@@ -61,6 +61,7 @@ from mod_editor.core.nfl2k5_formation_play_writer import (
     formation_request_from_mapping,
     play_request_from_mapping,
 )
+from mod_editor.core import nfl2k5_playbook_pack as playbook_pack
 from mod_editor.core.nfl2k5_stadium_studio import (
     Nfl2k5StadiumStudio,
     StadiumGltfTextureWriteBack,
@@ -2579,6 +2580,7 @@ class Nfl2k5StudioFacade:
         progress: ProgressSink = _quiet_progress,
         replace_index: int | None = None,
         play_flags: int | None = None,
+        link_group: int | None = None,
     ) -> object:
         """Stage an authored play and, optionally, list it in a formation.
 
@@ -2612,9 +2614,10 @@ class Nfl2k5StudioFacade:
                     session.staged_formation_index(link_formation_selector, len(book.formations))
                     if link_formation_selector is not None else int(link_formation_index)
                 )
-                link = FormationLinkRequest(asset_id, formation_index, play_index, None)
+                link = FormationLinkRequest(asset_id, formation_index, play_index, link_group)
                 session.create_formation_link(link)
-                message += f" Listed as play {play_index} in formation {formation_index}."
+                message += f" Listed as play {play_index} in formation {formation_index}"
+                message += (f" (audible group {link_group})." if link_group is not None else ".")
         progress("Play created", 3, 3)
         return StudioOperationResult(message if changed else "That authored play is already staged.")
 
@@ -2659,6 +2662,201 @@ class Nfl2k5StudioFacade:
             changed = self._require_session().revert_formation_link(selector)
         progress("Link reverted", 1, 1)
         return StudioOperationResult("Link reverted." if changed else "Already original.")
+
+    # -- community playbook packs (.2k5book) -------------------------------------------------
+
+    def playbook_teams(self) -> tuple[str, ...]:
+        """The team books this source carries, in the pack format's order."""
+
+        available = {book.book_name for book in self._playbook_books()}
+        return tuple(name for name in playbook_pack.TEAM_BOOKS if name in available)
+
+    def _playbook_books(self) -> tuple[Nfl2k5Playbook, ...]:
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+        return inspector.load_all()
+
+    def _playbook_book_for_team(self, team: str) -> tuple[str, Nfl2k5Playbook, bytes]:
+        for book in self._playbook_books():
+            if book.book_name == team:
+                return book.asset_id, book, self.playbook_raw_body(book.asset_id)
+        raise ValidationError(
+            f"This game source has no playbook named “{team}”. "
+            f"Choose one of: {', '.join(self.playbook_teams())}."
+        )
+
+    def load_playbook_pack(self, path: Path | str) -> playbook_pack.PlaybookPack:
+        """Read and schema-check a ``.2k5book`` (no game data needed)."""
+
+        return playbook_pack.load_pack(Path(path))
+
+    def preview_playbook_pack(
+        self,
+        pack: playbook_pack.PlaybookPack | Path | str,
+        team: str | None = None,
+        progress: ProgressSink = _quiet_progress,
+    ) -> playbook_pack.PackPreview:
+        """The plan table, budget totals and full offline check for one target book."""
+
+        if not isinstance(pack, playbook_pack.PlaybookPack):
+            pack = self.load_playbook_pack(pack)
+        target = team or pack.book.team
+        progress(f"Reading {target}'s playbook", 0, 2)
+        asset_id, book, body = self._playbook_book_for_team(target)
+        staged_f, staged_p = self.staged_replace_targets(asset_id)
+        progress("Planning the install", 1, 2)
+        preview = playbook_pack.preview_pack(
+            pack, target, book, body,
+            resource=self._playbook_raw_resource(asset_id),
+            staged_formation_targets=staged_f,
+            staged_play_targets=staged_p,
+        )
+        progress("Plan ready", 2, 2)
+        return preview
+
+    def _playbook_raw_resource(self, asset_id: str) -> bytes:
+        from nfl_outer import read_entry_range
+
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            record = inspector.index.get(asset_id)
+            entry = inspector.index.archive.entries[record.outer_index]
+            return read_entry_range(
+                inspector.index.archive, entry, record.chunk_offset, record.raw_size
+            )
+
+    def install_playbook_pack(
+        self,
+        pack: playbook_pack.PlaybookPack | Path | str,
+        teams: Sequence[str] | None = None,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        """Stage one pack's rows as ordinary project edits, per target team.
+
+        Nothing new is persisted: the rows are the same ``formation_creates`` /
+        ``play_creates`` / ``formation_links`` the designers already stage, so
+        they appear in the edit list, revert one by one, and serialise into
+        ``.2k5mod`` with no schema change."""
+
+        if not isinstance(pack, playbook_pack.PlaybookPack):
+            pack = self.load_playbook_pack(pack)
+        targets = tuple(teams) if teams else (pack.book.team,)
+        staged_rows = 0
+        installed: list[str] = []
+        total = len(targets)
+        for done, team in enumerate(targets):
+            progress(f"Installing “{pack.book.name}” into {team}", done, total)
+            asset_id, book, body = self._playbook_book_for_team(team)
+            staged_f, staged_p = self.staged_replace_targets(asset_id)
+            preview = playbook_pack.preview_pack(
+                pack, team, book, body,
+                staged_formation_targets=staged_f, staged_play_targets=staged_p,
+            )
+            blocked = [row for row in preview.plan.rows if row.status not in ("ok", "retargeted")]
+            if blocked or preview.plan.blocked:
+                first = blocked[0] if blocked else None
+                reason = first.detail if first is not None else preview.plan.blocked[0]
+                raise ValidationError(
+                    f"{team}: “{first.name}” cannot be installed — {reason}"
+                    if first is not None else f"{team}: {reason}"
+                )
+            if not preview.check.ok:
+                raise ValidationError(f"{team}: {preview.check.errors[0]}")
+            staged_rows += self._stage_pack(preview.pack, asset_id, book)
+            installed.append(team)
+        progress("Playbook pack staged", total, total)
+        return StudioOperationResult(
+            f"Staged “{pack.book.name}” into {', '.join(installed)} "
+            f"({staged_rows} edit(s)). Revert them like any other edit."
+        )
+
+    def _stage_pack(
+        self, pack: playbook_pack.PlaybookPack, asset_id: str, book: Nfl2k5Playbook
+    ) -> int:
+        staged = 0
+        formation_selectors: dict[str, str] = {}
+        play_selectors: dict[str, str] = {}
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            for entry in pack.formations:
+                request = formation_request_from_mapping(entry.request_mapping(asset_id))
+                formation_selectors[entry.id] = request.selector
+                staged += 1 if session.create_formation(request) else 0
+            for entry in pack.plays:
+                request = play_request_from_mapping(entry.request_mapping(asset_id))
+                play_selectors[entry.id] = request.selector
+                staged += 1 if session.create_play(request) else 0
+            for entry in pack.plays:
+                if entry.link_formation is None:
+                    continue
+                if isinstance(entry.link_formation, str):
+                    target = pack.formations_by_id[entry.link_formation]
+                    formation_index = (
+                        target.replace_index if target.replace_index is not None
+                        else session.staged_formation_index(
+                            formation_selectors[target.id], len(book.formations)
+                        )
+                    )
+                else:
+                    formation_index = int(entry.link_formation)
+                play_index = (
+                    entry.replace_index if entry.replace_index is not None
+                    else session.staged_play_index(play_selectors[entry.id], len(book.plays))
+                )
+                link = FormationLinkRequest(asset_id, formation_index, play_index, entry.link_group)
+                staged += 1 if session.create_formation_link(link) else 0
+        return staged
+
+    def export_playbook_pack(
+        self,
+        asset_id: str,
+        destination: Path,
+        *,
+        name: str = "",
+        author: str = "",
+        version: str = "1.0.0",
+        license: str = "CC0-1.0",
+        notes: str = "",
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Write this project's staged rows for one book out as a ``.2k5book``."""
+
+        progress("Reading the staged playbook edits", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            book = inspector.load(asset_id)
+            formation_rows = [r.provider_edit() for r in session.formation_creates
+                              if r.asset_id == asset_id]
+            play_rows = [r.provider_edit() for r in session.play_creates if r.asset_id == asset_id]
+            link_rows = [r.provider_edit() for r in session.formation_links if r.asset_id == asset_id]
+        if not formation_rows and not play_rows:
+            raise ValidationError(
+                "This project stages no designed formations or plays for that book, so there "
+                "is nothing to share. Use Design Formation… / Design Play… or Create a Play first."
+            )
+        body = self.playbook_raw_body(asset_id)
+        progress("Building the pack", 1, 3)
+        pack = playbook_pack.pack_from_staged_rows(
+            team=book.book_name, book=book, body=body,
+            formation_rows=formation_rows, play_rows=play_rows, link_rows=link_rows,
+            name=name or f"{book.book_name} playbook pack", author=author or "unknown",
+            version=version, license=license, notes=notes,
+        )
+        progress("Checking the pack", 2, 3)
+        report = playbook_pack.check_pack(
+            pack, resource=self._playbook_raw_resource(asset_id), asset_id=asset_id
+        )
+        if not report.ok:
+            raise ValidationError(
+                "The staged edits do not pass the pack check, so they were not exported:\n\n"
+                + "\n".join(report.errors[:5])
+            )
+        path = playbook_pack.save_pack(pack, Path(destination))
+        progress("Playbook pack written", 3, 3)
+        return path
 
     @property
     def stadium_available(self) -> bool:

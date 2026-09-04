@@ -297,3 +297,11 @@ tools/nfl2k5_scorebug_textures_into_xiso.py
 tools/nfl2k5_soundbank_swap.py
 tools/nfl_vc_lz_fill.py
 tools/fatx_dirent_rename.py
+
+# Beta 59: community playbook packs (.2k5book) — the format, the offline check CLI,
+# the install / export dialogs and the seed pack.
+data/playbooks/modern_gun_core.2k5book
+docs/mod_editor/playbook_packs.md
+mod_editor/core/nfl2k5_playbook_pack.py
+mod_editor/gui/playbook_pack_dialog_qt.py
+tools/nfl2k5_playbook_pack.py

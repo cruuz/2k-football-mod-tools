@@ -246,6 +246,28 @@ def suggested_playbook_filename(book: Nfl2k5Playbook) -> str:
     return f"{book.outer_index:04d}_{stem or 'playbook'}_PLAY.bin"
 
 
+#: Menu selection groups.  Every populated retail formation carries exactly one link in
+#: each of groups 0, 1 and 2 (938 formations, no exceptions) -- the three audible slots,
+#: the same structure proved in APF's SPLB.  Group 3 exists in the format and is what the
+#: tutorial book uses.  What an audible slot *does* at the line is the format's structure,
+#: not a witnessed runtime claim.
+AUDIBLE_GROUPS: tuple[tuple[str, object], ...] = (
+    ("Inherit", None),
+    ("Audible 1", 0),
+    ("Audible 2", 1),
+    ("Audible 3", 2),
+    ("Group 3", 3),
+)
+
+
+def suggested_playbook_pack_filename(team: str, pack_name: str) -> str:
+    """Filesystem-safe ``.2k5book`` name for one team's exported pack."""
+
+    stem = re.sub(r"[^A-Za-z0-9._-]+", "_", pack_name).strip("._-") or "playbook_pack"
+    team_stem = re.sub(r"[^A-Za-z0-9]+", "", team) or "book"
+    return f"{team_stem}_{stem}.2k5book"
+
+
 def format_formation_package_map_line(
     formation_name: str, package_map: tuple[int, ...] | list[int]
 ) -> str:
@@ -435,6 +457,24 @@ class PlaybooksPanelHost(Protocol):
         link_formation_index: int | None, link_formation_selector: str | None, progress: ProgressSink,
         replace_index: int | None = None, play_flags: int | None = None,
     ) -> object: ...
+
+    # community playbook packs (.2k5book)
+    def playbook_teams(self) -> tuple[str, ...]: ...
+
+    def load_playbook_pack(self, path: Path) -> object: ...
+
+    def preview_playbook_pack(
+        self, pack: object, team: str | None, progress: ProgressSink
+    ) -> object: ...
+
+    def install_playbook_pack(
+        self, pack: object, teams: Iterable[str] | None, progress: ProgressSink
+    ) -> object: ...
+
+    def export_playbook_pack(
+        self, asset_id: str, destination: Path, *, name: str, author: str, version: str,
+        license: str, notes: str, progress: ProgressSink,
+    ) -> Path: ...
 
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
@@ -710,6 +750,21 @@ class PlaybooksPanel(QWidget):
         )
         create_row.addWidget(self.design_formation_button)
         create_row.addWidget(self.design_play_button)
+        self.install_pack_button = QPushButton("Install Playbook Pack…")
+        self.install_pack_button.setToolTip(
+            "Open a community .2k5book: a recipe of formations and plays somebody designed in "
+            "this studio. You see what each entry replaces and the live budget (plays n/270, "
+            "formations n/50, nodes n/3,500) before anything is staged. The file carries no "
+            "game data — it is compiled against your own disc."
+        )
+        self.export_pack_button = QPushButton("Export Playbook Pack…")
+        self.export_pack_button.setToolTip(
+            "Write the formations and plays you designed for this book out as a shareable "
+            ".2k5book recipe. No Python, no git, no retail bytes — attach it to a thread or a "
+            "pull request."
+        )
+        create_row.addWidget(self.install_pack_button)
+        create_row.addWidget(self.export_pack_button)
         create_row.addStretch(1)
         inspector_layout.addLayout(create_row)
 
@@ -726,6 +781,17 @@ class PlaybooksPanel(QWidget):
             "formation's existing slots; group-bit gameplay meaning is unproved."
         )
         name_row.addWidget(self.custom_name_edit, 1)
+        self.link_group_combo = QComboBox()
+        for label, value in AUDIBLE_GROUPS:
+            self.link_group_combo.addItem(label, value)
+        self.link_group_combo.setToolTip(
+            "Which of the formation's three audible slots lists the play. Every populated retail "
+            "formation carries exactly one link in each of groups 0, 1 and 2 (938 formations, no "
+            "exceptions) — the three audible slots. Leave it on Inherit to copy the formation's "
+            "existing group."
+        )
+        name_row.addWidget(QLabel("Audible slot:"))
+        name_row.addWidget(self.link_group_combo)
         name_row.addWidget(self.create_link_button)
         inspector_layout.addLayout(name_row)
 
@@ -885,6 +951,8 @@ class PlaybooksPanel(QWidget):
         self.create_formation_button.clicked.connect(self._create_formation)
         self.design_formation_button.clicked.connect(self._design_formation)
         self.design_play_button.clicked.connect(self._design_play)
+        self.install_pack_button.clicked.connect(self._install_playbook_pack)
+        self.export_pack_button.clicked.connect(self._export_playbook_pack)
         self.create_link_button.clicked.connect(self._create_link)
         self.export_link_copy_button.clicked.connect(self._export_link_table_copy)
         self.export_pkgmap_copy_button.clicked.connect(self._export_package_map_copy)
@@ -1777,6 +1845,59 @@ class PlaybooksPanel(QWidget):
             ready,
         )
 
+    def _install_playbook_pack(self) -> None:
+        from mod_editor.gui.playbook_pack_dialog_qt import (
+            PlaybookPackInstallDialog, choose_pack_to_open,
+        )
+
+        path = choose_pack_to_open(self)
+        if path is None:
+            return
+        try:
+            dialog = PlaybookPackInstallDialog(self.host, path, self)
+        except Exception as exc:  # noqa: BLE001 - a bad file explains itself
+            QMessageBox.warning(self, "Install Playbook Pack", str(exc))
+            return
+        if dialog.exec_() != dialog.Accepted:
+            return
+        self.progress_label.setText(getattr(dialog, "result_message", "Playbook pack staged."))
+        self._refresh_after_task = True
+        self.refresh()
+
+    def _export_playbook_pack(self) -> None:
+        from mod_editor.gui.playbook_pack_dialog_qt import (
+            PlaybookPackExportDialog, choose_pack_to_save,
+        )
+
+        book = self._selected_book()
+        if book is None:
+            QMessageBox.information(
+                self, "Export Playbook Pack",
+                "Load your NFL 2K5 disc and select the playbook you designed for first.",
+            )
+            return
+        dialog = PlaybookPackExportDialog(book.book_name, None, self)
+        if dialog.exec_() != dialog.Accepted or dialog.result_payload is None:
+            return
+        payload = dialog.result_payload
+        destination = choose_pack_to_save(
+            self, str(Path.home() / suggested_playbook_pack_filename(book.book_name, payload["name"]))
+        )
+        if destination is None:
+            return
+
+        def ready(value: object) -> None:
+            self.progress_label.setText(f"Playbook pack written: {value}")
+
+        self._run(
+            lambda progress: self.host.export_playbook_pack(
+                book.asset_id, destination, name=payload["name"], author=payload["author"],
+                version=payload["version"], license=payload["license"], notes=payload["notes"],
+                progress=progress,
+            ),
+            ready,
+        )
+
     def _export_link_table_copy(self) -> None:
         reason = str(
             self.export_link_copy_button.property("disableReason") or ""
@@ -2129,9 +2250,11 @@ class PlaybooksPanel(QWidget):
             )
             self._refresh_after_task = True
 
+        group = self.link_group_combo.currentData()
         self._run(
             lambda progress: self.host.create_formation_link(
-                book.asset_id, int(formation_index), linked.play.index, None, progress
+                book.asset_id, int(formation_index), linked.play.index,
+                None if group is None else int(group), progress
             ),
             ready,
         )

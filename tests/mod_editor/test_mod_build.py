@@ -114,6 +114,89 @@ class PresetTests(unittest.TestCase):
             self.assertEqual(set(values), toggles, name)
             self.assertIn(name, mod_build.PRESET_TITLES)
 
+    def test_playbook_packs_are_off_by_default_and_need_a_disc(self) -> None:
+        """A community book is a user choice like commentary: never in a preset."""
+
+        plan = mod_build.BuildPlan(source="s", target="t")
+        self.assertEqual(plan.playbook_packs, ())
+        self.assertIn("playbook_packs", plan.to_recipe())
+        for name, values in mod_build.PRESETS.items():
+            self.assertNotIn("playbook_packs", values, name)
+        self.assertTrue(mod_build.availability()["playbook_packs"])
+        self.assertEqual(mod_build.inspect.__doc__ is None, False)
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "default.xbe"
+            source.write_bytes(_build_synthetic_xbe())
+            with self.assertRaisesRegex(ValueError, "playbook packs need a disc image"):
+                mod_build.build(mod_build.BuildPlan(
+                    str(source), str(Path(tmp) / "out.xbe"),
+                    playbook_packs=(str(ROOT / "data" / "playbooks" / "modern_gun_core.2k5book"),),
+                ))
+
+    def test_playbook_pack_step_lands_in_the_receipt(self) -> None:
+        from mod_editor.core import nfl2k5_playbook_pack as packs
+
+        seed = ROOT / "data" / "playbooks" / "modern_gun_core.2k5book"
+        calls: list[tuple[str, list[str]]] = []
+
+        def fake_apply(target, paths, progress=None):
+            calls.append((str(target), [Path(p).name for p in paths]))
+            if progress:
+                progress("Installing “Modern Gun Core” into ATL")
+            pack = packs.load_pack(seed)
+            return {"status": "applied", "packs": [{
+                "pack": seed.name, "name": pack.book.name, "author": pack.book.author,
+                "version": pack.book.version, "license": pack.book.license,
+                "authored_on": pack.book.team, "book_fingerprint": pack.base.book_fingerprint,
+                "formations": len(pack.formations), "plays": len(pack.plays),
+                "books": [{"team": "ATL", "outer_index": 308, "retargeted": False,
+                           "formations": 39, "plays": 254, "nodes": 2746, "changed_bytes": 2450}],
+            }]}
+
+        real_apply = packs.apply_packs_to_image
+        real_is_image = mod_build.tt.is_disc_image
+        real_inspect = mod_build.inspect
+        pretend_image = lambda _path: True   # noqa: E731 - only the plan's image gate
+
+        def inspect_for_real(target):
+            # inspect() reads the real container; only the plan gate is pretending
+            mod_build.tt.is_disc_image = real_is_image
+            try:
+                return real_inspect(target)
+            finally:
+                mod_build.tt.is_disc_image = pretend_image
+
+        packs.apply_packs_to_image = fake_apply
+        mod_build.tt.is_disc_image = pretend_image
+        mod_build.inspect = inspect_for_real
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                source = Path(tmp) / "default.xbe"
+                source.write_bytes(_build_synthetic_xbe())
+                target = Path(tmp) / "out.xbe"
+                messages: list[str] = []
+                receipt = mod_build.build(
+                    mod_build.BuildPlan(str(source), str(target), playbook_packs=(str(seed),)),
+                    lambda msg, a, b: messages.append(msg),
+                )
+        finally:
+            packs.apply_packs_to_image = real_apply
+            mod_build.tt.is_disc_image = real_is_image
+            mod_build.inspect = real_inspect
+        step = next(s for s in receipt["steps"] if s["step"] == "playbook_packs")
+        self.assertEqual(step["status"], "applied")
+        self.assertEqual(len(step["packs"]), 1)
+        entry = step["packs"][0]
+        self.assertEqual(entry["pack"], "modern_gun_core.2k5book")
+        self.assertEqual(entry["name"], "Modern Gun Core")
+        self.assertEqual(entry["license"], "CC0-1.0")
+        self.assertEqual(entry["authored_on"], "ATL")
+        self.assertEqual([b["team"] for b in entry["books"]], ["ATL"])
+        self.assertEqual(list(receipt["plan"]["playbook_packs"]), [str(seed)])
+        self.assertEqual(calls[0][1], ["modern_gun_core.2k5book"])
+        self.assertTrue(any("playbook packs" in m for m in messages))
+        self.assertEqual(receipt["result"]["playbook_packs"], "n/a")
+
     def test_unknown_preset_is_refused_and_names_are_kept(self) -> None:
         with self.assertRaises(KeyError):
             mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t"), "nope")

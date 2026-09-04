@@ -855,6 +855,26 @@ job from his menu, replace outdated stock plays, build. Every authored play is
 checked against the game's own validator before it is staged; the build refuses
 anything the game would reject.
 
+## Playbook packs — share a playbook, not a disc (RC83)
+
+**Playbooks & Plays → Install Playbook Pack…**, and the same card on Create a Play step 1. A
+`.2k5book` is a small JSON recipe somebody made in this studio: formations, plays, and the stock
+entries each one replaces. It carries no game data at all — it is compiled against *your* disc when
+you Build — so it is safe to post in a thread or attach to a pull request. Before anything is staged
+you see a plan table (per entry: what it replaces, and OK / conflict / over budget) under a live
+budget bar reading `plays 254/270, formations 39/50, nodes 2,746/3,500`, and you choose where it
+goes: the pack's own team, a retarget to any other book (every target is re-resolved **by name** in
+that team's book), or all 32 at once. What installs are ordinary project edits — they show in the
+edit list, revert one at a time, and save into your `.2k5mod`. **Export Playbook Pack…** is the
+mirror: design what you want in Create a Play, press it, and you have a file to share, with no
+Python and no git. `data/playbooks/modern_gun_core.2k5book` ships as a worked example — four gun
+sets and eleven pass concepts that replace ranked dated entries so the book does not grow, which is
+what lets it install into the eight team books already at the 270-play cap. Contributors can gate
+their own work with `tools/nfl2k5_playbook_pack.py check FILE.2k5book`, whose first six rules need
+no game data. Read `docs/mod_editor/playbook_packs.md` before authoring one: the engine has no
+pre-snap motion, no give-or-throw RPO and no tempo, and option routes and keep-or-throw RPOs pass
+the validator but have never been witnessed in game.
+
 ## Throw Distance & Arc (RC77)
 
 Sliders & Gameplay → **Throw Distance && Arc**. Choose a `default.xbe` or a
