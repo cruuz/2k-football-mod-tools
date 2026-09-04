@@ -537,7 +537,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_crib_scene_texture_writer.py": "4f72f59fab6f116c164a2acafb110829a46eb18dc5abcc5cd2c05978a0f0cdbd",
         "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py": "95cab3bb2d666fa4f4dfddfb25816c443b17a51bb97abbe90d9532a5f117bae6",
         "mod_editor/core/nfl2k5_playbook_route_writer.py": "87ac9ab729e15c665774223c406a248931b77a05ca2fa258b04e1f0cd06674c5",
-        "mod_editor/core/nfl2k5_formation_play_writer.py": "0405c622e0e8c41cd3f2d0da1945e1c0c5567255ae276894bdef9c400c247472",
+        "mod_editor/core/nfl2k5_formation_play_writer.py": "9ee0444d60927941b2e5165d3f413b6844a2bebdee1cc4fe26fdd75a781b436e",
         "mod_editor/core/nfl2k5_play_codec.py": "6102d406bb8738ff78f65ce19fa455f0af2284ad27687b3c9b7de5ce9cebf2d2",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "f77f94c4d926d9fb5de55626bec8106e9c7a9b124e0553b724913922d8d3099f",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "3bf99afe588f381d4604a883ad92a5bfbb1bb39391bce4acb5b97eda54bc27d7",
