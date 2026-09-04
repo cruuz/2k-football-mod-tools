@@ -881,6 +881,24 @@ punts and ball carries unchanged; a fake field goal run carries the rolled ball 
 If the laces end up sideways instead of backwards, the 90-degree variant is a 16-byte data edit in
 the cave (`nfl2k5_kick_laces.apply(..., roll=ROLL_90)`). Unwitnessed in game.
 
+**Star decal under the players you tag** (Gameplay group, advanced and experimental presets; the
+tags need a disc image). The game already owns this star: the art is called `icon_controller_star`
+and the engine draws it flat on the grass under whoever a controller is driving. Open **Text &
+Rosters -> Current Roster Players**, find a player, and tick the **★ Star** column at the end of his
+row (only current primary-roster players can be ticked; the Build tab's Gameplay group lists who is
+ticked). Tick **Star decal under the players you tag** in the same group, build, and that star
+follows those players around the field in every game the copy plays, in the same place and the same
+size the controller star uses. Up to **nine** players wear one at a time -- that is the size of the
+game's own star list, and the patch refuses the tenth rather than corrupting it, so past nine some
+tagged players simply go without a decal that frame. Two things to expect: the tag also turns on the
+on-field name / number text over that player when your **Player Indicator Text** option is on (the
+game decides both with the same test), and the tag lives in the roster, so it reaches **new**
+franchises started from the patched copy, not one you are already playing. With nobody ticked the
+patch changes nothing on screen. What to check in game: tag two or three players on both teams, then
+look for a star under each of them on offence and defence, in Exhibition and in a franchise game;
+your own controller star must still be there and still be your controller's colour; tag nine and
+confirm nothing crashes; untick, rebuild, and the stars are gone. Unwitnessed in game.
+
 **Penalties at NFL rates, Chop Block toggle** (Gameplay group, advanced and experimental presets):
 retail's default 50 on every slider flags far more holding, face masks and clipping than an NFL
 Sunday, the incidental face mask is still the 2004 five-yard call, and the Chop Block On/Off toggle

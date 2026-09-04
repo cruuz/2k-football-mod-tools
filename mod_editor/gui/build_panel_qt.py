@@ -28,6 +28,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import mod_build
+from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
@@ -208,10 +209,15 @@ class BuildPanel(QWidget):
         self.uniform_choice_check = QCheckBox("Home/away jerseys at any stadium: up/down past the last era on Controller Assign or Team Select flips that side's colour (retail default kept; unwitnessed)")
         self.kick_laces_check = QCheckBox("Laces to the posts on field goals and PATs: the held ball rolls 180 degrees about its long axis on Field Goal formation plays (kickoff tee, punts and carries unchanged; unwitnessed)")
         self.seven_on_seven_check = QCheckBox("7-on-7 practice mode: Practice Type 7-On-7 + 7-on-7 sets in the practice playbook (linemen idle at the sideline, 4-second timer rusher; disc images only; unwitnessed)")
-        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.seven_on_seven_check):
+        self.player_star_check = QCheckBox("Star decal under the players you tag: the retail controller star follows every player ticked ★ Star in Text & Rosters, up to 9 at once (nothing changes with no tags; unwitnessed)")
+        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.seven_on_seven_check, self.player_star_check):
             g.addWidget(box)
         if not mod_build.SEVEN_ON_SEVEN_RELEASED:
             self.seven_on_seven_check.hide()
+        self.star_players_label = QLabel("★ Star players: none ticked (tick them in Text & Rosters -> Current Roster Players).")
+        self.star_players_label.setObjectName("throwMuted")
+        self.star_players_label.setWordWrap(True)
+        g.addWidget(self.star_players_label)
         g.addLayout(history_row)
         g.addLayout(names_row)
         root.addWidget(gameplay)
@@ -274,6 +280,7 @@ class BuildPanel(QWidget):
                     self.returner_check, self.progression_check, self.edge_check, self.scorebug_check):
             box.toggled.connect(lambda _c: self._refresh())
         self.commentary: list[mod_build.CommentarySwap] = []
+        self.star_players: list[str] = []
 
     # ------------------------------------------------------------- state
     def apply_state(self, state: dict[str, object]) -> None:
@@ -289,6 +296,7 @@ class BuildPanel(QWidget):
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("prospect_names", "prospect names"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("seven_on_seven", "7-on-7 practice"),
+                           ("player_star", "star decal"), ("player_tags", "star tags"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
                            ("scorebug", "ESPN scorebug")):
@@ -331,6 +339,7 @@ class BuildPanel(QWidget):
         gate(self.uniform_choice_check, "uniform_choice")
         gate(self.kick_laces_check, "kick_laces")
         gate(self.seven_on_seven_check, "seven_on_seven", needs_image=True)
+        gate(self.player_star_check, "player_star")
         gate(self.edge_check, "edge_rename")
         gate(self.scheme_labels_check, "scheme_labels")
         gate(self.position_pools_check, "position_pools", needs_image=True)
@@ -358,6 +367,7 @@ class BuildPanel(QWidget):
             "penalties": self.penalties_check,
             "uniform_choice": self.uniform_choice_check,
             "kick_laces": self.kick_laces_check,
+            "player_star": self.player_star_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
         applied, skipped = [], []
@@ -382,6 +392,22 @@ class BuildPanel(QWidget):
             self.preset_note.setText(f"{title}: ticked {len(applied)} patches. Untick anything you do not want, then build.")
         return {"applied": applied, "skipped": skipped}
 
+    def set_star_players(self, tags: list[str], names: list[str] | None = None) -> None:
+        """The ★ Star ticks from Text & Rosters: the players the star decal follows."""
+
+        self.star_players = [str(tag) for tag in tags]
+        shown = list(names or self.star_players)
+        if not self.star_players:
+            self.star_players_label.setText(
+                "★ Star players: none ticked (tick them in Text & Rosters -> Current Roster Players).")
+        else:
+            over = ("; the game draws at most 9 at once"
+                    if len(self.star_players) > player_star.STAR_LIST_LIMIT else "")
+            self.star_players_label.setText(
+                f"★ Star players: {len(self.star_players)} ticked ({', '.join(shown[:8])}"
+                + (", …" if len(shown) > 8 else "") + f"){over}. Needs a disc image.")
+        self._refresh()
+
     def plan(self) -> mod_build.BuildPlan:
         return mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
@@ -402,6 +428,7 @@ class BuildPanel(QWidget):
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
             uniform_choice=("choice" if self.uniform_choice_check.isChecked() else ""),
             kick_laces=self.kick_laces_check.isChecked(),
+            player_star=self.player_star_check.isChecked(), player_tags=list(self.star_players),
             team_history=((self.team_history_field.text().strip() or "retail") if self.team_history_check.isChecked() else ""),
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
@@ -411,7 +438,7 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools
-                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.prospect_names or p.commentary)
+                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.prospect_names or p.player_star or p.player_tags or p.commentary)
 
     def _refresh(self) -> None:
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())

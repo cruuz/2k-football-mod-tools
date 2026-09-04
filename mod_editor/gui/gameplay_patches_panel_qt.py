@@ -136,6 +136,15 @@ PATCHES = (
      "five skill players) with nine pass concepts and two coverage sets (4-3 and Nickel looks) with six coverages. The "
      "engine always fields eleven, so the four linemen of each side stand idle at the sideline by design, and one "
      "parked defender rushes after a 4-second count as the throw timer. Needs a disc image; unwitnessed in game."),
+    ("player_star", "Star decal under the players you tag",
+     "Retail already draws a star at a player's feet and the art is called icon_controller_star: it is a "
+     "world-space decal the game puts under whoever a controller is driving, and one 80-byte routine decides "
+     "who gets one. Patch: that routine is rewritten in place (same 80 bytes, same entry, no cave) so it keeps "
+     "every retail answer and also says yes when the player's roster record carries the studio's star bit, "
+     "refusing once the game's 9-entry star list is full. Tick the players in Text & Rosters (★ Star); with no "
+     "player ticked nothing changes on screen. The same routine gates the on-field name/number indicator, so a "
+     "tagged player gets that too when Player Indicator Text is on. The tags need a disc image and reach "
+     "franchises created from the copy. Unwitnessed in game."),
 )
 
 

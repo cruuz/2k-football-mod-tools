@@ -143,6 +143,45 @@
   goal-line numeral, SPORTSCENTER board, crowd and seat rows are right under the per-shape
   rule and wrong under the fixed one. Unwitnessed in game: no UV or vertex-colour edit has
   been played back on a console or emulator yet.
+- **Star decal under the players you tag** (`nfl2k5_player_star.py` + `nfl2k5_player_tags.py`,
+  `BuildPlan.player_star` / `BuildPlan.player_tags`; off in BASIC, on in ADVANCED and EXPERIMENTAL
+  because with no player tagged it draws nothing). Retail already draws this star and the art is
+  literally called `icon_controller_star` (`.string_` 0xE6C16C): `FUN_000f8e60` loads it as the
+  models `controller` / `controller100` (`[0xBA28A4]` / `[0xBA28A8]`), `FUN_000f8880` puts an
+  instance at a player's feet as a **world-space decal** (it adds x/z into the instance transform
+  at +0x30 / +0x38 and colours it from the per-user `.rdata` table 0x4ED9A0), `FUN_000f9030` walks
+  the on-field entity list `[0xE60268]` once a frame and appends the players who get one to a list
+  at 0xBA2824, and `FUN_000f9320` draws them. The **only** gate on that append is `FUN_00075d40`,
+  an 80-byte leaf. So nothing is authored: the patch is an **in-place rewrite of that one routine**
+  -- 80 retail bytes out, 80 new bytes in, entry unmoved, **no cave and no hook** -- that keeps every
+  retail answer and adds "or this player's roster record carries the studio's star bit", refusing
+  once the star list is full. The tag is byte **+0x53 bit 0** of the 0x54 roster record: `entity+0x3C`
+  **is** that record (`FUN_000fa270` stores it into the marker queue at 0xFA2CB and the consumers
+  read its +0x14 as the name pointer, its +0x20 bits 3..9 as the jersey number and its +0x35 as the
+  position code -- the studio's own record fields), and +0x53 is the second of the two bytes Bad_AL's
+  NFL2K5Tool calls "padded by 2 zero bytes", zero in all 2,547 retail records. Four earlier
+  candidates were checked and every one is live: +0x27 bit 0 is **contract length** (981 primary
+  records set it; +0x0A/+0x24/+0x26/+0x27 are the contract block and +0x08 the Player Type flags,
+  per the Flying Finn V4 RE), +0x26 bit 0 and +0x08 bit 0 the same way, **+0x23** is bits 24..31 of
+  the live dword at +0x20 (an 8-bit field at bits 22..29 with a getter at `FUN_000be290` and a
+  setter at `FUN_000be2a0`, plus flag bits 30 and 31), and **+0x24 bit 7** is its own copied one-bit
+  field that retail data actually sets. The decisive evidence for +0x53 is the game's own
+  field-by-field player clone at 0xC16CD..0xC1DDB: it names every field of the record from +0x00 to
+  +0x51 and never names +0x52 or +0x53 (a test pins this). The **9-entry clamp is not optional**: the list is 0xC bytes an entry with a byte count at
+  0xBA2821 and `FUN_000f9030` flushes `[0xBA2820, 0xBA2820 + 4 + count*0xC)` at 0xF92E3, which with
+  9 entries ends exactly at the next global (0xBA2890), so the tag path refuses at 9 while retail's
+  own answers are never clamped. The rewrite is a leaf with no push, no pop, no call and no memory
+  write at all (its last act is a tail `jmp` to the pure `FUN_0017ebd0`, whose 0/1 return is the
+  retail answer); both cave gates and the memory-write gate pass, and unicorn runs the real bytes to
+  prove retail-identical answers for untagged records over eleven entity states, 1 for a tagged one,
+  a null record pointer never dereferenced, and the clamp at 9. Tagging is a **★ Star** checkbox
+  column in Text & Rosters -> Current Roster Players (primary pool only: those are the records the
+  on-field entity points at) which the Build tab reads as `player_tags`; the writer rewrites only
+  those pad bytes in the ROST resource of the copy, runs last of the roster passes and leaves the
+  team-history, reclassify, schedule and prospect-name digests intact. Side effect by design: the
+  same predicate gates the on-field name/number indicator in `FUN_00075d90`, so a tagged player gets
+  that too when Player Indicator Text is on. Tags need a disc image and reach franchises **created**
+  from the copy. Unwitnessed in game.
 
 ## v1.0 RC81 — Update now: the studio updates itself on every platform (2026-09-03)
 

@@ -74,6 +74,7 @@ from . import nfl2k5_penalties as penalties_patch
 from . import nfl2k5_uniform_choice as uniform_choice_patch
 from . import nfl2k5_kick_laces as kick_laces_patch
 from . import nfl2k5_prospect_names as prospect_names_patch
+from . import nfl2k5_player_star as player_star_patch
 from . import nfl2k5_seven_on_seven as seven_on_seven_patch
 from . import nfl2k5_boot_logo as boot_logo
 from .nfl2k5_bump_strength import (
@@ -600,6 +601,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "uniform_choice": uniform_choice_patch.status(payload),
         "kick_laces": kick_laces_patch.status(payload),
         "prospect_names": prospect_names_patch.xbe_status(payload),
+        "player_star": player_star_patch.status(payload),
         "boot_logo": boot_logo.status(payload),
         "path": str(path),
         "xbe_sha256": _digest(payload),
@@ -700,6 +702,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "uniform_choice": uniform_choice_patch.status(payload),
         "kick_laces": kick_laces_patch.status(payload),
         "prospect_names": prospect_names_patch.xbe_status(payload),
+        "player_star": player_star_patch.status(payload),
         "boot_logo": boot_logo.status(payload),
         "path": str(path),
         "xbe_byte_offset": offset,
@@ -906,7 +909,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                team_column: bool = False,
                seven_on_seven: bool = False, position_row: bool = False,
                probowl_order: bool = False, penalties: str = "", uniform_choice: str = "",
-               kick_laces: bool = False, prospect_names: str = "") -> tuple[bytes, dict[str, object]]:
+               kick_laces: bool = False, prospect_names: str = "",
+               player_star: bool = False) -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
 
@@ -990,7 +994,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (probowl_order, probowl_order_patch, "probowl_order_patch", "Pro Bowl order"),
                                      (bool(penalties), _penalties_adapter(penalties), "penalties_patch", "penalties"),
                                      (kick_laces, kick_laces_patch, "kick_laces_patch", "kick-laces"),
-                                     (bool(prospect_names), _prospect_names_adapter(prospect_names), "prospect_names_patch", "prospect-names")):
+                                     (bool(prospect_names), _prospect_names_adapter(prospect_names), "prospect_names_patch", "prospect-names"),
+                                     (player_star, player_star_patch, "player_star_patch", "player-star")):
         if not flag:
             continue
         state = module.status(patched)
@@ -1049,18 +1054,19 @@ def write_xbe_copy(
     uniform_choice: str = "",
     kick_laces: bool = False,
     prospect_names: str = "",
+    player_star: bool = False,
 ) -> dict[str, object]:
     """Write a patched COPY of ``source_xbe`` to ``target_xbe``."""
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or bool(prospect_names),
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or bool(prospect_names) or player_star,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
     _prepare_target(source, target, overwrite)
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, prospect_names=prospect_names)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, prospect_names=prospect_names, player_star=player_star)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
     try:
@@ -1104,6 +1110,7 @@ def write_xbe_copy(
         "uniform_choice": uniform_choice_patch.status(result),
         "kick_laces": kick_laces_patch.status(result),
         "prospect_names": prospect_names_patch.xbe_status(result),
+        "player_star": player_star_patch.status(result),
         "boot_logo": boot_logo.status(result),
         "source": {"path": str(source), "sha256": _digest(original),
                    "matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},
@@ -1151,6 +1158,7 @@ def write_image_copy(
     uniform_choice: str = "",
     kick_laces: bool = False,
     prospect_names: str = "",
+    player_star: bool = False,
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
 
@@ -1160,7 +1168,7 @@ def write_image_copy(
     """
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or bool(prospect_names),
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or bool(prospect_names) or player_star,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
@@ -1174,7 +1182,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, prospect_names=prospect_names)
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, prospect_names=prospect_names, player_star=player_star)
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
@@ -1266,6 +1274,7 @@ def write_image_copy(
         "uniform_choice": uniform_choice_patch.status(after),
         "kick_laces": kick_laces_patch.status(after),
         "prospect_names": prospect_names_patch.xbe_status(after),
+        "player_star": player_star_patch.status(after),
         "boot_logo": boot_logo.status(after),
         "source": {"path": str(source), "size": size, "xbe_sha256": _digest(original),
                    "xbe_matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},
