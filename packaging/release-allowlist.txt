@@ -259,6 +259,9 @@ mod_editor/core/nfl2k5_progression.py
 mod_editor/core/nfl2k5_returner_fix.py
 mod_editor/core/nfl2k5_season_length.py
 mod_editor/core/nfl2k5_team_column.py
+mod_editor/core/nfl2k5_rdata_sites.py
+mod_editor/core/nfl2k5_position_row.py
+mod_editor/core/nfl2k5_probowl_order.py
 mod_editor/core/nfl2k5_team_history.py
 mod_editor/core/nfl2k5_seven_on_seven.py
 mod_editor/core/nfl2k5_boot_logo.py

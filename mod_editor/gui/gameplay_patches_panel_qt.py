@@ -85,6 +85,16 @@ PATCHES = (
      "the Standard preset take Far's look-at, lens and offset words, so a profile left on Standard gets the "
      "Far view. Far itself, the kick, replay and other presets are untouched; the fresh-profile default stays "
      "Standard."),
+    ("position_row", "Position on the first page of Edit Player (roster and Franchise)",
+     "Retail: Create Player lets you pick a position, but Edit Player never lists it, in roster mode or in "
+     "Franchise, so a position change means a new player. Patch: the Position row (the game's own picker, "
+     "17 positions, ratings kept, overall recomputed from the new position) sits after Last Name on the first "
+     "page of both Edit Player screens; Franchise opens the same screens. Run Depth Chart -> Auto afterwards. "
+     "Unwitnessed in game."),
+    ("probowl_order", "Pro Bowl Votes in football order",
+     "Retail: the Pro Bowl Votes tabs run QB, HB, FB, WR, TE, C, G, T, then K and P before the defence. Patch: "
+     "the tab list runs offence, defence, then K and P (one pointer list; the vote scanner reads each tab's "
+     "own position, and no other screen uses the list). Unwitnessed in game."),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "

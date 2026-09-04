@@ -2,6 +2,17 @@
 
 ## v1.0 RC82 — (unreleased)
 
+- **Position on the first page of Edit Player, in roster mode and in Franchise.** Create Player's own
+  Position picker (17 positions, ratings kept, overall recomputed from the new position's weights)
+  now sits after Last Name on both Edit Player screens; Franchise opens the same screens, so a
+  position change no longer means a new player. Two 28-byte `.rdata` row-list edits
+  (`nfl2k5_position_row.py`). Run Depth Chart -> Auto afterwards. In every preset. Unwitnessed.
+- **Pro Bowl Votes tabs in football order.** Offence, defence, then K and P (retail put the kickers
+  between the linemen and the defence). One 17-pointer list (`nfl2k5_probowl_order.py`); the vote
+  scanner reads each tab's own position and no other screen shares the list. In every preset.
+- `nfl2k5_rdata_sites.py`: the shared retail-pin / status / apply / digest-repin helper those two
+  and future fixed-span `.rdata` patches use.
+
 - **★ Models: texture coordinates now follow the game's own per-mesh rule.** Beta 56
   decoded every model's UVs with one fixed formula (`u = (n + 1) / 2`, `v = (1 - n) / 2`,
   "verified on the referee"). The game does not. Every NFL 2K5 vertex shader that routes

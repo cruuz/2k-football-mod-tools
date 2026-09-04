@@ -865,6 +865,11 @@ xemu-only: its RSA signature cannot be regenerated, so real hardware rejects it
 (the same rule as Bump strength). `tools/nfl2k5_throw_distance.py` does the
 same from a terminal (`read`, `sliders`, `curves`, `preview`).
 
+**Position on Edit Player, Pro Bowl order** (Gameplay group, every preset): Edit Player's first
+page gains the game's own Position picker after Last Name, in roster mode and inside Franchise
+(the ratings stay, the overall follows the new position; run Depth Chart -> Auto afterwards), and
+the Pro Bowl Votes tabs run offence, defence, then kicker and punter. Both are unwitnessed in game.
+
 ## If xemu says "insert a disc" or stops at the Xbox logo
 
 Every disc the studio writes is a plain XISO; the changed bytes are inside `default.xbe` and the
