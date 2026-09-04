@@ -2763,6 +2763,139 @@ def _apply_csv_team(document: RosterDocument, player: Player, value: str) -> tup
     return 1, f"moved {current_text} -> {document.teams[target].abbreviation}"
 
 
+# ---------------------------------------------------------------------------------------- .PlayerData
+# Finn's Backup / Restore container (§15.1 of the RE report): a flat array of 150-byte entries, one
+# per primary record -- the raw 0x54 record verbatim (its pointers are stale on restore, so the
+# tool matches by name + play-by-play index instead), first name (16, NUL-padded ASCII), last name
+# (16), college (32) and a constant u16 7.  Community backups exist in this shape; the studio reads
+# and writes it, and restores under its own identity rules: names are the match key and are never
+# overwritten, the college is looked up by name in the roster's own table, pointers never travel,
+# and the star tag (the studio's own bit) stays as it is.
+PLAYER_DATA_ENTRY_SIZE = 150
+PLAYER_DATA_TRAILER = 7
+PLAYER_DATA_NAME_SIZE = 16
+PLAYER_DATA_COLLEGE_SIZE = 32
+PLAYER_DATA_EXCLUDED = frozenset(POINTER_FIELDS) | {"star_tag"}
+
+
+@dataclass
+class PlayerDataEntry:
+    index: int
+    raw: bytes
+    first: str
+    last: str
+    college: str
+    trailer: int
+
+    @property
+    def values(self) -> dict[str, int]:
+        return decode_record(self.raw)
+
+    @property
+    def pbp_id(self) -> int:
+        return int.from_bytes(self.raw[4:6], "little")
+
+    @property
+    def display(self) -> str:
+        return f"{self.first} {self.last}".strip() or f"#{self.index}"
+
+
+def _fixed_ascii(text: str, size: int) -> bytes:
+    raw = text.encode("ascii", "replace")[: size - 1]
+    return raw + bytes(size - len(raw))
+
+
+def _read_fixed_ascii(raw: bytes) -> str:
+    return raw.split(b"\0", 1)[0].decode("ascii", "replace").strip()
+
+
+def export_player_data(document: RosterDocument, players: Sequence[Player] | None = None) -> bytes:
+    """Finn's Export Player Data: the primary pool (or ``players``) as 150-byte entries."""
+
+    out = bytearray()
+    for player in (players if players is not None else document.by_pool("primary")):
+        out += player.record.encode()
+        out += _fixed_ascii(player.first, PLAYER_DATA_NAME_SIZE)
+        out += _fixed_ascii(player.last, PLAYER_DATA_NAME_SIZE)
+        out += _fixed_ascii(player.college, PLAYER_DATA_COLLEGE_SIZE)
+        out += struct.pack("<H", PLAYER_DATA_TRAILER)
+    return bytes(out)
+
+
+def read_player_data(data: bytes) -> list[PlayerDataEntry]:
+    """Parse a ``.PlayerData`` file; refuses a size that is not whole entries or a bad trailer."""
+
+    _require(len(data) > 0 and len(data) % PLAYER_DATA_ENTRY_SIZE == 0,
+             f"a .PlayerData file is whole {PLAYER_DATA_ENTRY_SIZE}-byte entries; this one is {len(data)} bytes")
+    entries: list[PlayerDataEntry] = []
+    for index in range(len(data) // PLAYER_DATA_ENTRY_SIZE):
+        chunk = data[index * PLAYER_DATA_ENTRY_SIZE: (index + 1) * PLAYER_DATA_ENTRY_SIZE]
+        trailer = struct.unpack_from("<H", chunk, 0x94)[0]
+        _require(trailer == PLAYER_DATA_TRAILER,
+                 f"entry {index}: trailer word is {trailer}, not {PLAYER_DATA_TRAILER}; not a .PlayerData file")
+        entries.append(PlayerDataEntry(
+            index=index, raw=bytes(chunk[:PLAYER_SIZE]),
+            first=_read_fixed_ascii(chunk[0x54:0x64]), last=_read_fixed_ascii(chunk[0x64:0x74]),
+            college=_read_fixed_ascii(chunk[0x74:0x94]), trailer=trailer))
+    return entries
+
+
+def import_player_data(document: RosterDocument, data: bytes, *, mode: str = "all",
+                       players: Sequence[Player] | None = None) -> dict[str, Any]:
+    """Finn's Restore Player Data, under the studio's identity rules.
+
+    Each entry is matched to a roster record by **last + first name and the play-by-play index**;
+    a name that is unique on the roster still matches when the index differs (logged), a name
+    that matches several records is skipped rather than guessed.  ``mode`` is ``all`` (every
+    non-pointer field except the studio's star tag, plus the college by name) or ``attributes``
+    (the 28 rating bytes only).  Returns a receipt: entries, matched, changed, fields, log."""
+
+    _require(mode in ("all", "attributes"), "mode must be all or attributes")
+    entries = read_player_data(data)
+    scope = list(players) if players is not None else list(document.players)
+    by_name: dict[tuple[str, str], list[Player]] = {}
+    for player in scope:
+        by_name.setdefault((player.last.casefold(), player.first.casefold()), []).append(player)
+    keys = RATING_BYTE_ORDER if mode == "attributes" else tuple(
+        f.name for f in FIELDS if f.name not in PLAYER_DATA_EXCLUDED)
+    log: list[str] = []
+    matched = changed_players = fields_written = 0
+    for entry in entries:
+        candidates = by_name.get((entry.last.casefold(), entry.first.casefold()), [])
+        if not candidates:
+            log.append(f"entry {entry.index} {entry.display}: no roster record has this name")
+            continue
+        exact = [p for p in candidates if p.record.values["pbp_id"] == entry.pbp_id]
+        if len(exact) == 1:
+            player = exact[0]
+        elif len(candidates) == 1:
+            player = candidates[0]
+            log.append(f"entry {entry.index} {entry.display}: play-by-play index {entry.pbp_id} differs from "
+                       f"the roster's {player.record.values['pbp_id']}; matched by name alone")
+        else:
+            log.append(f"entry {entry.index} {entry.display}: {len(candidates)} records carry this name and "
+                       f"none has play-by-play index {entry.pbp_id}; skipped")
+            continue
+        matched += 1
+        values = entry.values
+        touched = 0
+        for name in keys:
+            if player.record.values[name] != values[name]:
+                player.record.values[name] = values[name]
+                touched += 1
+        if mode == "all" and entry.college and entry.college != player.college:
+            if entry.college in document.colleges:
+                document.set_college(player, document.colleges.index(entry.college))
+                touched += 1
+            else:
+                log.append(f"entry {entry.index} {entry.display}: college {entry.college!r} is not in this "
+                           f"roster's table; left as {player.college!r}")
+        fields_written += touched
+        changed_players += 1 if touched else 0
+    return {"entries": len(entries), "matched": matched, "changed": changed_players,
+            "fields": fields_written, "log": log}
+
+
 # --------------------------------------------------------------------------------------------- global
 WHERE_OPERATORS = {
     ">=": lambda a, b: a >= b, ">": lambda a, b: a > b, "<=": lambda a, b: a <= b,
@@ -3136,7 +3269,8 @@ __all__ = [
     "TEAM_MAX_PLAYERS", "TEAM_SLOTS", "CLUB_TEAM_COUNT", "FLAG_PROSPECT", "FLAG_NFL_PLAYER",
     "MSG_DRAFT_CLASS", "MSG_FREE_AGENT_IR", "MSG_RELEASE_MAX_FREE_AGENTS", "MSG_RELEASE_MINIMUM",
     "MSG_SIGN_MAX_PLAYERS", "DRAFT_CLASS_WHY", "FREE_AGENT_LIST_CAP", "replay_moves", "validate_membership",
-    "REPAIR_KINDS", "plan_repairs", "apply_repairs",
+    "REPAIR_KINDS", "plan_repairs", "apply_repairs", "PLAYER_DATA_ENTRY_SIZE", "PLAYER_DATA_TRAILER",
+    "PlayerDataEntry", "export_player_data", "import_player_data", "read_player_data",
     "advance_years_pro", "apply", "apply_body",
     "copy_player", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",

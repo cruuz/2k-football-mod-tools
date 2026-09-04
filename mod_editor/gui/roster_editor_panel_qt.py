@@ -100,6 +100,7 @@ DISC_FILTER = "Disc images (*.iso *.xiso *.xiso.iso);;All files (*)"
 SAVE_FILTER = "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)"
 EDITS_FILTER = "Roster edits (*.json);;All files (*)"
 CSV_FILTER = "Spreadsheets (*.csv *.txt);;All files (*)"
+PLAYER_DATA_FILTER = "Finn's player backups (*.PlayerData);;All files (*)"
 
 # The studio's own sheet has no rule for a checked QToolButton, so a selected chip or segment would
 # look identical to an unselected one.  Scope the rule to the buttons themselves.
@@ -749,6 +750,11 @@ class RosterEditorPanel(QWidget):
         csv_menu.addAction("Export this list…", lambda: self._export_csv(False))
         csv_menu.addAction("Export every player…", lambda: self._export_csv(True))
         csv_menu.addAction("Import a CSV…", self._import_csv)
+        csv_menu.addSeparator()
+        csv_menu.addAction("Export a .PlayerData backup (Finn's format)…", self._export_player_data)
+        csv_menu.addAction("Restore from a .PlayerData backup…", lambda: self._import_player_data("all"))
+        csv_menu.addAction("Restore attributes only from a .PlayerData backup…",
+                           lambda: self._import_player_data("attributes"))
         self.csv_button.setMenu(csv_menu)
         for widget in (self.undo_button, self.redo_button, self.global_button, self.copy_button,
                        self.paste_button, self.passes_button, self.csv_button):
@@ -2037,6 +2043,58 @@ class RosterEditorPanel(QWidget):
         self._set_status(f"CSV: {receipt['rows']} rows matched, {receipt['changed']} players, {receipt['fields']} fields"
                          + (f", {len(receipt['log'])} notes" if receipt["log"] else ""))
         return receipt
+
+    # ------------------------------------------------------------------ .PlayerData
+    def export_player_data_bytes(self) -> bytes:
+        return rr.export_player_data(self.document) if self.document is not None else b""
+
+    def import_player_data_bytes(self, data: bytes, mode: str = "all") -> dict[str, Any]:
+        if self.document is None:
+            return {"entries": 0, "matched": 0, "changed": 0, "fields": 0, "log": ["no roster loaded"]}
+        document = self.document
+        snapshot = {(p.pool, p.index): (dict(p.record.values), p.college_index, p.college) for p in document.players}
+        receipt = rr.import_player_data(document, data, mode=mode)
+        after = {(p.pool, p.index): (dict(p.record.values), p.college_index, p.college) for p in document.players}
+        touched = [p for p in document.players if snapshot[(p.pool, p.index)] != after[(p.pool, p.index)]]
+
+        def restore(state: dict) -> None:
+            for player in touched:
+                values, college_index, college = state[(player.pool, player.index)]
+                player.record.values.update(values)
+                player.college_index, player.college = college_index, college
+                self._after_edit(player)
+            self.refresh_grid()
+            self._show_player(self.selected_player())
+
+        self.undo_stack.push(UndoEntry(f".PlayerData restore ({receipt['changed']} players)",
+                                       lambda: restore(snapshot), lambda: restore(after)))
+        restore(after)
+        self._set_status(f".PlayerData: {receipt['entries']} entries, {receipt['matched']} matched, "
+                         f"{receipt['changed']} players changed, {receipt['fields']} fields"
+                         + (f", {len(receipt['log'])} notes" if receipt["log"] else ""))
+        return receipt
+
+    def _export_player_data(self) -> None:
+        if self.document is None:
+            return
+        chosen, _f = QFileDialog.getSaveFileName(self, "Export a .PlayerData backup", "roster.PlayerData",
+                                                 PLAYER_DATA_FILTER)
+        if not chosen:
+            return
+        Path(chosen).write_bytes(self.export_player_data_bytes())
+        self._set_status(f"Wrote {chosen} ({len(self.document.by_pool('primary'))} entries)")
+
+    def _import_player_data(self, mode: str) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Restore from a .PlayerData backup", "", PLAYER_DATA_FILTER)
+        if not chosen:
+            return
+        try:
+            receipt = self.import_player_data_bytes(Path(chosen).read_bytes(), mode)
+        except rr.RosterRecordError as exc:
+            QMessageBox.warning(self, "Not a .PlayerData file", str(exc))
+            return
+        if receipt["log"]:
+            QMessageBox.information(self, ".PlayerData restore", "\n".join(receipt["log"][:20]))
 
     def _export_csv(self, everything: bool) -> None:
         if self.document is None:

@@ -809,6 +809,90 @@ class MembershipTests(unittest.TestCase):
         self.assertEqual(reloaded.by_offset[reloaded.free_agents[-1]].display, player.display)
 
 
+# --------------------------------------------------------------------------------------- .PlayerData
+class PlayerDataTests(unittest.TestCase):
+    """Finn's backup container: 150-byte entries, matched back by name + play-by-play index."""
+
+    def setUp(self) -> None:
+        self.body = synthetic_body()
+        self.document = rr.load_body(self.body)
+
+    def test_export_is_finns_shape(self) -> None:
+        data = rr.export_player_data(self.document)
+        primary = self.document.by_pool("primary")
+        self.assertEqual(len(data), rr.PLAYER_DATA_ENTRY_SIZE * len(primary))
+        first = data[:rr.PLAYER_DATA_ENTRY_SIZE]
+        player = primary[0]
+        self.assertEqual(first[:rr.PLAYER_SIZE], self.body[player.offset: player.offset + rr.PLAYER_SIZE],
+                         "the raw record, pointers included")
+        self.assertEqual(first[0x54:0x64], b"Peyton" + bytes(10))
+        self.assertEqual(first[0x64:0x74], b"Manning" + bytes(9))
+        self.assertEqual(first[0x74:0x94], b"Tennessee" + bytes(23))
+        self.assertEqual(struct.unpack_from("<H", first, 0x94)[0], 7)
+        entries = rr.read_player_data(data)
+        self.assertEqual([(e.first, e.last, e.college, e.pbp_id) for e in entries[:2]],
+                         [("Peyton", "Manning", "Tennessee", 1000), ("Marvin", "Harrison", "Tennessee", 1001)])
+
+    def test_restoring_an_untouched_export_changes_nothing(self) -> None:
+        data = rr.export_player_data(self.document)
+        receipt = rr.import_player_data(self.document, data)
+        self.assertEqual((receipt["entries"], receipt["matched"], receipt["changed"], receipt["fields"], receipt["log"]),
+                         (len(SAMPLE), len(SAMPLE), 0, 0, []))
+        self.assertEqual(self.document.to_body(), self.body)
+
+    def test_a_backup_puts_edited_values_back_and_respects_the_identity_rules(self) -> None:
+        backup = rr.export_player_data(self.document)
+        manning = self.document.players[0]
+        manning.record.set("speed", 12)
+        manning.record.set("contract_value", 1)
+        manning.record.set("star_tag", 1)
+        manning.record.set("pbp_id", 4242)                               # the index differs: name alone
+        self.document.set_college(manning, COLLEGES.index("Michigan"))
+        receipt = rr.import_player_data(self.document, backup)
+        self.assertEqual(receipt["changed"], 1)
+        self.assertEqual((manning.record.values["speed"], manning.record.values["contract_value"]), (66, 200))
+        self.assertEqual(manning.record.values["pbp_id"], 1000, "the play-by-play index is data and comes back")
+        self.assertEqual(manning.record.values["star_tag"], 1, "the studio's own bit is never overwritten")
+        self.assertEqual(manning.college, "Tennessee", "the college comes back by name")
+        self.assertTrue(any("matched by name alone" in line for line in receipt["log"]), receipt["log"])
+        self.assertEqual(manning.record.values["first_name_pointer"],
+                         rr.PlayerRecord.decode(self.body[manning.offset: manning.offset + 0x54]).values["first_name_pointer"])
+
+    def test_attributes_only_and_unmatched_entries(self) -> None:
+        backup = bytearray(rr.export_player_data(self.document))
+        backup[0x36] = 99                                                  # Manning's speed in the file
+        backup[0x0A] = 0xFF                                                # and his contract value
+        stranger = bytes(rr.PLAYER_SIZE) + b"Nobody".ljust(16, b"\0") + b"Here".ljust(16, b"\0") + bytes(32) + struct.pack("<H", 7)
+        receipt = rr.import_player_data(self.document, bytes(backup) + stranger, mode="attributes")
+        self.assertEqual((receipt["entries"], receipt["matched"], receipt["changed"], receipt["fields"]),
+                         (len(SAMPLE) + 1, len(SAMPLE), 1, 1))
+        self.assertEqual(self.document.players[0].record.values["speed"], 99)
+        self.assertEqual(self.document.players[0].record.values["contract_value"], 200, "attributes only")
+        self.assertTrue(any("Nobody Here" in line and "no roster record" in line for line in receipt["log"]))
+        with self.assertRaisesRegex(rr.RosterRecordError, "whole 150-byte entries"):
+            rr.read_player_data(bytes(backup)[:-1])
+        bad = bytearray(backup)
+        struct.pack_into("<H", bad, 0x94, 9)
+        with self.assertRaisesRegex(rr.RosterRecordError, "trailer word is 9"):
+            rr.read_player_data(bytes(bad))
+        college_missing = bytearray(rr.export_player_data(self.document))
+        college_missing[0x74:0x94] = b"Nowhere State".ljust(32, b"\0")
+        receipt = rr.import_player_data(self.document, bytes(college_missing))
+        self.assertTrue(any("Nowhere State" in line and "not in this roster's table" in line for line in receipt["log"]))
+
+    def test_a_duplicate_name_without_its_index_is_skipped_not_guessed(self) -> None:
+        twin = self.document.players[1]
+        self.document.set_name(twin, "first", "Peyton")
+        self.document.set_name(twin, "last", "Manning")
+        backup = bytearray(rr.export_player_data(self.document))
+        struct.pack_into("<H", backup, 4, 5555)                            # entry 0's index matches nobody now
+        backup[0x36] = 1
+        receipt = rr.import_player_data(self.document, bytes(backup))
+        self.assertTrue(any("2 records carry this name" in line for line in receipt["log"]), receipt["log"])
+        self.assertEqual(self.document.players[0].record.values["speed"], 66)
+        self.assertEqual(receipt["matched"], len(SAMPLE) - 1)
+
+
 # ------------------------------------------------------------------------------------------ repairs
 def damaged_body() -> bytes:
     """The synthetic roster with the faults Check & repair knows: a headless bit, a team whose count

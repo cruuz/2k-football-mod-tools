@@ -333,6 +333,24 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.panel.undo()
         self.assertEqual(self.panel.document.players[0].record.values["jersey"], 18)
 
+    def test_a_player_data_backup_round_trips_with_undo(self) -> None:
+        backup = self.panel.export_player_data_bytes()
+        self.assertEqual(len(backup), rr.PLAYER_DATA_ENTRY_SIZE * len(SAMPLE))
+        player = self.panel.selected_player()
+        assert player is not None
+        self.panel.set_field(player, "speed", 3)
+        receipt = self.panel.import_player_data_bytes(backup)
+        self.assertEqual((receipt["matched"], receipt["changed"], receipt["fields"]), (len(SAMPLE), 1, 1))
+        self.assertEqual(player.record.values["speed"], 66)
+        self.assertNotIn((player.pool, player.index), self.panel._dirty)
+        self.assertIn(".PlayerData: 8 entries", self.panel.status_label.text())
+        self.assertEqual(self.panel.undo(), ".PlayerData restore (1 players)")
+        self.assertEqual(player.record.values["speed"], 3)
+        self.panel.redo()
+        self.assertEqual(player.record.values["speed"], 66)
+        with self.assertRaises(rr.RosterRecordError):
+            self.panel.import_player_data_bytes(b"not a backup")
+
     def test_saving_the_edits_document_announces_it_for_the_build_tab(self) -> None:
         seen: list[str] = []
         self.panel.roster_edits_changed.connect(seen.append)
