@@ -635,6 +635,14 @@ class RosterEditorPanel(QWidget):
         source_row.addWidget(self.source_label, 1)
         layout.addLayout(source_row)
 
+        # a franchise save says what season it is in; read-only, filled by load_save, hidden otherwise
+        self.franchise_label = QLabel("")
+        self.franchise_label.setObjectName("franchise_summary")
+        self.franchise_label.setWordWrap(True)
+        self.franchise_label.setVisible(False)
+        layout.addWidget(self.franchise_label)
+        self.franchise_summary: dict[str, Any] | None = None
+
         scheme_row = QHBoxLayout()
         scheme_row.addWidget(QLabel("Position scheme"))
         self.scheme_combo = QComboBox()
@@ -1048,6 +1056,7 @@ class RosterEditorPanel(QWidget):
         self._baseline = None
         self._source_path = source
         self._source_kind = kind
+        self._show_franchise(None)
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
@@ -1102,7 +1111,48 @@ class RosterEditorPanel(QWidget):
         # a save carries no executable, so the scheme can only come from the records
         self.load_document(document, label=f"{Path(path).name} (signature verified)",
                            source=Path(path), kind="save", detection=self.detect_scheme(document))
+        self._show_franchise(self._franchise_summary(container.savegame))
         return True
+
+    @staticmethod
+    def _franchise_summary(savegame: bytes) -> dict[str, Any] | None:
+        """The season summary of a franchise save, or None for a roster save (never raises)."""
+
+        try:
+            from mod_editor.core import nfl2k5_franchise_save as fs
+            if not fs.is_franchise_save(savegame):
+                return None
+            save = fs.FranchiseSave(savegame)
+            summary = save.summary()
+            users = summary["user_teams"]
+            coach = save.coach_for_team(users[0]) if users else None
+            summary["coach"] = (f"{coach.name} ({coach.fields['wins']}-{coach.fields['losses']}-"
+                                f"{coach.fields['ties']})" if coach else "")
+            return summary
+        except Exception:  # noqa: BLE001 - the card is a convenience, loading must not depend on it
+            return None
+
+    def _show_franchise(self, summary: dict[str, Any] | None) -> None:
+        self.franchise_summary = summary
+        if not summary:
+            self.franchise_label.setVisible(False)
+            self.franchise_label.setText("")
+            self.franchise_label.setToolTip("")
+            return
+        injured = summary["injured_reserve"]
+        ir_text = ", ".join(f"{e['name'] or e['player_index']} ({e['team_name']})" for e in injured) or "none"
+        users = ", ".join(summary["user_team_names"]) or "none"
+        self.franchise_label.setText(
+            f"Franchise save · {summary['display_year']} season (year field {summary['year_field']}) · "
+            f"{summary['stage_name']}, week {summary['week']}/{summary['stage_weeks']} · user team(s) {users}"
+            + (f" · coach {summary['coach']}" if summary.get("coach") else "")
+            + f" · salary cap {summary['salary_cap_text']} · {summary['games_played']}/{summary['games_in_grid']} "
+            f"grid games played · injured reserve: {ir_text}")
+        self.franchise_label.setToolTip(
+            "Read from the season and front-office blocks after the roster arena "
+            "(mod_editor/core/nfl2k5_franchise_save.py). Read-only here: the roster edits above write a "
+            "re-signed copy that carries these blocks byte for byte.")
+        self.franchise_label.setVisible(True)
 
     def _choose_disc(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Open an NFL 2K5 disc image", "", DISC_FILTER)
