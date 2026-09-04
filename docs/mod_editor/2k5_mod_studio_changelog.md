@@ -2,6 +2,17 @@
 
 ## v1.0 RC82 — (unreleased)
 
+- **Fixed: modern overtime ended after a first-possession field goal** because the kickoff after
+  a score is built (and its receiving team marked as "has possessed") in the same dead-ball pass
+  that applies the score, before the post-play evaluator judges the scoring play; the evaluator
+  then saw the opponent as already having had its possession and ended the game (Noah, 2026-09-04,
+  Situation OT1 0-0, field goal, "game ended"). The receiving team of a kickoff is now only
+  *pending* until the kickoff has been played, the Situation screen's game seed clears the
+  possession flags (it never runs the overtime kickoff builder), and unicorn tests replay the
+  exact scenario through the real score/kickoff/evaluator code: first-possession FG -> play on
+  and the other team receives, tying FG -> sudden death, second FG -> game over; first-possession
+  TD + PAT -> play on; safety -> game over. Same two caves (`nfl2k5_overtime.py`, 287/300 and
+  216/233 bytes), one new 5-byte hook in `FUN_0010bd80`. Unwitnessed in game.
 - **Position on the first page of Edit Player, in roster mode and in Franchise.** Create Player's own
   Position picker (17 positions, ratings kept, overall recomputed from the new position's weights)
   now sits after Last Name on both Edit Player screens; Franchise opens the same screens, so a

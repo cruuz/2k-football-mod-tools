@@ -996,6 +996,12 @@ patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
 
+Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
+period (scaled from your quarter length), both teams get a possession unless the first
+possession ends in a safety, a first-possession field goal or touchdown is answered by a
+kickoff to the other team, and after both have possessed the next score wins; regular
+season games can still end tied after one period, playoff games play on.
+
 **TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
 franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
 which team each season was played for. The current season shows the player's live
