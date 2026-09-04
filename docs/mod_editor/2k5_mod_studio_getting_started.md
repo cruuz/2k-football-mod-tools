@@ -870,6 +870,17 @@ page gains the game's own Position picker after Last Name, in roster mode and in
 (the ratings stay, the overall follows the new position; run Depth Chart -> Auto afterwards), and
 the Pro Bowl Votes tabs run offence, defence, then kicker and punter. Both are unwitnessed in game.
 
+**Laces to the posts on field goals and PATs** (Gameplay group, EXPERIMENTAL preset only; opt-in
+elsewhere): the holder's animation decides which way the held ball faces, and the retail hold leaves
+the laces toward the kicker. The patch rolls the ball 180 degrees about its own long axis, every
+frame it is held during a live play from the Field Goal formation, using the game's own quaternion
+product; the kickoff tee already faces the posts and is left alone. What to check in game: FG and PAT
+replays from the kick camera in both drive directions and from both hashes (the laces must face the
+posts through the hold and the kicker's approach, with no pop or spin at the catch); the kickoff tee,
+punts and ball carries unchanged; a fake field goal run carries the rolled ball for that play only.
+If the laces end up sideways instead of backwards, the 90-degree variant is a 16-byte data edit in
+the cave (`nfl2k5_kick_laces.apply(..., roll=ROLL_90)`). Unwitnessed in game.
+
 **Penalties at NFL rates, Chop Block toggle** (Gameplay group, advanced and experimental presets):
 retail's default 50 on every slider flags far more holding, face masks and clipping than an NFL
 Sunday, the incidental face mask is still the 2004 five-yard call, and the Chop Block On/Off toggle

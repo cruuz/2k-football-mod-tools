@@ -192,8 +192,9 @@ class BuildPanel(QWidget):
         self.probowl_order_check = QCheckBox("Pro Bowl Votes tabs in football order: offence, defence, then K and P")
         self.penalties_check = QCheckBox("Penalties at NFL rates (estimated first cut: holding, DPI, roughing, face mask, clipping re-tuned; 15-yd face mask) + a working Chop Block toggle")
         self.uniform_choice_check = QCheckBox("Home/away jerseys at any stadium: up/down past the last era on Controller Assign or Team Select flips that side's colour (retail default kept; unwitnessed)")
+        self.kick_laces_check = QCheckBox("Laces to the posts on field goals and PATs: the held ball rolls 180 degrees about its long axis on Field Goal formation plays (kickoff tee, punts and carries unchanged; unwitnessed)")
         self.seven_on_seven_check = QCheckBox("7-on-7 practice mode: Practice Type 7-On-7 + 7-on-7 sets in the practice playbook (linemen idle at the sideline, 4-second timer rusher; disc images only; unwitnessed)")
-        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.seven_on_seven_check):
+        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.seven_on_seven_check):
             g.addWidget(box)
         if not mod_build.SEVEN_ON_SEVEN_RELEASED:
             self.seven_on_seven_check.hide()
@@ -272,7 +273,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("seven_on_seven", "7-on-7 practice"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
                            ("scorebug", "ESPN scorebug")):
@@ -312,6 +313,7 @@ class BuildPanel(QWidget):
         gate(self.probowl_order_check, "probowl_order")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
+        gate(self.kick_laces_check, "kick_laces")
         gate(self.seven_on_seven_check, "seven_on_seven", needs_image=True)
         gate(self.edge_check, "edge_rename")
         gate(self.scheme_labels_check, "scheme_labels")
@@ -338,6 +340,7 @@ class BuildPanel(QWidget):
             "seven_on_seven": self.seven_on_seven_check, "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
             "penalties": self.penalties_check,
             "uniform_choice": self.uniform_choice_check,
+            "kick_laces": self.kick_laces_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
         applied, skipped = [], []
@@ -381,6 +384,7 @@ class BuildPanel(QWidget):
             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
             uniform_choice=("choice" if self.uniform_choice_check.isChecked() else ""),
+            kick_laces=self.kick_laces_check.isChecked(),
             team_history=((self.team_history_field.text().strip() or "retail") if self.team_history_check.isChecked() else ""),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
         )
@@ -389,7 +393,7 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools
-                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.commentary)
+                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.commentary)
 
     def _refresh(self) -> None:
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())

@@ -38,6 +38,25 @@
   7-on-7 flag and clear with the era slots; no cave. The `rule` form (opt-in) is the same block as
   `mov esi,0` + NOPs: home always dark everywhere, Cowboys included. Practice, Xbox Live and the
   Team Select preview art are not covered. Unicorn-proven on the real routines; unwitnessed in game.
+- **Laces to the posts on field goals and PATs** (`nfl2k5_kick_laces.py`, `BuildPlan.kick_laces`;
+  EXPERIMENTAL preset only, opt-in elsewhere until witnessed). The held ball's orientation is not a
+  constant: `FUN_001ccfa0` samples the holder's animation ball track every frame, so the hold clip
+  decides where the laces point (the kickoff tee is a code constant, `.rdata` 0x50D9A0, and already
+  faces the target). The patch hooks the six-byte join point of the three held-ball orientation
+  paths at 0x1CD3FB (`mov edx,[esp+0x14]; mov ecx,[edx]` -> `call cave; nop`) into a 143-byte cave
+  in the dead `FUN_002979f0` (0x2979F0; zero references in the retail image, both cave gates pass):
+  `pushad/pushfd`, live play (`[0xE602B8] == 0xE`) and the offence's chosen formation being the
+  Field Goal formation (the `[[[0xE60280]+0xC]+8]` chain with the -4 sentinel guard, flags bits 8-13
+  == 12, as the kick-rules PAT fixer reads it), then the ball quaternion at transform +0x20 is
+  multiplied in place by a 16-byte roll constant kept in the cave through the game's own
+  `FUN_003ca150` (`q <- q x r`, Hamilton order), default `(0, 0, 0, 1)` = 180 degrees about the
+  ball's long axis (`(w,x,y,z) <- (-z, y, -x, w)`), so the laces swing from the kicker to the posts;
+  `apply(..., roll=ROLL_90)` writes the 90-degree variant into those 16 bytes without touching the
+  code. 78 bytes of code, writes only through `esi`; `popfd/popad`, the two instructions replayed,
+  `ret`. Punts, kickoffs and scrimmage carries are not the Field Goal formation and stay retail; a
+  fake field goal carries the rolled ball for that play only. Unicorn-proven on the real bytes
+  (rolled on live FG, untouched on other formations / dead ball / the -4 sentinel, registers, flags
+  and stack transparent); unwitnessed in game.
 
 - **★ Models: texture coordinates now follow the game's own per-mesh rule.** Beta 56
   decoded every model's UVs with one fixed formula (`u = (n + 1) / 2`, `v = (1 - n) / 2`,

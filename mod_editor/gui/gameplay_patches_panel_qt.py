@@ -112,6 +112,14 @@ PATCHES = (
      "flip that side's colour and restart at the first era (15 eras x 2 colours per side; the retail default "
      "stays the default; both teams may choose white). Practice and Xbox Live keep the retail rule; the Team "
      "Select preview shows the era art only. Unwitnessed in game."),
+    ("kick_laces", "Laces to the posts on field goals and PATs",
+     "Retail: the holder's animation decides which way the ball faces on a place kick, and the hold clip "
+     "leaves the laces toward the kicker (the kickoff tee is a code constant and already faces the posts). "
+     "Patch: at the one point where every held-ball orientation path joins, a 143-byte cave in a dead routine "
+     "checks that the play is live and the offence's formation is the Field Goal formation (PAT and FG; punts, "
+     "kickoffs and scrimmage carries are not), then turns the ball 180 degrees about its own long axis with "
+     "the game's quaternion product, so the laces face the posts through the hold and the kick. A fake field "
+     "goal carries the rolled ball for that play only. Unwitnessed in game."),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
