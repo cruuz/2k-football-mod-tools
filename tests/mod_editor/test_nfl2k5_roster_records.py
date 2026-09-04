@@ -1349,7 +1349,12 @@ class RealSaveTests(unittest.TestCase):
     """Every real HMAC-verified save on this machine loads, round-trips and re-signs (private fixtures)."""
 
     def test_every_real_save_round_trips_and_resigns(self) -> None:
+        seen = 0
         for path in REAL_SAVE_FILES:
+            payload = path.read_bytes()
+            if payload[rr.FRANCHISE_BLOCK_OFFSET:rr.FRANCHISE_BLOCK_OFFSET + 4] != b"ROST":
+                continue                                                # settings / team / profile saves carry no arena
+            seen += 1
             with self.subTest(save=path.parts[-5]):
                 try:
                     rr.find_block_base(path.read_bytes())
@@ -1370,3 +1375,4 @@ class RealSaveTests(unittest.TestCase):
                     back = rr.load_save(Path(td) / "copy")
                     self.assertTrue(back.container.verified)
                     self.assertEqual(back.players[0].record.values["speed"], 88)
+        self.assertGreaterEqual(seen, 1, "no roster-bearing save among the private fixtures")
