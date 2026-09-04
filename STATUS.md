@@ -1,9 +1,35 @@
-# 2K5 Mod Studio — v1.0 RC81 Release Status
+# 2K5 Mod Studio — v1.0 RC82 Release Status
+
+## Beta 58 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star (2026-09-04)
+
+Source/UI versions are **2K5 RC82** and **APF alpha.84**; both use updater tag
+`beta-58`.
+
+- **Free Practice inside Franchise:** a Practice row on the Coach's Desk starts a
+  Scrimmage of your team against itself with the live franchise roster and
+  returns to the desk; no stats or injuries (mode-gated).
+- **Position on the first page of Edit Player**, in roster mode and Franchise.
+- **Home or away jersey at any stadium:** up/down past the last era on
+  Controller Assign or Team Select flips that side's colour.
+- **Penalties near NFL rates** (estimated, calibration recipe in Getting
+  Started) and a working Chop Block toggle.
+- **Modern draft-prospect names** from nflverse 2015-2025 (recorded surnames
+  keep their announcer call-out).
+- **Pro Bowl Votes tabs in football order**; **laces to the posts on place
+  kicks** (EXPERIMENTAL only); **a star decal under players you tag** in Text &
+  Rosters.
+- **Fixed:** modern overtime ended after a first-possession field goal; the
+  Models export's UV rule (the game applies a per-shape scale and offset; every
+  export now carries the Stadium Studio contract and keeps baked lighting out of
+  the base colour); Build & Share greyed the texture-project buttons; Help gains
+  Join the Discord.
+- **Not in this release:** 7-on-7 practice (built, hidden until witnessed).
+  Everything above is unwitnessed in game unless Noah's test says otherwise.
 
 ## Beta 57 — Update now, the franchise TEAM column with real history, and two report fixes (2026-09-03)
 
-Source/UI versions are **2K5 RC81** and **APF alpha.84**; both use updater tag
-`beta-57`.
+Source/UI versions are **2K5 RC82** and **APF alpha.84**; both use updater tag
+`beta-58`.
 
 - **Update now.** The update banner and Help > Check for Updates install a newer
   release from inside the studio: download, SHA-256 check against the published

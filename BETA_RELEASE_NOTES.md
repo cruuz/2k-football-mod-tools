@@ -1,3 +1,50 @@
+# beta-58 — RC82 / alpha.84
+
+**Date:** 2026-09-04
+
+**2K5 Mod Studio:** `v1.0-RC82`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+## New: the community list
+
+- **Free Practice inside Franchise.** The Coach's Desk gains a Practice row: a Scrimmage of your
+  team against itself with the exact roster, ratings and depth chart your franchise has right now
+  (away kit against home kit), and it returns to the desk. Stats and injuries are not recorded.
+- **Position on the first page of Edit Player**, in roster mode and inside Franchise. Ratings stay,
+  the overall follows the new position; run Depth Chart, Auto afterwards.
+- **Home or away jersey at any stadium.** On Controller Assign or Team Select, keep pressing up or
+  down past a side's last era to flip its colour (the Cowboys rule is the retail default; both teams
+  may choose white).
+- **Penalties near NFL rates**, and the Chop Block toggle now works (retail profiles carry it Off).
+  The rates are an estimate until a calibration playtest; the recipe is in Getting Started. Illegal
+  formation, illegal contact and 12 men do not exist in the engine.
+- **Modern draft-prospect names** from nflverse 2015-2025 rosters (CC-BY-4.0). Surnames the
+  announcer has recorded keep their call-out; replacements are announced by number. New
+  franchises only. Your own list: a CSV on the Build tab.
+- **Pro Bowl Votes tabs in football order** (kicker and punter last).
+- **Laces to the posts on field goals and PATs** (EXPERIMENTAL only until witnessed).
+- **A star under players you tag** in Text & Rosters (the game's own controller star, up to nine).
+
+## Fixed
+
+- Modern overtime ended the game after a first-possession field goal. The kick path credited the
+  receiving team with a possession before the field-goal play was judged; the other team now gets
+  its possession, and a Situation started in overtime seeds the rule correctly.
+- Models export: the UV rule was wrong for every model (the game applies a per-shape scale and
+  offset stored in the shape record). Exports now map textures correctly, carry the Stadium
+  Studio's metadata so the community Blender add-on accepts them, and keep baked vertex lighting
+  out of the base colour. Same-topology re-import inverts the rule.
+- Build & Share left the texture-project buttons greyed after a build and Launch Latest Build did
+  not know about the copy; both fixed. Help gains Join the Discord.
+
+## Not in this release
+
+7-on-7 practice is built but hidden until it is witnessed through a snap. The SOFTDRINK patch
+files are rebuilt: basic v0.7, advanced v1.0, experimental v0.3. APF 2K8 Mod Studio assets are the
+beta-53 alpha.84 files, re-attached. Everything new is unwitnessed in game unless Noah's own test
+says otherwise; please report what you see on the Discord.
+
 # beta-57 — RC81 / alpha.84
 
 **Date:** 2026-09-03
