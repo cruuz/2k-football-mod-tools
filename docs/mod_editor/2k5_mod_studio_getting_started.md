@@ -1016,7 +1016,7 @@ first-class controls:
 * **Power Run Style** (`+0x4D`) — a **Finesse / Balanced / Power** segmented control writing the
   game's own 1 / 50 / 99, with the raw byte on a card beneath. The game decodes it below 33, below
   66, else, and reads it in play as a blend weight.
-* **Throw style** (the low bit of **Scramble**, `+0x4F`) — the only bit test on any rating byte
+* **Signature release** (the low bit of **Scramble**, `+0x4F`; in retail only Vick, Gannon and Rivers carry it) — the only bit test on any rating byte
   anywhere in the executable. It picks which family of directional animation sets a player uses;
   believed, not proved, to be the throw and release motion. The toggle moves **only** that bit, and
   the Scramble slider (presets Pocket 10 / Balanced 50 / Scrambling 90) moves the magnitude while
@@ -1038,7 +1038,7 @@ name fields always says how much room is left.
 
 **Tools.** **Global Attribute Editor** takes an attribute (including the style channels), a rule
 (set / add / percent), a scope (positions, this team, rookies only) and an optional condition —
-"every QB with Speed ≥ 80 → throw style B", "all HBs with Break Tackle ≥ 75 → Power" — and shows
+"every QB with Speed ≥ 80 → signature release", "all HBs with Break Tackle ≥ 75 → Power" — and shows
 **every affected player before it changes anything**. **Copy player** and **Paste ▾**
 (player / attributes only / photo only) follow Finn's rules: a paste never carries names, college,
 play-by-play or photo unless you ask for the photo. **One-shot passes ▾** advance years pro for the

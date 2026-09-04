@@ -185,7 +185,7 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.application.processEvents()
         self.assertEqual(player.record.values["scramble"], 91)
         self.assertEqual(player.record.throw_style, 1)
-        self.assertIn("throw style B", self.panel.header_stats.text())
+        self.assertIn("signature release", self.panel.header_stats.text())
         self.assertIn(rr.POWER_RUN_STYLES[player.record.power_run_style_bucket],
                       self.panel.header_stats.text())
 

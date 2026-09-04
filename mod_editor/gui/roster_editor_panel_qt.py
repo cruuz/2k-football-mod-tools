@@ -20,7 +20,7 @@ Layout, left to right:
   ← → nudge by one, ↑ ↓ move to the next card.  Enum cards are dropdowns built from the tables lifted
   out of Finn's binary, so no value order is guessed.  The **Style** tab carries the three rating
   bytes that are style channels rather than scalars, with the controls the engine's own decoding
-  implies: a Finesse / Balanced / Power segmented control over Power Run Style, a Throw style A / B
+  implies: a Finesse / Balanced / Power segmented control over Power Run Style, a Signature release
   toggle that moves only the Scramble parity bit, and Kicking Style with its retail presets
   (EXPERIMENTAL -- no consumer proved).
 
@@ -386,7 +386,7 @@ def _target_label(name: str) -> str:
     if name == "power_run_style_bucket":
         return "Power Run Style (Finesse / Balanced / Power)"
     if name == "throw_style":
-        return "Throw style (Scramble parity bit)"
+        return "Signature release (Scramble parity bit)"
     if name in rr.FIELD_BY_NAME:
         return rr.FIELD_BY_NAME[name].label
     return name.replace("_", " ").title()
@@ -405,7 +405,7 @@ class GlobalEditDialog(QDialog):
         self.attribute = QComboBox()
         for name in rr.RATING_UI_ORDER:
             self.attribute.addItem(rr.RATING_LABELS[name], name)
-        # the style channels, so a sweep can say "every QB with Speed >= 80 -> throw style B"
+        # the style channels, so a sweep can say "every QB with Speed >= 80 -> signature release"
         for name in ("power_run_style_bucket", "throw_style", "scramble", "kicking_style"):
             self.attribute.addItem(_target_label(name), name)
         for name in ("years_pro", "weight", "height", "contract_value", "contract_length",
@@ -780,7 +780,7 @@ class RosterEditorPanel(QWidget):
     STYLE_CAPTIONS = {
         "power_run_style_bucket": "Power Run Style",
         "power_run_style": "Power Run Style (raw byte)",
-        "throw_style": "Throw style (A even / B odd)",
+        "throw_style": "Signature release (unorthodox delivery)",
         "kicking_style": "Kicking Style (experimental)",
     }
     STYLE_TOOLTIPS = {
@@ -792,8 +792,10 @@ class RosterEditorPanel(QWidget):
         "throw_style":
             "The LOW BIT of Scramble (+0x4F). It is the only bit test on any rating byte in the whole "
             "executable (0x002D92B1) and it picks which family of directional animation sets the "
-            "player uses -- believed, not proved, to be the throw and release motion. Changing it "
-            "leaves the Scramble rating where it is.",
+            "player uses. In the retail roster exactly three quarterbacks carry it: Michael Vick, "
+            "Rich Gannon and Philip Rivers, the three unorthodox deliveries, so it reads as a hand-set "
+            "signature-release flag. Changing it leaves the Scramble rating where it is. Unwitnessed "
+            "in game.",
         "scramble":
             "A hidden rating the Player Card never prints, but the game's own roster editor does. "
             "Magnitude and parity are read separately: this slider moves the magnitude and preserves "
@@ -1032,8 +1034,8 @@ class RosterEditorPanel(QWidget):
         if birth is not None:
             age = f" · age {2004 - birth.year - ((9, 1) < (birth.month, birth.day))}"
         # the animation family the engine picks for this record (Scramble parity, then magnitude)
-        family = ("throw style B" if record.throw_style
-                  else ("throw style A, mobile family" if record.mobile_quarterback else "throw style A"))
+        family = ("signature release" if record.throw_style
+                  else ("standard release, mobile family" if record.mobile_quarterback else "standard release"))
         self.header_stats.setText(
             f"{record.position_name} · #{record.values['jersey']} · {record.height_text} · "
             f"{record.weight} lb{age} · {record.values['years_pro']} yrs pro · {player.college or '—'} · "
