@@ -5,7 +5,9 @@ only way to find out was to go and look. This checks once and says so.
 
 Three rules it does not break:
 
-* It never downloads or installs anything. It reports a version and a link.
+* The check itself never downloads or installs anything. It reports a version,
+  a link, and the list of published files; installing is a separate step the
+  user starts on purpose (``self_update``).
 * It never blocks the app. Callers run it on a worker; every failure -- offline,
   rate limited, garbage response -- returns "no news" rather than an error the
   user has to dismiss.
@@ -34,7 +36,7 @@ RELEASES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/releases"
 #: The release this build was cut from. Packaging updates it when a release is
 #: tagged; the check compares it with the newest published tag, which works
 #: across the two products' different version schemes without parsing either.
-BUILD_RELEASE_TAG = "beta-56"
+BUILD_RELEASE_TAG = "beta-57"
 
 DEFAULT_TIMEOUT_SECONDS = 6.0
 MAX_RESPONSE_BYTES = 1024 * 1024
@@ -80,6 +82,10 @@ class UpdateStatus:
     title: str = ""
     checked: bool = False
     detail: str = ""
+    #: The release's published files as ``{"name", "browser_download_url",
+    #: "size"}`` rows, only ever from the repository's own release, so the
+    #: self-updater can pick the right one without a second request.
+    assets: tuple = ()
 
     @property
     def headline(self) -> str:
@@ -88,6 +94,10 @@ class UpdateStatus:
         if not self.available:
             return f"You are up to date ({self.current_tag})."
         return f"Update available: {self.latest_tag}"
+
+    def release_document(self) -> dict:
+        """The subset of the GitHub release the self-updater needs."""
+        return {"tag_name": self.latest_tag, "assets": [dict(row) for row in self.assets]}
 
 
 def _read(url: str, timeout: float) -> list | None:
@@ -185,4 +195,23 @@ def check(
         url=url,
         title=title.strip()[:200],
         checked=True,
+        assets=_assets(document),
     )
+
+
+#: Only files GitHub itself hosts for this repository are ever handed on.
+_ASSET_HOST = "https://github.com/cruuz/2k-football-mod-tools/releases/download/"
+
+
+def _assets(document: dict) -> tuple:
+    rows = []
+    for item in document.get("assets") or []:
+        if not isinstance(item, dict):
+            continue
+        name = item.get("name")
+        url = item.get("browser_download_url")
+        size = item.get("size")
+        if (isinstance(name, str) and isinstance(url, str) and url.startswith(_ASSET_HOST)
+                and isinstance(size, int) and size >= 0):
+            rows.append({"name": name, "browser_download_url": url, "size": size})
+    return tuple(rows)

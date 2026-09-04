@@ -1,0 +1,137 @@
+"""No code cave may sit on bytes the retail executable references.
+
+A cave is only safe in genuinely dead code. The 7-on-7 cave was placed in what the disassembler
+called a 525-byte dead routine; the routine really ended after 240 bytes and the bytes after it were
+a live function reached through a pointer, so the game hit the cave's int3 fill the moment a play
+started (2026-09-03). This test scans the RETAIL image for every relative call/jump target in .text
+and every absolute pointer stored in .text/.rdata/.data, then checks that no patch rewrites 16 or
+more contiguous .text bytes (a cave) that any such reference lands in. Small rewrites (hooks placed on
+referenced instructions on purpose) are not caves and are not checked here."""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+import struct
+import sys
+import unittest
+
+REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
+
+try:
+    from capstone import CS_ARCH_X86, CS_MODE_32, Cs
+except Exception:  # noqa: BLE001
+    Cs = None
+
+XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
+BASE = 0x10000
+CAVE_MIN = 16
+
+
+def sections(xbe: bytes):
+    base = struct.unpack_from("<I", xbe, 0x104)[0]
+    count = struct.unpack_from("<I", xbe, 0x11C)[0]
+    header = struct.unpack_from("<I", xbe, 0x120)[0] - base
+    out = {}
+    for i in range(count):
+        flags, vaddr, vsize, raw, rawsize, name_addr = struct.unpack_from("<IIIIII", xbe, header + i * 0x38)
+        name = xbe[name_addr - base: name_addr - base + 16].split(b"\0")[0].decode("ascii", "replace")
+        out[name] = (vaddr, vaddr + vsize, raw, rawsize)
+    return out
+
+
+@unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
+class CaveReferenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+        cls.retail = XBE.read_bytes()
+        cls.sec = sections(cls.retail)
+        flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
+                                          "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
+        cls.patched, _receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False)
+        text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
+        # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
+        targets: dict[int, list[int]] = {}
+        data = cls.retail
+        for off in range(text_lo - BASE, text_hi - BASE - 5):
+            op = data[off]
+            if op in (0xE8, 0xE9):
+                rel = struct.unpack_from("<i", data, off + 1)[0]
+                tgt = (BASE + off + 5 + rel) & 0xFFFFFFFF
+                if text_lo <= tgt < text_hi:
+                    targets.setdefault(tgt, []).append(BASE + off)
+            elif op == 0x0F and 0x80 <= data[off + 1] <= 0x8F:
+                rel = struct.unpack_from("<i", data, off + 2)[0]
+                tgt = (BASE + off + 6 + rel) & 0xFFFFFFFF
+                if text_lo <= tgt < text_hi:
+                    targets.setdefault(tgt, []).append(BASE + off)
+        # absolute pointers: any dword in .rdata/.data (vtables, callback tables), and in .text only the
+        # immediate of `push imm32` (68), `mov r32, imm32` (B8..BF) or `mov dword [mem], imm32` (C7 ..),
+        # so that constants and float tables that happen to look like addresses are not counted
+        for name in (".text", ".rdata", ".data"):
+            lo, hi, raw, rawsize = cls.sec[name]
+            # pointer tables are dword-aligned; .text immediates can sit at any byte
+            step = 1 if name == ".text" else 4
+            for off in range(raw, raw + rawsize - 4, step):
+                v = struct.unpack_from("<I", data, off)[0]
+                if not (text_lo <= v < text_hi):
+                    continue
+                if name == ".text":
+                    prev = data[off - 1]
+                    immediate = prev == 0x68 or 0xB8 <= prev <= 0xBF or (data[off - 2] == 0xC7 and prev == 0x05) \
+                        or (off >= 6 and data[off - 6] == 0xC7 and data[off - 5] == 0x05)
+                    if not immediate:
+                        continue
+                targets.setdefault(v, []).append(("ptr", name, off))
+        cls.targets = targets
+
+    def _caves(self) -> list[tuple[int, int]]:
+        text_lo, text_hi, _raw, _rawsize = self.sec[".text"]
+        ranges = []
+        start = None
+        for off in range(text_lo - BASE, text_hi - BASE):
+            if self.retail[off] != self.patched[off]:
+                if start is None:
+                    start = off
+            elif start is not None:
+                ranges.append((start + BASE, off + BASE))
+                start = None
+        # merge runs separated by fewer than 8 unchanged bytes (a cave's retail bytes may coincide)
+        merged: list[list[int]] = []
+        for a, b in ranges:
+            if merged and a - merged[-1][1] < 8:
+                merged[-1][1] = b
+            else:
+                merged.append([a, b])
+        return [(a, b) for a, b in merged if b - a >= CAVE_MIN]
+
+    def test_no_cave_overlaps_referenced_retail_code(self) -> None:
+        caves = self._caves()
+        self.assertTrue(caves, "no caves found; the scan is broken")
+        offenders = []
+        for a, b in caves:
+            hits = []
+            for t, refs in self.targets.items():
+                if not (a <= t < b) or t == a:
+                    # a replaced routine keeps its entry: callers may still land on the first byte
+                    continue
+                outside = [r for r in refs
+                           if not (isinstance(r, int) and a <= r < b)                       # a jump inside the range
+                           and not (isinstance(r, tuple) and r[1] == ".text" and a <= r[2] + BASE < b)]  # a pointer inside it
+                if outside:
+                    hits.append((hex(t), outside[:3]))
+            if hits:
+                offenders.append((f"{a:#x}..{b:#x}", hits[:4]))
+        self.assertEqual(offenders, [], "caves on referenced code:\n" + "\n".join(map(str, offenders)))
+
+    def test_the_seven_on_seven_cave_stops_before_the_live_function(self) -> None:
+        from mod_editor.core import nfl2k5_seven_on_seven as seven
+        self.assertEqual(seven.CAVE_VA + seven.CAVE_SIZE, 0x1AC260)
+        self.assertIn(0x1AC260, self.targets)
+        self.assertEqual(self.patched[0x1AC260 - BASE: 0x1AC270 - BASE], self.retail[0x1AC260 - BASE: 0x1AC270 - BASE])
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1613,9 +1613,9 @@ class StudioMainWindow(QMainWindow):
 
     def _manual_update_result(self, status: object) -> None:
         self._set_status("")
-        update_ui.report_manual_check(self, status)
         if getattr(status, "available", False):
             self._update_banner.show_status(status)
+        update_ui.report_manual_check(self, status, self._update_banner)
 
     def _start_automatic_update_check(self) -> None:
         """Quiet on startup: only a genuinely newer release shows anything."""
@@ -2091,7 +2091,7 @@ class StudioMainWindow(QMainWindow):
         shell = QVBoxLayout(root)
         shell.setContentsMargins(0, 0, 0, 0)
         shell.setSpacing(0)
-        self._update_banner = update_ui.UpdateBanner()
+        self._update_banner = update_ui.UpdateBanner(product="2k5")
         shell.addWidget(self._update_banner)
         body = QWidget()
         shell.addWidget(body, 1)

@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC80 — Getting Started
+# 2K5 Mod Studio v1.0 RC81 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -862,6 +862,37 @@ xemu-only: its RSA signature cannot be regenerated, so real hardware rejects it
 (the same rule as Bump strength). `tools/nfl2k5_throw_distance.py` does the
 same from a terminal (`read`, `sliders`, `curves`, `preview`).
 
+## If xemu says "insert a disc" or stops at the Xbox logo
+
+Every disc the studio writes is a plain XISO; the changed bytes are inside `default.xbe` and the
+packs. If xemu will not boot it: quit xemu completely and load the image fresh (the "insert a
+disc" message means no disc was mounted at boot); keep the images outside `C:\Program Files`;
+make sure the save name ends in `.iso` (the studio adds `.xiso.iso` to a bare name); check that
+your retail image boots with the same settings; and if you run a ReShade or other graphics
+wrapper, try once without it. The boot logo the kernel draws is kept decodable by the builder
+from RC81 on.
+
+## Updating the studio
+
+The studio checks GitHub for a newer release when it starts (Help menu: **Check
+for updates automatically** turns that off; **Check for Updates…** asks now).
+When there is one, a banner appears with three choices:
+
+- **Update now** downloads the release, verifies it against its published
+  SHA-256, installs it over this copy and reopens the studio. Save your work
+  first: the studio closes to finish. On Windows the installer runs on its own
+  after the studio closes and reopens it when it is done. From an unpacked
+  release folder the new version is placed beside the old one, the folders are
+  swapped so your shortcut keeps working, and the previous version stays next
+  to it as `<folder>.previous` until you delete it.
+- **Get the update** opens the downloads page instead, for a manual install.
+- **Later** hides the notice until the next release.
+
+**Update now** is only offered when this copy knows how to replace itself: the
+Windows installer layout, or an unpacked release folder you can write to. A
+folder you cannot write to, or a git checkout, gets the link only. Nothing is
+downloaded until you press the button and confirm.
+
 ## ★ Models — every model out to Blender and back
 
 1. Load your XISO, open **★ Models** (below the categories) and press **List the models**.
@@ -900,3 +931,31 @@ dynamic-kickoff line-up. Untick anything you do not want, choose where the
 patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
+
+**TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
+franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
+which team each season was played for. The current season shows the player's live
+team; from the first season rollover after the patch is in the save, every completed
+season shows the team the player finished it with. Past seasons of an OLD franchise
+save show "--" until their next rollover (the game never stored a team per season;
+the patch records one from then on), the folded "pre" row and the Total row also
+read "--", and a player traded mid-season shows the season-end team. Saves stay
+loadable with or without the patch. Unwitnessed in game so far: it is executed under
+an emulator in the test suite, so please report what you see.
+
+**Real team history** (Build tab, ADVANCED and EXPERIMENTAL; disc images only): the retail
+roster already carries season-by-season stats for 1,325 players back to 1982, and the TEAM
+column above can only learn teams from the seasons a patched disc plays. This toggle writes
+the real club of those past seasons into the roster template from nflverse-data (CC-BY-4.0):
+1,148 of the 1,325 players match by name and birth date and 5,068 of their 5,867 season rows
+get a team (86 %; 1999-2003 about 85 %, the 1990s 80-90 %, sparse before 1990). Only a
+franchise CREATED from the copy shows it - an existing save keeps its own roster - and each
+row costs one dword of the game's 50,000-dword history pool (36,866 -> 41,908), so the game's
+automatic folding of the oldest seasons into the "pre" row starts a little earlier. To use
+your own data, point the "Team history CSV" field at a UTF-8 CSV with the columns
+`last_name,first_name,birth_date,season,team` (birth date `YYYY-MM-DD`; `position` and
+`roster_index` optional; team = a 2004 abbreviation such as `ARZ`, `STL`, `TEN` or an nflverse
+code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). Players are matched by
+name and birth date, then last name and birth date, then name and position; a season is only
+written when the roster has stats for it (the receipt lists every row that could not be used).
+In this cut relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).

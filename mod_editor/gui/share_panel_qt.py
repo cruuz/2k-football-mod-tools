@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from mod_editor.core import modpack
+from mod_editor.core import mod_build, modpack
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 PACK_FILTER = f"2K5 disc patches (*{modpack.EXTENSION});;All files (*)"
@@ -355,7 +355,7 @@ class SharePanel(QWidget):
         chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the patched copy",
                                                  "ESPN NFL 2K5 (patched).xiso.iso", IMAGE_FILTER)
         if chosen:
-            self.target_field.setText(chosen)
+            self.target_field.setText(mod_build.image_target_path(chosen))
 
     # ------------------------------------------------------------------ background work
     def _start(self, operation: Callable[[modpack.ProgressSink], object], done: Callable[[object], None], failed: Callable[[str], None]) -> None:

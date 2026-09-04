@@ -1,5 +1,67 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC81 — Update now: the studio updates itself on every platform (2026-09-03)
+
+- **Update now.** When a newer release exists the banner and the Help menu's
+  Check for Updates dialog offer **Update now** next to the old **Get the update**
+  link. The studio downloads the release file that matches this copy, checks it
+  against the SHA-256 the release published (a mismatch is discarded, never
+  installed), and then:
+  - **Windows installer** (the Setup.exe layout): starts the new installer
+    silently with `/S /WAITPID=<pid> /RELAUNCH /D=<install folder>` and closes.
+    The installer waits for the studio to exit before it touches a file,
+    installs over the same folder, and reopens the studio.
+  - **Unpacked release folder** (the tarball on Linux, macOS, or Windows): unpacks
+    the new version beside the folder, swaps the two so shortcuts keep working,
+    keeps the old one as `<folder>.previous`, starts the new version and closes.
+    If the folder is held open (Windows, started from the .bat) the new version is
+    placed beside it under the release's own name and the banner says where.
+  - **A git checkout** is never updated in place; it only gets the link.
+- The update runs off the GUI thread with progress in the banner; a failure is
+  one sentence in the banner and the old copy is untouched.
+- The first-run disclosure now says what the check does and that nothing is
+  downloaded on its own. Nothing starts without the user pressing the button
+  and confirming.
+- Installer template: `.onInit` implements `/WAITPID=` (SYNCHRONIZE wait, ten
+  minute cap) and `.onInstSuccess` implements `/RELAUNCH`; both are inert when a
+  person runs the installer by hand. Proven under Wine 9: the install held until
+  the waited process exited, then `runtime\pythonw.exe` started; the control run
+  without `/RELAUNCH` started nothing; a dead pid does not hang.
+- New module `mod_editor/core/self_update.py`, shipped in both studios; tests in
+  `tests/mod_editor/test_self_update.py` (install-kind detection, asset choice per
+  product and layout, sidecar verification, tarball swap + fallback, hostile
+  archive refusal, the banner flow off the GUI thread).
+- **TEAM column on the franchise Player Card.** A new executable patch (Build tab, Gameplay
+  Patches page, both SOFTDRINK presets; `.2k5patch` carries it) adds a frozen TEAM column next to
+  Yr on the Player Card's season-by-season stats. The current season shows the live team; every
+  season rollover records the team the player finished the season with (field 87 of the game's own
+  per-player history stream, written through its own writer), so past seasons show that club from
+  then on. Seasons that ended before the patch was in the save, the folded "pre" row and the Total
+  row read "--"; a mid-season trade shows the season-end team. Six column lists get the new
+  pointer in place; the caves live in the unused tail of the dead `FUN_00046ee0` (0x47220..0x47420).
+  Unwitnessed in game; the caves run under unicorn in `tests/mod_editor/test_nfl2k5_team_column.py`.
+- **Real team history for the roster's past seasons.** The Build tab's "Real team history" toggle (ADVANCED and
+  EXPERIMENTAL presets; disc images only) writes the real club of every past season the retail roster carries stats
+  for into the roster template's own history pool (field 87, `data/nfl2k5_retail_team_history.csv`, generated from
+  nflverse-data, CC-BY-4.0: 1,148 of the 1,325 retail players with history matched, 5,068 of 5,867 season rows, 86 %;
+  5,042 rows land in the pool, 36,866 -> 41,908 of 50,000 dwords). Only franchises created from the copy show it; a
+  user CSV (last_name, first_name, birth_date, season, team) replaces the built-in data and rides in the `.2k5patch`
+  as `assets/text/`. Relocated franchises show the 2004 abbreviation (Oilers -> TEN, LA Raiders -> OAK). The pool
+  writer runs after the position-pool and 2026-schedule passes. Unwitnessed in game.
+- **Boot logo kept decodable.** Several executable patches keep code and constants in the XBE
+  header's boot-logo bitmap (0x10A10..0x10CC2). The game never reads it, but the kernel draws it during
+  the boot animation, and a bitmap full of code decodes to nonsense (a user's investigation of a
+  freeze at the Xbox logo flagged exactly this). Whenever a cave has taken the bitmap the builder now
+  copies the retail logo into the header's zero padding (0x10CD0) and points LogoBitmapAddr at the
+  copy, so the kernel decodes the genuine 100 x 17 logo; the caves are untouched.
+  `mod_editor/core/nfl2k5_boot_logo.py`, reported as `boot_logo` in every XBE status.
+- **Disc names always end in .iso.** A save name typed without a suffix in Build or Apply produced a
+  file xemu's picker could not see; a bare name now gets `.xiso.iso`.
+- **In development, not in this release: 7-on-7 practice.** A fifth Practice Type that plays 7-on-7
+  sets from the practice playbook is built and tested (executable patch, book writer, three runtime
+  bugs found and fixed through xemu's debugger: a flag in read-only `.text`, menu links without
+  bit 15, a cave over a live function). It reaches the play-call but has not been witnessed through
+  a snap, so it is hidden in this build (`mod_build.SEVEN_ON_SEVEN_RELEASED`).
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 
 - **New: ★ Models.** Every 3D model on the loaded disc (players, helmets and face

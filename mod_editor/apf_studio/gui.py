@@ -19907,7 +19907,7 @@ class ApfStudioMainWindow(QMainWindow):
         shell = QVBoxLayout(root)
         shell.setContentsMargins(0, 0, 0, 0)
         shell.setSpacing(0)
-        self._update_banner = update_ui.UpdateBanner()
+        self._update_banner = update_ui.UpdateBanner(product="apf")
         shell.addWidget(self._update_banner)
         body = QWidget()
         shell.addWidget(body, 1)
@@ -20045,10 +20045,10 @@ class ApfStudioMainWindow(QMainWindow):
         )
 
     def _manual_update_result(self, status: object) -> None:
-        update_ui.report_manual_check(self, status)
         banner = getattr(self, "_update_banner", None)
         if banner is not None and getattr(status, "available", False):
             banner.show_status(status)
+        update_ui.report_manual_check(self, status, banner)
 
     def _start_automatic_update_check(self) -> None:
         """Quiet on startup: only a genuinely newer release shows anything."""

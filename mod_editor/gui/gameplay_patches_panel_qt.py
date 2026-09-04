@@ -57,6 +57,13 @@ PATCHES = (
      "grow over years 1-5 by rating family and decline harder after year 9-12 (speed first), and each "
      "position's archetype mix is widened so more prospects become stars or busts. Draft-day ratings are "
      "unchanged."),
+    ("team_column", "TEAM column on the franchise Player Card",
+     "Retail: the Player Card lists a player's stats season by season (Yr, Games, ...) but never which team a "
+     "season was played for; only the card's colours show the current team, so a traded veteran's history reads "
+     "as one club. Patch: a TEAM column sits next to Yr (frozen, the stats still scroll). The current season shows "
+     "the live team; every season rollover records the team the player finished it with, so from then on past "
+     "seasons show that club (a mid-season trade shows the season-end team). Seasons that ended before this patch "
+     "was in the save, the folded \"pre\" row and the Total row read \"--\". Franchise saves stay loadable either way."),
     ("kick_rules", "Modern kicking: kickoff from the 35, touchbacks to the 35, PAT from the 15, ~70-yard legs",
      "Retail kicks off from the 30 with touchbacks at the 20, snaps the extra point from the 2, and its "
      "field-goal tables top out near 60 yards for a 99 kicker on a perfect meter. Patch: kickoff spot 35, "
@@ -78,6 +85,13 @@ PATCHES = (
      "the Standard preset take Far's look-at, lens and offset words, so a profile left on Standard gets the "
      "Far view. Far itself, the kick, replay and other presets are untouched; the fresh-profile default stays "
      "Standard."),
+    ("seven_on_seven", "7-on-7 practice mode",
+     "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
+     "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
+     "the pass rush off; the practice book gains three 7-on-7 passing sets (Trips, Spread, Ace: QB, a centre to snap, "
+     "five skill players) with nine pass concepts and two coverage sets (4-3 and Nickel looks) with six coverages. The "
+     "engine always fields eleven, so the four linemen of each side stand idle at the sideline by design, and one "
+     "parked defender rushes after a 4-second count as the throw timer. Needs a disc image; unwitnessed in game."),
 )
 
 
@@ -102,6 +116,9 @@ class _Task(QRunnable):
         else:
             self.signals.finished.emit(result)
 
+
+if not mod_build.SEVEN_ON_SEVEN_RELEASED:
+    PATCHES = tuple(entry for entry in PATCHES if entry[0] != "seven_on_seven")
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",

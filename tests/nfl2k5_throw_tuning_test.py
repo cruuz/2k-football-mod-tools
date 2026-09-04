@@ -25,6 +25,8 @@ from mod_editor.core import nfl2k5_accel_ramp as accel  # noqa: E402
 from mod_editor.core import nfl2k5_draft_ai as draft  # noqa: E402
 from mod_editor.core import nfl2k5_progression as progression  # noqa: E402
 from mod_editor.core import nfl2k5_returner_fix as returner  # noqa: E402
+from mod_editor.core import nfl2k5_team_column as team_column  # noqa: E402
+from mod_editor.core import nfl2k5_seven_on_seven as seven  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 
 IMAGE_BASE = strength.IMAGE_BASE
@@ -50,6 +52,10 @@ ROOKIE_SECTION = 11         # synthetic .data window (index 12-15 belong to the 
 ROOKIE_VA = 0xAE1000
 ROOKIE_RAW = TEXT_RAW + TEXT_SIZE
 ROOKIE_SIZE = 0x1000
+CARD_SECTION = 6            # synthetic .rdata window: the Player Card column lists and the Yr descriptor (0x535020..)
+CARD_VA = 0x535000
+CARD_RAW = ROOKIE_RAW + ROOKIE_SIZE
+CARD_SIZE = 0x1000
 
 
 def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | None = None) -> bytes:
@@ -73,9 +79,21 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
             fields[1] = ROOKIE_VA
             fields[3] = ROOKIE_RAW
             fields[4] = ROOKIE_SIZE
+        if index == CARD_SECTION:
+            fields[1] = CARD_VA
+            fields[3] = CARD_RAW
+            fields[4] = CARD_SIZE
         struct.pack_into(strength.SECTION_TABLE_FIELDS, buf, header, *fields)
     # .data window for the Rookie Report key tables (retail scale words of the K / P / FB structs)
-    buf.extend(b"\0" * (ROOKIE_RAW + ROOKIE_SIZE - len(buf)))
+    buf.extend(b"\0" * (CARD_RAW + CARD_SIZE - len(buf)))
+    # .rdata window for the Player Card TEAM column: the six column lists and the Yr descriptor it clones
+    buf[CARD_RAW + (team_column.YR_DESCRIPTOR_VA - CARD_VA): CARD_RAW + (team_column.YR_DESCRIPTOR_VA - CARD_VA) + team_column.DESCRIPTOR_SIZE] = team_column.RETAIL_YR_DESCRIPTOR
+    for _label, list_va, pointers in team_column.COLUMN_LISTS:
+        off = CARD_RAW + (list_va + team_column.LIST_POINTERS_OFF - CARD_VA)
+        buf[off: off + team_column.LIST_SLOTS * 4] = team_column.list_words(pointers, False)
+    for va, retail in ((team_column.HOOK_VA, team_column.RETAIL_HOOK), (team_column.CAVE_VA, team_column.RETAIL_CAVE)):
+        off = TEXT_RAW + (va - TEXT_VA)
+        buf[off: off + len(retail)] = retail
     for _pos, struct_va, retail_bits in draft.ROOKIE_KEY_SITES:
         struct.pack_into("<I", buf, ROOKIE_RAW + (struct_va + draft.ROOKIE_KEY_SCALE_OFF - ROOKIE_VA), retail_bits)
     # retail bytes at the catch-slider sites: logo region (header), hook and ceilings (.text)
@@ -89,6 +107,9 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     for va, retail in ((catch.HOOK_VA, catch.RETAIL_HOOK), (catch.CEIL_SITES[0], catch.RETAIL_CEIL), (catch.CEIL_SITES[1], catch.RETAIL_CEIL)):
         off = TEXT_RAW + (va - TEXT_VA)
         buf[off: off + len(retail)] = retail
+    for _label, va, retail, _patched in seven.sites():      # the 7-on-7 practice sites (all in .text)
+        off = TEXT_RAW + (va - TEXT_VA)
+        buf[off: off + len(retail)] = retail
     for name, curve in tt.CURVES.items():
         pairs = (curves or {}).get(name, curve.retail)
         blob = curve.encode(pairs)
@@ -99,7 +120,7 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     for va, retail in ((tt.LOBSPEED_COUNT_SITE_VA, tt.RETAIL_COUNT_OPERAND), (tt.LOBSPEED_PAIRS_SITE_VA, tt.RETAIL_PAIRS_OPERAND)):
         off = TEXT_RAW + (va - TEXT_VA)
         buf[off: off + len(retail)] = retail
-    for index, (raw, size) in ((3, (DATA_RAW, DATA_SIZE)), (0, (TEXT_RAW, TEXT_SIZE)), (ROOKIE_SECTION, (ROOKIE_RAW, ROOKIE_SIZE))):
+    for index, (raw, size) in ((3, (DATA_RAW, DATA_SIZE)), (0, (TEXT_RAW, TEXT_SIZE)), (ROOKIE_SECTION, (ROOKIE_RAW, ROOKIE_SIZE)), (CARD_SECTION, (CARD_RAW, CARD_SIZE))):
         header = TABLE_OFF + index * strength.SECTION_HEADER_SIZE
         buf[header + 36: header + 56] = _section_digest(bytes(buf), raw, size)
     return bytes(buf)
