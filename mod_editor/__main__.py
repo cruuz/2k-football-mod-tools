@@ -56,6 +56,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     action.add_argument(
+        "--ps2-disc",
+        action="store_true",
+        help=(
+            "open only the PlayStation 2 disc inventory browser, without the "
+            "rest of the studio"
+        ),
+    )
+    action.add_argument(
         "--check-registry",
         action="store_true",
         help="validate the capability registry without opening a display",
@@ -498,6 +506,17 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         application = QApplication.instance() or QApplication(sys.argv[:1])
         dialog = Ps2SaveEditorDialog()
+        dialog.show()
+        return application.exec_()
+    if args.ps2_disc:
+        # Same shape as --ps2-save: the disc inventory reads the user's own
+        # PS2 ISO and needs none of the studio's Xbox-derived startup inputs.
+        from PyQt5.QtWidgets import QApplication
+
+        from .gui.ps2_disc_dialog_qt import Ps2DiscInventoryDialog
+
+        application = QApplication.instance() or QApplication(sys.argv[:1])
+        dialog = Ps2DiscInventoryDialog()
         dialog.show()
         return application.exec_()
 

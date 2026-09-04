@@ -7,9 +7,11 @@ Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 - **First PS2 disc capability.** `nfl2k5ps2.textures.disc_inventory` (read-only-mapped, view):
   open a `SLUS-20919` ISO read-only, identity-check it against the pinned digests, inventory
   550,746 named resources (120,779 textures with GS format and dimensions) and see each name's
-  Xbox counterpart -- 24,187 shared names, 99.6% of the Xbox disc's. Command line today
-  (`tools/nfl2k5_ps2_disc_inventory.py`); the PS2 Disc window follows. Never reads a pixel or a
-  sample: only the metadata half of each chunk is decoded, and the self-test proves it.
+  Xbox counterpart -- 24,187 shared names, 99.6% of the Xbox disc's. Command line
+  (`tools/nfl2k5_ps2_disc_inventory.py`) and the **PS2 Disc Inventory** window (File menu, or
+  `--ps2-disc`): a separate read-only browser like the PS2 save editor, virtualized table, filters,
+  CSV/JSON export. Never reads a pixel or a sample: only the metadata half of each chunk is
+  decoded, and the self-test proves it.
 - ISO9660 reader serial fix (`SLUS-209.19` -> `SLUS-20919`); its 54-test suite now runs in CI.
 - The PCSX2 replacement-pack audit accepts all six PCSX2 name shapes (it rejected 27% of a real
   pack).

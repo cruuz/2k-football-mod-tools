@@ -1701,6 +1701,8 @@ def main() -> int:
         "ps2_iso9660",
         "mod_editor.core.ps2_save_service",
         "mod_editor.gui.ps2_save_dialog_qt",
+        "mod_editor.core.ps2_disc_service",
+        "mod_editor.gui.ps2_disc_dialog_qt",
         "mod_editor.core.nfl2k5_playbook_inspector",
         "mod_editor.core.nfl2k5_playbook_pack",
         "mod_editor.core.playbook_package_rule_spike",

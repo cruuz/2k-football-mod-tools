@@ -11,8 +11,13 @@
   **Xbox counterpart**. Both discs carry the same Visual Concepts container, so the correspondence
   is a name join, not a pixel match: 24,187 of the Xbox disc's 24,285 names (99.6%) occur on the
   PS2 disc. That list is what a PCSX2 texture-replacement pack author has never had, because a
-  GS-hash dump carries no names. `tools/nfl2k5_ps2_disc_inventory.py` ships on the command line
-  now; the PS2 Disc window (a separate window, like the PS2 save editor) follows.
+  GS-hash dump carries no names. It ships two ways: `tools/nfl2k5_ps2_disc_inventory.py` on the
+  command line, and **File → PS2 Disc Inventory…** (or `--ps2-disc` on its own, like `--ps2-save`),
+  a separate read-only window in the shape of the PS2 save editor: open your ISO, read the
+  identity check, browse the rows in a virtualized table (the half-million rows live in a private
+  SQLite sidecar and the table fetches pages as you scroll), narrow by name, entry number, type,
+  role, pack or Xbox counterpart, and export the rows shown as CSV or the whole report as JSON.
+  The walk runs off the Qt thread with progress, and the window refuses to close mid-walk.
 - **Retail-free by construction, and proved.** Only the metadata half of each resource chunk is
   ever read or decoded; pixels and audio are never touched. The self-test builds a synthetic
   two-pack disc, plants a payload sentinel and proves no output contains it. The committed

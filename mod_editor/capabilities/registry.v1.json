@@ -5161,7 +5161,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "view",
-        "reason": "Every field shown is read straight off the user's disc by a walk that decodes only the metadata half of each resource chunk and is proved on a synthetic disc plus the retail image (550,746 rows, 0 errors). There is no PS2 disc writer and no GS texture codec, so the viewer browses names, formats, dimensions and Xbox counterparts and exports them; it never offers an edit. The workspace is the PS2 Disc window (separate from the Xbox sidebar, like the PS2 save editor); the command line ships today."
+        "reason": "Every field shown is read straight off the user's disc by a walk that decodes only the metadata half of each resource chunk and is proved on a synthetic disc plus the retail image (550,746 rows, 0 errors). There is no PS2 disc writer and no GS texture codec, so the viewer browses names, formats, dimensions and Xbox counterparts and exports them; it never offers an edit. The workspace is the PS2 Disc Inventory window (File menu, or --ps2-disc on its own), a separate read-only dialog in the shape of the PS2 save editor rather than a card in the Xbox sidebar; the command line ships alongside it."
       },
       "id": "nfl2k5ps2.textures.disc_inventory",
       "input_constraints": [

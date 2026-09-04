@@ -99,12 +99,21 @@ classification is right — `read-only-mapped` matches
   under gitignored `docs/research/`.
 - `registry.v1.json` must stay **canonically sorted JSON** (`:291`).
 
-### Discovery — the row is invisible without this
+### Discovery — decided: a File-menu window, not a sidebar card
 
-`mod_editor/core/product_catalog.py:301` filters on `game != NFL2K5`, so a
-`nfl2k5_ps2` row **never reaches the sidebar**. Commit 5b must widen that
-filter, or the capability ships unreachable and the single menu entry is the
-entire discoverable surface.
+`mod_editor/core/product_catalog.py` filters on `game != NFL2K5`, so a
+`nfl2k5_ps2` row never reaches the Xbox sidebar. An earlier version of this
+plan said 5b must widen that filter. **It was not widened, on purpose:** the
+catalog is built per game (`registry.for_game(GameId.NFL2K5)`), so the only
+ways to admit the disc row are to admit every PS2 row — which drops the PS2
+save *writer* into the Xbox "Sliders & Gameplay" section as an Editable card
+and moves the "32 Xbox NFL 2K5 rows" pins — or to add a per-row opt-in field
+the schema does not have. The shipped precedent is the PS2 save editor: a
+separate window off the File menu plus its own `--ps2-save` entry point, and
+the disc inventory follows it exactly (**File → PS2 Disc Inventory…**,
+`--ps2-disc`). That menu entry is the discoverable surface, and it is the same
+surface the save editor has had since Beta 53. Revisit only if PS2 grows enough
+rows to deserve its own sidebar, which is a product decision, not a 5b task.
 
 ## Landing order — 5 commits
 
@@ -118,7 +127,7 @@ to their branches first — **nothing is currently committed.**
 | 3 | `tools/ps2_iso9660.py` reader + the synthetic suite. **Fix `SLUS-209.19` → `SLUS-20919`** in `boot_identity()` or it will not join against `SERIAL`. **Move the test file to `tests/mod_editor/`** or CI never runs it. Swap the Madden disc tests for a skip-guarded SLUS-20919 identity test. ✅ **Landed** (`a1ab225` on `ps2-lane`): `_serial_of` normalises the 8.3 name; the suite is 54 tests (50 synthetic + 4 gated on `NFL2K5_PS2_ISO`), verified against the retail image | no — unshipped until #5 |
 | 4 | `tools/nfl2k5_ps2_disc_inventory.py` (productized `ps2_vc_inventory.py`) + synthetic selftest + evidence JSON at `reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json` + a **~1.5 MB name-join as `.csv`** (not `.tsv` — see landing mechanics), not the 70 MB dumps. ✅ **Landed** (`38f0376`): reproduces the research run row for row (550,746 rows); `ps2_iso9660.build_synthetic_iso` made public for the selftest; the validator `.sh`/`.bat` pair landed here rather than in 5a | no |
 | 5a | Registry row (complete per the field list above) + `SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox")` + the **13 count pins** 70→71 + allowlist entries + closure list (the `product_modules` tuple in `check_2k5_mod_studio_runtime.py`, next to the two PS2 save tools — locate by content) + changelog **RC84** (RC83 is taken — Beta 59 shipped 2026-09-04) + the **6-edit** schema fix. ⚠ **"Changelog RC84" is a version-truth bump, not one heading:** `test_no_capability_is_invisible.py` requires `__version__` == the newest changelog heading == the `STATUS.md` and getting-started headers, and `test_beta45_honesty_freeze.py` / `test_phase1_packaging.py` pin the literal, so it is 6 more edits (`mod_editor/__init__.py` → `1.0.0rc84`, `STATUS.md` ×2, getting-started ×1, three test literals) | **2K5 re-seal**; APF literal only |
-| 5b | `ps2_disc_service.py` (Qt-free) + `ps2_disc_dialog_qt.py` + `studio_qt.py` menu entry + `--ps2-disc`, `repin.py --apply` | same release |
+| 5b | `ps2_disc_service.py` (Qt-free) + `ps2_disc_dialog_qt.py` + `studio_qt.py` menu entry + `--ps2-disc`, `repin.py --apply`. ✅ **Landed** (see the `ps2-lane` log): the service keeps the rows in a private SQLite sidecar and answers filtered counts/windows; the dialog's model fetches 256-row pages on demand (the virtualized model the effort section asked for); the walk runs on a pool thread with progress; `repin.py` had nothing to re-pin. **The `product_catalog.py` game filter was deliberately not widened** — see "Discovery" below | same release |
 
 **The 13 count-pin sites (9 files).** ⚠ **Do not trust any line number in
 this document for these sites.** Two audits hours apart on 2026-09-04 reported

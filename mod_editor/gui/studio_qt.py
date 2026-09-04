@@ -1517,6 +1517,7 @@ class StudioMainWindow(QMainWindow):
         self._save_project_action: QAction | None = None
         self._save_project_as_action: QAction | None = None
         self._ps2_save_action: QAction | None = None
+        self._ps2_disc_action: QAction | None = None
 
         self.setWindowTitle("2K5 Mod Studio")
         icon = _window_icon()
@@ -1581,6 +1582,13 @@ class StudioMainWindow(QMainWindow):
             "separate from the Xbox game image you have open."
         )
         self._ps2_save_action.triggered.connect(self._open_ps2_save_editor)
+        self._ps2_disc_action = file_menu.addAction("PS2 Disc Inventory…")
+        self._ps2_disc_action.setToolTip(
+            "Browse every named resource on an ESPN NFL 2K5 PlayStation 2 disc "
+            "image, read-only, and see each name's Xbox counterpart. This is "
+            "separate from the Xbox game image you have open."
+        )
+        self._ps2_disc_action.triggered.connect(self._open_ps2_disc_inventory)
         file_menu.addSeparator()
         quit_action = file_menu.addAction("Quit")
         quit_action.setShortcut("Ctrl+Q")
@@ -2053,6 +2061,35 @@ class StudioMainWindow(QMainWindow):
         dialog.deleteLater()
         self._set_status(
             "PS2 Save Editor closed • your Xbox project was not changed."
+        )
+
+    def _open_ps2_disc_inventory(self, _checked: bool = False) -> None:
+        """Open the read-only PS2 disc inventory browser.
+
+        A PS2 disc image is the user's own file and has nothing to do with the
+        Xbox image this window may have loaded, so -- like the PS2 save editor
+        -- it is a self-contained dialog rather than a page in the project
+        workspace.  It never writes: the capability behind it is
+        read-only-mapped, and the walk reads only resource names and headers.
+        """
+
+        if self._refuse_while_audio_busy("open the PS2 Disc Inventory"):
+            return
+        try:
+            from .ps2_disc_dialog_qt import Ps2DiscInventoryDialog
+        except Exception as exc:  # pragma: no cover - defensive import guard
+            QMessageBox.warning(
+                self,
+                "PS2 Disc Inventory is unavailable",
+                f"The PS2 disc inventory could not be loaded: {str(exc).strip()}\n\n"
+                "Nothing was changed.",
+            )
+            return
+        dialog = Ps2DiscInventoryDialog(parent=self)
+        dialog.exec_()
+        dialog.deleteLater()
+        self._set_status(
+            "PS2 Disc Inventory closed • your Xbox project was not changed."
         )
 
     def _recover_candidate(self, candidate: RecoveryCandidate) -> None:
@@ -7577,6 +7614,10 @@ class StudioMainWindow(QMainWindow):
             # PS2 saves are independent of the Xbox source, so this needs no
             # loaded image -- only the guard against a running operation.
             self._ps2_save_action.setEnabled(not global_busy)
+        if self._ps2_disc_action is not None:
+            # Likewise: a PS2 disc image is the user's own file, opened
+            # read-only, unrelated to the Xbox source.
+            self._ps2_disc_action.setEnabled(not global_busy)
         if self._recent_source_menu is not None:
             self._recent_source_menu.setEnabled(not global_busy)
         if self._recent_project_menu is not None:

@@ -74,7 +74,7 @@ import sys
 import tempfile
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ps2_iso9660 as iso  # noqa: E402
@@ -938,12 +938,14 @@ def _entry_results(iso_path: str, packs, entries, indices, jobs: int, progress):
 
 def inventory(iso_path: str, *, csv_path: Optional[str] = None,
               jobs: int = 1, limit: int = 0, hash_image: bool = False,
-              progress=None) -> Tuple[dict, NameSide]:
+              progress=None,
+              row_sink: Optional[Callable[[dict], None]] = None) -> Tuple[dict, NameSide]:
     """Inventory one disc.  Returns the JSON-ready report and the name side.
 
-    Rows stream straight into ``csv_path`` as each entry completes, so memory
-    stays flat over a 550,000-row disc; only censuses and the per-name
-    aggregate are kept.
+    Rows stream straight into ``csv_path`` -- and to ``row_sink``, when a
+    caller such as the studio's disc service wants them in its own store -- as
+    each entry completes, so memory stays flat over a 550,000-row disc; only
+    censuses and the per-name aggregate are kept.
     """
     stat_before = os.stat(iso_path)
     image = iso.open_image(iso_path)
@@ -1016,6 +1018,8 @@ def inventory(iso_path: str, *, csv_path: Optional[str] = None,
                     elif piece.startswith("obj="):
                         object_census[piece[4:]] += 1
                 side.add_row(row)
+                if row_sink is not None:
+                    row_sink(row)
                 if writer is not None:
                     writer.writerow([
                         str(row[column]).replace("\t", " ").replace("\n", " ")
