@@ -56,7 +56,7 @@ import sys
 import tempfile
 import unittest
 
-_REPO_ROOT = Path(__file__).resolve().parents[1]
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 for _candidate in (_REPO_ROOT, _REPO_ROOT / "tools"):
     if str(_candidate) not in sys.path:
         sys.path.insert(0, str(_candidate))
@@ -1355,7 +1355,7 @@ class BootIdentityTests(_IsoTestCase):
         identity = iso.boot_identity(image)
         self.assertEqual(identity["boot2"], "cdrom0:\\SLUS_217.70;1")
         self.assertEqual(identity["boot_file"], "SLUS_217.70")
-        self.assertEqual(identity["serial"], "SLUS-217.70")
+        self.assertEqual(identity["serial"], "SLUS-21770")
         self.assertEqual(identity["boot_size"], len(BOOT_ELF))
         self.assertEqual(identity["boot_sha256"], hashlib.sha256(BOOT_ELF).hexdigest())
         self.assertIn("BOOT2", identity["system_cnf"])
@@ -1381,20 +1381,23 @@ class BootIdentityTests(_IsoTestCase):
             with self.subTest(system_cnf=label):
                 identity = iso.boot_identity(iso.open_image(self._image_with_cnf(cnf)))
                 self.assertEqual(identity["boot_file"], "SLUS_217.70")
-                self.assertEqual(identity["serial"], "SLUS-217.70")
+                self.assertEqual(identity["serial"], "SLUS-21770")
 
-    def test_the_serial_derivation_is_the_underscore_to_hyphen_rule(self) -> None:
-        """``SLUS_219.46`` on the disc is ``SLUS-219.46`` everywhere else.
+    def test_the_serial_derivation_is_the_catalogue_form(self) -> None:
+        """``SLUS_209.19`` on the disc is ``SLUS-20919`` everywhere else.
 
-        PCSX2, redump and every cover-art database spell it with a hyphen; the
-        disc spells it with an underscore because ISO9660 level 1 forbids the
-        hyphen. Both Deluxe images in the ground truth rely on this mapping.
+        PCSX2, redump, every cover-art database and this repository's own
+        capability registry spell the serial with a hyphen and no dot; the disc
+        spells it ``SLUS_209.19`` because an ISO9660 level-1 name forbids the
+        hyphen and caps the name at 8.3. An earlier reader kept the dot
+        (``SLUS-209.19``), which joined against nothing.
         """
         for stored, serial in (
-            ("SLUS_217.70", "SLUS-217.70"),
-            ("SLUS_219.46", "SLUS-219.46"),
-            ("SLES_502.10", "SLES-502.10"),
-            ("SCUS_971.11", "SCUS-971.11"),
+            ("SLUS_209.19", "SLUS-20919"),
+            ("SLUS_217.70", "SLUS-21770"),
+            ("SLUS_219.46", "SLUS-21946"),
+            ("SLES_502.10", "SLES-50210"),
+            ("SCUS_971.11", "SCUS-97111"),
         ):
             with self.subTest(boot_file=stored):
                 cnf = ("BOOT2 = cdrom0:\\" + stored + ";1\r\n").encode("ascii")
@@ -1408,7 +1411,7 @@ class BootIdentityTests(_IsoTestCase):
         cnf = b"BOOT2 = cdrom0:\\SLUS_217.70\r\n"
         identity = iso.boot_identity(iso.open_image(self._image_with_cnf(cnf)))
         self.assertEqual(identity["boot_file"], "SLUS_217.70")
-        self.assertEqual(identity["serial"], "SLUS-217.70")
+        self.assertEqual(identity["serial"], "SLUS-21770")
         self.assertEqual(identity["boot_size"], len(BOOT_ELF))
 
     def test_a_disc_without_system_cnf_is_refused_explicitly(self) -> None:
@@ -1419,102 +1422,77 @@ class BootIdentityTests(_IsoTestCase):
 
 
 # ---------------------------------------------------------------------------
-# Ground truth. Never required; read-only; never writes to /mnt/c/Roms.
+# Ground truth. Never required; read-only; never writes to the user's library.
+#
+# The reader was measured against four real discs while it was built (retail
+# Madden NFL 09 -- blank volume id, zero slack -- and the Madden NFL 12 Deluxe
+# rebuild -- volume id MADDEN_12_MOD, 18,432 bytes of slack -- among them; the
+# synthetic builder above reproduces both shapes, so those facts are asserted
+# without a disc). The one disc this repository ships a lane for is ESPN NFL
+# 2K5, so the gated check kept here is the identity that lane keys on: the
+# serial that the capability registry, the replacement-pack audit and the disc
+# inventory all spell ``SLUS-20919``, and the boot ELF digest the registry
+# pins. Point ``NFL2K5_PS2_ISO`` at a legally dumped image to run it; CI has
+# no disc and skips.
 # ---------------------------------------------------------------------------
 
-_ROMS = Path("/mnt/c/Roms/PS2")
-_MADDEN_09 = _ROMS / "Madden NFL 09 (USA).iso"
-_MADDEN_12_DELUXE = _ROMS / "Madden NFL 12 Deluxe 2026 (USA).iso"
+_NFL2K5_PS2_ISO = (
+    Path(os.environ["NFL2K5_PS2_ISO"]) if os.environ.get("NFL2K5_PS2_ISO") else None
+)
 
 
-class _RealDiscTestCase(unittest.TestCase):
-    """Shared read-only discipline for the gated tests.
+def _registry_ps2_identity() -> dict:
+    registry = json.loads(
+        (_REPO_ROOT / "mod_editor" / "capabilities" / "registry.v1.json")
+        .read_text(encoding="utf-8")
+    )
+    (game,) = [entry for entry in registry["games"] if entry["id"] == "nfl2k5_ps2"]
+    return game["retail_identity"]
 
-    These images are the measured ground truth behind the whole design, but a
-    CI runner has neither, so every test here skips cleanly when absent. They
-    are also somebody's game library: opened read-only, never copied into, and
-    the size and mtime are re-checked afterwards so a regression that started
-    writing would fail here rather than eat a 1.6 GB file.
+
+@unittest.skipUnless(
+    _NFL2K5_PS2_ISO is not None and _NFL2K5_PS2_ISO.is_file(),
+    "set NFL2K5_PS2_ISO to a legally dumped SLUS-20919 image to run the disc-gated test",
+)
+class RetailNfl2k5Ps2IdentityTests(unittest.TestCase):
+    """Read-only against somebody's game library.
+
+    The size and mtime are re-checked afterwards so a regression that started
+    writing fails here rather than eating a 4.6 GB file.
     """
 
-    IMAGE = None
-
     def setUp(self) -> None:
-        stat = self.IMAGE.stat()
+        stat = _NFL2K5_PS2_ISO.stat()
         self.addCleanup(self._assert_untouched, stat.st_size, stat.st_mtime_ns)
+        self.image = iso.open_image(_NFL2K5_PS2_ISO)
 
     def _assert_untouched(self, size: int, mtime_ns: int) -> None:
-        stat = self.IMAGE.stat()
+        stat = _NFL2K5_PS2_ISO.stat()
         self.assertEqual(stat.st_size, size, "the disc image was written to")
         self.assertEqual(stat.st_mtime_ns, mtime_ns, "the disc image was written to")
 
-
-@unittest.skipUnless(_MADDEN_09.exists(), "retail Madden NFL 09 image is absent")
-class RetailMadden09Tests(_RealDiscTestCase):
-    IMAGE = _MADDEN_09
-
-    def test_the_measured_geometry(self) -> None:
-        image = iso.open_image(self.IMAGE)
-        self.assertEqual(image.sector_size, 2048)
-        self.assertEqual(image.data_offset, 0)
-        self.assertEqual(image.block_size, 2048)
-        self.assertEqual(image.volume_id, "", "retail ships a blank volume id")
-        self.assertEqual(image.volume_blocks, 809248)
-        self.assertEqual(image.root_lba, 261)
-        self.assertEqual(image.slack_bytes, 0)
-        self.assertEqual(image.file_size, 809248 * 2048)
-
-    def test_the_boot_identity(self) -> None:
-        identity = iso.boot_identity(iso.open_image(self.IMAGE))
-        self.assertEqual(identity["serial"], "SLUS-217.70")
-        self.assertEqual(identity["boot_file"], "SLUS_217.70")
-        self.assertEqual(identity["boot2"], "cdrom0:\\SLUS_217.70;1")
+    def test_the_boot_identity_is_the_registry_serial(self) -> None:
+        identity = iso.boot_identity(self.image)
+        self.assertEqual(identity["boot2"], "cdrom0:\\SLUS_209.19;1")
+        self.assertEqual(identity["boot_file"], "SLUS_209.19")
+        self.assertEqual(identity["serial"], "SLUS-20919")
         self.assertGreater(identity["boot_size"], 0)
-        self.assertEqual(len(identity["boot_sha256"]), 64)
 
-    def test_system_cnf_reads_back(self) -> None:
-        image = iso.open_image(self.IMAGE)
-        entry = iso.find(image, "/SYSTEM.CNF")
-        self.assertIsNotNone(entry)
-        self.assertFalse(entry.is_dir)
-        self.assertIn(b"BOOT2", iso.read_file(image, entry))
-        self.assertEqual(entry.parent_lba, image.root_lba)
-
-
-@unittest.skipUnless(_MADDEN_12_DELUXE.exists(), "Madden NFL 12 Deluxe image is absent")
-class DeluxeMadden12Tests(_RealDiscTestCase):
-    IMAGE = _MADDEN_12_DELUXE
-
-    def test_the_measured_geometry_including_the_trailing_slack(self) -> None:
-        """18,432 bytes past the declared volume, and that is fine.
-
-        This is the single most important real-disc assertion in the file: a
-        community rebuild carries padding a retail press does not, and treating
-        that as corruption would reject a legitimate image.
-        """
-        image = iso.open_image(self.IMAGE)
-        self.assertEqual(image.sector_size, 2048)
-        self.assertEqual(image.volume_id, "MADDEN_12_MOD")
-        self.assertEqual(image.volume_blocks, 795991)
-        self.assertEqual(image.root_lba, 259)
-        self.assertEqual(image.slack_bytes, 18432)
+    def test_the_boot_elf_digest_matches_the_registry_pin(self) -> None:
+        identity = iso.boot_identity(self.image)
         self.assertEqual(
-            image.file_size - image.volume_blocks * image.sector_size, 18432
+            identity["boot_sha256"], _registry_ps2_identity()["executable_sha256"]
         )
 
-    def test_the_boot_identity(self) -> None:
-        identity = iso.boot_identity(iso.open_image(self.IMAGE))
-        self.assertEqual(identity["serial"], "SLUS-219.46")
-        self.assertEqual(identity["boot_file"], "SLUS_219.46")
+    def test_the_serial_joins_the_replacement_pack_audit(self) -> None:
+        import nfl2k5_ps2_replacement_pack_audit as audit  # noqa: E402
 
-    def test_a_modded_volume_id_does_not_change_how_the_disc_reads(self) -> None:
-        """Volume id varies and means nothing; the boot ELF is the identity."""
-        image = iso.open_image(self.IMAGE)
-        self.assertNotEqual(image.volume_id, "")
-        entry = iso.find(image, "/SLUS_219.46")
-        self.assertIsNotNone(entry, "the boot ELF named by SYSTEM.CNF is missing")
-        self.assertFalse(entry.is_dir)
-        self.assertGreater(entry.length, 0)
+        self.assertEqual(iso.boot_identity(self.image)["serial"], audit.SERIAL)
+
+    def test_the_resource_pack_directory_is_where_the_inventory_expects_it(self) -> None:
+        entry = iso.find(self.image, "/VC_20919")
+        self.assertIsNotNone(entry, "the SLUS-20919 resource pack directory is missing")
+        self.assertTrue(entry.is_dir)
 
 
 if __name__ == "__main__":

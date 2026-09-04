@@ -874,14 +874,43 @@ def _boot_file_name(boot2: str) -> Optional[str]:
     return name or None
 
 
+_SERIAL_SHAPE = re.compile(r"^([A-Za-z]{4})_(\d{3})\.(\d{2})$")
+
+
+def _serial_of(boot_file: str) -> str:
+    """'SLUS_209.19' -> 'SLUS-20919', the form every catalogue spells.
+
+    The disc stores the serial as an ISO9660 level-1 file name.  The hyphen is
+    illegal there, so it became an underscore, and the 8.3 name limit forced a
+    dot into the digit run.  Both are artefacts of the file system, not of the
+    serial: PCSX2, redump and this repository's own capability registry and
+    ``nfl2k5_ps2_replacement_pack_audit.SERIAL`` all write ``SLUS-20919``.  An
+    earlier version emitted ``SLUS-209.19`` here, which silently failed every
+    join against them.
+
+    A boot file outside the ``SXXX_NNN.NN`` shape falls back to the plain
+    underscore-to-hyphen rule, so an unusual mod disc still reports something
+    rather than ``None``.
+    """
+    match = _SERIAL_SHAPE.match(boot_file)
+    if match is not None:
+        prefix, high, low = match.groups()
+        return f"{prefix.upper()}-{high}{low}"
+    return boot_file.replace("_", "-", 1)
+
+
 def boot_identity(image: IsoImage) -> dict:
     """Recover the disc's identity from ``/SYSTEM.CNF``.
 
     Returns exactly::
 
         {"system_cnf": <raw text>, "boot2": "cdrom0:\\\\SLUS_217.70;1",
-         "boot_file": "SLUS_217.70", "serial": "SLUS-217.70",
+         "boot_file": "SLUS_217.70", "serial": "SLUS-21770",
          "boot_sha256": <hex>, "boot_size": int}
+
+    ``boot_file`` is the name exactly as the disc spells it; ``serial`` is the
+    catalogue form (see ``_serial_of``), which is what the capability registry
+    and the replacement-pack audit key on.
 
     A missing ``SYSTEM.CNF`` raises -- without it there is no identity to
     report.  Anything *inside* the file that is missing or malformed degrades to
@@ -911,7 +940,7 @@ def boot_identity(image: IsoImage) -> dict:
 
     boot2 = values.get("BOOT2") or values.get("BOOT")
     boot_file = _boot_file_name(boot2) if boot2 else None
-    serial = boot_file.replace("_", "-", 1) if boot_file else None
+    serial = _serial_of(boot_file) if boot_file else None
 
     boot_sha256 = None
     boot_size = None
@@ -1341,7 +1370,11 @@ def selftest(tmp: "Path | None" = None) -> int:
               f"boot_identity keys {sorted(identity)}")
         check(identity["boot2"] == "cdrom0:\\SLUS_217.70;1", identity["boot2"])
         check(identity["boot_file"] == "SLUS_217.70", str(identity["boot_file"]))
-        check(identity["serial"] == "SLUS-217.70", str(identity["serial"]))
+        check(identity["serial"] == "SLUS-21770", str(identity["serial"]))
+        check(_serial_of("SLUS_209.19") == "SLUS-20919", "2K5 serial shape")
+        check(_serial_of("SLES_502.10") == "SLES-50210", "PAL serial shape")
+        check(_serial_of("MODDISC") == "MODDISC", "non-serial boot name passes through")
+        check(_serial_of("MY_BOOT.ELF") == "MY-BOOT.ELF", "fallback underscore rule")
         check(identity["boot_size"] == 4096, str(identity["boot_size"]))
         check(identity["boot_sha256"] ==
               hashlib.sha256(b"ELF" + bytes(4093)).hexdigest(), "boot sha256")
@@ -1360,7 +1393,7 @@ def selftest(tmp: "Path | None" = None) -> int:
         raw_target = find(raw_image, "/DATA/FOO.BIN")
         check(raw_target is not None and read_file(raw_image, raw_target) == foo,
               "raw CD content must match")
-        check(boot_identity(raw_image)["serial"] == "SLUS-217.70",
+        check(boot_identity(raw_image)["serial"] == "SLUS-21770",
               "raw CD boot identity")
         check(raw_image.slack_bytes == 0, "raw CD slack")
 
@@ -1441,7 +1474,7 @@ def selftest(tmp: "Path | None" = None) -> int:
                 raise Iso9660Error("selftest: a symlink must be refused")
 
     print(f"PS2_ISO9660_SELFTEST_PASS entries={len(expected)} "
-          f"layouts=2048+2352 slack=18432 serial=SLUS-217.70")
+          f"layouts=2048+2352 slack=18432 serial=SLUS-21770")
     return 0
 
 
