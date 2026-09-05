@@ -145,7 +145,8 @@ class ExistingGameRowsTests(unittest.TestCase):
         ))
         tool.apply(self.root, game="nfl2k5_ps2", rows=[row], widen_surfaces=["portraits_faces"])
         validator = _validator(self.root)
-        self.assertEqual(validator.SURFACE_GAMES["portraits_faces"], validator.GAMES)
+        # The game joins the surface's rule; other newcomers (madden09_ps2) are not demanded.
+        self.assertEqual(validator.SURFACE_GAMES["portraits_faces"], validator._LEGACY_GAMES + ("nfl2k5_ps2",))
         validator.validate_data(_registry(self.root), check_files=False)
 
     def test_a_row_on_an_uncovered_surface_without_widening_fails_the_scratch_validator(self) -> None:
@@ -164,7 +165,7 @@ class NewGameTests(unittest.TestCase):
         self.root = _scratch()
         self.addCleanup(shutil.rmtree, self.root, True)
 
-    def test_a_fourth_game_registers_everywhere_and_validates(self) -> None:
+    def test_another_game_registers_everywhere_and_validates(self) -> None:
         entry = {
             "id": "demo_ps2", "platform": "PlayStation 2", "title": "Demo Game (USA, PlayStation 2)",
             "public_input": "User supplies a legally obtained image; nothing is bundled.",
@@ -181,16 +182,18 @@ class NewGameTests(unittest.TestCase):
             path = self.root / name
             path.write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8", newline="\n")
             rows.append(path)
+        before = _validator(self.root)
         with self.assertRaisesRegex(tool.ApplyError, "pass --widen"):
             tool.apply(self.root, game="demo_ps2", rows=rows, new_game=entry_path, display_name="Demo Game (PS2)")
         tool.apply(self.root, game="demo_ps2", rows=rows, new_game=entry_path, display_name="Demo Game (PS2)",
                    widen_surfaces=["menus", "portraits_faces"])
         validator = _validator(self.root)
-        self.assertEqual(validator.GAMES, ("apf2k8_xbox360", "demo_ps2", "nfl2k5_ps2", "nfl2k5_xbox"))
-        self.assertEqual(validator._ESTABLISHED_GAMES, ("apf2k8_xbox360", "nfl2k5_ps2", "nfl2k5_xbox"))
+        # Relative to whatever the fixture already registers (today: four games, madden09_ps2 the first newcomer).
+        self.assertEqual(validator.GAMES, tuple(sorted(before.GAMES + ("demo_ps2",))))
+        self.assertEqual(validator._ESTABLISHED_GAMES, before._ESTABLISHED_GAMES, "a later newcomer never changes the established set")
         self.assertEqual(validator.SURFACE_GAMES["saves"], validator._ESTABLISHED_GAMES, "GAMES-wide rules no longer demand the newcomer")
-        self.assertEqual(validator.SURFACE_GAMES["menus"], validator._ESTABLISHED_GAMES + ("demo_ps2",))
-        self.assertEqual(validator.SURFACE_GAMES["portraits_faces"], validator._LEGACY_GAMES + ("demo_ps2",))
+        self.assertEqual(validator.SURFACE_GAMES["menus"], before.SURFACE_GAMES["menus"] + ("demo_ps2",))
+        self.assertEqual(validator.SURFACE_GAMES["portraits_faces"], before.SURFACE_GAMES.get("portraits_faces", validator._LEGACY_GAMES) + ("demo_ps2",))
         registry = _registry(self.root)
         self.assertEqual([g["id"] for g in registry["games"]], list(validator.GAMES))
         validator.validate_data(registry, check_files=False)
@@ -199,7 +202,7 @@ class NewGameTests(unittest.TestCase):
         self.assertIn('GameId.DEMO_PS2: "Demo Game (PS2)",', model)
         capabilities = (self.root / tool.CAPABILITIES).read_text(encoding="utf-8")
         self.assertIn('"demo_ps2": GameId.DEMO_PS2,', capabilities)
-        self.assertIn('required = {"nfl2k5_xbox", "apf2k8_xbox360", "nfl2k5_ps2", "demo_ps2"}', capabilities)
+        self.assertRegex(capabilities, r'required = \{[^}]*"demo_ps2"[^}]*\}')
         self.assertIn('{"id": "demo_ps2", "title": "Demo Game (USA, PlayStation 2)"},', capabilities)
         schema = json.loads((self.root / tool.REGISTRY_SCHEMA).read_text(encoding="utf-8"))
         self.assertEqual(schema["$defs"]["capability"]["properties"]["game"]["enum"], list(validator.GAMES))

@@ -24,10 +24,9 @@ class EarlierTitleInspectionTests(unittest.TestCase):
         self.assertEqual(selected.name, "default.xbe")
 
     def test_naming_2k3_or_2k4_does_not_create_a_supported_game_id(self) -> None:
-        self.assertEqual(
-            {game.value for game in GameId},
-            {"nfl2k5", "nfl2k5_ps2", "apf2k8"},
-        )
+        values = {game.value for game in GameId}
+        self.assertEqual(values, {"nfl2k5", "nfl2k5_ps2", "apf2k8", "madden09_ps2"})
+        self.assertFalse({"nfl2k3", "nfl2k4"} & values, "an earlier title is inspected, never a game id")
 
 
 class EarlierTitleProviderGuardTests(unittest.TestCase):

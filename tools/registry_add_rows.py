@@ -27,7 +27,7 @@ What it edits, for rows of an existing game:
   ``tests/mod_editor/test_phase1_packaging.py`` (two), ``APF2K8-README.md``,
   ``docs/mod_editor/APF2K8_STATUS.md``,
   ``docs/mod_editor/2k5_mod_studio_getting_started.md``, ``STATUS.md``;
-* ``--widen SURFACE``: a ``SURFACE_GAMES["<surface>"] = GAMES`` line in
+* ``--widen SURFACE``: the game joins ``SURFACE_GAMES["<surface>"]`` (appended to the existing tuple, or ``_LEGACY_GAMES + (game,)``) in
   ``mod_editor/capabilities/validate_registry.py`` (the coverage rule is set
   equality, so a row on a newly covered surface and its widening land together);
 * ``--module NAME``: a ``product_modules`` entry in the 2K5 runtime gate;
@@ -239,18 +239,10 @@ def widen(plan: Plan, surfaces: Sequence[str], game: str, new_game: bool) -> Non
     if not surfaces:
         return
     text = plan.read(VALIDATOR)
-    if not new_game:
-        for surface in surfaces:
-            if f'SURFACE_GAMES["{surface}"]' in text:
-                raise ApplyError(f"{VALIDATOR}: {surface} is already widened")
-        matches = list(_SURFACE_LINE.finditer(text))
-        if not matches:
-            raise ApplyError(f"{VALIDATOR}: no SURFACE_GAMES assignment to append after")
-        last = matches[-1]
-        lines = "".join(f'SURFACE_GAMES["{surface}"] = GAMES\n' for surface in surfaces)
-        comment = f"# {game} rows join these surfaces' coverage rule:\n"
-        text = text[:last.end() + 1] + comment + lines + text[last.end() + 1:]
-    else:
+    # One rule for a new game and for an existing one: the game joins the
+    # surface's coverage tuple. Writing "= GAMES" would demand every other
+    # newcomer too, which is exactly what broke once a second game existed.
+    if True:
         additions = []
         for surface in surfaces:
             pattern = re.compile(r'^SURFACE_GAMES\["' + re.escape(surface) + r'"\] = (.+)$', re.M)
@@ -258,8 +250,8 @@ def widen(plan: Plan, surfaces: Sequence[str], game: str, new_game: bool) -> Non
             if len(found) > 1:
                 raise ApplyError(f"{VALIDATOR}: {surface} is assigned more than once")
             if found:
-                if f'"{game}"' in found[0]:
-                    raise ApplyError(f"{VALIDATOR}: {surface} already names {game}")
+                if game in _games_named(text, found[0]):
+                    raise ApplyError(f"{VALIDATOR}: {surface} is already widened: it already names {game}")
                 text = pattern.sub(lambda match: f'SURFACE_GAMES["{surface}"] = {match.group(1)} + ("{game}",)', text)
             else:
                 additions.append(f'SURFACE_GAMES["{surface}"] = _LEGACY_GAMES + ("{game}",)\n')
@@ -363,13 +355,14 @@ def register_new_game(plan: Plan, game: str, display_name: str, enum_member: str
     ids = re.findall(r'"([a-z0-9_]+)"', games_match.group(1))
     new_ids = sorted(ids + [game])
     validator = plan.once(VALIDATOR, validator, games_match.group(0), "GAMES = (" + ", ".join(f'"{item}"' for item in new_ids) + ")")
-    if "_ESTABLISHED_GAMES = " in validator:
-        raise ApplyError(f"{VALIDATOR}: _ESTABLISHED_GAMES already exists; register one new game per run")
-    validator = plan.once(VALIDATOR, validator, "\n_LEGACY_GAMES = ",
-                          "\n# The games every GAMES-wide surface rule was written for; a newer game\n"
-                          "# covers only the surfaces its own rows declare below.\n"
-                          "_ESTABLISHED_GAMES = (" + ", ".join(f'"{item}"' for item in ids) + ")\n_LEGACY_GAMES = ")
-    validator = validator.replace('] = GAMES\n', '] = _ESTABLISHED_GAMES\n')
+    if "_ESTABLISHED_GAMES = " not in validator:
+        # The first newcomer freezes the games every GAMES-wide rule was written
+        # for; later newcomers find the tuple in place and join surfaces one by one.
+        validator = plan.once(VALIDATOR, validator, "\n_LEGACY_GAMES = ",
+                              "\n# The games every GAMES-wide surface rule was written for; a newer game\n"
+                              "# covers only the surfaces its own rows declare below.\n"
+                              "_ESTABLISHED_GAMES = (" + ", ".join(f'"{item}"' for item in ids) + ")\n_LEGACY_GAMES = ")
+        validator = validator.replace('] = GAMES\n', '] = _ESTABLISHED_GAMES\n')
     count_match = re.search(r'len\(games\) == (\d+), "games: expected exactly (\w+) entries"', validator)
     if count_match is None:
         raise ApplyError(f"{VALIDATOR}: games-count pin not found")
@@ -442,6 +435,21 @@ def repin(plan: Plan, paths: Sequence[str]) -> None:
             text = pattern.sub(lambda match: match.group(1) + current + match.group(3), text)
             plan.log.append(f"[repin] {relative}: {found[0][1][:12]} -> {current[:12]}")
     plan.stage(RUNTIME_GATE, text)
+
+
+def _tuple_literal(text: str, name: str) -> tuple:
+    """The string members of ``NAME = ("a", "b")`` in the validator's source."""
+    match = re.search(r'^' + re.escape(name) + r' = \((.*?)\)$', text, re.M)
+    return tuple(re.findall(r'"([a-z0-9_]+)"', match.group(1))) if match else ()
+
+
+def _games_named(text: str, expression: str) -> set:
+    """Every game a SURFACE_GAMES right-hand side names, resolving GAMES / _ESTABLISHED_GAMES / _LEGACY_GAMES."""
+    named = set(re.findall(r'"([a-z0-9_]+)"', expression))
+    for symbol in ("GAMES", "_ESTABLISHED_GAMES", "_LEGACY_GAMES"):
+        if re.search(r'\b' + symbol + r'\b', expression):
+            named.update(_tuple_literal(text, symbol))
+    return named
 
 
 def apply(
