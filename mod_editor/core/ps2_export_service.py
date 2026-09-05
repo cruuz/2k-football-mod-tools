@@ -815,11 +815,20 @@ def run_export(plan: ExportPlan, out_dir: Path) -> ExportReceipt:
     published = False
     try:
         rows: List[ReceiptFile] = []
+        # One asset fanning out over a mip chain asks for the same resample
+        # once per level. Resizing identical bytes to an identical size seven
+        # times would be pure waste, so the result is memoized per (source
+        # bytes, target size) -- which also guarantees the fan-out's files
+        # stay byte-identical to each other.
+        resamples: Dict[Tuple[str, Tuple[int, int]], bytes] = {}
         for planned in plan.files:
             payload = planned.payload
             resampled_from: Optional[List[int]] = None
             if planned.needs_resample:
-                payload = _resample(payload, planned.native_size)
+                key = (_sha256_bytes(payload), planned.native_size)
+                if key not in resamples:
+                    resamples[key] = _resample(payload, planned.native_size)
+                payload = resamples[key]
                 resampled_from = [planned.source_size[0], planned.source_size[1]]
             destination = stage.joinpath(*REPLACEMENTS_DIR, planned.pcsx2_png)
             _write_new(destination, payload)

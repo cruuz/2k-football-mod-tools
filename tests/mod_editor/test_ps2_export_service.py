@@ -318,6 +318,37 @@ class GeometryTests(_ExportTestCase):
         self.assertIsNone(rows[NAME_ONE]["resampled_from"])
         self.assertEqual(document["counts"]["resampled"], 1)
 
+    def test_a_resampled_fan_out_writes_byte_identical_files(self) -> None:
+        """A mip chain resamples once and reuses the result for every level.
+
+        If each level resized independently, a non-deterministic encoder could
+        make the levels differ, and the pack would carry two "identical" files
+        that are not.
+        """
+
+        if not svc.pillow_available():  # pragma: no cover
+            self.skipTest("Pillow is not installed")
+        document = manifest_document()
+        chain = ["aaaa-bbbb-" + SQUARE + ".png"] + [
+            "aaaa-bbbb-" + SQUARE + "-mip%d.png" % level for level in range(1, 7)
+        ]
+        document["entries"] = [
+            {"pcsx2_png": name, "xbox_asset_id": SQUARE_ASSET} for name in chain
+        ]
+        path = self.work / "chain.json"
+        path.write_bytes(
+            (json.dumps(document, indent=2, sort_keys=True) + "\n").encode("utf-8")
+        )
+        project = svc.project_from_targets([(SQUARE_ASSET, self.square_source)])
+        receipt = svc.run_export(
+            svc.plan_export(project, path), self.work / "chain-pack"
+        )
+        self.assertEqual(receipt.file_count, len(chain))
+        digests = {row.sha256 for row in receipt.files}
+        self.assertEqual(len(digests), 1)
+        for row in receipt.files:
+            self.assertEqual(row.resampled_from, [512, 128])
+
     def test_the_recorded_digest_is_of_the_resampled_bytes(self) -> None:
         """Not of the user's original, or the verifier would reject the file."""
 
