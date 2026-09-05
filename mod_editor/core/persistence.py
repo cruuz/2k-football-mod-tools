@@ -42,7 +42,15 @@ def save_project(project: ModProject, destination: Path) -> Path:
 
 
 def load_project(source: Path) -> ModProject:
-    path = Path(platform_compat.long_path(source.expanduser())).resolve(strict=True)
+    extended = Path(platform_compat.long_path(source.expanduser()))
+    try:
+        path = extended.resolve(strict=True)
+    except OSError:
+        # Windows' final-path lookup can fail on extended (\\?\) paths past 260 characters (seen as
+        # WinError 234 under Wine); the file is still addressable, so canonicalise without realpath.
+        path = Path(os.path.abspath(extended))
+        if not path.exists():
+            raise
     io_path = Path(platform_compat.long_path(path))
     if not io_path.is_file() or io_path.is_symlink():
         raise ValidationError("Project source must be a regular non-symlink file")
