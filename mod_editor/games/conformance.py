@@ -32,7 +32,9 @@ from typing import Any, Callable, Iterable, Optional, Sequence
 
 from .contract import (
     ALLOWED_CORE_IMPORTS,
+    PAGE_ORDER,
     SHARED_FORMATS_PACKAGE,
+    SURFACE_PAGES,
     Catalogue,
     ContractError,
     Edit,
@@ -43,6 +45,7 @@ from .contract import (
     Receipt,
     Refusal,
     Verdict,
+    lane_page,
 )
 from .registry_merge import validate_fragment
 
@@ -56,16 +59,28 @@ PAYLOAD_KEYS = frozenset({
     "raw_bytes", "retail_bytes", "rgba_bytes",
 })
 _MAX_COMPARE_BYTES = 64 * 1024 * 1024
+#: The QApplication the shell check made, if it had to make one.  Qt requires
+#: exactly one and requires it to outlive every widget, so it is kept here for
+#: the life of the process rather than made and dropped per game.
+_APPLICATION: Any = None
 
 
 @dataclass(frozen=True)
 class Check:
+    """One named check.  A skipped check passes and says so by name.
+
+    Skipping is for a check that *cannot run here* -- the offscreen shell check
+    without PyQt5 -- never for one that could run and was not.  It is printed
+    as its own state so a green report never hides a check nobody ran.
+    """
+
     name: str
     passed: bool
     detail: str = ""
+    skipped: bool = False
 
     def line(self) -> str:
-        state = "PASS" if self.passed else "FAIL"
+        state = "SKIP" if self.skipped else ("PASS" if self.passed else "FAIL")
         return f"{state}  {self.name}" + (f" — {self.detail}" if self.detail else "")
 
 
@@ -86,10 +101,16 @@ class ConformanceReport:
         return [check.line() for check in self.checks]
 
     @property
+    def skipped(self) -> tuple[Check, ...]:
+        return tuple(check for check in self.checks if check.skipped)
+
+    @property
     def summary(self) -> str:
+        skipped = len(self.skipped)
         return (
-            f"{self.game_id}: {len(self.checks) - len(self.failures)} of "
+            f"{self.game_id}: {len(self.checks) - len(self.failures) - skipped} of "
             f"{len(self.checks)} conformance checks passed"
+            + (f" ({skipped} skipped)" if skipped else "")
         )
 
 
@@ -101,6 +122,11 @@ class _Collector:
     def record(self, name: str, passed: bool, detail: str = "") -> bool:
         self.checks.append(Check(f"{self.prefix}.{name}", bool(passed), detail))
         return bool(passed)
+
+    def skip(self, name: str, detail: str) -> None:
+        """A check that cannot run here; it passes, and the line says SKIP."""
+
+        self.checks.append(Check(f"{self.prefix}.{name}", True, detail, skipped=True))
 
     def attempt(self, name: str, action: Callable[[], Any], detail: str = "") -> tuple[bool, Any]:
         """Run ``action``; a raised exception is a failed check, not a crash."""
@@ -201,6 +227,16 @@ def check_manifest(manifest: GameManifest, repo_root: Path = REPO_ROOT) -> list[
         missing = [line for line in lines if not (repo_root / line).is_file()]
         out.record("allowlist_files_exist", not missing,
                    f"{len(lines)} files" if not missing else f"missing: {missing}")
+    out.record(
+        "display_fields",
+        all(str(getattr(manifest, name, "")).strip() for name in ("console", "game", "year")),
+        f"console={manifest.console!r} game={manifest.game!r} year={manifest.year!r}",
+    )
+    pages = {page_id for page_id, _title in PAGE_ORDER}
+    out.record("page_notes_name_pages", set(manifest.page_notes) <= pages,
+               f"{len(manifest.page_notes)} page note(s)"
+               if set(manifest.page_notes) <= pages
+               else f"not pages: {sorted(set(manifest.page_notes) - pages)}")
     ok, pins = out.attempt("pins_read", manifest.pins_document)
     if ok:
         bad = [key for key, value in pins.items()
@@ -307,9 +343,114 @@ def check_module(game: GameModule, repo_root: Path = REPO_ROOT) -> list[Check]:
         missing = [path for path in lane.validators if not (repo_root / path).is_file()]
         out.record(f"lane.{lane.lane_id}.validators_exist", not missing,
                    "" if not missing else f"missing: {missing}")
+    window_ids = [window.window_id for window in game.windows]
+    out.record("studio_window", game.studio_window in window_ids,
+               f"{game.studio_window} — {game.manifest.studio_label}"
+               if game.studio_window in window_ids
+               else f"studio_window {game.studio_window!r} is not one of {window_ids}")
+    out.checks.extend(check_studio_label(game))
+    for lane in game.lanes:
+        page = lane_page(lane)
+        named = isinstance(getattr(lane, "page", None), str) and bool(getattr(lane, "page").strip())
+        known = named or lane.surface in SURFACE_PAGES
+        out.record(f"lane.{lane.lane_id}.page", page in {p for p, _t in PAGE_ORDER} and known,
+                   f"{page} ({'named by the lane' if named else 'from surface ' + lane.surface})"
+                   if known else
+                   f"surface {lane.surface!r} has no studio page and the lane names none; "
+                   "set Lane.page to one of " + ", ".join(p for p, _t in PAGE_ORDER))
     for window in game.windows:
         out.record(f"window.{window.window_id}", callable(window.factory),
                    f"{window.menu_label} (--{window.flag})")
+    return out.checks
+
+
+#: Files of a module the composed studio label may not appear in.  The
+#: registry and allowlist fragments are mirrors of canonical files whose prose
+#: legitimately names the studio, so the rule is about what the module *writes*:
+#: its code and its manifest.
+LABEL_SCANNED_SUFFIXES = (".py", ".json")
+
+
+def check_studio_label(game: GameModule) -> list[Check]:
+    """The label is composed from the manifest and never typed out in the module.
+
+    One rule composes every studio's name, so a module that spells its own
+    name somewhere will drift the day the rule or the manifest changes -- and
+    a second game copying it would inherit the drift.  The mirrors a module
+    does not author (``registry.fragment.json``, ``allowlist.fragment.txt``,
+    ``pins.json``) are exempt: their prose comes from the canonical registry.
+    """
+
+    out = _Collector("module")
+    label = game.manifest.studio_label
+    root = Path(game.manifest.root)
+    exempt = {
+        game.manifest.registry_fragment_path.name,
+        game.manifest.allowlist_fragment_path.name,
+        game.manifest.pins_path.name,
+    }
+    typed: list[str] = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.suffix not in LABEL_SCANNED_SUFFIXES or path.name in exempt:
+            continue
+        try:
+            body = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if label in body:
+            typed.append(path.relative_to(root).as_posix())
+    out.record("studio_label_is_composed_not_typed", not typed,
+               f"{label!r} composed from console/game/year" if not typed
+               else f"{label!r} is typed out in " + ", ".join(typed)
+                    + "; the core composes it from game.json's console, game and year")
+    return out.checks
+
+
+def check_shell(game: GameModule) -> list[Check]:
+    """The core shell hosts this module: it opens, and it shows every page.
+
+    Offscreen and read-only -- nothing is opened but the window.  Without
+    PyQt5 the check cannot run and says so by name rather than passing quietly.
+    """
+
+    out = _Collector("shell")
+    try:
+        from PyQt5.QtWidgets import QApplication
+
+        from .studio_qt import GameStudioDialog
+    except ImportError as exc:
+        out.skip("studio_opens", f"PyQt5 is not installed here ({exc}); the shell was not drawn")
+        return out.checks
+    import os
+
+    global _APPLICATION
+    if QApplication.instance() is None:
+        # A conformance run must never need a display: without one Qt aborts
+        # the process instead of raising, so offscreen is chosen before the
+        # application exists (an explicit QT_QPA_PLATFORM still wins).
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        _APPLICATION = QApplication([])
+    dialog = None
+    try:
+        dialog = GameStudioDialog(game)
+        out.record("studio_opens", dialog.windowTitle() == game.manifest.studio_label,
+                   f"window title {dialog.windowTitle()!r}")
+        expected = tuple(page_id for page_id, _title in PAGE_ORDER)
+        missing = [page_id for page_id in expected if dialog.page_widget(page_id) is None]
+        out.record("studio_shows_every_page",
+                   dialog.page_ids() == expected and not missing,
+                   f"{len(expected)} pages, in the studio's order" if not missing
+                   else f"pages without a panel: {missing}")
+        placed = {lane.lane_id for page_id in expected for lane in dialog.lanes_for_page(page_id)}
+        out.record("studio_places_every_lane",
+                   placed == {lane.lane_id for lane in game.lanes},
+                   f"{len(placed)} of {len(game.lanes)} lanes on a page")
+    except Exception as exc:  # a shell that cannot draw this module is a failure, not a crash
+        out.record("studio_opens", False, f"{exc.__class__.__name__}: {exc}")
+    finally:
+        if dialog is not None:
+            dialog.close()
+            dialog.deleteLater()
     return out.checks
 
 
@@ -477,6 +618,7 @@ def run(
     checks.extend(check_manifest(game.manifest, repo_root))
     checks.extend(check_boundary(game.manifest.root, game.package))
     checks.extend(check_module(game, repo_root))
+    checks.extend(check_shell(game))
     if behavioural:
         for lane in game.lanes:
             checks.extend(check_lane_behaviour(game, lane, Path(work_dir)))
@@ -518,12 +660,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 __all__ = [
     "Check",
     "ConformanceReport",
+    "LABEL_SCANNED_SUFFIXES",
     "PAYLOAD_KEYS",
     "REPO_ROOT",
     "check_boundary",
     "check_lane_behaviour",
     "check_manifest",
     "check_module",
+    "check_shell",
+    "check_studio_label",
     "contains_payload",
     "run",
 ]

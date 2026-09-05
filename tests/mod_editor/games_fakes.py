@@ -6,8 +6,9 @@ frozen with the contract tests because the negative controls depend on it.
 ``write_fake_root(directory)`` writes three packages under ``directory``:
 
 * ``okgame`` -- loadable: contract v1, no lanes, three windows (one plain,
-  one whose factory raises, one that needs the studio session), complete
-  fragments so the conformance harness passes with zero lanes;
+  one whose factory raises, one that needs the studio session), the first of
+  them its ``studio_window``, complete fragments so the conformance harness
+  passes with zero lanes;
 * ``oldgame`` -- refused: its manifest declares ``vc_game_module/v9``;
 * ``crashgame`` -- refused: its import raises ``ModuleNotFoundError``.
 """
@@ -84,6 +85,7 @@ OK_GAME_SOURCE = textwrap.dedent(
         ),
         manifest=load_manifest(HERE),
         package=__name__,
+        studio_window="main",
     )
     '''
 )
@@ -98,6 +100,9 @@ def manifest(game_id: str, **overrides) -> dict:
         "package": f"mod_editor.games.{game_id}",
         "title": f"{game_id} title",
         "platform": "Test Console",
+        "console": "TC",
+        "game": "Fake",
+        "year": "1",
         "version": "2.3.4",
         "contract": contract.CONTRACT_SCHEMA,
         "registry_fragment": "registry.fragment.json",
@@ -152,12 +157,14 @@ def write_fake_root(root: Path) -> Path:
 
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
-    write_fake_game(root, "okgame", OK_GAME_SOURCE, manifest("okgame", title="OK Game"),
+    # Distinct game words so the chooser's console/game/year ordering is
+    # visible: TC Crash 1 Studio, TC OK 1 Studio, TC Old 1 Studio.
+    write_fake_game(root, "okgame", OK_GAME_SOURCE, manifest("okgame", title="OK Game", game="OK"),
                     with_fragments=True, title="OK Game")
     write_fake_game(root, "oldgame", OK_GAME_SOURCE,
-                    manifest("oldgame", title="Old Game", contract=INCOMPATIBLE_CONTRACT))
+                    manifest("oldgame", title="Old Game", game="Old", contract=INCOMPATIBLE_CONTRACT))
     write_fake_game(root, "crashgame", "import a_dependency_nobody_has\n",
-                    manifest("crashgame", title="Crash Game"))
+                    manifest("crashgame", title="Crash Game", game="Crash"))
     return root
 
 

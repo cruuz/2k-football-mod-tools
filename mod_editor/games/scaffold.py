@@ -1,13 +1,20 @@
 """Scaffold a game module that passes the conformance suite on day one.
 
     python -m mod_editor.games new <game-id> --title "Madden NFL 08 (USA, PlayStation 2)" \
-        --platform "PlayStation 2" [--serial SLUS-21638]
+        --platform "PlayStation 2" --console PS2 --game Madden --year 08 \
+        [--serial SLUS-21638]
 
 writes ``mod_editor/games/<game-id>/`` -- manifest, ``GAME``, one **example
 lane** over a synthetic "slot file" format with a synthetic source and a
 known-good edit, the registry/allowlist/pins fragments, the two validators --
 and ``tests/mod_editor/test_<game-id>_module.py``.  Everything is under the
 game's own directory; no upstream file is touched.
+
+``--console``, ``--game`` and ``--year`` are the three fields the core
+composes the studio label from ("PS2 Madden 08 Studio").  The module's studio
+window is the core shell itself
+(:class:`mod_editor.games.studio_qt.GameStudioDialog`), so a new game has all
+fourteen pages on day one without writing a window.
 
 The example lane is a teaching template and a placeholder, not a capability.
 Its registry row is complete so the row-insertion tool can read it, but it
@@ -27,7 +34,13 @@ import re
 import sys
 from typing import Optional, Sequence
 
-from .contract import CONTRACT_SCHEMA, MANIFEST_SCHEMA, PINS_SCHEMA, REGISTRY_FRAGMENT_SCHEMA, ContractError
+from .contract import (
+    CONTRACT_SCHEMA,
+    MANIFEST_SCHEMA,
+    PINS_SCHEMA,
+    REGISTRY_FRAGMENT_SCHEMA,
+    ContractError,
+)
 from .registry_merge import canonical_bytes
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -50,7 +63,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from mod_editor.games.contract import CONTRACT_SCHEMA, GameIdentity, GameModule, load_manifest
+from typing import Any
+
+from mod_editor.games.contract import (
+    CONTRACT_SCHEMA,
+    GameIdentity,
+    GameModule,
+    WindowSpec,
+    load_manifest,
+)
 
 from .example_lane import ExampleLane, SlotFileIdentifier
 
@@ -67,17 +88,43 @@ IDENTITY = GameIdentity(
     content_sha256=(),
 )
 
+def _studio(parent: Any = None, **context: Any) -> Any:
+    """This module's studio: the core shell, hosting whatever lanes exist.
+
+    Qt is imported inside the function, as the contract requires of a game
+    package.  Replace this factory only if the game needs a window of its own;
+    the shell already gives every page, and a lane reaches its page by being a
+    lane.
+    """
+
+    from mod_editor.games.studio_qt import GameStudioDialog
+
+    source = context.get("source")
+    return GameStudioDialog(GAME, parent=parent, initial_source=Path(source) if source else None)
+
+
+WINDOWS = (
+    WindowSpec(
+        window_id="studio",
+        menu_label="Studio…",
+        tooltip="Open this game\u2019s studio: every page, and the lanes this module has so far.",
+        flag="__GAME_FLAG__-studio",
+        factory=_studio,
+    ),
+)
+
 GAME = GameModule(
     contract=CONTRACT_SCHEMA,
     identity=IDENTITY,
     identifier=SlotFileIdentifier(IDENTITY),
     lanes=(ExampleLane(GAME_ID),),
-    windows=(),
+    windows=WINDOWS,
     manifest=load_manifest(HERE),
     package=__name__,
+    studio_window="studio",
 )
 
-__all__ = ["GAME", "GAME_ID", "IDENTITY"]
+__all__ = ["GAME", "GAME_ID", "IDENTITY", "WINDOWS"]
 '''
 
 MAIN_TEMPLATE = '''"""``python -m mod_editor.games.__GAME_ID__``: this game alone, with no studio."""
@@ -601,7 +648,7 @@ def example_row(game_id: str, title: str, platform: str) -> dict:
 
 
 def scaffold(game_id: str, title: str, platform: str, serial: Optional[str] = None,
-             *, repo_root: Path = REPO_ROOT) -> list[Path]:
+             *, console: str, game: str, year: str, repo_root: Path = REPO_ROOT) -> list[Path]:
     """Write the module and its test; return the paths written.  Refuses to overwrite."""
 
     if _GAME_ID_RE.fullmatch(game_id) is None:
@@ -611,6 +658,13 @@ def scaffold(game_id: str, title: str, platform: str, serial: Optional[str] = No
         )
     if not title.strip() or not platform.strip():
         raise ContractError("--title and --platform must be non-empty.")
+    for name, value, limit in (("console", console, 8), ("game", game, 24), ("year", year, 8)):
+        if not isinstance(value, str) or not value.strip() or len(value.strip()) > limit:
+            raise ContractError(
+                f"--{name} must be 1 to {limit} characters; the studio label is composed as "
+                "'<console> <game> <year> Studio' (e.g. PS2 Madden 08 Studio)."
+            )
+    console, game, year = console.strip(), game.strip(), year.strip()
     package = Path(repo_root) / "mod_editor" / "games" / game_id
     test_path = Path(repo_root) / "tests" / "mod_editor" / f"test_{game_id}_module.py"
     if package.exists():
@@ -622,7 +676,8 @@ def scaffold(game_id: str, title: str, platform: str, serial: Optional[str] = No
     upper = game_id.upper()
     class_name = "".join(part.capitalize() for part in game_id.split("_"))
     values = dict(GAME_ID=game_id, TITLE=title, PLATFORM=platform, SERIAL_TUPLE=serial_tuple,
-                  SERIAL_LITERAL=serial_literal, GAME_ID_UPPER=upper, CLASS_NAME=class_name)
+                  SERIAL_LITERAL=serial_literal, GAME_ID_UPPER=upper, CLASS_NAME=class_name,
+                  GAME_FLAG=game_id.replace("_", "-"))
 
     package.mkdir(parents=True)
     written: list[Path] = []
@@ -646,6 +701,9 @@ def scaffold(game_id: str, title: str, platform: str, serial: Optional[str] = No
         "package": f"mod_editor.games.{game_id}",
         "title": title,
         "platform": platform,
+        "console": console,
+        "game": game,
+        "year": year,
         "version": "0.1.0",
         "contract": CONTRACT_SCHEMA,
         "registry_fragment": "registry.fragment.json",
@@ -682,7 +740,7 @@ def scaffold(game_id: str, title: str, platform: str, serial: Optional[str] = No
         "save_writer_ids": [],
         "shipped_files": len(lines),
         "product_modules": 2,
-        "windows": 0,
+        "windows": len(("studio",)),
         "lanes_on_contract": 1,
         "retail_identity": {"content_sha256": PLACEHOLDER_SHA256, "executable_sha256": PLACEHOLDER_SHA256},
     }
@@ -696,23 +754,29 @@ def scaffold(game_id: str, title: str, platform: str, serial: Optional[str] = No
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m mod_editor.games new", description=__doc__.splitlines()[0])
-    parser.add_argument("game")
+    parser.add_argument("game_id", metavar="game")
     parser.add_argument("--title", required=True)
     parser.add_argument("--platform", required=True)
+    parser.add_argument("--console", required=True, help="1-8 characters, no whitespace (PS2)")
+    parser.add_argument("--game", required=True, help="1-24 characters (Madden)")
+    parser.add_argument("--year", required=True, help="1-8 characters, no whitespace (08)")
     parser.add_argument("--serial", default=None)
     parser.add_argument("--repo-root", type=Path, default=REPO_ROOT, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     try:
-        written = scaffold(args.game, args.title, args.platform, args.serial, repo_root=args.repo_root)
+        written = scaffold(args.game_id, args.title, args.platform, args.serial,
+                           console=args.console, game=args.game, year=args.year,
+                           repo_root=args.repo_root)
     except ContractError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     for path in written:
         print(f"wrote {path}")
+    label = f"{args.console} {args.game} {args.year} Studio"
     print(
-        f"SCAFFOLDED game={args.game} files={len(written)}\n"
-        f"next: python -m mod_editor.games conformance --game {args.game}\n"
-        f"      PYTHONPATH=. python tests/mod_editor/test_{args.game}_module.py\n"
+        f"SCAFFOLDED game={args.game_id} files={len(written)} studio={label!r}\n"
+        f"next: python -m mod_editor.games conformance --game {args.game_id}\n"
+        f"      PYTHONPATH=. python tests/mod_editor/test_{args.game_id}_module.py\n"
         f"      then replace example_lane.py with real lanes -- see docs/product/ADDING_A_GAME_MODULE.md"
     )
     return 0
