@@ -1,5 +1,32 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC87 — PS2 Madden 09 Studio (unreleased)
+
+- **A second studio.** *Select other games…* now lists two rows. **PS2 Madden 09 Studio** works off your own Madden
+  NFL 09 (PlayStation 2) disc image, `SLUS-21770` — the retail USA disc or the community's **Deluxe** rebuild, which
+  it tells apart by the boot ELF's digest and names on screen, because thirteen of the disc's data files differ
+  between them. A disc that boots another serial is refused with a sentence saying which one it wanted.
+- **All fourteen pages on day one.** Four of them have lanes; the other ten say, in Madden 09's own words, what is on
+  the disc for them and why there is no editor yet. No dead buttons and no hidden pages.
+- **All Textures — every /DATA container.** The chunk chain, the alignment, and each member's offset, stored size,
+  codec, unpacked size and — after decompression, because a packed member's magic means nothing — its format. On the
+  retail disc: **101 containers, 36,195 members, 4,901 MMAP textures, 1,288 TEXT banks, 626 SMF geometry, 354 TDB
+  databases**, in about ten seconds. Read-only.
+- **Names, Numbers & Faces — the team databases.** Madden 09's roster and tuning data is **EA TDB v8 packed inside
+  TERF members**, so `mod_editor/games/_formats/ea_tdb.py` joins the container reader as a shared format: header,
+  table directory, field directory and bit-packed records. On the retail disc: **355 databases, 2,151 tables, 354,812
+  records, 60,537 field definitions**. Field *names* are catalogued — they are the schema; a record's contents are
+  your game data and stay on your disc.
+- **Menus & UI — the text banks**, counted and measured. The catalogue carries string counts, lengths and digests and
+  **not one string**, because a catalogue is a file you might share; the strings are read off your own image when you
+  ask to see them.
+- **Gameplay — the pnach pipeline, with nothing mapped.** Six subject areas named, zero sites located, every
+  translation refused by name. Classified `unknown`, so the page states that and offers no control. The pipeline
+  around a translation is complete and proved on a synthetic ELF, so locating one site is a one-entry change.
+- **Nothing writes to a Madden 09 disc, and the module says so.** Rebuilding a container has never been booted in an
+  emulator, and no `LZH1` encoder exists publicly, so an edited member cannot be re-packed to its slot. Both limits
+  are written down in `docs/product/MADDEN09_PS2_MODULE.md` rather than worked around.
+
 ## v1.0 RC86 — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container (unreleased)
 
 - **Select other games… lists studios**, one row per game, labelled console, game, year: **PS2 NFL 2K5 Studio**. Open it

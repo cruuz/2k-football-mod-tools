@@ -13,8 +13,33 @@
   "allowlist_fragment": "allowlist.fragment.txt",
   "pins": "pins.json",
   "product_modules": [
+    "ps2_iso9660",
+    "mod_editor.games._formats.ea_terf",
+    "mod_editor.games._formats.ea_tdb",
     "mod_editor.games.madden09_ps2",
-    "mod_editor.games.madden09_ps2.example_lane"
+    "mod_editor.games.madden09_ps2.containers",
+    "mod_editor.games.madden09_ps2.disc_identity",
+    "mod_editor.games.madden09_ps2.inventory_lane",
+    "mod_editor.games.madden09_ps2.mmap_art",
+    "mod_editor.games.madden09_ps2.uniform_art",
+    "mod_editor.games.madden09_ps2.team_data",
+    "mod_editor.games.madden09_ps2.text_lane",
+    "mod_editor.games.madden09_ps2.code_patches"
   ],
-  "tool_modules": []
+  "tool_modules": [],
+  "allowlist_patterns": [
+    "mod_editor/games/madden09_ps2/*",
+    "tools/validate_madden09_ps2_*",
+    "mod_editor/games/_formats/ea_tdb.py"
+  ],
+  "page_notes": {
+    "identity": "Team names and colours live in the DB_TEAMS.DAT databases, which the Names, Numbers & Faces page already lists table by table; a separate identity editor waits on a database writer, and there is none until a rebuilt container has been booted.",
+    "field_art": "FIELDART.DAT holds 642 SMF geometry members and 73 MMAP textures: the textures read through the same decoder as the uniforms, the geometry is not decoded anywhere here, and neither has an editor yet.",
+    "stadiums": "STADIUMS.DAT holds 651 SMF geometry members and 434 MMAP textures, so the textures are readable and the geometry is not decoded; both are listed by the All Textures page and neither has an editor.",
+    "presentation": "The scorebug and the broadcast overlays are drawn by the executable rather than by a data file, and nothing on this disc has been mapped to them.",
+    "crib": "The Crib is an ESPN NFL 2K5 feature and not a Madden concept, so this page stays empty here on purpose.",
+    "audio": "SOUNDDAT.DAT, BGM.DAT and the speech containers carry EA SCHl streams and BNKl banks; no decoder for either is built here and no public writer for them exists.",
+    "playbooks": "Madden 09's playbook data has not been located on this disc by this project, and the owner's own research records that no playbook is among the members the GAME.QKL preload copies.",
+    "saves": "A Madden 09 memory-card save is a different repository's tooling; this studio works off the disc, so nothing here reads or writes a save."
+  }
 }

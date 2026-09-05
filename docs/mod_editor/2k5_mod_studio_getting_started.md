@@ -367,6 +367,42 @@ one-shot AUDO sounds), which the PS2 NFL 2K5 Studio window drives (see below). N
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.
 
+## PS2 Madden 09 Studio (RC87)
+
+**A second game is on the *Select other games…* list.** Pick **PS2 Madden 09 Studio** and it
+opens on your own **Madden NFL 09 (PlayStation 2)** disc image, `SLUS-21770`. From a terminal:
+`python -m mod_editor --game madden09_ps2`.
+
+It knows two discs apart and tells you which one you opened: the **retail** USA disc and the
+community's **Deluxe** rebuild. That matters — thirteen of the disc's data files are different
+between them, so the uniforms and the databases you are looking at genuinely are not the same.
+Any other disc is refused with a sentence saying which one it wanted.
+
+**Your image is opened read-only. This studio writes nothing to it.** Four pages have
+something today, and each one lists rather than edits:
+
+- **All Textures** — every container under `/DATA`, member by member: how it is packed, how big
+  it is packed and unpacked, and what its bytes turn out to be. On a retail disc that is 101
+  containers and 36,195 members, in about ten seconds.
+- **Names, Numbers & Faces** — the 355 EA databases on the disc, table by table: 2,151 tables,
+  354,812 records and every field's name, type and width. The field *names* are the schema, so
+  they are what you see; the values in your records stay on your disc.
+- **Menus & UI** — every text bank on the disc, with how many strings it holds and how long they
+  are. Ask to see one and it is read off your image then and there; nothing keeps a copy.
+- **Uniforms & Equipment** — the disc's own texture members.
+
+The other ten pages are there and say what is on the disc for them and why there is no editor
+yet — stadium and field geometry that nothing here decodes, EA audio with no public writer,
+playbooks nobody has located. **Gameplay** shows its pnach pipeline as unavailable on purpose:
+it is complete and tested, but no patch site in Madden 09's executable has been found, so there
+is nothing to turn on.
+
+**Why no editors yet.** Putting an edit back means rebuilding one of these containers, and two
+things stand in the way: no rebuilt Madden 09 disc has been booted in an emulator to prove the
+game still loads it, and the compression EA used has no public encoder, so an edited piece
+cannot be squeezed back to the size of the one it replaces.
+`docs/product/MADDEN09_PS2_MODULE.md` is the full account.
+
 ## PS2 NFL 2K5 Studio (RC86)
 
 **The File menu has two PlayStation 2 entries now, not five.**

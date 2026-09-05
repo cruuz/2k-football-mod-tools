@@ -398,9 +398,15 @@ def members_of_format(
     """Every member whose *decompressed* bytes carry format *wanted*.
 
     A packed member's stored magic says nothing about its format, so each
-    member is decompressed before it is classified; a member the codec cannot
-    open is skipped rather than failing the walk, because one unreadable member
-    must not empty a catalogue of hundreds.
+    member has to be unpacked before it can be classified -- but only its
+    **first 32 bytes**, which is what :meth:`TerfContainer.member_format` asks
+    for and what the codec stops at.  Only a member that matches is then
+    unpacked in full.  Classifying by full decompression instead costs minutes
+    on a retail disc: 36,195 members, 4,269 of them ``LZH1`` streams decoded in
+    pure Python, for an answer the first 32 bytes already gave.
+
+    A member the codec cannot open is skipped rather than failing the walk,
+    because one unreadable member must not empty a catalogue of hundreds.
     """
 
     yielded = 0
@@ -408,10 +414,14 @@ def members_of_format(
         if limit is not None and yielded >= limit:
             return
         try:
+            if container.member_format(index) != wanted:
+                continue
             payload = container.member(index)
         except ea_terf.TerfError:
             continue
         if ea_terf.identify_member(payload) != wanted:
+            # The head said one thing and the whole member says another: a
+            # truncated or malformed member, not one of these.
             continue
         yielded += 1
         if progress is not None and yielded % 64 == 0:
