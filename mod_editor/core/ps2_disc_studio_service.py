@@ -672,6 +672,7 @@ class Ps2DiscStudioService:
         started = time.monotonic()
         results: List[StepResult] = []
         intermediates: List[Path] = []
+        created: List[Path] = []
         current_input = source
         source_sha256 = ""
         try:
@@ -702,6 +703,7 @@ class Ps2DiscStudioService:
                     result = self._run_step(job, lane, progress, cancel)
                 finally:
                     shutil.rmtree(work_dir, ignore_errors=True)
+                created.append(output)
                 self._record_timing(f"build:{step.lane_id}", time.monotonic() - step_started)
                 if index == 0:
                     source_sha256 = str(result.get("input_sha256") or "")
@@ -732,11 +734,13 @@ class Ps2DiscStudioService:
                     intermediates.append(output)
                 current_input = output
         except BaseException:
-            for path in intermediates:
-                path.unlink(missing_ok=True)
-            if os.path.lexists(requested):
-                # The last step created it and then failed or was cancelled.
-                Path(requested).unlink(missing_ok=True)
+            # Everything this queue created goes: the intermediates still on
+            # disk, an output whose verifier did not pass, and the destination
+            # if the last step had already created it.  The source is never
+            # in this list.
+            for path in dict.fromkeys(intermediates + created):
+                if path != source and os.path.lexists(path):
+                    Path(path).unlink(missing_ok=True)
             raise
 
         seconds = time.monotonic() - started
