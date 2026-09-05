@@ -22,16 +22,33 @@ the service's own text, surfaced verbatim: one condition, one sentence.
 says so in its boundary note, its Build page and its receipt; every lane is
 offline-proved only, and the caveats each tab shows come from the lane's
 registry row.
+
+The PCSX2 Pack page is the one thing here that is not about the disc.  It
+offers the same replacement-pack export the main window's File menu offers,
+because the two jobs meet in the same place -- somebody making a PS2 disc from
+their Xbox edits wants the uniform art on the same emulator -- and asking them
+to close this window to find it was the complaint.  It is the export window,
+opened on a saved ``.2k5mod``; it reads no disc image and builds none, and the
+export's own rules (edited targets only, the emulator question with no default,
+the independent verifier) are unchanged and unrestated here.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import sys
 from typing import Any, Callable, Dict, Optional, Protocol, Sequence, runtime_checkable
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.ps2_disc_studio_lanes import LANE_ORDER, lanes_in_order
+
+ROOT = Path(__file__).resolve().parents[2]
+TOOLS = ROOT / "tools"
+if str(TOOLS) not in sys.path:
+    # The kit tool is a shipped script, not a package module, and the release
+    # layout puts tools/ on the path; a source checkout has to say so.
+    sys.path.insert(0, str(TOOLS))
 
 BOUNDARY_NOTE = (
     "NEW IMAGE  •  Your disc image is opened read-only and never changed. Only the edits you "
@@ -68,17 +85,29 @@ class Ps2DiscStudioActionState:
     can_build: bool
     can_cancel: bool
     can_open_folder: bool
+    can_export_pack: bool = False
+    can_write_kit: bool = False
+    can_open_pack_folder: bool = False
 
 
 def ps2_disc_studio_action_state(
     *, disc_open: bool, supported: bool, busy: bool, catalogue_built: bool,
     staged_count: int, plans_ready: bool, built: bool,
+    exported: bool = False, kit_written: bool = False,
 ) -> Ps2DiscStudioActionState:
     """Compute gating without consulting any widget.
 
     Build needs every staged lane to have a clean plan (``plans_ready``): the
     dry run is where the patchers' refusals surface, so a build is never
     offered before it has been done for the recipe as it now stands.
+
+    The three pack controls answer to none of that.  A replacement pack is made
+    from a saved Xbox project and never from the disc, so the export is offered
+    whether or not an image is open, and is withheld only while this window is
+    busy with something else.  The kit copies a pack that exists, so it waits
+    for one -- and stands down once it has been written, because the tool
+    refuses a second kit at the same place and an offer that can only refuse is
+    not an offer.
     """
 
     live = disc_open and not busy
@@ -90,6 +119,87 @@ def ps2_disc_studio_action_state(
         can_build=bool(live and supported and staged_count > 0 and plans_ready),
         can_cancel=busy,
         can_open_folder=bool(built and not busy),
+        can_export_pack=not busy,
+        can_write_kit=bool(exported and not kit_written and not busy),
+        can_open_pack_folder=bool(exported and not busy),
+    )
+
+
+def receipt_settings(receipt: Any) -> Sequence[str]:
+    """What the exported pack's emulator must turn on, from the pack's receipt.
+
+    Read out of the receipt rather than restated here: the export service
+    decides the settings per emulator, writes them into the receipt, and the
+    kit tool holds it to them.  A window that named its own would be a fourth
+    opinion nobody checks.
+    """
+
+    document = getattr(receipt, "document", None)
+    block = document.get("instructions") if isinstance(document, dict) else None
+    rows = block.get("settings") if isinstance(block, dict) else None
+    return tuple(str(row) for row in (rows or ()) if str(row).strip())
+
+
+def pack_receipt_text(receipt: Any, kit: Any = None) -> str:
+    """The card under the pack controls: what was written, and what to turn on.
+
+    Two states, one card.  After an export it names the folder, the emulator
+    the user answered for and the settings that emulator needs; after a kit it
+    names the kit folder and the settings its ``settings.ini`` carries.  The
+    settings are never left out: a pack loaded with texture replacement off
+    draws the retail art and looks like it did nothing at all.
+    """
+
+    if receipt is None:
+        return ""
+    files = tuple(getattr(receipt, "files", ()) or ())
+    target = str(getattr(receipt, "emulator_target", "") or "")
+    lines = [
+        f"Wrote {len(files)} PCSX2 file{'' if len(files) == 1 else 's'} to "
+        f"{getattr(receipt, 'path', '')}"
+    ]
+    if target:
+        lines.append(f"Exported for {target}.")
+    settings = tuple(receipt_settings(receipt))
+    if settings:
+        lines.append(
+            "Turn on in your emulator: " + ", ".join(settings)
+            + ". With texture replacement off the game draws the retail art "
+            "and the pack looks like it did nothing."
+        )
+    kits = dict(kit.get("kits") or {}) if isinstance(kit, dict) else {}
+    if not kits:
+        lines.append(
+            "Write PCSX2 kit copies this pack beside itself with that "
+            "emulator's HOW-TO.txt and a settings.ini to paste."
+        )
+        return "\n".join(lines)
+    for name in sorted(kits):
+        row = kits[name] if isinstance(kits[name], dict) else {}
+        copied = row.get("files", 0)
+        lines.append(
+            f"Kit for {name}: {row.get('path', '')} "
+            f"({copied} file{'' if copied == 1 else 's'} copied byte for byte)."
+        )
+        rows = tuple(str(value) for value in (row.get("settings") or ()))
+        if rows:
+            lines.append("   settings.ini: " + ", ".join(rows))
+    return "\n".join(lines)
+
+
+def kit_status_text(report: Any) -> str:
+    """The status line after a kit lands: where it went, and the setting."""
+
+    kits = dict(report.get("kits") or {}) if isinstance(report, dict) else {}
+    if not kits:
+        return "Nothing was kitted."
+    name = sorted(kits)[0]
+    row = kits[name] if isinstance(kits[name], dict) else {}
+    settings = ", ".join(str(value) for value in (row.get("settings") or ()))
+    where = row.get("path", "")
+    return (
+        f"Kit for {name} written to {where}"
+        + (f" — turn on {settings}." if settings else ".")
     )
 
 
@@ -406,6 +516,88 @@ class BuildPage(QWidget):
         self.queue_label.setText(queue_summary_text(edits_by_lane, plans, stale))
 
 
+class PackPage(QWidget):
+    """Export edited Xbox uniform art as a PCSX2 pack, then kit it.
+
+    Nothing on this page reads or writes a disc image.  It opens the studio's
+    existing export window -- the same one the main window's File menu offers,
+    with the same rules -- and, once that window has written a pack, offers the
+    kit tool for the emulator the user answered for.
+    """
+
+    INTRO = (
+        "Your edited Xbox uniform art, written as a PCSX2 texture-replacement pack for this "
+        "disc's serial. It reads a saved .2k5mod project you choose -- this window has no Xbox "
+        "session of its own -- and writes a new folder of your own PNGs. No disc image is "
+        "opened here and no ISO is built by this page; only art you have actually edited is "
+        "written, and the export window asks which emulator the pack is for before it writes "
+        "anything."
+    )
+
+    def __init__(self, window: "Ps2DiscStudioDialog") -> None:
+        super().__init__(window)
+        self.window = window
+        root = QVBoxLayout(self)
+        root.setContentsMargins(12, 12, 12, 12)
+        root.setSpacing(10)
+
+        intro = QLabel(self.INTRO)
+        intro.setWordWrap(True)
+        intro.setObjectName("mutedLabel")
+        intro.setAccessibleName("What this page exports")
+        root.addWidget(intro)
+
+        buttons = QHBoxLayout()
+        self.export_button = QPushButton("Export to PCSX2…")
+        self.export_button.setAccessibleName("Export to PCSX2 as a texture-replacement pack")
+        self.export_button.setToolTip(
+            "Write your edited Xbox uniform art as a PCSX2 texture-replacement pack for "
+            "this disc's serial"
+        )
+        self.export_button.setAccessibleDescription(
+            "Opens the PS2 replacement-pack export window on a saved .2k5mod project you "
+            "choose. Only the targets that project marks edited are written; your disc image "
+            "is not read and no new ISO is built."
+        )
+        self.kit_button = QPushButton("Write PCSX2 kit")
+        self.kit_button.setAccessibleName("Write the PCSX2 kit beside the exported pack")
+        self.kit_button.setToolTip(
+            "Copy the pack you just exported into a kit for the emulator you chose, with its "
+            "instructions and the settings to paste"
+        )
+        self.kit_button.setAccessibleDescription(
+            "Writes HOW-TO.txt, settings.ini and a byte-identical copy of the pack next to it, "
+            "for the emulator the pack's receipt names. The pack itself is not changed."
+        )
+        self.open_folder_button = QPushButton("Open folder")
+        self.open_folder_button.setAccessibleName("Open the folder holding the exported pack")
+        buttons.addWidget(self.export_button)
+        buttons.addWidget(self.kit_button)
+        buttons.addWidget(self.open_folder_button)
+        buttons.addStretch(1)
+        root.addLayout(buttons)
+
+        self.receipt_label = QLabel("")
+        self.receipt_label.setObjectName("exportReceiptCard")
+        self.receipt_label.setWordWrap(True)
+        self.receipt_label.setTextFormat(Qt.PlainText)
+        self.receipt_label.setTextInteractionFlags(
+            Qt.TextSelectableByMouse | Qt.TextSelectableByKeyboard)
+        self.receipt_label.setAccessibleName("Pack and kit receipt")
+        self.receipt_label.hide()
+        root.addWidget(self.receipt_label)
+        root.addStretch(1)
+
+        self.export_button.clicked.connect(self.window._open_pcsx2_export)
+        self.kit_button.clicked.connect(self.window._write_pcsx2_kit)
+        self.open_folder_button.clicked.connect(self.window._open_pack_folder)
+
+    def refresh(self, receipt: Any, kit: Any) -> None:
+        text = pack_receipt_text(receipt, kit)
+        self.receipt_label.setText(text)
+        self.receipt_label.setVisible(bool(text))
+
+
 class Ps2DiscStudioDialog(QDialog):
     """Open, catalogue, edit, check, build and verify -- one PS2 disc, six lanes."""
 
@@ -440,6 +632,13 @@ class Ps2DiscStudioDialog(QDialog):
         self._stale: set = set()
         self._plan_errors: Dict[str, str] = {}
         self._receipt: Any = None
+        #: The last replacement-pack export made from the PCSX2 Pack page, its
+        #: kit report, and the .2k5mod the export window was last on. None of
+        #: the three has anything to do with the open disc, so opening another
+        #: image leaves them alone.
+        self._pack_receipt: Any = None
+        self._kit_report: Any = None
+        self._last_project: Optional[Path] = None
         self.tabs: Dict[str, Any] = {}
 
         self.setObjectName("ps2DiscStudioDialog")
@@ -499,7 +698,9 @@ class Ps2DiscStudioDialog(QDialog):
         self.tab_widget = QTabWidget()
         self.tab_widget.setAccessibleName("Lanes")
         self.tab_widget.setAccessibleDescription(
-            "One tab per lane -- Text, Playbooks, Colours, Roster, Stadium, Audio -- and the Build page."
+            "One tab per lane -- Text, Playbooks, Colours, Roster, Stadium, Audio -- the Build "
+            "page, and the PCSX2 Pack page that exports edited Xbox uniform art without "
+            "touching a disc image."
         )
         from mod_editor.gui.ps2_disc_studio_tabs_qt import make_lane_tab
 
@@ -509,6 +710,8 @@ class Ps2DiscStudioDialog(QDialog):
             self.tab_widget.addTab(tab, lane.title)
         self.build_page = BuildPage(self)
         self.tab_widget.addTab(self.build_page, "Build")
+        self.pack_page = PackPage(self)
+        self.tab_widget.addTab(self.pack_page, "PCSX2 Pack")
         root.addWidget(self.tab_widget, 1)
 
         footer = QHBoxLayout()
@@ -895,6 +1098,110 @@ class Ps2DiscStudioDialog(QDialog):
         folder = Path(getattr(self._receipt, "destination", Path.home())).parent
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))
 
+    # -- the PCSX2 replacement pack ------------------------------------
+
+    def _open_pcsx2_export(self) -> None:
+        """Open the replacement-pack export window on a saved Xbox project.
+
+        This window has no Xbox session -- a PS2 disc image has nothing to do
+        with the Xbox game image the main window may have open -- so the
+        exporter is opened on its project-chooser path, starting at whatever
+        ``.2k5mod`` was chosen here last.  Nothing about the disc, the
+        catalogues or a staged recipe reaches it, and none of its own rules is
+        restated or relaxed from here.
+        """
+
+        if self._busy:
+            return
+        try:
+            from mod_editor.gui.ps2_export_dialog_qt import Ps2ExportDialog
+        except Exception as exc:  # pragma: no cover - defensive import guard
+            QMessageBox.warning(
+                self,
+                "PS2 replacement-pack export is unavailable",
+                f"The PS2 exporter could not be loaded: {str(exc).strip()}\n\n"
+                "Nothing was changed.",
+            )
+            return
+        dialog = Ps2ExportDialog(
+            self._last_project, parent=self, on_exported=self._pack_exported,
+        )
+        chosen: Optional[Path] = None
+        try:
+            dialog.exec_()
+            chosen = dialog.project_path
+        finally:
+            dialog.deleteLater()
+        if chosen is not None:
+            self._last_project = chosen
+        self.pack_page.refresh(self._pack_receipt, self._kit_report)
+        self._refresh_controls()
+
+    def _pack_exported(self, receipt: Any) -> None:
+        """The export window wrote a pack: remember it and offer the kit.
+
+        Called while that window is still open, so this only records and
+        re-words; the page it updates is behind the modal until it closes.
+        """
+
+        self._pack_receipt = receipt
+        self._kit_report = None
+        self.pack_page.refresh(receipt, None)
+        self._refresh_controls()
+
+    def _write_pcsx2_kit(self) -> None:
+        """Kit the exported pack for the emulator its receipt names.
+
+        The kit tool is the authority on what each emulator must turn on: it
+        restates those settings rather than importing them from the exporter,
+        and refuses a pack whose receipt disagrees with them or whose bytes no
+        longer hash to what it recorded.  So this hands it the pack and says
+        whatever it says.
+        """
+
+        if self._busy or self._pack_receipt is None:
+            return
+        pack = Path(getattr(self._pack_receipt, "path", ""))
+        target = str(getattr(self._pack_receipt, "emulator_target", "") or "")
+        # Beside the pack and named after it, so two packs exported into one
+        # folder never contend for the same kit directory.
+        out_dir = pack.parent / (pack.name + "-kit")
+        self._start(
+            "Writing the PCSX2 kit",
+            "The PCSX2 kit could not be written",
+            lambda _stage, _cancel: self._build_kit(pack, out_dir, target),
+            self._kit_done,
+            failure_note="The pack itself is still on disk exactly as it was exported.",
+        )
+
+    @staticmethod
+    def _build_kit(pack: Path, out_dir: Path, target: str) -> object:
+        """Call the kit tool in this process, on the pool thread.
+
+        Imported here rather than at module scope so a build without the tool
+        fails at the click, with a message, instead of at import time -- the
+        export window calls its verifier the same way.
+        """
+
+        import nfl2k5_ps2_replacement_pack_kit as kit_tool
+
+        targets = (target,) if target else kit_tool.EMULATOR_TARGETS
+        return kit_tool.build_kit(pack, out_dir, targets)
+
+    def _kit_done(self, report: object) -> None:
+        self._kit_report = report if isinstance(report, dict) else None
+        self.pack_page.refresh(self._pack_receipt, self._kit_report)
+        self.status_label.setStyleSheet(f"color: {_MATCH_COLOUR};")
+        self._status(kit_status_text(report))
+
+    def _open_pack_folder(self) -> None:
+        """The pack is itself a folder, so open it rather than its parent."""
+
+        if self._pack_receipt is None:
+            return
+        folder = Path(getattr(self._pack_receipt, "path", Path.home()))
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))
+
     # -- shared --------------------------------------------------------
 
     def action_state(self) -> Ps2DiscStudioActionState:
@@ -918,13 +1225,18 @@ class Ps2DiscStudioDialog(QDialog):
             staged_count=sum(self.edits_by_lane().values()),
             plans_ready=self._plans_ready(),
             built=self._receipt is not None,
+            exported=self._pack_receipt is not None,
+            kit_written=self._kit_report is not None,
         )
 
     def _refresh_controls(self) -> None:
-        if getattr(self, "build_page", None) is None:
+        if getattr(self, "build_page", None) is None or getattr(self, "pack_page", None) is None:
             return      # a tab is still being constructed; the shell refreshes once it is up
         state = self.action_state()
         self.open_button.setEnabled(state.can_open)
+        self.pack_page.export_button.setEnabled(state.can_export_pack)
+        self.pack_page.kit_button.setEnabled(state.can_write_kit)
+        self.pack_page.open_folder_button.setEnabled(state.can_open_pack_folder)
         self.build_page.check_button.setEnabled(state.can_check)
         self.build_page.build_button.setEnabled(state.can_build)
         self.build_page.open_folder_button.setEnabled(state.can_open_folder)
@@ -954,13 +1266,17 @@ __all__ = [
     "BOUNDARY_NOTE",
     "BuildPage",
     "PYQT5_AVAILABLE",
+    "PackPage",
     "Ps2DiscStudioActionState",
     "Ps2DiscStudioDialog",
     "Ps2DiscStudioHost",
     "UNSUPPORTED_DISC_NOTE",
     "catalogue_status_text",
+    "kit_status_text",
+    "pack_receipt_text",
     "ps2_disc_studio_action_state",
     "queue_summary_text",
+    "receipt_settings",
     "receipt_text",
     "suggested_destination",
 ]

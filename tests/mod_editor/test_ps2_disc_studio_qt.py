@@ -7,6 +7,13 @@ offscreen QApplication and is skipped where PyQt5 is absent, following the
 disc-inventory and export windows' tests.  The entry points are checked
 statically, as the wording tests check copy: constructing the whole Xbox
 studio window is not this module's business.
+
+The PCSX2 Pack page is covered the same way and with the same fixtures the
+export window's own tests use: a synthetic ``.2k5mod`` and a synthetic mapping
+manifest, exported by the Qt-free service so the pack and its receipt are real,
+then handed to the page.  The export window itself is stood in for where the
+question is only *which* window opens and on what project; where the question
+is what lands on disk, nothing is stubbed at all.
 """
 
 from __future__ import annotations
@@ -26,9 +33,13 @@ for _extra in (ROOT, ROOT / "tools", ROOT / "tests" / "mod_editor"):
 
 from mod_editor.core import ps2_disc_studio_lanes as lanes  # noqa: E402
 from mod_editor.core import ps2_disc_studio_service as svc  # noqa: E402
+from mod_editor.core import ps2_export_service as export_svc  # noqa: E402
 from mod_editor.gui import ps2_disc_studio_qt as gui  # noqa: E402
 
 import test_ps2_disc_studio_service as fixtures  # noqa: E402
+import test_ps2_export_dialog_qt as export_fixtures  # noqa: E402
+
+import nfl2k5_ps2_replacement_pack_kit as kit_tool  # noqa: E402
 
 try:
     from PyQt5.QtCore import Qt
@@ -74,6 +85,62 @@ class ViewModelTests(unittest.TestCase):
         self.assertIn("not checked yet", gui.queue_summary_text({"text": 2}, {}, []))
         self.assertIn("not checked yet", gui.queue_summary_text({"text": 2}, {"text": object()}, ["text"]))
         self.assertIn("ready to build", gui.queue_summary_text({"text": 2}, {"text": object()}, []))
+
+    def test_the_pack_export_is_offered_without_a_disc(self) -> None:
+        """A pack is made from a saved Xbox project, so no disc gates it."""
+
+        state = gui.ps2_disc_studio_action_state(
+            disc_open=False, supported=False, busy=False, catalogue_built=False,
+            staged_count=0, plans_ready=False, built=False)
+        self.assertTrue(state.can_export_pack)
+        self.assertFalse(state.can_write_kit or state.can_open_pack_folder)
+        busy = gui.ps2_disc_studio_action_state(
+            disc_open=True, supported=True, busy=True, catalogue_built=True,
+            staged_count=1, plans_ready=True, built=True, exported=True)
+        self.assertFalse(busy.can_export_pack or busy.can_write_kit
+                         or busy.can_open_pack_folder)
+
+    def test_the_kit_waits_for_a_pack_and_stands_down_once_written(self) -> None:
+        common = dict(disc_open=False, supported=False, busy=False,
+                      catalogue_built=False, staged_count=0, plans_ready=False, built=False)
+        self.assertFalse(gui.ps2_disc_studio_action_state(**common).can_write_kit)
+        offered = gui.ps2_disc_studio_action_state(exported=True, **common)
+        self.assertTrue(offered.can_write_kit and offered.can_open_pack_folder)
+        # The tool refuses a second kit at the same place; an offer that can
+        # only refuse is withdrawn instead.
+        done = gui.ps2_disc_studio_action_state(exported=True, kit_written=True, **common)
+        self.assertFalse(done.can_write_kit)
+        self.assertTrue(done.can_open_pack_folder)
+
+    def test_the_pack_card_names_the_folder_the_target_and_the_settings(self) -> None:
+        class Receipt:
+            path = Path("/tmp/my-pack")
+            files = (1, 2, 3)
+            emulator_target = "pcsx2_modern"
+            document = {"instructions": {"settings": ["LoadTextureReplacements=true"]}}
+
+        self.assertEqual(gui.pack_receipt_text(None), "")
+        text = gui.pack_receipt_text(Receipt())
+        self.assertIn("Wrote 3 PCSX2 files", text)
+        self.assertIn("my-pack", text)
+        self.assertIn("pcsx2_modern", text)
+        # Never omitted: a pack loaded with replacement off draws retail art.
+        self.assertIn("LoadTextureReplacements=true", text)
+        self.assertIn("Write PCSX2 kit", text)
+        kitted = gui.pack_receipt_text(Receipt(), {"kits": {"pcsx2_modern": {
+            "path": "/tmp/my-pack-kit/pcsx2_modern", "files": 5,
+            "settings": ["LoadTextureReplacements=true"]}}})
+        self.assertIn("/tmp/my-pack-kit/pcsx2_modern", kitted)
+        self.assertIn("5 files copied byte for byte", kitted)
+        self.assertIn("settings.ini: LoadTextureReplacements=true", kitted)
+
+    def test_the_kit_status_line_says_where_it_went_and_what_to_turn_on(self) -> None:
+        line = gui.kit_status_text({"kits": {"pcsx2_legacy": {
+            "path": "/tmp/pack-kit/pcsx2_legacy", "files": 5,
+            "settings": ["LoadTextureReplacements=true"]}}})
+        self.assertIn("/tmp/pack-kit/pcsx2_legacy", line)
+        self.assertIn("LoadTextureReplacements=true", line)
+        self.assertEqual(gui.kit_status_text(None), "Nothing was kitted.")
 
     def test_the_receipt_text_carries_every_verdict_and_the_digest(self) -> None:
         class Step:
@@ -191,11 +258,16 @@ class DialogTests(unittest.TestCase):
         dialog = gui.Ps2DiscStudioDialog(host=self._service())
         try:
             self.assertEqual(list(dialog.tabs), list(lanes.LANE_ORDER))
-            self.assertEqual(dialog.tab_widget.count(), 7)
+            self.assertEqual(dialog.tab_widget.count(), 8)
             self.assertEqual(dialog.tab_widget.tabText(6), "Build")
+            self.assertEqual(dialog.tab_widget.tabText(7), "PCSX2 Pack")
             self.assertFalse(dialog.build_page.build_button.isEnabled())
             self.assertFalse(dialog.build_page.check_button.isEnabled())
             self.assertTrue(dialog.open_button.isEnabled())
+            # The pack export needs no disc, so it is live from the first frame.
+            self.assertTrue(dialog.pack_page.export_button.isEnabled())
+            self.assertFalse(dialog.pack_page.kit_button.isEnabled())
+            self.assertFalse(dialog.pack_page.open_folder_button.isEnabled())
         finally:
             dialog.done(0)
 
@@ -208,7 +280,9 @@ class DialogTests(unittest.TestCase):
                      dialog.status_label, dialog.progress_bar, dialog.build_page.queue,
                      dialog.build_page.destination, dialog.build_page.choose_button,
                      dialog.build_page.check_button, dialog.build_page.build_button,
-                     dialog.build_page.open_folder_button, dialog.build_page.receipt_label]
+                     dialog.build_page.open_folder_button, dialog.build_page.receipt_label,
+                     dialog.pack_page.export_button, dialog.pack_page.kit_button,
+                     dialog.pack_page.open_folder_button, dialog.pack_page.receipt_label]
             for tab in dialog.tabs.values():
                 named.extend([tab.search, tab.table, tab.catalogue_button, tab.add_button, tab.staged_list,
                               tab.remove_button, tab.clear_button, tab.check_button, tab.preview, tab.rules_button])
@@ -341,6 +415,154 @@ class DialogTests(unittest.TestCase):
             self.assertEqual(dialog.tab_widget.currentWidget(), dialog.build_page)
             self.assertEqual(self.iso.read_bytes(), fixtures.combined_disc())
         finally:
+            dialog.done(0)
+
+    # -- the PCSX2 Pack page -------------------------------------------
+
+    def _exported_pack(self, name: str, target: str = export_svc.TARGET_PCSX2_MODERN):
+        """A real pack, written by the Qt-free exporter from synthetic fixtures.
+
+        The shapes are the export window's own: a hand-built PNG, a hand-built
+        mapping manifest and a hand-built ``.2k5mod``. Nothing here needs the
+        shipped map, a disc image or Pillow -- the art already matches the
+        manifest's geometry, so no export in this module resamples.
+        """
+
+        work = self.root / name
+        work.mkdir()
+        manifest = export_fixtures.write_manifest(work)
+        project = export_fixtures.write_project(work)
+        plan = export_svc.plan_export(project, manifest)
+        return export_svc.run_export(plan, work / "pack", emulator_target=target)
+
+    def test_the_pack_page_offers_the_export_by_name_and_explains_itself(self) -> None:
+        dialog = gui.Ps2DiscStudioDialog(host=self._service())
+        try:
+            button = dialog.pack_page.export_button
+            self.assertEqual(button.text(), "Export to PCSX2…")
+            self.assertEqual(button.accessibleName(),
+                             "Export to PCSX2 as a texture-replacement pack")
+            self.assertEqual(
+                button.toolTip(),
+                "Write your edited Xbox uniform art as a PCSX2 texture-replacement pack "
+                "for this disc's serial")
+            self.assertTrue(button.accessibleDescription().strip())
+            # Reachable from the keyboard, like every other control here.
+            self.assertNotEqual(button.focusPolicy(), Qt.NoFocus)
+            self.assertTrue(dialog.pack_page.kit_button.accessibleName())
+            # The page says what it does not do, in the window's own terms.
+            self.assertIn("No disc image is opened here", gui.PackPage.INTRO)
+            self.assertIn("no ISO is built", gui.PackPage.INTRO)
+            self.assertTrue(dialog.pack_page.receipt_label.isHidden())
+        finally:
+            dialog.done(0)
+
+    def test_the_export_control_opens_the_export_window_on_the_chooser_path(self) -> None:
+        """No Xbox session here, so the window opens on a project the user picks.
+
+        The export window itself is stood in for: what is under test is which
+        window opens, on what project, and that a finished export reaches this
+        page. Its own rules are its own tests' business.
+        """
+
+        import mod_editor.gui.ps2_export_dialog_qt as export_module
+
+        class Receipt:
+            path = self.root / "stubbed-pack"
+            files = (1, 2, 3)
+            emulator_target = export_svc.TARGET_PCSX2_MODERN
+            document = {"instructions": {"settings": ["LoadTextureReplacements=true"]}}
+
+        opened: list = []
+        remembered = self.root / "remembered.2k5mod"
+
+        class FakeExportDialog:
+            def __init__(self, project=None, *, manifest=None, parent=None, on_exported=None):
+                opened.append(project)
+                self.project_path = remembered
+                self._on_exported = on_exported
+
+            def exec_(self) -> int:
+                self._on_exported(Receipt())
+                return 1
+
+            def deleteLater(self) -> None:
+                pass
+
+        dialog = gui.Ps2DiscStudioDialog(host=self._service())
+        real_dialog = export_module.Ps2ExportDialog
+        export_module.Ps2ExportDialog = FakeExportDialog
+        try:
+            dialog.pack_page.export_button.click()
+            self.assertEqual(opened, [None], "the first open is the project chooser")
+            self.assertTrue(dialog.pack_page.kit_button.isEnabled())
+            self.assertTrue(dialog.pack_page.open_folder_button.isEnabled())
+            card = dialog.pack_page.receipt_label.text()
+            self.assertFalse(dialog.pack_page.receipt_label.isHidden())
+            self.assertIn("stubbed-pack", card)
+            self.assertIn("LoadTextureReplacements=true", card)
+            # The project chosen last time is offered back rather than hunted for again.
+            dialog.pack_page.export_button.click()
+            self.assertEqual(opened, [None, remembered])
+        finally:
+            export_module.Ps2ExportDialog = real_dialog
+            dialog.done(0)
+
+    def test_a_completed_export_enables_the_kit_and_it_lands_beside_the_pack(self) -> None:
+        receipt = self._exported_pack("kit-lands")
+        pack = Path(receipt.path)
+        dialog = gui.Ps2DiscStudioDialog(host=self._service())
+        try:
+            self.assertFalse(dialog.pack_page.kit_button.isEnabled())
+            dialog._pack_exported(receipt)
+            self.assertTrue(dialog.pack_page.kit_button.isEnabled())
+            dialog.pack_page.kit_button.click()
+            self._settle(dialog)
+
+            kit_root = pack.parent / (pack.name + "-kit") / export_svc.TARGET_PCSX2_MODERN
+            self.assertTrue(kit_root.is_dir(), "the kit lands beside the pack")
+            settings = (kit_root / "settings.ini").read_text(encoding="utf-8")
+            self.assertIn("LoadTextureReplacements=true", settings)
+            # There is no such setting in stock PCSX2; naming it would send the
+            # reader hunting through a menu that has no such row.
+            self.assertNotIn(kit_tool.CLASSIC_NAMES_SETTING, settings)
+            self.assertIn("LoadTextureReplacements=true",
+                          (kit_root / "HOW-TO.txt").read_text(encoding="utf-8"))
+            copied = {path.relative_to(kit_root / "pack").as_posix(): path.read_bytes()
+                      for path in sorted((kit_root / "pack").rglob("*")) if path.is_file()}
+            original = {path.relative_to(pack).as_posix(): path.read_bytes()
+                        for path in sorted(pack.rglob("*")) if path.is_file()}
+            self.assertEqual(copied, original)
+
+            self.assertIn(str(kit_root), dialog.pack_page.receipt_label.text())
+            self.assertIn("LoadTextureReplacements=true", dialog.status_label.text())
+            self.assertIn(str(kit_root), dialog.status_label.text())
+            # One kit per export: the tool refuses a second at the same place.
+            self.assertFalse(dialog.pack_page.kit_button.isEnabled())
+        finally:
+            dialog.done(0)
+
+    def test_the_kit_is_refused_when_the_packs_receipt_is_missing(self) -> None:
+        receipt = self._exported_pack("kit-refused")
+        pack = Path(receipt.path)
+        (pack / export_svc.RECEIPT_NAME).unlink()
+        dialog = gui.Ps2DiscStudioDialog(host=self._service())
+        real_warning = gui.QMessageBox.warning
+        warnings: list = []
+        gui.QMessageBox.warning = staticmethod(lambda *args, **kwargs: warnings.append(str(args[2])))
+        try:
+            dialog._pack_exported(receipt)
+            dialog._write_pcsx2_kit()
+            self._settle(dialog)
+            self.assertEqual(len(warnings), 1)
+            self.assertIn("no export receipt", warnings[0])
+            self.assertIn("still on disk", warnings[0])
+            self.assertIn("no export receipt", dialog.status_label.text())
+            self.assertFalse((pack.parent / (pack.name + "-kit")).exists())
+            self.assertTrue(dialog.pack_page.kit_button.isEnabled(),
+                            "a refusal leaves the offer standing")
+        finally:
+            gui.QMessageBox.warning = real_warning
             dialog.done(0)
 
     def test_closing_is_refused_while_an_operation_runs(self) -> None:
