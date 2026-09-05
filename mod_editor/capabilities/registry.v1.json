@@ -2783,7 +2783,7 @@
       "summary": "Catalogue archive animation roots and two explicitly identified embedded roots separately; preview local poses and export glTF with mandatory native bytes and metadata. Import is disabled.",
       "surface": "models_shap_scne",
       "title": "Animations (EXPERIMENTAL / UNWITNESSED)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_animation"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -3543,7 +3543,7 @@
       "summary": "Relocate the existing dynamic kickoff with equivalent instructions and separate writable state.",
       "surface": "gameplay_tuning_sliders",
       "title": "Kickoff in extra space (experimental, unwitnessed)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_xbe_space"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -3605,7 +3605,7 @@
       "summary": "Add two bounded preloaded sections with named allocations and preserve SPECIAL.",
       "surface": "scripts_config",
       "title": "Extra patch space (experimental, unwitnessed)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_xbe_space"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -3962,7 +3962,7 @@
       "summary": "Every player wearing helmet C shows a guardian cap. Helmet C's normal look is replaced while this is on.",
       "surface": "models_shap_scne",
       "title": "Guardian caps on helmet C (experimental)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_guardian_cap"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -4364,7 +4364,7 @@
       "summary": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game.",
       "surface": "audio",
       "title": "Music library (experimental)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_music_banks"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -4428,7 +4428,7 @@
       "summary": "86 logical music slots; 59 jukebox entries update stereo and mono together. Exact-length fit, restore, Undo, authored projects and copy builds. In-game playback has not been witnessed.",
       "surface": "audio",
       "title": "Music fixed slots (experimental)",
-      "validation_command": "python3 -m tests.mod_editor.test_music_service"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -4500,7 +4500,7 @@
       "summary": "Menus can use the 59 jukebox recordings in the game's random order. The seven menu songs are excluded; twelve jukebox tracks are spoken outtakes. Collections and UserList substitution are independent opt-ins.",
       "surface": "audio",
       "title": "Music policies (experimental)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_music_policy"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -4919,7 +4919,7 @@
       "summary": "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet. EXPERIMENTAL / UNWITNESSED. Game DOBs can fail in 2053.",
       "surface": "schedules_franchise",
       "title": "128-season franchise gate (experimental)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_season_cap"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -5068,7 +5068,7 @@
       "summary": "Bind native team panels and show timeout counts, score flashes, down refresh and play-clock urgency.",
       "surface": "scorebug_presentation",
       "title": "Team logos and scorebug effects (experimental, unwitnessed)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_runtime"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
@@ -5265,7 +5265,7 @@
       "summary": "Experimental A/B/C/D screen holds, QB drops and pass-delay settings. UNWITNESSED.",
       "surface": "scripts_config",
       "title": "Screen pass timing (experimental)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_screen_timing"
+      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
     },
     {
       "backend": {
