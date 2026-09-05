@@ -553,7 +553,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_penalties.py": "0678ba8d6288db2fdec5cd7a61558e585e3bb5a64a50fbab3c3c6d173103d66f",
         "mod_editor/core/nfl2k5_play_library.py": "8cfc5b3f7f6448c51636782c3a99b958a49e188dee1ce4c3a184fac3aa64e2f2",
         "mod_editor/core/nfl2k5_playbook_pack.py": "1addb8a76cb227cb7dfe8a724dadaa1d250824a0c16f5ff3a03913cb8d608b8f",
-        "mod_editor/core/nfl2k5_player_star.py": "fa16d7ffb1eb7747d05d4ed54ed49d38845ac3745a1eb614f39fd62b3824b5ed",
+        "mod_editor/core/nfl2k5_player_star.py": "306162e399a030532758b638784b4d105c2df496ba341afa279091029730f8a7",
         "mod_editor/core/nfl2k5_playoff_picture.py": "cc851bca3cd4ac77fdcea03be41db1536c51e3699503cfb227f60f1619b2c441",
         "mod_editor/core/nfl2k5_playoffs14.py": "ab4e110bed018dd436a667e11cf650a5467db5a295fda7cdd5a73dc93e06b6ed",
         "mod_editor/core/nfl2k5_position_pools.py": "b48819568be566ed30a93c3ec2420ea66c3c6609d851e845cd4bbf35a72368ab",

@@ -158,6 +158,11 @@ class PatchTests(unittest.TestCase):
         opposite, _ = rows.apply(opposite)
         self.assertEqual(final, opposite)
         self.assertEqual(ps.status(final), 'applied')
+        from mod_editor.core import nfl2k5_practice_reserves as reserves
+        self.assertEqual(reserves.status(final), 'applied')
+        tampered = bytearray(final)
+        tampered[ps._offset(final, reserves.STAGE_VA) + 4] ^= 1
+        self.assertEqual(ps.status(bytes(tampered)), 'foreign')
         repeat, receipt = tt._apply_all(final, None, player_star=True, catch_slider=False)
         self.assertEqual(final, repeat)
         self.assertTrue(receipt['player_star_patch']['already_applied'])

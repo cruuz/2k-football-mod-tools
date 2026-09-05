@@ -698,7 +698,12 @@ class FacadeInstallTests(unittest.TestCase):
         from mod_editor.core.nfl2k5_uniform_catalog import DEFAULT_REPORT
         if not DEFAULT_REPORT.is_file():
             raise unittest.SkipTest("private uniform catalog report missing; facade requires it")
-        cls.facade = Nfl2k5StudioFacade()
+        from mod_editor.studio.session import StudioSession
+        from functools import partial
+        temporary = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(temporary.cleanup)
+        cls.facade = Nfl2k5StudioFacade(
+            session_factory=partial(StudioSession, root=pathlib.Path(temporary.name)))
         cls.facade.load_source(SRC, lambda *a: None)
 
     def test_installing_into_two_teams_stages_ordinary_reversible_edits(self) -> None:
