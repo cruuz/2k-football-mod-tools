@@ -471,7 +471,7 @@ POWER_RUN_STYLE_THRESHOLDS = (33, 66)          # < 33 Finesse, < 66 Balanced, el
 
 # Scramble: the magnitude presets the game's own templates use, and the parity toggle.
 SCRAMBLE_PRESETS = (("Pocket", 10), ("Balanced", 50), ("Scrambling", 90))
-THROW_STYLES = ("A", "B")          # the parity bit: even = A, odd = B
+THROW_STYLES = ("Even", "Odd")     # compatible throw_style key; odd = scrambler
 SCRAMBLE_AGILITY_THRESHOLD = 1.5               # 0.01*Scramble + 0.01*Agility, [0x004E6D0C]
 
 # Kicking Style: retail's three values.  EXPERIMENTAL -- no consumer proved.
@@ -903,6 +903,8 @@ class PlayerRecord:
         return self.values[name]
 
     def set(self, name: str, value: int) -> None:
+        if name in STYLE_RATINGS or name in VIRTUAL_FIELDS:
+            _require(type(value) is int, f"{name} requires a whole number")
         if name in ABILITY_BITS:
             _require(value in (0, 1), "ability accepts 0 or 1")
             self.set_ability(name, bool(value))
@@ -1008,7 +1010,7 @@ class PlayerRecord:
 
     @power_run_style_bucket.setter
     def power_run_style_bucket(self, index: int) -> None:
-        _require(0 <= index < len(POWER_RUN_STYLE_VALUES),
+        _require(type(index) is int and 0 <= index < len(POWER_RUN_STYLE_VALUES),
                  f"power run style accepts 0..{len(POWER_RUN_STYLE_VALUES) - 1}, got {index}")
         self.values["power_run_style"] = POWER_RUN_STYLE_VALUES[index]
 
@@ -1020,13 +1022,13 @@ class PlayerRecord:
 
     @throw_style.setter
     def throw_style(self, style: int) -> None:
-        _require(style in (0, 1), f"throw style is 0 or 1, got {style}")
+        _require(type(style) is int and style in (0, 1), f"throw style is 0 or 1, got {style}")
         self.values["scramble"] = (self.values["scramble"] & ~1) | style
 
     def set_scramble_magnitude(self, value: int) -> None:
         """Move the Scramble rating without disturbing the throw-style bit."""
 
-        _require(0 <= value <= 255, f"scramble accepts 0..255, got {value}")
+        _require(type(value) is int and 0 <= value <= 255, f"scramble accepts 0..255, got {value}")
         self.values["scramble"] = (value & ~1) | (self.values["scramble"] & 1)
 
     @property
@@ -1772,7 +1774,8 @@ class RosterDocument:
         """Publish re-decoded bytes, retaining objects held by the UI and undo commands."""
         _require(len(payload) == len(self.body), "the roster arena changed size")
         fresh = RosterDocument(payload, base=self.base, source=self.source, container=self.container,
-                               resource_header=self.resource_header, scheme=self.scheme)
+                               resource_header=self.resource_header, scheme=self.scheme,
+                               reference_year=self.reference_year, base_year=self.base_year)
         old_players = {(p.pool, p.index): p for p in self.players}
         _require(set(old_players) == {(p.pool, p.index) for p in fresh.players},
                  "pool remapping requires an explicit complete identity map")
@@ -3810,6 +3813,14 @@ def validate(document: RosterDocument, players: Sequence[Player] | None = None) 
         if record.birth_date is None and record.values["birth_month"]:
             findings.append({"level": "warning", "player": player.display, "check": "birth date",
                              "detail": "the stored month/day/year is not a real date"})
+        if (record.birth_date is not None and document.reference_year is not None
+                and player.pool == "primary" and record.values["player_type"] & FLAG_NFL_PLAYER):
+            from .nfl2k5_roster_ages import age_on_september_1, MIN_AGE, MAX_AGE
+            age = age_on_september_1(record.birth_date, document.reference_year)
+            if not MIN_AGE <= age <= MAX_AGE:
+                findings.append({"level": "warning", "player": player.display, "check": "season age",
+                                 "detail": f"age {age} on September 1, {document.reference_year} is outside "
+                                           f"{MIN_AGE}..{MAX_AGE}; review the birth date and source season"})
         if record.values["headless"]:
             findings.append({"level": "error", "player": player.display, "check": "headless",
                              "detail": "+0x0C bit 7 is set; this model renders without a head "

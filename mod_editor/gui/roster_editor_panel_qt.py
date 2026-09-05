@@ -643,6 +643,66 @@ class GlobalEditDialog(QDialog):
 
 
 # ------------------------------------------------------------------------------------------- pickers
+class AgeShiftDialog(QDialog):
+    """Explicit season choice, review, then one undoable in-memory operation."""
+
+    def __init__(self, panel: "RosterEditorPanel") -> None:
+        super().__init__(panel)
+        self.panel = panel
+        self.plan = None
+        self.setWindowTitle("Shift ages to season year")
+        self.resize(700, 480)
+        box = QVBoxLayout(self)
+        note = QLabel("EXPERIMENTAL / UNWITNESSED. Keep player ages while moving birth dates to a new season. "
+                      "Choose the season this roster's ages were made for; a save cannot tell us that. "
+                      "Calendar, years pro and contracts stay as they are. Save a copy to keep changes.")
+        note.setWordWrap(True)
+        box.addWidget(note)
+        row = QHBoxLayout()
+        self.source_year = QSpinBox()
+        self.target_year = QSpinBox()
+        for spin, caption in ((self.source_year, "Ages made for season"),
+                              (self.target_year, "Target season")):
+            spin.setRange(100, 9999)
+            spin.setAccessibleName(caption)
+            row.addWidget(QLabel(caption))
+            row.addWidget(spin)
+        self.source_year.setValue(panel.document.reference_year or 2004)
+        self.target_year.setValue(2026)
+        box.addLayout(row)
+        self.shown_only = QCheckBox("Only the players shown in this list")
+        box.addWidget(self.shown_only)
+        self.report = QPlainTextEdit()
+        self.report.setReadOnly(True)
+        box.addWidget(self.report)
+        buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Cancel)
+        self.apply_button = buttons.button(QDialogButtonBox.Apply)
+        self.apply_button.setText("Apply age shift")
+        self.apply_button.clicked.connect(self._apply)
+        buttons.rejected.connect(self.reject)
+        box.addWidget(buttons)
+        self.source_year.valueChanged.connect(self.refresh_preview)
+        self.target_year.valueChanged.connect(self.refresh_preview)
+        self.shown_only.toggled.connect(self.refresh_preview)
+        self.refresh_preview()
+
+    def refresh_preview(self, *_args) -> None:
+        from mod_editor.core import nfl2k5_roster_ages as ages
+        self.plan = ages.preview(self.panel.document, self.source_year.value(), self.target_year.value(),
+                                 self.panel.visible_players() if self.shown_only.isChecked() else None)
+        self.report.setPlainText(self.panel.age_shift_text(self.plan))
+        self.apply_button.setEnabled(bool(self.plan["changed"]))
+
+    def _apply(self) -> None:
+        try:
+            self.panel.apply_age_shift(self.plan)
+        except rr.RosterRecordError as exc:
+            self.report.setPlainText(str(exc))
+            self.apply_button.setEnabled(False)
+            return
+        self.accept()
+
+
 class IdPickerDialog(QDialog):
     """A searchable id list (play-by-play names, portraits) with a spin box for any id the list lacks."""
 
@@ -800,6 +860,7 @@ class RosterEditorPanel(QWidget):
         self._repair_plans: list[dict[str, Any]] = []
         self._templates: tuple[rr.CreatePlayerTemplate, ...] = rr.create_player_templates()
         self._templates_source = "retail table"
+        self.age_shift_receipts: list[dict[str, Any]] = []
         self.undo_stack = UndoStack(on_change=self._refresh_actions)
         self.cards: dict[str, AttributeCard] = {}
         self._card_order: list[str] = []
@@ -912,6 +973,9 @@ class RosterEditorPanel(QWidget):
         passes_menu.addAction("Add a year pro to everyone", lambda: self.advance_years_pro(False))
         passes_menu.addAction("Add a year pro to this list", lambda: self.advance_years_pro(True))
         passes_menu.addAction("Restore height / weight / birth date", self.restore_measurements)
+        passes_menu.addAction("Shift ages to season year...", self.open_age_shift)
+        passes_menu.addAction("Show age shift receipt", self.show_age_shift_receipt)
+        passes_menu.addAction("Export age shift receipt...", lambda: self.export_age_shift_receipt())
         self.passes_button.setMenu(passes_menu)
         self.csv_button = QToolButton()
         self.csv_button.setText("CSV ▾")
@@ -1345,13 +1409,19 @@ class RosterEditorPanel(QWidget):
             grid.setColumnStretch(column, 1)
         grid.setRowStretch(grid.rowCount(), 1)
         area.setWidget(host)
+        if group == "Style":
+            note = QLabel("EXPERIMENTAL / UNWITNESSED. Scramble: odd = scrambler; even = other animation families. "
+                          "The number also affects the animation choice. Kicking-style behavior is unverified.")
+            note.setWordWrap(True)
+            grid.addWidget(note, grid.rowCount(), 0, 1, columns)
         area.setObjectName(f"cards_{group.lower()}")
         return area
 
     STYLE_CAPTIONS = {
         "power_run_style_bucket": "Power Run Style",
         "power_run_style": "Power Run Style (raw byte)",
-        "throw_style": "Signature release (unorthodox delivery)",
+        "throw_style": "Scramble parity: odd = scrambler",
+        "scramble": "Scramble (keeps odd/even choice)",
         "kicking_style": "Kicking Style (experimental)",
     }
     STYLE_TOOLTIPS = {
@@ -1361,12 +1431,8 @@ class RosterEditorPanel(QWidget):
             "(value x 0.01), so the raw card below still works.",
         "power_run_style": "The raw +0x4D byte behind the Finesse / Balanced / Power control.",
         "throw_style":
-            "The LOW BIT of Scramble (+0x4F). It is the only bit test on any rating byte in the whole "
-            "executable (0x002D92B1) and it picks which family of directional animation sets the "
-            "player uses. In the retail roster exactly three quarterbacks carry it: Michael Vick, "
-            "Rich Gannon and Philip Rivers, the three unorthodox deliveries, so it reads as a hand-set "
-            "signature-release flag. Changing it leaves the Scramble rating where it is. Unwitnessed "
-            "in game.",
+            "Odd = scrambler. Even and odd select different animation families. This switch changes "
+            "the number by at most one. The exact motion is unverified; this does not promise different CPU playcalling.",
         "scramble":
             "A hidden rating the Player Card never prints, but the game's own roster editor does. "
             "Magnitude and parity are read separately: this slider moves the magnitude and preserves "
@@ -1546,6 +1612,7 @@ class RosterEditorPanel(QWidget):
         """Adopt a parsed roster (the tests and the studio both use this)."""
 
         self.document = document
+        self.age_shift_receipts = []
         self._baseline = None
         self._source_path = source
         self._source_kind = kind
@@ -1858,10 +1925,11 @@ class RosterEditorPanel(QWidget):
         birth = record.birth_date
         age = ""
         if birth is not None:
-            age = f" · age in Sep 2004: {2004 - birth.year - ((9, 1) < (birth.month, birth.day))}"
+            year = self.document.reference_year or 2004
+            age = f" · age on Sep 1, {year}: {year - birth.year - ((9, 1) < (birth.month, birth.day))}"
         # the animation family the engine picks for this record (Scramble parity, then magnitude)
-        family = ("signature release" if record.throw_style
-                  else ("standard release, mobile family" if record.mobile_quarterback else "standard release"))
+        family = ("odd = scrambler" if record.throw_style
+                  else ("even, high animation family" if record.mobile_quarterback else "even animation family"))
         self.header_stats.setText(
             f"{record.position_name} · #{record.values['jersey']} · {record.height_text} · "
             f"{record.weight} lb{age} · {record.values['years_pro']} yrs pro · {player.college or '—'} · "
@@ -1957,14 +2025,19 @@ class RosterEditorPanel(QWidget):
                 return
         before = player.record.get(name)
         if before == value:
+            if name == "scramble":
+                self.cards[name].set_value(before)
             return
         self.set_field(player, name, value)
 
     def set_field(self, player: rr.Player, name: str, value: int) -> None:
         """Set one field with undo, dirty marking and a refreshed header."""
 
-        before = player.record.get(name)
-        if before == int(value):
+        # A bucket is a lossy view: Balanced may mean 38, not just 50. Save the
+        # actual byte so undo recovers custom ratings without quantising them.
+        restore_name = "power_run_style" if name == "power_run_style_bucket" else name
+        before = player.record.get(restore_name)
+        if player.record.get(name) == int(value):
             return
 
         def do(new: int = int(value)) -> None:
@@ -1972,7 +2045,7 @@ class RosterEditorPanel(QWidget):
             self._after_edit(player, name)
 
         def undo(old: int = before) -> None:
-            player.record.set(name, old)
+            player.record.set(restore_name, old)
             self._after_edit(player, name)
 
         do()
@@ -2315,6 +2388,8 @@ class RosterEditorPanel(QWidget):
             return 0
         rows = [dict(row) for row in preview]
         by_key = {(p.pool, p.index): p for p in self.document.players}
+        restore_attribute = "power_run_style" if attribute == "power_run_style_bucket" else attribute
+        before_values = {key: player.record.get(restore_attribute) for key, player in by_key.items()}
 
         def do() -> None:
             assert self.document is not None
@@ -2330,7 +2405,7 @@ class RosterEditorPanel(QWidget):
             for row in rows:
                 player = by_key.get((row["pool"], row["index"]))
                 if player is not None:
-                    player.record.set(attribute, int(row["before"]))
+                    player.record.set(restore_attribute, before_values[(row["pool"], row["index"])])
                     self._after_edit(player)
             self.refresh_grid()
 
@@ -2369,6 +2444,90 @@ class RosterEditorPanel(QWidget):
         self._after_edit(player)
         self._set_status(f"Pasted {count} fields onto {player.display}.")
         return count
+
+    @staticmethod
+    def age_shift_text(receipt: dict[str, Any]) -> str:
+        lines = ["EXPERIMENTAL / UNWITNESSED", receipt.get("summary", "") or
+                 f"Season {receipt['source_year']} to {receipt['target_year']}: "
+                 f"{receipt['changed']} players will change; {len(receipt['skipped'])} skipped.",
+                 "Ages are measured on September 1. No file is changed by this preview.", ""]
+        for row in receipt["changes"]:
+            lines.append(f"{row['name']} ({row['pool']} #{row['index']}): "
+                         f"{row['birth_before']} -> {row['birth_after']}; "
+                         f"age {row['age_before']} -> {row['age_after']}" +
+                         (f". {row['note']}" if row['note'] else ""))
+        for row in receipt["skipped"]:
+            lines.append(f"Skipped {row['name']} ({row['pool']} #{row['index']}): {row['reason']}")
+        return "\n".join(lines)
+
+    def open_age_shift(self) -> AgeShiftDialog | None:
+        if self.document is None:
+            return None
+        dialog = AgeShiftDialog(self)
+        dialog.exec_()
+        return dialog
+
+    def apply_age_shift(self, plan: dict[str, Any]) -> dict[str, Any]:
+        from mod_editor.core import nfl2k5_roster_ages as ages
+        if self.document is None:
+            raise rr.RosterRecordError("no roster is loaded")
+        document = self.document
+        before_history = list(getattr(document, "_age_shift_history", []))
+        before_dirty = set(self._dirty)
+        receipt = ages.apply(document, plan)
+        if not receipt["changed"]:
+            return receipt
+        before_receipts = list(self.age_shift_receipts)
+        after_receipts = before_receipts + [receipt]
+        after_history = list(document._age_shift_history)
+        after_dirty = set(before_dirty)
+        moved = {(row["pool"], row["index"]) for row in document.membership_changes()}
+        for row in receipt["changes"]:
+            player = document.by_offset[row["offset"]]
+            baseline = self._baseline_record(player)
+            changed = baseline is not None and any(
+                baseline.values[key] != player.record.values[key]
+                for key in player.record.values if key not in rr.POINTER_FIELDS)
+            key = (player.pool, player.index)
+            if changed or self._name_changed(player) or key in moved:
+                after_dirty.add(key)
+            else:
+                after_dirty.discard(key)
+
+        def put(after: bool) -> None:
+            for row in receipt["changes"]:
+                player = document.by_offset[row["offset"]]
+                player.record.values.update(row["after" if after else "before"])
+            document.set_reference_year(receipt["target_year"] if after else receipt["reference_year_before"])
+            self.age_shift_receipts = list(after_receipts if after else before_receipts)
+            document._age_shift_history = list(after_history if after else before_history)
+            # Refresh once for the bulk transaction. Per-player refresh would
+            # rerun whole-roster membership/capacity checks thousands of times.
+            self._dirty = set(after_dirty if after else before_dirty)
+            self.refresh_grid()
+            self._show_player(self.selected_player())
+            self.show_age_shift_receipt()
+
+        put(True)
+        self.undo_stack.push(UndoEntry(f"Shift ages to {receipt['target_year']} ({receipt['changed']} players)",
+                                      lambda: put(False), lambda: put(True)))
+        self._set_status(receipt["summary"])
+        return receipt
+
+    def show_age_shift_receipt(self) -> None:
+        self.report.setPlainText("\n\n".join(self.age_shift_text(r) for r in self.age_shift_receipts)
+                                 or "No age shifts are applied in this session.")
+        self.tabs.setCurrentIndex(self.tabs.count() - 1)
+
+    def export_age_shift_receipt(self, path: Path | str | None = None) -> None:
+        if not self.age_shift_receipts:
+            self._set_status("No age shifts are applied in this session.")
+            return
+        if path is None:
+            path, _filter = QFileDialog.getSaveFileName(self, "Export age shift receipt", "age-shift.json", "JSON (*.json)")
+        if path:
+            Path(path).write_text(json.dumps({"schema": "nfl2k5_roster_age_shift_receipts/v1",
+                                             "receipts": self.age_shift_receipts}, indent=2) + "\n", encoding="utf-8")
 
     def advance_years_pro(self, visible_only: bool = False) -> int:
         if self.document is None:
@@ -2901,5 +3060,5 @@ class RosterEditorPanel(QWidget):
         self.status_label.setText(text)
 
 
-__all__ = ["AttributeCard", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",
+__all__ = ["AgeShiftDialog", "AttributeCard", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",
            "UndoEntry", "UndoStack", "ValueBar"]

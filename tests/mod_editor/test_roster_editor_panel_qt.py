@@ -171,7 +171,7 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.assertEqual([b.text() for b in bucket.segments], list(rr.POWER_RUN_STYLES))
         throw = self.panel.cards["throw_style"]
         self.assertEqual([b.text() for b in throw.segments], list(rr.THROW_STYLES))
-        self.assertIn("only bit test", throw.toolTip())
+        self.assertIn("Odd = scrambler", throw.toolTip())
         self.assertIn("EXPERIMENTAL", self.panel.cards["kicking_style"].toolTip())
         self.assertIn("Best Hand", self.panel.cards["hand"].toolTip())
         self.assertEqual(self.panel.cards["hand"].name, "hand")
@@ -198,7 +198,7 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.application.processEvents()
         self.assertEqual(player.record.values["scramble"], 91)
         self.assertEqual(player.record.throw_style, 1)
-        self.assertIn("signature release", self.panel.header_stats.text())
+        self.assertIn("odd = scrambler", self.panel.header_stats.text())
         self.assertIn(rr.POWER_RUN_STYLES[player.record.power_run_style_bucket],
                       self.panel.header_stats.text())
 

@@ -3100,3 +3100,219 @@ All new options remain experimental and unwitnessed, Retail/off in every preset.
 The defensive conversion box-score row and persistent category remain missing;
 only its diagnostic tally is implemented. See ASTRA_INTEGRATION_3_REPORT.md for
 capacity, receipts, complete CI accounting and delivery details.
+
+# r62-rosters-data: 2026 team names, style clarity and explicit age shifts
+
+This section is the integration handoff for `astra/r62-rosters-data`, based on
+`5f5b5047d42984ee41449c4a03669e0945a22f2a`. Earlier handoffs above are preserved.
+All new behavior is **EXPERIMENTAL / UNWITNESSED**. The protected files were not
+edited. The Rosters panel changes are implemented directly; the team-name Build
+option and the protected Studio facade connection below are ready for Claude.
+
+## Dispatcher and the four executable status dictionaries
+
+**No `_apply_all` tuple or keyword is added.** There is no executable patch in
+this job. Do not pass `team_names_2026` or an age-shift argument through
+`nfl2k5_throw_tuning._apply_all`, `write_xbe_copy` or `write_image_copy`.
+The four XBE dictionaries in `read_xbe`, `read_image`, `write_xbe_copy` (using
+`result`) and `write_image_copy` (using `after`) get **no new key**. A bare XBE
+cannot reveal which names or birth dates the main ROST or a loaded save contains.
+Neither XBE safety-suite owner list changes; both existing suites are run.
+There are no new code/data pages, caves, reservations or digest repins.
+
+## BuildPlan, availability, inspection and order (protected mod_build.py)
+
+Add `team_names_2026: bool = False`. Reject non-Boolean values during plan
+validation. Include the field in project/recipe serialization and Build panel
+load/save/reset paths. **Basic=false, advanced=false, experimental=false**:
+this remains an explicit opt-in even with `season_2026=True`. The fallback names
+and changed abbreviations need review, so a calendar choice does not enable it.
+Do not include this field in `wants_xbe_patch`.
+
+Availability key `team_names_2026` requires
+`_core_module("nfl2k5_team_names_2026")` and the shipped
+`data/nfl2k5_team_names_2026.json` with its module-pinned SHA-256. Extend
+`mod_build.inspect`'s **data** dictionary with `"team_names_2026": "n/a"` for
+non-image input. For a disc use `module.image_status(source)`; parsing/I/O errors
+are `foreign`. Expose `module.manifest()["teams"]` for the exact before / desired /
+written review, and `strg_audit` for scope. No archive pack is read wholesale.
+
+Reject `plan.team_names_2026` when the input is a bare executable or a save.
+Preflight `image_status(source)` before creating output. Only retail/applied
+are accepted. Run the grouped pass on the private build image after existing
+ROST passes (position pools, season_2026 schedule, team history, prospect names,
+player tags and roster_edits). Do this after any generic authored team text is
+composed too, so a conflict refuses before final publication. Use this block:
+
+```python
+if plan.team_names_2026:
+    module = _core_module("nfl2k5_team_names_2026")
+    if module is None:
+        raise RuntimeError("The 2026 team-name module is unavailable")
+    names_receipt = module.apply_to_image(
+        target, progress=lambda message: progress(message, 0, 0))
+    receipt["steps"].append({"step": "team_names_2026", **names_receipt})
+```
+
+Keep the whole receipt, including the 17 string spans, limits, full intended
+names, chosen short forms, hashes, zero growth and replay state. Do not discard
+`writes` from the report. The adapter resolves the current outer table through
+`OuterImage`, so earlier archive growth can relocate packs. It reads only the
+main 593,792-byte resource, validates all fields before mutation, rereads the
+source before writing and checks the exact output. On I/O failure discard the
+private build copy; multi-span power-loss atomicity is not promised.
+
+Existing saves are never searched, opened or edited by this Build pass. A new
+franchise gets the disc's names; an old save supplies its own ROST. Disabling the
+option preserves the selected source, including names already on that source;
+return to a retail source to restore retail names.
+
+## Build tab option and Gameplay Patches text
+
+In protected `build_panel_qt.py`, near the 2026 season option:
+
+```python
+self.team_names_2026_check = self._option(
+    g, "team_names_2026", "2026 team names (experimental)",
+    "Use modern team names in new disc rosters. Limited name space writes "
+    "L.A. Chargers (LA), L Vegas Raiders (LV), L.A. Rams (LAR), and "
+    "Washington Cmdrs (WAS); Arizona uses ARI. Existing saves keep their names. "
+    "EXPERIMENTAL / UNWITNESSED.")
+```
+
+The caption has 30 characters, within the 60-character limit. Connect this
+checkbox to the plan, all preset resets, source availability and the Studio
+preview refresh. A details view should list `desired` and `written` from the
+manifest and explain the name-space limits rather than exposing byte offsets.
+
+If shown on protected `gameplay_patches_panel_qt.py`, add a `PATCHES` row with
+key `team_names_2026`, caption `2026 team names`, and exactly this explanatory
+text (includes the required words **Retail** and **Patch**):
+
+> Retail: 2004 team names. Patch: modern names in the disc roster, with L.A., L Vegas, LA and Cmdrs short forms where space is limited. Existing saves keep their names. EXPERIMENTAL / UNWITNESSED.
+
+Add `team_names_2026` to `NEEDS_IMAGE`. Route the checkbox to the Build data
+field, not the executable dispatcher. Style controls and age shifts get no
+Gameplay Patches row, no NEEDS_IMAGE entry and no BuildPlan flag: they are
+explicit Rosters edits, available to both disc rosters and save copies.
+
+## Same strings on Team Identity (protected studio_qt.py)
+
+`nfl2k5_text_catalog` already maps main-ROST team fields and the independent
+team-label pool; no replacement catalog or display-name dictionary is needed.
+The implemented helper `catalog_overrides(catalog, enabled=flag,
+value_lookup=underlying_session.text_value)` returns actual planned strings by
+the existing **dot-separated** asset IDs. Example:
+`nfl2k5.text.rost.5.team.25.nickname -> Cmdrs`. It uses the same manifest as the
+byte writer, validates source/staged values, and refuses a manual conflict or a
+mixed install. Pass the underlying lookup, not the decorated facade recursively.
+
+In the protected facade `text_value(asset)` adapter, resolve the asset ID,
+return this override when present, otherwise return the underlying session's
+value. Build computes the same override set for preflight. Invalidate/recompute
+the preview when the checkbox, source, project, session Undo/Redo or any text
+edit changes. Keep the preview local to the selected source/project. Reset to
+source values when off. Never write overrides into the session as 17 individual
+text edits: the grouped data pass also owns the normally read-only team-label
+pool, and it must preflight all names together.
+
+Refresh Team Identity's displayed city/nickname/abbreviation through the facade
+lookup, including the title assembled from city + nickname. Do not use a cached
+`RosterTeam.display_name` to mask the short forms. The value shown must equal
+what Build writes, not the full `desired` marketing name. Show the intended full
+name only in the explanatory preview. If manual editing is offered while this
+option is selected, disable edits to these 35 pinned cells or expose the explicit
+conflict before Build; do not overwrite manual text silently.
+
+For direct resource consumers, `read_team_identities(resource, enabled=flag)`
+returns actual source/planned city, nickname, abbreviation and combined display.
+It is tested against both the pure writer and the existing Team Identity catalog.
+The separate historical ROST resources remain historical. The 1,115 STRG
+allocations have no affected literal names; `[TEAM0NAME]` and similar dynamic
+placeholders are retained. No broad search/replace through tutorials, historical
+milestones, stadiums, executable strings, logos or recorded commentary is allowed.
+
+## Rosters age tool and save behavior
+
+Implemented in the owned panel: Tools -> `Shift ages to season year...` opens a
+preview with explicit source season, target season (2026 by default), optional
+shown-list scope, every change and every skip. `Apply age shift` changes memory
+as one undo entry. A subsequent Save disc copy / Save Xbox save copy / roster
+JSON / CSV export is the user's persistence action. Receipt view/export is in
+Tools. The codec uses the existing seven-bit modulo-100 birth-year storage and
+checks a 100-year reference window. No fixed-century assumption is reintroduced.
+
+The source picker starts with the loaded reference year or 2004. When a 2026
+calendar save still contains a 2004-era roster, the user must explicitly choose
+2004 as the source season. An already modern roster should choose 2026 and gets
+no shift. A reopened save does not encode this provenance; do not infer it from
+player names, years pro or the calendar patch. Repeated same-pair shifts are
+suppressed per player in the current session; undo restores their eligibility.
+
+September 1 ages 18..55 qualify. Primary records must carry the NFL-player flag;
+non-NFL records, unflagged prospects, templates and invalid/implausible dates
+are listed as skipped. February 29 becomes February 28 when needed, explicitly
+receipted. Actual birth dates become fictional shifted dates, preserving ages;
+years pro, player ratings, team membership, contracts, save calendar and statistics
+are not rewritten. A calendar/years-pro progression overhaul is not implied.
+The header now prints the current context's September 1 age. Save membership
+re-decoding preserves the chosen reference/base year.
+
+## Allowlist and runtime closure (protected release files)
+
+Add exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_roster_ages.py
+mod_editor/core/nfl2k5_team_names_2026.py
+data/nfl2k5_team_names_2026.json
+```
+
+The existing `roster_editor_panel_qt.py`, `nfl2k5_roster_records.py`,
+`nfl2k5_text_catalog.py` and `docs/nfl2k5_ratings_and_styles.md` carry updated
+behavior/documentation and should retain their existing staged paths. In
+`packaging/check_2k5_mod_studio_runtime.py` add imports for
+`mod_editor.core.nfl2k5_roster_ages` and
+`mod_editor.core.nfl2k5_team_names_2026`, plus a manifest-exists/hash check and
+an offscreen construction of `AgeShiftDialog` after loading a synthetic roster.
+New runtime dependencies are existing shipped modules: roster_records,
+text_catalog, their error/format/parser closure, and
+`tools/nfl2k5_playbook_position_recode.py`/`nfl_uniform_color_xiso_direct_patch.py`
+through the existing bounded `OuterImage` adapter. Age changes additionally
+use only datetime, hashlib and typing. Do not package the private inventory,
+retail ROST, test saves, logs or `.scratch/`.
+
+## Capability registry entries
+
+Add capability `nfl2k5.players.team_names_2026`, game `nfl2k5_xbox`, surface
+`players_rosters`, classification `offline-writer-proved`; backend module
+`mod_editor/core/nfl2k5_team_names_2026.py`, operation `write`, command `null`.
+GUI: expose=true, mode=edit, default_enabled=false, reason: "Explicit disc-only
+2026 names with fixed-space short forms; existing saves keep their own names."
+Runtime: status=`not-tested`, evidence=[], scope="EXPERIMENTAL / UNWITNESSED;
+no played or screen witness." Selectors: main ROST outer 5, team indexes
+7/8/22/23/25, identity fields plus independent nickname/abbreviation labels;
+asset codes and pointers fixed. Constraints: module-pinned manifest, 35 exact
+preflight cells, 17 writes, mixed/foreign refusal, zero growth, no STRG edits,
+no saves. Evidence paths: new module, data manifest, this report and
+`tests/mod_editor/test_nfl2k5_team_names_2026.py`. Validation command:
+`python3 tests/mod_editor/test_nfl2k5_team_names_2026.py`. Portme: protected
+Build/facade wiring and Noah's new-franchise/scorebug/menu witness list.
+Distribution: source-and-schemas-only tooling; user-authored-inputs-and-recipes
+mod payload; never-bundle-retail-data game data. No ROST dump is distributable.
+Source container: main disc ROST 0x20 wrapper + 0x90F60 body, resource outer 5;
+manifest SHA-256 `fea1e37b7fb23887b8231d3e971b5113eeecef1d815001b9032da6b0eac8d13b`.
+
+Add capability `nfl2k5.players.age_shift`, same game/surface/classification;
+backend `mod_editor/core/nfl2k5_roster_ages.py`, operation=write, command=null;
+GUI expose=true/mode=edit/default_enabled=false (explicit preview and Apply).
+Runtime not-tested, empty runtime evidence, no gameplay claim. Selectors are
+(pool,index) from a chosen RosterDocument plus explicit source and target season.
+Constraints and distribution follow the preceding age/save section. Evidence:
+new age module, owned panel, `tests/mod_editor/test_rosters_data.py`,
+`tests/mod_editor/test_rosters_data_qt.py`, `ASTRA_ROSTERS_DATA_REPORT.md`.
+Validation: `QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_rosters_data_qt.py`.
+Source container: version 17 disc ROST or version 0 roster/franchise save,
+field-relative 0x54 records, title's existing signed-save copy writer.
+Portme: Noah's signed-copy reopen and 2026-franchise witness. Registry changes
+should not re-enable the older narrow disc_roster provider's unrelated writes.

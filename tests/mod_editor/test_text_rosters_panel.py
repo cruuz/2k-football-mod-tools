@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import sys
 import tempfile
 import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_text_catalog import (
