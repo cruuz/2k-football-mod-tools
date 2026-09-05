@@ -126,6 +126,11 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
         cls.patched, _ = scorebug.apply_xbe(cls.patched)
         cls.patched, _ = runtime.apply(cls.patched)
+        from mod_editor.core import nfl2k5_music_metadata as music
+        cls.patched, _ = music.apply(cls.patched, [dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256)
+                                                 for i in range(200)])
+        if music.status(cls.patched) != 'applied':
+            raise AssertionError('200-song metadata owner missing from composed XBE')
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True

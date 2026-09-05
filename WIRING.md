@@ -2052,3 +2052,210 @@ python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py
 The optional `--allocated` merely exposes the allocator's existing evidence API;
 the allocator itself is unchanged. See `ASTRA_SCOREBUG_RUNTIME_REPORT.md` for
 the complete proof boundaries, static previews and Noah's required witness list.
+
+---
+
+# r61b music banks: protected integration hand-off
+
+Status: **EXPERIMENTAL / UNWITNESSED**. The callable writer and CLI are complete;
+the protected GUI/build integration below belongs to Claude. This job does not
+create or modify the parallel session's `nfl2k5_music_policy.py`,
+`nfl2k5_music_catalog.py`, or `music_panel_qt.py`. Presets **basic, advanced and
+experimental never enable a music library**. A chosen personal recipe enables it.
+
+## Service and source contract
+
+Import `mod_editor.core.nfl2k5_music_banks` as `music_banks`. Public calls:
+
+```python
+preview = music_banks.plan(source_image, recipe_path)
+receipt = music_banks.rebuild(source_image, distinct_output, recipe_path,
+                             expected_plan=preview, overwrite=False,
+                             progress=progress_callback)
+music_banks.verify(source_image, distinct_output, receipt)
+music_banks.estimate(source_image, count=200, seconds=180, twins=True)
+```
+
+Plans/receipts are JSON-serializable. Progress is `(stage, done, total)`; raising
+from it cancels and discards private output. Source and destination handles close
+before publication. `plan` only reads. Limits, every moved outer, 16 pack deltas,
+physical ISO size, scratch budget and descriptor/XBE edits are reviewable before
+building. `expected_plan` refuses stale sources, input WAVs and different recipes.
+
+Recipe shape, stored as a project asset with paths relative to its JSON file:
+
+```json
+{
+  "schema": "nfl2k5_music_library/v1",
+  "bank": "femusic",
+  "tracks": [
+    {"wav": "audio/first.wav", "title": "First song", "artist": "My artist"},
+    {"source_index": 1},
+    {"source_index": 2}
+  ]
+}
+```
+
+The list is the entire selected bank. `femusic` needs no twin or XBE metadata.
+`cribmusic` automatically rebuilds `crib22` and all 18 collection record arrays.
+Conform WAV/MP3/FLAC/OGG upstream to 22,050 Hz, PCM16 WAV, one or two channels;
+the service encodes in bounded chunks, repeats at most 63 final PCM frames, and
+concatenates whole IMA blocks without inter-song sector padding. Mono is the
+floor-rounded stereo average on the same canonical timeline. Existing unchanged
+tracks use `source_index` and retain their exact encoded bytes and titles.
+
+The full-library service currently accepts 1..400 tracks (two-track `femusic`
+refuses because retail random selection divides by N-2), <=10 minutes per input,
+<=512 MiB per source WAV, <=2 GiB minus one encoded byte including twins, and
+positive pack F below 2 GiB. Read-only metadata has its own 65,408-byte content
+budget. Presentation banks remain with the fixed-slot service: their cue/index
+scheduling has separate ownership. No all-screen shuffle policy is implied.
+
+After rebuilding, reopen the image and invalidate catalog/physical-range caches.
+The fixed-slot reader's pinned offsets deliberately refuse a resized descriptor;
+the Music tab must use `music_archive.Disc` for grown-library inspection. Do not
+relax the unrelated fixed-slot validators. A renamed/title-changed recipe cannot
+silently replace an existing differently sealed metadata allocation: rebuild from
+the original selected source. Same-recipe rebuilds are byte-idempotent, without
+another append.
+
+## BuildPlan and ordering
+
+In protected `mod_build.py`, add `music_library: str | None = None`, a recipe
+reference rather than a Boolean or serialized physical offsets. Add it to project
+round-trip, selected-key validation, availability/inspect, Build receipt and the
+image-required input checks. `wants_xbe_patch` must account for jukebox metadata
+when the selected bank is `cribmusic`; a menu-only library remains a content build
+even when all XBE policies are retail. Reject missing recipe/WAV assets before
+starting the ordinary build. Never enable or replace the recipe via any preset.
+
+Run the final `music_banks.rebuild` **after** all existing archive, roster,
+playbook, texture, SPECIAL and other XBE passes. Its source is the disposable
+working image including those changes; its destination is a distinct private
+sibling. Re-plan against that source and pass that exact plan. Promote the
+verified music result through the builder's final transaction. Do not use an
+earlier retail physical-range plan on a modified intermediate image, and do not
+write metadata first into an otherwise unchanged bank: mixed bank/metadata counts
+refuse. The service owns the metadata/archive transaction together. The builder
+must retain its original source identity and add the service's immediate source
+identity and receipt, so earlier changes remain attributable.
+
+## Dispatcher tuple, keyword and four status dictionaries
+
+Archive writes do not belong in `_apply_all`. For the executable metadata helper
+surface, add a prepared-record keyword `music_metadata=None` to `_apply_all`,
+`write_xbe_copy`, `write_image_copy`, and `write_copy`. Its adapter binds validated
+`[{title, artist, frames}, ...]` and exposes `status(payload)` / `apply(payload)`.
+Use this exact tuple shape in the existing four-field dispatcher:
+
+```python
+(music_metadata is not None, _music_metadata_adapter(music_metadata),
+ "music_metadata_patch", "music library titles")
+```
+
+The adapter delegates to `nfl2k5_music_metadata`. When status is already applied,
+it must still call the pure `apply(payload, prepared_records)` validator to refuse
+a differently configured library; the general dispatcher normally skips applied
+patches. The new receipt includes `changed_bytes`. Reserve any other requested
+allocator owners before applying metadata. Do not dispatch metadata during the
+ordinary content-build prepass: leave this keyword `None` there and let the final
+bank rebuild apply it transactionally. Standalone XBE output is an offline metadata
+artifact, not a usable music library by itself.
+
+Import `nfl2k5_music_metadata as music_metadata_patch`. Add
+`"music_metadata_patch": music_metadata_patch.status(payload)` to all four status
+dictionaries: `read_xbe`, `read_image`, `write_xbe_copy` result and
+`write_image_copy` result, using their local XBE byte variable. The Build receipt
+separately records `music_library` from the service, because a `femusic` library
+correctly leaves executable metadata status retail. Do not conflate these states.
+
+Protected grown-XBE readers must accept the additional exact
+`nfl2k5_music_storage.FILE_SIZE` (12,095,488) and validate it with
+`nfl2k5_depth_chart_storage.recognized_grown_xbe`. The existing generalized helper
+now recognizes it and writes/replays it safely. No arbitrary length/count bypass.
+The common section/digest reader, allocator and ownership recorder were extended
+additively for this third read-only section; existing two-page allocations retain
+their addresses and file size.
+
+## UI text and lifecycle
+
+Build tab `_option` caption: **"Include my music library (experimental)"** (39
+characters). Selecting it enables the chosen `music_library` recipe; an absent
+recipe is an actionable validation error. Show **"Experimental, not yet tested
+in game"**, the projected output/scratch sizes, and a cancel action. Do not show
+addresses, codec geometry, or allocator names in the user flow.
+
+If exposing a Gameplay Patches card, its `PATCHES` helper must be:
+**"Retail: menus and the jukebox use the original songs. Patch: builds your chosen
+music library. Experimental, not yet tested in game."** Add `music_library` to
+`NEEDS_IMAGE`. Keep this a recipe chooser, not another automatically enabled
+music-policy checkbox. Reuse the parallel Music panel for authoring, undo/redo,
+conform and project asset lifecycle. Its fixed-length mode can remain independent.
+
+Jukebox songs beyond retail go into the four free collections, starting at the
+last. The first 59 collection/song identities stay stable. Never describe all 18
+collections as unlocked: purchase-key changes belong to the parallel policy
+owner. Clearly request a fresh/rebuilt playlist after replacing a library;
+title checksums, saved cursor and old stadium trim points can be stale.
+
+## Packaging, transport and closure
+
+Add these allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_music_banks.py
+mod_editor/core/nfl2k5_music_archive.py
+mod_editor/core/nfl2k5_music_metadata.py
+mod_editor/core/nfl2k5_music_storage.py
+tools/nfl2k5_music_banks.py
+```
+
+Retain/add the transitive lines `tools/nfl2k5_commentary_swap.py`,
+`tools/nfl_outer.py`, `tools/nfl_uniform_color_xiso_direct_patch.py`,
+`tools/xbox_ima_encoder.py`, `mod_editor/core/platform_compat.py`,
+`mod_editor/core/nfl2k5_ausb_fixed_slots.py`, `nfl2k5_bump_strength.py`,
+`nfl2k5_depth_chart_storage.py`, `nfl2k5_xbe_space.py`, `nfl2k5_boot_logo.py`,
+`nfl2k5_cave_oracle.py`, `modpack.py` and `modpack_ops.py` under their existing
+`mod_editor/core/` paths. Check the commentary/XISO reader's existing tools closure.
+Do not package scratch images, research files, retail metadata blobs or tones.
+
+In the protected runtime closure checker import all four new core modules,
+`tools.nfl2k5_music_banks`, `mod_editor.core.modpack_ops`, and the dependencies
+above. Exercise imports with NumPy/FFmpeg/Capstone/Unicorn absent; NumPy is an
+optional encoder speed-up, and canonical WAV/scalar encoding remains available.
+No retail path or Ghidra corpus is required at import time.
+
+Format 2 adds **ID 5, `file_shrink`, version 1**. ID 4 remains reserved for
+`file_add`. Registry/reader versions remain 1/2; older readers reject unknown
+handler 5 before writing. Export complete builds through the existing
+`modpack.export(..., file_operations=["vc_53450030/0", ..., "vc_53450030/F",
+"default.xbe"])`, naming `default.xbe` only when it changes. Same-sized packs use
+`file_replace`; larger F/XBE use `file_grow`; shorter F uses `file_shrink` and
+retains unused physical bytes. No new executable modpack operation is necessary.
+For portable personal project sharing, embed only authored WAVs and the recipe,
+rewrite references relative to the recipe, and retain the selected source hash.
+Do not bundle rebuilt pack files/retail audio into distributed presets.
+
+## Capability registry and reservations
+
+Add `nfl2k5.music.bank_rebuild` to the protected integration's capability registry
+review: game `nfl2k5_xbox`, surface `audio`, title "Music library (experimental)",
+classification `offline-writer-proved`, backend module
+`mod_editor/core/nfl2k5_music_banks.py`, operation `write`, GUI default disabled,
+runtime status `not-tested`. Selectors: `music_library` recipe, `bank`, ordered
+`tracks`. Source container: XDVDFS `vc_53450030/0..F`, all 17 descriptor owners,
+and pinned USA XBE geometry for jukebox metadata. Inputs/constraints are the
+service limits above. Transport: authored WAVs + schema v1 recipe; receipts bind
+actual source and output SHA-256. Evidence: `ASTRA_MUSIC_BANKS_REPORT.md` and the
+three new standalone music test files. Validation command:
+`python3 tests/mod_editor/test_nfl2k5_music_banks.py`. Never register a true-shuffle
+or all-screen playback capability for this writer.
+
+Both XBE gate compositions now include the actual 200-song metadata owner.
+The oracle generator also observes this default-off owner on its disposable
+ownership probe (no game playback), including the entire 64 KiB RO allocation.
+Regenerate `data/nfl2k5_cave_reservations.json` with the existing oracle command
+after integration. This job generated and tested `.scratch/music-cave-manifest.json`
+without modifying that protected release manifest. Keep source-drift rejection
+enabled. The RO proof is a new loader allocation outside retail mappings, not
+a free-cave claim; the audit retains all 469 raw reference-encoding candidates.

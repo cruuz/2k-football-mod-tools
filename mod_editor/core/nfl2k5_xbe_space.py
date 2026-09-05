@@ -153,6 +153,10 @@ def _digest(data):
 
 def _validate(payload):
     _require(payload[:4] == b"XBEH", "missing XBE header")
+    if struct.unpack_from("<I", payload, 0x11C)[0] == COUNT + 3:
+        from . import nfl2k5_music_storage as music_storage
+        original, _ = music_storage.unwrap(payload)
+        return _validate(original)
     base, headers, image_size = struct.unpack_from("<3I", payload, 0x104)
     count, table = struct.unpack_from("<II", payload, 0x11C)
     grown = count == COUNT + 2
@@ -215,11 +219,20 @@ def special_state(payload: bytes) -> str:
 
 def layout(payload: bytes) -> dict:
     grown, special_status, requests = _validate(payload)
-    return {"status": "applied" if grown else "retail", "special": special_status,
+    result = {"status": "applied" if grown else "retail", "special": special_status,
             "file_size": FILE_SIZE, "image_size": IMAGE_SIZE, "headers_size": PAGE,
             "regions": [{"kind": k, "va": va, "raw": raw, "size": PAGE, "flags": flags}
                         for k, va, raw, flags in (("code", CODE_VA, CODE_RAW, 0x36), ("data", DATA_VA, DATA_RAW, 3))],
             "allocations": _allocations(requests) if grown else []}
+    if struct.unpack_from('<I', payload, 0x11C)[0] == COUNT + 3:
+        from . import nfl2k5_music_storage as music_storage
+        result['file_size'] = music_storage.FILE_SIZE
+        result['image_size'] = music_storage.VA + music_storage.CAPACITY - 0x10000
+        result['regions'].append(dict(kind='read_only', va=music_storage.VA, raw=music_storage.RAW,
+                                      size=music_storage.CAPACITY, flags=0x3A))
+        result['allocations'].append(dict(owner=music_storage.OWNER, kind='read_only',
+            va=music_storage.VA, raw=music_storage.RAW, size=music_storage.CAPACITY, align=PAGE))
+    return result
 
 
 def reservations(payload: bytes | None = None) -> list[dict]:
@@ -230,7 +243,8 @@ def reservations(payload: bytes | None = None) -> list[dict]:
     if payload is not None:
         for a in layout(payload)["allocations"]:
             result.append(dict(start=hex(a["va"]), end=hex(a["va"] + a["size"]), size=a["size"],
-                               owner=a["owner"], basis="named " + a["kind"] + " sub-allocation", parent_owner=OWNER))
+                               owner=a["owner"], basis="named " + a["kind"] + " allocation",
+                               **({"parent_owner": OWNER} if a['kind'] != 'read_only' else {})))
     return result
 
 

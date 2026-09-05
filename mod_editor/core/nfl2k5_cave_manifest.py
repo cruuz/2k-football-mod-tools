@@ -79,6 +79,9 @@ class Recorder:
                             and storage.state(after) == "applied")
             allow_append |= (owner in (space.OWNER, "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime")
                              and space.status(before) == "retail" and space.status(after) == "applied")
+            if owner == 'nfl2k5_music_metadata':
+                from . import nfl2k5_music_metadata as music
+                allow_append |= music.status(before) == 'retail' and music.status(after) == 'applied'
         runs = list(changed_runs(before, after, allow_append=allow_append))
         self.mapping_end = max(self.mapping_end, post_image.base + post_image.image_size)
         if len(after) > len(self.covered):
@@ -103,7 +106,7 @@ class Recorder:
                            "after_sha256": hashlib.sha256(after).hexdigest(),
                            "changed_bytes": sum(b - a for a, b in runs),
                            "file_runs": [[hex(a), hex(b)] for a, b in runs]})
-        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime"):
+        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata"):
             from . import nfl2k5_xbe_space as space
             for reservation in space.reservations(after):
                 self.reserve(int(reservation["start"], 0), reservation["size"],
@@ -208,6 +211,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     from . import nfl2k5_seven_on_seven_book as seven_book
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_ingame as scorebug_ingame
+    from . import nfl2k5_music_metadata as music
     progress = progress or (lambda _message: None)
     xiso = xiso.resolve(strict=True)
     work_dir = work_dir.resolve(strict=True)
@@ -216,7 +220,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     recorder = Recorder(retail)
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
-    modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame)})
+    modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame, music)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -260,6 +264,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
             final, _ = space.apply(final, relocated.REQUESTS + runtime.REQUESTS)
             final, _ = relocated.apply(final)
             final, _ = runtime.apply(final)
+            # Ownership probe only, on a disposable oracle disc. Presets never
+            # enable a personal music library; no playback claim is made here.
+            final, _ = music.apply(final, [dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256)
+                                           for i in range(200)])
             from . import nfl2k5_depth_chart_storage as storage, platform_compat as io
             import os
             descriptor = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
@@ -286,9 +294,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                              if str((ROOT / name).resolve()) in loaded_paths}
         return {"schema": MANIFEST_SCHEMA, "retail_sha256": RETAIL_SHA256, "complete": True,
                 "stack_image_size": XbeImage(final).image_size,
-                "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff and scorebug runtime; exact diffs union owned pages and named allocations",
+                "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime and music metadata; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER],
+                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER],
                 "seven_on_seven_book": book_note,
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,
                 "preset_xbe_sha256": hashlib.sha256(preset_xbe).hexdigest(),
@@ -296,5 +304,5 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                 "section_digests_verified": True,
                 "image_options": {"scorebug_textures": True, "runtime_panel_resources": False,
                                   "reason": "Manifest proves XBE ownership only; panel transport has its own resource tests"},
-                "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated", "scorebug_runtime"],
+                "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated", "scorebug_runtime", "music_metadata"],
                 "source_sha256": used_fingerprints, "steps": recorder.steps, "spans": spans}

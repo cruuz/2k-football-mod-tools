@@ -82,6 +82,11 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
         cls.patched, _ = scorebug.apply_xbe(cls.patched)
         cls.patched, _ = runtime.apply(cls.patched)
+        from mod_editor.core import nfl2k5_music_metadata as music
+        cls.patched, _ = music.apply(cls.patched, [dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256)
+                                                 for i in range(200)])
+        if music.status(cls.patched) != 'applied':
+            raise AssertionError('200-song metadata owner missing from composed XBE')
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
