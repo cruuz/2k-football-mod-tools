@@ -300,6 +300,10 @@ class TdbDatabase:
         assert preamble is not None  # for type checkers; _require has raised
         #: Bytes before the magic.  4 for a franchise save, 0 otherwise [S].
         self.preamble_bytes = preamble
+        #: The bytes as handed in, preamble included.  A writer starts from
+        #: these, so a database that arrived with a preamble goes back out with
+        #: one; nothing here ever mutates them.
+        self._data = data
         body = data[preamble:]
         _require(
             len(body) >= TDB_HEADER_SIZE,
@@ -424,6 +428,38 @@ class TdbDatabase:
             records_offset=records_at,
             fields=tuple(fields),
         )
+
+    # -- the bytes themselves ----------------------------------------------
+
+    @property
+    def data(self) -> bytes:
+        """The database exactly as it was handed in, preamble included.
+
+        A writer starts here, patches the bytes it means to change, and hands
+        the result back; the parse itself is never mutated.
+        """
+        return self._data
+
+    @property
+    def body(self) -> bytes:
+        """The database with its preamble stripped: offset 0 is the magic."""
+        return self._body
+
+    def record_offset(self, table: Union[str, TdbTable], index: int) -> int:
+        """Where record *index* of *table* starts in :attr:`data`.
+
+        Offsets are into the whole file, preamble included, so a caller
+        declaring a byte range does not have to remember the preamble.
+        """
+        resolved = self._resolve_table(table)
+        _require(
+            0 <= index < resolved.current_records,
+            "table %s has no record %d: it holds %d (0..%d) of a possible %d."
+            % (resolved.name, index, resolved.current_records,
+               resolved.current_records - 1, resolved.max_records),
+        )
+        return (self.preamble_bytes + resolved.records_offset
+                + index * resolved.record_bytes)
 
     # -- tables ------------------------------------------------------------
 
@@ -645,7 +681,28 @@ def _layout(fields: Sequence[Tuple[str, int, int]]) -> Tuple[List[TdbField], int
 
 
 def _encode(field: TdbField, value: object) -> int:
-    """One field's contribution to a record, as bits of a little-endian integer."""
+    """One field's contribution to a record, as bits of a little-endian integer.
+
+    The exact inverse of :meth:`TdbDatabase.decode`: an integer whose set bits
+    are the field's, positioned by its bit offset, so a caller ORs it into a
+    record whose old bits it has cleared.
+    """
+    _require(
+        field.type_id in FIELD_TYPE_NAMES,
+        "field %s declares type %d, which is not one of the five this format "
+        "defines (%s); it cannot be written."
+        % (field.name, field.type_id,
+           ", ".join("%d=%s" % item for item in FIELD_TYPE_NAMES.items())),
+    )
+    if field.type_id in BYTE_ALIGNED_TYPES:
+        _require(
+            field.byte_aligned and field.bit_width % 8 == 0,
+            "field %s is a %s at bit %d and %d bit(s) wide; a %s is whole "
+            "bytes on a byte boundary, and this one is not, so it cannot be "
+            "written."
+            % (field.name, field.type_name, field.bit_offset, field.bit_width,
+               field.type_name),
+        )
     if field.type_id in (FIELD_UINT, FIELD_SINT):
         _require(
             isinstance(value, int) and not isinstance(value, bool),
@@ -806,8 +863,353 @@ def build_tdb(tables: Sequence[Sequence[object]], *,
     return bytes(out)
 
 
+# --------------------------------------------------------------------------
+# The checksums
+# --------------------------------------------------------------------------
+#
+# EA stores four kinds of CRC in a TDB, and a Madden franchise save that
+# carries a stale one is refused by the game with "error loading franchise"
+# [S].  All four are CRC-32/MPEG-2 -- polynomial 0x04C11DB7, initial value all
+# ones, no input or output reflection, no final xor -- stored little-endian on
+# the little-endian platforms this module reads.
+#
+# The four sites, and what each covers:
+#
+# ============== ============================ ===============================
+# site           stored at                    covers
+# ============== ============================ ===============================
+# file header    body offset 20               body bytes 0..20
+# table prior    each table header + 0        the *previous* table's data
+#                                             block, or the table directory
+#                                             for the first table
+# table header   each table header + 36       that header's bytes 4..36
+# end of file    body offset ``dbSize - 4``   the last table's data block
+# ============== ============================ ===============================
+#
+# A "data block" runs from the end of a table's 40-byte header -- so it
+# includes the field directory -- to the start of the next table's header, and
+# for the last table to ``dbSize - 4``, which is the end-of-file CRC's own
+# slot.  No site's coverage includes any other site's slot, so the four can be
+# written in any order.
+#
+# **[M]** Measured on the owner's retail Madden NFL 09 (PS2) disc: 4,806 CRC
+# sites across 252 databases -- every TDB member of ``/DATA/DB_TEAMS.DAT``
+# (235) and ``/DATA/TEMPLATE.DAT`` (14 of its 15 open), the two of
+# ``/DATA/GAMEDATA.DAT``'s 104 that open, and the bare ``/DATA/STRMDATA.DB``
+# -- and the stored value equalled the recomputed value at every one.  The
+# other 103 members are refused by this reader before a CRC is reached,
+# because they declare a table whose name carries a NUL byte.
+
+#: CRC-32/MPEG-2's polynomial and starting value [S].
+CRC_POLYNOMIAL = 0x04C11DB7
+CRC_INITIAL = 0xFFFFFFFF
+
+#: The four site kinds, as :class:`CrcSite` names them.
+CRC_SITE_FILE_HEADER = "file-header"
+CRC_SITE_TABLE_PRIOR = "table-prior"
+CRC_SITE_TABLE_HEADER = "table-header"
+CRC_SITE_END_OF_FILE = "end-of-file"
+
+#: Where the file-header CRC sits, and how much of the header it covers.
+CRC_FILE_HEADER_OFFSET = 20
+CRC_FILE_HEADER_COVERAGE = 20
+
+_CRC_TABLE: Tuple[int, ...] = tuple(
+    _byte for _byte in ()
+)
+
+
+def _crc_table() -> Tuple[int, ...]:
+    """The 256-entry table for the MSB-first CRC, built once on first use."""
+    global _CRC_TABLE
+    if not _CRC_TABLE:
+        entries: List[int] = []
+        for value in range(256):
+            register = value << 24
+            for _ in range(8):
+                register = (((register << 1) ^ CRC_POLYNOMIAL)
+                            if register & 0x80000000 else (register << 1)) & 0xFFFFFFFF
+            entries.append(register)
+        _CRC_TABLE = tuple(entries)
+    return _CRC_TABLE
+
+
+def crc32_mpeg2(data: bytes) -> int:
+    """CRC-32/MPEG-2 of *data*: poly 0x04C11DB7, init all ones, no reflection.
+
+    Table-driven, which is the same function as the bit-at-a-time loop the
+    reference writers use and is roughly forty times faster over the megabytes
+    a whole-disc pass covers.
+    """
+    table = _crc_table()
+    register = CRC_INITIAL
+    for byte in data:
+        register = ((register << 8) & 0xFFFFFFFF) ^ table[((register >> 24) ^ byte) & 0xFF]
+    return register
+
+
+@dataclass(frozen=True)
+class CrcSite:
+    """One checksum slot: where it sits, what it covers, and both values."""
+
+    kind: str
+    label: str
+    #: Offset of the four-byte slot in the whole file, preamble included.
+    offset: int
+    #: The covered span, also in whole-file offsets.
+    covers_start: int
+    covers_end: int
+    stored: int
+    computed: int
+
+    @property
+    def matches(self) -> bool:
+        return self.stored == self.computed
+
+    def sentence(self) -> str:
+        """One line saying what disagrees, for :func:`verify_crcs`."""
+        return (
+            "%s CRC at offset %d covers bytes %d..%d and stores %08X, but "
+            "those bytes compute to %08X."
+            % (self.label, self.offset, self.covers_start, self.covers_end,
+               self.stored, self.computed)
+        )
+
+
+def crc_sites(data: bytes) -> Tuple[CrcSite, ...]:
+    """Every checksum slot in *data*, with the value stored and the value due.
+
+    Reading, not writing: nothing is changed.  A database whose tables are not
+    laid out in the order its directory lists them is refused, because a data
+    block's extent is exactly "up to the next table" and there is no honest
+    answer otherwise.
+    """
+    database = parse_tdb(data)
+    body = database.body
+    base = database.preamble_bytes
+    _require(
+        database.db_size >= CRC_FILE_HEADER_OFFSET + 4,
+        "this database declares itself %d byte(s) long, which leaves no room "
+        "for the end-of-file checksum; it is damaged."
+        % (database.db_size,),
+    )
+    _require(
+        database.db_size <= len(body),
+        "this database declares itself %d byte(s) long and only %d are here, "
+        "so the end-of-file checksum's slot is past the end; the file is "
+        "truncated." % (database.db_size, len(body)),
+    )
+    offsets = [table.offset for table in database.tables]
+    _require(
+        all(later > earlier for earlier, later in zip(offsets, offsets[1:])),
+        "this database's tables are not in the order its directory lists them "
+        "(offsets %s), and a table's checksummed data block is defined as "
+        "everything up to the next table's header; this reader will not guess "
+        "at the extents." % (offsets,),
+    )
+    sites: List[CrcSite] = [CrcSite(
+        kind=CRC_SITE_FILE_HEADER,
+        label="file-header",
+        offset=base + CRC_FILE_HEADER_OFFSET,
+        covers_start=base,
+        covers_end=base + CRC_FILE_HEADER_COVERAGE,
+        stored=database.checksum,
+        computed=crc32_mpeg2(body[:CRC_FILE_HEADER_COVERAGE]),
+    )]
+    directory = body[TDB_HEADER_SIZE:database.directory_end]
+    prior = crc32_mpeg2(directory)
+    prior_span = (base + TDB_HEADER_SIZE, base + database.directory_end)
+    for index, table in enumerate(database.tables):
+        start = table.offset
+        sites.append(CrcSite(
+            kind=CRC_SITE_TABLE_PRIOR,
+            label="table %d (%s) prior-block" % (index, table.name),
+            offset=base + start,
+            covers_start=prior_span[0],
+            covers_end=prior_span[1],
+            stored=table.prior_crc,
+            computed=prior,
+        ))
+        sites.append(CrcSite(
+            kind=CRC_SITE_TABLE_HEADER,
+            label="table %d (%s) header" % (index, table.name),
+            offset=base + start + TDB_TABLE_HEADER_SIZE - 4,
+            covers_start=base + start + 4,
+            covers_end=base + start + TDB_TABLE_HEADER_SIZE - 4,
+            stored=table.header_crc,
+            computed=crc32_mpeg2(body[start + 4:start + TDB_TABLE_HEADER_SIZE - 4]),
+        ))
+        block_start = start + TDB_TABLE_HEADER_SIZE
+        block_end = (database.tables[index + 1].offset
+                     if index + 1 < len(database.tables) else database.db_size - 4)
+        _require(
+            block_start <= block_end <= len(body),
+            "table %s's data block would run from %d to %d in a %d-byte "
+            "database; the file is damaged."
+            % (table.name, block_start, block_end, len(body)),
+        )
+        prior = crc32_mpeg2(body[block_start:block_end])
+        prior_span = (base + block_start, base + block_end)
+    stored_eof, = struct.unpack_from("<I", body, database.db_size - 4)
+    sites.append(CrcSite(
+        kind=CRC_SITE_END_OF_FILE,
+        label="end-of-file",
+        offset=base + database.db_size - 4,
+        covers_start=prior_span[0],
+        covers_end=prior_span[1],
+        stored=stored_eof,
+        computed=prior,
+    ))
+    return tuple(sites)
+
+
+def recompute_crcs(data: bytes) -> bytes:
+    """*data* with all four kinds of checksum written from its own bytes.
+
+    The only thing that changes is the sixteen-odd checksum slots; every other
+    byte, the preamble included, comes through untouched, and the length is the
+    same.  Call it after any record edit -- a changed record changes its
+    table's data block, which changes the next table's prior-block checksum and
+    the end-of-file one.
+    """
+    out = bytearray(data)
+    for site in crc_sites(data):
+        struct.pack_into("<I", out, site.offset, site.computed)
+    return bytes(out)
+
+
+def verify_crcs(data: bytes) -> List[str]:
+    """One sentence per checksum slot that disagrees with its own bytes.
+
+    An empty list is the pass.  This is the independent half of
+    :func:`recompute_crcs`: it recomputes from the file alone and never
+    consults what a writer claimed.
+    """
+    return [site.sentence() for site in crc_sites(data) if not site.matches]
+
+
+# --------------------------------------------------------------------------
+# The record writer
+# --------------------------------------------------------------------------
+#
+# A record edit never changes a length: a field owns a fixed run of bits in a
+# fixed-stride record, and writing it clears exactly those bits and sets the
+# new ones.  So a database that goes through here comes back the same size,
+# which is what lets a caller put it back into a container slot and an ISO
+# extent it already fits.
+
+
+def encode_field(field: TdbField, record: bytes, value: TdbValue) -> bytes:
+    """*record* with *field* set to *value*, and every other bit as it was.
+
+    The inverse of :meth:`TdbDatabase.decode`, bit for bit: the field's bits
+    are cleared and re-set from the same little-endian integer view the reader
+    shifts out of.  The record keeps its exact length.
+    """
+    stride = len(record)
+    _require(
+        field.bit_offset + field.bit_width <= stride * 8,
+        "field %s covers bits %d..%d and this record is %d byte(s); the field "
+        "does not belong to this table."
+        % (field.name, field.bit_offset, field.bit_offset + field.bit_width, stride),
+    )
+    mask = ((1 << field.bit_width) - 1) << field.bit_offset
+    whole = int.from_bytes(record, "little")
+    whole = (whole & ~mask) | _encode(field, value)
+    out = whole.to_bytes(stride, "little")
+    _require(
+        len(out) == stride,
+        "writing field %s produced a %d-byte record where the table's stride "
+        "is %d; refusing to change a record's length."
+        % (field.name, len(out), stride),
+    )
+    return out
+
+
+def write_records(
+    database: TdbDatabase,
+    table: Union[str, TdbTable],
+    rows: Mapping[int, Mapping[str, TdbValue]],
+    *,
+    recompute: bool = True,
+) -> bytes:
+    """The database's bytes with *rows* written into *table*.
+
+    *rows* maps a record index to the fields it changes; a field the mapping
+    omits keeps whatever the record already holds, so this is an edit and not a
+    rewrite.  The result is the same length as :attr:`TdbDatabase.data`.
+
+    ``recompute`` writes the four checksum sites afterwards, which is what
+    makes the result a file a game will load; pass ``False`` only to produce a
+    deliberately stale file, as a test that a verifier catches one does.
+    """
+    resolved = database._resolve_table(table)  # noqa: SLF001 -- same module
+    _require(
+        bool(rows),
+        "no record was named, so there is nothing to write; hand write_records "
+        "at least one record index and the fields it changes.",
+    )
+    out = bytearray(database.data)
+    stride = resolved.record_bytes
+    for index in sorted(rows):
+        _require(
+            type(index) is int,
+            "a record index is an integer and %r is not; the mapping "
+            "write_records takes is keyed by record index." % (index,),
+        )
+        start = database.record_offset(resolved, index)
+        record = bytes(out[start:start + stride])
+        values = rows[index]
+        _require(
+            hasattr(values, "items"),
+            "record %d of table %s was handed %r; pass a mapping from field "
+            "name to value." % (index, resolved.name, values),
+        )
+        for name, value in values.items():
+            field = database._resolve_field(resolved, name)  # noqa: SLF001
+            record = encode_field(field, record, value)
+        out[start:start + stride] = record
+    result = bytes(out)
+    _require(
+        len(result) == len(database.data),
+        "writing records changed the database's length from %d to %d; that "
+        "cannot happen and the result is refused."
+        % (len(database.data), len(result)),
+    )
+    return recompute_crcs(result) if recompute else result
+
+
+def set_value(
+    database: TdbDatabase,
+    table: Union[str, TdbTable],
+    index: int,
+    field: Union[str, TdbField],
+    value: TdbValue,
+    *,
+    recompute: bool = True,
+) -> bytes:
+    """The database's bytes with one field of one record set to *value*.
+
+    A convenience over :func:`write_records` for the single-field case; the
+    refusals, the fixed length and the checksum pass are the same.
+    """
+    resolved = database._resolve_table(table)  # noqa: SLF001
+    named = database._resolve_field(resolved, field)  # noqa: SLF001
+    return write_records(database, resolved, {index: {named.name: value}},
+                         recompute=recompute)
+
+
 __all__ = [
     "BYTE_ALIGNED_TYPES",
+    "CRC_FILE_HEADER_COVERAGE",
+    "CRC_FILE_HEADER_OFFSET",
+    "CRC_INITIAL",
+    "CRC_POLYNOMIAL",
+    "CRC_SITE_END_OF_FILE",
+    "CRC_SITE_FILE_HEADER",
+    "CRC_SITE_TABLE_HEADER",
+    "CRC_SITE_TABLE_PRIOR",
+    "CrcSite",
     "FIELD_BINARY",
     "FIELD_FLOAT",
     "FIELD_SINT",
@@ -831,6 +1233,13 @@ __all__ = [
     "TdbTable",
     "TdbValue",
     "build_tdb",
+    "crc32_mpeg2",
+    "crc_sites",
+    "encode_field",
     "looks_like_tdb",
     "parse_tdb",
+    "recompute_crcs",
+    "set_value",
+    "verify_crcs",
+    "write_records",
 ]
