@@ -441,3 +441,157 @@ one same-size span patch, one screenshot. And because the Xbox row has *never*
 had this witness either, taking it on PS2 would make the **PS2** row the
 better-evidenced of the two — and would retire the M1-class doubt for every
 remaining on-disc Phase-2 surface at the same time.
+
+---
+
+# Implementation
+
+The PORT verdict above was accepted and built. This section records what
+shipped, the real-disc trial that exercised it, and what is still missing
+before the registry row can claim a classification.
+
+## What ported, and what is new
+
+**Ported unchanged — zero edits.** `nfl2k5_play_codec.py`,
+`nfl2k5_playbook_inspector.py` and `nfl2k5_formation_play_writer.py` are used
+exactly as the Xbox lane ships them. No stride, offset, capacity or validator
+constant was changed for PS2, because §1 showed none differs. The PS2 lane is
+therefore a *caller* of the Xbox writer, not a fork of it — the single most
+important property to preserve, since it means Xbox-side playbook fixes reach
+PS2 for free.
+
+**New, and only about *where the bytes live*:**
+
+| file | role |
+|---|---|
+| `tools/nfl2k5_ps2_playbook_patch.py` | Locates the 37 `PLAY` resources, drives the Xbox writer, rebuilds pack 0 at identical length, and installs it with `ps2_iso9660_writer.replace_files` into a **new** image. Source ISO opened read-only. |
+| `tools/nfl2k5_ps2_playbook_verify.py` | The independent half. Imports neither the patcher nor `ps2_iso9660` (the writer's own reader). Re-derives everything from the two images plus the report. |
+| `tools/nfl2k5_ps2_playbook_target_catalog.py` | Emits `reports/gameplay_tuning/nfl2k5_ps2_playbook_catalog.v1.json` — per book: id, name, location, counts, capacity headroom. |
+| `tools/validate_nfl2k5_ps2_playbook.{sh,bat}` | Offline validators; compile the tools and run the synthetic suite. No disc needed. |
+| `tests/mod_editor/test_nfl2k5_ps2_playbook.py` | 10 tests on a synthetic ISO + synthetic pack + a synthetic `PLAY` body the shipped codec accepts. |
+
+Two design points worth keeping:
+
+- **Locating a book costs one 32-byte read per outer entry.** On both discs
+  every playbook is *chunk 0 of its own outer entry* at offset 0, so the
+  4,322-entry table resolves without a chunk walk — `list` over the retail ISO
+  takes ~14 s, nearly all of it the codec parsing all 37 books.
+- **The `PLAY` chunks are uncompressed** (`lz=0` on all 37; the outer header's
+  `0xFEEDBEEF` sentinel is absent), so there is no decode on read and **no
+  recompression on write**. The body is patched inside the pack and the
+  surrounding bytes are untouched. A compressed family would have needed a
+  re-encoder that fits the old size — this one does not.
+
+Allocation is pinned twice: the compiled resource is asserted to be exactly
+78,768 bytes, and the rebuilt pack is asserted to be exactly its original
+1,073,741,824 bytes before `replace_files` — which independently refuses any
+replacement that does not fit the extent it already owns — is even called.
+
+## Real-disc trial
+
+Run against the owner's own stock `SLUS-20919` ISO, read-only, output written
+to gitignored scratch and **not committed**. Recorded in
+`reports/gameplay_tuning/nfl2k5_ps2_playbook_trial.v1.json`.
+
+Target: **ATL** (`0x49cd9f21`), outer entry 336, pack `/VC_20919/0.` at pack
+offset 116,217,856 = **absolute ISO offset 146,198,528**. Chosen for headroom,
+and because it is the same book the Xbox `PLAY_XISO_SLICE_PROOF.md` used.
+Requested: one authored formation ("GUN TRIPS RT", 11 authored slot positions)
+and one created play ("PS2 SMASH").
+
+| measurement | value |
+|---|---|
+| book before → after | **39f / 254p / 2,438n → 40f / 255p / 2,438n** |
+| new formation index / new play index | 39 / 254 |
+| bytes changed inside the body | **258**, in 74 ranges |
+| resource size in and out | 78,768 → **78,768** |
+| source image size / output image size | 4,665,081,856 → **4,665,081,856** |
+| writer declared ranges | 2 (the pack extent + its directory-record length) |
+
+That the counts land on **39→40 formations and 254→255 plays** is the same
+result the Xbox lane recorded for its ATL book — the strongest single
+confirmation that the ported writer behaves identically on PS2 data.
+
+**Both verifiers pass.** `nfl2k5_ps2_playbook_verify.py`:
+
+```
+ok  iso_writer_replacement_verified          declared_ranges=2
+ok  diff_confined_to_declared_play_spans     74 differing ranges, 258 bytes, 1 declared span
+ok  books_parse_and_validate                 1 book, 255 plays accepted by the retail validator
+ok  undeclared_books_byte_identical          36 of 37 books untouched
+PASS
+```
+
+The second line is the one that matters most: a **streaming diff of the entire
+4.35 GB image** finds 258 differing bytes and every one of them lies inside the
+single declared 78,768-byte playbook span. Nothing else on the disc moved. The
+third line re-parses the patched book with the codec and puts all 255 plays —
+the 254 stock ones and the new one — through the ported retail validator, which
+accepts every one.
+
+## Tests
+
+10 tests, all passing, no game data:
+
+- the synthetic body parses with the shipped inspector and **every play passes
+  the retail validator** (the fixture has to be a real book or nothing else
+  proves anything);
+- targets are found with correct offsets;
+- a formation and a play are added and the independent verifier returns PASS;
+- the untouched book keeps every byte;
+- **a byte flipped outside the declared span fails verification**;
+- a book at the **270-play capacity is refused** ("would need 271 plays"), and
+  no output image is created;
+- **a compile returning the wrong body length is refused** before the output
+  exists — a fixed-allocation violation cannot reach disk;
+- an unknown book id and a bad recipe schema are refused;
+- the catalog reports counts and headroom and carries no payload.
+
+`tools/validate_nfl2k5_ps2_playbook.sh` prints
+`NFL2K5_PS2_PLAYBOOK_VALIDATION_PASS`. Both `py_compile` under Python 3.9 and
+`test_shipped_tools_are_self_sufficient` pass for all three new tools.
+
+## Catalog
+
+`reports/gameplay_tuning/nfl2k5_ps2_playbook_catalog.v1.json` — 37 books,
+1,533 formations, 9,251 plays, 91,833 nodes; headroom **317 formations / 739
+plays / 37,667 nodes**; **8 books at the 270-play cap**. Those eight are
+`ARZ, BUF, CIN, HOU, JAX, NYJ, OAK, SD` — **exactly the eight
+`docs/mod_editor/playbook_packs.md` names for Xbox**, independently re-derived
+here from the PS2 disc. A recipe that *adds* a play cannot target them; one
+that replaces can.
+
+## What remains
+
+**Before the row can claim `offline-writer-proved`** — none of it is format
+work, and none of it is in this branch by instruction:
+
+1. **The registry row itself** (`nfl2k5ps2.scripts.director_playbook`), which
+   is the 8-file atomic change documented as handoff correction #1 — it also
+   re-pins the APF 2K8 release gate. Added in a serialized integration commit.
+2. **Capability + provider wiring** so Build accepts the two PS2 kinds, and
+   project-archive round-tripping for the PS2 game id.
+3. **GUI surfacing** in a separate PS2 workspace, following the
+   `ps2_save_dialog_qt.py` pattern.
+
+The *evidence* those steps need already exists: this branch's trial JSON is
+what the row would cite.
+
+**Before `runtime-proved`:** the witness named at the end of the research
+section — boot the patched ISO in PCSX2 / PenguinScreen2 and see the authored
+formation line up. That is a rig step, deliberately not done here. Note again
+that the **Xbox** row has never had this witness either
+(`runtime.status: not-tested`, `runtime.evidence: []`), so taking it on PS2
+would make the PS2 row the better-evidenced of the two.
+
+**Known limits of the current tool**, all deliberate and enforced rather than
+silently worked around:
+
+- one pack per run (every `PLAY` resource is in pack 0, so this has never
+  bound);
+- creations are clones of a donor plus authored slot positions / node chains —
+  the Xbox writer's Stage-3 surface, no more;
+- the group bits on a formation→play menu link stay unproved, so the writer
+  only ever reuses a value the book already uses;
+- the memory-card overlay risk from `PLAY_SAVE_OWNERSHIP.md` is untested on
+  PS2 and would be a runtime finding, not a writer bug.

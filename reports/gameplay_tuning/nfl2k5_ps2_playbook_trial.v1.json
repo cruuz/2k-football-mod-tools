@@ -1,0 +1,83 @@
+{
+  "classification_supported": "offline-writer-proved",
+  "edit": {
+    "absolute_offset": 146198528,
+    "after": {
+      "categories": 23,
+      "formations": 40,
+      "nodes": 2438,
+      "plays": 255
+    },
+    "before": {
+      "categories": 23,
+      "formations": 39,
+      "nodes": 2438,
+      "plays": 254
+    },
+    "book_id": "0x49cd9f21",
+    "book_name": "ATL",
+    "changed_byte_count": 258,
+    "changed_range_count": 74,
+    "entry_index": 336,
+    "new_formation_indices": [
+      39
+    ],
+    "new_play_indices": [
+      254
+    ],
+    "pack_offset": 116217856,
+    "replacement_sha256": "2f88a98ce78b1995a3d0f237ccc7f6bba452196125f63eed25da3b5b2f850f9a",
+    "requested": {
+      "authored_slot_positions": 11,
+      "custom_names": [
+        "GUN TRIPS RT",
+        "PS2 SMASH"
+      ],
+      "formations_created": 1,
+      "plays_created": 1
+    },
+    "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5"
+  },
+  "game": "ESPN NFL 2K5 (PS2, SLUS-20919)",
+  "image_size_unchanged": true,
+  "iso_writer": {
+    "declared_ranges": 2
+  },
+  "output_image": {
+    "name": "nfl2k5-ps2-playbook-trial.iso",
+    "note": "written under gitignored scratch and not committed",
+    "retained": false,
+    "size": 4665081856
+  },
+  "pack": {
+    "iso_path": "/VC_20919/0.",
+    "size": 1073741824
+  },
+  "purpose": "Real-disc trial of tools/nfl2k5_ps2_playbook_patch.py and tools/nfl2k5_ps2_playbook_verify.py. Offsets, sizes, counts and digests only -- no disc bytes, no playbook payload.",
+  "resource": {
+    "body_size": 78736,
+    "compressed": false,
+    "size": 78768
+  },
+  "runtime_status": "not-tested",
+  "schema": "nfl2k5_ps2_playbook_trial/v1",
+  "source_image": {
+    "name": "ESPN NFL 2K5 (USA).iso",
+    "size": 4665081856
+  },
+  "verification": {
+    "books_untouched": 36,
+    "changed_byte_total": 258,
+    "changed_range_count": 74,
+    "checks": [
+      "iso_writer_replacement_verified",
+      "diff_confined_to_declared_play_spans",
+      "books_parse_and_validate",
+      "undeclared_books_byte_identical"
+    ],
+    "declared_edits": 1,
+    "play_resources_found": 37,
+    "plays_accepted_by_retail_validator": 255,
+    "verdict": "PASS"
+  }
+}
