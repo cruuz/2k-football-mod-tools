@@ -1,0 +1,67 @@
+[
+  {
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_practice_squad_screen.py",
+      "operation": "write",
+      "command": "python3 -c \"from pathlib import Path; from mod_editor.core import nfl2k5_practice_squad_screen as m; result, receipt = m.apply(Path('prepared.xbe').read_bytes()); print(receipt)\""
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_PS_NATIVE_SCREEN_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_practice_squad_screen.py",
+      "tests/mod_editor/test_nfl2k5_practice_squad_screen_unicorn.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+    },
+    "id": "nfl2k5.franchise.practice_squad_screen",
+    "input_constraints": [
+      "Pinned USA XBE and applied practice_squad, franchise_practice, practice_reserves prerequisites.",
+      "Allocate all selected owner requests together before any installation. Foreign, mixed and altered prerequisites refuse.",
+      "Only the selected human NFL team can move its owned eligible player; promotion below 53 active, demotion below 12 reserves, 65 physical slots.",
+      "No CPU poaching or protection; no save-format growth."
+    ],
+    "portme": [
+      "Complete Noah's in-game witness list in ASTRA_PS_NATIVE_SCREEN_REPORT.md, including sorted identity, 0/12 reserves, multi-human context, save/reload, cap/depth and game-day exclusion."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "status": "not-tested",
+      "scope": "Bounded CPU execution of native page dispatch, construction, transactions, rebuilding and teardown. Graphics, controller use, Xbox loading and save lifecycle remain unwitnessed.",
+      "evidence": [
+        "ASTRA_PS_NATIVE_SCREEN_REPORT.md"
+      ]
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "practice_squad_screen",
+          "required": true,
+          "allowed": "false in Basic, Advanced and Experimental; explicit opt-in"
+        }
+      ],
+      "notes": "Requires practice_squad, franchise_practice, practice_reserves and a complete allocator request union; WIRING.md specifies protected integration."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "One delegated Coach Desk pointer, 4096 immutable RX bytes and 256 zero-initialized RW bytes",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Coach's Desk Active and Reserves lists with guarded Promote and Demote actions.",
+    "surface": "menus",
+    "title": "Practice Squad screen (experimental, unwitnessed)",
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_practice_squad_screen.py"
+  }
+]

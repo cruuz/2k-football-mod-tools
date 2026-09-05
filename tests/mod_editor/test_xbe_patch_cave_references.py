@@ -43,6 +43,10 @@ def sections(xbe: bytes):
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
+    # The complete union includes the 4 KiB native screen and requires v3.
+    # Keep the existing v3 mapping/candidate assertions selected explicitly.
+    scaleout = True
+
     @classmethod
     def setUpClass(cls) -> None:
         from mod_editor.core import nfl2k5_throw_tuning as tt
@@ -77,6 +81,9 @@ class CaveReferenceTests(unittest.TestCase):
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
+        if practice_screen.status(cls.patched) != "applied":
+            raise AssertionError("Practice Squad screen missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")

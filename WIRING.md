@@ -3981,3 +3981,140 @@ protected `data/nfl2k5_cave_reservations.json` only through Claude's coordinated
 packaging source hashes using the existing release workflow. The new standalone
 manifest test observes the real writer and validates every hook and full
 RX/RW/RO child without rewriting a disc or the protected manifest.
+# r62 native Practice Squad screen handoff, 2026-09-05
+
+`nfl2k5_practice_squad_screen` is implemented and EXPERIMENTAL / UNWITNESSED.
+Protected product files are unchanged. This section supersedes the old
+PS-section statements that the management destination is deferred. The
+transaction, Free Practice and Schedule-first prerequisites remain required.
+CPU poaching/protection stay off and have no option in this delivery.
+
+## BuildPlan, presets and allocation order
+
+In `mod_editor/core/mod_build.py`, add `practice_squad_screen: bool = False`.
+Explicitly keep it **False in basic, advanced (`modern`) and experimental**.
+Add it to availability, inspection, option persistence/serialization, selection
+and has-work predicates, worker arguments, summary and step receipts. Enabling
+it implies `practice_squad=True`, `franchise_practice=True` and `xbe_space=True`;
+the existing conjunction installs `practice_reserves`. Include the implication
+in both Build and bare writer normalization, before the first mutation.
+
+Include `screen.REQUESTS` in `_selected_space_requests` and every selected
+request union, including the defensive-try allocator adapter and scorebug
+`extra_requests` path. Reserve the whole union before installing any grown
+owner. Use v3 (`space.apply(payload, requests, scaleout=True)`). The feature
+requests exactly `("nfl2k5_practice_squad_screen", "code", 4096, 16)` and
+`("nfl2k5_practice_squad_screen", "data", 256, 16)`. Immutable code, clones,
+menu and strings fit within RX; no separate RO allocation or extra RW is needed.
+The committed beta-62 budget fixture already has both exact rows.
+
+Defer the screen until the **final grown-owner pass**, after SPECIAL/resource
+work and `practice_reserves`. Include its request when paired scorebug realizes
+the allocator, and include the flag in the final `_apply_all` call after that
+paired pass. A pre-existing sealed request set without this owner must refuse
+and require rebuilding from the original source. No late request insertion or
+address relocation is permitted. All presets stay off even though enabling
+this option automatically selects its prerequisites.
+
+## Dispatcher tuple, keyword and all four dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py` import:
+
+```python
+from . import nfl2k5_practice_squad_screen as practice_squad_screen_patch
+```
+
+Add `practice_squad_screen: bool = False` to `_apply_all`, `write_xbe_copy`,
+`write_image_copy`, allocator adapters and `_selected_space_requests`.
+Forward it through every writer/Build dispatch, including deferred scorebug
+calls. Include it in the writer's has-work checks. At dispatcher entry,
+normalize its prerequisites before ordinary patch processing.
+
+Add this exact tuple in the **final owners** loop, after the allocator entry
+and the already-executed `practice_reserves` block:
+
+```python
+(practice_squad_screen, practice_squad_screen_patch,
+ "practice_squad_screen_patch", "experimental Practice Squad screen"),
+```
+
+Preserve its complete receipt, including limits, allocation, labels, hashes,
+`runtime_witnessed=False`, poaching/protection and replay `changed_bytes=0`.
+`FranchisePractice.status/apply` already recognize the exact new table through
+its sealed owner validator, so do not project or rewrite the old pointer in
+the dispatcher. Free Practice replay must leave the new pointer intact.
+
+Add the following key in **each** dictionary:
+
+| Function | Entry |
+| --- | --- |
+| `read_xbe` | `"practice_squad_screen": practice_squad_screen_patch.status(payload),` |
+| `read_image` | `"practice_squad_screen": practice_squad_screen_patch.status(payload),` |
+| `write_xbe_copy` | `"practice_squad_screen": practice_squad_screen_patch.status(result),` |
+| `write_image_copy` | `"practice_squad_screen": practice_squad_screen_patch.status(after),` |
+
+Expose the same key in `mod_build.inspect`, availability and final output
+status. Missing prerequisites are an error, never a successful omitted step.
+
+## Gameplay Patches, Build and Studio
+
+Import the module in `gameplay_patches_panel_qt.py` and add to `PATCHES`:
+
+```python
+("practice_squad_screen", "Practice Squad screen (experimental)",
+ practice_squad_screen_patch.HELP_TEXT),
+```
+
+`HELP_TEXT` contains **Retail** and **Patch** and explicitly says experimental
+and unwitnessed. Add `practice_squad_screen` to `NEEDS_IMAGE`, matching product
+policy for grown owners. Its pure XBE API remains available for developer use.
+
+In `build_panel_qt.py`, add the opt-in `_option` with the 36-character caption
+**`Practice Squad screen (experimental)`**, the same help, and the existing
+EXPERIMENTAL badge. Connect it to `_make_plan`, preset/reset, source-reload,
+source availability/status, persistence, dirty detection and selected-change
+text. Studio forwards the plan through the existing Build operation lock;
+no new GUI panel or top-level navigation item is needed. Show prerequisite
+selection in the build summary. Never report an in-game witness from these
+CPU tests.
+
+## Allowlist, runtime closure, capability and manifest
+
+Add these exact runtime paths to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_practice_squad_screen.py
+mod_editor/core/nfl2k5_practice_squad_screen_code.py
+```
+
+Explicitly import both in protected
+`packaging/check_2k5_mod_studio_runtime.py`. Retain closure imports for
+`nfl2k5_practice_squad`, `nfl2k5_practice_squad_runtime`,
+`nfl2k5_franchise_practice`, `nfl2k5_practice_reserves`,
+`nfl2k5_xbe_space`, `nfl2k5_bump_strength`, `nfl2k5_rdata_sites`,
+`nfl2k5_cave_oracle`, `nfl2k5_draft_ai` and their existing transitive dependencies.
+The Franchise Practice module now lazily imports the screen validator only
+when a pointer needs delegation recognition, so the new module must ship even
+when the Build option defaults off. Add both files to the gameplay provider
+closure and repin provider/runtime source hashes after integration.
+GNU as, Capstone, Unicorn, the `.S` file, the assembler script and test fixtures
+are development-only dependencies; application uses the checked-in byte
+and relocation template with the Python standard library.
+
+Merge the complete schema-valid object in
+`docs/mod_editor/nfl2k5_practice_squad_screen_capability.json` by ID
+`nfl2k5.franchise.practice_squad_screen` into the canonical capability registry.
+It uses the existing `menus` surface, classification `offline-writer-proved`,
+runtime `not-tested`, GUI explicit opt-in, default false. It requires no new
+surface enum. Update registry count/coverage assertions during integration.
+The handoff JSON/report are review artifacts, not runtime game assets.
+
+The manifest builder and both executable gates already include the owner.
+The exact four-byte pointer is intentionally delegated from Franchise
+Practice; it is not free storage. The full menu/code/state capacities are
+allocator children, never retail caves. Claude must regenerate protected
+`data/nfl2k5_cave_reservations.json` after integration with the existing
+`tools/nfl2k5_cave_oracle.py manifest` command. A scratch manifest can be tested
+with `NFL2K5_CAVE_MANIFEST`; production fingerprints must never be weakened.
+Run both new standalone suites, Franchise Practice, practice reserves and
+both complete XBE gates, then the protected Build/closure tests after wiring.

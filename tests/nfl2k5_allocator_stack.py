@@ -11,21 +11,29 @@ from mod_editor.core import nfl2k5_roster_storage as roster_storage
 from mod_editor.core import nfl2k5_coverage_slider as coverage
 from mod_editor.core import nfl2k5_scramble_tuning as scramble
 from mod_editor.core import nfl2k5_music_playlist as playlist
+from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
                    + defensive_try.REQUESTS + zone_drop.REQUESTS)
-REQUESTS = LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
+REQUESTS = (LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
+            + playlist.REQUESTS + practice_screen.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
 def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     from mod_editor.core import nfl2k5_scorebug_ingame as scene
+    from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_franchise_practice as fp
+    from mod_editor.core import nfl2k5_practice_reserves as pr
+    payload, _ = ps.apply(payload)
+    payload, _ = fp.apply(payload)
+    payload, _ = pr.apply(payload)
     payload, _ = scene.apply_xbe(payload)
     payload, policy_receipt = policy.apply(payload, music_unlock=True, music_userlist=True)
     payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
     owners = ((defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True)), (zone_drop, {}),
-              (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}))
+              (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
+              (practice_screen, {}))
     order = tuple(reversed(owners)) if reverse else owners
     for module, kwargs in order:
         payload, _ = module.apply(payload, **kwargs)

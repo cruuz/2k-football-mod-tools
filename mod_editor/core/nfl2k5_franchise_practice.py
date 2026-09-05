@@ -411,7 +411,17 @@ def status(payload: bytes) -> str:
 
     if not _pins_are_retail(payload):
         return "foreign"
-    return rdata.status(payload, sites())
+    owned_sites = sites()
+    state = rdata.status(payload, owned_sites)
+    if state == "foreign":
+        # The native Practice Squad screen takes over this one pointer. Its
+        # sealed allocation and exact composed table must validate in full;
+        # every other Franchise Practice byte still has its original pin.
+        from . import nfl2k5_practice_squad_screen as screen
+        if screen.owns_franchise_pointer(payload):
+            return rdata.status(payload, [s for s in owned_sites
+                                         if s[1] != COACH_DESK_ROWS_PTR_VA])
+    return state
 
 
 def _read_utf16(payload: bytes, va: int) -> str:
@@ -460,6 +470,8 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     An already-applied image is returned unchanged with ``already_applied``.
     """
 
+    if status(payload) == "applied":
+        return payload, {"already_applied": True, "edits": [], "changed_bytes": 0, **code_report()}
     if not _pins_are_retail(payload):
         raise FranchisePracticeError(
             "the Coach's Desk, the Scrimmage Settings screen, the L\"Practice\" string or a routine "
