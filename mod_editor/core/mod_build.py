@@ -347,7 +347,7 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "accel_ramp": report.get("accel_ramp"), "draft_ai": report.get("draft_ai"),
         "returner_fix": report.get("returner_fix", "unknown"), "progression": report.get("progression", "unknown"),
         "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
-        "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
+        "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "playoff_picture": report.get("playoff_picture", "unknown"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "penalties": report.get("penalties", "unknown"),
@@ -751,6 +751,23 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
             season_receipt = {"already_applied": True}
         else:
             raise ValueError(f"season-length sites are {state}; refusing")
+        # the seven-seed presentation (Playoff Picture, Playoff Tree, SportsCenter previews) rides with the bracket:
+        # a disc with the fourteen-team playoffs must never show the old six-seed picture
+        picture = _core_module("nfl2k5_playoff_picture")
+        if picture is None:
+            raise RuntimeError("the playoff presentation module is not available in this build")
+        pstate_xbe = picture.status(xbe)
+        if pstate_xbe == "retail":
+            progress("Showing the seven-seed playoff picture and previews", 0, 0)
+            xbe, picture_receipt = picture.apply(xbe)
+            _write_xbe_bytes(target, xbe)
+        elif pstate_xbe == "applied":
+            picture_receipt = {"already_applied": True}
+        else:
+            raise ValueError(f"playoff presentation sites are {pstate_xbe}; refusing")
+        if picture.status(_xbe_bytes(target)) != "applied":
+            raise ValueError("the seven-seed playoff presentation failed its read-back")
+        season_receipt = {**season_receipt, "playoff_picture": {k: v for k, v in picture_receipt.items() if k != "edits"}}
         progress("Writing the real 2026 schedule into the franchise template", 0, 0)
         doc = json.loads((ROOT / "data" / "nfl_2026_schedule.json").read_text(encoding="utf-8"))
         template, info = fs.encode_schedule(doc)

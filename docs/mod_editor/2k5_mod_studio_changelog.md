@@ -2,6 +2,16 @@
 
 ## v1.0 RC84 — ★ Rosters does what Finn's did (real saves, Franchise tab, membership, templates), dynamic kickoff, slot / nickel / dime, practice squads, career stats, simpler words everywhere (2026-09-04)
 
+- **The Playoff Picture, the Playoff Tree and SportsCenter's playoff previews now show the seven-seed format.** Noah's
+  first look at the pre-release disc found the franchise's seeding preview and the recap segments still describing the
+  retail six-seed picture while the bracket itself played the 2020+ format. Built by GPT-6 Astra and now part of the 2026
+  season step: the Playoff Picture always lists the seven projected qualifiers with a visible 7, the Playoff Tree binds
+  all thirteen postseason games (three wild-card boxes per conference, headed "AFC: 7 Seeds / Superbowl / NFC: 7 Seeds",
+  no fixed connectors because the wild-card winners reseed), SportsCenter admits the seventh seed's status and compares
+  the seventh team with the eighth on the bubble, only the #1 seed is ever labelled "#1 Seed / Bye" (an older save's
+  stale second-bye flag is ignored), and the durable seventh seeds ride in the wild-card slots of the grid so save and
+  reload keep them. 605 bytes, no new cave; proved by bounded execution of the presentation callbacks through complete
+  wild-card rounds with upsets. The recorded narration was not touched. Unwitnessed on screen.
 - **Fixed before release: the star under tagged players never drew.** Beta 58's star patch widened the controller-
   indicator gate so a tagged player was queued, but the game's indicator pass marks every CPU body and skips the whole
   drawing branch for them, so nothing appeared under anyone. The patch now runs its own pass after the game's: for every

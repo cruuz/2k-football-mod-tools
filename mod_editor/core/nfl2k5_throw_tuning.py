@@ -62,6 +62,7 @@ from . import nfl2k5_kick_rules as kick_rules_patch
 from . import nfl2k5_dynamic_kickoff as dynamic_kickoff_patch
 from . import nfl2k5_depth_chart_rows as depth_chart_rows_patch
 from . import nfl2k5_practice_squad as practice_squad_patch
+from . import nfl2k5_playoff_picture as playoff_picture_patch
 
 
 def _kick_power_status(payload: bytes) -> str:
@@ -598,6 +599,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(payload),
         "depth_chart_rows": depth_chart_rows_patch.status(payload),
         "practice_squad": practice_squad_patch.status(payload),
+        "playoff_picture": playoff_picture_patch.status(payload),
         "kick_power": _kick_power_status(payload),
         "widescreen": widescreen_patch.status(payload),
         "overtime": overtime_patch.status(payload),
@@ -704,6 +706,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(payload),
         "depth_chart_rows": depth_chart_rows_patch.status(payload),
         "practice_squad": practice_squad_patch.status(payload),
+        "playoff_picture": playoff_picture_patch.status(payload),
         "kick_power": _kick_power_status(payload),
         "widescreen": widescreen_patch.status(payload),
         "overtime": overtime_patch.status(payload),
@@ -1155,6 +1158,7 @@ def write_xbe_copy(
         "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(result),
         "depth_chart_rows": depth_chart_rows_patch.status(result),
         "practice_squad": practice_squad_patch.status(result),
+        "playoff_picture": playoff_picture_patch.status(result),
         "kick_power": _kick_power_status(result),
         "widescreen": widescreen_patch.status(result),
         "overtime": overtime_patch.status(result),
@@ -1329,6 +1333,7 @@ def write_image_copy(
         "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(after),
         "depth_chart_rows": depth_chart_rows_patch.status(after),
         "practice_squad": practice_squad_patch.status(after),
+        "playoff_picture": playoff_picture_patch.status(after),
         "kick_power": _kick_power_status(after),
         "widescreen": widescreen_patch.status(after),
         "overtime": overtime_patch.status(after),
