@@ -396,11 +396,12 @@ with a disc rebuilt by these lanes:**
 2. **The field art.** Same disc, same game: the field is drawn from
    `FIELDART.DAT`, and the edited member is one of the 32 a coin-toss frame
    drew, so it should be visible at the coin toss without playing a down.
-3. **The UI texture.** `UIS_TMLO.DAT` member 1 is a team logo the coin-toss
-   screen draws. It is also carried in `GAME.QKL`, so seeing it change is the
-   thing that proves the **member-copy cache rewrite** is right — if the game
-   preloads the stale copy, the old logo appears and the edit is silently
-   ignored.
+3. **The UI texture.** `UIS_TMLO.DAT` member 1 is one of the 58 textures in
+   that container a dumped coin-toss frame was drawing [M], so the coin-toss
+   screen is where to look; what it depicts is not established here. It is
+   also carried in `GAME.QKL`, which makes it the one edit that proves the
+   **member-copy cache rewrite** — if the game preloads the stale copy, the
+   old texture appears and the edit is silently ignored.
 4. **The negative that matters.** The game must still *load*: a directory
    rewritten in three cached copies is the step most likely to hang a preload
    rather than draw the wrong picture. A disc that boots to the menu and starts
