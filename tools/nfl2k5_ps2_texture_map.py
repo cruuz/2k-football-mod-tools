@@ -336,6 +336,70 @@ def level_bytes(psm: int, image: bytes, width: int, height: int) -> bytes:
     raise TextureMapError("unsupported PSM 0x%02x" % psm)
 
 
+# ---------------------------------------------------------------------------
+# The same permutations, run backwards.  Hashing only ever needs the forward
+# direction; a *decoder* needs the inverse, because what it holds is the GS
+# block image and what it wants is the linear index rows.  They live here, one
+# function under the other, so the two directions cannot drift apart -- an
+# inverse derived from a copy of the tables would be a second implementation of
+# the same maths, and the pair would agree only until one of them was fixed.
+# ---------------------------------------------------------------------------
+
+def _invert(order: Sequence[int]) -> List[int]:
+    """``inverse[order[i]] == i``.  ``order`` must be a permutation."""
+    inverse = [0] * len(order)
+    for position, source in enumerate(order):
+        inverse[source] = position
+    return inverse
+
+
+def unswizzle8_blocks(blocks: bytes, width: int, height: int) -> bytes:
+    """Inverse of :func:`swizzle8_blocks`: GS 16x16 blocks back to linear rows."""
+    getter = _gather(("u8", width, height),
+                     lambda: _invert(_swizzle8_perm(width, height)))
+    return _apply(getter, blocks)
+
+
+def unswizzle4_blocks(packed: bytes, width: int, height: int) -> bytes:
+    """Inverse of :func:`swizzle4_blocks`: one index byte per texel, linear.
+
+    The forward direction packs two texels per byte, so the inverse gathers
+    from the low-nibble and high-nibble halves laid end to end.
+    """
+    count = width * height
+
+    def build() -> List[int]:
+        low, high = _swizzle4_perms(width, height)
+        order = [0] * count
+        for position, source in enumerate(low):
+            order[source] = position
+        for position, source in enumerate(high):
+            order[source] = position + len(low)
+        return order
+
+    getter = _gather(("u4", width, height), build)
+    half = packed[: count // 2]
+    return _apply(getter, half.translate(_LOW_NIBBLE) + half.translate(_HIGH_NIBBLE))
+
+
+def level_indices(psm: int, blocks: bytes, width: int, height: int) -> bytes:
+    """Inverse of :func:`level_bytes`: one palette index per texel, row-major.
+
+    The small-level path of :func:`level_bytes` is the identity, so this one is
+    too: below a whole GS block in either direction the bytes already are the
+    expanded index rows.
+    """
+    if psm == PSMT8:
+        if width >= 16 and height >= 16:
+            return unswizzle8_blocks(blocks, width, height)
+        return blocks[: width * height]
+    if psm == PSMT4:
+        if width >= 32 and height >= 16:
+            return unswizzle4_blocks(blocks, width, height)
+        return blocks[: width * height]
+    raise TextureMapError("unsupported PSM 0x%02x" % psm)
+
+
 def vram_block_offsets(width: int, height: int, tbw: int, psm: int) -> List[int]:
     """Byte offset of every block relative to the image's TBP, row-major."""
     pages_wide = max(1, (tbw * 64) // 128)
@@ -715,8 +779,16 @@ def _next_offset(candidates: Sequence[int], after: int) -> Optional[int]:
     return next((value for value in candidates if value > after), None)
 
 
-def process_entry(index: int) -> List[dict]:
-    """Every indexed texture in one outer-table entry."""
+def process_entry(index: int, keep_payload: bool = False) -> List[dict]:
+    """Every indexed texture in one outer-table entry.
+
+    ``keep_payload`` attaches the bytes :func:`analyse` read -- the descriptor,
+    the video block and the region end -- under a ``payload`` key, so a caller
+    that wants *pixels* rather than hashes can decode the very same input this
+    hashed.  It is off by default and never set on the pooled build: the map is
+    a retail-free document, and a record carrying a video block would be
+    neither small enough to pickle across a worker nor safe to serialise.
+    """
     archive = _state["archive"]
     name_id, entry_size, offset_blocks = _state["entries"][index]
     virtual_base = offset_blocks * inv.ALIGNMENT
@@ -769,12 +841,14 @@ def process_entry(index: int) -> List[dict]:
             if inner == "TXTR":
                 descriptor = inv.relative_pointer(head, 0x14, len(head))
                 if descriptor is not None:
-                    record = analyse(
-                        system[descriptor:descriptor + TXTR_DESCRIPTOR_SIZE],
-                        video, True)
+                    desc = system[descriptor:descriptor + TXTR_DESCRIPTOR_SIZE]
+                    record = analyse(desc, video, True)
                     if record:
                         record.update(base, src="chunk", idx=0, name=object_name or "",
                                       name_key=inv.name_key(object_name))
+                        if keep_payload:
+                            record["payload"] = {"descriptor": desc, "video": video,
+                                                 "is_chunk": True, "region_end": None}
                         out.append(record)
             elif kind == "TSET":
                 descriptors = _tset_descriptors(system)
@@ -787,11 +861,14 @@ def process_entry(index: int) -> List[dict]:
                     if len(desc) < TXTR_DESCRIPTOR_SIZE:
                         continue
                     start = struct.unpack_from("<I", desc, 0x18)[0]
-                    record = analyse(desc, video, False,
-                                     _next_offset(boundaries, start))
+                    region_end = _next_offset(boundaries, start)
+                    record = analyse(desc, video, False, region_end)
                     if record:
                         record.update(base, src="tset", idx=child, name=name or "",
                                       name_key=inv.name_key(name))
+                        if keep_payload:
+                            record["payload"] = {"descriptor": desc, "video": video,
+                                                 "is_chunk": False, "region_end": region_end}
                         out.append(record)
             if inner == "SCNE" and video_bytes > 0:
                 descriptors = _scene_descriptors(system)
@@ -800,14 +877,17 @@ def process_entry(index: int) -> List[dict]:
                 scene_key = inv.name_key(object_name)
                 for child, desc in descriptors:
                     start = struct.unpack_from("<I", desc, 0x18)[0]
-                    record = analyse(desc, video, False,
-                                     _next_offset(boundaries, start))
+                    region_end = _next_offset(boundaries, start)
+                    record = analyse(desc, video, False, region_end)
                     if record:
                         record.update(
                             base, src="scne", idx=child,
                             name="%s/embedded_%04d" % (object_name or "", child),
                             name_key="%s/EMBEDDED_%04d" % (scene_key, child),
                             scene=scene_key)
+                        if keep_payload:
+                            record["payload"] = {"descriptor": desc, "video": video,
+                                                 "is_chunk": False, "region_end": region_end}
                         out.append(record)
         except (struct.error, ValueError, IndexError):
             pass
@@ -1999,6 +2079,14 @@ def _descriptor(tex0: int, image_offset: int, width: int, height: int,
     return bytes(out)
 
 
+# Public names for the three fixture builders above.  A game module's own
+# synthetic source lays its bytes out with these rather than copying the TEX0
+# and descriptor packing, so a fixture and this parser cannot drift apart.
+pattern_bytes = _pattern
+make_tex0 = _make_tex0
+descriptor_bytes = _descriptor
+
+
 def _c32_upload(vram: bytes, width32: int) -> bytes:
     """Forward direction of the c32 layout: VRAM image -> the linear region."""
     words = len(vram) // 4
@@ -2099,6 +2187,24 @@ def selftest() -> int:
     check("c32-inverse-bijection",
           sorted(c32_source_words(slot, 64, 1) for slot in range(2048))
           == list(range(2048)))
+
+    # -- 6. the block permutations really invert -----------------------------
+    # A decoder reads the hash input backwards to get pixels, so the inverse is
+    # load-bearing in exactly the way the forward direction is.
+    width, height = 64, 32
+    image8 = _pattern(width * height, 7)
+    check("unswizzle8", unswizzle8_blocks(
+        swizzle8_blocks(image8, width, height), width, height) == image8)
+    indices4 = bytes(value & 0x0F for value in _pattern(width * height, 8))
+    check("unswizzle4", unswizzle4_blocks(
+        swizzle4_blocks(indices4, width, height), width, height) == indices4)
+    check("level_indices8", level_indices(
+        PSMT8, level_bytes(PSMT8, image8, width, height), width, height) == image8)
+    check("level_indices4", level_indices(
+        PSMT4, level_bytes(PSMT4, indices4, width, height), width, height) == indices4)
+    small = _pattern(8 * 8, 9)
+    check("level_indices-small-is-identity",
+          level_indices(PSMT8, level_bytes(PSMT8, small, 8, 8), 8, 8) == small)
 
     if failures:
         print("NFL2K5_PS2_TEXTURE_MAP_SELFTEST_FAIL %d" % failures)

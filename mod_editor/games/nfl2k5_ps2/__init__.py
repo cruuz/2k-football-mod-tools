@@ -15,6 +15,10 @@ What is on the contract today:
 * one lane, ``colors.unif_words`` (registry row
   ``nfl2k5ps2.colors.unif_words``): the on-disc facemask/turtleneck colour
   writer, plan → build → verify on a copy of the user's own disc;
+* one art lane, ``uniforms.art`` (registry row
+  ``nfl2k5ps2.uniforms.replacement_pack_export``): the disc's own uniform
+  textures decoded to PNG, edited, and written back out as a PCSX2 replacement
+  pack -- see :mod:`.uniform_art`;
 * four windows -- the disc studio (the module's ``studio_window``, which the
   chooser opens under the label the core composes from the manifest), the PS2
   save editor, the PS2 disc inventory and the PS2 replacement-pack export.
@@ -38,6 +42,7 @@ import sys
 from typing import Any, Callable, Mapping, Optional, Sequence
 
 from mod_editor.games._formats.ps2_disc import Ps2DiscIdentifier
+from .uniform_art import UniformArtLane
 from mod_editor.games.contract import (
     CONTRACT_SCHEMA,
     Catalogue,
@@ -366,7 +371,12 @@ def _registered(capability_id: str) -> bool:
 
 
 CODE_PATCH_CAPABILITY_ID = "nfl2k5ps2.gameplay.executable_patches"
-LANES = (UnifColourLane(),) + ((_code_patch_lane()[0],) if _registered(CODE_PATCH_CAPABILITY_ID) else ())
+UNIFORM_ART_CAPABILITY_ID = "nfl2k5ps2.uniforms.replacement_pack_export"
+LANES = (
+    (UnifColourLane(),)
+    + ((UniformArtLane(),) if _registered(UNIFORM_ART_CAPABILITY_ID) else ())
+    + ((_code_patch_lane()[0],) if _registered(CODE_PATCH_CAPABILITY_ID) else ())
+)
 
 GAME = GameModule(
     contract=CONTRACT_SCHEMA,
@@ -379,4 +389,5 @@ GAME = GameModule(
     studio_window="disc-studio",
 )
 
-__all__ = ["CODE_PATCH_CAPABILITY_ID", "CODE_PATCH_LANE", "GAME", "GAME_ID", "IDENTITY", "LANES", "SERIAL", "UnifColourLane", "WINDOWS"]
+__all__ = ["CODE_PATCH_CAPABILITY_ID", "CODE_PATCH_LANE", "GAME", "GAME_ID", "IDENTITY", "LANES", "SERIAL",
+           "UNIFORM_ART_CAPABILITY_ID", "UnifColourLane", "UniformArtLane", "WINDOWS"]

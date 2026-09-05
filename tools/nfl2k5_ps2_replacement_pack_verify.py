@@ -21,11 +21,16 @@ exported from, it re-derives from the bytes alone that
      turn on a setting their build does not have, or telling a PenguinScreen2
      user nothing about Classic Texture Names, is wrong in the way that costs
      an evening;
-  6. **no receipt entry names a target the project does not mark edited.** This
-     is the hard rule of the whole lane: an unedited texture in a pack is
-     retail pixels leaving the disc. It needs the project as a third input;
-     without one the verdict is downgraded to ``INCOMPLETE`` and says so,
-     rather than passing silently.
+  6. **no receipt entry names a target the pack's own author did not edit.**
+     This is the hard rule of the whole lane: an unedited texture in a pack is
+     retail pixels leaving the disc. It needs a third input, and *which* third
+     input depends on where the pixels came from -- the receipt says so in
+     ``origin``. An ``xbox-project`` pack is checked against the ``.2k5mod`` it
+     was exported from; a ``disc-native-art`` pack, whose art was decoded from
+     the user's own PS2 disc and edited there, is checked against the edits
+     document written beside it. Without the one its origin calls for, the
+     verdict is downgraded to ``INCOMPLETE`` and says so, rather than passing
+     silently. Neither input is ever the receipt itself.
 
 Emulator target
 ---------------
@@ -62,6 +67,8 @@ Usage::
 
     nfl2k5_ps2_replacement_pack_verify.py --pack <folder> \\
         [--manifest <nfl2k5-xbox-map.v1.json>] [--project <file.2k5mod>]
+    nfl2k5_ps2_replacement_pack_verify.py --pack <folder> \\
+        --edits <uniform-art edits document>       # a disc-native pack
     nfl2k5_ps2_replacement_pack_verify.py --selftest
 """
 
@@ -126,6 +133,24 @@ TARGET_REQUIRED_INSTRUCTION_FACTS = {
     TARGET_PCSX2_LEGACY: ("1.7.4034",),
 }
 
+#: Where a pack's pixels were authored, and therefore which third input can
+#: prove that no file in it is an unedited texture. Restated, not imported.
+ORIGIN_XBOX_PROJECT = "xbox-project"
+ORIGIN_DISC_NATIVE_ART = "disc-native-art"
+EXPORT_ORIGINS = (ORIGIN_XBOX_PROJECT, ORIGIN_DISC_NATIVE_ART)
+#: A receipt written before origins existed is an Xbox-project export; that is
+#: the only pack the exporter could produce then, so the default adds no pack.
+DEFAULT_ORIGIN = ORIGIN_XBOX_PROJECT
+#: What each origin's third input is called on the command line.
+ORIGIN_INPUT_FLAG = {
+    ORIGIN_XBOX_PROJECT: "--project <file.2k5mod>",
+    ORIGIN_DISC_NATIVE_ART: "--edits <uniform-art edits document>",
+}
+
+#: The edits document a disc-native pack is checked against: the lane's own
+#: record of which disc textures the user replaced, and with what.
+EDITS_SCHEMA = "nfl2k5_ps2_uniform_art_edits/v1"
+
 #: The files a pack may carry at its root. Anything else there is an extra.
 ROOT_FILES = (RECEIPT_NAME, MAPPING_MANIFEST)
 
@@ -152,6 +177,9 @@ PCSX2_HASH_NAME = re.compile(
     + r"\.(?i:png)$",
     re.ASCII,
 )
+
+#: A lowercase hex SHA-256, the only digest shape any of these documents use.
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$", re.ASCII)
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 JSON_READ_ENCODING = "utf-8-sig"
@@ -328,6 +356,12 @@ def read_receipt(path: Path):
     provenance = document.get("provenance")
     _require(isinstance(provenance, dict),
              f"the export receipt carries no provenance block: {path}")
+    origin = document.get("origin", DEFAULT_ORIGIN)
+    _require(
+        origin in EXPORT_ORIGINS,
+        "the export receipt claims an origin this tool does not know "
+        "(origin must be one of " + ", ".join(EXPORT_ORIGINS) + f"): {path}",
+    )
     target = document.get("emulator_target")
     _require(
         target in EMULATOR_TARGETS,
@@ -393,11 +427,43 @@ def read_project_edited_ids(path: Path):
     return edited
 
 
+def read_edits_edited_ids(path: Path):
+    """The asset ids a disc-native uniform-art edits document marks edited.
+
+    The disc-native counterpart of :func:`read_project_edited_ids`: a plain JSON
+    file the lane writes beside the pack, one row per texture the user replaced,
+    each naming the disc target, the Xbox asset id the pack is attributed to and
+    the digest of the PNG they supplied. Read here with ``json`` alone, so a bug
+    in the lane cannot make an untouched texture look edited.
+    """
+
+    edits_path = Path(path)
+    document = _read_json(edits_path, "The uniform-art edits document")
+    _require(isinstance(document, dict) and document.get("schema") == EDITS_SCHEMA,
+             f"the edits document schema must be {EDITS_SCHEMA}: {edits_path}")
+    _require(document.get("origin") == ORIGIN_DISC_NATIVE_ART,
+             "an edits document proves a disc-native pack; this one claims "
+             f"origin {document.get('origin')!r}: {edits_path}")
+    rows = document.get("edits")
+    _require(isinstance(rows, list) and rows,
+             f"the edits document lists no edits: {edits_path}")
+    edited = set()
+    for number, row in enumerate(rows, 1):
+        _require(isinstance(row, dict), f"edit {number} is not an object: {edits_path}")
+        for key in ("target", "xbox_asset_id", "png_sha256"):
+            _require(isinstance(row.get(key), str) and bool(row[key]),
+                     f"edit {number} has an empty {key}: {edits_path}")
+        _require(_SHA256_RE.fullmatch(row["png_sha256"]) is not None,
+                 f"edit {number} has no lowercase hex PNG digest: {edits_path}")
+        edited.add(row["xbox_asset_id"])
+    return edited
+
+
 # --------------------------------------------------------------------------
 # The verification itself.
 # --------------------------------------------------------------------------
 
-def verify(pack, manifest=None, project=None):
+def verify(pack, manifest=None, project=None, edits=None):
     """Verify one exported pack. Returns the report; raises on any violation."""
 
     root = _open_pack(Path(pack))
@@ -538,27 +604,39 @@ def verify(pack, manifest=None, project=None):
             f"mention {fact}: {receipt_path}",
         )
 
-    # 6. no receipt entry names an unedited target.
+    # 6. no receipt entry names a target its author did not edit. Which third
+    # input can say so is the receipt's origin, not the caller's choice: an
+    # Xbox-project pack is held to its project and a disc-native pack to its
+    # edits document, and neither substitutes for the other.
+    origin = receipt.get("origin", DEFAULT_ORIGIN)
     result = RESULT_PASS
     downgrade = ""
     edited_checked = 0
-    if project is not None:
+    edited = None
+    source_label = ""
+    if origin == ORIGIN_XBOX_PROJECT and project is not None:
         edited = read_project_edited_ids(Path(project))
+        source_label = "the project"
+    elif origin == ORIGIN_DISC_NATIVE_ART and edits is not None:
+        edited = read_edits_edited_ids(Path(edits))
+        source_label = "the edits document"
+    if edited is not None:
         for relative in sorted(claimed):
             row = claimed[relative]
             _require(
                 row["source_target"] in edited,
-                "the pack contains a texture for a target the project does not "
-                f"mark edited ({row['source_target']}), which would be retail "
-                f"pixels leaving the disc: {root / relative}",
+                f"the pack contains a texture for a target {source_label} does "
+                f"not mark edited ({row['source_target']}), which would be "
+                f"retail pixels leaving the disc: {root / relative}",
             )
         edited_checked = len(claimed)
     else:
         result = RESULT_INCOMPLETE
         downgrade = (
-            "no project was supplied, so the check that no exported file names "
-            "an unedited target could not run. Re-run with --project <file."
-            "2k5mod> for a full PASS."
+            f"this pack's receipt says its art was authored from {origin}, and "
+            f"no {ORIGIN_INPUT_FLAG[origin].split()[0]} was supplied, so the "
+            "check that no exported file names an unedited target could not "
+            f"run. Re-run with {ORIGIN_INPUT_FLAG[origin]} for a full PASS."
         )
 
     report = {
@@ -566,6 +644,8 @@ def verify(pack, manifest=None, project=None):
         "pack": root.as_posix(),
         "manifest": Path(manifest_path).as_posix(),
         "project": Path(project).as_posix() if project is not None else None,
+        "edits": Path(edits).as_posix() if edits is not None else None,
+        "origin": origin,
         "emulator_target": target,
         "files_checked": checked,
         "files_resampled": resampled,
@@ -579,7 +659,7 @@ def verify(pack, manifest=None, project=None):
             "provenance_matches_manifest": True,
             "bundled_manifest_matches_receipt": True,
             "instructions_match_the_emulator_target": True,
-            "no_unedited_target": project is not None,
+            "no_unedited_target": edited is not None,
         },
         "result": result,
     }
@@ -707,6 +787,40 @@ def build_synthetic_pack(root: Path):
     }
     _write_json(pack / RECEIPT_NAME, receipt)
     return pack, manifest_path, project_path
+
+
+def make_disc_native(pack: Path, edits_path: Path,
+                     targets=("00H0:1:0:jersey00",)) -> None:
+    """Turn a correct Xbox-origin pack into a correct disc-native one.
+
+    Same folder, same names, same digests: only where the pixels were authored
+    changes, and with it which third input is allowed to prove they were.
+    """
+
+    receipt_path = pack / RECEIPT_NAME
+    document = json.loads(receipt_path.read_text(encoding="utf-8"))
+    document["origin"] = ORIGIN_DISC_NATIVE_ART
+    rows = []
+    for number, row in enumerate(document["files"]):
+        row["source_target"] = row["xbox_asset_id"]
+        rows.append({
+            "target": targets[number % len(targets)],
+            "xbox_asset_id": row["xbox_asset_id"],
+            "selector": "00H0",
+            "texture": "jersey00",
+            "png_sha256": row["sha256"],
+            "size": [512, 256],
+        })
+    _write_json(receipt_path, document)
+    _write_json(edits_path, {
+        "schema": EDITS_SCHEMA,
+        "serial": SERIAL,
+        "origin": ORIGIN_DISC_NATIVE_ART,
+        "source": "the operator's own disc image",
+        "pack": pack.as_posix(),
+        "emulator_target": document["emulator_target"],
+        "edits": rows,
+    })
 
 
 def selftest(tmp=None) -> int:
@@ -866,6 +980,79 @@ def selftest(tmp=None) -> int:
             document["instructions"]["lines"] = ["1. Copy the folder."]
             _write_json(path, document)
 
+        # ---- the disc-native origin: same pack, a different third input ----
+        native_room = room / "native"
+        native_room.mkdir(parents=True)
+        shutil.copytree(base, native_room / "case")
+        native_pack = native_room / "case" / "pack"
+        native_manifest = native_room / "case" / "map" / MAPPING_MANIFEST
+        native_edits = native_room / "case" / "uniform-art-edits.json"
+        make_disc_native(native_pack, native_edits)
+
+        native = verify(native_pack, native_manifest, edits=native_edits)
+        assert native["result"] == RESULT_PASS, native
+        assert native["origin"] == ORIGIN_DISC_NATIVE_ART, native
+        assert native["edited_targets_checked"] == 2, native
+
+        bare = verify(native_pack, native_manifest)
+        assert bare["result"] == RESULT_INCOMPLETE, bare
+        assert "--edits" in bare["downgrade_reason"], bare
+
+        # The project is not a substitute: a disc-native pack is not proved by
+        # an Xbox project, and an Xbox pack is not proved by an edits document.
+        crossed = verify(native_pack, native_manifest, project=project)
+        assert crossed["result"] == RESULT_INCOMPLETE, crossed
+        crossed_back = verify(pack, manifest, edits=native_edits)
+        assert crossed_back["result"] == RESULT_INCOMPLETE, crossed_back
+        assert "--project" in crossed_back["downgrade_reason"], crossed_back
+
+        def native_rejected(name, mutate, why):
+            case_room = room / ("native_" + name)
+            case_room.mkdir(parents=True)
+            shutil.copytree(native_room / "case", case_room / "case")
+            case_pack = case_room / "case" / "pack"
+            case_manifest = case_room / "case" / "map" / MAPPING_MANIFEST
+            case_edits = case_room / "case" / "uniform-art-edits.json"
+            mutate(case_pack, case_manifest, case_edits)
+            try:
+                verify(case_pack, case_manifest, edits=case_edits)
+            except PackVerifyError:
+                return
+            raise AssertionError(f"{why} must fail verification")
+
+        def forge_an_unedited_native_target(case_pack, _manifest, _edits):
+            path = case_pack / RECEIPT_NAME
+            document = json.loads(path.read_text(encoding="utf-8"))
+            document["files"][0]["source_target"] = "p8:99:never_edited"
+            _write_json(path, document)
+
+        def empty_the_edits(_pack, _manifest, case_edits):
+            document = json.loads(case_edits.read_text(encoding="utf-8"))
+            document["edits"] = []
+            _write_json(case_edits, document)
+
+        def relabel_the_edits_origin(_pack, _manifest, case_edits):
+            document = json.loads(case_edits.read_text(encoding="utf-8"))
+            document["origin"] = ORIGIN_XBOX_PROJECT
+            _write_json(case_edits, document)
+
+        def claim_an_unknown_origin(case_pack, _manifest, _edits):
+            path = case_pack / RECEIPT_NAME
+            document = json.loads(path.read_text(encoding="utf-8"))
+            document["origin"] = "somewhere-else"
+            _write_json(path, document)
+
+        native_rejected("unedited", forge_an_unedited_native_target,
+                        "a receipt entry naming a target the edits document omits")
+        native_rejected("empty_edits", empty_the_edits,
+                        "an edits document that lists no edits")
+        native_rejected("relabelled", relabel_the_edits_origin,
+                        "an edits document that is not a disc-native one")
+        native_rejected("unknown_origin", claim_an_unknown_origin,
+                        "a receipt claiming an origin this tool does not know")
+        native_rejected("mutated", flip_a_byte,
+                        "one changed output byte in a disc-native pack")
+
         rejected("uncanonical", uncanonical_name,
                  "a filename that is not a canonical PCSX2 hash name")
         rejected("swapped_map", swap_the_bundled_manifest,
@@ -889,8 +1076,12 @@ def selftest(tmp=None) -> int:
         "rejects=mutated-byte,extra-file,unedited-target,"
         "unmapped-name,missing-file,forged-provenance,stray-directory,"
         "uncanonical-name,swapped-bundled-map,no-emulator-target,"
-        "unknown-emulator-target,crossed-instructions,empty-instructions "
-        "downgrades=no-project audit=xbox_mapping_ready"
+        "unknown-emulator-target,crossed-instructions,empty-instructions,"
+        "unknown-origin,unedited-disc-native-target,empty-edits,"
+        "relabelled-edits "
+        "origins=xbox-project,disc-native-art "
+        "downgrades=no-project,no-edits,crossed-origin-input "
+        "audit=xbox_mapping_ready"
     )
     return 0
 
@@ -910,6 +1101,11 @@ def main(argv=None) -> int:
              "downgraded, because the unedited-target check cannot run",
     )
     parser.add_argument(
+        "--edits", type=Path,
+        help="the uniform-art edits document a disc-native pack was written "
+             "beside; the disc-native counterpart of --project",
+    )
+    parser.add_argument(
         "--require-project", action="store_true",
         help="treat a missing --project as a failure instead of a downgrade",
     )
@@ -926,7 +1122,7 @@ def main(argv=None) -> int:
     if args.require_project and not args.project:
         parser.error("--require-project was given but --project was not")
 
-    report = verify(args.pack, args.manifest, args.project)
+    report = verify(args.pack, args.manifest, args.project, args.edits)
     print(json.dumps(report, indent=2, sort_keys=True))
     if report["result"] != RESULT_PASS:
         print(

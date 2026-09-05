@@ -173,6 +173,15 @@ EMULATOR_TARGETS = (
 #: pack. The export window has no default and makes the user answer.
 DEFAULT_EMULATOR_TARGET = TARGET_PENGUINSCREEN2_CLASSIC
 
+#: Where a pack's pixels came from. The rule the whole lane turns on -- that no
+#: file may be an unedited retail texture -- is the same for both, but the
+#: *third input* that proves it differs, so the receipt records which one the
+#: verifier should ask for: a ``.2k5mod`` project for an Xbox-authored pack, an
+#: edits document for one authored against the user's own PS2 disc.
+ORIGIN_XBOX_PROJECT = "xbox-project"
+ORIGIN_DISC_NATIVE_ART = "disc-native-art"
+EXPORT_ORIGINS = (ORIGIN_XBOX_PROJECT, ORIGIN_DISC_NATIVE_ART)
+
 LOAD_REPLACEMENTS_SETTING = "LoadTextureReplacements=true"
 CLASSIC_NAMES_SETTING = "ClassicTextureNames=true"
 
@@ -912,6 +921,8 @@ class ExportReceipt:
     #: :data:`EMULATOR_TARGETS`. It changes no file, only the instructions.
     emulator_target: str = DEFAULT_EMULATOR_TARGET
     instructions: Tuple[str, ...] = ()
+    #: Which kind of source authored the pixels; see :data:`EXPORT_ORIGINS`.
+    origin: str = ORIGIN_XBOX_PROJECT
 
     @property
     def file_count(self) -> int:
@@ -955,6 +966,7 @@ def run_export(
     *,
     emulator_target: str = DEFAULT_EMULATOR_TARGET,
     settings: Any = None,
+    origin: str = ORIGIN_XBOX_PROJECT,
 ) -> ExportReceipt:
     """Write ``plan``'s files to a new folder and return the receipt.
 
@@ -969,6 +981,9 @@ def run_export(
     """
 
     _require(isinstance(plan, ExportPlan), "run_export needs a plan from plan_export")
+    _require(origin in EXPORT_ORIGINS,
+             "A pack is authored from " + " or ".join(EXPORT_ORIGINS)
+             + "; %r is not one of those." % (origin,))
     resolved_settings = emulator_settings(emulator_target, settings)
     requested = _refuse_destination(out_dir)
 
@@ -1024,6 +1039,9 @@ def run_export(
             # than assumed: the same filenames load completely on one emulator
             # and partly on another, and the receipt is where that is said.
             "emulator_target": emulator_target,
+            # Which third input proves no file here is an unedited texture: the
+            # project, or the disc-native edits document beside the pack.
+            "origin": origin,
             "instructions": {
                 "settings": list(resolved_settings),
                 "lines": list(
@@ -1078,6 +1096,7 @@ def run_export(
         document=receipt_document,
         emulator_target=emulator_target,
         instructions=tuple(receipt_document["instructions"]["lines"]),
+        origin=origin,
     )
 
 
@@ -1085,17 +1104,20 @@ def export_replacement_pack(
     project: Any, out_dir: Path, manifest: Any = None, *,
     emulator_target: str = DEFAULT_EMULATOR_TARGET,
     settings: Any = None,
+    origin: str = ORIGIN_XBOX_PROJECT,
 ) -> ExportReceipt:
     """Plan and write in one call, for a caller with nothing to preview."""
 
     return run_export(plan_export(project, manifest), out_dir,
-                      emulator_target=emulator_target, settings=settings)
+                      emulator_target=emulator_target, settings=settings,
+                      origin=origin)
 
 
 __all__ = [
     "CLASSIC_NAMES_SETTING",
     "DEFAULT_EMULATOR_TARGET",
     "EMULATOR_TARGETS",
+    "EXPORT_ORIGINS",
     "ExportPlan",
     "ExportProject",
     "ExportReceipt",
@@ -1104,6 +1126,8 @@ __all__ = [
     "Manifest",
     "MAPPING_MANIFEST",
     "MAPPING_SCHEMA",
+    "ORIGIN_DISC_NATIVE_ART",
+    "ORIGIN_XBOX_PROJECT",
     "PlanEntry",
     "PlannedFile",
     "Ps2ExportError",

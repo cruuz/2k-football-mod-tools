@@ -346,9 +346,10 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(game.manifest.studio_label, "PS2 NFL 2K5 Studio")
         self.assertEqual(game.studio_window, "disc-studio")
         self.assertIs(game.studio, game.windows[0])
-        # The executable-patch lane joins once its registry row exists (it did on 2026-09-05).
+        # A lane joins once its registry row exists: the executable-patch lane on
+        # 2026-09-05, the uniform-art lane on the row the M1 exporter already had.
         self.assertEqual([lane.lane_id for lane in game.lanes],
-                         ["colors.unif_words", "gameplay.executable_patches"])
+                         ["colors.unif_words", "uniforms.art", "gameplay.executable_patches"])
 
 
 class RegistryFragmentTests(unittest.TestCase):
