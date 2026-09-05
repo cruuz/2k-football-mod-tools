@@ -500,6 +500,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.gui.ux_text import Details
+from mod_editor.gui.task_delivery import bound
 
 
 class _TaskSignals(QObject):
@@ -2330,7 +2331,7 @@ class PlaybooksPanel(QWidget):
         self._refresh_controls()
         task = _Task(operation)
         self._tasks.add(task)
-        task.signals.result.connect(ready)
+        task.signals.result.connect(bound(self, ready))
         task.signals.progress.connect(self._progress)
         task.signals.error.connect(self.error_raised.emit)
 
@@ -2343,7 +2344,7 @@ class PlaybooksPanel(QWidget):
                 self._refresh_after_task = False
                 QTimer.singleShot(0, self.refresh)
 
-        task.signals.finished.connect(finished)
+        task.signals.finished.connect(bound(self, finished))
         self._pool.start(task)
 
     def _progress(self, stage: str, completed: int, total: int) -> None:

@@ -1,9 +1,11 @@
 """Permission repair is explicit and pinned; the runtime predicate stays strict."""
+import contextlib
 import importlib.util
 import os
 from pathlib import Path
 import shutil
 import stat
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -17,12 +19,26 @@ stage_release = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(stage_release)
 
 
+@contextlib.contextmanager
+def linux_x86_64():
+    """Present the reviewed-helper runtime predicate with its one supported platform.
+
+    ``_optimal_binary`` answers ``None`` everywhere but Linux x86_64 before it
+    looks at the file at all. The file-based checks under test are the same on
+    every POSIX host, so a macOS CI runner exercises them through this shim.
+    """
+    with patch.object(sys, 'platform', 'linux'), patch('platform.machine', return_value='x86_64'):
+        yield
+
+
 @unittest.skipUnless(os.name == 'posix', 'Unix mode-bit/descriptor tests require POSIX')
 class PermissionTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix='reviewed-helper-test-')
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        # The tool refuses a symlinked ancestor by design; macOS temp dirs sit
+        # under /var -> /private/var, so every test starts from the real path.
+        self.root = Path(self.temporary.name).resolve()
         (self.root / 'tools').mkdir()
         self.helper = self.root / 'tools/apf_h7a_optimal'
         shutil.copyfile(ROOT / 'tools/apf_h7a_optimal', self.helper)
@@ -30,7 +46,7 @@ class PermissionTests(unittest.TestCase):
 
     def test_setup_corrects_exact_helper_and_is_idempotent(self):
         before = self.helper.read_bytes()
-        with patch.object(art, '_OPTIMAL_BINARY', self.helper):
+        with linux_x86_64(), patch.object(art, '_OPTIMAL_BINARY', self.helper):
             self.assertIsNone(art._optimal_binary())
             self.assertEqual(art.optimal_encoder_diagnostic()['code'], 'unsafe_permissions')
             receipt = setup.normalize(self.root)
@@ -93,7 +109,8 @@ class PermissionTests(unittest.TestCase):
         self.assertIn('test denied', log.output[0])
 
     def test_precise_fallback_diagnostic(self):
-        with patch.object(art, '_OPTIMAL_BINARY', self.helper), self.assertLogs(art.__name__, level='WARNING') as log:
+        with linux_x86_64(), patch.object(art, '_OPTIMAL_BINARY', self.helper), \
+                self.assertLogs(art.__name__, level='WARNING') as log:
             result = art.compress_h7a_best(b'headless-test' * 4, 12)
         self.assertTrue(result)
         self.assertIn('0775 is group/other writable', log.output[0])
@@ -104,12 +121,15 @@ class PermissionTests(unittest.TestCase):
         cases = ((0o644, 'not_executable'), (0o777, 'unsafe_permissions'))
         for mode, reason in cases:
             self.helper.chmod(mode)
-            with patch.object(art, '_OPTIMAL_BINARY', self.helper):
+            with linux_x86_64(), patch.object(art, '_OPTIMAL_BINARY', self.helper):
                 self.assertIsNone(art._optimal_binary())
                 self.assertEqual(art.optimal_encoder_diagnostic()['code'], reason)
         self.helper.write_bytes(b'short')
-        with patch.object(art, '_OPTIMAL_BINARY', self.helper):
+        with linux_x86_64(), patch.object(art, '_OPTIMAL_BINARY', self.helper):
             self.assertEqual(art.optimal_encoder_diagnostic()['code'], 'wrong_size')
+        with patch.object(sys, 'platform', 'darwin'), patch.object(art, '_OPTIMAL_BINARY', self.helper):
+            self.assertIsNone(art._optimal_binary())
+            self.assertEqual(art.optimal_encoder_diagnostic()['code'], 'unsupported_platform')
 
     def test_stage_strips_umask_write_bits_not_source_permissions(self):
         text = self.root / 'plain.txt'
@@ -125,7 +145,7 @@ class PermissionTests(unittest.TestCase):
         self.assertEqual(stat.S_IMODE(self.helper.stat().st_mode), 0o775)
         self.assertEqual(stat.S_IMODE(text.stat().st_mode), 0o664)
         self.assertEqual(helper.read_bytes(), self.helper.read_bytes())
-        with patch.object(art, '_OPTIMAL_BINARY', helper):
+        with linux_x86_64(), patch.object(art, '_OPTIMAL_BINARY', helper):
             self.assertEqual(art._optimal_binary(), helper)
 
 

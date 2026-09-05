@@ -37,6 +37,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.gui.ux_text import XEMU_LINE, Details, show_operation_error, source_captions, suggest_copy_name, write_caption
+from mod_editor.gui.task_delivery import bound
 
 ProgressSink = Callable[[str, int, int], None]
 
@@ -791,7 +792,7 @@ class ThrowTuningPanel(QWidget):
         task = _Task(operation)
         self._tasks.add(task)
         task.signals.progress.connect(self._progress)
-        task.signals.result.connect(on_success)
+        task.signals.result.connect(bound(self, on_success))
         task.signals.error.connect(self._failed)
 
         def finished() -> None:
@@ -803,7 +804,7 @@ class ThrowTuningPanel(QWidget):
             self.progress_label.setText("")
             self._refresh_controls()
 
-        task.signals.finished.connect(finished)
+        task.signals.finished.connect(bound(self, finished))
         try:
             self._pool.start(task)
         except BaseException:

@@ -1134,6 +1134,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.gui.ux_text import Details
+from mod_editor.gui.task_delivery import bound
 from mod_editor.gui.audio_waveform_qt import (
     AudioWaveformPreview,
     WaveformCancelled,
@@ -5875,7 +5876,7 @@ if PYQT5_AVAILABLE:
             task = _Task(operation)
             self._tasks.add(task)
             task.signals.progress.connect(self._progress)
-            task.signals.result.connect(on_success)
+            task.signals.result.connect(bound(self, on_success))
             task.signals.error.connect(on_error or self.error_raised.emit)
 
             def finished() -> None:
@@ -5893,7 +5894,7 @@ if PYQT5_AVAILABLE:
                 if continuation is not None:
                     QTimer.singleShot(0, continuation)
 
-            task.signals.finished.connect(finished)
+            task.signals.finished.connect(bound(self, finished))
             try:
                 self._pool.start(task)
             except BaseException:

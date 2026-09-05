@@ -31,6 +31,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.gui.ux_text import XEMU_LINE, Details, plain_failure, show_operation_error, suggest_copy_name
+from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 
@@ -185,8 +186,8 @@ class PresentationPanel(QWidget):
                 self.preview.setText("Open your game disc to preview the layout.")
 
         task = _Task(operation)
-        task.signals.finished.connect(done)
-        task.signals.failed.connect(failed)
+        task.signals.finished.connect(bound(self, done))
+        task.signals.failed.connect(bound(self, failed))
         self._task = task
         self._pool.start(task)
 

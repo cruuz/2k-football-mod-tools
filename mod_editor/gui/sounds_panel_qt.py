@@ -40,6 +40,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.gui.ux_text import XEMU_LINE, Details, plain_failure, show_operation_error, suggest_copy_name
+from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 WAV_FILTER = "WAV audio (*.wav);;All files (*)"
@@ -902,8 +903,8 @@ class SoundsPanel(QWidget):
             self._busy = False
             failed(message)
 
-        task.signals.finished.connect(finish_done)
-        task.signals.failed.connect(finish_failed)
+        task.signals.finished.connect(bound(self, finish_done))
+        task.signals.failed.connect(bound(self, finish_failed))
         self._task = task
         self._busy = True
         self._refresh()

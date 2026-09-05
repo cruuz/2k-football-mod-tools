@@ -40,6 +40,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.gui.ux_text import XEMU_LINE
+from mod_editor.gui.task_delivery import bound
 
 from mod_editor.core.nfl2k5_bump_strength import (
     read_strengths,
@@ -411,7 +412,7 @@ class BumpPanel(QWidget):
         task = _Task(operation)
         self._tasks.add(task)
         task.signals.progress.connect(self._progress)
-        task.signals.result.connect(on_success)
+        task.signals.result.connect(bound(self, on_success))
         task.signals.error.connect(self._failed)
 
         def finished() -> None:
@@ -422,7 +423,7 @@ class BumpPanel(QWidget):
             self.progress_bar.hide()
             self._refresh_controls()
 
-        task.signals.finished.connect(finished)
+        task.signals.finished.connect(bound(self, finished))
         try:
             self._pool.start(task)
         except BaseException:

@@ -117,6 +117,7 @@ from mod_editor.gui.throw_tuning_panel_qt import ThrowTuningPanel
 from mod_editor.gui.presentation_panel_qt import PresentationPanel
 from mod_editor.gui.share_panel_qt import SharePanel
 from mod_editor.gui.commentary_panel_qt import CommentaryPanel
+from mod_editor.gui.task_delivery import bound
 from mod_editor.gui.sounds_panel_qt import SoundsPanel
 from mod_editor.gui.build_panel_qt import BuildPanel
 from mod_editor.gui.models_panel_qt import ModelsPanel
@@ -7305,7 +7306,7 @@ class StudioMainWindow(QMainWindow):
         self._workers.add(worker)
         if blocking:
             self._set_busy(True, label)
-        worker.signals.result.connect(on_success)
+        worker.signals.result.connect(bound(self, on_success))
         # Preview decoding also runs off-thread, but it must not take over the
         # global build/index progress strip or leave it visible after a quick
         # selection change. Blocking user operations own that progress UI.
@@ -7318,7 +7319,7 @@ class StudioMainWindow(QMainWindow):
             # progress at all, so that job showed a single static label for its
             # whole run and read as hung.
             worker.signals.progress.connect(
-                lambda stage, done, total: on_progress(stage, done, total)
+                bound(self, lambda stage, done, total: on_progress(stage, done, total))
             )
 
         def error(message: str) -> None:
@@ -7330,7 +7331,7 @@ class StudioMainWindow(QMainWindow):
             elif self._selected_asset is not None:
                 self.preview.set_empty("Preview unavailable. The asset was not changed.")
 
-        worker.signals.error.connect(error)
+        worker.signals.error.connect(bound(self, error))
 
         def finished() -> None:
             self._workers.discard(worker)
@@ -7338,7 +7339,7 @@ class StudioMainWindow(QMainWindow):
                 self._set_busy(False)
                 self._drain_post_blocking_continuations()
 
-        worker.signals.finished.connect(finished)
+        worker.signals.finished.connect(bound(self, finished))
         self.thread_pool.start(worker)
 
     def _task_progress(self, stage: str, completed: int, total: int) -> None:
@@ -7437,9 +7438,9 @@ class StudioMainWindow(QMainWindow):
 
         worker = _BackgroundTask(lambda progress: mod_build.inspect(source))
         self._workers.add(worker)
-        worker.signals.result.connect(inspected)
-        worker.signals.error.connect(inspect_failed)
-        worker.signals.finished.connect(lambda: self._workers.discard(worker))
+        worker.signals.result.connect(bound(self, inspected))
+        worker.signals.error.connect(bound(self, inspect_failed))
+        worker.signals.finished.connect(bound(self, lambda: self._workers.discard(worker)))
         self.thread_pool.start(worker)
         # 2. pages with their own background readers
         if self._throw_tuning_panel is not None:
@@ -7663,9 +7664,9 @@ class StudioMainWindow(QMainWindow):
             if pending and self._workspace_dirty:
                 QTimer.singleShot(0, self._save_recovery_snapshot)
 
-        worker.signals.result.connect(success)
-        worker.signals.error.connect(error)
-        worker.signals.finished.connect(finished)
+        worker.signals.result.connect(bound(self, success))
+        worker.signals.error.connect(bound(self, error))
+        worker.signals.finished.connect(bound(self, finished))
         self.thread_pool.start(worker)
 
     def _clear_recovery_safely(

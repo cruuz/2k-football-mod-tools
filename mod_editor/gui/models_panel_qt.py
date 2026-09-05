@@ -36,6 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.gui.ux_text import Details, suggest_copy_name
+from mod_editor.gui.task_delivery import bound
 
 from mod_editor.core import nfl2k5_models as models
 
@@ -377,8 +378,8 @@ class ModelsPanel(QWidget):
             self._set_busy(False)
             (failed or self._failed)(message)
 
-        task.signals.finished.connect(finish)
-        task.signals.failed.connect(fail)
+        task.signals.finished.connect(bound(self, finish))
+        task.signals.failed.connect(bound(self, fail))
         self._task = task
         self._set_busy(True)
         self._pool.start(task)
