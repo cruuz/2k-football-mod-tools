@@ -430,6 +430,21 @@ How it goes:
    A JSON receipt with every step's changed bytes, digests, verdicts and timings is written next
    to the new image; *Open folder* takes you there.
 
+**PCSX2 Pack tab -- Export to PCSX2.** The one page here that is not about the disc. It
+exports the uniform art you have **edited in the Xbox studio** as a PCSX2
+texture-replacement pack for `SLUS-20919`, so you do not have to close this window to
+reach **File > Export PS2 replacement pack…**. It is the same export window with the same
+rules: it needs a **saved `.2k5mod` Xbox project that has edited art** (this window has no
+Xbox session, so you choose the project; the one you chose last is offered back next time),
+it writes only targets that project marks edited, it asks which emulator the pack is for
+before it writes anything, and it offers the independent verifier afterwards. **No disc
+image is read and no ISO is written by this path** -- your ISO is not even needed, so the
+page works whether or not one is open. Once a pack is written, **Write PCSX2 kit** puts a
+kit for the emulator you answered for beside it, at `<pack>-kit/<target>/`: `HOW-TO.txt`,
+a `settings.ini` you can paste, and a byte-identical copy of the pack that the verifier
+still passes. The page names the folder and the setting that must be on -- with texture
+replacement off the game draws the retail art and the pack looks like it did nothing.
+
 Rules that prevent most refusals here: keep text inside the shown character budget and keep
 its tokens; keep names inside the shown budget; supply mono WAVs to mono slots and stereo to
 stereo; do not stage two aliases of one stadium span; choose a destination that does not exist

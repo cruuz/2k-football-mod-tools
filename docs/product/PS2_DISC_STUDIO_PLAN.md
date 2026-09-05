@@ -460,6 +460,40 @@ helper belongs to the Xbox lane); a PS2 sidebar; any change to the six tools.
   under a second.
 
 
+## 16. Export to PCSX2 from this window (added after the trial)
+
+The owner's request: *"you need to be able to export to PCSX2 the same way from the
+Disc Studio."* Somebody building a PS2 disc from their Xbox edits wants the uniform
+art on the same emulator, and having to close this window to find **File ▸ Export PS2
+replacement pack…** in the main window was the complaint.
+
+A **PCSX2 Pack** page sits beside Build. **Export to PCSX2…** opens the existing
+`Ps2ExportDialog` — not a fork of it — on the project-chooser path: this window has no
+Xbox session, so it starts on whatever `.2k5mod` was chosen here last (`None` the first
+time, which is that window's chooser). Every rule there is unchanged and unrestated
+here: only targets the project marks edited are written, the emulator question still has
+no default, and the independent verifier is still offered. **No disc image is read and
+no ISO is built by this path**, so the export is offered whether or not an image is open
+and is withheld only while this window is busy with the disc.
+
+Once a pack has been written, **Write PCSX2 kit** calls
+`tools/nfl2k5_ps2_replacement_pack_kit.build_kit` in this process — its Python API, not
+its CLI — for the one emulator the pack's receipt names, writing
+`<pack>-kit/<target>/` beside the pack: `HOW-TO.txt`, `settings.ini` and a
+byte-identical copy of the pack. The card and the status line name where it went and
+the setting that has to be on; with texture replacement off the game draws the retail
+art and the pack looks like it did nothing. The offer stands down once a kit exists,
+because the tool refuses a second one at the same place, and every refusal it makes
+(a missing receipt, a pack whose bytes no longer match it, settings that are not that
+target's) is surfaced verbatim.
+
+Two files change, both PS2-only: the page and its handlers in
+`mod_editor/gui/ps2_disc_studio_qt.py`, and one hook in
+`mod_editor/gui/ps2_export_dialog_qt.py` — an optional `on_exported` callback and a
+public `project_path`, both notifications that no plan, file or wording there depends
+on. `studio_qt.py`, `__main__.py`, the registry, the allowlist and the packaging checks
+are untouched; no module is added, so nothing needs allowlisting.
+
 ## Windows end-to-end (2026-09-05)
 
 The shipped portable Windows build drove the service over the retail disc on the owner's PC: open and identity check, text and colour catalogues from the disc, one string and one facemask colour staged, a two-step chained build to a new image (text 34 bytes, colours 8 bytes; 368 s on a hard disk), every step verified by the lane's independent verifier, source opened read-only. Receipt with paths scrubbed: `reports/gameplay_tuning/nfl2k5_ps2_disc_studio_windows_e2e.v1.json`. Nothing was seen in game.

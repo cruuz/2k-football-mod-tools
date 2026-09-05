@@ -72,6 +72,10 @@
   the stock disc (`reports/gameplay_tuning/nfl2k5_ps2_disc_studio_trial.v1.json`): catalogues in
   about a second each, a two-lane (text + facemask) build in 49 s with both verifiers PASS and the
   source digest unchanged. Still nothing on a screen: every lane stays `offline-writer-proved`.
+  A **PCSX2 Pack** page beside Build offers the same replacement-pack export as the File menu --
+  the same window, on a saved `.2k5mod` you choose, reading no disc image and building no ISO --
+  and then writes that emulator's kit (`HOW-TO.txt`, `settings.ini`, a byte-identical copy of the
+  pack) beside the pack with `tools/nfl2k5_ps2_replacement_pack_kit.py`.
 
 ## v1.0 RC84 — NFL 2K5 (PS2): the disc, read by name (unreleased)
 
