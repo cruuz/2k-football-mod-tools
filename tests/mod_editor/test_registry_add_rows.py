@@ -139,14 +139,20 @@ class ExistingGameRowsTests(unittest.TestCase):
         # portraits_faces has no PS2 row today; a PS2 row there needs the widening.
         registry = _registry(self.root)
         self.assertFalse(any(r["game"] == "nfl2k5_ps2" and r["surface"] == "portraits_faces" for r in registry["capabilities"]))
+        before = tuple(_validator(self.root).SURFACE_GAMES["portraits_faces"])
+        self.assertNotIn("nfl2k5_ps2", before)
         row = self._write_row("row.json", _row_like(
             self.root, "nfl2k5ps2.textures.disc_inventory",
             id="nfl2k5ps2.portraits.zz_inventory", surface="portraits_faces", title="Probe",
         ))
         tool.apply(self.root, game="nfl2k5_ps2", rows=[row], widen_surfaces=["portraits_faces"])
         validator = _validator(self.root)
-        # The game joins the surface's rule; other newcomers (madden09_ps2) are not demanded.
-        self.assertEqual(validator.SURFACE_GAMES["portraits_faces"], validator._LEGACY_GAMES + ("nfl2k5_ps2",))
+        # The game joins the surface's rule and everything already on it stays: a
+        # module that widened the same surface first is not un-widened, and no
+        # newcomer is demanded of the others. Read from the tree rather than
+        # spelled out, because which games a surface already carries is exactly
+        # what a second module changes.
+        self.assertEqual(validator.SURFACE_GAMES["portraits_faces"], before + ("nfl2k5_ps2",))
         validator.validate_data(_registry(self.root), check_files=False)
 
     def test_a_row_on_an_uncovered_surface_without_widening_fails_the_scratch_validator(self) -> None:
