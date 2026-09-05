@@ -1854,3 +1854,201 @@ After protected integration, rerun both composed XBE gates, the six new Music
 test files, normal build/project tests, capability validation and the packaged
 runtime closure. No release-tag, update-check or CI workflow edit is required
 by this feature itself.
+
+---
+
+# Runtime scorebug integration handoff, r61b
+
+**EXPERIMENTAL / UNWITNESSED.** This section extends the v7 scorebug and extra
+space handoffs above. It supersedes the kickoff-only allocation adapter when
+runtime scorebug is selected. The allocator API and protected product files
+were not changed. The brief's task 4 and explicit protected-file handoff rules
+require this additive WIRING entry despite its earlier parenthetical ambiguity.
+
+## Build plan, presets and ordering
+
+Add `scorebug_runtime: bool = False` to `BuildPlan`, serialization, availability,
+source inspection and preset reset. Set it false in Basic and Advanced and true
+in `softdrink_experimental`. Selecting it implies `scorebug=True` and
+`xbe_space=True`; it does not imply relocated kickoff. Preserve the separate
+kickoff flag's existing alignment and kick-rules prerequisites.
+
+Runtime installation requires a disc. When selected, skip the earlier
+`if plan.scorebug:` neutral resource pass by changing its predicate to
+`plan.scorebug and not plan.scorebug_runtime`. The runtime compiler supplies the
+matching v7 atlas and binding scene itself. An already-installed neutral v7 HUD
+is deliberately refused; rebuild from the supported base. Any other writer
+that changes this pinned HUD collection or its index must be reconciled before
+enabling both options. Do not weaken the resource fingerprints.
+
+Run every ordinary XBE and resource pass first. For a runtime disc build, leave
+`xbe_space`, `kickoff_relocated` and `scorebug_runtime` false in earlier shared
+dispatcher calls. Replace the final bare allocator/relocation pass with:
+
+```python
+from . import nfl2k5_scorebug_ingame as runtime_resources
+sub_receipt = runtime_resources.runtime_apply_in_place(
+    target, with_kickoff=plan.kickoff_relocated)
+receipt["steps"].append({"step": "scorebug_runtime", **sub_receipt})
+```
+
+Use the build's actual disposable output path for `target`. This preflights
+resources and XBE together, reserves the union once, installs both selected
+owners, then transports the pack and XBE transactionally. Do not pre-apply the
+runtime XBE hook before this call: it refuses mismatched resource/XBE states.
+For non-runtime builds retain the earlier final allocator handoff. A pre-grown
+input is accepted only if it already reserved every selected owner at the exact
+stable addresses. Rebuild from base to change the owner set.
+
+The final resource pass moves later pack-0 assets and adjusts all later virtual
+archive offsets. Any later resource inspection must re-read the archive index
+and XDVDFS nodes. Hard-coded retail pack offsets are no longer valid. No PLAY or
+ROST records are edited; their containing assets are retained byte for byte.
+
+## Dispatcher tuple, keyword and four status dictionaries
+
+Import `nfl2k5_scorebug_runtime as scorebug_runtime_patch`. Add keyword-only
+`scorebug_runtime: bool = False` to `_apply_all`, `write_xbe_copy` and
+`write_image_copy`, forwarding it through the existing wrapper/keyword route.
+For direct XBE output, replace the earlier final allocator adapter with one
+whose requests are the union of selected owners:
+
+```python
+class _xbe_space_adapter:
+    def __init__(self, relocated, runtime):
+        self.requests = ((kickoff_relocated_patch.REQUESTS if relocated else ())
+                         + (scorebug_runtime_patch.REQUESTS if runtime else ()))
+
+    def status(self, payload):
+        state = xbe_space_patch.status(payload)
+        if state == "applied":
+            xbe_space_patch.apply(payload, self.requests)
+        return state
+
+    def apply(self, payload):
+        return xbe_space_patch.apply(payload, self.requests)
+
+for flag, module, key, label in (
+    (xbe_space or kickoff_relocated or scorebug_runtime,
+     _xbe_space_adapter(kickoff_relocated, scorebug_runtime),
+     "xbe_space_patch", "experimental executable space"),
+    (kickoff_relocated, kickoff_relocated_patch,
+     "kickoff_relocated_patch", "experimental relocated kickoff"),
+    (scorebug_runtime, scorebug_runtime_patch,
+     "scorebug_runtime_patch", "experimental scorebug effects"),
+):
+    if not flag:
+        continue
+    state = module.status(patched)
+    _require(state in ("retail", "applied"), f"{label} is {state}; refusing")
+    patched, sub_receipt = module.apply(patched)
+    receipt[key] = sub_receipt
+    receipt["changed_byte_count"] = int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])
+```
+
+This remains the separate last tuple after uniform choice, boot-logo repair and
+all ordinary owners. Direct XBE output contains hooks only. Its receipt must
+retain `requires_resources`; it must not claim installed team logos.
+
+For direct `write_image_copy`, call `_apply_all` with all three final flags false
+when `scorebug_runtime` is true, finish its ordinary XBE write, then call
+`runtime_apply_in_place` on the closed temporary output before publication,
+passing the selected kickoff flag. Refresh `after` from the actual grown XBE
+before reporting statuses. This gives the disc entry point the same paired
+preflight/transport as Build, rather than creating an incomplete resource pair.
+
+Add `"scorebug_runtime": scorebug_runtime_patch.status(...)` to all four XBE
+status dictionaries, using the local bytes shown here:
+
+| Dictionary | Byte argument |
+| --- | --- |
+| `read_xbe` | `payload` |
+| `read_image` | `payload` |
+| `write_xbe_copy` | `result` |
+| `write_image_copy` | `after` |
+
+Retain the prior `xbe_space`, `kickoff_relocated` and settings keys. Report disc
+readiness separately with `runtime_resources.runtime_image_status(path)`;
+XBE-only recognition cannot verify the resource collection. Apply the earlier
+`image_xbe_extent` and generalized `write_image_xbe` handoff so protected readers
+accept the recognized grown size and all handles close before `os.replace`.
+
+## Product text and packaging
+
+Add this exact `gameplay_patches_panel_qt.PATCHES` entry and add
+`scorebug_runtime` to `NEEDS_IMAGE`:
+
+```python
+("scorebug_runtime", "Team logos and scorebug effects (experimental, unwitnessed)",
+ "Retail: team panels and timeout marks use the stock display. Patch: adds "
+ "team logos, remaining timeout marks, a score flash, down refresh and a red "
+ "play clock below five seconds. Unwitnessed in game; use a separate disc copy."),
+```
+
+Build tab `_option` caption (46 characters):
+
+```python
+self._option(layout, "scorebug_runtime", "Team logos and scorebug effects (experimental)", helper, badge="EXPERIMENTAL")
+```
+
+Use the same helper text and keep the unwitnessed notice visible. Basic and
+Advanced reset this flag. Keep allocation, addresses and archive details in
+receipts, outside the ordinary product flow.
+
+Add these allowlist lines if absent (some belong to the prerequisite v7 handoff):
+
+```text
+mod_editor/core/nfl2k5_scorebug_ingame.py
+mod_editor/core/nfl2k5_scorebug_resources.py
+mod_editor/core/nfl2k5_scorebug_runtime.py
+tools/nfl2k5_scorebug_reference.py
+```
+
+Retain the existing lines for `nfl2k5_scorebug_source_art.py`, scorebug layout,
+position, texture/outer codecs, palette importer, draft assembler and generalized
+storage. Retain the allocator/relocation additions above. Do not package generated
+game resources, executables, the witness disc or `.scratch`.
+
+In `packaging/check_2k5_mod_studio_runtime.py`, add dotted imports for
+`mod_editor.core.nfl2k5_scorebug_ingame`,
+`mod_editor.core.nfl2k5_scorebug_resources`,
+`mod_editor.core.nfl2k5_scorebug_runtime`, and tools
+`nfl2k5_scorebug_reference` / `nfl2k5_scorebug_layout`. Exercise `REQUESTS`,
+`status(b"bad") == "foreign"`, panel-name validation and the new CLI parser.
+Retain Pillow and existing codec dependencies. Unicorn and Capstone are offline
+proof dependencies, not runtime application imports.
+
+Copy the complete, schema-validated object from
+`docs/mod_editor/nfl2k5_scorebug_runtime_capability.json` into
+`mod_editor/capabilities/registry.v1.json` and update closure counts. Its ID is
+`nfl2k5.scorebug_presentation.runtime`, classification `offline-writer-proved`,
+runtime status `not-tested`, GUI default false. Existing scorebug metadata must
+distinguish neutral v7 installation from the new paired runtime installation.
+
+## Ownership regeneration and acceptance
+
+The manifest builder now records the runtime hook spans plus its entire named
+code/data allocation, including untouched zero data. It uses the real v7 atlas
+writer and the final union with kickoff. Its temporary ownership disc does not
+install the runtime panel collection and is not a gameplay image. Resource
+installation is separately proved by the new resource suite and private disc.
+
+Regenerate the protected manifest with the command in the allocator handoff
+after all integration changes. Do not copy the private manifest over it before
+integrating; source fingerprint checks remain enforced. To inspect this owner
+union, use the actual composed XBE with the CLI's new forwarding option:
+
+```sh
+python3 tools/nfl2k5_cave_oracle.py space-proof '<retail.xbe>' \
+  --manifest '<fresh-manifest.json>' --allocated '<composed.xbe>' \
+  --json '<space-proof.json>'
+NFL2K5_CAVE_MANIFEST='<fresh-manifest.json>' python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+python3 tests/mod_editor/test_xbe_patch_cave_references.py
+python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py
+python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py
+```
+
+The optional `--allocated` merely exposes the allocator's existing evidence API;
+the allocator itself is unchanged. See `ASTRA_SCOREBUG_RUNTIME_REPORT.md` for
+the complete proof boundaries, static previews and Noah's required witness list.

@@ -67,6 +67,7 @@ def main(argv=None) -> int:
     fresh.add_argument("xbe", type=Path)
     fresh.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     fresh.add_argument("--json", type=Path)
+    fresh.add_argument("--allocated", type=Path, help="validate the actual composed owner allocations")
     args = parser.parse_args(argv)
     try:
         data = args.xbe.read_bytes()
@@ -74,9 +75,9 @@ def main(argv=None) -> int:
         if args.command == "space-proof":
             from mod_editor.core import nfl2k5_xbe_space as space
             ownership = ReservationManifest.load(args.manifest, image)
-            report = space.allocation_evidence(data, ownership)
+            report = space.allocation_evidence(data, ownership, allocated=args.allocated.read_bytes() if args.allocated else None)
             if args.json:
-                write_json(args.json, report, [args.xbe, args.manifest])
+                write_json(args.json, report, [args.xbe, args.manifest] + ([args.allocated] if args.allocated else []))
             else:
                 print(json.dumps(report, indent=2))
             return 0

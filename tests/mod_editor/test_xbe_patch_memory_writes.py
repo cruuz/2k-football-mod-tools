@@ -114,7 +114,8 @@ class PatchWriteTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_xbe_space as space
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
-        cls.patched, _ = space.apply(cls.patched, relocated.REQUESTS)
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+        cls.patched, _ = space.apply(cls.patched, relocated.REQUESTS + runtime.REQUESTS)
         cls.patched, _ = relocated.apply(cls.patched)
         from mod_editor.core import nfl2k5_music_policy as music
         cls.patched, cls.music_receipt = music.apply(
@@ -124,6 +125,8 @@ class PatchWriteTests(unittest.TestCase):
         cls.table = sections(cls.patched)
         from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
         cls.patched, _ = scorebug.apply_xbe(cls.patched)
+        cls.patched, _ = runtime.apply(cls.patched)
+        cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 
@@ -217,25 +220,25 @@ class PatchWriteTests(unittest.TestCase):
 
     def test_grown_code_owner_writes_only_to_the_named_writable_data_allocation(self) -> None:
         from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
         image = XbeImage(self.patched)
-        code, data = relocated._sites(self.patched)
         self.assertEqual(space.status(self.patched), "applied")
-        self.assertEqual(relocated.status(self.patched), "applied")
-        writes = absolute_writes(self.patched, [(code["va"], code["va"] + code["size"])])
-        checked = 0
-        for write in writes:
-            if write["target"] is not None:
-                self.assertTrue(write["writable"], write)
-                target = int(write["target"], 0)
-                if space.CODE_VA <= target < space.DATA_VA + space.PAGE:
-                    checked += 1
-                    self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
-        self.assertGreater(checked, 0)
-        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
-        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
-
-
+        for module, getter in ((relocated, relocated._sites), (runtime, runtime.sites)):
+            self.assertEqual(module.status(self.patched), "applied")
+            code, data = getter(self.patched)
+            writes = absolute_writes(self.patched, [(code["va"], code["va"] + code["size"])])
+            checked = 0
+            for write in writes:
+                if write["target"] is not None:
+                    self.assertTrue(write["writable"], write)
+                    target = int(write["target"], 0)
+                    if space.CODE_VA <= target < space.DATA_VA + space.PAGE:
+                        checked += 1
+                        self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
+            self.assertGreater(checked, 0)
+            self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+            self.assertTrue(image.runtime_writable(data["va"], data["size"]))
 
     def test_special_spacing_is_an_existing_data_descriptor_not_code_storage(self) -> None:
         from mod_editor.core import nfl2k5_depth_chart_rows as rows

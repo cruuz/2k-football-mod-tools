@@ -77,7 +77,7 @@ class Recorder:
             from . import nfl2k5_xbe_space as space
             allow_append = (owner == "nfl2k5_depth_chart_rows" and storage.state(before) == "retail"
                             and storage.state(after) == "applied")
-            allow_append |= (owner in (space.OWNER, "nfl2k5_dynamic_kickoff_relocated")
+            allow_append |= (owner in (space.OWNER, "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime")
                              and space.status(before) == "retail" and space.status(after) == "applied")
         runs = list(changed_runs(before, after, allow_append=allow_append))
         self.mapping_end = max(self.mapping_end, post_image.base + post_image.image_size)
@@ -103,7 +103,7 @@ class Recorder:
                            "after_sha256": hashlib.sha256(after).hexdigest(),
                            "changed_bytes": sum(b - a for a, b in runs),
                            "file_runs": [[hex(a), hex(b)] for a, b in runs]})
-        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated"):
+        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime"):
             from . import nfl2k5_xbe_space as space
             for reservation in space.reservations(after):
                 self.reserve(int(reservation["start"], 0), reservation["size"],
@@ -207,6 +207,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     from . import nfl2k5_position_pools as pools, nfl2k5_season_length as season
     from . import nfl2k5_seven_on_seven_book as seven_book
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
+    from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_ingame as scorebug_ingame
     progress = progress or (lambda _message: None)
     xiso = xiso.resolve(strict=True)
     work_dir = work_dir.resolve(strict=True)
@@ -215,7 +216,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     recorder = Recorder(retail)
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
-    modules.update({m.__name__: m for m in (tt, pools, season, space, relocated)})
+    modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -229,17 +230,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
         preset = dict(build.PRESETS["softdrink_experimental"])
         plan = build.BuildPlan(source=str(xiso), target=str(target), **preset)
         with ExitStack() as stack:
-            # Atlas repainting cannot change any XBE address. The scorebug's real
-            # image writer still refits the retail mesh and applies ALL XBE/HUD
-            # patches; only optional PNG generation/import is omitted. This also
-            # avoids depending on the unshipped presentation-audit asset fixture.
-            scorebug = build._tools_module("nfl2k5_scorebug_layout")
-            scorebug_apply = scorebug.apply_in_place
-            def xbe_and_mesh_only(path, **kwargs):
-                return scorebug_apply(path, **{**kwargs, "textures": False})
-            stack.enter_context(patch.object(scorebug, "apply_in_place", xbe_and_mesh_only))
+            # v7 requires its matching atlas. Observe its actual fixed-span
+            # writer, then the runtime XBE owner after all ordinary build passes.
             for module in modules.values():
-                for name in ("apply", "xbe_apply", "plan_patch", "apply_arc_table", "patch_xbe"):
+                for name in ("apply", "apply_xbe", "xbe_apply", "plan_patch", "apply_arc_table", "patch_xbe"):
                     function = getattr(module, name, None)
                     if inspect.isfunction(function) and function.__module__ == module.__name__:
                         stack.enter_context(patch.object(module, name, recorder.wrapper(module, name)))
@@ -263,8 +257,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
             # Observe their real pure-byte writers after every disc/XBE pass.
             # The generalized writer resolves the grown extent directly, so
             # manifest generation does not depend on the protected dispatcher.
-            final, _ = space.apply(final, relocated.REQUESTS)
+            final, _ = space.apply(final, relocated.REQUESTS + runtime.REQUESTS)
             final, _ = relocated.apply(final)
+            final, _ = runtime.apply(final)
             from . import nfl2k5_depth_chart_storage as storage, platform_compat as io
             import os
             descriptor = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
@@ -291,15 +286,15 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                              if str((ROOT / name).resolve()) in loaded_paths}
         return {"schema": MANIFEST_SCHEMA, "retail_sha256": RETAIL_SHA256, "complete": True,
                 "stack_image_size": XbeImage(final).image_size,
-                "model": "observed experimental disc build plus dormant seven-on-seven and grown kickoff; exact diffs union owned pages and named allocations",
+                "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff and scorebug runtime; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER],
+                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER],
                 "seven_on_seven_book": book_note,
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,
                 "preset_xbe_sha256": hashlib.sha256(preset_xbe).hexdigest(),
                 "stack_xbe_sha256": hashlib.sha256(final).hexdigest(),
                 "section_digests_verified": True,
-                "image_options": {"scorebug_textures": False,
-                                  "reason": "PNG atlas generation/import is asset-only; actual image mesh and all XBE/HUD writers ran"},
-                "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated"],
+                "image_options": {"scorebug_textures": True, "runtime_panel_resources": False,
+                                  "reason": "Manifest proves XBE ownership only; panel transport has its own resource tests"},
+                "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated", "scorebug_runtime"],
                 "source_sha256": used_fingerprints, "steps": recorder.steps, "spans": spans}

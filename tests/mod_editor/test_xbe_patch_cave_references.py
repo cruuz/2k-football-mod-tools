@@ -71,7 +71,8 @@ class CaveReferenceTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_xbe_space as space
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
-        cls.patched, _ = space.apply(cls.patched, relocated.REQUESTS)
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+        cls.patched, _ = space.apply(cls.patched, relocated.REQUESTS + runtime.REQUESTS)
         cls.patched, _ = relocated.apply(cls.patched)
         from mod_editor.core import nfl2k5_music_policy as music
         cls.patched, cls.music_receipt = music.apply(
@@ -80,6 +81,7 @@ class CaveReferenceTests(unittest.TestCase):
             raise AssertionError("music policy owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
         cls.patched, _ = scorebug.apply_xbe(cls.patched)
+        cls.patched, _ = runtime.apply(cls.patched)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -273,6 +275,10 @@ class CaveReferenceTests(unittest.TestCase):
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
         self.assertEqual(space.allocation_evidence(self.retail, manifest)["encoded_references"], [])
         self.assertEqual(relocated.status(self.patched), "applied")
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+        self.assertEqual(runtime.status(self.patched), "applied")
+        for va, original in runtime.HOOKS.values():
+            self.assertEqual(manifest.overlaps(va, va + len(original), exclude_owner=runtime.OWNER), [])
         for r in space.reservations(self.patched):
             self.assertGreaterEqual(int(r["start"], 0), space.CODE_VA)
 

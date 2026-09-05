@@ -228,9 +228,13 @@ def sha(b: bytes) -> str:
 
 
 class Mesh:
-    def __init__(self, data: bytes):
-        if len(data) != SCNE_SIZE or sha(data) != SCNE_SHA:
-            raise SystemExit(f"not the retail decoded score_bug SCNE ({len(data)} bytes, {sha(data)[:12]})")
+    def __init__(self, data: bytes, *, runtime: bool = False):
+        expected = SCNE_SHA
+        if runtime:
+            from mod_editor.core.nfl2k5_scorebug_resources import RUNTIME_SCENE_SHA256
+            expected = RUNTIME_SCENE_SHA256
+        if len(data) != SCNE_SIZE or sha(data) != expected:
+            raise SystemExit(f"not the pinned decoded score_bug SCNE ({len(data)} bytes, {sha(data)[:12]})")
         self.buf = bytearray(data)
         self.scale = struct.unpack_from("<f", data, SHAPE + 0x10)[0]
         self.offset = struct.unpack_from("<3f", data, SHAPE + 0x20)
@@ -854,7 +858,7 @@ def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool =
 
 def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: bool = False,
                       team_panels: dict | None = None, samples: dict | None = None,
-                      slide: float = 1.0) -> None:
+                      slide: float = 1.0, runtime: bool = False, text_colors: dict | None = None) -> None:
     """Render actual SCNE strips, patched P8 texels and measured text anchors.
 
     Fonts approximate the game. Optional staged team panels are labelled as a target
@@ -868,6 +872,8 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
         dr.line((x*scale,0,(x+95)*scale,480*scale),fill=(224,235,215,155),width=2*scale)
     dr.rectangle((0,440*scale,640*scale,480*scale),fill=(12,16,20,255))
     order={"yscore_buga":0,"zscore_buga":1,"cscore_buga":2,"dscore_buga":3,"zz_ESPN_bug":4}
+    if runtime:
+        order["hscore_buga"] = 1
     def point(v):
         x,y,_=m.pos[v]
         if m.tindex[v] == 11:
@@ -881,8 +887,11 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
             vs=indices[i:i+3]
             if len(set(vs)) < 3:
                 continue
-            _textured_triangle(im,texture,[point(v) for v in vs],[m.uv_edit.get(v,m.uv[v]) for v in vs])
-    if team_panels:
+            selected = texture
+            if runtime and team_panels and mat in ("hscore_buga", "zscore_buga"):
+                selected = team_panels["home" if mat == "hscore_buga" else "away"]
+            _textured_triangle(im,selected,[point(v) for v in vs],[m.uv_edit.get(v,m.uv[v]) for v in vs])
+    if team_panels and not runtime:
         for side,panel in team_panels.items():
             a,b,c,d=r.PANELS[side]
             im.alpha_composite(panel.resize((round((c-a)*scale),round((d-b)*scale)),Image.Resampling.LANCZOS),
@@ -896,8 +905,10 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
     dr=ImageDraw.Draw(im)
     from nfl2k5_scorebug_espn_art import font as getfont,FONT_BOLD
     for name,(x,y,z) in r.ANCHORS.items():
-        if name not in values or (team_panels and name.endswith("city")):
+        if name not in values or (team_panels and not runtime and name.endswith("city")):
             continue
+        if runtime:
+            x, y, z = m.world[T[name]]
         text=values[name]
         size=18 if name.endswith("score") else 9
         font=getfont(FONT_BOLD,size*scale)
@@ -911,8 +922,11 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
             px-=width/2
         py=(424-y)*scale
         color=(255,255,255,255) if name in ("away_city","home_city","away_score","home_score","drop_down") else (17,17,24,255)
+        color = (text_colors or {}).get(name, color)
         dr.text((px,py),text,font=font,fill=color,anchor="ls")
     label="TARGET WITH STAGED LOGOS / RUNTIME HOOK REQUIRED" if team_panels else "INSTALLABLE DATA / NEUTRAL TEAM FALLBACK"
+    if runtime:
+        label = "COMPILED RUNTIME STATE / STATIC PREVIEW"
     dr.text((14*scale,12*scale),label,fill="white",font=getfont(FONT_BOLD,10*scale))
     dr.text((14*scale,453*scale),"EXPERIMENTAL / UNWITNESSED / FONT APPROXIMATION",fill="white",font=getfont(FONT_BOLD,8*scale))
     path.parent.mkdir(parents=True,exist_ok=True)

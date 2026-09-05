@@ -553,3 +553,174 @@ LEGACY_DIGITAL_FONT = {'chunk': 46,
  'span_sha256': 'fdfac95dae8920078b4ac3a9f02e00864868c285b1cdde8a18fbcaa71b2139b3',
  'span_size': 2752,
  'width': 128}
+
+# Runtime resource collection. Pixel data is derived from the user's retail disc.
+# These are ordinary native TXTR resources in the same HUD outer as score_bug.
+RUNTIME_VERSION = "scorebug-runtime-v1"
+HUD_OUTER_INDEX, HUD_START, HUD_SIZE = 346, 109895680, 2977184
+RUNTIME_TEXTURE_COUNT, RUNTIME_TEXTURE_SPAN = 264, 5280
+RUNTIME_APPEND_SIZE = RUNTIME_TEXTURE_COUNT * RUNTIME_TEXTURE_SPAN
+RUNTIME_GROWTH = ((HUD_SIZE + RUNTIME_APPEND_SIZE + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
+# Filled by the reproducible compiler; no game bytes are distributed.
+RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': 'a36b11dcf12e8b2f9948206e487cf074486fdaaa67bfc1a68d7044882e4b5b1c', 'appendix': '5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49'}
+
+
+def runtime_panel_name(asset_code, side, count):
+    if asset_code not in {r["asset_code"] for r in TEAM_LOGOS.values()} | {"--"}:
+        raise ValueError("unknown panel identity")
+    if side not in ("home", "away") or type(count) is not int or not 0 <= count <= 3:
+        raise ValueError("invalid panel side or timeout count")
+    return f"sb{asset_code}{side[0]}{count}"
+
+
+def runtime_panel(template, image, name):
+    """128x32 swizzled P8, native 128-byte system buffer and 5120-byte video.
+
+    The existing quantizer/swizzler produce the pixels. Uncompressed wrappers
+    avoid adding any VC-LZ overlap/scratch requirement to the grown collection.
+    """
+    import struct
+    from . import nfl2k5_scorebug_ingame as r
+    import nfl_tset_png_import as palettes
+    decoded = r.pinned(template, RESOURCES["score_buga"])
+    system = bytearray(decoded[:128])
+    encoded_name = (name + "\0").encode("utf-16le")
+    if len(encoded_name) > 24 or image.size != (128, 32):
+        raise ValueError("invalid runtime texture dimensions/name")
+    system[32:56] = encoded_name.ljust(24, b"\0")
+    struct.pack_into("<I", system, 56 + 12, 0x05710B29)  # 2D, P8, 1 mip, 128x32
+    palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, 128, 32, image.tobytes())], 128)
+    video = r.tx.swizzle_2d(levels[0], 128, 32, 1) + palettes.palette_bytes(palette)
+    body = bytes(system) + video
+    header = struct.pack("<4s7I", b"TXTR", len(body), 128, len(video), 0, 0, 0, 0)
+    result = header + body
+    chunk, roundtrip, _ = r.decode(result)
+    tex = r.tx.parse_texture(roundtrip, chunk)
+    if len(result) != RUNTIME_TEXTURE_SPAN or roundtrip != body or (tex.width, tex.height, tex.name) != (128, 32, name):
+        raise ValueError("runtime native TXTR round trip failed")
+    return result
+
+
+def panel_states(span, team, side):
+    """Yield four source images, 0..3 actual remaining timeout dashes."""
+    from PIL import Image, ImageDraw
+    from . import nfl2k5_scorebug_ingame as r
+    if team is None:
+        im = Image.new("RGBA", (128, 32))
+        d = ImageDraw.Draw(im)
+        for x in range(128):
+            v = round(75 * (1 - (x if side == "away" else 127-x)/127) + 17 * (x if side == "away" else 127-x)/127)
+            d.line((x, 0, x, 31), fill=(v, v, v + 5, 255))
+    else:
+        data, _ = r.stage_team_panel(span, team, side=side)
+        im = Image.frombytes("RGBA", (128, 32), data)
+    for count in range(4):
+        state = im.copy()
+        d = ImageDraw.Draw(state)
+        for n, x in enumerate((103, 112, 121)):
+            dx = x if side == "away" else 127-x
+            d.line((dx, 30, dx + 4, 30), fill=(230, 230, 232, 255) if n < count else (55, 55, 60, 255))
+        yield state
+
+
+def compile_runtime_collection(pack):
+    """Pure bounded pack-0 compiler, retaining all unrelated bytes and entries.
+
+    Insert at the end of outer 346, expand its existing index entry and pack 0,
+    and move later virtual offsets by the same sector count. Other packs do not
+    move physically. The old outer's chunks keep their offsets and wrappers.
+    """
+    import struct
+    from . import nfl2k5_scorebug_ingame as r
+    import nfl_outer as outer
+    state = runtime_pack_status(pack)
+    if state == "applied":
+        return pack, {"status": "already_applied", "changed_bytes": 0, "growth": 0}
+    if state != "retail":
+        raise ValueError("foreign/mixed scorebug collection; rebuild from retail resources")
+    inputs = {n: pack[v["pack_offset"]:v["pack_offset"] + v["span_size"]] for n, v in RESOURCES.items()}
+    patches = {"score_bug": r.stage_binding_scene(inputs["score_bug"], runtime=True)[0],
+               "score_buga": r.apply(inputs["score_buga"], "score_buga", inputs=inputs)[0]}
+    panels, receipts = [], []
+    for team, record in [(None, {"asset_code": "--"})] + sorted(TEAM_LOGOS.items()):
+        span = b"" if team is None else pack[record["pack_offset"]:record["pack_offset"] + record["span_size"]]
+        for side in ("home", "away"):
+            for count, image in enumerate(panel_states(span, team, side)):
+                name = runtime_panel_name(record["asset_code"], side, count)
+                data = runtime_panel(inputs["score_buga"], image, name)
+                receipts.append(dict(name=name, team=team, side=side, timeouts=count, size=len(data), sha256=r.digest(data)))
+                panels.append(data)
+    appendix = b"".join(panels)
+    if len(appendix) != RUNTIME_APPEND_SIZE:
+        raise ValueError("runtime texture collection size changed")
+    end = HUD_START + HUD_SIZE
+    aligned_end = outer.align_up(end)
+    new_end = outer.align_up(end + len(appendix))
+    result = bytearray(pack[:end] + appendix + bytes(new_end - end - len(appendix)) + pack[aligned_end:])
+    for name, data in patches.items():
+        start = RESOURCES[name]["pack_offset"]
+        result[start:start + len(data)] = data
+    entries = struct.unpack_from("<I", pack)[0]
+    struct.pack_into("<I", result, 12, len(result) // 2048)
+    struct.pack_into("<I", result, outer.HEADER_SIZE + HUD_OUTER_INDEX * 12 + 4, HUD_SIZE + len(appendix))
+    for i in range(HUD_OUTER_INDEX + 1, entries):
+        at = outer.HEADER_SIZE + i * 12 + 8
+        old = struct.unpack_from("<I", pack, at)[0]
+        struct.pack_into("<I", result, at, old + RUNTIME_GROWTH // 2048)
+    result = bytes(result)
+    if runtime_pack_status(result) != "applied":
+        raise ValueError("runtime collection postcondition failed")
+    return result, dict(status="applied", version=RUNTIME_VERSION, experimental=True, runtime_witnessed=False,
+                        growth=len(result)-len(pack), sha256_before=r.digest(pack), sha256_after=r.digest(result),
+                        outer_index=HUD_OUTER_INDEX, outer_size_before=HUD_SIZE,
+                        outer_size_after=HUD_SIZE+RUNTIME_APPEND_SIZE, resources=receipts,
+                        scene_sha256=r.digest(patches["score_bug"]), atlas_sha256=r.digest(patches["score_buga"]),
+                        appendix_sha256=r.digest(appendix),
+                        transport="sector insertion in pack 0; all later index offsets move equally")
+
+
+def runtime_pack_status(pack):
+    import struct
+    from . import nfl2k5_scorebug_ingame as r
+    import nfl_outer as outer
+    try:
+        grown = len(pack) == r.PACK_SIZE + RUNTIME_GROWTH
+        if len(pack) != (r.PACK_SIZE + RUNTIME_GROWTH if grown else r.PACK_SIZE):
+            return "foreign"
+        count, reserved, packs = struct.unpack_from("<III", pack)
+        if count != 4323 or reserved != 0 or not 1 <= packs <= 36:
+            return "foreign"
+        table = bytearray(pack[:outer.HEADER_SIZE + count * 12])
+        if grown:
+            struct.pack_into("<I", table, 12, r.PACK_SIZE // 2048)
+            struct.pack_into("<I", table, outer.HEADER_SIZE + HUD_OUTER_INDEX * 12 + 4, HUD_SIZE)
+            for i in range(HUD_OUTER_INDEX + 1, count):
+                at = outer.HEADER_SIZE + i * 12 + 8
+                old = struct.unpack_from("<I", table, at)[0]
+                struct.pack_into("<I", table, at, old - RUNTIME_GROWTH // 2048)
+        if r.digest(table) != RUNTIME_PINS["index"]:
+            return "foreign"
+        # Check real grown header fields BEFORE normalization, not just its inverse.
+        if struct.unpack_from("<I", pack, 12)[0] * 2048 != len(pack):
+            return "foreign"
+        at = outer.HEADER_SIZE + HUD_OUTER_INDEX * 12
+        if struct.unpack_from("<III", pack, at) != (11965036, HUD_SIZE + (RUNTIME_APPEND_SIZE if grown else 0), HUD_START // 2048):
+            return "foreign"
+        hud = pack[HUD_START:HUD_START + HUD_SIZE]
+        expected = "hud_after" if grown else "hud_before"
+        if r.digest(hud) != RUNTIME_PINS[expected]:
+            return "foreign"
+        if grown:
+            end = HUD_START + HUD_SIZE
+            if r.digest(pack[end:end + RUNTIME_APPEND_SIZE]) != RUNTIME_PINS["appendix"]:
+                return "foreign"
+            if any(pack[end + RUNTIME_APPEND_SIZE:outer.align_up(end + RUNTIME_APPEND_SIZE)]):
+                return "foreign"
+        return "applied" if grown else "retail"
+    except (ValueError, KeyError, IndexError, struct.error):
+        return "foreign"
+
+# Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
+RUNTIME_ABI_GUARDS = [(1035472, 407, 'fae55450eb58f087e0e31b50636342c39d7b7df70361fae6b2ccda6e2fedfa60'), (1035888, 1466, 'fadbe0384fccb436be4f0fe52514aa9e38c543288a471ffc6b44e9ffde365b2f'), (1034688, 780, 'bdc0d7cda462c37ec5546944605fe12141a83c798965b78ebe5abe8467d379df'), (1031280, 73, '1fea8eb67ed1d7df96e85562ec8d79075736ed4d10e5cfbe18f1b7be05c01e60'), (281056, 104, '710fd5ba9fd2a147042dd4c5f133cc2a8d36dcdc10b47417d17ec65df9b46191'), (279504, 770, '1caaf5b258e1849435c7ed69dbc970f9ce5f265415c4dadecee3bef94dc8d6b3'), (199744, 37, 'dd3d52cc45c43dc86d8db7220d777346237b324dd9a00dce35c9de3362bbfdee'), (277792, 136, '03233a25e1afc3ef91892233872e5b9cf29404be7b250dbf17a62db248949d9f'), (282016, 20, '0ee1f6425e946ec6d8dd4aeae08c6ae211e9de4ba09f9648a75f052d1c6bed6e'), (216560, 108, 'f84f040777759d3417fb8bee34ab8e046cf40255e18c467530417ae504aad29c'), (216080, 267, '69266ee656258cc0c7c3f770b0a650452d18c4c84251088bb204fbecb3afa2fe'), (754112, 58, '13cd2011501c1d9567889a32898a944b6cd7dee7769062e7ad57a0994614c674'), (1032272, 29, '02136e09af5b89365ab949b6cdd50c82e2c705bf3e4a9a585f6561234e33de99'), (1032304, 29, '730201c327a46bc2ee757b942eef6efb387d47a9aa5d9cdde452e5539a296222'), (400464, 6, 'b47138018b9b2ec278b17d759b0d8e54f0c9c5c9181510e9d3716d37aa74d6a4'), (400480, 6, '7d1ab1e0e220598d0dfeec086c9327bcec8699bc836f0ee2d3930a8e3d500e9b'), (1031584, 9, '5e68b2fc2391d42f537a7a352387790a5c46114bbe4f2197a6293a5a9a6f1b63'), (1034192, 446, '61eb66a3851ced7740b600c9b2ec8dc32c1fcfdb6c980ae7995b78407b23390a'), (15124024, 24, '9385e4da55d331aa5b8649841a9206ccd44b267e2a05abb359cb178b7d862f67'), (15124276, 24, 'c9ce8e336a66c1f198ee4f2a11052c232675558077c0f6e328e689d5bd52aee2')]
+
+RUNTIME_SCENE_SHA256 = '8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624'

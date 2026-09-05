@@ -439,7 +439,7 @@ def stage_team_panel(span: bytes, team: str, *, side: str = "away") -> tuple[byt
                   "runtime_bound":False,"experimental":True,"witnessed":False}
 
 
-def stage_binding_scene(span: bytes) -> tuple[bytes, dict]:
+def stage_binding_scene(span: bytes, *, runtime: bool = False) -> tuple[bytes, dict]:
     """Fixed-span scene data for the specified future binding hook, never auto-installed.
 
     zscore_buga becomes away-only. The unused hscore_buga material becomes the
@@ -467,6 +467,10 @@ def stage_binding_scene(span: bytes) -> tuple[bytes, dict]:
             m.uv_edit[v]=(-1+2*u,-1+2*vv)
             struct.pack_into("<I",m.buf,layout.S1+v*10,0xffffffff)
             struct.pack_into("<h",m.buf,layout.S1+v*10+8,0)
+    if runtime:
+        # Keep the native away abbreviation clear of the real logo's outer third.
+        for name in ("away_city", "away_city_l"):
+            m.world[layout.T[name]][0] += 43
     result,info=layout.refit(span,serialize(m))
     return result,{"schema":"nfl2k5_scorebug_binding_scene/v1","runtime_bound":False,
                    "requires_hook":True,"sha256":digest(result),"wrapper_identical":info.wrapper_identical,
@@ -489,3 +493,113 @@ def preview_data(source: Path):
     tex=tx.parse_texture(decoded,chunk)
     image=Image.frombytes("RGBA",(64,64),tx.texture_to_rgba(decoded,chunk,tex))
     return m,image
+
+
+def runtime_image_plan(fd: int, *, with_kickoff: bool = False):
+    """Preflight both files before any write; use the generalized extent reader."""
+    from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
+    from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as kickoff
+    from . import platform_compat as io
+    entries, _ = layout.xc.parse_xdvdfs(fd, os.fstat(fd).st_size)
+    pack_entry, xbe_entry = entries.get("vc_53450030/0"), entries.get("default.xbe")
+    if pack_entry is None or xbe_entry is None:
+        raise ScorebugError("missing scorebug disc files")
+    if pack_entry.size not in (PACK_SIZE, PACK_SIZE + resources.RUNTIME_GROWTH) or xbe_entry.size not in (
+            space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, space.FILE_SIZE):
+        raise ScorebugError("unknown scorebug disc extents")
+    pack = io.pread(fd, pack_entry.size, pack_entry.byte_offset)
+    xbe = io.pread(fd, xbe_entry.size, xbe_entry.byte_offset)
+    states = (resources.runtime_pack_status(pack), runtime.status(xbe))
+    if "foreign" in states or len(set(states)) != 1:
+        raise ScorebugError("runtime scorebug files are mixed or foreign; rebuild from base")
+    prepared = xbe
+    if space.status(xbe) == "retail":
+        requests = runtime.REQUESTS + (kickoff.REQUESTS if with_kickoff else ())
+        prepared, _ = space.apply(xbe, requests)
+    if with_kickoff:
+        prepared, _ = kickoff.apply(prepared)
+    new_xbe, xr = runtime.apply(prepared)
+    new_pack, pr = resources.compile_runtime_collection(pack)
+    return ((pack_entry, pack, new_pack), (xbe_entry, xbe, new_xbe)), dict(
+        version=resources.RUNTIME_VERSION, status=states[0], experimental=True,
+        runtime_witnessed=False, runtime_team_logos=True, timeout_dimming=True,
+        score_flash=True, down_refresh=True, under_5_color=True, resources=pr, xbe=xr)
+
+
+def runtime_image_status(path):
+    """Recognition only. Never rasterize artwork or invoke a writer for status."""
+    from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
+    from . import nfl2k5_xbe_space as space, platform_compat as io
+    try:
+        with Path(path).open("rb") as stream:
+            fd = stream.fileno()
+            entries, _ = layout.xc.parse_xdvdfs(fd, os.fstat(fd).st_size)
+            p, x = entries["vc_53450030/0"], entries["default.xbe"]
+            if p.size not in (PACK_SIZE, PACK_SIZE + resources.RUNTIME_GROWTH) or x.size not in (
+                    space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, space.FILE_SIZE):
+                return "foreign"
+            states = (resources.runtime_pack_status(io.pread(fd, p.size, p.byte_offset)),
+                      runtime.status(io.pread(fd, x.size, x.byte_offset)))
+            return states[0] if len(set(states)) == 1 else "foreign"
+    except (OSError, ValueError, KeyError, struct.error, SystemExit):
+        return "foreign"
+
+
+def runtime_apply_in_place(path, *, with_kickoff=False):
+    """Transactional resource growth and allocator XBE transport on an output copy.
+
+    Pack 0 is appended intact, then its existing XDVDFS node is switched. The
+    generalized XBE writer owns its extent. Ordinary failures restore both
+    nodes, any same-size XBE write, and the original image length. Power loss
+    is outside this guarantee; apply_copy publishes only a closed verified copy.
+    """
+    from . import nfl2k5_depth_chart_storage as storage, platform_compat as io
+    with Path(path).open("r+b") as stream:
+        fd = stream.fileno()
+        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff)
+        original_size = os.fstat(fd).st_size
+        nodes = []
+        for entry, before, _after in jobs:
+            node, sector, length = storage.image_file_node(
+                lambda count, offset: io.pread(fd, count, offset), entry.base_offset, original_size, entry.path)
+            if (sector, length) != (entry.sector, entry.size) or io.pread(fd, len(before), entry.byte_offset) != before:
+                raise ScorebugError("disc changed after runtime scorebug preflight")
+            nodes.append((node, io.pread(fd, 8, node)))
+        if all(before == after for _, before, after in jobs):
+            return {**receipt, "status": "already_applied", "image_growth": 0}
+        def write(data, at):
+            if io.pwrite(fd, data, at) != len(data):
+                raise ScorebugError("short runtime scorebug write")
+        xbe_attempted = False
+        try:
+            entry, before, after = jobs[0]
+            offset = (original_size + 2047) & -2048
+            if offset > original_size:
+                write(bytes(offset-original_size), original_size)
+            write(after, offset)
+            if io.pread(fd, len(after), offset) != after:
+                raise ScorebugError("runtime pack readback failed")
+            write(struct.pack("<II", (offset-entry.base_offset)//2048, len(after)), nodes[0][0])
+            xbe_attempted = True
+            xr = storage.write_image_xbe(fd, jobs[1][2])
+            entries, _ = layout.xc.parse_xdvdfs(fd, os.fstat(fd).st_size)
+            if entries["vc_53450030/0"].byte_offset != offset or entries["vc_53450030/0"].size != len(after):
+                raise ScorebugError("runtime pack directory readback failed")
+            os.fsync(fd)
+        except Exception as exc:
+            try:
+                for node, before in reversed(nodes):
+                    write(before, node)
+                if xbe_attempted:
+                    write(jobs[1][1], jobs[1][0].byte_offset)
+                os.ftruncate(fd, original_size)
+                os.fsync(fd)
+                if any(io.pread(fd, len(before), node) != before for node, before in nodes):
+                    raise ScorebugError("runtime rollback directory readback failed")
+                if io.pread(fd, len(jobs[1][1]), jobs[1][0].byte_offset) != jobs[1][1]:
+                    raise ScorebugError("runtime rollback XBE readback failed")
+            except Exception as rollback:
+                raise ScorebugError(f"{exc}; rollback failed: {rollback}; discard output copy") from exc
+            raise
+    return {**receipt, "status": "applied", "image_growth": Path(path).stat().st_size-original_size,
+            "pack_offset": offset, "pack_size": len(jobs[0][2]), "xbe_transport": xr}
