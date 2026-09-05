@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "111cc430b65395a15c17147591f590058eac644806ffb92299f15dabf30d688e",
     "mod_editor/gui/studio_qt.py":
-        "7e230f6f1aabf50a08ab54ca16ef67535173c5d1c2d8a9671ede645fe3b5fb9b",
+        "e51f9c26fc708708650f19948787a62812fafe939eefe61c3cf2dacdb46789c5",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1806,6 +1806,7 @@ def main() -> int:
         "mod_editor.games.chooser",
         "mod_editor.games.chooser_qt",
         "mod_editor.games.studio_qt",
+        "mod_editor.games.studio_service",
         "mod_editor.games.lane_cli",
         "mod_editor.games.pins",
         "mod_editor.games.fragments",
@@ -1816,6 +1817,7 @@ def main() -> int:
         "mod_editor.games.nfl2k5_ps2",
         "mod_editor.games.nfl2k5_ps2.code_patches",
         "mod_editor.games.nfl2k5_ps2.uniform_art",
+        "mod_editor.games.nfl2k5_ps2.disc_lanes",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative

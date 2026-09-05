@@ -17,9 +17,12 @@ tools/validate_nfl2k5_ps2_save.sh
 mod_editor/core/ps2_export_service.py
 tools/nfl2k5_ps2_replacement_pack_audit.py
 tools/nfl2k5_ps2_replacement_pack_kit.py
+tools/nfl2k5_ps2_uniform_art.py
 tools/nfl2k5_ps2_replacement_pack_verify.py
 tools/validate_nfl2k5_ps2_replacement_pack.bat
+tools/validate_nfl2k5_ps2_uniform_art.bat
 tools/validate_nfl2k5_ps2_replacement_pack.sh
+tools/validate_nfl2k5_ps2_uniform_art.sh
 tools/nfl2k5_ps2_playbook_patch.py
 tools/nfl2k5_ps2_playbook_verify.py
 tools/nfl2k5_ps2_playbook_target_catalog.py
@@ -28,6 +31,7 @@ tools/validate_nfl2k5_ps2_playbook.bat
 tools/ps2_iso9660_writer.py
 tools/ps2_iso9660_verify.py
 docs/product/PS2_PHASE2_TEXT.md
+docs/product/PS2_UNIFORM_ART.md
 tools/nfl2k5_ps2_text_patch.py
 tools/nfl2k5_ps2_text_target_catalog.py
 tools/nfl2k5_ps2_text_verify.py
@@ -73,3 +77,6 @@ mod_editor/games/nfl2k5_ps2/pins.json
 mod_editor/games/nfl2k5_ps2/registry.fragment.json
 mod_editor/games/nfl2k5_ps2/validate_code_patches.bat
 mod_editor/games/nfl2k5_ps2/validate_code_patches.sh
+mod_editor/games/nfl2k5_ps2/uniform_art.py
+mod_editor/games/nfl2k5_ps2/disc_lanes.py
+mod_editor/games/nfl2k5_ps2/uniform_kits.v1.json

@@ -470,6 +470,7 @@ mod_editor/games/_formats/ea_terf.py
 mod_editor/games/chooser.py
 mod_editor/games/chooser_qt.py
 mod_editor/games/studio_qt.py
+mod_editor/games/studio_service.py
 mod_editor/games/lane_cli.py
 mod_editor/games/conformance.py
 mod_editor/games/contract.py
@@ -488,4 +489,5 @@ mod_editor/games/nfl2k5_ps2/registry.fragment.json
 mod_editor/games/nfl2k5_ps2/validate_code_patches.bat
 mod_editor/games/nfl2k5_ps2/validate_code_patches.sh
 mod_editor/games/nfl2k5_ps2/uniform_art.py
+mod_editor/games/nfl2k5_ps2/disc_lanes.py
 mod_editor/games/nfl2k5_ps2/uniform_kits.v1.json

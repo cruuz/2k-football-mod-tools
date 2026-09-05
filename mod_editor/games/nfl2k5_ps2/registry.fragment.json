@@ -18,7 +18,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Audio tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; one slot (menu-appear_01) heard on a cold boot; every other slot's in-game cue is unproved."
+        "reason": "Surfaces on the Audio page of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, --game nfl2k5_ps2, or Select other games\u2026; the classic disc window keeps --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; one slot (menu-appear_01) heard on a cold boot; every other slot's in-game cue is unproved."
       },
       "id": "nfl2k5ps2.audio.audo_exact_slot_replace",
       "input_constraints": [
@@ -99,7 +99,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Colours tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
+        "reason": "Surfaces on the Text & Team Identity page of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, --game nfl2k5_ps2, or Select other games\u2026; the classic disc window keeps --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.colors.unif_words",
       "input_constraints": [
@@ -258,7 +258,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Text tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
+        "reason": "Surfaces on the Menus & UI page of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, --game nfl2k5_ps2, or Select other games\u2026; the classic disc window keeps --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.menus.text_banks",
       "input_constraints": [
@@ -345,7 +345,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Roster tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
+        "reason": "Surfaces on the Names, Numbers & Faces page of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, --game nfl2k5_ps2, or Select other games\u2026; the classic disc window keeps --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.players.disc_roster",
       "input_constraints": [
@@ -519,7 +519,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Playbooks tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
+        "reason": "Surfaces on the Playbooks & Plays page of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, --game nfl2k5_ps2, or Select other games\u2026; the classic disc window keeps --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.scripts.director_playbook",
       "input_constraints": [
@@ -604,7 +604,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Stadium tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested. Off by default: catalogue and build steps take tens of minutes and only one scene is proved."
+        "reason": "Surfaces on the Stadiums page of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, --game nfl2k5_ps2, or Select other games\u2026; the classic disc window keeps --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested. Off by default: catalogue and build steps take tens of minutes and only one scene is proved."
       },
       "id": "nfl2k5ps2.stadiums.position_lanes",
       "input_constraints": [
