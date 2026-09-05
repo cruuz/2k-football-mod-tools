@@ -47,10 +47,13 @@ def put(buf, va, raw):
 
 def fixture():
     buf = bytearray(pool_fixture())
+    table = struct.unpack_from("<I", buf, 0x120)[0] - 0x10000
+    raw = (len(buf) + 0xFFF) & ~0xFFF
+    buf.extend(bytes(raw + 0x2000 - len(buf)))
+    struct.pack_into("<5I", buf, table + 18 * 56, 7, 0x532000, 0x2000, raw, 0x2000)
     # Synthetic final section, with no private retail bytes. Only the test's
     # content hash is overridden; production still pins the real .XTLID data.
     buf.extend(bytes(storage.RETAIL_FILE_SIZE - len(buf)))
-    table = struct.unpack_from("<I", buf, 0x120)[0] - 0x10000
     struct.pack_into("<5I", buf, table + 21 * 56, storage.RETAIL_FLAGS, storage.SECTION_VA,
                      storage.RETAIL_SIZE, storage.RETAIL_RAW, storage.RETAIL_SIZE)
     struct.pack_into("<I", buf, 0x10C, storage.RETAIL_IMAGE_SIZE)
@@ -58,8 +61,23 @@ def fixture():
         for slot, (abbrev, long_name, pos, chain) in enumerate(records):
             put(buf, modern.record_va(unit, slot), modern.slot_text(abbrev, long_name) + struct.pack("<II", pos, chain))
     put(buf, modern.record_va(3, 4), bytes(7 * rows.RECORD_SIZE))
-    for site in (*rows.code_sites(), *rows.title_sites()):
+    for site in (*rows.code_sites(), *rows.title_sites(), *rows.layout_sites()):
         put(buf, site.va, site.befores[0])
+    # Public descriptor structure, built without private resource payloads.
+    for va, size, _digest in rows.SUMMARY_PINS:
+        put(buf, va, bytes(size))
+    for col, va in enumerate(rows.SUMMARY_COLUMNS):
+        callback = 0x243AE0 if col == 0 else (0x243B00 if col % 2 else 0x243AC0)
+        put(buf, va, struct.pack("<4I", 8, 1, callback, 0x10003 if col == 0 else 0x20034))
+        if col == 0 or col % 2 == 0:
+            put(buf, va + 0x50, struct.pack("<f", 50 if col == 0 else 145))
+        put(buf, va + 0x64, struct.pack("<4I", 1, 0x27CCD0, 0x10000, 0xEA2860))
+    put(buf, 0x532830, struct.pack("<I", rows.COUNT_VA))
+    put(buf, 0x532898, struct.pack("<8I", 1, *rows.SUMMARY_COLUMNS))
+    for off, value in ((0xA8, 0x22), (0xB4, 0x40C00000), (0xBC, 10),
+                       (0xC0, 0xEA2864), (0xF4, 0x532800)):
+        put(buf, 0x532968 + off, struct.pack("<I", value))
+    put(buf, 0x533060, struct.pack("<I", 0x532968))
     put(buf, rows.TABLE_END_VA, rows.RETAIL_RETURNER_POSITIONS)
     _repin(buf)
     return bytes(buf)
@@ -149,7 +167,7 @@ class LayoutTests(unittest.TestCase):
 
     def test_every_code_instruction_is_pinned_and_partial_layouts_refuse(self):
         for payload in (self.prepared, self.patched):
-            for site in (*rows.code_sites(), *rows.title_sites()):
+            for site in (*rows.code_sites(), *rows.title_sites(), *rows.layout_sites()):
                 # Corrupt opcode, interior and final bytes, including whole-block pins.
                 for delta in {0, len(site.after) // 2, len(site.after) - 1}:
                     broken = bytearray(payload)
@@ -247,7 +265,7 @@ class LayoutTests(unittest.TestCase):
                         return real_write(descriptor, data, offset)
 
                     with patch.object(io, "pwrite", side_effect=short_directory):
-                        with self.assertRaisesRegex(ValueError, "short SPECIAL"):
+                        with self.assertRaisesRegex(ValueError, "short grown"):
                             storage.write_image_xbe(fd, self.patched)
                     self.assertEqual(path.read_bytes(), image)
                 else:
@@ -333,7 +351,7 @@ class RetailTests(unittest.TestCase):
         for site in rows.code_sites():
             self.assertEqual(rows._read(retail, site.va, len(site.after)), site.befores[0], site.label)
         patched, receipt = rows.apply(prepare(retail))
-        self.assertEqual(receipt["sections_repinned"], [0, 14, 21])
+        self.assertEqual(receipt["sections_repinned"], [0, 12, 13, 14, 21])
         replay, _ = tt._apply_all(patched, None, False, edge_rename=True, scheme_labels=True)
         for mod in (edge, modern, pools, rows):
             self.assertEqual(mod.status(replay), "applied")

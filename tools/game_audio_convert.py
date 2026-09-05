@@ -217,7 +217,34 @@ def _open_source(path) -> Path:
     return resolved.resolve(strict=True)
 
 
-def probe(path, *, timeout: float = DEFAULT_TIMEOUT_SECONDS) -> SourceAudio:
+def _run_process(command, *, timeout, cancelled=None):
+    """Optional worker cancellation, with the child reaped before temp cleanup."""
+    if cancelled is None:
+        return subprocess.run(command, capture_output=True, timeout=timeout, check=False)
+    import time
+    if cancelled():
+        raise AudioConversionError("Audio conversion cancelled")
+    deadline = time.monotonic() + timeout
+    with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as child:
+        try:
+            while True:
+                if cancelled():
+                    raise AudioConversionError("Audio conversion cancelled")
+                remaining = deadline-time.monotonic()
+                if remaining <= 0:
+                    raise subprocess.TimeoutExpired(command, timeout)
+                try:
+                    stdout, stderr = child.communicate(timeout=min(0.2, remaining))
+                    return subprocess.CompletedProcess(command, child.returncode, stdout, stderr)
+                except subprocess.TimeoutExpired:
+                    continue
+        finally:
+            if child.poll() is None:
+                child.kill()
+            child.communicate()
+
+
+def probe(path, *, timeout: float = DEFAULT_TIMEOUT_SECONDS, cancelled=None) -> SourceAudio:
     """Read the source's real shape rather than trusting its extension."""
 
     resolved = _open_source(path)
@@ -230,9 +257,7 @@ def probe(path, *, timeout: float = DEFAULT_TIMEOUT_SECONDS) -> SourceAudio:
         str(resolved),
     )
     try:
-        completed = subprocess.run(
-            command, capture_output=True, timeout=timeout, check=False,
-        )
+        completed = _run_process(command, timeout=timeout, cancelled=cancelled)
     except subprocess.TimeoutExpired as exc:
         raise AudioConversionError("ffprobe timed out reading the audio source") from exc
     _require(
@@ -303,7 +328,7 @@ def _channel_arguments(source_channels: int, target_channels: int) -> tuple[str,
     return ("-ac", str(target_channels))
 
 
-def _decode(source: SourceAudio, shape: AudioShape, timeout: float) -> bytes:
+def _decode(source: SourceAudio, shape: AudioShape, timeout: float, *, cancelled=None) -> bytes:
     """Decode to headerless float32 at the target rate and channel count.
 
     Float rather than PCM16 on purpose.  Band-limited resampling overshoots on
@@ -339,7 +364,7 @@ def _decode(source: SourceAudio, shape: AudioShape, timeout: float) -> bytes:
     limit = shape.frame_count / shape.sample_rate + 0.5
 
     with tempfile.TemporaryDirectory(prefix="game-audio-convert-") as directory:
-        destination = Path(directory) / "decoded.pcm"
+        destination = Path(directory).resolve() / "decoded.pcm"
         command = (
             _tool("ffmpeg"),
             "-nostdin",
@@ -354,9 +379,7 @@ def _decode(source: SourceAudio, shape: AudioShape, timeout: float) -> bytes:
             str(destination),
         )
         try:
-            completed = subprocess.run(
-                command, capture_output=True, timeout=timeout, check=False,
-            )
+            completed = _run_process(command, timeout=timeout, cancelled=cancelled)
         except subprocess.TimeoutExpired as exc:
             raise AudioConversionError("ffmpeg timed out decoding the audio") from exc
         if completed.returncode != 0:
@@ -416,6 +439,7 @@ def convert(
     limit_peak: bool = True,
     fade_on_trim: bool = True,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
+    cancelled=None,
 ) -> tuple[bytes, ConversionReport]:
     """Convert any audio file into exactly ``shape``, and say what was done.
 
@@ -424,8 +448,12 @@ def convert(
     """
 
     _require(isinstance(shape, AudioShape), "A target AudioShape is required")
-    source = probe(path, timeout=timeout)
-    decoded = _decode(source, shape, timeout)
+    if cancelled is None:
+        source = probe(path, timeout=timeout)
+        decoded = _decode(source, shape, timeout)
+    else:
+        source = probe(path, timeout=timeout, cancelled=cancelled)
+        decoded = _decode(source, shape, timeout, cancelled=cancelled)
 
     frame_bytes = shape.channels * FLOAT_BYTES_PER_SAMPLE
     _require(

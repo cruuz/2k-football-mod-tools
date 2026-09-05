@@ -24,6 +24,10 @@ import struct
 import sys
 from typing import Iterable
 
+TOOLS = Path(__file__).resolve().parent
+if str(TOOLS) not in sys.path:
+    sys.path.insert(0, str(TOOLS))
+
 import nfl_outer
 
 
@@ -507,7 +511,7 @@ def main() -> int:
         resources, padding = read_motion_corpus(args.index, args.resource_inventory)
         report = build_report(args.index, args.resource_inventory, resources, padding)
         args.json.parent.mkdir(parents=True, exist_ok=True)
-        args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
         write_tsv(args.tsv, resources)
     except (MotionError, nfl_outer.FormatError, OSError, UnicodeError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)

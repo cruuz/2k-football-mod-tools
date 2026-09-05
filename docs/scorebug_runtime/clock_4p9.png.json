@@ -1,0 +1,19 @@
+{
+  "experimental": true,
+  "font": "approximation",
+  "native_slide_fraction": 1,
+  "play_clock": 4.9,
+  "runtime_witnessed": false,
+  "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+  "score_flash": null,
+  "selected": {
+    "away": "sb20a3",
+    "home": "sb37h3"
+  },
+  "static_preview": true,
+  "timeouts": [
+    3,
+    3
+  ],
+  "version": "scorebug-runtime-v1"
+}

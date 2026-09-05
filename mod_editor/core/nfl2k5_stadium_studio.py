@@ -27,8 +27,8 @@ import shutil
 import tempfile
 from threading import RLock
 from typing import Protocol
-from uuid import uuid4
 
+from . import platform_compat
 from .errors import ActionNotImplementedError, ValidationError
 from .nfl2k5_models import (
     GLTF_MATERIAL_INDEX_KEY,
@@ -699,7 +699,7 @@ class Nfl2k5StadiumStudio:
         target.parent.mkdir(parents=True, exist_ok=True)
         if os.path.lexists(target):
             raise ValidationError(f"A file already exists there: {target}")
-        temporary = target.with_name(f".{target.name}.{os.getpid()}.{uuid4().hex}.tmp")
+        temporary = platform_compat.temporary_sibling(target)
         descriptor = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
@@ -1108,9 +1108,7 @@ class Nfl2k5StadiumStudio:
     def _write_new_file(target: Path, payload: bytes) -> None:
         """Exclusive create through a temporary, the way export_texture does."""
 
-        temporary = target.with_name(
-            f".{target.name}.{os.getpid()}.{uuid4().hex}.tmp"
-        )
+        temporary = platform_compat.temporary_sibling(target)
         descriptor = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL

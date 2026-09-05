@@ -1,0 +1,2750 @@
+{
+  "allocator_proof": {
+    "allocation": "new_preloaded_sections",
+    "cave_verdict": "unmapped; owned loader allocation, not a free retail cave",
+    "encoded_references": [],
+    "end": "0x14bc000",
+    "manifest_overlaps": [],
+    "proof_boundary": "encoded references and structural mapping; runtime loader/gameplay unwitnessed",
+    "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "start": "0x14ba000"
+  },
+  "decoded_scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+  "disc": {
+    "allowed_directory_spans": [
+      [
+        72765508,
+        72765516
+      ],
+      [
+        67612,
+        67620
+      ]
+    ],
+    "original_extent_changed_byte_count": 10,
+    "original_extent_changed_offsets": [
+      67612,
+      67613,
+      67614,
+      67617,
+      67618,
+      72765508,
+      72765509,
+      72765510,
+      72765513,
+      72765514
+    ],
+    "runtime_status": "applied",
+    "source_extent_other_bytes_identical": true,
+    "source_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+    "source_size": 6300499968,
+    "target_sha256": "87662b96a15a966cc65c196edebda6cead496a915a89d26d289ab92e248008c0",
+    "target_size": 6507634688
+  },
+  "environment": {
+    "dependencies": {
+      "Pillow": "10.2.0",
+      "capstone": "5.0.9",
+      "unicorn": "2.1.4"
+    },
+    "python": "3.12.3"
+  },
+  "executables": [
+    {
+      "allocations": [
+        {
+          "align": 16,
+          "kind": "code",
+          "owner": "nfl2k5_boot_logo",
+          "raw": 12021760,
+          "size": 690,
+          "va": 21733376
+        },
+        {
+          "align": 16,
+          "kind": "code",
+          "owner": "nfl2k5_scorebug_runtime",
+          "raw": 12022464,
+          "size": 1408,
+          "va": 21734080
+        },
+        {
+          "align": 16,
+          "kind": "data",
+          "owner": "nfl2k5_scorebug_runtime",
+          "raw": 12025856,
+          "size": 128,
+          "va": 21737472
+        }
+      ],
+      "hooks": [
+        {
+          "after": "e865d43b01",
+          "before": "e845f3ffff",
+          "entry": "0x14ba2c0",
+          "name": "setup",
+          "va": "0xfce56"
+        },
+        {
+          "after": "e84bd43b01",
+          "before": "e819faffff",
+          "entry": "0x14ba3f2",
+          "name": "update",
+          "va": "0xfcfa2"
+        }
+      ],
+      "path": ".scratch/scorebug-runtime.xbe",
+      "runtime_code_bytes": 1228,
+      "runtime_code_sha256": "153641d86041b1bdc6e39c10310fa8e40b930c3edf8439c07a7421e854ce1b96",
+      "runtime_status": "applied",
+      "sha256": "3f4e763692dd6b5cef19bd81d4b74069c526bbfb96c42c8641e35915936e3730",
+      "size": 12029952
+    },
+    {
+      "allocations": [
+        {
+          "align": 16,
+          "kind": "code",
+          "owner": "nfl2k5_boot_logo",
+          "raw": 12021760,
+          "size": 690,
+          "va": 21733376
+        },
+        {
+          "align": 16,
+          "kind": "code",
+          "owner": "nfl2k5_dynamic_kickoff_relocated",
+          "raw": 12022464,
+          "size": 1939,
+          "va": 21734080
+        },
+        {
+          "align": 4,
+          "kind": "data",
+          "owner": "nfl2k5_dynamic_kickoff_relocated",
+          "raw": 12025856,
+          "size": 10,
+          "va": 21737472
+        },
+        {
+          "align": 16,
+          "kind": "code",
+          "owner": "nfl2k5_scorebug_runtime",
+          "raw": 12024416,
+          "size": 1408,
+          "va": 21736032
+        },
+        {
+          "align": 16,
+          "kind": "data",
+          "owner": "nfl2k5_scorebug_runtime",
+          "raw": 12025872,
+          "size": 128,
+          "va": 21737488
+        }
+      ],
+      "hooks": [
+        {
+          "after": "e805dc3b01",
+          "before": "e845f3ffff",
+          "entry": "0x14baa60",
+          "name": "setup",
+          "va": "0xfce56"
+        },
+        {
+          "after": "e8ebdb3b01",
+          "before": "e819faffff",
+          "entry": "0x14bab92",
+          "name": "update",
+          "va": "0xfcfa2"
+        }
+      ],
+      "path": ".scratch/scorebug-kickoff-composed.xbe",
+      "runtime_code_bytes": 1228,
+      "runtime_code_sha256": "4786a6c10815c5929de1160dbffc226983c5f746453236865ec869a723fdf060",
+      "runtime_status": "applied",
+      "sha256": "f9f54ba67181627b43a264c41c4f13e8390398837bc465b55f9839f665349c5e",
+      "size": 12029952
+    }
+  ],
+  "experimental": true,
+  "manifest": {
+    "image_options": {
+      "reason": "Manifest proves XBE ownership only; panel transport has its own resource tests",
+      "runtime_panel_resources": false,
+      "scorebug_textures": true
+    },
+    "observed_writer_calls": 42,
+    "path": ".scratch/scorebug-runtime-manifest.json",
+    "reservations": 3348,
+    "sha256": "37bc2463ba09fae09cfdfb1fa930507427db37b493e815e80f413b425fc755fb",
+    "source_sha256": {
+      "mod_editor/core/mod_build.py": "71d0046ec3dcf5723fd188b601f6888aa87e8e4d3aee985413c650a2b8dcc6ef",
+      "mod_editor/core/nfl2k5_accel_ramp.py": "35efee308a841b12939248f6d388e670b97dd99723efe1c3832212afc89f2b1d",
+      "mod_editor/core/nfl2k5_boot_logo.py": "b8dabc5b34aad1bc673965dd31281dd894103b3a777ca7f7c0c544a98bc55262",
+      "mod_editor/core/nfl2k5_bump_strength.py": "f23b28fbc8066c9614ce577d7667ef3db4a62dcb796d85d47a9e010f7e77f245",
+      "mod_editor/core/nfl2k5_camera.py": "5f645e4a104d5660a00ddc07a4ee7721bf08b209258ca91ac8f5bcd140934f24",
+      "mod_editor/core/nfl2k5_catch_slider.py": "c69f022b6328abcb0dcb74fef277297ac6d6471a96790559ef43ecc7cae26abe",
+      "mod_editor/core/nfl2k5_depth_chart_rows.py": "b2b8dd171f20837d321a8e762f0a01d87f93e0987875e34fa27f218131090568",
+      "mod_editor/core/nfl2k5_depth_chart_storage.py": "d08ee30335c24a664be5f7c64b25c42a025330feebe6dc37856c91f440f02980",
+      "mod_editor/core/nfl2k5_depth_locks.py": "39a0948c3fc26721f15495acd66a3a48c8db1cb6bcda6e4911b07d353bffd61c",
+      "mod_editor/core/nfl2k5_depth_roles.py": "92a11e038973a1c421fe7f3162064bb62a9fd8cefd6bfb4bd9cc5765d3f3a19d",
+      "mod_editor/core/nfl2k5_disc_identity.py": "bb9701f911996e4fd208f2eabbdce0c00b1519cc036055518830c19f06e223a4",
+      "mod_editor/core/nfl2k5_draft_ai.py": "b90f8e84cd6e30c03758158a917773cdb44f3089f5f0aa2413503f39fb4a9a16",
+      "mod_editor/core/nfl2k5_dynamic_kickoff.py": "cb1495340d04d2f51d32d8bc197bba2727c5c5003f9753b4e7022386e91a12e6",
+      "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "11d1712344d058966a78d21e0af1f8b6839dbeb4b889215645a35dc7473b3817",
+      "mod_editor/core/nfl2k5_edge_rename.py": "1a47e378e17ca4fe8a2e9440778893826a32905efe64359463ac121110353695",
+      "mod_editor/core/nfl2k5_formation_play_writer.py": "e0712331cc2ec8d64c11d490df3366aa3fa68e828500f0d7103ed3a48d237665",
+      "mod_editor/core/nfl2k5_franchise_practice.py": "6d0599d0dbcd173e3975dc31655051c76eae48e24895309b890dd8c94dce0440",
+      "mod_editor/core/nfl2k5_hud_layout.py": "6072ada85b0e59132226fa060c59d3a8e8249062a63682939aab7db54e0c7abd",
+      "mod_editor/core/nfl2k5_kick_laces.py": "a495864f35b60f335855b17f8a12ec304f78ecf3c363a597bb0e519e64790754",
+      "mod_editor/core/nfl2k5_kick_rules.py": "09023a7bf09146877c2bc7ba3ea7c7f9e5037e0090a70394262537192519c8d5",
+      "mod_editor/core/nfl2k5_modern_positions.py": "9b6777034a1c373edc1dbb4e2a902a70bfa0012b63042bb7a2a9ba4054be8e21",
+      "mod_editor/core/nfl2k5_overtime.py": "9621106101e1ce6d0bccb35ab5a2051cc8d68e9ed2fcdf2af87a13342855bbd5",
+      "mod_editor/core/nfl2k5_penalties.py": "0678ba8d6288db2fdec5cd7a61558e585e3bb5a64a50fbab3c3c6d173103d66f",
+      "mod_editor/core/nfl2k5_play_codec.py": "275342dbbe0e16590962b089efa27114ad45957a1ccc37447d3ef598c33bfe7a",
+      "mod_editor/core/nfl2k5_play_library.py": "2ad3518c02005de218819446b8182df5b63c095fae10e9c7d601ad2b71ab3510",
+      "mod_editor/core/nfl2k5_playbook_inspector.py": "acad37b2b09e7f3800ef0ab2ca6f753dcb0d42f4008b0f37f2e0989ba0e53a30",
+      "mod_editor/core/nfl2k5_playbook_pack.py": "ee012b93157bb63e0467795c2f8f61b4dd9f98ce5c5b1d8e74c6de85773fb8b0",
+      "mod_editor/core/nfl2k5_player_star.py": "fa16d7ffb1eb7747d05d4ed54ed49d38845ac3745a1eb614f39fd62b3824b5ed",
+      "mod_editor/core/nfl2k5_player_tags.py": "3190b1e28378e460b7bb40a3bb867bf1378a420d8e1d3e8fc8a58b654de64da6",
+      "mod_editor/core/nfl2k5_playoff_picture.py": "cc851bca3cd4ac77fdcea03be41db1536c51e3699503cfb227f60f1619b2c441",
+      "mod_editor/core/nfl2k5_playoffs14.py": "ab4e110bed018dd436a667e11cf650a5467db5a295fda7cdd5a73dc93e06b6ed",
+      "mod_editor/core/nfl2k5_position_pools.py": "b48819568be566ed30a93c3ec2420ea66c3c6609d851e845cd4bbf35a72368ab",
+      "mod_editor/core/nfl2k5_position_row.py": "0df78f0d7e3af61be8738afe5373925f48ef8a309a35bfcb31ab62008b6be85b",
+      "mod_editor/core/nfl2k5_practice_reserves.py": "461493f2d63fdc0e62c6551c6ba3f36b4635763d3a8030efa77b20a81f973d96",
+      "mod_editor/core/nfl2k5_practice_squad.py": "4bf4ca13dddfd929ad41f4cd64e04d1c517ba77d06807447dc4e48dd25d57be2",
+      "mod_editor/core/nfl2k5_practice_squad_runtime.py": "33041313a6ae071fd48cf28d79b2ad8c11281d9afe2310a5189ec03735da8ccb",
+      "mod_editor/core/nfl2k5_preseason.py": "cb3d4f940eb976dfd54e9bd3f4ae40b8d23735bd7c66130f5598acaaf2e93e3e",
+      "mod_editor/core/nfl2k5_probowl_order.py": "17fece44f811d9684b4d10df52219b9d8b9fe7817a82a3708bf93a99afd812d9",
+      "mod_editor/core/nfl2k5_progression.py": "a4e978a251fb9a747819c09c3563540229a41afca92458990496915f772d6b94",
+      "mod_editor/core/nfl2k5_prospect_names.py": "e92464afcc1b82581551b3092f2aedf8e5bca7d4a1e26f28fa4bdeefd44bf5da",
+      "mod_editor/core/nfl2k5_rdata_sites.py": "cb422ad49c38a233a8d0e855beae0a9748b1dfef809472bdae84c459865762af",
+      "mod_editor/core/nfl2k5_returner_fix.py": "a59cd96b4d639ee4f2d7fa7460e1b8bd61559ca060e7cd5c1a8d65990a3c7dc2",
+      "mod_editor/core/nfl2k5_roster_records.py": "92420ddefbfd69c6162895fdcc3fb2a55cad2645bd465efbb7e4d37b9636d142",
+      "mod_editor/core/nfl2k5_save_writer.py": "653f29449c8eb04fd7cc98f11c991b4c55e2af477c80b5b58bd1f7c10cc81c87",
+      "mod_editor/core/nfl2k5_scorebug_ingame.py": "97d063ec1a94e1409a91421ceb6667b50b0f2d49c3fdfc33cad4e5083a1e2689",
+      "mod_editor/core/nfl2k5_scorebug_resources.py": "ee092fc94bf4cba30b940628ef7b7c48e5a27ef2a7211ecb0acaa4105c1a0a0c",
+      "mod_editor/core/nfl2k5_scorebug_runtime.py": "a1fec85c3394249a82d01e5f62d24e1463cef792254e32575e5215b7fb92f52c",
+      "mod_editor/core/nfl2k5_season_length.py": "50405025eab3cdba33aaacc4e4fbc978f92df35ddffb38cf8e88bf15531951ae",
+      "mod_editor/core/nfl2k5_seven_on_seven.py": "bf72ea8e464bbb9199bbe9afdccee266c2291366870eafff4b048134a269995f",
+      "mod_editor/core/nfl2k5_seven_on_seven_book.py": "2ea757cabf2b3c175a8a2244d7f520f847f0d7a5e77f470daf989b3e46c34ac7",
+      "mod_editor/core/nfl2k5_source_cache.py": "db973c02fce5b25fc8ac2fe261023b4c519d94f82b95a878e42af1a5991b4b24",
+      "mod_editor/core/nfl2k5_special_roles.py": "5c51ee9bcaae8e6a9c520430a9d6ad5c711b08043d2332d5161420022438d967",
+      "mod_editor/core/nfl2k5_team_column.py": "465ae89093c76404e71653004c3bb1a0cd60ef9c1ebec4df7b639f4fe94e6337",
+      "mod_editor/core/nfl2k5_team_history.py": "e8620bb41a4e76b7b84e10f1f8f4abce4052061507089a97503339e3b4b1b5ae",
+      "mod_editor/core/nfl2k5_throw_tuning.py": "0ecd58e753bd18570715ce0031bb1c9dde8adcbca5515146a1d25eb8a340ee21",
+      "mod_editor/core/nfl2k5_uniform_choice.py": "485a0b64855836d03573381281b079a9cdab814996fa83b894046d8b29f93d6a",
+      "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
+      "mod_editor/core/nfl2k5_widescreen.py": "e0bf85b15ec89b551f5f470a3beb7e974037a4a3c3e2956a4b5fef808e081718",
+      "mod_editor/core/nfl2k5_xbe_space.py": "37d53c259d714be311b62068c56ec7cb7df5d78e04b4cb9cbc1a565ba8b589f9",
+      "tools/nfl2k5_franchise_schedule.py": "fdba5ff2b8b3cb5a3e39b50365c8bfedb10df57cf08bf2fc0a1e43366040ce07",
+      "tools/nfl2k5_franchise_schedule_probe.py": "7d072d518f034aba0b0e7109ccb0f884eb3e876210de6bfc48ec98238209b077",
+      "tools/nfl2k5_kickoff_alignment.py": "31218fc1e553adf4ab0f7fa59857459da16b828a5bb3679aba3c27d419cfe82b",
+      "tools/nfl2k5_playbook_position_recode.py": "3757f49b48b0318ec18f3434fe4ebf36962563615beac906607d6f80278d3607",
+      "tools/nfl2k5_roster_reclassify.py": "2e44dece33ca4e07db1b18e89509a8a1a9ca6728764b0110b986a43df73d96bb",
+      "tools/nfl2k5_scorebug_layout.py": "f63ed96e60bc57d5701b977955b336fbacb542afa92c0d655e9e00bc16ac2c53",
+      "tools/nfl2k5_scorebug_position_patch.py": "5c516ecd3b6600c04eb761f0f1810dbc69898d3a71107d71f3418ac6e8cbd3a4"
+    },
+    "stack_xbe_sha256": "cb6ae088aa99cbcf58021075d6e165dfe0985ff9aafa47ae6193ae6c12f1078e"
+  },
+  "previews": [
+    {
+      "path": "docs/scorebug_runtime/BAL_PIT.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb02a3",
+          "home": "sb22h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "5418f4e3010fed43274ec214dbf344caf775c953be996e5412de7b72b906c30e"
+    },
+    {
+      "path": "docs/scorebug_runtime/LV_HOU.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb20a3",
+          "home": "sb37h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "bfb80a16d10484332b3bb40ca068436a3bcce4decbf4c5e5f9030093c5124b21"
+    },
+    {
+      "path": "docs/scorebug_runtime/NO_MIA.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb17a3",
+          "home": "sb14h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "606f0586c28d2535893593cb0d3f7cca7909448c44efc78b48bb213cee26f1b0"
+    },
+    {
+      "path": "docs/scorebug_runtime/away_score_flash.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": "away",
+        "selected": {
+          "away": "sb20a3",
+          "home": "sb37h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "21164aecc203c34089d3561fe1a477e1feaf04538c0fc643922d37bc8b724020"
+    },
+    {
+      "path": "docs/scorebug_runtime/clock_4p9.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 4.9,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb20a3",
+          "home": "sb37h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "d47a0c335cb2ca7867281fa250942e3b3a72cb71ff3e9053ee352d492ad2db79"
+    },
+    {
+      "path": "docs/scorebug_runtime/clock_under_5.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 4,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb20a3",
+          "home": "sb37h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "c000f6a6e7faea0b9b4bce03d2b9bd5e13de8bb0d93a5823b0e5a269916db005"
+    },
+    {
+      "path": "docs/scorebug_runtime/down_halfway.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 0.5,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb20a3",
+          "home": "sb37h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "404a48fd599ae0af1d2372d45601560b96bfb6e6dc6c45de750729147854edf4"
+    },
+    {
+      "path": "docs/scorebug_runtime/down_refresh.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 0.03333333333333333,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb20a3",
+          "home": "sb37h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "d647151db82a66eb4af0d1db12ee8e82717a06fa713d2bf382e184b690e461b8"
+    },
+    {
+      "path": "docs/scorebug_runtime/home_score_flash.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": "home",
+        "selected": {
+          "away": "sb20a3",
+          "home": "sb37h3"
+        },
+        "static_preview": true,
+        "timeouts": [
+          3,
+          3
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "5a34fef64615db23cd9b87eca7281bfa4cb4277bab477fbe7b725d8e487e0acc"
+    },
+    {
+      "path": "docs/scorebug_runtime/timeouts_0.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb20a0",
+          "home": "sb37h0"
+        },
+        "static_preview": true,
+        "timeouts": [
+          0,
+          0
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "2efa6d5e861979f87636220d38947a8bb0e578c5e527dfda89b241f87c9361f5"
+    },
+    {
+      "path": "docs/scorebug_runtime/timeouts_1.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb20a1",
+          "home": "sb37h1"
+        },
+        "static_preview": true,
+        "timeouts": [
+          1,
+          1
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "e0d068a2ee22a06ac437a636c858994378dc88f1e44add1085ea1e91f28cdcff"
+    },
+    {
+      "path": "docs/scorebug_runtime/timeouts_2.png",
+      "receipt": {
+        "experimental": true,
+        "font": "approximation",
+        "native_slide_fraction": 1,
+        "play_clock": 12,
+        "runtime_witnessed": false,
+        "scene_sha256": "8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624",
+        "score_flash": null,
+        "selected": {
+          "away": "sb20a2",
+          "home": "sb37h2"
+        },
+        "static_preview": true,
+        "timeouts": [
+          2,
+          2
+        ],
+        "version": "scorebug-runtime-v1"
+      },
+      "sha256": "307ab9f6ee53fb5ee00de4b49a933f557dc90681c73f955e6ace7885dba92ca5"
+    }
+  ],
+  "proof_boundary": "Static analysis, bounded native x86 execution with explicit heap/IO/predicate fixtures, offline resource round trips and file transactions. No kernel, GPU, asynchronous loader or played-game witness.",
+  "resource_pins": {
+    "appendix": "5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49",
+    "hud_after": "a36b11dcf12e8b2f9948206e487cf074486fdaaa67bfc1a68d7044882e4b5b1c",
+    "hud_before": "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
+    "index": "1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10"
+  },
+  "resources": {
+    "appendix_sha256": "5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49",
+    "atlas_sha256": "72aee2c09b471c6f07e3658c00ef6f204021f3f6065cd96344c7c72d30df9947",
+    "experimental": true,
+    "growth": 1394688,
+    "outer_index": 346,
+    "outer_size_after": 4371104,
+    "outer_size_before": 2977184,
+    "resources": [
+      {
+        "name": "sb--h0",
+        "sha256": "cca5ceb9ef6905cdfa1489d95aa155b807fb30c4971eb057b7f7e4c34eaff19f",
+        "side": "home",
+        "size": 5280,
+        "team": null,
+        "timeouts": 0
+      },
+      {
+        "name": "sb--h1",
+        "sha256": "d45f78970d38bd52cf04f882dd983df903e4a5a40067b0c9fb3ea9705c4bcf3b",
+        "side": "home",
+        "size": 5280,
+        "team": null,
+        "timeouts": 1
+      },
+      {
+        "name": "sb--h2",
+        "sha256": "6c21a0561eac90bb06581f448ee7a1f4fbec416edc76d5e839dcbd04c8a199fb",
+        "side": "home",
+        "size": 5280,
+        "team": null,
+        "timeouts": 2
+      },
+      {
+        "name": "sb--h3",
+        "sha256": "2820f1abe4a88617d0da87584a3dc245e2c58bc66dfef743e4f71ca3344dac8f",
+        "side": "home",
+        "size": 5280,
+        "team": null,
+        "timeouts": 3
+      },
+      {
+        "name": "sb--a0",
+        "sha256": "39934ae2be4f8a7d721c9976764f72b323c2970d2107e75b7ff0a3c5f37f52ae",
+        "side": "away",
+        "size": 5280,
+        "team": null,
+        "timeouts": 0
+      },
+      {
+        "name": "sb--a1",
+        "sha256": "95a3ecddd37d432888346f2534f3e470afc246502cd70f55d1b6295a189205bb",
+        "side": "away",
+        "size": 5280,
+        "team": null,
+        "timeouts": 1
+      },
+      {
+        "name": "sb--a2",
+        "sha256": "2e11fea9309492261a71353cfe568ef15afa253227d8158856e1b8a68c4dcd93",
+        "side": "away",
+        "size": 5280,
+        "team": null,
+        "timeouts": 2
+      },
+      {
+        "name": "sb--a3",
+        "sha256": "72bc263a278486bc635f2c672030c825007d6b47818bd04d3df2062938401d9f",
+        "side": "away",
+        "size": 5280,
+        "team": null,
+        "timeouts": 3
+      },
+      {
+        "name": "sb00h0",
+        "sha256": "e2bb9099921e6ca4dd27e86f08a1d50d2bbfa89eec671dc7e7f7c12c94883c16",
+        "side": "home",
+        "size": 5280,
+        "team": "ARI",
+        "timeouts": 0
+      },
+      {
+        "name": "sb00h1",
+        "sha256": "4797c34ac5e400cbf9311770b0aaad14eff4df8622a5b32f99e5912487779b64",
+        "side": "home",
+        "size": 5280,
+        "team": "ARI",
+        "timeouts": 1
+      },
+      {
+        "name": "sb00h2",
+        "sha256": "39acfe56be41668bad5b8e8ad95e7d75c23fbde974964db8a2ad6311e824f9a9",
+        "side": "home",
+        "size": 5280,
+        "team": "ARI",
+        "timeouts": 2
+      },
+      {
+        "name": "sb00h3",
+        "sha256": "7f2773ed7c9fa5d67115468c74b8e1f9b01f93500df37dc9f15cc8e8c856149c",
+        "side": "home",
+        "size": 5280,
+        "team": "ARI",
+        "timeouts": 3
+      },
+      {
+        "name": "sb00a0",
+        "sha256": "2a4de4dd4d4d3a00c183d2de44b828690a8748bc6aff9f51e63c14c9cbc08bcb",
+        "side": "away",
+        "size": 5280,
+        "team": "ARI",
+        "timeouts": 0
+      },
+      {
+        "name": "sb00a1",
+        "sha256": "250fdd49567bf38c6711dbb682917d1be03ebaf8bb205fbda7c77069e4f5833a",
+        "side": "away",
+        "size": 5280,
+        "team": "ARI",
+        "timeouts": 1
+      },
+      {
+        "name": "sb00a2",
+        "sha256": "643e59799c74a347e202a1899c51d9fcd629faa4438bc6d792f2de79a01c8db8",
+        "side": "away",
+        "size": 5280,
+        "team": "ARI",
+        "timeouts": 2
+      },
+      {
+        "name": "sb00a3",
+        "sha256": "53e35dfdc97c41ffb6f9a4e21f1254c50606ca723fe58e1502cb2098cb10a81c",
+        "side": "away",
+        "size": 5280,
+        "team": "ARI",
+        "timeouts": 3
+      },
+      {
+        "name": "sb01h0",
+        "sha256": "bd0e346c0e2321fe7b1277cd8382fec4d5ac5f2a24effc3621d7b7c5a6b59304",
+        "side": "home",
+        "size": 5280,
+        "team": "ATL",
+        "timeouts": 0
+      },
+      {
+        "name": "sb01h1",
+        "sha256": "91f45e895f7e71e2c928731b7864160b3cdeb437d86283cabbc1f68981409a7a",
+        "side": "home",
+        "size": 5280,
+        "team": "ATL",
+        "timeouts": 1
+      },
+      {
+        "name": "sb01h2",
+        "sha256": "16b4e4a7af2574755ee9ab98e60767aec03d7380703dc086c8f7335f04d4c135",
+        "side": "home",
+        "size": 5280,
+        "team": "ATL",
+        "timeouts": 2
+      },
+      {
+        "name": "sb01h3",
+        "sha256": "f7337cdbf24fe5fb991263ad4e71387bcc242268731f5a24557808a886c9d1bd",
+        "side": "home",
+        "size": 5280,
+        "team": "ATL",
+        "timeouts": 3
+      },
+      {
+        "name": "sb01a0",
+        "sha256": "64c1ad8e02625af86e30a507588076515cd95dce143434e97363ef97fcb6126f",
+        "side": "away",
+        "size": 5280,
+        "team": "ATL",
+        "timeouts": 0
+      },
+      {
+        "name": "sb01a1",
+        "sha256": "c46f06ea55ce5d8a9f1c922f6ca7273b95ea86886890986c7766e56528a24394",
+        "side": "away",
+        "size": 5280,
+        "team": "ATL",
+        "timeouts": 1
+      },
+      {
+        "name": "sb01a2",
+        "sha256": "df3b6b00f964c90e87b7f4f08b475b95247455bffe200a15dcf18045c8093fd0",
+        "side": "away",
+        "size": 5280,
+        "team": "ATL",
+        "timeouts": 2
+      },
+      {
+        "name": "sb01a3",
+        "sha256": "1e005a60ce72ecd5a026fad0fceaf6457c876aa93bfcbcd7301af36a2b629c34",
+        "side": "away",
+        "size": 5280,
+        "team": "ATL",
+        "timeouts": 3
+      },
+      {
+        "name": "sb02h0",
+        "sha256": "2ad13ba8a2f0927f0fc673d980f6a452eb512e9140ab0e40517d7c74c4c6df16",
+        "side": "home",
+        "size": 5280,
+        "team": "BAL",
+        "timeouts": 0
+      },
+      {
+        "name": "sb02h1",
+        "sha256": "e3d0d955e63eeceba5b7c9cee7b2eaeb8b79ff574c3b7d609c4de6b82ec05d5e",
+        "side": "home",
+        "size": 5280,
+        "team": "BAL",
+        "timeouts": 1
+      },
+      {
+        "name": "sb02h2",
+        "sha256": "ad9d57af23a5cfb0da8bf69f87319bfe529bb5ce5cc24f3e0085ca0b4444fc61",
+        "side": "home",
+        "size": 5280,
+        "team": "BAL",
+        "timeouts": 2
+      },
+      {
+        "name": "sb02h3",
+        "sha256": "851f6bb6c4ad553d27d088fc6be3eceeec7f0d9f433c86b2b2e332c972d82278",
+        "side": "home",
+        "size": 5280,
+        "team": "BAL",
+        "timeouts": 3
+      },
+      {
+        "name": "sb02a0",
+        "sha256": "c8aa5e69be6f7d8364873cc11687ce65c28552447e6e149e9a5762526b10ab03",
+        "side": "away",
+        "size": 5280,
+        "team": "BAL",
+        "timeouts": 0
+      },
+      {
+        "name": "sb02a1",
+        "sha256": "08ca0feef058c47783791b4ca48e04b4e9bafbff94c7605c40ef068810f48ca1",
+        "side": "away",
+        "size": 5280,
+        "team": "BAL",
+        "timeouts": 1
+      },
+      {
+        "name": "sb02a2",
+        "sha256": "8f9157c498aa0848d4696f31b1188f04ce07a9210805e8e75c0e8fcccfd7312f",
+        "side": "away",
+        "size": 5280,
+        "team": "BAL",
+        "timeouts": 2
+      },
+      {
+        "name": "sb02a3",
+        "sha256": "7a047cae6cb3f706c56d4c53a057efef4e992a201840319172ea41f8656254d5",
+        "side": "away",
+        "size": 5280,
+        "team": "BAL",
+        "timeouts": 3
+      },
+      {
+        "name": "sb03h0",
+        "sha256": "871e907dd12cb43b36b8f14a6e952aebe74d9a9d086d87bb7993767d22531adf",
+        "side": "home",
+        "size": 5280,
+        "team": "BUF",
+        "timeouts": 0
+      },
+      {
+        "name": "sb03h1",
+        "sha256": "35bccc066bf27ed88340f18ccaa841c80846e9ff62cf65d704b91da074688681",
+        "side": "home",
+        "size": 5280,
+        "team": "BUF",
+        "timeouts": 1
+      },
+      {
+        "name": "sb03h2",
+        "sha256": "877edd10190b8b55a60777d76ac7b215da204ab7e9d8d0af9b6d9086a3b0707d",
+        "side": "home",
+        "size": 5280,
+        "team": "BUF",
+        "timeouts": 2
+      },
+      {
+        "name": "sb03h3",
+        "sha256": "6b34498abf5216650eea33027133849d04a4d1c432a1397c5f7ac4e6f59df1bd",
+        "side": "home",
+        "size": 5280,
+        "team": "BUF",
+        "timeouts": 3
+      },
+      {
+        "name": "sb03a0",
+        "sha256": "d4c11e24461a22713d75b5a72bd147d110b220d5605bbe1b39fb329570f65bad",
+        "side": "away",
+        "size": 5280,
+        "team": "BUF",
+        "timeouts": 0
+      },
+      {
+        "name": "sb03a1",
+        "sha256": "7975a960204d78d37a6624fbe6448218f07638c591a5f308649afea10b1e738c",
+        "side": "away",
+        "size": 5280,
+        "team": "BUF",
+        "timeouts": 1
+      },
+      {
+        "name": "sb03a2",
+        "sha256": "7d9a6c5e265a6052d31a46db23273c460ca08604e6f00e8c73813e0dbc3ed479",
+        "side": "away",
+        "size": 5280,
+        "team": "BUF",
+        "timeouts": 2
+      },
+      {
+        "name": "sb03a3",
+        "sha256": "77d1a8245b3e88457ac5d172d4ba7d205bde3d1a51bba544e1836691fb241ca9",
+        "side": "away",
+        "size": 5280,
+        "team": "BUF",
+        "timeouts": 3
+      },
+      {
+        "name": "sb04h0",
+        "sha256": "90fbc52c63985d4928826cf82ecd9a7754a922a475da6f08d64aa4f866b6a295",
+        "side": "home",
+        "size": 5280,
+        "team": "CAR",
+        "timeouts": 0
+      },
+      {
+        "name": "sb04h1",
+        "sha256": "de30cd8f862cd396bdae4fbcf5c82946634e66ce701adb7b255065dc1923b2f2",
+        "side": "home",
+        "size": 5280,
+        "team": "CAR",
+        "timeouts": 1
+      },
+      {
+        "name": "sb04h2",
+        "sha256": "52db673d9259d565cc5e5ce5cb07876d9d58d43da13d3de220a36d48ffc8a88b",
+        "side": "home",
+        "size": 5280,
+        "team": "CAR",
+        "timeouts": 2
+      },
+      {
+        "name": "sb04h3",
+        "sha256": "a67b3b934219caee1bd3c59359c59c747b5b5b3ac2598554f47047007642863d",
+        "side": "home",
+        "size": 5280,
+        "team": "CAR",
+        "timeouts": 3
+      },
+      {
+        "name": "sb04a0",
+        "sha256": "1cc3ed0dd9d0d238297ef6c46841c7e22067fd3287e0a456ebf9d561a726cfd3",
+        "side": "away",
+        "size": 5280,
+        "team": "CAR",
+        "timeouts": 0
+      },
+      {
+        "name": "sb04a1",
+        "sha256": "a1d5596713936ab592959c206d69e8b8fff63c0f95afca6fc8220e95e3599fbf",
+        "side": "away",
+        "size": 5280,
+        "team": "CAR",
+        "timeouts": 1
+      },
+      {
+        "name": "sb04a2",
+        "sha256": "3f8da02a534c1fe01262f439d10cd847ded87cfc3f797b74e86ee2085b6d36f7",
+        "side": "away",
+        "size": 5280,
+        "team": "CAR",
+        "timeouts": 2
+      },
+      {
+        "name": "sb04a3",
+        "sha256": "ea7583602a88a64f992b2fab7beba3694db55d53c5837c2a6ee79cf08dfb2429",
+        "side": "away",
+        "size": 5280,
+        "team": "CAR",
+        "timeouts": 3
+      },
+      {
+        "name": "sb05h0",
+        "sha256": "5ef79d6f924b7bcdd58e3803c33ce9168844dc3b28064595771f395d97357d94",
+        "side": "home",
+        "size": 5280,
+        "team": "CHI",
+        "timeouts": 0
+      },
+      {
+        "name": "sb05h1",
+        "sha256": "d1bfdb03dd048882bf807b8746d8ee93d27e41d855632b65c0f3aaca1bbfecd8",
+        "side": "home",
+        "size": 5280,
+        "team": "CHI",
+        "timeouts": 1
+      },
+      {
+        "name": "sb05h2",
+        "sha256": "9ce05cecf90abaca2e961cf0a328de009a067e944676b651f599dc216a0442c4",
+        "side": "home",
+        "size": 5280,
+        "team": "CHI",
+        "timeouts": 2
+      },
+      {
+        "name": "sb05h3",
+        "sha256": "3f01bc20e8b76289fa5e419aea8d1d81be7c3cd1108674e6cecccf7433332ee7",
+        "side": "home",
+        "size": 5280,
+        "team": "CHI",
+        "timeouts": 3
+      },
+      {
+        "name": "sb05a0",
+        "sha256": "069c0b7fdd6cbd7d699336f62efcdcf4e452cb076e83589fa2ef209dccee2dfd",
+        "side": "away",
+        "size": 5280,
+        "team": "CHI",
+        "timeouts": 0
+      },
+      {
+        "name": "sb05a1",
+        "sha256": "928293d10d4ea5025597aa93aa1817f04bf2e008bda965250e61b23211cb76ea",
+        "side": "away",
+        "size": 5280,
+        "team": "CHI",
+        "timeouts": 1
+      },
+      {
+        "name": "sb05a2",
+        "sha256": "9ccaa2e1ec357333e86e2bca0a49f11ef52bed6ca1192f16fddc66924d3ba1ba",
+        "side": "away",
+        "size": 5280,
+        "team": "CHI",
+        "timeouts": 2
+      },
+      {
+        "name": "sb05a3",
+        "sha256": "87aaba8cc4cd0c5af210a6becea41e7b65896dde557cfdc07a2aa86d4fb13e7b",
+        "side": "away",
+        "size": 5280,
+        "team": "CHI",
+        "timeouts": 3
+      },
+      {
+        "name": "sb06h0",
+        "sha256": "004c185696de8f7c049f9c29f1ba28c4c63c0a9715fa33c5625cebfa657a7223",
+        "side": "home",
+        "size": 5280,
+        "team": "CIN",
+        "timeouts": 0
+      },
+      {
+        "name": "sb06h1",
+        "sha256": "de91cbf9d103ab3b66852196e2cf83599e08ea6fae219cafcfeb57df373c652b",
+        "side": "home",
+        "size": 5280,
+        "team": "CIN",
+        "timeouts": 1
+      },
+      {
+        "name": "sb06h2",
+        "sha256": "32b6f40f82f854ef02160a9e6fe98caeed9f3d0326a1cb3aa869c9d7a71883ef",
+        "side": "home",
+        "size": 5280,
+        "team": "CIN",
+        "timeouts": 2
+      },
+      {
+        "name": "sb06h3",
+        "sha256": "fbf06e4ccbdcb364be3155921aaf876850806a9ec1c6fb1a5fe6286fa2d6cbf8",
+        "side": "home",
+        "size": 5280,
+        "team": "CIN",
+        "timeouts": 3
+      },
+      {
+        "name": "sb06a0",
+        "sha256": "48cb408fe2b9d35862fe3bbdd5cbc348fd6e4cc873be2d4b0648267920d83de6",
+        "side": "away",
+        "size": 5280,
+        "team": "CIN",
+        "timeouts": 0
+      },
+      {
+        "name": "sb06a1",
+        "sha256": "049ed113681ffbb65775bd9b573ed9929e744d3201a7436d5495c1d0326e7be9",
+        "side": "away",
+        "size": 5280,
+        "team": "CIN",
+        "timeouts": 1
+      },
+      {
+        "name": "sb06a2",
+        "sha256": "264ae5c9a741cb6c01e1c9abaf2f99dd1396db78aeceef2f9248dd067668553e",
+        "side": "away",
+        "size": 5280,
+        "team": "CIN",
+        "timeouts": 2
+      },
+      {
+        "name": "sb06a3",
+        "sha256": "8831f89afc75241b9ad07731b7d35f26911e842e9fc9bad3ec942bfc197845ee",
+        "side": "away",
+        "size": 5280,
+        "team": "CIN",
+        "timeouts": 3
+      },
+      {
+        "name": "sb30h0",
+        "sha256": "3a75b77c2462b3b7d56360dbce5b4da1b610a676bed16449dd8e3e696a9712b9",
+        "side": "home",
+        "size": 5280,
+        "team": "CLE",
+        "timeouts": 0
+      },
+      {
+        "name": "sb30h1",
+        "sha256": "d3e1f8d905da94cd17b82d6b5e77aa85a1dc26e74e87eb326e869e90125255cf",
+        "side": "home",
+        "size": 5280,
+        "team": "CLE",
+        "timeouts": 1
+      },
+      {
+        "name": "sb30h2",
+        "sha256": "4fb2fcc7af67cf3da4f2df1b2fa09b1d3aa36f76e0217c722630bfc31f8dcdc6",
+        "side": "home",
+        "size": 5280,
+        "team": "CLE",
+        "timeouts": 2
+      },
+      {
+        "name": "sb30h3",
+        "sha256": "f541d3574471489fd8c1870d1aa31987c26d64f82b91f6a04813dcd6ea0a55f8",
+        "side": "home",
+        "size": 5280,
+        "team": "CLE",
+        "timeouts": 3
+      },
+      {
+        "name": "sb30a0",
+        "sha256": "d92f61b03a17d7e9d5351afd7d388b0b0051d4d8ff7942e16eda3b7c40032271",
+        "side": "away",
+        "size": 5280,
+        "team": "CLE",
+        "timeouts": 0
+      },
+      {
+        "name": "sb30a1",
+        "sha256": "9d78e00fa027665fdd6ee2d241ae5e4aad0a25736e1f276ef10ae7894a3fe25d",
+        "side": "away",
+        "size": 5280,
+        "team": "CLE",
+        "timeouts": 1
+      },
+      {
+        "name": "sb30a2",
+        "sha256": "f8d60f2ba6cbe72c48ac3325acc1230ce46d2bf095370855afc215f15e7feb8c",
+        "side": "away",
+        "size": 5280,
+        "team": "CLE",
+        "timeouts": 2
+      },
+      {
+        "name": "sb30a3",
+        "sha256": "f9df642d7327a003cb7510dac68468fb8c8ae49deeb003df6c28820ab419e5ef",
+        "side": "away",
+        "size": 5280,
+        "team": "CLE",
+        "timeouts": 3
+      },
+      {
+        "name": "sb07h0",
+        "sha256": "8af9954d2f3b50e8471519c1675605c952c7f781cd587359c0cd19dcf9a65e3e",
+        "side": "home",
+        "size": 5280,
+        "team": "DAL",
+        "timeouts": 0
+      },
+      {
+        "name": "sb07h1",
+        "sha256": "e00f08e942543229bb8caf95813459c764462d3b9ea7b9054435939d2d82a7a2",
+        "side": "home",
+        "size": 5280,
+        "team": "DAL",
+        "timeouts": 1
+      },
+      {
+        "name": "sb07h2",
+        "sha256": "ff4cb476362f05525a1d9ff707687b24be8b8a49ead46758ef998cf9c8fa155a",
+        "side": "home",
+        "size": 5280,
+        "team": "DAL",
+        "timeouts": 2
+      },
+      {
+        "name": "sb07h3",
+        "sha256": "8250e158b871088dadd38658dbec633a4f0bf45feb7ca86f4fe0633e0f9d73bd",
+        "side": "home",
+        "size": 5280,
+        "team": "DAL",
+        "timeouts": 3
+      },
+      {
+        "name": "sb07a0",
+        "sha256": "960e64a1b231b87f9ae3a0ad24ca7d376f9a33bec47e5100ea662e89a4b51c4c",
+        "side": "away",
+        "size": 5280,
+        "team": "DAL",
+        "timeouts": 0
+      },
+      {
+        "name": "sb07a1",
+        "sha256": "663cc6d0ef53ed8fc614bc5326f66333c3741d9a2eabf354c770e68ea8e62449",
+        "side": "away",
+        "size": 5280,
+        "team": "DAL",
+        "timeouts": 1
+      },
+      {
+        "name": "sb07a2",
+        "sha256": "81a4b8d7fd35baee085f80ec434637f4c76cbd3ea2c20272ed9fd8bc32aeec9b",
+        "side": "away",
+        "size": 5280,
+        "team": "DAL",
+        "timeouts": 2
+      },
+      {
+        "name": "sb07a3",
+        "sha256": "b657765fe5e6c75dbd72b6564657d2ced6d6d703e674c955cf642a6148722b0b",
+        "side": "away",
+        "size": 5280,
+        "team": "DAL",
+        "timeouts": 3
+      },
+      {
+        "name": "sb08h0",
+        "sha256": "0468fec78667b765187a1687fa9c8f2f99291e73f9cb10de708a158da41dad6d",
+        "side": "home",
+        "size": 5280,
+        "team": "DEN",
+        "timeouts": 0
+      },
+      {
+        "name": "sb08h1",
+        "sha256": "95b0d2572191ba8931fee9bfc38c8dd2b806d989984c6f35510dc0d2cbe84198",
+        "side": "home",
+        "size": 5280,
+        "team": "DEN",
+        "timeouts": 1
+      },
+      {
+        "name": "sb08h2",
+        "sha256": "fb427c0a89797be3ed72b5fc50cd190e0699827378734637bb281681e494f71e",
+        "side": "home",
+        "size": 5280,
+        "team": "DEN",
+        "timeouts": 2
+      },
+      {
+        "name": "sb08h3",
+        "sha256": "827ff18904aa33d85070b8dbf0918feef73bd5c1c9e7d2737749b4e6ef9ed608",
+        "side": "home",
+        "size": 5280,
+        "team": "DEN",
+        "timeouts": 3
+      },
+      {
+        "name": "sb08a0",
+        "sha256": "853ee6bc5c338cb1ad7cab388325731d340fae1fa2e09883c844ee9a5f08e319",
+        "side": "away",
+        "size": 5280,
+        "team": "DEN",
+        "timeouts": 0
+      },
+      {
+        "name": "sb08a1",
+        "sha256": "8cddf9c8ac14ce2267b695065f83fa7e51eef13342e5a0c9cd164fc72478c274",
+        "side": "away",
+        "size": 5280,
+        "team": "DEN",
+        "timeouts": 1
+      },
+      {
+        "name": "sb08a2",
+        "sha256": "d156cd4a4d74b1ca1ebb457daeac3599c5cb91adb8d30df6f923fcb73ddd7ba5",
+        "side": "away",
+        "size": 5280,
+        "team": "DEN",
+        "timeouts": 2
+      },
+      {
+        "name": "sb08a3",
+        "sha256": "f674f82c146243e6c71450d3f85568221efcfb13d2351146edf153a44323dd4d",
+        "side": "away",
+        "size": 5280,
+        "team": "DEN",
+        "timeouts": 3
+      },
+      {
+        "name": "sb09h0",
+        "sha256": "9d2b31e11384cc75f4be9089fa477f1e5eebbaebf5f9bd1a04665fad4ba3851e",
+        "side": "home",
+        "size": 5280,
+        "team": "DET",
+        "timeouts": 0
+      },
+      {
+        "name": "sb09h1",
+        "sha256": "4fe0cb8984e3c94635576dd6ff1bf05d080f9b259cb83b5aa3ffe77f0b656027",
+        "side": "home",
+        "size": 5280,
+        "team": "DET",
+        "timeouts": 1
+      },
+      {
+        "name": "sb09h2",
+        "sha256": "c9891d896f110a28704459c9c25a6d5b7ba098b575af7a54bc77d8585ebfdbeb",
+        "side": "home",
+        "size": 5280,
+        "team": "DET",
+        "timeouts": 2
+      },
+      {
+        "name": "sb09h3",
+        "sha256": "1d28b3f10d4af0dff7cc44bb9905f33253402631939816f8f4e4154fd3148ed6",
+        "side": "home",
+        "size": 5280,
+        "team": "DET",
+        "timeouts": 3
+      },
+      {
+        "name": "sb09a0",
+        "sha256": "e26ade5119848f8d15be5219c893c0c796e670c6b8f11a7d250a14a055c23c4e",
+        "side": "away",
+        "size": 5280,
+        "team": "DET",
+        "timeouts": 0
+      },
+      {
+        "name": "sb09a1",
+        "sha256": "3878ba30247630e3c9df0c86348519d456475f05a5634cb5fcb23a41d8112de6",
+        "side": "away",
+        "size": 5280,
+        "team": "DET",
+        "timeouts": 1
+      },
+      {
+        "name": "sb09a2",
+        "sha256": "924feedb002d62b001cc5ffba5a49b4f8c9632eb216b591a515d53d364062be9",
+        "side": "away",
+        "size": 5280,
+        "team": "DET",
+        "timeouts": 2
+      },
+      {
+        "name": "sb09a3",
+        "sha256": "e9c9246bf41185d1dcf2ec49660585ff4474e750f22604cd3823b2f06a8a25e5",
+        "side": "away",
+        "size": 5280,
+        "team": "DET",
+        "timeouts": 3
+      },
+      {
+        "name": "sb10h0",
+        "sha256": "dc0e1f0d1dd3d6ea22f67bb297d5cc9857a15aadeac7df65b02944c33effc7d2",
+        "side": "home",
+        "size": 5280,
+        "team": "GB",
+        "timeouts": 0
+      },
+      {
+        "name": "sb10h1",
+        "sha256": "dd451473efc2c431c144b9dd7ad434f860b00008b9e4c52955a00bcf3cac6868",
+        "side": "home",
+        "size": 5280,
+        "team": "GB",
+        "timeouts": 1
+      },
+      {
+        "name": "sb10h2",
+        "sha256": "524923e6ae09b98be4990207e1a976a4301b7094112d6a943c01ca6bc3160afb",
+        "side": "home",
+        "size": 5280,
+        "team": "GB",
+        "timeouts": 2
+      },
+      {
+        "name": "sb10h3",
+        "sha256": "f28b8ad801d1f767dbad3e771a13f55e4ebb7231bf58eaaf1daee0f440f21519",
+        "side": "home",
+        "size": 5280,
+        "team": "GB",
+        "timeouts": 3
+      },
+      {
+        "name": "sb10a0",
+        "sha256": "ab9776656808f52330ba26077e50a7288dcd392f5f51cac51b9e9f7a0f6b7176",
+        "side": "away",
+        "size": 5280,
+        "team": "GB",
+        "timeouts": 0
+      },
+      {
+        "name": "sb10a1",
+        "sha256": "40c0fbed7fc07e1cdbe8cc532f706d8aec3340f4cfe7fe829310a61ddea21e1d",
+        "side": "away",
+        "size": 5280,
+        "team": "GB",
+        "timeouts": 1
+      },
+      {
+        "name": "sb10a2",
+        "sha256": "992795f921224c54b69e50b5d426ac12e2d4bb84bdb3ca0f9985f6e6cdc8f820",
+        "side": "away",
+        "size": 5280,
+        "team": "GB",
+        "timeouts": 2
+      },
+      {
+        "name": "sb10a3",
+        "sha256": "a00ab6d87789cf09eb55ffb78f8255b855df1076df7668322544235eb17a5c36",
+        "side": "away",
+        "size": 5280,
+        "team": "GB",
+        "timeouts": 3
+      },
+      {
+        "name": "sb37h0",
+        "sha256": "9d0896b22e4ba855f89213bf21437ca2f4c1a5907e7e0b733f9aa48144976bbd",
+        "side": "home",
+        "size": 5280,
+        "team": "HOU",
+        "timeouts": 0
+      },
+      {
+        "name": "sb37h1",
+        "sha256": "ebb6618e9354737e7094583d3feeccbd130e3235fdbd4cf64b57ea0b56643410",
+        "side": "home",
+        "size": 5280,
+        "team": "HOU",
+        "timeouts": 1
+      },
+      {
+        "name": "sb37h2",
+        "sha256": "fdbaa5ebd4ed542feb9df884efec35fad8208d6266d29582826aa5f7bc9f53c5",
+        "side": "home",
+        "size": 5280,
+        "team": "HOU",
+        "timeouts": 2
+      },
+      {
+        "name": "sb37h3",
+        "sha256": "d07c0e6e2813fcda0bbc2e0e4c7b8cf47db1c342189d5a99a3fed1a974620009",
+        "side": "home",
+        "size": 5280,
+        "team": "HOU",
+        "timeouts": 3
+      },
+      {
+        "name": "sb37a0",
+        "sha256": "67cba527a33dfb08a6e0ed47d003a8f0535476ce26ce99e789fda859180831ff",
+        "side": "away",
+        "size": 5280,
+        "team": "HOU",
+        "timeouts": 0
+      },
+      {
+        "name": "sb37a1",
+        "sha256": "1b4dd666b831ee87040e94be73c6050c49faff18286c184d0ed9426623657a2a",
+        "side": "away",
+        "size": 5280,
+        "team": "HOU",
+        "timeouts": 1
+      },
+      {
+        "name": "sb37a2",
+        "sha256": "2eef7d863a7751729e44901a52e0f1dfe480c982bc3016649620a48e95b90661",
+        "side": "away",
+        "size": 5280,
+        "team": "HOU",
+        "timeouts": 2
+      },
+      {
+        "name": "sb37a3",
+        "sha256": "4f8f8712a7f303a05f2b28884f09053233e8decd6b378d578478629b4702269f",
+        "side": "away",
+        "size": 5280,
+        "team": "HOU",
+        "timeouts": 3
+      },
+      {
+        "name": "sb11h0",
+        "sha256": "1d0641f8cedb37d9b95af7ed3c9a47ceb466f8fffb88735d2509b7ad9d859f06",
+        "side": "home",
+        "size": 5280,
+        "team": "IND",
+        "timeouts": 0
+      },
+      {
+        "name": "sb11h1",
+        "sha256": "4ecdb81b5f8620695d230f7414f3a47bb07996313aaf645422160c0fb0325533",
+        "side": "home",
+        "size": 5280,
+        "team": "IND",
+        "timeouts": 1
+      },
+      {
+        "name": "sb11h2",
+        "sha256": "01a57dfb76e14780c319c6f8f3545e99520c7394e7838ada73eb7afdb2900282",
+        "side": "home",
+        "size": 5280,
+        "team": "IND",
+        "timeouts": 2
+      },
+      {
+        "name": "sb11h3",
+        "sha256": "572b37a30baa4a6bc30549350d0a407c2d34347a0c4cb40f3e02113ccb525745",
+        "side": "home",
+        "size": 5280,
+        "team": "IND",
+        "timeouts": 3
+      },
+      {
+        "name": "sb11a0",
+        "sha256": "41c507dcb247ffc52d010c6c92ae2ca193725aabadd55e00beeec89763b33702",
+        "side": "away",
+        "size": 5280,
+        "team": "IND",
+        "timeouts": 0
+      },
+      {
+        "name": "sb11a1",
+        "sha256": "4f992f37dc0de9bf5d0c29602e082877074572db17f7abd06b4e51fec9d44d9c",
+        "side": "away",
+        "size": 5280,
+        "team": "IND",
+        "timeouts": 1
+      },
+      {
+        "name": "sb11a2",
+        "sha256": "40ee07682a5e1f29335490171dcc9a443f89f9fdcc1adda333875aadc5cf625d",
+        "side": "away",
+        "size": 5280,
+        "team": "IND",
+        "timeouts": 2
+      },
+      {
+        "name": "sb11a3",
+        "sha256": "ca546ccce0b90209e8f594b5cc121bee3ab6878bd42a0e93870a16af8eca7d5d",
+        "side": "away",
+        "size": 5280,
+        "team": "IND",
+        "timeouts": 3
+      },
+      {
+        "name": "sb12h0",
+        "sha256": "7cc54f1e383d51ffafa7b27f309fa3d66619912fb6910dc6b6cdcf2ab6b914b5",
+        "side": "home",
+        "size": 5280,
+        "team": "JAX",
+        "timeouts": 0
+      },
+      {
+        "name": "sb12h1",
+        "sha256": "280f2af68cdcaabbebd922c75e95eacfc456f4daea8d447aa297df6dbcce1dd9",
+        "side": "home",
+        "size": 5280,
+        "team": "JAX",
+        "timeouts": 1
+      },
+      {
+        "name": "sb12h2",
+        "sha256": "e27e87582503b31d9932226fb61e30d314d9bb27d4cbb3741cd3b1c7156c7356",
+        "side": "home",
+        "size": 5280,
+        "team": "JAX",
+        "timeouts": 2
+      },
+      {
+        "name": "sb12h3",
+        "sha256": "1cef1effbfe458321d1fc7c8d4411b50c07b3e74c3110f88791724d85f2f7ded",
+        "side": "home",
+        "size": 5280,
+        "team": "JAX",
+        "timeouts": 3
+      },
+      {
+        "name": "sb12a0",
+        "sha256": "b753803adf6aac77ad776367891847cd962b70e3edb5d62f04712d491352d35c",
+        "side": "away",
+        "size": 5280,
+        "team": "JAX",
+        "timeouts": 0
+      },
+      {
+        "name": "sb12a1",
+        "sha256": "0da46834a472b9a3755095cc28d1c880c93f271405e7f5b4a06829e374a5ae62",
+        "side": "away",
+        "size": 5280,
+        "team": "JAX",
+        "timeouts": 1
+      },
+      {
+        "name": "sb12a2",
+        "sha256": "5ec37a08eb024700ee1a341976e8fdecbe86a480da03f05e63a92e5ada2bf1d5",
+        "side": "away",
+        "size": 5280,
+        "team": "JAX",
+        "timeouts": 2
+      },
+      {
+        "name": "sb12a3",
+        "sha256": "5e98186ef7b4d92c31a57f7b23d6ec2a2500f2357973d50b812572802609cc15",
+        "side": "away",
+        "size": 5280,
+        "team": "JAX",
+        "timeouts": 3
+      },
+      {
+        "name": "sb13h0",
+        "sha256": "ab2a5485675a1f1d9ddd7171a716303553477b86ddf9027eb579b7cfc01ac617",
+        "side": "home",
+        "size": 5280,
+        "team": "KC",
+        "timeouts": 0
+      },
+      {
+        "name": "sb13h1",
+        "sha256": "aa38a6635d8d75d01fec33d614e03ed7cc8d69a695537cc3b8f83272969095c1",
+        "side": "home",
+        "size": 5280,
+        "team": "KC",
+        "timeouts": 1
+      },
+      {
+        "name": "sb13h2",
+        "sha256": "6624245ee5c189402eab17d1efc1ca51a3ac442b16e187e64b32ec9e2f0d7b96",
+        "side": "home",
+        "size": 5280,
+        "team": "KC",
+        "timeouts": 2
+      },
+      {
+        "name": "sb13h3",
+        "sha256": "4125fa3d36fa8901b929b2fa10a5ce83f533aef480759660da3c421bc4fd00bb",
+        "side": "home",
+        "size": 5280,
+        "team": "KC",
+        "timeouts": 3
+      },
+      {
+        "name": "sb13a0",
+        "sha256": "906daab26fae439e6136245c09105164b15e4f5b0e3b6c6d27e92a556a4e3b08",
+        "side": "away",
+        "size": 5280,
+        "team": "KC",
+        "timeouts": 0
+      },
+      {
+        "name": "sb13a1",
+        "sha256": "c8edefe41c1dcb7b3db156563f2bdd41d15982a0b1210d6e53776ea1731747df",
+        "side": "away",
+        "size": 5280,
+        "team": "KC",
+        "timeouts": 1
+      },
+      {
+        "name": "sb13a2",
+        "sha256": "17fbfb18991db24f426bb9fed00c72c2cb5789dfc84fe2a53a807029df826f82",
+        "side": "away",
+        "size": 5280,
+        "team": "KC",
+        "timeouts": 2
+      },
+      {
+        "name": "sb13a3",
+        "sha256": "350bc78461f64d4a5314b577f814b74678d1e437492b51bc3cfe046acec8ba6b",
+        "side": "away",
+        "size": 5280,
+        "team": "KC",
+        "timeouts": 3
+      },
+      {
+        "name": "sb24h0",
+        "sha256": "874795dfd8ddc59cca159572ce02354b1704b67c2bb9bb0c1a5397f534e120ff",
+        "side": "home",
+        "size": 5280,
+        "team": "LAC",
+        "timeouts": 0
+      },
+      {
+        "name": "sb24h1",
+        "sha256": "11bcb0a58645eb0df5f77b724f73290ec4b3982e0d7a16775002532e4c9d4daf",
+        "side": "home",
+        "size": 5280,
+        "team": "LAC",
+        "timeouts": 1
+      },
+      {
+        "name": "sb24h2",
+        "sha256": "25e830c3489fc7a65bf42a2cf25d272913baf608bd8ffc2195cf101dc15178b0",
+        "side": "home",
+        "size": 5280,
+        "team": "LAC",
+        "timeouts": 2
+      },
+      {
+        "name": "sb24h3",
+        "sha256": "08ca817791a43aebb7d0272087f58e001e612fc5cea143dd315deb2478a0856c",
+        "side": "home",
+        "size": 5280,
+        "team": "LAC",
+        "timeouts": 3
+      },
+      {
+        "name": "sb24a0",
+        "sha256": "4830f2c9a588f2e7aacad2473cf55babe2e707cda12a92ea5df36a208415932c",
+        "side": "away",
+        "size": 5280,
+        "team": "LAC",
+        "timeouts": 0
+      },
+      {
+        "name": "sb24a1",
+        "sha256": "2cfb0ba978878acb929b1477567144bbe5975ffff0c505510f08e5efe541f33d",
+        "side": "away",
+        "size": 5280,
+        "team": "LAC",
+        "timeouts": 1
+      },
+      {
+        "name": "sb24a2",
+        "sha256": "f8d1565090c8cbc5cd9e65886d6147f0fc67d05662b2e74648cf96a80e2cfc35",
+        "side": "away",
+        "size": 5280,
+        "team": "LAC",
+        "timeouts": 2
+      },
+      {
+        "name": "sb24a3",
+        "sha256": "7fe59933821356569ceb2b03ec3576b8a88ae4c3be0b25f0152b32544b37d7d0",
+        "side": "away",
+        "size": 5280,
+        "team": "LAC",
+        "timeouts": 3
+      },
+      {
+        "name": "sb23h0",
+        "sha256": "d83a0b56825f1bb66b2a327c666bbb5cd88b1e12aefde8d951c424bc8208ebd1",
+        "side": "home",
+        "size": 5280,
+        "team": "LAR",
+        "timeouts": 0
+      },
+      {
+        "name": "sb23h1",
+        "sha256": "8b49c839f208a597338f2d752baba721c3b1afa8bb2604608d41753e4e18930f",
+        "side": "home",
+        "size": 5280,
+        "team": "LAR",
+        "timeouts": 1
+      },
+      {
+        "name": "sb23h2",
+        "sha256": "eb3b4884fa2fb67bae2312f9dc253906fcd4bbcc0a20859db68f88c8774c315a",
+        "side": "home",
+        "size": 5280,
+        "team": "LAR",
+        "timeouts": 2
+      },
+      {
+        "name": "sb23h3",
+        "sha256": "47668496ccdb9ed147e02508057778479ebaf8b53ad00bbac90946409f5e55da",
+        "side": "home",
+        "size": 5280,
+        "team": "LAR",
+        "timeouts": 3
+      },
+      {
+        "name": "sb23a0",
+        "sha256": "dd44cb6ec8cadac8b694bed2a73faea11db7a04f72b00bc782d13a4d4c0a587e",
+        "side": "away",
+        "size": 5280,
+        "team": "LAR",
+        "timeouts": 0
+      },
+      {
+        "name": "sb23a1",
+        "sha256": "983faa03ad3bf93f9d2e6791ebdfdb25e0d8e38350c1f003f2de0c5dc17f1cba",
+        "side": "away",
+        "size": 5280,
+        "team": "LAR",
+        "timeouts": 1
+      },
+      {
+        "name": "sb23a2",
+        "sha256": "928c6fa7a942c653dd1e91239054168a0c4832166d474a133d22f6ae68e88503",
+        "side": "away",
+        "size": 5280,
+        "team": "LAR",
+        "timeouts": 2
+      },
+      {
+        "name": "sb23a3",
+        "sha256": "bc2e1546a102b4f783ec584b075c5994ea7dd2bbd3a597ad70796ca75435e171",
+        "side": "away",
+        "size": 5280,
+        "team": "LAR",
+        "timeouts": 3
+      },
+      {
+        "name": "sb20h0",
+        "sha256": "955d3fbe2a62d2708e1965fe90209f319b5e4b841c5ab285b9a3e4a794ec4c5a",
+        "side": "home",
+        "size": 5280,
+        "team": "LV",
+        "timeouts": 0
+      },
+      {
+        "name": "sb20h1",
+        "sha256": "1d622fea573fbab80b9a9b80c73ec2e43a38a854d06bf965a0d69e5ac52a1f53",
+        "side": "home",
+        "size": 5280,
+        "team": "LV",
+        "timeouts": 1
+      },
+      {
+        "name": "sb20h2",
+        "sha256": "e4f235efaa3a06fcd09428fcf49a7a79de82b1ff036def34c7eb147dba6d05f4",
+        "side": "home",
+        "size": 5280,
+        "team": "LV",
+        "timeouts": 2
+      },
+      {
+        "name": "sb20h3",
+        "sha256": "6293720575d3688f2dc018c4f29fe1340b7af29c41297907bf3c7743b17151ec",
+        "side": "home",
+        "size": 5280,
+        "team": "LV",
+        "timeouts": 3
+      },
+      {
+        "name": "sb20a0",
+        "sha256": "7376b44789dc725e3f559bca447f77546abb77077a5640474c2da06d21b188d6",
+        "side": "away",
+        "size": 5280,
+        "team": "LV",
+        "timeouts": 0
+      },
+      {
+        "name": "sb20a1",
+        "sha256": "e1ebcbc9adfc339f6cb0801d3ea915d69043c1a5711d74d41e054d83908bd3f5",
+        "side": "away",
+        "size": 5280,
+        "team": "LV",
+        "timeouts": 1
+      },
+      {
+        "name": "sb20a2",
+        "sha256": "d2ff36e32f87583e99f0cc1a05c878bdba0a3d096b308178adae41c898f3e281",
+        "side": "away",
+        "size": 5280,
+        "team": "LV",
+        "timeouts": 2
+      },
+      {
+        "name": "sb20a3",
+        "sha256": "ea9cf304e724476bcf677eac636c2d49cb53b88a65cbdece22e8b1a1ba849b35",
+        "side": "away",
+        "size": 5280,
+        "team": "LV",
+        "timeouts": 3
+      },
+      {
+        "name": "sb14h0",
+        "sha256": "6cd55bf7b6e911afc10918142ccd2f7520f686f79bcb0004d944f76559ea9c0d",
+        "side": "home",
+        "size": 5280,
+        "team": "MIA",
+        "timeouts": 0
+      },
+      {
+        "name": "sb14h1",
+        "sha256": "a5cbcd03a12458e152543506ae4c5ac15de5d3eb640c05aaa621141fa2e1762f",
+        "side": "home",
+        "size": 5280,
+        "team": "MIA",
+        "timeouts": 1
+      },
+      {
+        "name": "sb14h2",
+        "sha256": "9a9d0170c069cc5153e3af793f539b0bcd85fe548fddb3fbe4ac59c40d0027c3",
+        "side": "home",
+        "size": 5280,
+        "team": "MIA",
+        "timeouts": 2
+      },
+      {
+        "name": "sb14h3",
+        "sha256": "c5312359fad6010109a9c6dde267fe7ac7c49210b8f5fb668877ccae34ee1f00",
+        "side": "home",
+        "size": 5280,
+        "team": "MIA",
+        "timeouts": 3
+      },
+      {
+        "name": "sb14a0",
+        "sha256": "2d1f8d8290e67376a837ffea081acfd05b7eb1f7465b15c2e4531f364a8edda2",
+        "side": "away",
+        "size": 5280,
+        "team": "MIA",
+        "timeouts": 0
+      },
+      {
+        "name": "sb14a1",
+        "sha256": "c8a762f6979f768e1f84b25481788cea879f51e24de4e768d15c5f927d61362b",
+        "side": "away",
+        "size": 5280,
+        "team": "MIA",
+        "timeouts": 1
+      },
+      {
+        "name": "sb14a2",
+        "sha256": "3603bf6af024500898995b5ab77b11259c695f507d749804c39d689ed4ceb9e4",
+        "side": "away",
+        "size": 5280,
+        "team": "MIA",
+        "timeouts": 2
+      },
+      {
+        "name": "sb14a3",
+        "sha256": "f506221890a14d7e3d29e4871f5e364a5a3e201f65ed70a384ce3edeaeeb0e29",
+        "side": "away",
+        "size": 5280,
+        "team": "MIA",
+        "timeouts": 3
+      },
+      {
+        "name": "sb15h0",
+        "sha256": "d6f392194e061a93012a887ecf5928e82411a39f03c9fdf86e614a85fbefa39a",
+        "side": "home",
+        "size": 5280,
+        "team": "MIN",
+        "timeouts": 0
+      },
+      {
+        "name": "sb15h1",
+        "sha256": "af6d7189be34c2ea0da173edee536b0f275167053a680a913c0acb5d296fc27e",
+        "side": "home",
+        "size": 5280,
+        "team": "MIN",
+        "timeouts": 1
+      },
+      {
+        "name": "sb15h2",
+        "sha256": "c66c5dd4816f0f3534df47d583ea813823b64788b01268dac43f2f069612fdf0",
+        "side": "home",
+        "size": 5280,
+        "team": "MIN",
+        "timeouts": 2
+      },
+      {
+        "name": "sb15h3",
+        "sha256": "b73ee22a1b30c8bc03326330928db347f64305e6a84660b2b69e402641bc9821",
+        "side": "home",
+        "size": 5280,
+        "team": "MIN",
+        "timeouts": 3
+      },
+      {
+        "name": "sb15a0",
+        "sha256": "f1ab24497ba498114d0e34cc3c2193c2ca89e723d671aa2b1bfb86d1f2de1c1f",
+        "side": "away",
+        "size": 5280,
+        "team": "MIN",
+        "timeouts": 0
+      },
+      {
+        "name": "sb15a1",
+        "sha256": "4edad100ccfb4bc471a3d64504b81d223e37e8489e82fb74336b4b955feb4322",
+        "side": "away",
+        "size": 5280,
+        "team": "MIN",
+        "timeouts": 1
+      },
+      {
+        "name": "sb15a2",
+        "sha256": "25909e18b71b2f0d14d5860f131f32fbf392c71008b34df0204976cf258651ce",
+        "side": "away",
+        "size": 5280,
+        "team": "MIN",
+        "timeouts": 2
+      },
+      {
+        "name": "sb15a3",
+        "sha256": "5c59ce7358bb006a80e6ff5b79a8cbe78bc34a3c62bf749bf0c0ee1c782a8b4f",
+        "side": "away",
+        "size": 5280,
+        "team": "MIN",
+        "timeouts": 3
+      },
+      {
+        "name": "sb16h0",
+        "sha256": "84b35a01c83376eace85f245364a3ec4fa7bf9ec7e33c59fb50d567645d134bf",
+        "side": "home",
+        "size": 5280,
+        "team": "NE",
+        "timeouts": 0
+      },
+      {
+        "name": "sb16h1",
+        "sha256": "0fe850a793c878ce761b16cf8f7e8476e087dfcf4349a49bd44e364d3f1f5d11",
+        "side": "home",
+        "size": 5280,
+        "team": "NE",
+        "timeouts": 1
+      },
+      {
+        "name": "sb16h2",
+        "sha256": "e5e4a09907cbe62838c92ed64930e46b47eacd350f4de817bf9e7c4a71fa4cfe",
+        "side": "home",
+        "size": 5280,
+        "team": "NE",
+        "timeouts": 2
+      },
+      {
+        "name": "sb16h3",
+        "sha256": "856af83826d116b15bac3a188f4cc8d3fc47c56c29424a6f39152fb8d5b21a4c",
+        "side": "home",
+        "size": 5280,
+        "team": "NE",
+        "timeouts": 3
+      },
+      {
+        "name": "sb16a0",
+        "sha256": "f7431fc05636f60cd0ce4503eab1ab497a2bba67bbe1693fb3ffe6550694f768",
+        "side": "away",
+        "size": 5280,
+        "team": "NE",
+        "timeouts": 0
+      },
+      {
+        "name": "sb16a1",
+        "sha256": "8f6844d76b2f6cfa382244ee79c83fea1a953c8057137f4bc5caf357c7c1f656",
+        "side": "away",
+        "size": 5280,
+        "team": "NE",
+        "timeouts": 1
+      },
+      {
+        "name": "sb16a2",
+        "sha256": "86739d5944243c52d4e52b4d9d28491e49ca65fa5b6d983ad6f59105ff364a13",
+        "side": "away",
+        "size": 5280,
+        "team": "NE",
+        "timeouts": 2
+      },
+      {
+        "name": "sb16a3",
+        "sha256": "7de37ce00a51d39de4e3a53ade2d2c6838003e33995d1e02cff540e030bab7a7",
+        "side": "away",
+        "size": 5280,
+        "team": "NE",
+        "timeouts": 3
+      },
+      {
+        "name": "sb17h0",
+        "sha256": "d08ad09f3a9cf03d2d624a1619c643dd85a46c3e8a23bcd240d48f5120e541b9",
+        "side": "home",
+        "size": 5280,
+        "team": "NO",
+        "timeouts": 0
+      },
+      {
+        "name": "sb17h1",
+        "sha256": "8e7b98713a79c0ca373fe1955a41402c2915051f94aa8975aeeff362134ed70f",
+        "side": "home",
+        "size": 5280,
+        "team": "NO",
+        "timeouts": 1
+      },
+      {
+        "name": "sb17h2",
+        "sha256": "efefb57859d52c74666347ef2c6668b12e2f75e88e572c9de652d98368bdee33",
+        "side": "home",
+        "size": 5280,
+        "team": "NO",
+        "timeouts": 2
+      },
+      {
+        "name": "sb17h3",
+        "sha256": "e60da43828b539325750d987e00043dd9783efe2be03afa2b6c8f5687d7d2fc6",
+        "side": "home",
+        "size": 5280,
+        "team": "NO",
+        "timeouts": 3
+      },
+      {
+        "name": "sb17a0",
+        "sha256": "60f80f82aebe2eb386071fca978489d557d5712e766f8bbad04d370bf9ab5f48",
+        "side": "away",
+        "size": 5280,
+        "team": "NO",
+        "timeouts": 0
+      },
+      {
+        "name": "sb17a1",
+        "sha256": "0922e0abe52f5b2a5e053e121075763f01769d0a8569a0af5e97e21ee8ca737f",
+        "side": "away",
+        "size": 5280,
+        "team": "NO",
+        "timeouts": 1
+      },
+      {
+        "name": "sb17a2",
+        "sha256": "8b68f5446114a3fc27095acab3cbb5ebb24ac0b22d2a78443a7e138ac3a26cf6",
+        "side": "away",
+        "size": 5280,
+        "team": "NO",
+        "timeouts": 2
+      },
+      {
+        "name": "sb17a3",
+        "sha256": "11472c050f4bfef7153cf008af6341426f839aa7987d0bac6f6605fd10e9ee3c",
+        "side": "away",
+        "size": 5280,
+        "team": "NO",
+        "timeouts": 3
+      },
+      {
+        "name": "sb18h0",
+        "sha256": "5bd0772408e7a1d2c7ab4ac70a3ef0514fd514a3ad841db360014a029b90a849",
+        "side": "home",
+        "size": 5280,
+        "team": "NYG",
+        "timeouts": 0
+      },
+      {
+        "name": "sb18h1",
+        "sha256": "5a10597da388c76a74ea54b585717429b957be9e9c71e7b414529a904bad5133",
+        "side": "home",
+        "size": 5280,
+        "team": "NYG",
+        "timeouts": 1
+      },
+      {
+        "name": "sb18h2",
+        "sha256": "ae549bb19662b3d42516a8cab22b5f5a0e2702261871087b0a0d7052c04e5cf5",
+        "side": "home",
+        "size": 5280,
+        "team": "NYG",
+        "timeouts": 2
+      },
+      {
+        "name": "sb18h3",
+        "sha256": "b3093ec00a4a66beecb064edec49eff9a414b6e54cd2db840198ebe2fbf6e499",
+        "side": "home",
+        "size": 5280,
+        "team": "NYG",
+        "timeouts": 3
+      },
+      {
+        "name": "sb18a0",
+        "sha256": "e7a3f60bbcdb8a06f9a820f8c2c152bd9b6cdcb2e5a710daa65c249cb14a48c7",
+        "side": "away",
+        "size": 5280,
+        "team": "NYG",
+        "timeouts": 0
+      },
+      {
+        "name": "sb18a1",
+        "sha256": "0deb5ade83e09604cf3a61aadf453b8b6cfbd3c88a6cf1ec87a975b6dc8f228d",
+        "side": "away",
+        "size": 5280,
+        "team": "NYG",
+        "timeouts": 1
+      },
+      {
+        "name": "sb18a2",
+        "sha256": "25390e176454d29bb0fadc4e337e37cdabef4e86ca93b736723909538cc966d2",
+        "side": "away",
+        "size": 5280,
+        "team": "NYG",
+        "timeouts": 2
+      },
+      {
+        "name": "sb18a3",
+        "sha256": "b5679597902c152c777f21fc28b0daeac56e7ffdf26884817693f3b916e3fac1",
+        "side": "away",
+        "size": 5280,
+        "team": "NYG",
+        "timeouts": 3
+      },
+      {
+        "name": "sb19h0",
+        "sha256": "9fbe4966eefab3f85f335dc6e74cfcb5635eb4f895b7ee627ec467a0f78be1f0",
+        "side": "home",
+        "size": 5280,
+        "team": "NYJ",
+        "timeouts": 0
+      },
+      {
+        "name": "sb19h1",
+        "sha256": "04a86df690d720173562bb331d4c8036439d8b852d9b629a6a1c8c72be372a03",
+        "side": "home",
+        "size": 5280,
+        "team": "NYJ",
+        "timeouts": 1
+      },
+      {
+        "name": "sb19h2",
+        "sha256": "a4e554e8878887e376d1bfa7c4d2d6791537b0276504d77bca59eacd6cebc5cd",
+        "side": "home",
+        "size": 5280,
+        "team": "NYJ",
+        "timeouts": 2
+      },
+      {
+        "name": "sb19h3",
+        "sha256": "74e7fe5c3661b2d286949553fa865dd5f5c37574681bad2a1b2cb118f83e8d81",
+        "side": "home",
+        "size": 5280,
+        "team": "NYJ",
+        "timeouts": 3
+      },
+      {
+        "name": "sb19a0",
+        "sha256": "2a721abd96160807b4cba28cf264c654a586f59ce143d1acc24e0b3075f67f9e",
+        "side": "away",
+        "size": 5280,
+        "team": "NYJ",
+        "timeouts": 0
+      },
+      {
+        "name": "sb19a1",
+        "sha256": "8678fa8f4edee97065202871db7d0e605c077ed6c52c63239fbc750175fb8b07",
+        "side": "away",
+        "size": 5280,
+        "team": "NYJ",
+        "timeouts": 1
+      },
+      {
+        "name": "sb19a2",
+        "sha256": "5d75d504476269fcecf6a138e03bdb1c2ca385023044fce7a7743a52469e0a44",
+        "side": "away",
+        "size": 5280,
+        "team": "NYJ",
+        "timeouts": 2
+      },
+      {
+        "name": "sb19a3",
+        "sha256": "8f4b82173d8bb642d8574f8004f8461649e85f699f023ac890d9d0bd1da2cfb9",
+        "side": "away",
+        "size": 5280,
+        "team": "NYJ",
+        "timeouts": 3
+      },
+      {
+        "name": "sb21h0",
+        "sha256": "6b33e34ae883d5e45ff8f1a16dc6c8990950ce569ef0724dd7280f75c6d00a64",
+        "side": "home",
+        "size": 5280,
+        "team": "PHI",
+        "timeouts": 0
+      },
+      {
+        "name": "sb21h1",
+        "sha256": "074ab7f0676c1bcfec3b97845471f60508ba9f7810f290c4e091a60e63047d50",
+        "side": "home",
+        "size": 5280,
+        "team": "PHI",
+        "timeouts": 1
+      },
+      {
+        "name": "sb21h2",
+        "sha256": "3a1ecd5032eb9b79e7205fcdb344ee8ea8e67d2e581659ff52062716b8674108",
+        "side": "home",
+        "size": 5280,
+        "team": "PHI",
+        "timeouts": 2
+      },
+      {
+        "name": "sb21h3",
+        "sha256": "b44f2b79e591497b736fbb7be02cc62748916a6a164a4ca1ff33a360085a694f",
+        "side": "home",
+        "size": 5280,
+        "team": "PHI",
+        "timeouts": 3
+      },
+      {
+        "name": "sb21a0",
+        "sha256": "5efad79daafc727f5418e6c0490f80ca700b949da1b99410abb416110ae9a054",
+        "side": "away",
+        "size": 5280,
+        "team": "PHI",
+        "timeouts": 0
+      },
+      {
+        "name": "sb21a1",
+        "sha256": "16b8d373f73663d662e50f0711efe7779a1302c249636af9553e557271250193",
+        "side": "away",
+        "size": 5280,
+        "team": "PHI",
+        "timeouts": 1
+      },
+      {
+        "name": "sb21a2",
+        "sha256": "d534e0a969bd82a0ed62ee6275c3c131791e277a5e8e50532c2bf0bf3c2014a3",
+        "side": "away",
+        "size": 5280,
+        "team": "PHI",
+        "timeouts": 2
+      },
+      {
+        "name": "sb21a3",
+        "sha256": "972590f0ddbfa3d6e1895c0c2f9e6d87c61ed4013e476d32175922d4fcf8ac33",
+        "side": "away",
+        "size": 5280,
+        "team": "PHI",
+        "timeouts": 3
+      },
+      {
+        "name": "sb22h0",
+        "sha256": "30ee91839ea339dc42037258f5ff4a80e4565e45075f0554ef472bb799fd39c1",
+        "side": "home",
+        "size": 5280,
+        "team": "PIT",
+        "timeouts": 0
+      },
+      {
+        "name": "sb22h1",
+        "sha256": "fc6bb84503ae58affb0d9d9ba83c5b60df63215f13b37582a58253ac85c46c28",
+        "side": "home",
+        "size": 5280,
+        "team": "PIT",
+        "timeouts": 1
+      },
+      {
+        "name": "sb22h2",
+        "sha256": "864be1690c844c148474ea66d380de6d2f075f8c6731897a7c4b392368437365",
+        "side": "home",
+        "size": 5280,
+        "team": "PIT",
+        "timeouts": 2
+      },
+      {
+        "name": "sb22h3",
+        "sha256": "ce022894b269122a6d35040e194145297e0aa0c6ea25928d10321fe3f0a7ed17",
+        "side": "home",
+        "size": 5280,
+        "team": "PIT",
+        "timeouts": 3
+      },
+      {
+        "name": "sb22a0",
+        "sha256": "730e8b0fea1a38ba70f6f67b6ca8eb58b7ae7bc0b618f0e520af0f8469404143",
+        "side": "away",
+        "size": 5280,
+        "team": "PIT",
+        "timeouts": 0
+      },
+      {
+        "name": "sb22a1",
+        "sha256": "226e9a3da1e1712a8fdadbe9f787a90a904200142b70f59d56066643009fa0d1",
+        "side": "away",
+        "size": 5280,
+        "team": "PIT",
+        "timeouts": 1
+      },
+      {
+        "name": "sb22a2",
+        "sha256": "f5e983f1cc060ab0b05513c57c5aa4c2e2fb1b2e1bf32fb7f60c6f2f84cb59f6",
+        "side": "away",
+        "size": 5280,
+        "team": "PIT",
+        "timeouts": 2
+      },
+      {
+        "name": "sb22a3",
+        "sha256": "186eb918f52bc7069acd387bb77bb3662b112da91badc930e485889af4dc492f",
+        "side": "away",
+        "size": 5280,
+        "team": "PIT",
+        "timeouts": 3
+      },
+      {
+        "name": "sb26h0",
+        "sha256": "0d8a5f08a58fa2cc41da1f3e75a16266e2e027857e3e89007ad95aa43ae36cc3",
+        "side": "home",
+        "size": 5280,
+        "team": "SEA",
+        "timeouts": 0
+      },
+      {
+        "name": "sb26h1",
+        "sha256": "cdcfabf91a6825e6861dcf28af022c889491eaff2eb2bc04b7ef747896023bef",
+        "side": "home",
+        "size": 5280,
+        "team": "SEA",
+        "timeouts": 1
+      },
+      {
+        "name": "sb26h2",
+        "sha256": "319d78df4d142aa48777a8805f5eb68465ce9577111d274e7fa9886d816e30af",
+        "side": "home",
+        "size": 5280,
+        "team": "SEA",
+        "timeouts": 2
+      },
+      {
+        "name": "sb26h3",
+        "sha256": "1d8360b431c48b7923eb08cc3e6e4de04580e7e42d38db0381eca214638416ef",
+        "side": "home",
+        "size": 5280,
+        "team": "SEA",
+        "timeouts": 3
+      },
+      {
+        "name": "sb26a0",
+        "sha256": "8a0f6990812bbfe5eba891bf1596ea7af7e7147216bc99cfe943c5fcd50be1c9",
+        "side": "away",
+        "size": 5280,
+        "team": "SEA",
+        "timeouts": 0
+      },
+      {
+        "name": "sb26a1",
+        "sha256": "ba204021a48267a46f8ce92f87cc8acdd929adcc70a7a8957551f0de60ea26d4",
+        "side": "away",
+        "size": 5280,
+        "team": "SEA",
+        "timeouts": 1
+      },
+      {
+        "name": "sb26a2",
+        "sha256": "bd0bdec249f807f1dff2d979d41502a15ccb8ac2a1c8516bce2a0284fd31415d",
+        "side": "away",
+        "size": 5280,
+        "team": "SEA",
+        "timeouts": 2
+      },
+      {
+        "name": "sb26a3",
+        "sha256": "07a5435ae466248c078db5e8de75f430a3f64470b03127ac43d9ea317b3eb405",
+        "side": "away",
+        "size": 5280,
+        "team": "SEA",
+        "timeouts": 3
+      },
+      {
+        "name": "sb25h0",
+        "sha256": "57d1bc7abe05bb8cacd5cd540387b4e61f2e2e79a66e21c8e05b803f73507932",
+        "side": "home",
+        "size": 5280,
+        "team": "SF",
+        "timeouts": 0
+      },
+      {
+        "name": "sb25h1",
+        "sha256": "2cb182b9155346f8a148e919cbe2253707b48aeb64c48dfa888e36c4485ff031",
+        "side": "home",
+        "size": 5280,
+        "team": "SF",
+        "timeouts": 1
+      },
+      {
+        "name": "sb25h2",
+        "sha256": "ce1aae5c4a32695312545e8c944c80d3f70d35d9ca24ac4a593a09c06e15957d",
+        "side": "home",
+        "size": 5280,
+        "team": "SF",
+        "timeouts": 2
+      },
+      {
+        "name": "sb25h3",
+        "sha256": "3a976111cd30dcbdb300983d9357f14078c5815131606d2bfdb134eb16f4caf0",
+        "side": "home",
+        "size": 5280,
+        "team": "SF",
+        "timeouts": 3
+      },
+      {
+        "name": "sb25a0",
+        "sha256": "22add6b65db5ddad94d2ba65fe0096bf9f934fc9a2a159c5f8c2c708fc1c86c6",
+        "side": "away",
+        "size": 5280,
+        "team": "SF",
+        "timeouts": 0
+      },
+      {
+        "name": "sb25a1",
+        "sha256": "3568ad4dbe756fd17b133b92f815b36315b0770e4cb0c3ea9297a9a4048876d1",
+        "side": "away",
+        "size": 5280,
+        "team": "SF",
+        "timeouts": 1
+      },
+      {
+        "name": "sb25a2",
+        "sha256": "dbeecfd13cd0f60cdf017203e832dbe428f90a0d3bbe1522afd15a458a10279a",
+        "side": "away",
+        "size": 5280,
+        "team": "SF",
+        "timeouts": 2
+      },
+      {
+        "name": "sb25a3",
+        "sha256": "9baf87aef55ff9b66f453ffd714bcedaa101c313205e3612884f6391e9fa762b",
+        "side": "away",
+        "size": 5280,
+        "team": "SF",
+        "timeouts": 3
+      },
+      {
+        "name": "sb27h0",
+        "sha256": "88488683fe9bbbafd7142f92687080e0339806091adbac00d93dc40fb9ab3586",
+        "side": "home",
+        "size": 5280,
+        "team": "TB",
+        "timeouts": 0
+      },
+      {
+        "name": "sb27h1",
+        "sha256": "862acfcd04978e8e8724983bfe196a61521c6a73bcbe8187a9f096d63f23d473",
+        "side": "home",
+        "size": 5280,
+        "team": "TB",
+        "timeouts": 1
+      },
+      {
+        "name": "sb27h2",
+        "sha256": "904e0cbea303ab5404ae0520b2b2cfc0cd38103a4b200cb2c2aa9e0565080df8",
+        "side": "home",
+        "size": 5280,
+        "team": "TB",
+        "timeouts": 2
+      },
+      {
+        "name": "sb27h3",
+        "sha256": "aac34d73df421d3f10318359d9d5fffecadb065b5f818427bddf51751b75f6c4",
+        "side": "home",
+        "size": 5280,
+        "team": "TB",
+        "timeouts": 3
+      },
+      {
+        "name": "sb27a0",
+        "sha256": "7ba6054168e2a39671f2cfd33d8691a18482fcff7ca707bf045ab5df147b64f7",
+        "side": "away",
+        "size": 5280,
+        "team": "TB",
+        "timeouts": 0
+      },
+      {
+        "name": "sb27a1",
+        "sha256": "d36c1ff96de8433a74f133c8cc909e087726fcb3f7d02bce5537781d8a1f7bc4",
+        "side": "away",
+        "size": 5280,
+        "team": "TB",
+        "timeouts": 1
+      },
+      {
+        "name": "sb27a2",
+        "sha256": "cdadf20a02a5f72d4939af7d91909e419daa0ce9b35ed56fb924111e191b9773",
+        "side": "away",
+        "size": 5280,
+        "team": "TB",
+        "timeouts": 2
+      },
+      {
+        "name": "sb27a3",
+        "sha256": "9b41e8c563c460b1a3d042386be15a2c2d594daba075e231227d5b788bf827e9",
+        "side": "away",
+        "size": 5280,
+        "team": "TB",
+        "timeouts": 3
+      },
+      {
+        "name": "sb28h0",
+        "sha256": "738bc79b290fdc0981fda8db179d43286d51eaafcabc4ece498be0e4bac03c4c",
+        "side": "home",
+        "size": 5280,
+        "team": "TEN",
+        "timeouts": 0
+      },
+      {
+        "name": "sb28h1",
+        "sha256": "bcecaf72133ab70556d42e859d7503c407791eb0ea991d99065e0aff6cccf655",
+        "side": "home",
+        "size": 5280,
+        "team": "TEN",
+        "timeouts": 1
+      },
+      {
+        "name": "sb28h2",
+        "sha256": "dfc8350bde81a63243ec70e2e1816d32e5f30a265bc249080980f2356ecbf26d",
+        "side": "home",
+        "size": 5280,
+        "team": "TEN",
+        "timeouts": 2
+      },
+      {
+        "name": "sb28h3",
+        "sha256": "99f923cda00aae4eba448a43b78e923280371fb163034e518ca8311991eb709d",
+        "side": "home",
+        "size": 5280,
+        "team": "TEN",
+        "timeouts": 3
+      },
+      {
+        "name": "sb28a0",
+        "sha256": "4bef0afb5e7e5072d0b354f1c8ffc01571ea56dce47eeaac891ccdfcfe32781b",
+        "side": "away",
+        "size": 5280,
+        "team": "TEN",
+        "timeouts": 0
+      },
+      {
+        "name": "sb28a1",
+        "sha256": "b0c23c4bc0a15474ad1bbb7e3144c77f87e689e4aa324fd005135a66bff95a2a",
+        "side": "away",
+        "size": 5280,
+        "team": "TEN",
+        "timeouts": 1
+      },
+      {
+        "name": "sb28a2",
+        "sha256": "b15c4669d863f8d59fc0eba70a6488874caf633e95612bb9df4658953100d8fb",
+        "side": "away",
+        "size": 5280,
+        "team": "TEN",
+        "timeouts": 2
+      },
+      {
+        "name": "sb28a3",
+        "sha256": "6268afd04ecc1cf0685fd12456ffaa2d37df9db64d19b159b2063ce51157a85c",
+        "side": "away",
+        "size": 5280,
+        "team": "TEN",
+        "timeouts": 3
+      },
+      {
+        "name": "sb29h0",
+        "sha256": "2c97322a4ebabae356079af09b764e020f727134d6d0110af6d6faddca4117a5",
+        "side": "home",
+        "size": 5280,
+        "team": "WAS",
+        "timeouts": 0
+      },
+      {
+        "name": "sb29h1",
+        "sha256": "b2f90e50cbdf4756379b3ded613eed847eec4b0e4fc787b18d5348ceb5cc789d",
+        "side": "home",
+        "size": 5280,
+        "team": "WAS",
+        "timeouts": 1
+      },
+      {
+        "name": "sb29h2",
+        "sha256": "ce235dce99680c33784b46d882a8ae4629dad0cebb8360646b5bdeb1b31a53e2",
+        "side": "home",
+        "size": 5280,
+        "team": "WAS",
+        "timeouts": 2
+      },
+      {
+        "name": "sb29h3",
+        "sha256": "15c76be5579bd06783c12159528a31346a87301acf53141e07ce3614c8f74fa8",
+        "side": "home",
+        "size": 5280,
+        "team": "WAS",
+        "timeouts": 3
+      },
+      {
+        "name": "sb29a0",
+        "sha256": "ed83b9d3af5cd4354401737ed2a31982efb27e8c063eacb21e118c1cef5fdd90",
+        "side": "away",
+        "size": 5280,
+        "team": "WAS",
+        "timeouts": 0
+      },
+      {
+        "name": "sb29a1",
+        "sha256": "ecbb2625fbface0f9593f8452db3303756459ccb57101d6392e8a2f6e61e9879",
+        "side": "away",
+        "size": 5280,
+        "team": "WAS",
+        "timeouts": 1
+      },
+      {
+        "name": "sb29a2",
+        "sha256": "5a6d3fc8cdefa5235c3f11b1dd89af45aabef75ccebda5bdc106ba0add337f20",
+        "side": "away",
+        "size": 5280,
+        "team": "WAS",
+        "timeouts": 2
+      },
+      {
+        "name": "sb29a3",
+        "sha256": "4becec393460a4e75849c33fde4e23ff0034291921b83a8ca802527810893217",
+        "side": "away",
+        "size": 5280,
+        "team": "WAS",
+        "timeouts": 3
+      }
+    ],
+    "runtime_witnessed": false,
+    "scene_sha256": "7db6d6ccb522fb2822cff3a188522afaf10cc0db296e187a9d65edd325bdca8e",
+    "sha256_after": "ef6549e1ac04224c5d9eb415f04d6ee352d7a9eaf744e14e1b33664fbeac8921",
+    "sha256_before": "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d",
+    "status": "applied",
+    "transport": "sector insertion in pack 0; all later index offsets move equally",
+    "version": "scorebug-runtime-v1"
+  },
+  "runtime_witnessed": false,
+  "schema": "nfl2k5_scorebug_runtime_evidence/v1",
+  "tests": [
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "log_sha256": "04a209203806b8d01e59523d94337b84114b72a4bcbf0d729c7c57ed777847d7",
+      "result": "pass",
+      "seconds": 88.675,
+      "skips": 0,
+      "tests": 12
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "log_sha256": "6318918ae871f200c34ff957669183816749ec5542a05ac2e59661635b0410b5",
+      "result": "pass",
+      "seconds": 75.228,
+      "skips": 0,
+      "tests": 5
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "log_sha256": "a734d6a96fd190fb3c1cd4f7a0fbe645267334049b0c0a0d1811b6ef1bb679fd",
+      "result": "pass",
+      "seconds": 12.684,
+      "skips": 0,
+      "tests": 11
+    },
+    {
+      "command": "python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "log_sha256": "71ac46a8becc622fa64ccf2d7e6850c9bbb14229fce4211c709263bebe37add7",
+      "result": "pass",
+      "seconds": 25.864,
+      "skips": 0,
+      "tests": 12
+    },
+    {
+      "command": "NFL2K5_CAVE_MANIFEST=.scratch/scorebug-runtime-manifest.json python3 tests/mod_editor/test_nfl2k5_cave_oracle.py",
+      "log_sha256": "cb7cdad080c1326c949dc774737fbcca746e283557afbad1f63bce307bfbb307",
+      "result": "pass",
+      "seconds": 53.279,
+      "skips": 0,
+      "tests": 28
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_xbe_space.py",
+      "log_sha256": "de8a73eaf970cebec96704fed3f2913f1c325896415c0202c7f0767503f26625",
+      "result": "pass",
+      "seconds": 33.236,
+      "skips": 0,
+      "tests": 12
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "log_sha256": "a7aa4f876e3ef8503b3975a41185f1665be1cc1c561f5e01a4c45d95298b8f21",
+      "result": "pass",
+      "seconds": 8.699,
+      "skips": 0,
+      "tests": 11
+    },
+    {
+      "command": "python3 tests/nfl2k5_scorebug_layout_test.py",
+      "log_sha256": "b739b21af764a9baeb6282a907a431ecb1466a5658bc3074a1ba75b42b4559c3",
+      "result": "pass",
+      "seconds": 2.702,
+      "skips": 4,
+      "tests": 15
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      "log_sha256": "06dcbb48e7da58ab00eb6ce399a23122f53134c3d065274a11f7c0e5ad601aaa",
+      "result": "pass",
+      "seconds": 0.279,
+      "skips": 3,
+      "tests": 13
+    },
+    {
+      "command": "python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+      "log_sha256": "789cb31f0eaef2e7ff45cf17950724b278954f73553fc5cdc9e31fc094de3d71",
+      "result": "pass",
+      "seconds": 0.059,
+      "skips": 0,
+      "tests": 5
+    }
+  ]
+}

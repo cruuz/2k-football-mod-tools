@@ -9,6 +9,10 @@ import tempfile
 import unittest
 import zlib
 
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 from mod_editor.core.nfl2k5_scorebug_unified_adapter import (
     SCOREBUG_ADAPTER_SCHEMA,
     SCOREBUG_IMPORT_SCHEMA,

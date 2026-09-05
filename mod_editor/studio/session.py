@@ -7,6 +7,7 @@ copied into a session or a shareable project.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import dataclass
 import hashlib
 import hmac
@@ -15,7 +16,7 @@ import os
 from pathlib import Path
 import shutil
 import stat
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Iterator
 from uuid import UUID, uuid4
 
 from mod_editor.core import platform_compat
@@ -107,46 +108,78 @@ def _canonical_json(value: object) -> bytes:
     return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
 
+@contextmanager
+def _explain_write_failure(path: Path) -> Iterator[None]:
+    """Give the Studio error dialog an actionable Windows path-length error."""
+
+    try:
+        yield
+    except OSError as exc:
+        if platform_compat.IS_WINDOWS:
+            paths = []
+            for filename in (path, exc.filename, exc.filename2):
+                if filename is not None:
+                    value = os.fsdecode(filename)
+                    if value.startswith("\\\\?\\UNC\\"):
+                        value = "\\\\" + value[8:]
+                    elif value.startswith("\\\\?\\"):
+                        value = value[4:]
+                    paths.append(value)
+            length = max(map(len, paths))
+            if length >= 260:
+                raise ValidationError(
+                    "Windows limits file paths to 260 characters and this one is "
+                    f"{length}. Enable long paths in Windows (Settings or "
+                    "HKLM\\SYSTEM\\CurrentControlSet\\Control\\FileSystem "
+                    "LongPathsEnabled=1, then restart) or move your sessions folder."
+                ) from exc
+        raise
+
+
 def _write_new_atomic(path: Path, payload: bytes) -> Path:
     """Publish a new file atomically and never overwrite an existing path."""
 
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.{uuid4().hex}.tmp")
-    descriptor = os.open(
-        temporary,
-        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
-        0o600,
-    )
-    try:
-        with os.fdopen(descriptor, "wb", closefd=True) as stream:
-            stream.write(payload)
-            stream.flush()
-            os.fsync(stream.fileno())
+    with _explain_write_failure(path):
+        Path(platform_compat.long_path(path.parent)).mkdir(parents=True, exist_ok=True)
+        temporary = platform_compat.temporary_sibling(path)
+        descriptor = os.open(
+            platform_compat.long_path(temporary),
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
+            0o600,
+        )
         try:
-            platform_compat.publish_no_replace(temporary, path)
-        except FileExistsError as exc:
-            raise ValidationError(f"A file already exists there: {path}") from exc
-        return path
-    finally:
-        temporary.unlink(missing_ok=True)
+            with os.fdopen(descriptor, "wb", closefd=True) as stream:
+                stream.write(payload)
+                stream.flush()
+                os.fsync(stream.fileno())
+            try:
+                platform_compat.publish_no_replace(
+                    platform_compat.long_path(temporary), platform_compat.long_path(path)
+                )
+            except FileExistsError as exc:
+                raise ValidationError(f"A file already exists there: {path}") from exc
+            return path
+        finally:
+            Path(platform_compat.long_path(temporary)).unlink(missing_ok=True)
 
 
 def _replace_atomic(path: Path, payload: bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.{uuid4().hex}.tmp")
-    descriptor = os.open(
-        temporary,
-        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
-        0o600,
-    )
-    try:
-        with os.fdopen(descriptor, "wb", closefd=True) as stream:
-            stream.write(payload)
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)
+    with _explain_write_failure(path):
+        Path(platform_compat.long_path(path.parent)).mkdir(parents=True, exist_ok=True)
+        temporary = platform_compat.temporary_sibling(path)
+        descriptor = os.open(
+            platform_compat.long_path(temporary),
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
+            0o600,
+        )
+        try:
+            with os.fdopen(descriptor, "wb", closefd=True) as stream:
+                stream.write(payload)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(platform_compat.long_path(temporary), platform_compat.long_path(path))
+        finally:
+            Path(platform_compat.long_path(temporary)).unlink(missing_ok=True)
 
 
 @dataclass(frozen=True)
@@ -1456,7 +1489,8 @@ class StudioSession:
                     continue
                 staged = staged_paths.pop(asset_id)
                 committed_ids.add(asset_id)
-                os.replace(staged, destination)
+                with _explain_write_failure(destination):
+                    os.replace(platform_compat.long_path(staged), platform_compat.long_path(destination))
                 new_edits[asset_id] = SessionEdit(
                     asset_id,
                     destination,
@@ -2946,7 +2980,8 @@ class StudioSession:
                 # file still exists and must be removed there; popping first
                 # would orphan an undeclared ``.audio-pack-*`` WAV.
                 staged = staged_paths[asset_id]
-                os.replace(staged, destination)
+                with _explain_write_failure(destination):
+                    os.replace(platform_compat.long_path(staged), platform_compat.long_path(destination))
                 checked = service.validate_user_replacement(row.asset, destination)
                 if checked.wav_sha256 != row.payload_sha256:
                     raise ValidationError(
@@ -3411,7 +3446,8 @@ class StudioSession:
                     destination.unlink(missing_ok=True)
                     new_edits.pop(row.state_id, None)
                     continue
-                os.replace(stages[row.state_id], destination)
+                with _explain_write_failure(destination):
+                    os.replace(platform_compat.long_path(stages[row.state_id]), platform_compat.long_path(destination))
                 new_edits[row.state_id] = AudioSessionEdit(
                     row.selected.asset_id,
                     destination,
@@ -3610,7 +3646,8 @@ class StudioSession:
                 # A failed ``os.replace`` leaves its source in place, and the
                 # common ``finally`` must still know which path to remove.
                 restore = restore_stages[item.asset_id]
-                os.replace(restore, destination)
+                with _explain_write_failure(destination):
+                    os.replace(platform_compat.long_path(restore), platform_compat.long_path(destination))
                 checked = service.validate_user_replacement(asset, destination)
                 expected_hash = expected_previous_hashes[item.asset_id]
                 if checked.wav_sha256 != expected_hash:
@@ -3760,7 +3797,8 @@ class StudioSession:
                     destination.unlink(missing_ok=True)
                     new_edits.pop(item.asset_id, None)
                     continue
-                os.replace(restore_stages[item.asset_id], destination)
+                with _explain_write_failure(destination):
+                    os.replace(platform_compat.long_path(restore_stages[item.asset_id]), platform_compat.long_path(destination))
                 issued = previous_tokens[item.asset_id]
                 logical_id = item.logical_asset_id
                 assert isinstance(logical_id, str)
@@ -4327,12 +4365,14 @@ class StudioSession:
             written: list[Path] = []
             try:
                 for staged_path, destination in (*png_moves, *audio_moves):
-                    os.replace(staged_path, destination)
+                    with _explain_write_failure(destination):
+                        os.replace(platform_compat.long_path(staged_path), platform_compat.long_path(destination))
                     written.append(destination)
                 for staged_path, authored, preview, preview_payload in stadium_moves:
                     _write_new_atomic(preview, preview_payload)
                     written.append(preview)
-                    os.replace(staged_path, authored)
+                    with _explain_write_failure(authored):
+                        os.replace(platform_compat.long_path(staged_path), platform_compat.long_path(authored))
                     written.append(authored)
                 self._edits = new_visual
                 self.text_edits = new_text

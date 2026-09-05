@@ -1,0 +1,337 @@
+{
+ "schema": "nfl2k5_playbook_pack/v3",
+ "book": {
+  "team": "MIN",
+  "name": "SOFTDRINK option",
+  "author": "SOFTDRINK",
+  "version": "1.0.0",
+  "license": "CC0-1.0",
+  "notes": "EXPERIMENTAL / UNWITNESSED. The read is position/velocity based; a dependable modern read needs the later runtime tier. Opponent slots are fixed to the selected test formation. The game cannot check that formation or find an edge defender for you. For zone read and RPO, a true result gives; a false or missing target keeps or enters the pass. Blocks, exchange timing and pass readiness need play tests. Five native speed-option recipes plus speed, zone-read and RPO presets. Replaces eight I Jokers calls, never appends. The 4-3 fixture is an authoring check only; use matching defensive personnel in play tests. False/missing target does not guarantee a safe give."
+ },
+ "base": {
+  "book_fingerprint": "206ea8c360989c83959416610520774ab7f72a0845e1a9803e356ecce356f932",
+  "donor_formation_count": 46,
+  "donor_play_count": 266,
+  "donor_node_count": 2472
+ },
+ "budget": {
+  "formations": 50,
+  "plays": 270,
+  "nodes": 3500,
+  "links_per_formation": 36,
+  "nodes_per_chain": 15,
+  "name_chars": 40
+ },
+ "formations": [],
+ "plays": [
+  {
+   "id": "option-1",
+   "custom_name": "SD MIN24 Speed EXPERIMENTAL",
+   "play_type": "run",
+   "concept": "Speed option",
+   "donor": {
+    "index": 24,
+    "name": "Strong Speed Option",
+    "flags": 33588736,
+    "signature": "draw"
+   },
+   "play_flags": 33588736,
+   "replace_index": 156,
+   "replace_name": "Weak Stretch",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "option_intent": {
+    "schema": "nfl2k5_option_intent/v1",
+    "preset": "Speed option",
+    "weak": false,
+    "back_slot": 10,
+    "formation_name": "I Jokers"
+   }
+  },
+  {
+   "id": "option-2",
+   "custom_name": "SD NO57 Speed EXPERIMENTAL",
+   "play_type": "run",
+   "concept": "Speed option",
+   "donor": {
+    "index": 24,
+    "name": "Strong Speed Option",
+    "flags": 33588736,
+    "signature": "draw"
+   },
+   "play_flags": 33588736,
+   "replace_index": 160,
+   "replace_name": "50 Y/TE Zones",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "option_intent": {
+    "schema": "nfl2k5_option_intent/v1",
+    "preset": "Speed option",
+    "weak": false,
+    "back_slot": 10,
+    "formation_name": "I Jokers"
+   }
+  },
+  {
+   "id": "option-3",
+   "custom_name": "SD NO66 Speed EXPERIMENTAL",
+   "play_type": "run",
+   "concept": "Speed option",
+   "donor": {
+    "index": 24,
+    "name": "Strong Speed Option",
+    "flags": 33588736,
+    "signature": "draw"
+   },
+   "play_flags": 33588736,
+   "replace_index": 25,
+   "replace_name": "Strong Toss",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [
+     [1, [1, 4, 0, 0, 0, 0], 16],
+     [3, [0], 16],
+     [4, [1, 365.76, -365.76, 0], 20],
+     [26, [4, 1280.16, 0, 10, 4, 0, 13, 1], 18],
+     [19, [10, 1], 19]
+    ],
+    [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    [[1, [1, 2, 0, 0, 0, 0]], [2, [0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    null,
+    null,
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [24, [0, 822.96, -91.44, 0, 15, 0, 0]], [17, [4, 0, 1, 0, 2, 0, 914.4, 1]]],
+    [
+     [1, [1, 3, 0, 0, 0, 0], 16],
+     [26, [6, 457.2, -365.76, 0, 3, 0, 3, 0], 20],
+     [24, [2, 457.2, -365.76, 0, 15, 0, 0], 2],
+     [22, [1, 0, 0], 17],
+     [21, [1, 0, 914.4, 0, 15, 0, 0], 3]
+    ]
+   ],
+   "option_intent": {
+    "schema": "nfl2k5_option_intent/v1",
+    "preset": "Speed option",
+    "weak": true,
+    "back_slot": 10,
+    "formation_name": "I Jokers"
+   }
+  },
+  {
+   "id": "option-4",
+   "custom_name": "SD PHI175 Speed EXPERIMENTAL",
+   "play_type": "run",
+   "concept": "Speed option",
+   "donor": {
+    "index": 24,
+    "name": "Strong Speed Option",
+    "flags": 33588736,
+    "signature": "draw"
+   },
+   "play_flags": 33588736,
+   "replace_index": 158,
+   "replace_name": "90 X Lob Fade",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "option_intent": {
+    "schema": "nfl2k5_option_intent/v1",
+    "preset": "Speed option",
+    "weak": false,
+    "back_slot": 10,
+    "formation_name": "I Jokers"
+   }
+  },
+  {
+   "id": "option-5",
+   "custom_name": "SD TEN144 Speed EXPERIMENTAL",
+   "play_type": "run",
+   "concept": "Speed option",
+   "donor": {
+    "index": 24,
+    "name": "Strong Speed Option",
+    "flags": 33588736,
+    "signature": "draw"
+   },
+   "play_flags": 33588736,
+   "replace_index": 93,
+   "replace_name": "Weak Iso",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "option_intent": {
+    "schema": "nfl2k5_option_intent/v1",
+    "preset": "Speed option",
+    "weak": false,
+    "back_slot": 10,
+    "formation_name": "I Jokers"
+   }
+  },
+  {
+   "id": "option-6",
+   "custom_name": "SD Speed Weak EXPERIMENTAL",
+   "play_type": "run",
+   "concept": "Speed option",
+   "donor": {
+    "index": 24,
+    "name": "Strong Speed Option",
+    "flags": 33588736,
+    "signature": "draw"
+   },
+   "play_flags": 33588736,
+   "replace_index": 159,
+   "replace_name": "50 Y/TE Comebacks",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [
+     [1, [1, 4, 0, 0, 0, 0], 16],
+     [3, [0], 16],
+     [4, [1, 365.76, -365.76, 0], 20],
+     [26, [4, 1280.16, 0, 9, 4, 0, 13, 1], 18],
+     [19, [9, 1], 19]
+    ],
+    [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    [[1, [1, 2, 0, 0, 0, 0]], [2, [0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+    null,
+    null,
+    null,
+    [
+     [1, [1, 3, 0, 0, 0, 0], 16],
+     [26, [6, 457.2, -365.76, 0, 3, 0, 3, 0], 20],
+     [24, [2, 457.2, -365.76, 0, 15, 0, 0], 2],
+     [22, [1, 0, 0], 17],
+     [21, [1, 0, 914.4, 0, 15, 0, 0], 3]
+    ],
+    [[1, [1, 3, 0, 0, 0, 0]], [24, [0, 822.96, -91.44, 0, 15, 0, 0]], [17, [4, 0, 1, 0, 2, 0, 914.4, 1]]]
+   ],
+   "option_intent": {
+    "schema": "nfl2k5_option_intent/v1",
+    "preset": "Speed option",
+    "weak": true,
+    "back_slot": 9,
+    "formation_name": "I Jokers"
+   }
+  },
+  {
+   "id": "option-7",
+   "custom_name": "SD Zone Read EXPERIMENTAL",
+   "play_type": "run",
+   "concept": "Zone read (experimental)",
+   "donor": {
+    "index": 24,
+    "name": "Strong Speed Option",
+    "flags": 33588736,
+    "signature": "draw"
+   },
+   "play_flags": 33588736,
+   "replace_index": 155,
+   "replace_name": "Strong Counter Trap",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [
+     [1, [1, 4, 0, 0, 0, 0], 16],
+     [3, [0], 16],
+     [26, [4, -91.44, -274.32, 2, 4, 1, 13, 0], 20],
+     [21, [0, 365.76, 274.32, 2, 15, 0, 0], 2],
+     [19, [10, 0], 19]
+    ],
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    [
+     [1, [1, 3, 0, 0, 0, 0], 16],
+     [26, [6, -91.44, -274.32, 0, 3, 0, 2, 0], 20],
+     [24, [0, -274.32, 0, 0, 15, 0, 0], 2],
+     [22, [0, 0.1, 8], 17],
+     [21, [0, -182.88, 457.2, 2, 15, 0, 0], 3]
+    ]
+   ],
+   "option_intent": {
+    "schema": "nfl2k5_option_intent/v1",
+    "preset": "Zone read (experimental)",
+    "weak": false,
+    "back_slot": 10,
+    "formation_name": "I Jokers",
+    "opponent": {
+     "formation_index": 28,
+     "formation_name": "4-3",
+     "signature": "2754cde5a7300586be1c5038a14d0a76260255d0978f1a92e6c79041c6179e54",
+     "slot": 2
+    }
+   }
+  },
+  {
+   "id": "option-8",
+   "custom_name": "SD RPO EXPERIMENTAL",
+   "play_type": "pass",
+   "concept": "RPO (experimental)",
+   "donor": {
+    "index": 24,
+    "name": "Strong Speed Option",
+    "flags": 33588736,
+    "signature": "draw"
+   },
+   "play_flags": 33580544,
+   "replace_index": 157,
+   "replace_name": "90 X Speed Under",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [
+     [1, [1, 4, 0, 0, 0, 0], 16],
+     [3, [0], 16],
+     [26, [4, -91.44, -274.32, 6, 4, 1, 13, 0], 20],
+     [6, [0, 2, 0, 0, 0, 0.3], 2],
+     [19, [10, 0], 19]
+    ],
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    [[1, [1, 3, 0, 0, 0, 0]], [18, [0, 0, 274.32, 15]], [18, [1, 0, 274.32, 15]]],
+    null,
+    null,
+    [
+     [1, [1, 3, 0, 0, 0, 0], 16],
+     [26, [6, -91.44, -274.32, 0, 3, 0, 2, 0], 20],
+     [24, [0, -274.32, 0, 0, 15, 0, 0], 2],
+     [22, [0, 0.1, 8], 17],
+     [21, [0, -182.88, 457.2, 2, 15, 0, 0], 3]
+    ]
+   ],
+   "option_intent": {
+    "schema": "nfl2k5_option_intent/v1",
+    "preset": "RPO (experimental)",
+    "weak": false,
+    "back_slot": 10,
+    "formation_name": "I Jokers",
+    "opponent": {
+     "formation_index": 28,
+     "formation_name": "4-3",
+     "signature": "2754cde5a7300586be1c5038a14d0a76260255d0978f1a92e6c79041c6179e54",
+     "slot": 6
+    },
+    "receiver_slot": 7
+   }
+  }
+ ]
+}

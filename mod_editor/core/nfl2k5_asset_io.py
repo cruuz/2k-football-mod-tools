@@ -10,6 +10,7 @@ import shutil
 import sys
 from typing import Any
 
+from . import platform_compat
 from .errors import ValidationError
 from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 
@@ -62,7 +63,7 @@ def _atomic_write(path: Path, payload: bytes, *, replace: bool = False) -> None:
         raise ValidationError(f"A file already exists there: {path}")
     if path.is_symlink():
         raise ValidationError(f"Refusing to replace a symbolic link: {path}")
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary = platform_compat.temporary_sibling(path)
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
     descriptor = os.open(temporary, flags | getattr(os, "O_BINARY", 0), 0o600)
     try:
@@ -319,7 +320,7 @@ def copy_user_asset_atomic(source: Path, destination: Path) -> None:
     """Copy a user-authored replacement into private session storage."""
 
     destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")
+    temporary = platform_compat.temporary_sibling(destination)
     if temporary.exists():
         temporary.unlink()
     try:

@@ -11,8 +11,11 @@ import hashlib
 import os
 from pathlib import Path
 import struct
+import sys
 import unittest
 from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from mod_editor.core import nfl2k5_dynamic_kickoff as dk
 from mod_editor.core import nfl2k5_kick_rules as kr
@@ -110,13 +113,20 @@ class Machine:
     STACK, STOP, CALLBACK, COUNTER, SCALAR = 0x3028000, 0x3030000, 0x3030010, 0x3030100, 0x3030200
 
     def __init__(self, payload, direction=1, kick_yard=35, phase=2, onside=False,
-                 human_kicker=False, human_returner=False, rolls=(0, 0, 0)):
+                 human_kicker=False, human_returner=False, rolls=(0, 0, 0), state_va=None):
         self.uc = uni.Uc(uni.UC_ARCH_X86, uni.UC_MODE_32)
         self.uc.mem_map(0x10000, 0xFF0000)
         self.uc.mem_map(0x2000000, 0x20000)
         self.uc.mem_map(0x3020000, 0x20000)
+        self.state_va = dk.FLAGS if state_va is None else state_va
         for sec in _sections(payload):
+            if sec.virtual_address >= 0x1000000:
+                self.uc.mem_map(sec.virtual_address & -4096, (sec.raw_size + 4095) & -4096)
             self.uc.mem_write(sec.virtual_address, payload[sec.raw_offset:sec.raw_offset + sec.raw_size])
+            if sec.virtual_address >= 0x1000000:
+                flags = struct.unpack_from("<I", payload, sec.header_offset)[0]
+                perms = uni.UC_PROT_READ | (uni.UC_PROT_WRITE if flags & 1 else 0) | (uni.UC_PROT_EXEC if flags & 4 else 0)
+                self.uc.mem_protect(sec.virtual_address & -4096, (sec.raw_size + 4095) & -4096, perms)
         self.uc.mem_protect(0x11000, 0x410000, uni.UC_PROT_READ | uni.UC_PROT_EXEC)
         self.direction = direction
         self.rolls = iter(rolls)
@@ -189,7 +199,7 @@ class Machine:
     def get(self, va): return struct.unpack("<I", self.uc.mem_read(va, 4))[0]
     def f32(self, va, value): self.uc.mem_write(va, struct.pack("<f", value))
     def readf(self, va): return struct.unpack("<f", self.uc.mem_read(va, 4))[0]
-    def flags(self): return self.uc.mem_read(dk.FLAGS, 1)[0]
+    def flags(self): return self.uc.mem_read(self.state_va, 1)[0]
     def position(self, x, z, holder=0):
         self.put(self.BALL, holder)
         self.uc.mem_write(self.BALL_POS, struct.pack("<4f", x, 100.0, z, 1.0))

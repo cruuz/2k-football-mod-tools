@@ -187,10 +187,10 @@ class RetailRosterTests(unittest.TestCase):
         self.assertTrue(all(not p.tagged for p in players))
         self.assertEqual(players[88].display, "Michael Vick")
         self.assertEqual(players[88].key, "Vick,Michael,1980-06-28")
-        # a pad byte carrying anything but the tag bit is foreign
+        # the pad byte's high bits belong to the abilities flags (beta 61); the star reads bit 0 only
         body = bytearray(self.body)
         body[self.roster.players[3].offset + ps.TAG_RECORD_OFFSET] = 0x02
-        self.assertEqual(pt.body_status(bytes(body)), "foreign")
+        self.assertEqual(pt.body_status(bytes(body)), "retail")
 
 
 class StarColumnTests(unittest.TestCase):

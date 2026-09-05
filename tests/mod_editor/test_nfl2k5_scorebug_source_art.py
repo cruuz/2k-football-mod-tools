@@ -53,10 +53,10 @@ class AvailabilityTests(unittest.TestCase):
             with mock.patch.object(art, "DEVELOPER_ASSETS", Path(tmp) / "nothing"):
                 self.assertTrue(art.available())
 
-    def test_unavailable_without_the_shipped_audit(self) -> None:
+    def test_available_with_reference_pins_without_the_legacy_audit(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             with mock.patch.object(art, "AUDIT", Path(tmp) / "no-audit.json"):
-                self.assertFalse(art.available())
+                self.assertTrue(art.available())
 
     def test_texture_targets_carry_the_four_atlases(self) -> None:
         targets = art.texture_targets()
@@ -168,6 +168,8 @@ class ByteIdentityTests(unittest.TestCase):
     """
 
     def test_every_texture_span_is_identical_either_way(self) -> None:
+        if not AUDIT.is_file():
+            self.skipTest("legacy typed-importer audit evidence absent; v7 has independent pins")
         import nfl_scorebug_png_import as importer
         import nfl_txtr
         import nfl_vc_lz_fill
@@ -290,7 +292,7 @@ class FullDiscWriteTests(unittest.TestCase):
             places = {"score_bug": (art.SCNE_PACK_OFFSET, art.SCNE_SPAN_SIZE)}
             for role in art.TEXTURE_NAMES:
                 places[role] = (int(targets[role]["pack_offset"]), int(targets[role]["span_size"]))
-            descriptor = os.open(target, os.O_RDONLY)
+            descriptor = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 size = os.fstat(descriptor).st_size
                 base, _pack_size = xc.pack_extent(descriptor, size, "0")

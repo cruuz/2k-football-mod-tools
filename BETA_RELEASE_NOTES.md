@@ -1,3 +1,25 @@
+# beta-61 — RC85 / alpha.84
+
+**Date:** 2026-09-05
+
+**2K5 Mod Studio:** `v1.0-RC85`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+Built almost entirely by GPT-6 Astra under Claude's review, one research memo and one build session per feature, with
+integration sessions on the stack. Every patch passed the retail pins, both executable safety gates composed with every
+owner, two real image builds and the full CI loop. Everything experimental is unwitnessed in game; every new option is
+off or retail in every preset unless the changelog says otherwise. See the RC85 section of
+`docs/mod_editor/2k5_mod_studio_changelog.md` for every change in full, and the GitHub release body for the research
+write-ups.
+
+Highlights: defense Create a Play and the modern defense pack; read option / RPO writer fix and presets; screen-pass
+timing levels; Rosters Locks, Reserves and Abilities; depth-chart locks; SPECIAL tab fixes; practice squad in Free
+Practice; the 128-season gate; guardian caps route B; the Music tab, menu policy and 200-track banks; the reference
+scorebug with real logos and live events; Momentum; defensive two-point returns; the deep-zone drop cap; the Animations
+workspace; the Windows path-length fix; the local Windows tester; and the owned executable space that makes the native
+features possible.
+
 # beta-60 — RC84 / alpha.84
 
 **Date:** 2026-09-04

@@ -1,0 +1,1177 @@
+{
+  "animation_patch": {
+    "down_refresh_each_new_down": false,
+    "drop_red_label": "FUMBLE",
+    "drop_yellow_label": "FLAG",
+    "elements": [
+      {
+        "callback_va": "0xfc7d0",
+        "closed_position": 0.0,
+        "direction": [
+          0.20000000298023224,
+          0.0,
+          0.0
+        ],
+        "duration_seconds": 0.20000000298023224,
+        "name": "drop_down",
+        "open_position": 30.0,
+        "record_va": "0xa959c8",
+        "root_shift": 0,
+        "text_color": "0xffffffff"
+      },
+      {
+        "callback_va": "0xfbe30",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_clock",
+        "open_position": 30.0,
+        "record_va": "0xa95a38",
+        "root_shift": 0,
+        "text_color": "0xff111118"
+      },
+      {
+        "callback_va": "0xfbe60",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_hangtime",
+        "open_position": 30.0,
+        "record_va": "0xa95aa8",
+        "root_shift": 0,
+        "text_color": "0xff000000"
+      },
+      {
+        "callback_va": "0xfbe90",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_yellow",
+        "open_position": 30.0,
+        "record_va": "0xa95b18",
+        "root_shift": 0,
+        "text_color": "0xff000000"
+      },
+      {
+        "callback_va": "0xfbeb0",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_ball_on",
+        "open_position": 45.0,
+        "record_va": "0xa95b88",
+        "root_shift": 0,
+        "text_color": "0xffc0c0c0"
+      },
+      {
+        "callback_va": "0xfbea0",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_red",
+        "open_position": 30.0,
+        "record_va": "0xa95bf8",
+        "root_shift": 0,
+        "text_color": "0xffc0c0c0"
+      }
+    ],
+    "evidence": "PROVED file data and pinned native code; UNWITNESSED in game",
+    "score_flash_color": false,
+    "score_phase_rate": 1.600000023841858,
+    "score_phase_words": [
+      "0xa95978",
+      "0xa959b0"
+    ],
+    "score_rotation_code": [
+      "0xfd2f0",
+      "0xfd416"
+    ],
+    "timeout_dimming": false,
+    "under_5_color": false
+  },
+  "animation_retail": {
+    "down_refresh_each_new_down": false,
+    "drop_red_label": "FUMBLE",
+    "drop_yellow_label": "FLAG",
+    "elements": [
+      {
+        "callback_va": "0xfc7d0",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_down",
+        "open_position": 30.0,
+        "record_va": "0xa959c8",
+        "root_shift": 0,
+        "text_color": "0xff000000"
+      },
+      {
+        "callback_va": "0xfbe30",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_clock",
+        "open_position": 30.0,
+        "record_va": "0xa95a38",
+        "root_shift": 0,
+        "text_color": "0xffc0c0c0"
+      },
+      {
+        "callback_va": "0xfbe60",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_hangtime",
+        "open_position": 30.0,
+        "record_va": "0xa95aa8",
+        "root_shift": 0,
+        "text_color": "0xff000000"
+      },
+      {
+        "callback_va": "0xfbe90",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_yellow",
+        "open_position": 30.0,
+        "record_va": "0xa95b18",
+        "root_shift": 0,
+        "text_color": "0xff000000"
+      },
+      {
+        "callback_va": "0xfbeb0",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_ball_on",
+        "open_position": 45.0,
+        "record_va": "0xa95b88",
+        "root_shift": 0,
+        "text_color": "0xffc0c0c0"
+      },
+      {
+        "callback_va": "0xfbea0",
+        "closed_position": 0.0,
+        "direction": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "duration_seconds": 0.5,
+        "name": "drop_red",
+        "open_position": 30.0,
+        "record_va": "0xa95bf8",
+        "root_shift": 0,
+        "text_color": "0xffc0c0c0"
+      }
+    ],
+    "evidence": "PROVED file data and pinned native code; UNWITNESSED in game",
+    "score_flash_color": false,
+    "score_phase_rate": 1.600000023841858,
+    "score_phase_words": [
+      "0xa95978",
+      "0xa959b0"
+    ],
+    "score_rotation_code": [
+      "0xfd2f0",
+      "0xfd416"
+    ],
+    "timeout_dimming": false,
+    "under_5_color": false
+  },
+  "build_receipt": {
+    "animation": "retail score rotation and visibility-triggered down slide",
+    "experimental": true,
+    "layout": "espn-reference-v7",
+    "resources": [
+      {
+        "absolute": 1741675264,
+        "filled_bytes": 4797,
+        "resource": "score_bug",
+        "sha256_after": "475efc3d7aa03535f8f807dbdca0baaa32928faf2ade9116551c7bb57039c732",
+        "sha256_before": "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+        "span_size": 4832,
+        "state_before": "retail",
+        "wrapper_identical": true
+      },
+      {
+        "absolute": 1741540432,
+        "filled_bytes": 2384,
+        "palette_attempts": [
+          {
+            "colors": 256,
+            "encoder": "greedy",
+            "refused": "VC-LZ stream needs more than the 2400-byte bound"
+          },
+          {
+            "colors": 256,
+            "encoder": "optimal",
+            "refused": "VC-LZ stream needs 2474 bytes, more than the 2400-byte stored body even with optimal parsing"
+          },
+          {
+            "colors": 128,
+            "encoder": "greedy",
+            "result": "fit"
+          }
+        ],
+        "resource": "score_buga",
+        "sha256_after": "72aee2c09b471c6f07e3658c00ef6f204021f3f6065cd96344c7c72d30df9947",
+        "sha256_before": "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+        "span_size": 2432,
+        "state_before": "retail",
+        "wrapper_identical": true
+      }
+    ],
+    "root": [
+      320.0,
+      424.0
+    ],
+    "runtime_team_logos": false,
+    "state_before": "retail",
+    "textures": [
+      "score_buga"
+    ],
+    "timeout_dimming": false,
+    "under_5_color": false,
+    "witnessed": false,
+    "wrapper_identical": true,
+    "xbe": {
+      "boot_logo": {
+        "changed_byte_count": 684,
+        "logo_va": "0x10cd0",
+        "size_of_headers": "0xf82",
+        "status": "applied"
+      },
+      "edits": [
+        {
+          "after": "0000a0430000d443",
+          "before": "73f7d373e3f7430f",
+          "label": "reserved position floats",
+          "size": 8,
+          "va": "0x10a40"
+        },
+        {
+          "after": "d805400a0100",
+          "before": "d805586d4e00",
+          "label": "root x",
+          "size": 6,
+          "va": "0xfcffc"
+        },
+        {
+          "after": "d805400a0100",
+          "before": "d80568694f00",
+          "label": "root x",
+          "size": 6,
+          "va": "0xfd07b"
+        },
+        {
+          "after": "d805400a0100",
+          "before": "d805586d4e00",
+          "label": "root x",
+          "size": 6,
+          "va": "0xfd0eb"
+        },
+        {
+          "after": "d805440a0100",
+          "before": "d8051c0f4f00",
+          "label": "root y",
+          "size": 6,
+          "va": "0xfd15e"
+        },
+        {
+          "after": "9090909090",
+          "before": "e8b5fcffff",
+          "label": "persistent bug",
+          "size": 5,
+          "va": "0xfc9f6"
+        },
+        {
+          "after": "9090909090",
+          "before": "e8e4f7ffff",
+          "label": "persistent bug",
+          "size": 5,
+          "va": "0xfcec7"
+        },
+        {
+          "after": "9090909090",
+          "before": "e800c80500",
+          "label": "persistent bug",
+          "size": 5,
+          "va": "0x9feab"
+        },
+        {
+          "after": "9090909090",
+          "before": "e8d6ffffff",
+          "label": "persistent bug",
+          "size": 5,
+          "va": "0xfc6d5"
+        },
+        {
+          "after": "ffffffff",
+          "before": "c0c0c0ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa95894"
+        },
+        {
+          "after": "ffffffff",
+          "before": "c0c0c0ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa958bc"
+        },
+        {
+          "after": "ffffffff",
+          "before": "000000ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa95958"
+        },
+        {
+          "after": "ffffffff",
+          "before": "000000ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa95990"
+        },
+        {
+          "after": "ffffffff",
+          "before": "000000ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa959d8"
+        },
+        {
+          "after": "181111ff",
+          "before": "c0c0c0ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa95a48"
+        },
+        {
+          "after": "181111ff",
+          "before": "c0c0c0ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa9590c"
+        },
+        {
+          "after": "181111ff",
+          "before": "c0c0c0ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa95910"
+        },
+        {
+          "after": "181111ff",
+          "before": "c0c0c0ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa95934"
+        },
+        {
+          "after": "181111ff",
+          "before": "c0c0c0ff",
+          "label": "text contrast",
+          "size": 4,
+          "va": "0xa95938"
+        },
+        {
+          "after": "cdcc4c3e0000000000000000",
+          "before": "00000000000080bf00000000",
+          "label": "drop_down direction",
+          "size": 12,
+          "va": "0xa959e0"
+        },
+        {
+          "after": "000000000000000000000000",
+          "before": "00000000000080bf00000000",
+          "label": "drop_clock direction",
+          "size": 12,
+          "va": "0xa95a50"
+        },
+        {
+          "after": "000000000000000000000000",
+          "before": "00000000000080bf00000000",
+          "label": "drop_hangtime direction",
+          "size": 12,
+          "va": "0xa95ac0"
+        },
+        {
+          "after": "000000000000000000000000",
+          "before": "00000000000080bf00000000",
+          "label": "drop_yellow direction",
+          "size": 12,
+          "va": "0xa95b30"
+        },
+        {
+          "after": "000000000000000000000000",
+          "before": "00000000000080bf00000000",
+          "label": "drop_ball_on direction",
+          "size": 12,
+          "va": "0xa95ba0"
+        },
+        {
+          "after": "000000000000000000000000",
+          "before": "00000000000080bf00000000",
+          "label": "drop_red direction",
+          "size": 12,
+          "va": "0xa95c10"
+        },
+        {
+          "after": "cdcc4c3e",
+          "before": "0000003f",
+          "label": "down slide duration",
+          "size": 4,
+          "va": "0xa959f0"
+        },
+        {
+          "after": "e8c6e600",
+          "before": "68c7e600",
+          "label": "literal corner mark atlas",
+          "size": 4,
+          "va": "0xa95cac"
+        },
+        {
+          "after": "e8c6e600",
+          "before": "68c7e600",
+          "label": "literal corner mark atlas",
+          "size": 4,
+          "va": "0xa95cb4"
+        }
+      ],
+      "hud_layout": {
+        "changed_bytes": 25,
+        "edits": [
+          {
+            "after": "d825e4884e00",
+            "before": "d825486c4e00",
+            "file_offset": "0xaab52",
+            "label": "kick_meter_margin",
+            "margin": 150.0,
+            "va": "0xbab52"
+          },
+          {
+            "after": "33c0c3",
+            "before": "558bec",
+            "file_offset": "0xefa80",
+            "label": "lineup_insert_off",
+            "va": "0xffa80"
+          }
+        ],
+        "sections_repinned": [
+          0
+        ],
+        "status": {
+          "kick_meter_margin": "150.0",
+          "lineup_insert": "off"
+        }
+      },
+      "sha256_after": "a10d9334bb466be4ded8a5b5be0a0369947d9ba751d5016f6b6f5d00f5056fab",
+      "sha256_before": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "state_before": "retail"
+    }
+  },
+  "full_disc_verification": {
+    "changed_bytes": 7612,
+    "output_sha256": "f05c2e4aadba8e2c548823eb3e65ac44497b8be323225c73277ebc0008e2a6be",
+    "output_status": "applied",
+    "outside_plan_changes": 0,
+    "same_size": true,
+    "source_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
+  },
+  "patched_spans": {
+    "score_bug": "475efc3d7aa03535f8f807dbdca0baaa32928faf2ade9116551c7bb57039c732",
+    "score_buga": "72aee2c09b471c6f07e3658c00ef6f204021f3f6065cd96344c7c72d30df9947"
+  },
+  "resources": {
+    "espn1": {
+      "chunk": 31,
+      "decoded_sha256": "7dc4e67203a846bf9bace8f0b034ad6d9591136304e4ec7c8c0ba4cffcd7e4e8",
+      "format_name": "DXT1",
+      "height": 128,
+      "name": "espn1",
+      "outer": 346,
+      "outer_id": 11965036,
+      "pack_offset": 110140624,
+      "span_sha256": "b071be81adbfa652e5b5ed0629aae18d7be33cb37bb105e278dfe5e7af3fcd99",
+      "span_size": 2352,
+      "width": 128
+    },
+    "nflShield1": {
+      "chunk": 32,
+      "decoded_sha256": "c8f69b7058852b44768a11c8adc12107fb4b0e547bb306977a808575cb1914fd",
+      "format_name": "DXT1",
+      "height": 256,
+      "name": "nflShield1",
+      "outer": 346,
+      "outer_id": 11965036,
+      "pack_offset": 110142976,
+      "span_sha256": "1ada0a78f821457972a85c343b8b8c32bd295a1ddf1b3876d66a685f175eb069",
+      "span_size": 8512,
+      "width": 256
+    },
+    "score_bug": {
+      "chunk": 78,
+      "decoded_sha256": "fc22e6caab35bc0f0b61d3a1014de9dfa0acfa6b8228fccf014f5ce0a17d1735",
+      "outer": 346,
+      "outer_id": 11965036,
+      "pack_offset": 110486272,
+      "span_sha256": "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+      "span_size": 4832
+    },
+    "score_buga": {
+      "chunk": 53,
+      "decoded_sha256": "3504993fc814f33afc3f37e32707a6e270c53c2b86dea6abe6def2e7219fae1b",
+      "format_name": "P8",
+      "height": 64,
+      "name": "score_buga",
+      "outer": 346,
+      "outer_id": 11965036,
+      "pack_offset": 110351440,
+      "span_sha256": "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+      "span_size": 2432,
+      "width": 64
+    },
+    "shield_espn": {
+      "chunk": 26,
+      "decoded_sha256": "f8cc8bb93f024dce63a710b3040888d051e33e8378ec8e8694452a609357d952",
+      "format_name": "P8",
+      "height": 64,
+      "name": "shield_espn",
+      "outer": 346,
+      "outer_id": 11965036,
+      "pack_offset": 110125136,
+      "span_sha256": "4517f5602ebab791e0d54e5f5bc8c3881e4f31addf5afe7f869c3b7c2f2cb1c7",
+      "span_size": 5952,
+      "width": 128
+    }
+  },
+  "schema": "nfl2k5_scorebug_ingame_evidence/v1",
+  "staged_binding_scene": {
+    "away_material": "zscore_buga",
+    "disable_element": 2,
+    "experimental": true,
+    "filled_bytes": 4789,
+    "home_material": "hscore_buga",
+    "requires_hook": true,
+    "runtime_bound": false,
+    "schema": "nfl2k5_scorebug_binding_scene/v1",
+    "sha256": "e658b74560fc882f02b09e145df9bf819cdc47f49762030cd3faee7b9f3bc0dd",
+    "witnessed": false,
+    "wrapper_identical": true
+  },
+  "status": "EXPERIMENTAL / UNWITNESSED",
+  "team_logos": {
+    "ARI": {
+      "asset_code": "00",
+      "chunk": 0,
+      "decoded_sha256": "dd07ea0d6d8d15bccba8455bb4d8d8fe2d04f1c14f38a8993314d12fa4cb99ab",
+      "format_name": "P8",
+      "height": 256,
+      "name": "00_teamlogo_00_h0",
+      "outer": 24,
+      "outer_id": 4145851365,
+      "pack_offset": 15939584,
+      "primary": "#97233F",
+      "roster_id": 7,
+      "secondary": "#000000",
+      "span_sha256": "ba9e20704d87babda9cb1b378e6b825a0b9d539aa829199ed866fef061cba217",
+      "span_size": 11968,
+      "width": 256
+    },
+    "ATL": {
+      "asset_code": "01",
+      "chunk": 0,
+      "decoded_sha256": "3b21bcf1ad05a7c543250957e6f169f994055a9b7c3d06c8075dd9477fbee18d",
+      "format_name": "P8",
+      "height": 256,
+      "name": "01_teamlogo_00_h0",
+      "outer": 25,
+      "outer_id": 417251547,
+      "pack_offset": 16039936,
+      "primary": "#A71930",
+      "roster_id": 14,
+      "secondary": "#000000",
+      "span_sha256": "060f65cbb773910f99d2f675f64f9fa825c13fc68577277986e78730d51822e4",
+      "span_size": 10368,
+      "width": 256
+    },
+    "BAL": {
+      "asset_code": "02",
+      "chunk": 0,
+      "decoded_sha256": "6b6f38cc73b9b8adf46daf371eb19caccace189bd49a0b3721f31863edffc0e6",
+      "format_name": "P8",
+      "height": 256,
+      "name": "02_teamlogo_00_h0",
+      "outer": 26,
+      "outer_id": 4092165080,
+      "pack_offset": 16136192,
+      "primary": "#241773",
+      "roster_id": 24,
+      "secondary": "#000000",
+      "span_sha256": "712e682896dbb08438c287983969fa494f3834d38021501c79960400d1a3fde1",
+      "span_size": 12432,
+      "width": 256
+    },
+    "BUF": {
+      "asset_code": "03",
+      "chunk": 0,
+      "decoded_sha256": "96d49259dcd3e5ba9f55b0503e734e7ed5b8db1dcebc2286fb1c629714c6d330",
+      "format_name": "P8",
+      "height": 256,
+      "name": "03_teamlogo_00_h0",
+      "outer": 27,
+      "outer_id": 472584422,
+      "pack_offset": 16236544,
+      "primary": "#00338D",
+      "roster_id": 3,
+      "secondary": "#C60C30",
+      "span_sha256": "5568f3dff35199fcc99ce4a85d3519dfa0eccb1e0bea85c126a3d8585124d917",
+      "span_size": 12752,
+      "width": 256
+    },
+    "CAR": {
+      "asset_code": "04",
+      "chunk": 0,
+      "decoded_sha256": "8b04936083b53a14d427c0591c6b05dcc16666c9dd1dbebd49c1d9f28a21c8f4",
+      "format_name": "P8",
+      "height": 256,
+      "name": "04_teamlogo_00_h0",
+      "outer": 28,
+      "outer_id": 4277603231,
+      "pack_offset": 16334848,
+      "primary": "#0085CA",
+      "roster_id": 20,
+      "secondary": "#101820",
+      "span_sha256": "fd4ad097f8f0c88e3ca54f2a473deb126cea52641b599c8978d20740761b3432",
+      "span_size": 11568,
+      "width": 256
+    },
+    "CHI": {
+      "asset_code": "05",
+      "chunk": 0,
+      "decoded_sha256": "c0ba592e83411daa250252fcaccccc7e196f8479f54d8346bcacdc26ef296fce",
+      "format_name": "P8",
+      "height": 256,
+      "name": "05_teamlogo_00_h0",
+      "outer": 29,
+      "outer_id": 288710817,
+      "pack_offset": 16433152,
+      "primary": "#0B162A",
+      "roster_id": 1,
+      "secondary": "#C83803",
+      "span_sha256": "4c4c41267db94a2d45edc77eaf9f45f2e038db1904dc3f83e41e903dfa5fb817",
+      "span_size": 9824,
+      "width": 256
+    },
+    "CIN": {
+      "asset_code": "06",
+      "chunk": 0,
+      "decoded_sha256": "bbd62a2e8e613669d3eff1b8b1ea6d432eafdfcd09b14253dd43119fbb8cee49",
+      "format_name": "P8",
+      "height": 256,
+      "name": "06_teamlogo_00_h0",
+      "outer": 30,
+      "outer_id": 4194491298,
+      "pack_offset": 16531456,
+      "primary": "#FB4F14",
+      "roster_id": 2,
+      "secondary": "#000000",
+      "span_sha256": "9897a5ffd296a2e81a44f781f55d28a946ac4f4d56e23a32e0f85b885e589e86",
+      "span_size": 18352,
+      "width": 256
+    },
+    "CLE": {
+      "asset_code": "30",
+      "chunk": 0,
+      "decoded_sha256": "366b999c0b8cace06fffc5b43e0093f9bf65f30b48e72f0fe2b786e9a43fe108",
+      "format_name": "P8",
+      "height": 256,
+      "name": "30_teamlogo_00_h0",
+      "outer": 54,
+      "outer_id": 2156034325,
+      "pack_offset": 18968576,
+      "primary": "#311D00",
+      "roster_id": 5,
+      "secondary": "#FF3C00",
+      "span_sha256": "86ca90f3c4c7cfff362af7a9801ef7bc25b5494894ff3840d87b9f8b12a51418",
+      "span_size": 14800,
+      "width": 256
+    },
+    "DAL": {
+      "asset_code": "07",
+      "chunk": 0,
+      "decoded_sha256": "0cb696fc7f6b53c8be75e24d98b7e5d40ac50ce1f8d501702b9f1e2591a1f1ba",
+      "format_name": "P8",
+      "height": 256,
+      "name": "07_teamlogo_00_h0",
+      "outer": 31,
+      "outer_id": 364949660,
+      "pack_offset": 16640000,
+      "primary": "#003594",
+      "roster_id": 11,
+      "secondary": "#869397",
+      "span_sha256": "a6d6a390e2bb7586b69b2704d2c7751849eed446f4e23682253b47079181aa8a",
+      "span_size": 13152,
+      "width": 256
+    },
+    "DEN": {
+      "asset_code": "08",
+      "chunk": 0,
+      "decoded_sha256": "2a6d23a42966276352a8532061156c1401eb832561ab08e020a7dfa54d68e9af",
+      "format_name": "P8",
+      "height": 256,
+      "name": "08_teamlogo_00_h0",
+      "outer": 32,
+      "outer_id": 3838569233,
+      "pack_offset": 16740352,
+      "primary": "#FB4F14",
+      "roster_id": 4,
+      "secondary": "#002244",
+      "span_sha256": "aa69d667a8f46d7431776dd5dd1b9888d95330ed8b03df7b47e13395bac03168",
+      "span_size": 11760,
+      "width": 256
+    },
+    "DET": {
+      "asset_code": "09",
+      "chunk": 0,
+      "decoded_sha256": "c60eea8456efff817bb57e080cbcbf7d95582145e1e164bd7d3e22fda9cc7d8a",
+      "format_name": "P8",
+      "height": 256,
+      "name": "09_teamlogo_00_h0",
+      "outer": 33,
+      "outer_id": 185172015,
+      "pack_offset": 16838656,
+      "primary": "#0076B6",
+      "roster_id": 18,
+      "secondary": "#B0B7BC",
+      "span_sha256": "e98e6964ef870ae9afd651e36f7bd1fc3f7616d47ba3cfd411e84a5c6bbd9267",
+      "span_size": 13264,
+      "width": 256
+    },
+    "GB": {
+      "asset_code": "10",
+      "chunk": 0,
+      "decoded_sha256": "9e32ba6710eccedf3a0a9b3451ad1485947bf6dfa37cd52dd8af698277e96fa7",
+      "format_name": "P8",
+      "height": 256,
+      "name": "10_teamlogo_00_h0",
+      "outer": 34,
+      "outer_id": 1824122762,
+      "pack_offset": 16936960,
+      "primary": "#203731",
+      "roster_id": 19,
+      "secondary": "#FFB612",
+      "span_sha256": "61835665a75c0cffd427451e994b95a1aa3c008b7169304f70142529f851e976",
+      "span_size": 10576,
+      "width": 256
+    },
+    "HOU": {
+      "asset_code": "37",
+      "chunk": 0,
+      "decoded_sha256": "d4b5eb05d6844295a081e20f11c55f654b44f7886ab072b48db54ba64ed76f85",
+      "format_name": "P8",
+      "height": 256,
+      "name": "37_teamlogo_00_h0",
+      "outer": 60,
+      "outer_id": 1650352748,
+      "pack_offset": 19605504,
+      "primary": "#03202F",
+      "roster_id": 29,
+      "secondary": "#A71930",
+      "span_sha256": "a7dfcb5709ce1453254ace8610cac688358006de16cf18f590f9ce2582328ea9",
+      "span_size": 14736,
+      "width": 256
+    },
+    "IND": {
+      "asset_code": "11",
+      "chunk": 0,
+      "decoded_sha256": "ee58a36e9f36b8837a87085444ca2c26d779a818fb01548cdfd4fc654ac9b4b4",
+      "format_name": "P8",
+      "height": 256,
+      "name": "11_teamlogo_00_h0",
+      "outer": 35,
+      "outer_id": 2205912244,
+      "pack_offset": 17031168,
+      "primary": "#002C5F",
+      "roster_id": 10,
+      "secondary": "#A2AAAD",
+      "span_sha256": "887e2a591c097fcf4eaea510b7ea2bbd088f323b3c256eb55ddc08eb248c3fc0",
+      "span_size": 10880,
+      "width": 256
+    },
+    "JAX": {
+      "asset_code": "12",
+      "chunk": 0,
+      "decoded_sha256": "5505cd05f276b9c9a08b7aecc6a909d985680d35c04844b237dd339202e6d8aa",
+      "format_name": "P8",
+      "height": 256,
+      "name": "12_teamlogo_00_h0",
+      "outer": 36,
+      "outer_id": 1749825463,
+      "pack_offset": 17127424,
+      "primary": "#006778",
+      "roster_id": 16,
+      "secondary": "#D7A22A",
+      "span_sha256": "afd470079920c75e3a238e364adeb4c3af2c8534b70aa574b75a45ad478cfd7c",
+      "span_size": 18448,
+      "width": 256
+    },
+    "KC": {
+      "asset_code": "13",
+      "chunk": 0,
+      "decoded_sha256": "556be81af5ec8b8b78c827edab3f6971e2a16e8b5294bb1f11873d4790426f06",
+      "format_name": "P8",
+      "height": 256,
+      "name": "13_teamlogo_00_h0",
+      "outer": 37,
+      "outer_id": 2274253961,
+      "pack_offset": 17233920,
+      "primary": "#E31837",
+      "roster_id": 9,
+      "secondary": "#FFB81C",
+      "span_sha256": "4b4a78740219937ab10f024e782cdc35dc73f4a7951c2182f008bf8442727923",
+      "span_size": 13664,
+      "width": 256
+    },
+    "LAC": {
+      "asset_code": "24",
+      "chunk": 0,
+      "decoded_sha256": "2eaa74957b253e7bda3e0bb665bd168f4888bbacf93f2cd008b05d9b2e9ecc7f",
+      "format_name": "P8",
+      "height": 256,
+      "name": "24_teamlogo_00_h0",
+      "outer": 48,
+      "outer_id": 315397376,
+      "pack_offset": 18343936,
+      "primary": "#0080C6",
+      "roster_id": 8,
+      "secondary": "#FFC20E",
+      "span_sha256": "85080521b4d47bca908dc6e07ddb7d79a7892065a9591bd9803bec3e65ad1bb6",
+      "span_size": 16592,
+      "width": 256
+    },
+    "LAR": {
+      "asset_code": "23",
+      "chunk": 0,
+      "decoded_sha256": "ec54365642bf7f009800e2350935460b0107fa922f1a046361ee231355cea51e",
+      "format_name": "P8",
+      "height": 256,
+      "name": "23_teamlogo_00_h0",
+      "outer": 47,
+      "outer_id": 4027616889,
+      "pack_offset": 18241536,
+      "primary": "#003594",
+      "roster_id": 23,
+      "secondary": "#FFD100",
+      "span_sha256": "f34ba90269552e64b0d4325e7b9461b30c72beade7c5a7a879dc6fd95511074b",
+      "span_size": 14432,
+      "width": 256
+    },
+    "LV": {
+      "asset_code": "20",
+      "chunk": 0,
+      "decoded_sha256": "7d182239adffdbf37728c77b845ce217f60ec3462d07210bade7952b37a22107",
+      "format_name": "P8",
+      "height": 256,
+      "name": "20_teamlogo_00_h0",
+      "outer": 44,
+      "outer_id": 455554426,
+      "pack_offset": 17934336,
+      "primary": "#000000",
+      "roster_id": 22,
+      "secondary": "#A5ACAF",
+      "span_sha256": "bb7e2ca4d69ef7c3e71d8633a5b25eef5b7f74be642865381a49cfb89afbc63f",
+      "span_size": 14736,
+      "width": 256
+    },
+    "MIA": {
+      "asset_code": "14",
+      "chunk": 0,
+      "decoded_sha256": "0079e1c7c460985618e1f7f45ccb1a12ff7924a1ed3c7207f98a2e45789eacb4",
+      "format_name": "P8",
+      "height": 256,
+      "name": "14_teamlogo_00_h0",
+      "outer": 38,
+      "outer_id": 1699891184,
+      "pack_offset": 17334272,
+      "primary": "#008E97",
+      "roster_id": 12,
+      "secondary": "#FC4C02",
+      "span_sha256": "0e59120ec9a965d3ce23593dadb4bc9f1f169f120018d3bacfef69a64086b3cd",
+      "span_size": 18784,
+      "width": 256
+    },
+    "MIN": {
+      "asset_code": "15",
+      "chunk": 0,
+      "decoded_sha256": "3c94f12898183b9afeb2b17006b49aa7c3df62c9bcf524180bd7e6fcff43e787",
+      "format_name": "P8",
+      "height": 256,
+      "name": "15_teamlogo_00_h0",
+      "outer": 39,
+      "outer_id": 2324704462,
+      "pack_offset": 17440768,
+      "primary": "#4F2683",
+      "roster_id": 31,
+      "secondary": "#FFC62F",
+      "span_sha256": "da5c5e9cffc4ac263c75f023f5e93fd45522246631a669936eeb491d6cdb8c45",
+      "span_size": 19632,
+      "width": 256
+    },
+    "NE": {
+      "asset_code": "16",
+      "chunk": 0,
+      "decoded_sha256": "17d1f3ba48727c88695c22aa45a76526a2afcfdfb65e1540ef579ca0583650cb",
+      "format_name": "P8",
+      "height": 256,
+      "name": "16_teamlogo_00_h0",
+      "outer": 40,
+      "outer_id": 1638373325,
+      "pack_offset": 17547264,
+      "primary": "#002244",
+      "roster_id": 21,
+      "secondary": "#C60C30",
+      "span_sha256": "09d139314bb508002a56c77b5b991a4208080eacddae5233f83112742398bdd0",
+      "span_size": 8688,
+      "width": 256
+    },
+    "NO": {
+      "asset_code": "17",
+      "chunk": 0,
+      "decoded_sha256": "0018c432c0591c061c183ccb26a8d289b180845e0647ea0908e9978f70a3b72e",
+      "format_name": "P8",
+      "height": 256,
+      "name": "17_teamlogo_00_h0",
+      "outer": 41,
+      "outer_id": 2389048563,
+      "pack_offset": 17641472,
+      "primary": "#D3BC8D",
+      "roster_id": 26,
+      "secondary": "#101820",
+      "span_sha256": "c4867c1f8dd800dd95dc33fc9dd1c24b23dae83ece78729328fdffb1e517ac84",
+      "span_size": 14240,
+      "width": 256
+    },
+    "NYG": {
+      "asset_code": "18",
+      "chunk": 0,
+      "decoded_sha256": "c35235f7c479172d4d09c5080e77e132558916b6b603484409dcd8f30d7809ae",
+      "format_name": "P8",
+      "height": 256,
+      "name": "18_teamlogo_00_h0",
+      "outer": 42,
+      "outer_id": 2137958270,
+      "pack_offset": 17743872,
+      "primary": "#0B2265",
+      "roster_id": 15,
+      "secondary": "#A71930",
+      "span_sha256": "63f48587fb336136c2606e17420b9afca6a380c75ff071bde3eef0db3f8af93a",
+      "span_size": 7344,
+      "width": 256
+    },
+    "NYJ": {
+      "asset_code": "19",
+      "chunk": 0,
+      "decoded_sha256": "53926954054c5fc695b8c317dd35fd6171ed4114af946eedc281920443ecdcbf",
+      "format_name": "P8",
+      "height": 256,
+      "name": "19_teamlogo_00_h0",
+      "outer": 43,
+      "outer_id": 2427243584,
+      "pack_offset": 17836032,
+      "primary": "#125740",
+      "roster_id": 17,
+      "secondary": "#000000",
+      "span_sha256": "4679c986e82f264bfec961364ba51231facdff3d6711d87b6d7f0e204cbc8d19",
+      "span_size": 12096,
+      "width": 256
+    },
+    "PHI": {
+      "asset_code": "21",
+      "chunk": 0,
+      "decoded_sha256": "191c7f29ba89149dcd47b7105c0b7d537da9db2972b509e95d684dde4e7160cf",
+      "format_name": "P8",
+      "height": 256,
+      "name": "21_teamlogo_00_h0",
+      "outer": 45,
+      "outer_id": 4108672580,
+      "pack_offset": 18040832,
+      "primary": "#004C54",
+      "roster_id": 13,
+      "secondary": "#A5ACAF",
+      "span_sha256": "84ab53015ab7c0197996530ae6778221019c5007b4c118baa5a6a063633c71bd",
+      "span_size": 17760,
+      "width": 256
+    },
+    "PIT": {
+      "asset_code": "22",
+      "chunk": 0,
+      "decoded_sha256": "a2b57c08ad117eec4544519991e72e1277866a3151673bef7284724009c0f99e",
+      "format_name": "P8",
+      "height": 256,
+      "name": "22_teamlogo_00_h0",
+      "outer": 46,
+      "outer_id": 533914951,
+      "pack_offset": 18145280,
+      "primary": "#101820",
+      "roster_id": 28,
+      "secondary": "#FFB612",
+      "span_sha256": "7f27d62838d04b6221b48c7fd8206e602871c6ad842ee0bdc67d42389b6ddeea",
+      "span_size": 10480,
+      "width": 256
+    },
+    "SEA": {
+      "asset_code": "26",
+      "chunk": 0,
+      "decoded_sha256": "c54626a8e5cfe680cc96f5e8cfdfc77af95c0bebb256ac1829d19e733a3aa539",
+      "format_name": "P8",
+      "height": 256,
+      "name": "26_teamlogo_00_h0",
+      "outer": 50,
+      "outer_id": 372852029,
+      "pack_offset": 18552832,
+      "primary": "#002244",
+      "roster_id": 27,
+      "secondary": "#69BE28",
+      "span_sha256": "2b801336d6088139a27e902a3f8548af037d66883f4c67bf7c61ce0de48ded98",
+      "span_size": 8016,
+      "width": 256
+    },
+    "SF": {
+      "asset_code": "25",
+      "chunk": 0,
+      "decoded_sha256": "8061b40a314ead7fb4d86782afd574491a094f830d5f78f559f078f8a44fa694",
+      "format_name": "P8",
+      "height": 256,
+      "name": "25_teamlogo_00_h0",
+      "outer": 49,
+      "outer_id": 4245618238,
+      "pack_offset": 18450432,
+      "primary": "#AA0000",
+      "roster_id": 0,
+      "secondary": "#B3995D",
+      "span_sha256": "9c411080c1001f0f6cc003bbcc433156453b60c6df2c7a4e53ff70d9f77cee85",
+      "span_size": 14768,
+      "width": 256
+    },
+    "TB": {
+      "asset_code": "27",
+      "chunk": 0,
+      "decoded_sha256": "aa2ec1f9fad10cd70f53e267408278e6d3fc47688e3f46f823af985c08c1ee46",
+      "format_name": "P8",
+      "height": 256,
+      "name": "27_teamlogo_00_h0",
+      "outer": 51,
+      "outer_id": 4193988099,
+      "pack_offset": 18649088,
+      "primary": "#D50A0A",
+      "roster_id": 6,
+      "secondary": "#34302B",
+      "span_sha256": "e6d7a486baf2dca48c37a254807a15d24374e7d5b4a3c3f974b47a76141739b9",
+      "span_size": 20608,
+      "width": 256
+    },
+    "TEN": {
+      "asset_code": "28",
+      "chunk": 0,
+      "decoded_sha256": "e44ab9d1612281868ce3adf60396bc3805c6a35ffee69bf5a202533f13cb2e7a",
+      "format_name": "P8",
+      "height": 256,
+      "name": "28_teamlogo_00_h0",
+      "outer": 52,
+      "outer_id": 149976462,
+      "pack_offset": 18759680,
+      "primary": "#0C2340",
+      "roster_id": 30,
+      "secondary": "#4B92DB",
+      "span_sha256": "5ec3d1babde8cb5f9f2f73a8158354fe7558908da45ed979dcf3256ff32c5199",
+      "span_size": 14624,
+      "width": 256
+    },
+    "WAS": {
+      "asset_code": "29",
+      "chunk": 0,
+      "decoded_sha256": "ca989b4be598f9da3bbb9ac2278ae9bdb1aa7dfa54247b688f9da748f6c022c4",
+      "format_name": "P8",
+      "height": 256,
+      "name": "29_teamlogo_00_h0",
+      "outer": 53,
+      "outer_id": 3878821552,
+      "pack_offset": 18860032,
+      "primary": "#5A1414",
+      "roster_id": 25,
+      "secondary": "#FFB612",
+      "span_sha256": "00a7f07682f5046165b9050d26f080effe34ec9f9642bb622ee3443e0b2c8c58",
+      "span_size": 21040,
+      "width": 256
+    }
+  },
+  "xbe_guards": [
+    [
+      1032608,
+      89,
+      "087132e1b01db50d2ab03c33faa583c44217fd8de4e2813c85640985f535719e",
+      "material binding"
+    ],
+    [
+      1037040,
+      294,
+      "7c7e00839242a825fa4d3c361dec3d4da4bec327735f107599872ddf59e3444e",
+      "score rotation"
+    ],
+    [
+      1031728,
+      33,
+      "da040c2ad99c4a69867d6256db6ddf1c2c72be543a13cd430f10d4e743216935",
+      "play clock formatter"
+    ],
+    [
+      1030928,
+      128,
+      "769ae0697334bb1cb70488d0168b78cc7534a0b18c341038d7366d5f3586703f",
+      "play clock getter"
+    ]
+  ]
+}

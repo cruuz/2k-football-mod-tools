@@ -230,6 +230,44 @@ class CollideRefusalNamesThePathTests(unittest.TestCase):
 
         self._assert_contains("already exists: {_path}")
 
+class DefenseBuildOrderingTests(unittest.TestCase):
+    def test_native_defense_precedes_recode_and_offense_keeps_later_order(self):
+        import tempfile
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from mod_editor.core import mod_build as build
+        events = []
+        packs = SimpleNamespace(
+            DEFENSE_SCHEMA="v2",
+            load_pack=lambda p: SimpleNamespace(schema="v2" if p.name == "defense.2k5book" else "v1", plays=()),
+            apply_packs_to_image=lambda target, paths, **kw: events.append(tuple(p.name for p in paths)) or {},
+        )
+        pools = SimpleNamespace(status=lambda payload: "retail", apply=lambda payload: (payload, {}))
+        roles = SimpleNamespace(status=lambda source: {"books": {"ATL": "retail"}},
+                                apply=lambda *a, **kw: events.append("roles") or {})
+        recode = SimpleNamespace(apply=lambda *a, **kw: events.append("recode") or {})
+        roster = SimpleNamespace(apply=lambda *a, **kw: {})
+        modules = {"nfl2k5_playbook_pack": packs, "nfl2k5_position_pools": pools, "nfl2k5_depth_roles": roles}
+        tool_modules = {"nfl2k5_playbook_position_recode": recode, "nfl2k5_roster_reclassify": roster}
+        with tempfile.TemporaryDirectory() as folder:
+            source, target = Path(folder) / "source.iso", Path(folder) / "copy.iso"
+            source.write_bytes(b"base")
+            plan = build.BuildPlan(str(source), str(target), position_pools=True, depth_roles=True,
+                                   playbook_packs=("offense.2k5book", "defense.2k5book", "defense.2k5book"))
+            with patch.object(build.tt, "is_disc_image", return_value=True), \
+                 patch.object(build.tt, "write_copy", return_value={}), \
+                 patch.object(build, "_core_module", side_effect=modules.get), \
+                 patch.object(build, "_tools_module", side_effect=tool_modules.get), \
+                 patch.object(build, "_xbe_bytes", return_value=b"base"), \
+                 patch.object(build, "_write_xbe_bytes"), \
+                 patch.object(build, "inspect", return_value={}):
+                receipt = build._build(plan)
+        self.assertEqual(events, [("defense.2k5book",), "recode", ("offense.2k5book",), "roles"])
+        self.assertEqual([s["step"] for s in receipt["steps"]],
+                         ["xbe", "defense_playbook_packs", "position_pools", "playbook_packs", "depth_roles"])
+        self.assertFalse(receipt["steps"][1]["witnessed"])
+
 
 if __name__ == "__main__":
     unittest.main()

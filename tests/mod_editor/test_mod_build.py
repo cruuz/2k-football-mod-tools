@@ -76,12 +76,14 @@ class ModBuildTests(unittest.TestCase):
             self.assertTrue(art.available())
             self.assertTrue(mod_build.availability()["scorebug"])
         with mock.patch.object(art, "AUDIT", missing / "audit.json"):
+            self.assertTrue(art.available())
+        from mod_editor.core import nfl2k5_scorebug_resources as resources
+        with mock.patch.object(resources, "PATCHED_SHA256", {}):
             self.assertFalse(art.available())
             self.assertFalse(mod_build.availability()["scorebug"])
 
 
-if __name__ == "__main__":
-    unittest.main()
+
 
 
 class PresetTests(unittest.TestCase):
@@ -108,7 +110,7 @@ class PresetTests(unittest.TestCase):
         # advanced carries the modern spots (which include the power re-spacing), not the power-only fix
         self.assertTrue(advanced["kick_rules"]); self.assertFalse(advanced["kick_power"])
         plan = mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t"), "softdrink_advanced")
-        self.assertTrue(plan.accel_ramp and plan.progression and plan.scorebug and plan.arc_by_distance and plan.position_pools
+        self.assertTrue(plan.accel_ramp and plan.progression and not plan.scorebug and plan.arc_by_distance and plan.position_pools
                         and plan.season_2026 and plan.edge_rename and plan.overtime and plan.camera and plan.scheme_labels)
         self.assertFalse(plan.widescreen or plan.kickoff_alignment or plan.seven_on_seven)
 
@@ -173,11 +175,11 @@ class PresetTests(unittest.TestCase):
         real_inspect = mod_build.inspect
         pretend_image = lambda _path: True   # noqa: E731 - only the plan's image gate
 
-        def inspect_for_real(target):
+        def inspect_for_real(target, **options):
             # inspect() reads the real container; only the plan gate is pretending
             mod_build.tt.is_disc_image = real_is_image
             try:
-                return real_inspect(target)
+                return real_inspect(target, **options)
             finally:
                 mod_build.tt.is_disc_image = pretend_image
 
@@ -217,3 +219,7 @@ class PresetTests(unittest.TestCase):
             mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t"), "nope")
         plan = mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t", name="mine"), "softdrink_basic")
         self.assertEqual(plan.name, "mine")
+
+
+if __name__ == "__main__":
+    unittest.main()

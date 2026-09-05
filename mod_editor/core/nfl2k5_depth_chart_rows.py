@@ -3,6 +3,12 @@
 All indices remain unit * 11 + slot. Relocate 46 records to fresh read-only
 storage; preserve the original table and its KR/PR boundary. Pools supplies
 the getter cave; swaps and bench promotion honor its encoded chain/row.
+
+The summary sheet uses style 17. Its 28-pixel retail pitch makes SPECIAL
+scroll vertically, which narrows the frame and hides the entire third name
+column. Reduce its spacing from 4 to 1 (25-pixel pitch). Widen the label
+column from 50 to 57 for SLWR/PWRB with normal padding. The font, player
+column widths, callbacks and encoded chains remain retail-compatible.
 """
 
 from __future__ import annotations
@@ -46,17 +52,42 @@ RETAIL_BENCH = bytes.fromhex(
 )
 DUPLICATE_COUNT_CALLS = (0x243B6C, 0x243B90, 0x243BCD, 0x243BD7)
 # unit, slot, <=4-char abbreviation, <=26-char long name, position, encoded chain
-ROLE_ROWS = ((3, 4, "SLOT", "SLOT RECEIVER", 3, 2),
-             (3, 5, "NCB", "NICKEL CORNER", 4, 2),
-             (3, 6, "DCB", "DIME CORNER", 4, 3),
-             (3, 7, "GDGT", "GADGET", 3, 4),
-             (3, 8, "GUN", "LEFT GUNNER", 3, 3),
-             (3, 9, "GUNR", "RIGHT GUNNER", 4, 3),
-             (3, 10, "LS", "LONG SNAPPER", 12, 2),
-             (3, 11, "3DB", "3RD DOWN BACK", 7, 2),
-             (3, 12, "PWR", "POWER BACK", 7, 4))
+ROLE_ROWS = ((3, 4, "LS", "LONG SNAPPER", 12, 2),
+             (3, 5, "LGUN", "LEFT GUNNER", 3, 3),
+             (3, 6, "RGUN", "RIGHT GUNNER", 4, 3),
+             (3, 7, "NCB", "NICKEL CORNER", 4, 2),
+             (3, 8, "DCB", "DIME CORNER", 4, 3),
+             (3, 9, "SLWR", "SLOT RECEIVER", 3, 2),
+             (3, 10, "GAD", "GADGET", 3, 4),
+             (3, 11, "3DRB", "THIRD DOWN BACK", 7, 2),
+             (3, 12, "PWRB", "POWER BACK", 7, 4))
 WR_LABELS = ((3, ("LWR", "LEFT WIDE RECEIVER"), ("X", "X RECEIVER")),
              (4, ("RWR", "RIGHT WIDE RECEIVER"), ("Z", "Z RECEIVER")))
+
+# File-backed .data style descriptor, not a cave or a runtime allocation.
+# dc_overviewsheet is the only style-17 use in all 86 retail LAYT resources.
+# All four tab callbacks select the SAME screen 0x533088. Its LAYT node
+# overrides the .rdata fallback style with 17 and frame (15, 80, 600, 360).
+# 0x16FAD0 computes pitch = style[+0x18] + style[+0x28]. At spacing 2,
+# SPECIAL still scrolls; spacing 1 is the largest whole-pixel value that fits.
+SUMMARY_STYLE = 17
+SUMMARY_STYLE_VA = 0xAA3744
+SUMMARY_SPACING_VA = SUMMARY_STYLE_VA + 0x28
+RETAIL_SUMMARY_STYLE = bytes.fromhex(
+    "0000a041c0c0c0ff01000000dcdcdcff01000000606060ff180000001e000000"
+    "020000000100000000008040dc38e800")
+SUMMARY_STYLE_BYTES = RETAIL_SUMMARY_STYLE[:40] + struct.pack("<f", 1.0) + RETAIL_SUMMARY_STYLE[44:]
+SUMMARY_COLUMNS = (0x532280, 0x532330, 0x532540, 0x5323E0, 0x5325F0, 0x532490, 0x5326A0)
+SUMMARY_LABEL_WIDTH_VA = SUMMARY_COLUMNS[0] + 0x50
+SUMMARY_LABEL_WIDTH = 57  # widest retail font3 label (51) plus normal padding (6)
+SUMMARY_FRAME = (15.0, 80.0, 615.0, 440.0)  # retail LAYT outer 3, chunk 73
+# Pin the complete data descriptors used by the bounded draw proof. These
+# are read-only assertions; the existing column getters are already correct.
+SUMMARY_PINS = ((0x532280, 0x50, "edb74ce4fe66c248b1f8ef66aca90672490bfac5a444c90ed2a957246191d6cd"),
+                (0x5322D4, 0x47C, "2b23bca51b666f10e9f7c5a315e267eb98601904d912580922313b6edaa3e509"),
+                (0x532800, 0xBC, "ee20e7ff4ed98ba3c5aabf235c6e1ac397cf909c8986b196fb1b38705bb30fdb"),
+                (0x532968, 0x100, "9ed52ec7fc5ba9e00b52d6d6c86bd094236cf249e137c190f104e6fcf742e03c"),
+                (0x533060, 20, "d0599cc74ffe99c29f128e9f0c2e9247b7ad932c25c7ea1a212887493be88732"))
 
 
 class DepthChartRowsError(ValueError):
@@ -165,6 +196,13 @@ def title_sites() -> tuple[CodeSite, ...]:
     return tuple(CodeSite(f"special_title_{va:x}", va, (RETAIL_TITLE,), SPECIAL_TITLE) for va in TITLE_VAS)
 
 
+def layout_sites() -> tuple[CodeSite, ...]:
+    return (CodeSite("summary_row_spacing", SUMMARY_STYLE_VA,
+                     (RETAIL_SUMMARY_STYLE,), SUMMARY_STYLE_BYTES),
+            CodeSite("summary_label_width", SUMMARY_LABEL_WIDTH_VA,
+                     (struct.pack("<f", 50),), struct.pack("<f", SUMMARY_LABEL_WIDTH)))
+
+
 def _records(payload: bytes, applied: bool) -> list[bytes]:
     raw = _read(payload, TABLE_VA if applied else RETAIL_TABLE_VA, TABLE_SIZE if applied else RETAIL_TABLE_SIZE)
     records = [raw[i:i + RECORD_SIZE] for i in range(0, TABLE_SIZE, RECORD_SIZE)]
@@ -231,10 +269,13 @@ def status(payload: bytes) -> str:
         _require(storage.state(payload) == ("applied" if applied else "retail"), "unknown storage")
         _require(_read(payload, TABLE_END_VA, len(RETAIL_RETURNER_POSITIONS)) == RETAIL_RETURNER_POSITIONS,
                  "unknown KR/PR boundary")
-        for site in (*code_sites(), *title_sites()):
+        for site in (*code_sites(), *title_sites(), *layout_sites()):
             got = _read(payload, site.va, len(site.after))
             _require(got == site.after if applied else got in site.befores,
                      f"unknown {site.label} bytes")
+        for va, size, digest in SUMMARY_PINS:
+            _require(hashlib.sha256(_read(payload, va, size)).hexdigest() == digest,
+                     f"unknown summary descriptor at 0x{va:x}")
         _table_is_known(payload, applied)
         if applied:
             _table_is_known(payload, False)  # retired allocation and its padding are retained intact
@@ -257,7 +298,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     buf, edits = storage.extend(payload)
     sections = _sections(buf)
     touched = {storage._section(buf).index}
-    writes = [(site.label, site.va, site.after) for site in (*code_sites(), *title_sites())]
+    writes = [(site.label, site.va, site.after) for site in (*code_sites(), *title_sites(), *layout_sites())]
     writes.append(("depth_chart_table", TABLE_VA, _special_table(payload)))
     for label, va, after in writes:
         off = _span(buf, va, len(after))
@@ -278,4 +319,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                      "file_growth": len(patched) - len(payload), "table_va": hex(TABLE_VA),
                      "sections_repinned": sorted(touched), "edits": edits,
                      "dependency": "position_pools", "stride": STRIDE, "row_counts": list(ROW_COUNTS),
+                     "summary_row_pitch": 25, "summary_spacing": 1, "summary_font_unchanged": True,
+                     "summary_label_width": SUMMARY_LABEL_WIDTH,
+                     "layout_scope": "shared depth-chart summary style 17",
                      "runtime_witnessed": False}

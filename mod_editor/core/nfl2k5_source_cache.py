@@ -494,7 +494,7 @@ class Nfl2k5SourceCache:
     @staticmethod
     def _atomic_write_json(path: Path, value: object) -> None:
         payload = (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
-        temporary = path.with_name(f".{path.name}.tmp")
+        temporary = platform_compat.temporary_sibling(path)
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
         descriptor = os.open(temporary, flags | getattr(os, "O_BINARY", 0), 0o600)
         try:

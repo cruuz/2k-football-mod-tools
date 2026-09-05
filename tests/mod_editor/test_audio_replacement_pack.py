@@ -57,6 +57,16 @@ from mod_editor.studio.session import AudioSessionEdit, StudioSession
 from tests.mod_editor.test_nfl2k5_audio_catalog import AudioFixture
 
 
+
+def _plain_path(value: object) -> Path:
+    """Compare paths the session may hand to os.replace with the Windows extended prefix stripped."""
+    text = os.fspath(value)
+    for prefix in ("\\\\?\\UNC\\", "\\\\?\\"):
+        if text.startswith(prefix):
+            text = ("\\\\" + text[len(prefix):]) if prefix.endswith("UNC\\") else text[len(prefix):]
+            break
+    return Path(text)
+
 def _menu_wav(path: Path, sample: int) -> Path:
     with wave.open(str(path), "wb") as stream:
         stream.setnchannels(1)
@@ -2116,7 +2126,7 @@ class AudioBatchSessionAtomicTests(unittest.TestCase):
                     not tripped
                     and "audio-undo-" in source_name
                     and source_name.endswith("-restore.wav")
-                    and Path(destination) == second_destination
+                    and _plain_path(destination) == second_destination
                 ):
                     tripped = True
                     raise OSError("synthetic second-restore failure")

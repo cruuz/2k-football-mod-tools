@@ -1,30 +1,30 @@
-"""Give NFL 2K5 players an acceleration ramp (executable patch, xemu-only, local research).
+"""Legacy effective-Speed rating envelope. EXPERIMENTAL / UNWITNESSED.
 
-Retail has no acceleration model: every locomotion consumer (top speed ``FUN_00238020``, the
-run-animation rate, pursuit maths) reads the player's *effective Speed rating* that
-``FUN_00075bd0`` caches into ``state+0x1b4`` every frame from the attribute accessor.  A
-lineman and a receiver therefore both reach their top speed on the first frame, which is why
-"everyone goes step for step" at high Pursuit.
+Retail already has acceleration, Agility-dependent turning limits and turn-rate
+history, a movement-command-dependent turn curve, weight-dependent acceleration,
+and velocity/weight-sensitive contact. Caching an effective Speed rating every
+frame does not imply instantaneous acceleration or identical player speeds.
 
-This patch redirects that one cache write (``0x00075CD5``: ``mov [esi+0x1b4], edx``) into a
-code cave in the XBE boot-logo bitmap.  The cave ramps the cached value instead of copying it:
+This patch redirects the cache store at 0x75CD5 to 131 bytes of logo code. It
+changes a rating input, not velocity or the ordinary movement command::
 
-    throttle = [[player+0x0C]+0x10]           (the steer record's speed command, 0..1)
-    idle  (throttle < 0.15):  cached = 0.6 * rating
-    moving:                   cached = min(rating, max(prev + step, 0.6 * rating))
-    step  = rating * 0.006667 / (2.5 - 1.5 * agility)       per 60 Hz frame
+    throttle <= 0.15: cached = 0.6 * rating
+    otherwise: cached = min(rating, max(previous + step, 0.6 * rating))
+    step = rating * (0.4 / 60) / (2.5 - 1.5 * agility)
 
-so a 99-agility receiver climbs from 60 % to 100 % of his rating in about one second, a
-50-agility lineman in about 1.75 s, a 30-agility one in two seconds; slow, low-agility
-quarterbacks cannot burst out of the pocket.  If the steer record is missing (0 or -1) the
-retail value is stored unchanged, so nothing can break for players the game does not steer.
-The ramp also lowers the run-animation rate while accelerating (it reads the same cache), which
-is the visible "winding up".
+The existing behavior is preserved: null/sentinel steer pointers AND valid
+records whose controller marker is -1 bypass the envelope. Thus this legacy
+option cannot claim human/CPU parity. The threshold includes equality.
 
-Everything is pattern-checked (retail or already-applied bytes only), the ``.text`` digest is
-recomputed, the header logo bytes carry no digest.  Constants live in the logo region too.
-Unverified at runtime (Noah tests): the human steer record is assumed to hold the stick
-magnitude at +0x10 like the AI's throttle does.
+A 60% rating floor is not 60% physical running speed. With rating .99, the
+ordinary full-command speed helper's endpoint at the floor is about 88% of its
+unmodified endpoint; command zero still returns zero. This is not coasting.
+The run-animation helper also limits its command by requested throttle. Native
+acceleration and this envelope can compound; played effects remain unwitnessed.
+
+Constants and code occupy pinned logo bytes; section digests are repinned.
+Only this documentation has changed. Runtime guards, arithmetic, ownership,
+status recognition and the legacy refusal of a second apply are unchanged.
 """
 
 from __future__ import annotations

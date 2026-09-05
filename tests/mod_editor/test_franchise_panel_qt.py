@@ -155,6 +155,56 @@ class OverviewTests(_PanelCase):
         self.payload = synthetic_franchise_with_coach(year_field=7, user_team=0)
         self.load(self.payload)
 
+    def test_long_season_indices_and_opaque_neighbor_survive_copy_reload(self) -> None:
+        payload = bytearray(synthetic_franchise_with_coach(year_field=30))
+        payload[0x91327] = 0xA5
+        self.load(bytes(payload), name="long")
+        page = self.page
+        self.assertIn("season 31 = index 30", page.year_rule_label.text())
+        self.assertIn("EXPERIMENTAL / UNWITNESSED", page.season_cap_label.text())
+        self.assertIn("Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet.",
+                      page.season_cap_label.text())
+        page.base_year_spin.setValue(2026)
+        self.assertEqual(page.save.to_bytes(), payload)
+        self.assertEqual(page.year_spin.value(), 2056)
+        self.assertTrue(page.set_year(2153))
+        before = page.save.to_bytes()
+        self.assertFalse(page.set_year(2154))
+        self.assertEqual(page.save.to_bytes(), before)
+        self.assertIn("season 128 = index 127", page.year_rule_label.text())
+        _, written = self.write()
+        expected = bytearray(payload)
+        expected[0x91326] = 127
+        self.assertEqual(written, expected)
+        self.assertTrue(self.panel.load_save(self.root / "copy"))
+        page.base_year_spin.setValue(2026)
+        self.assertEqual(page.save.header.display_year, 2153)
+        self.assertEqual(page.save.buffer[0x91327], 0xA5)
+
+    def test_base_year_change_does_not_reinterpret_journal_indices(self) -> None:
+        page = self.page
+        page.set_year(2034)  # index 30 with retail base
+        before = page.save.to_bytes()
+        page.base_year_spin.setValue(2026)
+        self.assertEqual(page.save.to_bytes(), before)
+        self.assertEqual(page.save.header.display_year, 2056)
+        page.undo()
+        self.assertEqual(page.save.to_bytes(), self.payload)
+        self.assertEqual(page.save.header.display_year, 2033)
+        page.redo()
+        self.assertEqual(page.save.to_bytes(), before)
+        self.assertEqual(page._document.reference_year, 2056)
+
+    def test_terminal_index_is_shown_without_clamping_or_dirtying(self) -> None:
+        for index in (128, 255):
+            payload = synthetic_franchise_with_coach(year_field=index)
+            self.load(payload, name=f"terminal-{index}")
+            self.assertIn(f"season {index + 1} = index {index}", self.page.year_rule_label.text())
+            self.assertFalse(self.page.year_spin.isEnabled())
+            self.assertEqual(self.page.year_spin.value(), 2004 + index)
+            self.assertEqual(self.page.save.to_bytes(), payload)
+            self.assertEqual(self.page.edits, [])
+
     def test_year_cap_and_user_control_round_trip_through_one_resigned_copy(self) -> None:
         page = self.page
         self.assertEqual(page.year_spin.value(), 2011)
@@ -174,7 +224,7 @@ class OverviewTests(_PanelCase):
         self.assertIn("90,000", page.cap_raw_label.text())
         self.assertEqual(page.dirty_label.text(), "● 4 franchise edits (not yet written)")
         self.assertEqual(page.edit_labels(), [
-            "Season year 2011 → 2012 (year field 8)",
+            "Season year 2011 → 2012 (season 9 = index 8)",
             "Salary cap $80.5M (80,500) → $90.0M (90,000)",
             "IND: user-controlled → CPU",
             "SF: CPU → user-controlled",
@@ -212,11 +262,11 @@ class OverviewTests(_PanelCase):
         self.assertEqual(page.save.salary_cap, 80_500)
         self.assertEqual(page.save.header.display_year, 2013)
         self.assertTrue(page.redo_button.isEnabled())
-        self.assertEqual(page.undo(), "Season year 2011 → 2013 (year field 9)")
+        self.assertEqual(page.undo(), "Season year 2011 → 2013 (season 10 = index 9)")
         assert page.save is not None
         self.assertEqual(page.save.to_bytes(), self.payload)
         self.assertEqual(page.undo(), "")
-        self.assertEqual(page.redo(), "Season year 2011 → 2013 (year field 9)")
+        self.assertEqual(page.redo(), "Season year 2011 → 2013 (season 10 = index 9)")
         self.assertEqual(page.redo(), "Salary cap $80.5M (80,500) → $95.5M (95,500)")
         self.assertEqual(page.redo(), "")
         assert page.save is not None
@@ -224,7 +274,7 @@ class OverviewTests(_PanelCase):
         # a new edit after an undo drops the redo branch
         page.undo()
         page.year_spin.setValue(2020)
-        self.assertEqual(page.edit_labels(), ["Season year 2011 → 2013 (year field 9)", "Season year 2013 → 2020 (year field 16)"])
+        self.assertEqual(page.edit_labels(), ["Season year 2011 → 2013 (season 10 = index 9)", "Season year 2013 → 2020 (season 17 = index 16)"])
         self.assertFalse(page.redo_button.isEnabled())
 
 
@@ -450,24 +500,25 @@ class SharedBytesTests(_PanelCase):
         self.assertTrue(self.page.place_on_ir(0, 2))
         receipt, written = self.write()
         expected = fs.FranchiseSave(document.to_body())
-        expected.place_on_injured_reserve(0, 2)
+        # The roster and franchise pages now expose the same composed ownership state.
         self.assertEqual(written, expected.to_bytes())
         back = fs.FranchiseSave(written)
         self.assertEqual(back.team_player_indices(0), [3, 1])
         self.assertEqual(back.team_player_indices(1), [0, 4, 5])
         self.assertEqual([(e.team, e.player_index) for e in back.injured_reserve()], [(0, 2)])
-        # the roster page pulling the rug: IR James, then swap him away on the roster page -> the IR edit is dropped and said
+        # Ownership edits are visible immediately; an IR player cannot be traded away.
         self.panel.load_save(self.root / "fr")
         document = self.panel.document
-        assert document is not None
         self.assertTrue(self.page.place_on_ir(0, 2))
         james = next(p for p in document.players if p.index == 2)
         dunn = next(p for p in document.players if p.index == 4)
-        document.swap(james, dunn)
+        before = document.to_body()
+        labels = self.page.edit_labels()
+        with self.assertRaisesRegex(rr.MembershipRefused, "injured reserve"):
+            document.swap(james, dunn)
         self.assertTrue(self.page.sync_from_roster())
-        self.assertEqual(self.page.edit_labels(), [])
-        self.assertIn("Dropped a franchise edit", self.page.status_label.text())
-        self.assertIn("not on team 0", self.page.status_label.text())
+        self.assertEqual(document.to_body(), before)
+        self.assertEqual(self.page.edit_labels(), labels)
 
 
 class ChecksTests(_PanelCase):
@@ -488,10 +539,10 @@ class ChecksTests(_PanelCase):
         text = page.checks_text.toPlainText()
         self.assertIn("Franchise edits since load (2):", text)
         self.assertIn("1. Salary cap $80.5M (80,500) → $90.0M (90,000)", text)
-        self.assertIn("2. Season year 2011 → 2012 (year field 8)", text)
+        self.assertIn("2. Season year 2011 → 2012 (season 9 = index 8)", text)
         self.assertIn("2 ranges, 3 bytes", text)
         self.assertIn("0x09ACCC..0x09ACCE (2 B) — salary cap $1000 (DAT_00e3c278) [PROVED]", text)
-        self.assertIn("year field (DAT_00e576b8), display = 2004 + field [PROVED]", text)
+        self.assertIn("year field (DAT_00e576b8), display = build starting year + index [PROVED]", text)
         self.assertEqual(page.checks_text_for(), text)
         page.checks_refresh_button.click()
         self.assertEqual(page.checks_text.toPlainText(), text)

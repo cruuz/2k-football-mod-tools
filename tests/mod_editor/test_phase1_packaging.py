@@ -34,7 +34,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc84"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc85"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -54,7 +54,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC84 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC85 — Getting Started"
         ))
         self.assertIn(
             "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
@@ -66,11 +66,11 @@ class ModStudioPackagingTests(unittest.TestCase):
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
-        self.assertIn("registry has 70 cross-title rows", getting_started)
-        self.assertIn("complete 12-tab sidebar", getting_started)
+        self.assertIn("registry has 83 cross-title rows", getting_started)
+        self.assertIn("complete 18-tab sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC84 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC85 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -163,7 +163,10 @@ class ModStudioPackagingTests(unittest.TestCase):
     def test_launcher_and_packaging_docs_require_pyqt5_not_tk(self) -> None:
         launcher = (ROOT / "tools/launch_2k5_mod_studio.sh").read_text(encoding="utf-8")
         readme = (ROOT / "packaging/README.md").read_text(encoding="utf-8")
-        combined = launcher + "\n" + readme
+        # Windows CI documents unavailable optional modules separately from the
+        # desktop installation requirements; those diagnostics are not dependencies.
+        install_readme = readme.split("\n## Local Windows CI\n", 1)[0]
+        combined = launcher + "\n" + install_readme
         self.assertIn("from PyQt5 import QtWidgets; import PIL; import mod_editor", launcher)
         self.assertIn("python3 -m mod_editor --studio", combined)
         self.assertIn("python3-pyqt5", readme)
@@ -246,7 +249,7 @@ class ModStudioPackagingTests(unittest.TestCase):
                 release_gate.audit_release(root, allowlist)
 
     def test_reviewed_metadata_files_match_exact_contract_and_have_no_payload(self) -> None:
-        self.assertEqual(len(release_gate.REVIEWED_METADATA), 22)
+        self.assertEqual(len(release_gate.REVIEWED_METADATA), 23)
         self.assertEqual(
             sum(path.startswith("reports/assets/")
                 for path in release_gate.REVIEWED_METADATA),
@@ -451,7 +454,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=70 sections=12 nfl2k5_capabilities=32", runtime_probe)
+        self.assertIn("registry=83 sections=12 nfl2k5_capabilities=45", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)
@@ -463,7 +466,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn(
             '"apf2k8.scorebug_presentation.digital_font"', runtime_probe
         )
-        self.assertIn("reports=16 reviewed_metadata=22", runtime_probe)
+        self.assertIn("reports=16 reviewed_metadata=23", runtime_probe)
         self.assertIn("Nfl2k5StadiumCacheCoordinator", runtime_probe)
         self.assertIn("build_scorebug_texture_import", runtime_probe)
 

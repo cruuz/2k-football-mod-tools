@@ -16,7 +16,6 @@ import os
 from pathlib import Path
 import stat
 from typing import Iterable
-from uuid import uuid4
 
 from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
@@ -318,9 +317,7 @@ class WorkspaceStateStore:
         }, indent=2, sort_keys=True) + "\n").encode("utf-8")
         if len(payload) > MAX_STATE_BYTES:
             raise ValidationError("Workspace state exceeds its size limit.")
-        temporary = self.state_path.with_name(
-            f".{self.state_path.name}.{os.getpid()}.{uuid4().hex}.tmp"
-        )
+        temporary = platform_compat.temporary_sibling(self.state_path)
         descriptor = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),

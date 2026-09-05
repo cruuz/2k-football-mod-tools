@@ -235,6 +235,18 @@ def read_units(payload: bytes) -> dict[str, list[dict[str, object]]]:
             for unit in (UNIT_43, UNIT_34)}
 
 
+def read_depth_chart_units(payload: bytes) -> dict[str, list[dict[str, object]]]:
+    """Studio preview labels in on-screen order, including every SPECIAL row.
+
+    Keep read_units' defensive-only API for its existing receipt consumers.
+    The final unit extends the table; it never changes the unit * 11 stride.
+    """
+    expanded = layout_table(payload) == SPECIAL_TABLE_VA
+    return {UNIT_NAMES[unit]: [read_record(payload, unit, slot) for slot in
+                              range((13 if expanded else 4) if unit == UNIT_SPECIAL else SLOTS_PER_UNIT)]
+            for unit in range(UNIT_COUNT)}
+
+
 def _site_state(payload: bytes, site: LabelSite) -> str:
     off = _offset(payload, site.va_for(layout_stride(payload), layout_table(payload)))
     got = payload[off: off + SLOT_TEXT_BYTES]
@@ -323,4 +335,5 @@ __all__ = [
     "UNIT_43", "UNIT_NAMES", "apply", "pool_profile", "read_record", "read_units", "record_va", "selected_sites",
     "site_states", "slot_text", "status", "layout_stride", "layout_table", "SLOTS_PER_UNIT", "SPECIAL_TABLE_VA",
     "SLOT_TABLE_RECORDS", "STRIDE_INSTRUCTION_VA",
+    "read_depth_chart_units",
 ]

@@ -90,18 +90,56 @@ import ctypes
 from dataclasses import dataclass
 import errno
 import hashlib
+import ntpath
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import shutil
 import stat
 import sys
 import tempfile
 from types import ModuleType
+from uuid import uuid4
 
 
 IS_WINDOWS = sys.platform.startswith("win")
 IS_MACOS = sys.platform == "darwin"
 IS_LINUX = sys.platform.startswith("linux")
+
+
+def temporary_sibling(path: Path, *, suffix: str = ".tmp") -> Path:
+    """Return a short random sibling without creating or reserving a file.
+
+    Keeping the target name out of the 17-character default staging name avoids
+    Windows MAX_PATH failures without changing the filesystem used for publish.
+    """
+
+    while True:
+        temporary = path.with_name(f".{uuid4().hex[:12]}{suffix}")
+        if temporary != path:
+            return temporary
+
+
+def long_path(path: str | os.PathLike[str]) -> str:
+    """Use Windows extended paths for fully absolute drive and UNC paths only.
+
+    Relative (including drive-relative/root-relative) paths and existing device
+    prefixes keep their meaning. POSIX paths are returned verbatim. Normalize
+    separators and dot segments before prefixing, since extended paths bypass
+    Windows' usual normalization. This does not access the filesystem.
+    """
+
+    value = os.fspath(path)
+    if (
+        not IS_WINDOWS
+        or value.replace("/", "\\").startswith(("\\\\?\\", "\\\\.\\"))
+        or not PureWindowsPath(value).is_absolute()
+    ):
+        return value
+    absolute = ntpath.normpath(value)
+    if absolute.startswith("\\\\"):
+        return "\\\\?\\UNC\\" + absolute[2:]
+    return "\\\\?\\" + absolute
+
 
 # Names for the two ownership models :func:`describe_ownership` can use.  They
 # are public because the guarantee differs between them and every caller/test is

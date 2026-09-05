@@ -36,10 +36,11 @@ The patch adds one row and one cloned settings screen; **no retail instruction b
 1. the 52-byte Coach's Desk hook list is copied into the cave (same six ``(event, record)``
    pairs, event 5 moved to the end -- see ``CAVE_HOOK_ORDER``) and ``0x522194`` repointed at the
    copy, which frees ``0x521EE8..0x521F1F``;
-2. a new 0x34-byte row is written at ``0x521EEC`` (type 9, label = the retail ``L"Practice"`` at
-   ``0xE9C3BC``, activate = the cave's row stub, always visible) and ``0x5221A0`` (the descriptor's
-   row-table pointer) is moved from ``0x521F20`` back to ``0x521EEC``, so Practice becomes the first
-   row and the eleven retail rows plus their type-3 terminator follow unchanged;
+2. ``0x5221A0`` (the descriptor's row-table pointer) moves from ``0x521F20`` to ``0x521EEC``.
+   The four mutually exclusive Schedule rows move back one slot, and the new Practice row
+   occupies ``0x521FBC`` (type 9, retail label ``0xE9C3BC``, cave activation, always visible).
+   The visible phase-specific Schedule is first and Practice second. The remaining seven
+   retail rows and the terminator stay in place. This beta-61 ordering needs no new cave;
 3. the row stub is the tail of the retail Front Office callback ``FUN_00142910``: start the fade
    (``FUN_001427A0``) and set the deferred "next screen" ``[0xAA2408]`` to a **clone of the
    Scrimmage Settings descriptor** kept in the cave;
@@ -91,7 +92,15 @@ ROW_SIZE = 0x34
 RETAIL_ROW_COUNT = 11
 FREED_SPAN_VA = COACH_DESK_HOOKS_VA                 # 0x521EE8..0x521F1F, 56 bytes
 FREED_SPAN_SIZE = COACH_DESK_ROWS_VA - COACH_DESK_HOOKS_VA
-NEW_ROW_VA = COACH_DESK_ROWS_VA - ROW_SIZE          # 0x521EEC: the new first row
+NEW_ROW_VA = COACH_DESK_ROWS_VA - ROW_SIZE          # 0x521EEC: expanded table start (Schedule)
+SCHEDULE_ROW_COUNT = 4
+PRACTICE_ROW_VA = NEW_ROW_VA + SCHEDULE_ROW_COUNT * ROW_SIZE  # 0x521FBC
+# Complete retail records: preserve the phase gates with their labels/activation.
+RETAIL_SCHEDULE_ROWS = b"".join(
+    struct.pack("<13I", 9, label, *([0] * 8), 0x142880, visibility, 0)
+    for label, visibility in (
+        (0xE9A730, 0x2C01C0), (0xE9A744, 0x2C01F0),
+        (0xE9A768, 0x2C0220), (0xE9A790, 0x2C0250)))
 TERMINATOR_VA = COACH_DESK_ROWS_VA + RETAIL_ROW_COUNT * ROW_SIZE   # 0x52215C
 ROW_TYPE_ACTION = 9
 ROW_TYPE_TERMINATOR = 3
@@ -350,7 +359,8 @@ def sites() -> list[tuple[str, int, bytes, bytes]]:
          struct.pack("<I", COACH_DESK_HOOKS_VA), struct.pack("<I", CAVE_HOOKS_VA)),
         ("coach_desk_row_pointer", COACH_DESK_ROWS_PTR_VA,
          struct.pack("<I", COACH_DESK_ROWS_VA), struct.pack("<I", NEW_ROW_VA)),
-        ("coach_desk_practice_row", FREED_SPAN_VA, RETAIL_FREED_SPAN, bytes(4) + practice_row()),
+        ("coach_desk_practice_row", FREED_SPAN_VA, RETAIL_FREED_SPAN + RETAIL_SCHEDULE_ROWS,
+         bytes(4) + RETAIL_SCHEDULE_ROWS + practice_row()),
         ("franchise_practice_cave", CAVE_VA, RETAIL_CAVE, cave_bytes()),
     ]
 
@@ -367,7 +377,6 @@ PINS: tuple[tuple[int, bytes], ...] = (
     (COACH_DESK_DESCRIPTOR_VA + 0x08, bytes.fromhex("903e0f0000000000")),     # handler cb_000f3e90
     (COACH_DESK_DESCRIPTOR_VA + 0x14,
      bytes.fromhex("0000000064a8e900a8f1ac004400400252008d010700000000000000")),
-    (COACH_DESK_ROWS_VA, bytes.fromhex("0900000030a7e900")),                  # retail row 0, Schedule
     (COACH_DESK_ROWS_VA + 10 * ROW_SIZE, bytes.fromhex("090000003ca8e900")),  # retail row 10, Quit
     (TERMINATOR_VA, RETAIL_TERMINATOR_ROW),
     (PRACTICE_LABEL_VA, PRACTICE_LABEL.encode("utf-16le") + b"\0\0"),
@@ -473,8 +482,9 @@ def code_report() -> dict[str, object]:
                    "clone_hooks": f"0x{CAVE_SCRIM_HOOKS_VA:x}",
                    "enter_record": f"0x{CAVE_ENTER_RECORD_VA:x}",
                    "clone_descriptor": f"0x{CAVE_DESCRIPTOR_VA:x}"},
-        "row_va": f"0x{NEW_ROW_VA:x}", "row_label": PRACTICE_LABEL,
-        "row_label_va": f"0x{PRACTICE_LABEL_VA:x}", "row_position": "first, above Schedule",
+        "row_va": f"0x{PRACTICE_ROW_VA:x}", "row_label": PRACTICE_LABEL,
+        "row_label_va": f"0x{PRACTICE_LABEL_VA:x}", "row_position": "second, after the visible Schedule",
+        "practice_squad_screen": False,
         "practice_type": PRACTICE_TYPE_FULL_SCRIMMAGE,
         "teams": {"away_setter": f"0x{SET_TEAM_A_VA:x}", "home_setter": f"0x{SET_TEAM_B_VA:x}",
                   "source": f"FUN_000c4d70 ([0x{CONTROLLED_TEAMS_VA:x}] -> FUN_000c4c50)"},
@@ -495,7 +505,8 @@ __all__ = ["DESCRIPTOR_OFFSET", "ENTER_RECORD_OFFSET", "ENTER_RECORD_SIZE", "EVE
            "COACH_DESK_HOOKS_PTR_VA", "COACH_DESK_HOOKS_VA", "COACH_DESK_ROWS_PTR_VA",
            "COACH_DESK_ROWS_VA", "CONTROLLED_TEAMS_VA", "ENTER_STUB_VA", "FADE_VA",
            "FREED_SPAN_SIZE", "FREED_SPAN_VA", "FranchisePracticeError", "GAME_START_VA",
-           "MODE_VA", "NEW_ROW_VA", "NEXT_ROUTINE_VA", "NEXT_SCREEN_VA", "PINS", "PRACTICE_DEFAULTS_VA",
+           "MODE_VA", "NEW_ROW_VA", "PRACTICE_ROW_VA", "RETAIL_SCHEDULE_ROWS", "SCHEDULE_ROW_COUNT",
+           "NEXT_ROUTINE_VA", "NEXT_SCREEN_VA", "PINS", "PRACTICE_DEFAULTS_VA",
            "PRACTICE_LABEL", "PRACTICE_LABEL_VA", "PRACTICE_TYPE_APPLY_VA",
            "PRACTICE_TYPE_FULL_SCRIMMAGE", "PRACTICE_TYPE_VA", "RETAIL_CAVE", "RETAIL_COACH_DESK_HOOKS",
            "RETAIL_FREED_SPAN", "RETAIL_SCRIM_DESCRIPTOR", "RETAIL_START_HANDLER",

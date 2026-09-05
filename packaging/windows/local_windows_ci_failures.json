@@ -1,0 +1,2235 @@
+{
+  "baseline": {
+    "revision": "b8d55f4",
+    "files": 301,
+    "passed": 216,
+    "failed": 73,
+    "skipped": 12,
+    "tests": 3376,
+    "jobs": 2,
+    "seconds": 1215.717
+  },
+  "gap_reasons": {
+    "symlink": "symlink creation succeeds but Wine cannot stat or identify the resulting link",
+    "identity": "Wine path/descriptor identity or metadata differs after private inventory publication",
+    "acl": "Wine DACL verification still reports the Everyone SID S-1-1-0",
+    "locking": "Wine msvcrt.locking reports Errno 0 instead of a lock-contention errno",
+    "simulation": "Wine exposes host /proc; Linux-only descriptor simulation runs against Windows CRT descriptors",
+    "h7a": "Wine exposes local retail inputs, enabling cases needing the Linux-only optimal H7A encoder",
+    "retail": "Wine exposes local retail XBE; optional legacy fixture is absent (native CI skips this class)",
+    "hostpath": "Wine exposes the local PS2 witness tree with a name invalid through Win32",
+    "tkinter": "the pinned embeddable Windows runtime omits tkinter (hosted CPython includes it)",
+    "copyfile2": "Wine 9.0 does not implement KERNEL32.dll.CopyFile2 used by CPython shutil.copy2"
+  },
+  "files": [
+    {
+      "name": "test_2k5_audio_operation_integration.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 22,
+          "case": "AudioPanelOperationContractTests.test_actual_waveform_busy_keeps_only_cancel_button_reachable",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        },
+        {
+          "line": 105,
+          "case": "StudioAudioOperationFenceTests.test_audio_busy_disables_global_actions_but_keeps_cancel_route_reachable",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [
+        "Also needs catalog hydration; mixed logs remain FAIL until those failures disappear.",
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "service = Nfl2k5AudioService(fixture.cache, fixture.catalog())",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_actual_waveform_busy_keeps_only_cancel_button_reachable (__main__.AudioPanelOperationContractTests.test_actual_waveform_busy_keeps_only_cancel_button_reachable)",
+            "ERROR: test_busy_worker_makes_catalog_and_every_non_cancel_button_inert (__main__.AudioPanelOperationContractTests.test_busy_worker_makes_catalog_and_every_non_cancel_button_inert)",
+            "ERROR: test_operation_signal_has_exact_true_false_edges_and_read_only_state (__main__.AudioPanelOperationContractTests.test_operation_signal_has_exact_true_false_edges_and_read_only_state)",
+            "ERROR: test_public_content_invalidation_clears_same_id_playback_and_waveform (__main__.AudioPanelOperationContractTests.test_public_content_invalidation_clears_same_id_playback_and_waveform)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_2k5_bump_retail_probe.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 13,
+          "case": "RetailProbeCacheTests.test_the_same_file_probed_through_two_paths_hashes_once",
+          "signature": "FileNotFoundError: [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\tmph8wnnvqr\\\\alias.iso'",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "self.assertTrue(bump_panel._retail_probe(link, progress))",
+          "terminal": "FileNotFoundError: [WinError 2] File not found: '<TEMP>/<case>/alias.iso'",
+          "gap": "symlink",
+          "headers": [
+            "ERROR: test_the_same_file_probed_through_two_paths_hashes_once (__main__.RetailProbeCacheTests.test_the_same_file_probed_through_two_paths_hashes_once)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_2k5_check_my_images.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 20,
+          "case": "DialogTests.test_a_clean_set_says_nothing_will_be_changed",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_2k5_import_offers_resize.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "ResizeOffscreenInteractionTests.test_built_in_visual_editor_records_a_native_raster_edit_layer",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_apf_audio_encoder_gui.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 8,
+          "case": "ApfAudioEncoderGuiTests.test_windows_encoder_picker_resolves_detected_wine_symlink",
+          "signature": "AssertionError: WindowsPath('.') != WindowsPath('C:/users/noah/Temp/apf-audio-encoder-gui-744fjmnn/wine-stable')",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "self.assertEqual(Path(dialog.wine_path.text()), real_wine.resolve())",
+          "terminal": "AssertionError: WindowsPath('.') != WindowsPath('<TEMP>/<case>/wine-stable')",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_windows_encoder_picker_resolves_detected_wine_symlink (__main__.ApfAudioEncoderGuiTests.test_windows_encoder_picker_resolves_detected_wine_symlink)"
+          ]
+        },
+        {
+          "statement": "self.assertEqual(Path(dialog.wine_path.text()), real_wine.resolve())",
+          "terminal": "AssertionError: WindowsPath('.') != WindowsPath('<TEMP>/ap[37 chars]ble')",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_windows_encoder_picker_resolves_detected_wine_symlink (__main__.ApfAudioEncoderGuiTests.test_windows_encoder_picker_resolves_detected_wine_symlink)"
+          ],
+          "observed_in": "matrix5"
+        }
+      ]
+    },
+    {
+      "name": "test_apf_audio_encoding.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "ApfAudioEncodingTests.test_encoder_and_wine_links_are_rejected",
+          "signature": "AssertionError: \"regular file, not a link\" does not match \"Could not open XMA1 encoder: [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\apf-audio-encoding-7vb2k9sb\\\\linked-encoder'\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(AudioEncodingError, \"regular file, not a link\"):",
+          "terminal": "AssertionError: \"regular file, not a link\" does not match \"Could not open XMA1 encoder: [WinError 2] File not found: '<TEMP>/<case>/linked-encoder'\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_encoder_and_wine_links_are_rejected (__main__.ApfAudioEncodingTests.test_encoder_and_wine_links_are_rejected)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(AudioEncodingError, \"not a link\"):",
+          "terminal": "AssertionError: \"not a link\" does not match \"Could not open the PCM replacement: [WinError 2] File not found: '<TEMP>/<case>/linked.wav'\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_wrong_pcm_shape_and_linked_input_fail_before_encoder_runs (__main__.ApfAudioEncodingTests.test_wrong_pcm_shape_and_linked_input_fail_before_encoder_runs)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_audio_waveform_qt.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "WaveformReaderTests.test_reader_rejects_links_and_non_pcm16",
+          "signature": "AssertionError: \"non-link\" does not match \"The private WAV preview is no longer available\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ValueError, \"non-link\"):",
+          "terminal": "AssertionError: \"non-link\" does not match \"The private WAV preview is no longer available\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_reader_rejects_links_and_non_pcm16 (__main__.WaveformReaderTests.test_reader_rejects_links_and_non_pcm16)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_digital_font.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "ApfDigitalFontTests.test_provider_rejects_escaping_symlink_parent_and_oversized_pins",
+          "signature": "AssertionError: \"non-symlink directory\" does not match \"Allowlisted APF digital_font parent is missing: linked-tools/pinned.py\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ProviderError, \"non-symlink directory\"):",
+          "terminal": "AssertionError: \"non-symlink directory\" does not match \"Allowlisted APF digital_font parent is missing: linked-tools/pinned.py\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_provider_rejects_escaping_symlink_parent_and_oversized_pins (__main__.ApfDigitalFontTests.test_provider_rejects_escaping_symlink_parent_and_oversized_pins)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaises(OutputRefusedError):",
+          "terminal": "AssertionError: OutputRefusedError not raised",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_recipe_output_is_exclusive_and_owned_partial_is_cleaned (__main__.ApfDigitalFontTests.test_recipe_output_is_exclusive_and_owned_partial_is_cleaned)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_field_art_patch.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 32,
+          "case": "FieldArtCopiedVolumeTests.test_endzone_edit_is_verified_by_the_independent_verifier",
+          "signature": "apf_outer.FormatError: cannot stat declared pack '0B': [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\tmpci4j9mr8\\\\vol\\\\0B'",
+          "cause": "symlink"
+        },
+        {
+          "line": 67,
+          "case": "FieldArtEditTests.test_both_endzone_layers_land_in_one_pass",
+          "signature": "apf_field_art_patch.PatchError: rebuilt endzone_l0 IFF exceeds its fixed outer allocation by 16 bytes; refusing output; optimal H7A encoder requires Linux x86_64",
+          "cause": "h7a"
+        }
+      ],
+      "notes": [
+        "Retail-only H7A cases are skipped on hosted Windows without local disc inputs; this is extra coverage exposed through Wine Z:."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "report = fav.verify(INDEX_PATH, out, png, 6, 1, manifest)",
+          "terminal": "apf_outer.FormatError: cannot stat declared pack '0B': [WinError 2] File not found: '<TEMP>/<case>/vol/0B'",
+          "gap": "symlink",
+          "headers": [
+            "ERROR: test_endzone_edit_is_verified_by_the_independent_verifier (__main__.FieldArtCopiedVolumeTests.test_endzone_edit_is_verified_by_the_independent_verifier)"
+          ]
+        },
+        {
+          "statement": "report = fav.verify(INDEX_PATH, out, png, 6, 0, manifest)",
+          "terminal": "apf_outer.FormatError: cannot stat declared pack '0B': [WinError 2] File not found: '<TEMP>/<case>/vol/0B'",
+          "gap": "symlink",
+          "headers": [
+            "ERROR: test_noop_copied_volume_is_byte_identical (__main__.FieldArtCopiedVolumeTests.test_noop_copied_volume_is_byte_identical)"
+          ]
+        },
+        {
+          "statement": "result = fa.build_field_art_patch_many(INDEX_PATH, 6, tuple(targets))",
+          "terminal": "apf_field_art_patch.PatchError: rebuilt endzone_l0 IFF exceeds its fixed outer allocation by 16 bytes; refusing output; optimal H7A encoder requires Linux x86_64",
+          "gap": "h7a",
+          "headers": [
+            "ERROR: test_both_endzone_layers_land_in_one_pass (__main__.FieldArtEditTests.test_both_endzone_layers_land_in_one_pass)"
+          ]
+        },
+        {
+          "statement": "result = fa.build_field_art_patch(INDEX_PATH, png, entry_index, file_index)",
+          "terminal": "apf_field_art_patch.PatchError: rebuilt endzone_l0 IFF exceeds its fixed outer allocation by 21 bytes; refusing output; optimal H7A encoder requires Linux x86_64",
+          "gap": "h7a",
+          "headers": [
+            "ERROR: test_endzone_l0_edit_changes_only_its_base (__main__.FieldArtEditTests.test_endzone_l0_edit_changes_only_its_base)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_helmet_crest_design_product.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 16,
+          "case": "SessionAndProjectTests.test_transparent_and_symlink_inputs_fail_before_staging",
+          "signature": "FileNotFoundError: [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\tmpooz2ddn5\\\\linked.png'",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "session.replace_helmet_crest_design(",
+          "terminal": "FileNotFoundError: [WinError 2] File not found: '<TEMP>/<case>/linked.png'",
+          "gap": "symlink",
+          "headers": [
+            "ERROR: test_transparent_and_symlink_inputs_fail_before_staging (__main__.SessionAndProjectTests.test_transparent_and_symlink_inputs_fail_before_staging)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_product_validation_wrappers.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 27,
+          "case": "NoArgumentProductValidationTests.test_symlinked_evidence_is_refused",
+          "signature": "AssertionError: \"not a regular file\" does not match \"field-art evidence is unavailable: C:\\users\\noah\\Temp\\tmp_ypf9914\\link.json\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(",
+          "terminal": "AssertionError: \"not a regular file\" does not match \"field-art evidence is unavailable: <TEMP>/<case>/link.json\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_symlinked_evidence_is_refused (__main__.NoArgumentProductValidationTests.test_symlinked_evidence_is_refused) (gate='validate_apf_field_art_product')"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(",
+          "terminal": "AssertionError: \"not a regular file\" does not match \"logo-cache evidence is unavailable: <TEMP>/<case>/link.json\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_symlinked_evidence_is_refused (__main__.NoArgumentProductValidationTests.test_symlinked_evidence_is_refused) (gate='validate_apf_logocache_product')"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_project_document_workflow.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 8,
+          "case": "ApfProjectTargetSafetyTests.test_missing_linked_nonregular_and_substituted_targets_fail_closed",
+          "signature": "AssertionError: False is not true",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "self.assertTrue(project.is_symlink())",
+          "terminal": "AssertionError: False is not true",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_missing_linked_nonregular_and_substituted_targets_fail_closed (__main__.ApfProjectTargetSafetyTests.test_missing_linked_nonregular_and_substituted_targets_fail_closed) (case='symlink')"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(ProjectError, \"regular, non-linked\"):",
+          "terminal": "AssertionError: ProjectError not raised",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_save_as_never_replaces_an_unsafe_existing_destination (__main__.ApfProjectTargetSafetyTests.test_save_as_never_replaces_an_unsafe_existing_destination)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_roster_workspace.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "ReservePlanContractTests.test_save_load_is_atomic_private_and_never_overwrites",
+          "signature": "AssertionError: \"regular file\" does not match \"Reserve plan could not be opened\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(RosterWorkspaceError, \"regular file\"):",
+          "terminal": "AssertionError: \"regular file\" does not match \"Reserve plan could not be opened\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_save_load_is_atomic_private_and_never_overwrites (__main__.ReservePlanContractTests.test_save_load_is_atomic_private_and_never_overwrites)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_studio_safety.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 13,
+          "case": "ProjectTransactionTests.test_loader_rejects_project_symlink",
+          "signature": "FileNotFoundError: [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\tmpc09vv8dv\\\\linked.apf2k8mod'",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "load_project(",
+          "terminal": "FileNotFoundError: [WinError 2] File not found: '<TEMP>/<case>/linked.apf2k8mod'",
+          "gap": "symlink",
+          "headers": [
+            "ERROR: test_loader_rejects_project_symlink (__main__.ProjectTransactionTests.test_loader_rejects_project_symlink)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(AssetIoError, \"unreceipted\"):",
+          "terminal": "AssertionError: \"unreceipted\" does not match \"Could not export this APF sound: cannot stat index <TEMP>/<case>/0A: [WinError 2] File not found: '<TEMP>/<case>/0A'\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_private_audio_preview_rejects_tamper_and_symlinks (__main__.AssetExportSafetyTests.test_private_audio_preview_rejects_tamper_and_symlinks)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(LaunchError, \"non-symlink\"):",
+          "terminal": "AssertionError: \"non-symlink\" does not match \"Title update 1.1 could not be opened: [WinError 2] File not found: '<TEMP>/<case>/link'\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_title_update_1_1_is_hash_pinned (__main__.CatalogAndLauncherSafetyTests.test_title_update_1_1_is_hash_pinned)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(LaunchError, \"non-symlink\"):",
+          "terminal": "AssertionError: \"non-symlink\" does not match \"Xenia Canary could not be opened: [WinError 2] File not found: '<TEMP>/<case>/xenia-link'\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_xenia_settings_reject_executable_symlink (__main__.CatalogAndLauncherSafetyTests.test_xenia_settings_reject_executable_symlink)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_team_logo_gui.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 15,
+          "case": "ApfTeamLogoGuiTests.test_full_shell_appearance_stage_sees_declared_sibling_links",
+          "signature": "AssertionError: False is not true",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "self.assertTrue(linked.exists())",
+          "terminal": "AssertionError: False is not true",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_full_shell_appearance_stage_sees_declared_sibling_links (__main__.ApfTeamLogoGuiTests.test_full_shell_appearance_stage_sees_declared_sibling_links)"
+          ]
+        },
+        {
+          "statement": "self.assertEqual(",
+          "terminal": "AssertionError: Lists differ: ['.apf-team-logo-build-<random>'] != ['0B', '1A', '1B']",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_one_action_writes_both_the_package_and_the_logo_cache (__main__.ApfTeamLogoGuiTests.test_one_action_writes_both_the_package_and_the_logo_cache)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_apf_workspace_recovery.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 16,
+          "case": "ApfWorkspaceStateStoreTests.test_recent_aliases_are_refused_and_stale_entries_remain_metadata",
+          "signature": "FileNotFoundError: [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\apf-workspace-alias-9anmnnfg\\\\linked-game'",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "store.record_source(linked_source, SOURCE_SHA256)",
+          "terminal": "FileNotFoundError: [WinError 2] File not found: '<TEMP>/<case>/linked-game'",
+          "gap": "symlink",
+          "headers": [
+            "ERROR: test_recent_aliases_are_refused_and_stale_entries_remain_metadata (__main__.ApfWorkspaceStateStoreTests.test_recent_aliases_are_refused_and_stale_entries_remain_metadata)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(ProjectError, \"regular private file\"):",
+          "terminal": "AssertionError: ProjectError not raised",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_outside_invalid_hash_and_linked_recovery_are_refused (__main__.ApfRecoveryArchiveTests.test_outside_invalid_hash_and_linked_recovery_are_refused)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaises(ProjectError):",
+          "terminal": "AssertionError: ProjectError not raised",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_corrupt_oversized_linked_and_hardlinked_state_fail_closed (__main__.ApfWorkspaceStateStoreTests.test_corrupt_oversized_linked_and_hardlinked_state_fail_closed) (case='symlink')"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_audio_annotations_product.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 19,
+          "case": "AudioAnnotationProductTests.test_annotation_only_project_is_saveable_metadata_but_not_a_build_edit",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "self.catalog = self.fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_annotation_only_project_is_saveable_metadata_but_not_a_build_edit (__main__.AudioAnnotationProductTests.test_annotation_only_project_is_saveable_metadata_but_not_a_build_edit)",
+            "ERROR: test_audio_panel_labels_only_playable_rows_and_commits_after_worker_success (__main__.AudioAnnotationProductTests.test_audio_panel_labels_only_playable_rows_and_commits_after_worker_success)",
+            "ERROR: test_facade_searches_title_note_and_mixed_terms_without_labeling_aliases (__main__.AudioAnnotationProductTests.test_facade_searches_title_note_and_mixed_terms_without_labeling_aliases)",
+            "ERROR: test_matching_and_shortlist_exports_carry_custom_discovery_metadata (__main__.AudioAnnotationProductTests.test_matching_and_shortlist_exports_carry_custom_discovery_metadata)",
+            "ERROR: test_untrusted_markup_is_literal_and_unsaved_drafts_survive_browsing (__main__.AudioAnnotationProductTests.test_untrusted_markup_is_literal_and_unsaved_drafts_survive_browsing)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_audio_bundle.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "AudioBundleTests.test_existing_dangling_symlink_and_publication_race_are_preserved",
+          "signature": "AssertionError: \"symbolic link\" does not match \"The audio payload writer returned an unexpected path\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [
+        "The int is Path.write_bytes() return value from the test lambda, reached because the dangling-link guard fails; it is not an fd-path API bug."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(AudioBundleError, \"symbolic link\"):",
+          "terminal": "AssertionError: \"symbolic link\" does not match \"The audio payload writer returned an unexpected path\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_existing_dangling_symlink_and_publication_race_are_preserved (__main__.AudioBundleTests.test_existing_dangling_symlink_and_publication_race_are_preserved)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(AudioBundleError, \"regular, non-link\"):",
+          "terminal": "AssertionError: \"regular, non-link\" does not match \"The audio payload writer returned an unexpected path\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_writer_must_create_the_exact_regular_non_link_target (__main__.AudioBundleTests.test_writer_must_create_the_exact_regular_non_link_target)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_audio_panel_qt.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 19,
+          "case": "AudioPanelBackendTests.test_audio_selection_keeps_transactional_failure_and_no_overwrite_contract",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "self.catalog = self.fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_audio_selection_keeps_transactional_failure_and_no_overwrite_contract (__main__.AudioPanelBackendTests.test_audio_selection_keeps_transactional_failure_and_no_overwrite_contract)",
+            "ERROR: test_audio_selection_rejects_invalid_ids_before_creating_output (__main__.AudioPanelBackendTests.test_audio_selection_rejects_invalid_ids_before_creating_output)",
+            "ERROR: test_collection_export_labels_current_replacement_and_never_mutates_project (__main__.AudioPanelBackendTests.test_collection_export_labels_current_replacement_and_never_mutates_project)",
+            "ERROR: test_exact_audio_selection_mixes_ordered_current_wavs_without_project_mutation (__main__.AudioPanelBackendTests.test_exact_audio_selection_mixes_ordered_current_wavs_without_project_mutation)",
+            "ERROR: test_host_protocol_search_status_and_pagination_cover_catalog (__main__.AudioPanelBackendTests.test_host_protocol_search_status_and_pagination_cover_catalog)",
+            "ERROR: test_main_facade_builds_audio_search_text_only_once_per_catalog (__main__.AudioPanelBackendTests.test_main_facade_builds_audio_search_text_only_once_per_catalog)",
+            "ERROR: test_main_facade_discards_audio_search_index_when_catalog_changes (__main__.AudioPanelBackendTests.test_main_facade_discards_audio_search_index_when_catalog_changes)",
+            "ERROR: test_main_facade_pages_and_exports_streaming_audio (__main__.AudioPanelBackendTests.test_main_facade_pages_and_exports_streaming_audio)",
+            "ERROR: test_meaning_confidence_filter_counts_paginate_and_refuse_wrong_scope (__main__.AudioPanelBackendTests.test_meaning_confidence_filter_counts_paginate_and_refuse_wrong_scope)",
+            "ERROR: test_modified_streaming_collection_refuses_missing_staged_wav (__main__.AudioPanelBackendTests.test_modified_streaming_collection_refuses_missing_staged_wav)",
+            "ERROR: test_panel_uses_the_products_existing_pyqt5_binding (__main__.AudioPanelBackendTests.test_panel_uses_the_products_existing_pyqt5_binding)",
+            "ERROR: test_play_uses_only_a_controllable_no_terminal_helper (__main__.AudioPanelBackendTests.test_play_uses_only_a_controllable_no_terminal_helper)",
+            "ERROR: test_raw_streaming_bank_export_is_separate_from_wav_playback (__main__.AudioPanelBackendTests.test_raw_streaming_bank_export_is_separate_from_wav_playback)",
+            "ERROR: test_replace_export_build_plan_and_revert_are_strict_and_reversible (__main__.AudioPanelBackendTests.test_replace_export_build_plan_and_revert_are_strict_and_reversible)",
+            "ERROR: test_staged_tamper_and_export_overwrite_fail_closed (__main__.AudioPanelBackendTests.test_staged_tamper_and_export_overwrite_fail_closed)",
+            "ERROR: test_streaming_collection_exports_every_filtered_range_as_verified_wav (__main__.AudioPanelBackendTests.test_streaming_collection_exports_every_filtered_range_as_verified_wav)"
+          ]
+        },
+        {
+          "statement": "catalog = fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_add_all_matching_builds_reviewed_152_in_canonical_v2_order (__main__.AudioPanelOffscreenTests.test_add_all_matching_builds_reviewed_152_in_canonical_v2_order)",
+            "ERROR: test_add_all_matching_collapses_existing_ids_and_is_cap_atomic (__main__.AudioPanelOffscreenTests.test_add_all_matching_collapses_existing_ids_and_is_cap_atomic)",
+            "ERROR: test_add_all_matching_disables_over_256_and_wrong_scopes (__main__.AudioPanelOffscreenTests.test_add_all_matching_disables_over_256_and_wrong_scopes)",
+            "ERROR: test_add_all_matching_does_not_requery_or_warn_while_page_token_is_stale (__main__.AudioPanelOffscreenTests.test_add_all_matching_does_not_requery_or_warn_while_page_token_is_stale)",
+            "ERROR: test_add_all_matching_is_disabled_during_review_busy_and_source_reset (__main__.AudioPanelOffscreenTests.test_add_all_matching_is_disabled_during_review_busy_and_source_reset)",
+            "ERROR: test_add_all_matching_refuses_hostile_count_duplicates_and_types (__main__.AudioPanelOffscreenTests.test_add_all_matching_refuses_hostile_count_duplicates_and_types)",
+            "ERROR: test_add_this_page_refuses_stale_query_atomically_then_adds_new_page_after_refresh (__main__.AudioPanelOffscreenTests.test_add_this_page_refuses_stale_query_atomically_then_adds_new_page_after_refresh)",
+            "ERROR: test_audio_shortlist_add_page_is_atomic_at_256_and_excludes_banks (__main__.AudioPanelOffscreenTests.test_audio_shortlist_add_page_is_atomic_at_256_and_excludes_banks)",
+            "ERROR: test_audio_shortlist_clear_from_review_returns_to_browser_and_undoes (__main__.AudioPanelOffscreenTests.test_audio_shortlist_clear_from_review_returns_to_browser_and_undoes)",
+            "ERROR: test_audio_shortlist_clear_has_one_level_exact_ordered_undo (__main__.AudioPanelOffscreenTests.test_audio_shortlist_clear_has_one_level_exact_ordered_undo)",
+            "ERROR: test_audio_shortlist_clear_undo_expires_on_mutation_and_source_reset (__main__.AudioPanelOffscreenTests.test_audio_shortlist_clear_undo_expires_on_mutation_and_source_reset)",
+            "ERROR: test_audio_shortlist_clear_undo_restores_mixed_256_without_project_mutation (__main__.AudioPanelOffscreenTests.test_audio_shortlist_clear_undo_restores_mixed_256_without_project_mutation)",
+            "ERROR: test_audio_shortlist_crosses_filters_pages_families_and_scopes (__main__.AudioPanelOffscreenTests.test_audio_shortlist_crosses_filters_pages_families_and_scopes)",
+            "ERROR: test_audio_shortlist_export_uses_exact_ids_not_current_bank_filter (__main__.AudioPanelOffscreenTests.test_audio_shortlist_export_uses_exact_ids_not_current_bank_filter)",
+            "ERROR: test_audio_shortlist_review_reorders_removes_and_restores_browser_state (__main__.AudioPanelOffscreenTests.test_audio_shortlist_review_reorders_removes_and_restores_browser_state)",
+            "ERROR: test_audio_toolbars_reflow_within_the_minimum_window_workspace (__main__.AudioPanelOffscreenTests.test_audio_toolbars_reflow_within_the_minimum_window_workspace)",
+            "ERROR: test_dense_detail_scrolls_with_actions_pinned_and_resets_on_selection (__main__.AudioPanelOffscreenTests.test_dense_detail_scrolls_with_actions_pinned_and_resets_on_selection)",
+            "ERROR: test_export_matching_refuses_stale_query_before_dialog_then_uses_refreshed_count_and_query (__main__.AudioPanelOffscreenTests.test_export_matching_refuses_stale_query_before_dialog_then_uses_refreshed_count_and_query)",
+            "ERROR: test_failed_source_change_restores_current_or_pending_old_catalog (__main__.AudioPanelOffscreenTests.test_failed_source_change_restores_current_or_pending_old_catalog)",
+            "ERROR: test_matching_export_forwards_meaning_filter_and_names_bundle (__main__.AudioPanelOffscreenTests.test_matching_export_forwards_meaning_filter_and_names_bundle)",
+            "ERROR: test_meaning_filter_is_accessible_scope_bound_and_review_stable (__main__.AudioPanelOffscreenTests.test_meaning_filter_is_accessible_scope_bound_and_review_stable)",
+            "ERROR: test_missing_controllable_player_fails_actionably_without_starting (__main__.AudioPanelOffscreenTests.test_missing_controllable_player_fails_actionably_without_starting)",
+            "ERROR: test_new_selection_queues_one_click_play_until_old_process_stops (__main__.AudioPanelOffscreenTests.test_new_selection_queues_one_click_play_until_old_process_stops)",
+            "ERROR: test_pending_debounced_search_disables_page_bound_actions_until_refresh (__main__.AudioPanelOffscreenTests.test_pending_debounced_search_disables_page_bound_actions_until_refresh)",
+            "ERROR: test_pending_search_blocks_pagination_without_offset_or_selection_change_then_timer_applies_page_zero (__main__.AudioPanelOffscreenTests.test_pending_search_blocks_pagination_without_offset_or_selection_change_then_timer_applies_page_zero)",
+            "ERROR: test_preview_callbacks_are_bound_to_selection_and_source_epoch (__main__.AudioPanelOffscreenTests.test_preview_callbacks_are_bound_to_selection_and_source_epoch)",
+            "ERROR: test_preview_preparation_error_clears_pending_lifecycle_state (__main__.AudioPanelOffscreenTests.test_preview_preparation_error_clears_pending_lifecycle_state)",
+            "ERROR: test_raw_bank_container_scope_refuses_an_incomplete_universal_index (__main__.AudioPanelOffscreenTests.test_raw_bank_container_scope_refuses_an_incomplete_universal_index)",
+            "ERROR: test_raw_bank_containers_use_universal_index_and_safe_export (__main__.AudioPanelOffscreenTests.test_raw_bank_containers_use_universal_index_and_safe_export)",
+            "ERROR: test_search_round_trip_to_applied_query_restores_actions_immediately (__main__.AudioPanelOffscreenTests.test_search_round_trip_to_applied_query_restores_actions_immediately)",
+            "ERROR: test_soundtrack_quick_view_and_transactional_matching_export (__main__.AudioPanelOffscreenTests.test_soundtrack_quick_view_and_transactional_matching_export)",
+            "ERROR: test_streaming_rows_show_compact_truth_with_full_tooltips (__main__.AudioPanelOffscreenTests.test_streaming_rows_show_compact_truth_with_full_tooltips)",
+            "ERROR: test_widget_populates_pages_and_gates_edit_controls (__main__.AudioPanelOffscreenTests.test_widget_populates_pages_and_gates_edit_controls)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_audio_replacement_pack.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 19,
+          "case": "AudioReplacementPackGuiTests.test_mixed_import_reports_changed_and_unchanged_counts",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "catalog = fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_mixed_import_reports_changed_and_unchanged_counts (__main__.AudioReplacementPackGuiTests.test_mixed_import_reports_changed_and_unchanged_counts)",
+            "ERROR: test_preflight_cancel_and_unchanged_preview_never_import (__main__.AudioReplacementPackGuiTests.test_preflight_cancel_and_unchanged_preview_never_import)",
+            "ERROR: test_preflight_worker_drains_before_apply_and_commits_once (__main__.AudioReplacementPackGuiTests.test_preflight_worker_drains_before_apply_and_commits_once)",
+            "ERROR: test_shortlist_template_preserves_mixed_order_and_refuses_empty (__main__.AudioReplacementPackGuiTests.test_shortlist_template_preserves_mixed_order_and_refuses_empty)"
+          ]
+        },
+        {
+          "statement": "self.catalog = self.fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_complete_and_selected_export_modes_are_mutually_exclusive (__main__.AudioReplacementPackTests.test_complete_and_selected_export_modes_are_mutually_exclusive)",
+            "ERROR: test_complete_pack_path_helper_uses_canonical_public_order (__main__.AudioReplacementPackTests.test_complete_pack_path_helper_uses_canonical_public_order)",
+            "ERROR: test_descriptor_reader_is_maximum_plus_one_bounded_and_rejects_links (__main__.AudioReplacementPackTests.test_descriptor_reader_is_maximum_plus_one_bounded_and_rejects_links)",
+            "ERROR: test_edited_zip_import_uses_the_same_atomic_contract (__main__.AudioReplacementPackTests.test_edited_zip_import_uses_the_same_atomic_contract)",
+            "ERROR: test_export_uses_dirhandle_when_posix_fd_paths_are_unavailable (__main__.AudioReplacementPackTests.test_export_uses_dirhandle_when_posix_fd_paths_are_unavailable)",
+            "ERROR: test_folder_and_zip_templates_are_deterministic_metadata_only (__main__.AudioReplacementPackTests.test_folder_and_zip_templates_are_deterministic_metadata_only)",
+            "ERROR: test_folder_export_final_rename_refuses_raced_destination (__main__.AudioReplacementPackTests.test_folder_export_final_rename_refuses_raced_destination)",
+            "ERROR: test_folder_export_race_preserves_foreign_destination (__main__.AudioReplacementPackTests.test_folder_export_race_preserves_foreign_destination)",
+            "ERROR: test_folder_import_rejects_oversized_guide_without_staging (__main__.AudioReplacementPackTests.test_folder_import_rejects_oversized_guide_without_staging)",
+            "ERROR: test_folder_import_stages_true_changes_once_and_global_undo_restores (__main__.AudioReplacementPackTests.test_folder_import_stages_true_changes_once_and_global_undo_restores)",
+            "ERROR: test_legacy_v1_ordered_id_set_stays_rc14_compatible (__main__.AudioReplacementPackTests.test_legacy_v1_ordered_id_set_stays_rc14_compatible)",
+            "ERROR: test_main_facade_forwards_complete_standalone_mode_without_gui_ids (__main__.AudioReplacementPackTests.test_main_facade_forwards_complete_standalone_mode_without_gui_ids)",
+            "ERROR: test_main_facade_pins_catalog_and_session_for_export_and_import (__main__.AudioReplacementPackTests.test_main_facade_pins_catalog_and_session_for_export_and_import)",
+            "ERROR: test_pack_can_restore_source_audio_and_undo_recovers_the_user_wav (__main__.AudioReplacementPackTests.test_pack_can_restore_source_audio_and_undo_recovers_the_user_wav)",
+            "ERROR: test_preflight_bounds_changed_rows_and_runs_origin_gate (__main__.AudioReplacementPackTests.test_preflight_bounds_changed_rows_and_runs_origin_gate)",
+            "ERROR: test_preflight_is_frozen_read_only_and_confirmation_revalidates (__main__.AudioReplacementPackTests.test_preflight_is_frozen_read_only_and_confirmation_revalidates)",
+            "ERROR: test_preflight_reports_already_current_and_restore_without_mutation (__main__.AudioReplacementPackTests.test_preflight_reports_already_current_and_restore_without_mutation)",
+            "ERROR: test_preflight_token_rejects_pack_project_and_session_changes (__main__.AudioReplacementPackTests.test_preflight_token_rejects_pack_project_and_session_changes)",
+            "ERROR: test_unknown_invalid_duplicate_stale_and_unchanged_only_packs_never_partially_stage (__main__.AudioReplacementPackTests.test_unknown_invalid_duplicate_stale_and_unchanged_only_packs_never_partially_stage)",
+            "ERROR: test_v1_v2_zip_bytes_remain_rc15_compatible (__main__.AudioReplacementPackTests.test_v1_v2_zip_bytes_remain_rc15_compatible)",
+            "ERROR: test_v2_invalid_second_wav_leaves_session_byte_identical (__main__.AudioReplacementPackTests.test_v2_invalid_second_wav_leaves_session_byte_identical)",
+            "ERROR: test_v2_rejects_invalid_selected_ids_before_publication (__main__.AudioReplacementPackTests.test_v2_rejects_invalid_selected_ids_before_publication)",
+            "ERROR: test_v2_selected_mixed_pack_is_retail_free_and_one_undo (__main__.AudioReplacementPackTests.test_v2_selected_mixed_pack_is_retail_free_and_one_undo)",
+            "ERROR: test_v2_shared_aliases_collapse_or_reject_atomically (__main__.AudioReplacementPackTests.test_v2_shared_aliases_collapse_or_reject_atomically)",
+            "ERROR: test_v3_complete_folder_and_zip_are_deterministic_public_metadata (__main__.AudioReplacementPackTests.test_v3_complete_folder_and_zip_are_deterministic_public_metadata)",
+            "ERROR: test_v3_one_changed_wav_imports_atomically_and_undoes (__main__.AudioReplacementPackTests.test_v3_one_changed_wav_imports_atomically_and_undoes)",
+            "ERROR: test_v3_refuses_invalid_complete_catalog_boundaries_before_publication (__main__.AudioReplacementPackTests.test_v3_refuses_invalid_complete_catalog_boundaries_before_publication)",
+            "ERROR: test_v3_refuses_malformed_reordered_missing_and_extra_rows_without_mutation (__main__.AudioReplacementPackTests.test_v3_refuses_malformed_reordered_missing_and_extra_rows_without_mutation)",
+            "ERROR: test_v3_zip_preserves_853_member_pack_below_the_new_v4_ceiling (__main__.AudioReplacementPackTests.test_v3_zip_preserves_853_member_pack_below_the_new_v4_ceiling)",
+            "ERROR: test_v4_mapped_complete_pack_is_deterministic_safe_public_metadata (__main__.AudioReplacementPackTests.test_v4_mapped_complete_pack_is_deterministic_safe_public_metadata)",
+            "ERROR: test_v4_one_changed_wav_imports_atomically_and_undoes (__main__.AudioReplacementPackTests.test_v4_one_changed_wav_imports_atomically_and_undoes)",
+            "ERROR: test_v4_refuses_changed_missing_or_extra_map_content_without_mutation (__main__.AudioReplacementPackTests.test_v4_refuses_changed_missing_or_extra_map_content_without_mutation)",
+            "ERROR: test_v4_zip_accepts_854_members_and_refuses_855_before_staging (__main__.AudioReplacementPackTests.test_v4_zip_accepts_854_members_and_refuses_855_before_staging)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_audio_waveform_qt.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 22,
+          "case": "Nfl2k5AudioWaveformPanelTests.test_cancel_is_retryable_and_source_decode_limit_is_explained",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        },
+        {
+          "line": 111,
+          "case": "WaveformReaderTests.test_reader_rejects_links_and_honors_cooperative_cancellation",
+          "signature": "AssertionError: \"non-link\" does not match \"The private WAV preview is no longer available\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "catalog = fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_cancel_is_retryable_and_source_decode_limit_is_explained (__main__.Nfl2k5AudioWaveformPanelTests.test_cancel_is_retryable_and_source_decode_limit_is_explained)",
+            "ERROR: test_fast_selection_change_cancels_and_discards_stale_result (__main__.Nfl2k5AudioWaveformPanelTests.test_fast_selection_change_cancels_and_discards_stale_result)",
+            "ERROR: test_load_is_explicit_never_autoplays_and_never_mutates_project (__main__.Nfl2k5AudioWaveformPanelTests.test_load_is_explicit_never_autoplays_and_never_mutates_project)",
+            "ERROR: test_unplayable_bank_and_decode_failure_are_explained_inline (__main__.Nfl2k5AudioWaveformPanelTests.test_unplayable_bank_and_decode_failure_are_explained_inline)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(ValueError, \"non-link\"):",
+          "terminal": "AssertionError: \"non-link\" does not match \"The private WAV preview is no longer available\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_reader_rejects_links_and_honors_cooperative_cancellation (__main__.WaveformReaderTests.test_reader_rejects_links_and_honors_cooperative_cancellation)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_caller_windows_pins.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 11,
+          "case": "Finding10AudioBundleIdentityTests.test_exclusive_publish_refuses_a_symlink_swapped_after_the_flush",
+          "signature": "FileNotFoundError: [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\tmptahu0jpg\\\\complete.zip'",
+          "cause": "symlink"
+        },
+        {
+          "line": 33,
+          "case": "Finding5ExportTemplateWindowsTests.test_export_template_folder_and_zip_on_windows",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "audio_bundle._exclusive_publish(",
+          "terminal": "FileNotFoundError: [WinError 2] File not found: '<TEMP>/<case>/complete.zip'",
+          "gap": "symlink",
+          "headers": [
+            "ERROR: test_exclusive_publish_refuses_a_symlink_swapped_after_the_flush (__main__.Finding10AudioBundleIdentityTests.test_exclusive_publish_refuses_a_symlink_swapped_after_the_flush)"
+          ]
+        },
+        {
+          "statement": "catalog = fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_export_template_folder_and_zip_on_windows (__main__.Finding5ExportTemplateWindowsTests.test_export_template_folder_and_zip_on_windows)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_commentary_panel_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "CommentaryPanelTests.test_studio_offers_the_tab",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_core.py",
+      "category": "UNKNOWN",
+      "evidence": [
+        {
+          "line": 1,
+          "case": "test_extracted_directory_copy_is_manifest_verified",
+          "signature": "F..wine: Call from 00006FFFFFC7D3B8 to unimplemented function KERNEL32.dll.CopyFile2, aborting",
+          "cause": "copyfile2"
+        }
+      ],
+      "notes": [
+        "runpy is only the outer call stack. Earlier F has no traceback; preserve FAIL until it is diagnosed."
+      ],
+      "wine_signatures": [
+        {
+          "crash": "unimplemented function KERNEL32.dll.CopyFile2, aborting",
+          "frame": "\\tests\\mod_editor\\test_core.py",
+          "case": "test_extracted_directory_copy_is_manifest_verified",
+          "gap": "copyfile2"
+        }
+      ]
+    },
+    {
+      "name": "test_emulator_launch_polish.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 20,
+          "case": "XemuBlockerTests.test_a_build_that_vanished_says_so_rather_than_blaming_xemu",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_facade_external_build.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "ExternalBuildTests.test_a_regular_file_becomes_the_latest_build",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_gameplay_inspection.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "GameplayInspectionTests.test_symlink_and_tampered_reports_are_refused",
+          "signature": "AssertionError: \"non-symlink\" does not match \"Gameplay-tuning report is missing: C:\\users\\noah\\Temp\\tmp_2mlmmse\\tuning-link.json\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ValidationError, \"non-symlink\"):",
+          "terminal": "AssertionError: \"non-symlink\" does not match \"Gameplay-tuning report is missing: <TEMP>/<case>/tuning-link.json\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_symlink_and_tampered_reports_are_refused (__main__.GameplayInspectionTests.test_symlink_and_tampered_reports_are_refused)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_gui.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 10,
+          "case": "import tkinter",
+          "signature": "ModuleNotFoundError: No module named 'tkinter'",
+          "cause": "tkinter"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "import_error": "ModuleNotFoundError: No module named 'tkinter'",
+          "frame": "mod_editor\\gui\\tkinter_app.py",
+          "gap": "tkinter"
+        }
+      ]
+    },
+    {
+      "name": "test_mod_build.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 8,
+          "case": "ModBuildTests.test_availability_reports_optional_modules",
+          "signature": "AssertionError: False is not true",
+          "cause": "lean"
+        }
+      ],
+      "notes": [
+        "avail[\"scorebug\"] and art.available() are false because available() requires reports/assets/scorebug_presentation_audit.json."
+      ],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_models_panel_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "ModelsPanelTests.test_studio_offers_the_models_row_and_page",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_never_silent_gray_boot.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 19,
+          "case": "NeverSilentGrayBootTests.test_2k5_audio_export_matching_boot",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "catalog = fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_2k5_audio_export_matching_boot (__main__.NeverSilentGrayBootTests.test_2k5_audio_export_matching_boot)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_audio_catalog.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 19,
+          "case": "Nfl2k5AudioCatalogTests.test_catalog_and_cache_tampering_fail_closed",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "exact_store.ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_catalog_and_cache_tampering_fail_closed (__main__.Nfl2k5AudioCatalogTests.test_catalog_and_cache_tampering_fail_closed)",
+            "ERROR: test_catalog_cold_import_defers_provider_registry_until_factory_call (__main__.Nfl2k5AudioCatalogTests.test_catalog_cold_import_defers_provider_registry_until_factory_call)",
+            "ERROR: test_catalog_uses_physical_stable_ids_for_every_exact_slot (__main__.Nfl2k5AudioCatalogTests.test_catalog_uses_physical_stable_ids_for_every_exact_slot)",
+            "ERROR: test_generic_slot_and_menu_back_keep_separate_provider_routes (__main__.Nfl2k5AudioCatalogTests.test_generic_slot_and_menu_back_keep_separate_provider_routes)",
+            "ERROR: test_lazy_preview_and_export_decode_verified_pcm (__main__.Nfl2k5AudioCatalogTests.test_lazy_preview_and_export_decode_verified_pcm)",
+            "ERROR: test_report_pin_and_nonlink_rules_are_enforced (__main__.Nfl2k5AudioCatalogTests.test_report_pin_and_nonlink_rules_are_enforced)",
+            "ERROR: test_shared_cache_reuses_inventories_and_wav_sidecars_across_source_records (__main__.Nfl2k5AudioCatalogTests.test_shared_cache_reuses_inventories_and_wav_sidecars_across_source_records)",
+            "ERROR: test_streaming_bank_is_browsable_and_raw_export_only (__main__.Nfl2k5AudioCatalogTests.test_streaming_bank_is_browsable_and_raw_export_only)",
+            "ERROR: test_streaming_decoder_falls_back_without_audioop (__main__.Nfl2k5AudioCatalogTests.test_streaming_decoder_falls_back_without_audioop)",
+            "ERROR: test_streaming_range_bad_ima_header_leaves_no_private_cache (__main__.Nfl2k5AudioCatalogTests.test_streaming_range_bad_ima_header_leaves_no_private_cache)",
+            "ERROR: test_streaming_range_decodes_to_verified_private_wav_and_export (__main__.Nfl2k5AudioCatalogTests.test_streaming_range_decodes_to_verified_private_wav_and_export)",
+            "ERROR: test_user_replacement_rejects_pcm_owned_by_any_source_cue (__main__.Nfl2k5AudioCatalogTests.test_user_replacement_rejects_pcm_owned_by_any_source_cue)",
+            "ERROR: test_user_replacement_rejects_verified_cached_streaming_pcm (__main__.Nfl2k5AudioCatalogTests.test_user_replacement_rejects_verified_cached_streaming_pcm)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_audio_source_containment.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 18,
+          "case": "Nfl2k5AudioSourceContainmentTests.test_complete_direct_source_build_is_private_canonical_and_complete",
+          "signature": "mod_editor.core.nfl2k5_audio_source_containment.AudioSourceContainmentError: Private containment inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "result = self.scanner().ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_containment.AudioSourceContainmentError: Private containment inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_complete_direct_source_build_is_private_canonical_and_complete (__main__.Nfl2k5AudioSourceContainmentTests.test_complete_direct_source_build_is_private_canonical_and_complete)"
+          ]
+        },
+        {
+          "statement": "result = scanner.ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_containment.AudioSourceContainmentError: Private containment inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_container_parser_receives_the_opened_alternate_layout_size (__main__.Nfl2k5AudioSourceContainmentTests.test_container_parser_receives_the_opened_alternate_layout_size)",
+            "ERROR: test_inventory_and_parent_links_fail_closed_without_touching_targets (__main__.Nfl2k5AudioSourceContainmentTests.test_inventory_and_parent_links_fail_closed_without_touching_targets)"
+          ]
+        },
+        {
+          "statement": "scanner.ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_containment.AudioSourceContainmentError: Private containment inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_mutation_after_final_hash_rolls_back_owned_publication (__main__.Nfl2k5AudioSourceContainmentTests.test_mutation_after_final_hash_rolls_back_owned_publication)"
+          ]
+        },
+        {
+          "statement": "completed = scanner.ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_containment.AudioSourceContainmentError: Private containment inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_prepublication_authorization_failure_publishes_nothing (__main__.Nfl2k5AudioSourceContainmentTests.test_prepublication_authorization_failure_publishes_nothing)",
+            "ERROR: test_store_refuses_nonsemantic_owner_text_before_persistence (__main__.Nfl2k5AudioSourceContainmentTests.test_store_refuses_nonsemantic_owner_text_before_persistence)"
+          ]
+        },
+        {
+          "statement": "first = self.scanner().ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_containment.AudioSourceContainmentError: Private containment inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_reuse_reauthenticates_xiso_and_standalone_without_stream_decode (__main__.Nfl2k5AudioSourceContainmentTests.test_reuse_reauthenticates_xiso_and_standalone_without_stream_decode)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(",
+          "terminal": "AssertionError: \"non-link directory\" does not match \"Private containment inventory changed during publication\"",
+          "gap": "identity",
+          "headers": [
+            "FAIL: test_derived_directory_symlink_is_rejected_before_outside_write (__main__.Nfl2k5AudioSourceContainmentTests.test_derived_directory_symlink_is_rejected_before_outside_write)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_audio_source_fingerprints.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 18,
+          "case": "Nfl2k5AudioSourceFingerprintTests.test_atomic_private_generation_load_and_deterministic_bytes",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "return self.store.ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_atomic_private_generation_load_and_deterministic_bytes (__main__.Nfl2k5AudioSourceFingerprintTests.test_atomic_private_generation_load_and_deterministic_bytes)",
+            "ERROR: test_canonical_inventory_reuses_for_an_alternate_source_record (__main__.Nfl2k5AudioSourceFingerprintTests.test_canonical_inventory_reuses_for_an_alternate_source_record)",
+            "ERROR: test_exact_pcm_lookup_and_rejection_cover_both_audio_families (__main__.Nfl2k5AudioSourceFingerprintTests.test_exact_pcm_lookup_and_rejection_cover_both_audio_families)",
+            "ERROR: test_existing_inventory_beneath_derived_symlink_is_rejected (__main__.Nfl2k5AudioSourceFingerprintTests.test_existing_inventory_beneath_derived_symlink_is_rejected)",
+            "ERROR: test_post_publication_guard_failure_unlinks_only_owned_inventory (__main__.Nfl2k5AudioSourceFingerprintTests.test_post_publication_guard_failure_unlinks_only_owned_inventory)",
+            "ERROR: test_private_document_contains_metadata_not_audio_or_archive_spans (__main__.Nfl2k5AudioSourceFingerprintTests.test_private_document_contains_metadata_not_audio_or_archive_spans)",
+            "ERROR: test_semantic_tampering_fails_even_with_recomputed_integrity_fields (__main__.Nfl2k5AudioSourceFingerprintTests.test_semantic_tampering_fails_even_with_recomputed_integrity_fields)",
+            "ERROR: test_wrong_source_noncanonical_and_digest_tampering_fail_closed (__main__.Nfl2k5AudioSourceFingerprintTests.test_wrong_source_noncanonical_and_digest_tampering_fail_closed)"
+          ]
+        },
+        {
+          "statement": "self.assertNotIsInstance(writer_result[0], BaseException)",
+          "terminal": "AssertionError: AudioSourceFingerprintError('Private source-audio inventory changed during publication') is an instance of <class 'BaseException'>",
+          "gap": "identity",
+          "headers": [
+            "FAIL: test_concurrent_reader_sees_only_the_complete_renamed_file (__main__.Nfl2k5AudioSourceFingerprintTests.test_concurrent_reader_sees_only_the_complete_renamed_file)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(",
+          "terminal": "AssertionError: \"private, non-link directory\" does not match \"Private source-audio inventory changed during publication\"",
+          "gap": "identity",
+          "headers": [
+            "FAIL: test_private_derived_directory_symlink_is_rejected (__main__.Nfl2k5AudioSourceFingerprintTests.test_private_derived_directory_symlink_is_rejected)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_audio_source_scan.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 18,
+          "case": "Nfl2k5AudioSourceScannerTests.test_complete_scan_reads_xiso_not_mutable_cached_payloads",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "result = self.fixture.scanner().ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_complete_scan_reads_xiso_not_mutable_cached_payloads (__main__.Nfl2k5AudioSourceScannerTests.test_complete_scan_reads_xiso_not_mutable_cached_payloads)"
+          ]
+        },
+        {
+          "statement": "first = self.fixture.scanner().ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_completed_inventory_rehashes_source_audo_but_not_streaming_slots (__main__.Nfl2k5AudioSourceScannerTests.test_completed_inventory_rehashes_source_audo_but_not_streaming_slots)"
+          ]
+        },
+        {
+          "statement": "self.fixture.scanner().ensure(",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_source_mutation_after_final_hash_rolls_back_owned_publication (__main__.Nfl2k5AudioSourceScannerTests.test_source_mutation_after_final_hash_rolls_back_owned_publication)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_audo_fixed_slots.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 14,
+          "case": "FixedAudoSlotTests",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_audo_import_capacity.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "fixture._ensure_private_audio_inventories(catalog)  # noqa: SLF001",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_service_session_export_replace_revert_and_project_use_logical_id (__main__.FixedAudoSlotTests.test_service_session_export_replace_revert_and_project_use_logical_id)"
+          ],
+          "observed_in": "matrix5"
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_create_play_wizard_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "CreatePlayWizardTests",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_nfl2k5_extended_visuals.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "Nfl2k5ExtendedVisualIOTests.test_strict_validation_accepts_exact_pngs_and_explains_bad_inputs",
+          "signature": "AssertionError: \"not a folder or link\" does not match \"Choose an existing PNG file for Portrait 0042 \ufffd Test Quarterback\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ValidationError, \"not a folder or link\"):",
+          "terminal": "AssertionError: \"not a folder or link\" does not match \"Choose an existing PNG file for Portrait 0042 \ufffd Test Quarterback\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_strict_validation_accepts_exact_pngs_and_explains_bad_inputs (__main__.Nfl2k5ExtendedVisualIOTests.test_strict_validation_accepts_exact_pngs_and_explains_bad_inputs)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_playbook_pack.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "FacadeInstallTests",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_nfl2k5_player_star_draw.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 11,
+          "case": "PatchTests",
+          "signature": "FileNotFoundError: [Errno 2] No such file or directory: 'Z:\\\\tmp\\\\winci-green\\\\tests\\\\fixtures\\\\nfl2k5_player_star_thin_v1.json'",
+          "cause": "retail"
+        }
+      ],
+      "notes": [
+        "tests/fixtures is outside sibling hydration and this later fixture is not promised by beta-50; classify as host-evidence exposure, not a hydration fix."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "fixture = json.loads((ROOT/'tests/fixtures/nfl2k5_player_star_thin_v1.json').read_text())",
+          "terminal": "FileNotFoundError: [Errno 2] No such file or directory: '<REPO>/tests/fixtures/nfl2k5_player_star_thin_v1.json'",
+          "gap": "retail",
+          "headers": [
+            "ERROR: setUpClass (__main__.PatchTests)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_ps2_replacement_pack_audit.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 22,
+          "case": "LocalPackWitnessTests.test_the_supplied_tree_is_an_incomplete_duplicate_only_skeleton",
+          "signature": "nfl2k5_ps2_replacement_pack_audit.PackAuditError: cannot read replacement directory Z:\\home\\noah\\Downloads\\NFL2K27\\PCSX2\\textures\\SLUS-20919\\replacements\\1Active\\Real Players\\Unassigned\\_Retired\\DT_Leati Joseph Anoa?i (Roman Reigns): [WinError 123] Invalid name: 'Z:\\\\home\\\\noah\\\\Downloads\\\\NFL2K27\\\\PCSX2\\\\textures\\\\SLUS-20919\\\\replacements\\\\1Active\\\\Real Players\\\\Unassigned\\\\_Retired\\\\DT_Leati Joseph Anoa?i (Roman Reigns)'",
+          "cause": "hostpath"
+        },
+        {
+          "line": 31,
+          "case": "Ps2ReplacementPackAuditTests.test_links_are_refused",
+          "signature": "AssertionError: PackAuditError not raised",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "report = audit.audit(Path(\"/home/noah/Downloads/NFL2K27\"))",
+          "terminal": "nfl2k5_ps2_replacement_pack_audit.PackAuditError: cannot read replacement directory Z:/home/noah/Downloads/NFL2K27/PCSX2/textures/SLUS-20919/replacements/1Active/Real Players/Unassigned/_Retired/DT_Leati Joseph Anoa?i (Roman Reigns): [WinError 123] Invalid name: 'Z:/home/noah/Downloads/NFL2K27/PCSX2/textures/SLUS-20919/replacements/1Active/Real Players/Unassigned/_Retired/DT_Leati Joseph Anoa?i (Roman Reigns)'",
+          "gap": "hostpath",
+          "headers": [
+            "ERROR: test_the_supplied_tree_is_an_incomplete_duplicate_only_skeleton (__main__.LocalPackWitnessTests.test_the_supplied_tree_is_an_incomplete_duplicate_only_skeleton)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(audit.PackAuditError, \"must not contain links\"):",
+          "terminal": "AssertionError: PackAuditError not raised",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_links_are_refused (__main__.Ps2ReplacementPackAuditTests.test_links_are_refused)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_scorebug_source_art.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 21,
+          "case": "AvailabilityTests.test_texture_targets_carry_the_four_atlases",
+          "signature": "mod_editor.core.nfl2k5_scorebug_source_art.ScorebugArtError: the scorebug presentation audit is unreadable: [Errno 2] No such file or directory: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\scorebug_presentation_audit.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_nfl2k5_source_cache_privacy.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 33,
+          "case": "PrivateStagingVerificationTests.test_a_symlinked_staging_directory_is_refused_on_both_platforms",
+          "signature": "AssertionError: \"non-link directory\" does not match \"staging could not be inspected at 'C:\\\\users\\\\noah\\\\Temp\\\\private-source-cache-eq_vbqn1\\\\linked-staging': [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\private-source-cache-eq_vbqn1\\\\linked-staging'\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ValidationError, \"non-link directory\"):",
+          "terminal": "AssertionError: \"non-link directory\" does not match \"staging could not be inspected at '<TEMP>/<case>/linked-staging': [WinError 2] File not found: '<TEMP>/<case>/linked-staging'\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_a_symlinked_staging_directory_is_refused_on_both_platforms (__main__.PrivateStagingVerificationTests.test_a_symlinked_staging_directory_is_refused_on_both_platforms)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_stadium_cache.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 13,
+          "case": "StadiumCacheCoordinatorTests.test_existing_staging_checkpoints_are_preserved_for_worker_resume",
+          "signature": "mod_editor.core.platform_compat.PrivatePathError: Cannot confirm an owner-only ACL on 'C:\\\\users\\\\noah\\\\Temp\\\\tmp88obbqpf\\\\7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9\\\\derived': DACL grants visibility to foreign SIDs: S-1-1-0",
+          "cause": "acl"
+        },
+        {
+          "line": 62,
+          "case": "StadiumWorkerAggregationTests.test_worker_refuses_archive_pack_symlink_outside_private_cache",
+          "signature": "AssertionError: \"regular, non-link\" does not match \"archive pack F is missing: C:\\users\\noah\\Temp\\tmpvvni7k_e\\cache\\packs\\F\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": ").ensure(self.cache)",
+          "terminal": "mod_editor.core.platform_compat.PrivatePathError: Cannot confirm an owner-only ACL on '<TEMP>/<case>/7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/derived': DACL grants visibility to foreign SIDs: S-1-1-0",
+          "gap": "acl",
+          "headers": [
+            "ERROR: test_existing_staging_checkpoints_are_preserved_for_worker_resume (__main__.StadiumCacheCoordinatorTests.test_existing_staging_checkpoints_are_preserved_for_worker_resume)",
+            "ERROR: test_private_derived_cache_takes_the_windows_branch_and_still_verifies (__main__.StadiumCacheCoordinatorTests.test_private_derived_cache_takes_the_windows_branch_and_still_verifies)"
+          ]
+        },
+        {
+          "statement": ").ensure(self.cache)",
+          "terminal": "mod_editor.core.platform_compat.PrivatePathError: Cannot confirm an owner-only ACL on '<TEMP>/<case>/7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/derived/.stadium-studio-v1.staging': DACL grants visibility to foreign SIDs: S-1-1-0",
+          "gap": "acl",
+          "headers": [
+            "ERROR: test_windows_branch_still_refuses_a_symlinked_lock_file (__main__.StadiumCacheCoordinatorTests.test_windows_branch_still_refuses_a_symlinked_lock_file)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(",
+          "terminal": "AssertionError: \"regular, non-link\" does not match \"archive pack F is missing: <TEMP>/<case>/cache/packs/F\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_worker_refuses_archive_pack_symlink_outside_private_cache (__main__.StadiumWorkerAggregationTests.test_worker_refuses_archive_pack_symlink_outside_private_cache)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_stadium_studio.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "StadiumStudioTests.test_rejects_symlinked_manifest_and_asset_escape",
+          "signature": "AssertionError: \"regular file\" does not match \"stadium glTF manifest is missing: C:\\users\\noah\\Temp\\tmpytdsbjww\\linked-manifest.json\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ValidationError, \"regular file\"):",
+          "terminal": "AssertionError: \"regular file\" does not match \"stadium glTF manifest is missing: <TEMP>/<case>/linked-manifest.json\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_rejects_symlinked_manifest_and_asset_escape (__main__.StadiumStudioTests.test_rejects_symlinked_manifest_and_asset_escape)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_streaming_audio_ui.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 19,
+          "case": "StreamingAudioFacadeTests.test_modified_range_play_and_wav_export_use_session_current_bytes",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "catalog = fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_modified_range_play_and_wav_export_use_session_current_bytes (__main__.StreamingAudioFacadeTests.test_modified_range_play_and_wav_export_use_session_current_bytes)",
+            "ERROR: test_modified_range_raw_export_stays_labeled_retail_derived (__main__.StreamingAudioFacadeTests.test_modified_range_raw_export_stays_labeled_retail_derived)",
+            "ERROR: test_playable_matching_bundle_is_wav_only_and_retail_labeled (__main__.StreamingAudioFacadeTests.test_playable_matching_bundle_is_wav_only_and_retail_labeled)",
+            "ERROR: test_playable_scope_is_domain_prefixed_search_reusing_and_global (__main__.StreamingAudioFacadeTests.test_playable_scope_is_domain_prefixed_search_reusing_and_global)",
+            "ERROR: test_unique_and_shared_modified_ranges_have_truthful_status_and_owner_list (__main__.StreamingAudioOffscreenTests.test_unique_and_shared_modified_ranges_have_truthful_status_and_owner_list)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl2k5_uniform_catalog.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 14,
+          "case": "Nfl2k5UniformCatalogTests",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_nfl2k5_universal_asset_index.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "UniversalAssetIndexTests.test_rejects_symlinked_inventory_and_sidecar",
+          "signature": "AssertionError: \"regular file\" does not match \"private NFL 2K5 asset index is missing: C:\\users\\noah\\Temp\\tmpd9pxu0zr\\linked.json\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ValidationError, \"regular file\"):",
+          "terminal": "AssertionError: \"regular file\" does not match \"private NFL 2K5 asset index is missing: <TEMP>/<case>/linked.json\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_rejects_symlinked_inventory_and_sidecar (__main__.UniversalAssetIndexTests.test_rejects_symlinked_inventory_and_sidecar)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_nfl_audio.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 12,
+          "case": "import tkinter",
+          "signature": "ModuleNotFoundError: No module named 'tkinter'",
+          "cause": "tkinter"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "import_error": "ModuleNotFoundError: No module named 'tkinter'",
+          "frame": "mod_editor\\gui\\tkinter_app.py",
+          "gap": "tkinter"
+        }
+      ]
+    },
+    {
+      "name": "test_platform_compat.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 10,
+          "case": "ExclusiveLockTests.test_lock_excludes_a_second_holder_then_releases",
+          "signature": "OSError: [Errno 0] Error",
+          "cause": "locking"
+        },
+        {
+          "line": 20,
+          "case": "SimulatedWindowsModeTests.test_a_private_directory_reports_0o777_and_is_still_accepted",
+          "signature": "mod_editor.core.platform_compat.PrivatePathError: Cannot confirm an owner-only ACL on 'C:\\\\users\\\\noah\\\\Temp\\\\tmphxo3598e\\\\derived': DACL grants visibility to foreign SIDs: S-1-1-0",
+          "cause": "acl"
+        },
+        {
+          "line": 41,
+          "case": "PrivatePathTests.test_a_symlinked_directory_is_refused_everywhere",
+          "signature": "AssertionError: \"non-link directory\" does not match \"test cache could not be inspected at 'C:\\\\users\\\\noah\\\\Temp\\\\tmpxw2i7h44\\\\link': [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\Temp\\\\tmpxw2i7h44\\\\link'\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "exclusive_nonblocking_lock(second)",
+          "terminal": "OSError: [Errno 0] Error",
+          "gap": "locking",
+          "headers": [
+            "ERROR: test_lock_excludes_a_second_holder_then_releases (__main__.ExclusiveLockTests.test_lock_excludes_a_second_holder_then_releases)"
+          ]
+        },
+        {
+          "statement": "harden_private_directory(private)",
+          "terminal": "mod_editor.core.platform_compat.PrivatePathError: Cannot confirm an owner-only ACL on '<TEMP>/<case>/derived': DACL grants visibility to foreign SIDs: S-1-1-0",
+          "gap": "acl",
+          "headers": [
+            "ERROR: test_a_private_directory_reports_0o777_and_is_still_accepted (__main__.SimulatedWindowsModeTests.test_a_private_directory_reports_0o777_and_is_still_accepted)"
+          ]
+        },
+        {
+          "statement": "with self.assertRaisesRegex(PrivatePathError, \"non-link directory\"):",
+          "terminal": "AssertionError: \"non-link directory\" does not match \"test cache could not be inspected at '<TEMP>/<case>/link': [WinError 2] File not found: '<TEMP>/<case>/link'\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_a_symlinked_directory_is_refused_everywhere (__main__.PrivatePathTests.test_a_symlinked_directory_is_refused_everywhere)"
+          ]
+        },
+        {
+          "statement": "verify_private_root_placement(root / \"2k5-mod-studio\", \"test cache root\")",
+          "terminal": "mod_editor.core.platform_compat.PrivatePathError: test cache root at '<LOCALAPPDATA>/2k5-mod-studio' is placed under the profile root but its DACL does not restrict access to the current user; DACL grants visibility to foreign SIDs: S-1-1-0",
+          "gap": "acl",
+          "headers": [
+            "ERROR: test_the_default_private_root_is_this_users_own_tree (__main__.PrivatePathTests.test_the_default_private_root_is_this_users_own_tree)"
+          ],
+          "observed_in": "matrix5"
+        }
+      ]
+    },
+    {
+      "name": "test_platform_compat_durability.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 12,
+          "case": "FsyncFdTests.test_windows_flushes_a_writable_descriptor_directly",
+          "signature": "OSError: [Errno 9] Bad file descriptor",
+          "cause": "simulation"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "raise OSError(errno.EBADF, \"Bad file descriptor\")",
+          "terminal": "OSError: [Errno 9] Bad file descriptor",
+          "gap": "simulation",
+          "headers": [
+            "ERROR: test_windows_flushes_a_writable_descriptor_directly (__main__.FsyncFdTests.test_windows_flushes_a_writable_descriptor_directly)",
+            "ERROR: test_windows_reopens_the_same_inode_and_flushes_it (__main__.FsyncFdTests.test_windows_reopens_the_same_inode_and_flushes_it)",
+            "ERROR: test_windows_flushes_where_the_old_idiom_raised_ebadf (__main__.FsyncPathTests.test_windows_flushes_where_the_old_idiom_raised_ebadf)",
+            "ERROR: test_simulation_leaves_writable_descriptors_flushable (__main__.SimulationFidelityTests.test_simulation_leaves_writable_descriptors_flushable)"
+          ]
+        },
+        {
+          "statement": "self.staged.unlink()",
+          "terminal": "PermissionError: [WinError 32] Sharing violation: '<TEMP>/<case>/modded.xiso'",
+          "gap": "simulation",
+          "headers": [
+            "ERROR: test_windows_still_refuses_a_swapped_file (__main__.FsyncFdTests.test_windows_still_refuses_a_swapped_file)"
+          ]
+        },
+        {
+          "statement": "self.assertFalse(fsync_directory(self.root))",
+          "terminal": "AssertionError: True is not false",
+          "gap": "simulation",
+          "headers": [
+            "FAIL: test_windows_never_touches_the_filesystem (__main__.FsyncDirectoryTests.test_windows_never_touches_the_filesystem)",
+            "FAIL: test_windows_reports_the_gap_instead_of_pretending (__main__.FsyncDirectoryTests.test_windows_reports_the_gap_instead_of_pretending)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_presentation_panel_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "PresentationPanelTests.test_studio_offers_the_tab",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_product_inspection_panels_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "ProductInspectionOffscreenTests.test_flagship_mounts_both_inspectors_and_preserves_raw_fallback",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_product_shell_accessibility_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "ProductShellAccessibilityTests.test_2k5_find_shortcut_reaches_visible_specialist_searches",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_project_document_workflow.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "ActiveProjectWindowTests.test_accepted_close_removes_private_texture_master_workspace",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        },
+        {
+          "line": 110,
+          "case": "ProjectTargetSafetyTests.test_missing_and_linked_fast_save_targets_fail_closed",
+          "signature": "AssertionError: False is not true",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [
+        "Also needs catalog hydration; mixed logs remain FAIL until those failures disappear."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "self.assertTrue(project.is_symlink())",
+          "terminal": "AssertionError: False is not true",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_missing_and_linked_fast_save_targets_fail_closed (__main__.ProjectTargetSafetyTests.test_missing_and_linked_fast_save_targets_fail_closed)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_providers.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 23,
+          "case": "ProviderTests.test_apf_preflight_refuses_noncanonical_selector_png_and_outputs",
+          "signature": "AssertionError: \"non-symlink\" does not match \"APF jersey PNG does not exist: C:\\users\\noah\\Temp\\tmp3p2hhvpw\\linked.png\"",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ProviderError, \"non-symlink\"):",
+          "terminal": "AssertionError: \"non-symlink\" does not match \"APF jersey PNG does not exist: <TEMP>/<case>/linked.png\"",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_apf_preflight_refuses_noncanonical_selector_png_and_outputs (__main__.ProviderTests.test_apf_preflight_refuses_noncanonical_selector_png_and_outputs)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_recipes.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 9,
+          "case": "RecipeGenerationTests.test_existing_and_broken_symlink_recipe_outputs_are_refused_unchanged",
+          "signature": "AssertionError: OutputRefusedError not raised",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaises(OutputRefusedError):",
+          "terminal": "AssertionError: OutputRefusedError not raised",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_existing_and_broken_symlink_recipe_outputs_are_refused_unchanged (__main__.RecipeGenerationTests.test_existing_and_broken_symlink_recipe_outputs_are_refused_unchanged)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_roster_editor_panel_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "ShellPlacementTests.test_the_studio_offers_the_rosters_row_and_its_page",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_security_blockers_remediation.py",
+      "category": "RUNNER BUG",
+      "evidence": [
+        {
+          "line": 12,
+          "case": "Finding1SourceCacheRootTests.test_ensure_private_cache_root_is_idempotent",
+          "signature": "mod_editor.core.platform_compat.PrivatePathError: The private NFL 2K5 source cache root must be created under this user's private profile root (C:\\users\\noah\\AppData\\Local) on Windows, which is where its other-users-excluded ACL comes from; it is at 'C:\\\\users\\\\noah\\\\Temp\\\\tmpuog770ho\\\\cache'",
+          "cause": "temp"
+        }
+      ],
+      "notes": [
+        "Fix TEMP/TMP to LOCALAPPDATA/Temp/winci; preserve the real placement and ACL checks."
+      ],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_share_panel_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "SharePanelTests.test_studio_offers_the_tab",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_sounds_panel_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "SoundsPanelTests.test_studio_offers_the_tab",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_stadium_editable_discovery.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 20,
+          "case": "Nfl2k5StadiumSceneListTests.test_a_view_only_scene_says_import_has_nothing_to_write",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_stage_release.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 1,
+          "case": "test_refuses_destination_below_symlinked_parent",
+          "signature": "....wine: Call from 00006FFFFFC7D3B8 to unimplemented function KERNEL32.dll.CopyFile2, aborting",
+          "cause": "copyfile2"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "crash": "unimplemented function KERNEL32.dll.CopyFile2, aborting",
+          "frame": "\\tests\\mod_editor\\test_stage_release.py",
+          "case": "test_refuses_destination_below_symlinked_parent",
+          "gap": "copyfile2"
+        }
+      ]
+    },
+    {
+      "name": "test_studio_qt_models.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 14,
+          "case": "StudioQtViewModelTests",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_studio_session.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 19,
+          "case": "StudioSessionTests.test_audio_composes_with_project_archive_and_global_undo",
+          "signature": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "cause": "identity"
+        }
+      ],
+      "notes": [
+        "Inference from repeatable synthetic per-test caches; the compound check does not log which identity/metadata field differs. No evidence of cross-file contention."
+      ],
+      "wine_signatures": [
+        {
+          "statement": "catalog = fixture.catalog()",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_audio_composes_with_project_archive_and_global_undo (__main__.StudioSessionTests.test_audio_composes_with_project_archive_and_global_undo)",
+            "ERROR: test_streaming_alias_is_one_physical_reversible_project_edit (__main__.StudioSessionTests.test_streaming_alias_is_one_physical_reversible_project_edit)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_studio_shell_layout_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "StudioShellLayoutTests.test_audio_page_has_cues_and_sounds_tabs",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_studio_visual_asset_routing.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 15,
+          "case": "BuildPathTests.test_a_batch_import_resolves_equipment_ids",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_team_kit_bundle.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 14,
+          "case": "TeamKitBundleTests",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_team_kit_product_integration.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 14,
+          "case": "TeamKitFacadeIntegrationTests",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_unif_color_control.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "GuiInteractionTests.test_selected_home_and_away_sets_keep_independent_colours",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_ux_open_disc_hook_qt.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 17,
+          "case": "OpenDiscHookTests.test_a_second_open_supersedes_the_first_inspection",
+          "signature": "FileNotFoundError: [WinError 3] Path not found: 'Z:\\\\tmp\\\\winci-green\\\\reports\\\\assets\\\\nfl2k5_team_select_card_inventory.json'",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_visual_export_and_preview.py",
+      "category": "LEAN CHECKOUT",
+      "evidence": [
+        {
+          "line": 28,
+          "case": "DecoderCoverageTests.test_every_published_kind_has_a_decoder_branch",
+          "signature": "mod_editor.core.nfl2k5_extended_visual_catalog.ExtendedVisualCatalogError: Player portrait report is missing: Z:\\tmp\\winci-green\\reports\\assets\\nfl2k5_player_portrait_compatibility.json",
+          "cause": "lean"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": []
+    },
+    {
+      "name": "test_workspace_recovery.py",
+      "category": "WINE GAP",
+      "evidence": [
+        {
+          "line": 9,
+          "case": "WorkspaceStateStoreTests.test_recovery_refuses_aliases_and_invalid_hashes",
+          "signature": "AssertionError: ValidationError not raised",
+          "cause": "symlink"
+        }
+      ],
+      "notes": [],
+      "wine_signatures": [
+        {
+          "statement": "with self.assertRaisesRegex(ValidationError, \"not a regular private file\"):",
+          "terminal": "AssertionError: ValidationError not raised",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_recovery_refuses_aliases_and_invalid_hashes (__main__.WorkspaceStateStoreTests.test_recovery_refuses_aliases_and_invalid_hashes)"
+          ]
+        }
+      ]
+    }
+  ],
+  "follow_up_2": {
+    "source": ".scratch/matrix5-logs/FULL_MATRIX5.log",
+    "baseline": {
+      "revision": "b8d55f4",
+      "files": 301,
+      "passed": 246,
+      "failed": 14,
+      "skipped": 41,
+      "tests": 2948,
+      "jobs": 2,
+      "seconds": 1682.202,
+      "hydrated_release_files": 4
+    },
+    "hydration": {
+      "target": "/tmp/winci-green",
+      "source": "/home/noah/2k-football-mod-tools",
+      "reports_assets_regular_files": 625,
+      "target_existing_files": 625,
+      "inventory": "reports/assets/nfl2k5_all_txtr_inventory_v2.json",
+      "inventory_bytes": 62137803,
+      "inventory_sha256": "5295168a4596b7be273e534b36efd2b53f44c7ed5f16893110a63413397f4929",
+      "decision": "All 625 target leaves already exist; inventory matches the maintainer source. Earlier partial hydration is consistent with the retained files and missing docs/research. Release hydration is additive and cannot make this tree lean. Evaluate the CI sentinel once after hydration on --repo; use a fresh archive for CI-equivalent inputs."
+    },
+    "runner_fixes": [
+      {
+        "issue": "The lean sentinel was evaluated for each file, after hydration but during test execution.",
+        "fix": "Freeze the exact ci.yml inventory.is_file() decision once after hydration on --repo. Print and retain the selected repo, inventory path, lean flag and pre-hydration inventory state in checkout.log."
+      },
+      {
+        "issue": "The audio log ends at exactly 8192 bytes, mid-summary. Buffered read(4096) can retain a partial chunk when a descendant holds stdout open; run_process previously returned after a 30-second pump join even when that thread was still alive.",
+        "fix": "Use read1(4096) to flush available bytes immediately. Require both launcher exit and output EOF within the per-file deadline; retained stdout triggers the existing process-tree timeout cleanup. A native pipe regression reproduced the buffering defect before the fix. The supplied Wine log's precise truncation cause still requires a fresh Wine run."
+      }
+    ],
+    "lean_files": [
+      {
+        "name": "test_2k5_uniform_equipment_export.py",
+        "observed_status": "FAIL",
+        "tests": 12
+      },
+      {
+        "name": "test_all_textures_workspace.py",
+        "observed_status": "FAIL",
+        "tests": 23
+      },
+      {
+        "name": "test_apf_logo_surface_ownership.py",
+        "observed_status": "PASS",
+        "tests": 4
+      },
+      {
+        "name": "test_apf_product_findings.py",
+        "observed_status": "PASS",
+        "tests": 6
+      },
+      {
+        "name": "test_menu_modes.py",
+        "observed_status": "FAIL",
+        "tests": 5
+      },
+      {
+        "name": "test_nfl2k5_crib.py",
+        "observed_status": "PASS",
+        "tests": 9
+      },
+      {
+        "name": "test_nfl2k5_crib_geometry_writer.py",
+        "observed_status": "FAIL",
+        "tests": 4
+      },
+      {
+        "name": "test_nfl2k5_face_shield_registry.py",
+        "observed_status": "FAIL",
+        "tests": 2
+      },
+      {
+        "name": "test_nfl2k5_stock_midfield_logo_boundary.py",
+        "observed_status": "PASS",
+        "tests": 3
+      },
+      {
+        "name": "test_no_capability_is_invisible.py",
+        "observed_status": "FAIL",
+        "tests": 2
+      },
+      {
+        "name": "test_presentation_inspection.py",
+        "observed_status": "FAIL",
+        "tests": 3
+      },
+      {
+        "name": "test_uniform_sharing.py",
+        "observed_status": "FAIL",
+        "tests": 8
+      }
+    ],
+    "remaining_six": [
+      {
+        "name": "test_2k5_audio_operation_integration.py",
+        "category": "TEST FOLLOW-UP",
+        "expected_status": "FAIL",
+        "evidence": [
+          {
+            "line": 22,
+            "text": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication"
+          },
+          {
+            "line": 91,
+            "text": "ERROR: test_save_then_open_xiso_starts_only_after_save_worker_releases_shell (__main__.StudioAudioOperationFenceTests.test_save_then_open_xiso_starts_only_after_save_worker_releases_shell)"
+          },
+          {
+            "line": 95,
+            "text": "PermissionError: [WinError 32] Sharing violation: 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpokzjuu6d\\\\next.xiso'"
+          },
+          {
+            "line": 109,
+            "text": "PermissionError: [WinError 32] Sharing violation: 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpokzjuu6d\\\\next.xiso'"
+          }
+        ],
+        "decision": "Four reviewed identity errors remain, plus a new WinError 32 on next.xiso during TemporaryDirectory cleanup. The supplied log is truncated after Ran 17 tests in 71. Close/drain the window source readers before the temporary directory exits, and capture a complete rerun; do not add a sharing-violation skip."
+      },
+      {
+        "name": "test_apf_audio_encoder_gui.py",
+        "category": "WINE GAP",
+        "expected_status": "SKIP",
+        "evidence": [
+          {
+            "line": 3,
+            "text": "FAIL: test_windows_encoder_picker_resolves_detected_wine_symlink (__main__.ApfAudioEncoderGuiTests.test_windows_encoder_picker_resolves_detected_wine_symlink)"
+          },
+          {
+            "line": 8,
+            "text": "AssertionError: WindowsPath('.') != WindowsPath('C:/users/noah/AppData/Local/Temp/winci/ap[37 chars]ble')"
+          }
+        ],
+        "decision": "The longer TMPDIR path makes unittest shorten WindowsPath to ap[37 chars]ble. Add only this observed terminal variant for the existing exact case and statement; other shortening patterns stay failures."
+      },
+      {
+        "name": "test_core.py",
+        "category": "UNKNOWN",
+        "expected_status": "FAIL",
+        "evidence": [
+          {
+            "line": 1,
+            "text": "F..wine: Call from 00006FFFFFC7D3B8 to unimplemented function KERNEL32.dll.CopyFile2, aborting"
+          },
+          {
+            "line": 9,
+            "text": "  File \"Z:\\tmp\\winci-green\\mod_editor\\core\\output.py\", line 62 in create_source_copy"
+          },
+          {
+            "line": 10,
+            "text": "  File \"Z:\\tmp\\winci-green\\mod_editor\\core\\controller.py\", line 324 in create_staging_copy"
+          }
+        ],
+        "decision": "F.. precedes the known CopyFile2 crash. The first alphabetic case is test_broken_output_symlink_is_refused, but the failure traceback is absent. Run that case alone or emit unittest failures immediately in a test-side diagnostic rerun; keep the F guard."
+      },
+      {
+        "name": "test_nfl2k5_audo_fixed_slots.py",
+        "category": "WINE GAP",
+        "expected_status": "SKIP",
+        "evidence": [
+          {
+            "line": 3,
+            "text": "ERROR: test_service_session_export_replace_revert_and_project_use_logical_id (__main__.FixedAudoSlotTests.test_service_session_export_replace_revert_and_project_use_logical_id)"
+          },
+          {
+            "line": 17,
+            "text": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication"
+          }
+        ],
+        "decision": "Hydration gets past the missing import-capacity catalog and exposes the reviewed private-inventory identity gap in this exact case."
+      },
+      {
+        "name": "test_nfl2k5_scorebug_source_art.py",
+        "category": "TEST FOLLOW-UP",
+        "expected_status": "FAIL",
+        "evidence": [
+          {
+            "line": 3,
+            "text": "FAIL: test_every_texture_span_is_identical_either_way (__main__.ByteIdentityTests.test_every_texture_span_is_identical_either_way)"
+          },
+          {
+            "line": 8,
+            "text": "AssertionError: b'TXT[57 chars]xfe\\xb0\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x0[8771 chars]\\x00' != b'TXT[57 chars]xfe\\xc0\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x0[8777 chars]\\x00' : digital_font"
+          },
+          {
+            "line": 11,
+            "text": "FAIL: test_the_modern_art_regenerates_byte_for_byte (__main__.DiscSourcedArtTests.test_the_modern_art_regenerates_byte_for_byte)"
+          },
+          {
+            "line": 16,
+            "text": "AssertionError: 'bbf446bf592721ed0bc14375828a20438618c6ac501eba09758e7f66762f9e5a' != '67b7c0a11efcf210dea9d9f8e4edf142f3a46bdb4d08c720645629e78c634b70'"
+          },
+          {
+            "line": 22,
+            "text": "FAIL: test_the_step_writes_the_expected_resource_bytes (__main__.FullDiscWriteTests.test_the_step_writes_the_expected_resource_bytes)"
+          },
+          {
+            "line": 27,
+            "text": "AssertionError: False is not true"
+          }
+        ],
+        "decision": "Wine exposes local retail data and fonts. The digital_font TXTR bytes differ, score_buga PNG hash is bbf446bf592721ed0bc14375828a20438618c6ac501eba09758e7f66762f9e5a instead of 67b7c0a11efcf210dea9d9f8e4edf142f3a46bdb4d08c720645629e78c634b70, and the reference-match receipt is false. Compare decoded pixels separately from PNG bytes and pin/check Pillow, zlib, FreeType and fonts for exact regeneration; the log does not establish the cause. Do not skip or update reference hashes blindly."
+      },
+      {
+        "name": "test_platform_compat.py",
+        "category": "WINE GAP",
+        "expected_status": "SKIP",
+        "evidence": [
+          {
+            "line": 3,
+            "text": "ERROR: test_lock_excludes_a_second_holder_then_releases (__main__.ExclusiveLockTests.test_lock_excludes_a_second_holder_then_releases)"
+          },
+          {
+            "line": 10,
+            "text": "OSError: [Errno 0] Error"
+          },
+          {
+            "line": 13,
+            "text": "ERROR: test_the_default_private_root_is_this_users_own_tree (__main__.PrivatePathTests.test_the_default_private_root_is_this_users_own_tree)"
+          },
+          {
+            "line": 20,
+            "text": "mod_editor.core.platform_compat.PrivatePathError: test cache root at 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\2k5-mod-studio' is placed under the profile root but its DACL does not restrict access to the current user; DACL grants visibility to foreign SIDs: S-1-1-0"
+          },
+          {
+            "line": 23,
+            "text": "ERROR: test_a_private_directory_reports_0o777_and_is_still_accepted (__main__.SimulatedWindowsModeTests.test_a_private_directory_reports_0o777_and_is_still_accepted)"
+          },
+          {
+            "line": 30,
+            "text": "mod_editor.core.platform_compat.PrivatePathError: Cannot confirm an owner-only ACL on 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpd7fh9ajy\\\\derived': DACL grants visibility to foreign SIDs: S-1-1-0"
+          },
+          {
+            "line": 33,
+            "text": "FAIL: test_a_symlinked_directory_is_refused_everywhere (__main__.PrivatePathTests.test_a_symlinked_directory_is_refused_everywhere)"
+          },
+          {
+            "line": 51,
+            "text": "AssertionError: \"non-link directory\" does not match \"test cache could not be inspected at 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpwpk9rvvt\\\\link': [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpwpk9rvvt\\\\link'\""
+          }
+        ],
+        "decision": "TMPDIR fixes placement, exposing another owner-only DACL assertion on LOCALAPPDATA/2k5-mod-studio. Add that exact Everyone-SID terminal, normalizing only the profile prefix; existing locking and symlink rules still apply."
+      }
+    ],
+    "replay_existing_tree": {
+      "files": 301,
+      "passed": 246,
+      "failed": 11,
+      "skipped": 44,
+      "tests": 2905
+    },
+    "replay_with_lean_policy": {
+      "files": 301,
+      "passed": 242,
+      "failed": 3,
+      "skipped": 56,
+      "tests": 2824
+    },
+    "conditional_clean": {
+      "files": 301,
+      "passed": 243,
+      "failed": 0,
+      "skipped": 58,
+      "tests": 2807,
+      "conditions": [
+        "The audio cleanup failure is fixed, a complete log contains only the four reviewed identity errors.",
+        "The earlier core failure is resolved or individually diagnosed; only the reviewed CopyFile2 crash with no earlier failed progress remains.",
+        "Scorebug assertions pass or optional retail cases skip within the passing 13-case file.",
+        "Every other matrix5 outcome is unchanged; fresh inputs and host retail visibility may change coverage."
+      ]
+    },
+    "validation_limit": "Wine execution in this sandbox exits SIGSYS (rc=-31) even for wine --version. Counts are supplied-log replay and conditional forecasts, not a new Wine matrix."
+  }
+}

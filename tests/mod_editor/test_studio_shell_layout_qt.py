@@ -2,7 +2,7 @@
 
 Gameplay = sliders inspector + Throw Distance & Arc + Gameplay Patches; Presentation = the
 scorebug inventory + ESPN Scorebug & Ticker + Commentary; Audio = Audio Cues + Sounds; Text & Team
-Identity carries the EDGE rename; ★ Rosters is the first of four special rows and ★ Build & Share the last, with the Build
+Identity carries the EDGE rename; ★ Rosters is the first of five special rows and ★ Build & Share the last, with the Build
 and Share tabs.
 """
 
@@ -42,10 +42,12 @@ class StudioShellLayoutTests(unittest.TestCase):
 
     def test_navigation_rows_and_pages_line_up(self) -> None:
         rows = self._row_texts()
-        self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 4)
+        self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 5)
         self.assertEqual(rows[0], "Getting Started")
-        self.assertEqual(rows[-4], "★ Rosters")
-        self.assertEqual(rows[-3], "★ Models")
+        self.assertEqual(rows[-5], "★ Rosters")
+        self.assertEqual(rows[-4], "★ Models")
+        self.assertEqual(rows[-3], "Animations")
+        self.assertFalse(self.window._animations_panel.import_button.isEnabled())
         self.assertEqual(rows[-2], "★ Create a Play")
         self.assertEqual(rows[-1], "★ Build & Share")
         self.assertIn("Gameplay", rows)
@@ -73,7 +75,7 @@ class StudioShellLayoutTests(unittest.TestCase):
             self.assertNotIn(moved, titles)
         patches = self.window._gameplay_patches_panel
         assert patches is not None
-        self.assertEqual(set(patches.checks), {"catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad"})
+        self.assertEqual(set(patches.checks), {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing", "scorebug", "scorebug_runtime", "music_policy", "music_unlock", "music_userlist"})
 
     def test_presentation_page_has_inventory_scorebug_and_commentary(self) -> None:
         page = self.window._category_pages[ProductCategory.SCOREBUG_PRESENTATION]
@@ -89,10 +91,11 @@ class StudioShellLayoutTests(unittest.TestCase):
         self.assertIsInstance(page, QTabWidget)
         assert isinstance(page, QTabWidget)
         self.assertEqual(page.objectName(), "audioTabs")
-        self.assertEqual(_tab_titles(page), ["Music & Sounds", "Replace a Sound"])
+        self.assertEqual(_tab_titles(page), ["Audio Cues", "Music", "Replace a Sound"])
         self.assertEqual(page.currentIndex(), 0)
         self.assertIs(page.widget(0), self.window._audio_panel)
-        self.assertIs(page.widget(1), self.window._sounds_panel)
+        self.assertIs(page.widget(1), self.window._music_panel)
+        self.assertIs(page.widget(2), self.window._sounds_panel)
         self.assertTrue(page.isAncestorOf(self.window._audio_panel))
 
     def test_team_identity_page_hosts_the_edge_rename(self) -> None:
@@ -117,9 +120,34 @@ class StudioShellLayoutTests(unittest.TestCase):
         self.assertIs(page.widget(1), self.window._share_panel)
         self.assertEqual(self.window.page_title.text(), "Build & Share")
 
+    def test_build_year_context_reaches_roster_and_franchise_without_byte_edits(self):
+        import tempfile
+        from pathlib import Path
+        from tests.mod_editor.test_nfl2k5_franchise_save import synthetic_franchise
+        from mod_editor.core import nfl2k5_roster_records as rr
+        panel = self.window._roster_editor_panel
+        self.window._build_panel.season_check.setChecked(True)
+        original = synthetic_franchise(year_field=27)
+        with tempfile.TemporaryDirectory() as folder:
+            save = Path(folder) / "SAVEGAME.DAT"
+            save.write_bytes(original)
+            save.with_name("EXTRA").write_bytes(rr.sign_save(original))
+            self.assertTrue(panel.load_save(save), panel.status_label.text())
+        self.assertEqual(panel.document.base_year, 2026)
+        self.assertEqual(panel.document.reference_year, 2053)
+        self.assertEqual(panel.franchise_panel.save.header.display_year, 2053)
+        before = bytes(panel.document.body)
+        player = panel.document.players[0]
+        self.assertEqual(panel._baseline_record(player).reference_year, 2053)
+        panel.franchise_panel.base_year_spin.setValue(2004)
+        self.assertEqual(panel.document.reference_year, 2031)
+        self.assertEqual(panel.franchise_panel.save.header.year_field, 27)
+        self.assertEqual(bytes(panel.document.body), before)
+        self.assertEqual(panel._baseline_record(player).reference_year, 2031)
+        self.assertFalse(panel.franchise_panel.edits)
 
-if __name__ == "__main__":
-    unittest.main()
+
+
 
 
 class BuildShareActionBarTests(StudioShellLayoutTests):
@@ -150,3 +178,7 @@ class BuildShareActionBarTests(StudioShellLayoutTests):
                 self.assertEqual(getattr(facade._last_build, "output_xiso", None), image)
             # a missing file must not crash the window
             self.window._on_build_tab_built({"target": str(Path(tmp) / "gone.iso")})
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -17,6 +17,8 @@ import sys
 import tempfile
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 from mod_editor.core.nfl2k5_cave_manifest import Recorder, changed_runs
 from mod_editor.core.nfl2k5_cave_oracle import (
     DEFAULT_MANIFEST, ENTRY_KEYS, MANIFEST_SCHEMA, RETAIL_SHA256, THUNK_KEYS,
@@ -25,6 +27,9 @@ from mod_editor.core.nfl2k5_cave_oracle import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+# A newly generated private manifest can be tested before Claude replaces the
+# protected release manifest. Production defaults and the drift guard stay intact.
+DEFAULT_MANIFEST = Path(os.environ.get("NFL2K5_CAVE_MANIFEST", str(DEFAULT_MANIFEST)))
 TEXT, DATA = 0x11000, 0x20000
 XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/default.xbe"
 
@@ -384,7 +389,7 @@ class CaveOracleTests(unittest.TestCase):
         for start in (0xA69970, 0xA69974, 0xA69978, 0xA6997C, 0x10A10, 0x10CD0):
             assert oracle.assess(start, 1, kind="data")["verdict"] == "reserved"
         assert manifest.document["section_digests_verified"]
-        assert "scorebug" in manifest.document["image_steps"]
+        assert "scorebug_runtime" in manifest.document["image_steps"]
         assert "season_2026" in manifest.document["image_steps"]
 
     def test_legacy_projection_reproduces_gate_targets_and_negative_caves(self):

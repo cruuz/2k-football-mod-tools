@@ -179,8 +179,15 @@ def status(payload: bytes) -> str:
     try:
         if payload[:4] != b'XBEH' or struct.unpack_from('<I', payload, 0x104)[0] != IMAGE_BASE:
             return 'foreign'
-        if any(_read(payload, va, len(pin)) != pin for va, pin in PINS):
-            return 'foreign'
+        changed_pins = {va for va, pin in PINS if _read(payload, va, len(pin)) != pin}
+        if changed_pins:
+            # Practice reserves replaces the complete staging routine, including
+            # these two retail call locations. Its exact body still invokes the
+            # pinned full-record copier, preserving the tag at record +0x53.
+            from . import nfl2k5_practice_reserves as reserves
+            if (not changed_pins <= {0x61769, 0x617A4}
+                    or reserves.status(payload) != 'applied'):
+                return 'foreign'
         if any(hashlib.sha256(_read(payload, va, size)).hexdigest() != pin
                for va, size, pin in CONTEXT_HASHES):
             return 'foreign'

@@ -17,7 +17,7 @@ for entry in (ROOT, ROOT / "tests"):
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 from mod_editor.core import mod_build  # noqa: E402
-from mod_editor.gui.gameplay_patches_panel_qt import PATCHES, GameplayPatchesPanel  # noqa: E402
+from mod_editor.gui.gameplay_patches_panel_qt import NEEDS_IMAGE, PATCHES, GameplayPatchesPanel  # noqa: E402
 from nfl2k5_throw_tuning_test import _build_progression_xbe as _build_synthetic_xbe   # every gameplay patch reads retail on it  # noqa: E402
 
 
@@ -27,7 +27,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_three_patches_with_explanations_and_gating(self) -> None:
-        self.assertEqual([k for k, _l, _e in PATCHES], ["catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "dynamic_kickoff", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "depth_chart_rows", "practice_squad"])
+        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'momentum', 'momentum_contact', 'defensive_try', 'zone_drop_cap', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'prospect_names', 'franchise_practice', 'player_star', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'screen_timing', 'music_policy', 'music_unlock', 'music_userlist', 'scorebug', 'scorebug_runtime', 'guardian_cap', 'season_cap', 'depth_locks'])
         for _k, _l, explanation in PATCHES:
             self.assertIn("Retail", explanation)
             self.assertIn("Patch", explanation)
@@ -45,9 +45,11 @@ class GameplayPatchesPanelTests(unittest.TestCase):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("Full disc required", check.toolTip())
                         continue
-                    if key in ("camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star"):
+                    if key in ("depth_locks", "music_policy", "music_unlock", "music_userlist", "camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star"):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("neither retail nor this patch", check.toolTip())
+                    elif key in NEEDS_IMAGE:
+                        self.assertFalse(check.isEnabled(), key)  # disc-only change on a loose executable
                     else:
                         self.assertTrue(check.isEnabled(), key)
                 self.assertFalse(panel.write_button.isEnabled())

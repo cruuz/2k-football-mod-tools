@@ -10,6 +10,8 @@ import struct
 import sys
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 from mod_editor.core.nfl2k5_audio_catalog import (
     Nfl2k5StreamingAudioBank,
     Nfl2k5StreamingAudioRange,

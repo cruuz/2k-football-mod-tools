@@ -73,6 +73,7 @@ Format 1 keeps its existing, more permissive run-only container-size behaviour.
 | 2 | `file_replace` | 1 | Resolve a named file through XDVDFS and replace its existing, same-size extent |
 | 3 | `file_grow` | 1 | Resolve a named file, append its larger replacement at the next sector after EOF, then repoint that file's directory sector/length |
 | 4 | `file_add` | reserved | Contract/design below; currently refuses as an unknown operation |
+| 5 | `file_shrink` | 1 | Replace a named file with a shorter nonempty payload at its existing sector, update its directory length, retain the physical image size and unused allocation bytes |
 
 Separate operations may overlap, including replacing the same bytes or growing
 an already grown file. Before hashes refer to the intermediate result of the
@@ -83,8 +84,11 @@ sector/length field, relative to the partition), and `before` / `after` objects
 with `sector`, `size`, and `sha256`. The name must resolve to the declared field
 and extent; offsets alone are insufficient. `file_grow` appends the *complete*
 replacement, leaves the old allocation untouched, and zero-fills only the alignment
-gap. It cannot overwrite the next disc file. Shrinking/repacking is not inferred
-by the current exporter; it can be represented by a future registered handler.
+gap. It cannot overwrite the next disc file. A shorter explicitly named file
+exports as `file_shrink` (ID 5). Shrink cannot relocate a file, truncate the ISO,
+or modify the bytes after its new declared end. Before/after hashes and nested
+directory resolution are verified as for replacement/growth. Version-2 readers
+without handler 5 refuse it as an unknown operation. ID 4 stays reserved.
 
 `xbe_grow` uses that same envelope plus strict SPECIAL validation: old XBE length
 `0xB65000`, new length `0xB77000`, recognised original final-section storage,

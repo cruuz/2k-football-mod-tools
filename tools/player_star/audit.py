@@ -57,7 +57,8 @@ def audit(payload):
             ref(address, int(args, 16), 'decoded-transfer-including-rel8')
         # Width-overlap reads into a cave could precede its entry by a few bytes.
         # The individual declared boundaries are reviewed in AUDIT.md as well.
-    ownership = [{'va': hex(a), 'end': hex(b), 'overlaps': manifest.overlaps(a, b),
+    ownership = [{'va': hex(a), 'end': hex(b),
+                  'overlaps': manifest.overlaps(a, b, exclude_owner='nfl2k5_player_star'),
                   'retail_sha256': hashlib.sha256(image.read(a, b-a)).hexdigest()}
                  for a, b in spans]
     return {'retail_sha256': image.sha256, 'decoded_instructions': count,

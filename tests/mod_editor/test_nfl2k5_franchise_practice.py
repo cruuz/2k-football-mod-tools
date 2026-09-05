@@ -225,13 +225,13 @@ class RetailTests(unittest.TestCase):
         after = self._off(fp.NEXT_ROUTINE_VA)
         self.assertEqual(self.patched[after: after + 0x20], self.retail[after: after + 0x20])
         self.assertEqual(self.retail[after: after + len(fp.RETAIL_NEXT_ROUTINE)], fp.RETAIL_NEXT_ROUTINE)
-        # the eleven retail rows and the terminator are untouched
-        rows = self._off(fp.COACH_DESK_ROWS_VA)
-        span = (fp.RETAIL_ROW_COUNT + 1) * fp.ROW_SIZE
+        # The seven rows after the phase-specific schedules and the terminator stay put.
+        rows = self._off(fp.COACH_DESK_ROWS_VA + fp.SCHEDULE_ROW_COUNT * fp.ROW_SIZE)
+        span = (fp.RETAIL_ROW_COUNT - fp.SCHEDULE_ROW_COUNT + 1) * fp.ROW_SIZE
         self.assertEqual(self.patched[rows: rows + span], self.retail[rows: rows + span])
         self.assertEqual(rdata.offset_of(self.patched, fp.CAVE_HOOKS_VA), cave)
 
-    def test_the_row_table_walk_finds_practice_first_and_the_terminator_intact(self) -> None:
+    def test_the_row_table_walk_keeps_every_schedule_before_practice(self) -> None:
         before = fp.read_rows(self.retail)
         self.assertEqual(len(before), fp.RETAIL_ROW_COUNT + 1)
         self.assertEqual([r["label"] for r in before][:2], ["Schedule", "Playoff Schedule"])
@@ -239,10 +239,12 @@ class RetailTests(unittest.TestCase):
 
         after = fp.read_rows(self.patched)
         self.assertEqual(len(after), fp.RETAIL_ROW_COUNT + 2)
-        self.assertEqual(after[0], {"va": "0x521eec", "type": fp.ROW_TYPE_ACTION,
+        self.assertEqual(after[4], {"va": "0x521fbc", "type": fp.ROW_TYPE_ACTION,
                                     "label_va": f"0x{fp.PRACTICE_LABEL_VA:x}", "label": "Practice",
                                     "activate": f"0x{fp.ROW_CALLBACK_VA:x}", "visibility": "0x0"})
-        self.assertEqual(after[1:], before)                       # the retail rows follow unchanged
+        for old, new in zip(before[:4], after[:4]):
+            self.assertEqual(new, {**old, "va": hex(int(old["va"], 16) - fp.ROW_SIZE)})
+        self.assertEqual(after[5:], before[4:])
         self.assertEqual(after[-1]["type"], fp.ROW_TYPE_TERMINATOR)
         self.assertEqual(after[-1]["va"], f"0x{fp.TERMINATOR_VA:x}")
         self.assertEqual([r["label"] for r in after][-2:], ["Quit", ""])
@@ -255,6 +257,24 @@ class RetailTests(unittest.TestCase):
                          fp.RETAIL_COACH_DESK_HOOKS)
         self.assertEqual(sorted(struct.unpack_from("<II", copy, i) for i in range(0, len(copy) - 4, 8)),
                          sorted(fp.HOOK_PAIRS))
+
+    def test_every_schedule_record_is_pinned_including_its_visibility_callback(self) -> None:
+        for row in range(fp.SCHEDULE_ROW_COUNT):
+            for within in (4, 0x28, 0x2C):
+                data = bytearray(self.retail)
+                data[self._off(fp.COACH_DESK_ROWS_VA + row * fp.ROW_SIZE + within)] ^= 1
+                self.assertEqual(fp.status(data), "foreign")
+                with self.assertRaises(fp.FranchisePracticeError):
+                    fp.apply(data)
+
+    def test_beta60_order_requires_a_rebuild_from_retail(self) -> None:
+        data = bytearray(self.patched)
+        at = self._off(fp.FREED_SPAN_VA)
+        old_order = bytes(4) + fp.practice_row() + fp.RETAIL_SCHEDULE_ROWS
+        data[at:at + len(old_order)] = old_order
+        self.assertEqual(fp.status(data), "foreign")
+        with self.assertRaises(fp.FranchisePracticeError):
+            fp.apply(data)
 
     def test_the_clone_reaches_the_retail_rows_and_the_team_select_record(self) -> None:
         clone = self.patched[self._off(fp.CAVE_DESCRIPTOR_VA):][: fp.SCRIM_DESCRIPTOR_SIZE]

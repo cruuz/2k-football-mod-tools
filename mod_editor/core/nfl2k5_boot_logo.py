@@ -11,6 +11,11 @@ So whenever the bitmap region is no longer retail, the retail bitmap is copied i
 that follows the header (0x10CD0..0x10F82, inside the header page, 830 zero bytes in retail) and the
 header's LogoBitmapAddr / LogoBitmapSize point at the copy; SizeOfHeaders grows to cover it. The caves
 keep their bytes, the kernel decodes the genuine 100 x 17 logo, and nothing in the game changes.
+
+The optional r61 grown-section allocator transfers this bitmap into its named
+read-only page allocation before taking the header padding. Recognition here
+delegates to that allocator. Loader availability of that new bitmap location
+is EXPERIMENTAL/UNWITNESSED; see ASTRA_XBE_SPACE_REPORT.md.
 """
 
 from __future__ import annotations
@@ -93,6 +98,11 @@ def status(payload: bytes) -> str:
     if len(payload) < 0x1000 or payload[:4] != b"XBEH":
         return "foreign"
     addr, size, headers = _fields(payload)
+    if headers == 0x1000 and payload[0xDA0:0xDA8] in (b"XSPACE1\0", b"XSPACE2\0"):
+        from . import nfl2k5_xbe_space as space
+        if space.status(payload) == "applied":
+            return "applied"
+        return "foreign"
     copy = payload[NEW_LOGO_VA - BASE: NEW_LOGO_VA - BASE + LOGO_SIZE]
     if addr == RETAIL_LOGO_VA and size == LOGO_SIZE and headers == RETAIL_SIZE_OF_HEADERS and not any(copy):
         return "retail"
@@ -112,7 +122,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
 
     state = status(payload)
     if state == "applied":
-        return payload, {"status": "applied", "already_applied": True, "logo_va": f"0x{NEW_LOGO_VA:x}"}
+        return payload, {"status": "applied", "already_applied": True, "logo_va": f"0x{_fields(payload)[0]:x}"}
     _require(state == "retail", f"boot-logo header fields are {state}; refusing")
     padding = payload[NEW_LOGO_VA - BASE: NEW_LOGO_VA - BASE + LOGO_SIZE]
     _require(not any(padding), "the header padding after the logo is not free")
