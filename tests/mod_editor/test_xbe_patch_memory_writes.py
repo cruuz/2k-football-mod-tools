@@ -164,6 +164,18 @@ class PatchWriteTests(unittest.TestCase):
                                     f"{insn.address:#x}: {insn.mnemonic} {insn.op_str}")
         self.assertGreater(checked, 0)
 
+    def test_special_table_is_preloaded_read_only_data_outside_text(self) -> None:
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        section = image.section(rows.TABLE_VA, rows.TABLE_SIZE)
+        self.assertIsNotNone(section)
+        self.assertNotEqual(section.name, ".text")
+        self.assertFalse(section.writable)
+        self.assertFalse(section.executable)
+        self.assertTrue(section.flags & 2)
+        self.assertFalse(image.runtime_writable(rows.TABLE_VA, rows.TABLE_SIZE))
+
 
 if __name__ == "__main__":
     unittest.main()

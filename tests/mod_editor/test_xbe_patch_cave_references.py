@@ -185,6 +185,17 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual({va: refs for va, refs in self.targets.items()
                           if pools.CAVE_VA <= va < pools.CAVE_VA + pools.CAVE_SIZE}, {})
 
+    def test_special_storage_is_a_fresh_loader_allocation_with_no_retail_reference_encoding(self) -> None:
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        image = XbeImage(self.retail)
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, image)
+        evidence = storage.allocation_evidence(self.retail, manifest)
+        self.assertEqual(evidence["encoded_references"], [])
+        self.assertEqual(evidence["manifest_overlaps"], [])
+        self.assertEqual(XbeImage(self.patched).read(storage.SECTION_VA, storage.RETAIL_SIZE),
+                         image.read(storage.SECTION_VA, storage.RETAIL_SIZE))
+
 
 if __name__ == "__main__":
     unittest.main()

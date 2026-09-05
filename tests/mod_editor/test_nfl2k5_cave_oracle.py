@@ -278,6 +278,10 @@ def test_exact_diff_tracks_last_byte_and_unchanged_pages():
     assert list(changed_runs(before, bytes(after))) == [(4095, 4097), (8999, 9000)]
     with pytest.raises(OracleError, match="resized"):
         list(changed_runs(b"a", b"ab"))
+    assert list(changed_runs(b"abc", b"azcd", allow_append=True)) == [(1, 2), (3, 4)]
+    assert list(changed_runs(b"abc", b"abzd", allow_append=True)) == [(2, 4)]
+    with pytest.raises(OracleError, match="resized"):
+        list(changed_runs(b"abc", b"ab", allow_append=True))
 
 
 def test_recorder_refuses_unattributed_patch():
@@ -285,6 +289,8 @@ def test_recorder_refuses_unattributed_patch():
     recorder = Recorder(p)
     with pytest.raises(OracleError, match="unattributed"):
         recorder.finish(put(p, TEXT + 0x80, b"\xc3"))
+    with pytest.raises(OracleError, match="unattributed"):
+        recorder.finish(p + b"x")
 
 
 def test_cli_json_and_twenty_largest_summary_without_mutating_input(tmp_path):

@@ -161,10 +161,12 @@ class OfflineDepthRolesTests(unittest.TestCase):
         self.assertEqual(result.report["gate"]["excluded"], 1)
         self.assertTrue(result.report["ambiguous_groups"])
 
-    def test_disagreement_refuses_entire_group_even_ordinary_formations(self):
+    def test_disagreement_refuses_wr_slots_even_when_hb_role_is_unambiguous(self):
         raw = fixture(((-9, -15, 15), (-15, 12, 15), (-9, -15, 15)))
         result = d.normalise(raw)
-        self.assertEqual(result.replacement, raw)
+        self.assertEqual(lib.category_positions(result.replacement[32:], 0)[6:9],
+                         lib.category_positions(raw[32:], 0)[6:9])
+        self.assertEqual(lib.category_positions(result.replacement[32:], 0)[10], 10 | 1 << 5)
         self.assertEqual(result.report["refused_groups"][0]["refused_reason"], "disagreeing_inner_slot")
         self.assertGreater(result.report["refused_groups"][0]["max_disagreement_yd"], 2)
         self.assertEqual(result.report["gate"]["excluded"], 3)
@@ -182,13 +184,14 @@ class OfflineDepthRolesTests(unittest.TestCase):
         self.assertEqual(result.report["refused_groups"][0]["refused_reason"], "non_offensive_wr_group")
         raw = fixture(((15, 12, 5),))
         result = d.normalise(raw)
-        self.assertEqual(result.replacement, raw)
+        self.assertEqual(lib.category_positions(result.replacement[32:], 0)[6:9],
+                         lib.category_positions(raw[32:], 0)[6:9])
         self.assertEqual(result.report["refused_groups"][0]["refused_reason"], "no_distinct_outside_left_and_right")
 
     def test_only_role_ordinal_bytes_change_and_link_words_are_exact(self):
         raw = fixture()
         result = d.normalise(raw)
-        allowed = {32 + insp.CATEGORY_BASE + 5 + s for s in (6, 7, 8)}
+        allowed = {32 + insp.CATEGORY_BASE + 5 + s for s in (6, 7, 8, 10)}
         changed = {i for i, (a, b) in enumerate(zip(raw, result.replacement)) if a != b}
         self.assertEqual(changed, allowed)
         for i in changed:
@@ -226,7 +229,7 @@ class OfflineDepthRolesTests(unittest.TestCase):
         with self.assertRaisesRegex(d.DepthRolesError, "foreign"):
             d.apply_to_archive(archive)
         self.assertEqual(archive.writes, 0)
-        self.assertEqual(d.apply_to_archive(archive, allow_custom=True)["changed_bytes"], 3)
+        self.assertEqual(d.apply_to_archive(archive, allow_custom=True)["changed_bytes"], 4)
         archive.writes = 0
         self.assertEqual(d.apply_to_archive(archive, allow_custom=True)["changed_bytes"], 0)
         self.assertEqual(archive.writes, 0)
@@ -276,7 +279,7 @@ class OfflineDepthRolesTests(unittest.TestCase):
                 self.assertEqual(before["totals"]["books"], 2)
                 self.assertEqual(before["totals"], d.audit(image.retail_packs)["totals"])
                 receipt = d.apply(image.path, allow_custom=True)
-                self.assertEqual(receipt["changed_bytes"], 6)
+                self.assertEqual(receipt["changed_bytes"], 8)
                 self.assertTrue(d.audit(image.path)["totals"]["gate_ok"])
                 self.assertEqual(d.apply(image.path, allow_custom=True)["changed_bytes"], 0)
                 # The complete XISO differs only at reported role ordinals;
@@ -295,7 +298,7 @@ class OfflineDepthRolesTests(unittest.TestCase):
             result = subprocess.run(command + ["normalise", str(source), "-o", str(output), "--allow-custom", "--json", "-"],
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(json.loads(result.stdout)["changed_bytes"], 3)
+            self.assertEqual(json.loads(result.stdout)["changed_bytes"], 4)
             result = subprocess.run(command + ["audit", str(output), "--json", "-"], capture_output=True, text=True)
             self.assertTrue(json.loads(result.stdout)["totals"]["gate_ok"])
             result = subprocess.run(command + ["status", str(output), "--json", "-"], capture_output=True, text=True)
@@ -365,11 +368,13 @@ class RetailDepthRolesTests(unittest.TestCase):
             allowed = set(result.report["changed_resource_offsets"])
             self.assertEqual(sum(a != b for a, b in zip(raw, result.replacement)), len(allowed))
             for offset in allowed:
-                self.assertEqual(raw[offset] & 31, result.replacement[offset] & 31)
+                if offset not in result.report["kind_change_offsets"]:
+                    self.assertEqual(raw[offset] & 31, result.replacement[offset] & 31)
                 self.assertTrue(32 + insp.CATEGORY_BASE <= offset < 32 + insp.NODE_BASE)
             for g in result.report["refused_groups"]:
                 offset = 32 + insp.CATEGORY_BASE + g["index"] * insp.CATEGORY_SIZE
-                self.assertEqual(raw[offset:offset + 16], result.replacement[offset:offset + 16])
+                for slot in g["slots"]:
+                    self.assertEqual(raw[offset + 5 + slot], result.replacement[offset + 5 + slot])
 
     def test_geometry_and_ordinal_edits_are_foreign_but_names_are_not_owned(self):
         raw = bytearray(self.raws["308"])
@@ -422,7 +427,7 @@ class RetailOrdinalExecutionTests(unittest.TestCase):
     def test_actual_retail_resolver_returns_chain_and_row_for_all_role_ordinals(self):
         raw = XBE.read_bytes()
         self.assertEqual(hashlib.md5(raw).hexdigest(), "444064a9ec984dd29d2c05a43f5c96e8")
-        for kind, chains in ((9, (4, 5)), (18, (21, 22))):
+        for kind, chains in ((9, (4, 5)), (18, (21, 22)), (6, (10, 10)), (10, (1, 1))):
             for ordinal in range(8):
                 uc = unicorn.Uc(unicorn.UC_ARCH_X86, unicorn.UC_MODE_32)
                 uc.mem_map(0xE7000, 0x1000)
@@ -441,7 +446,8 @@ class RetailOrdinalExecutionTests(unittest.TestCase):
                 uc.emu_start(0xE7530, 0xE7564, count=32)
                 self.assertEqual(uc.reg_read(ux.UC_X86_REG_EIP), 0xE7564, "bounded execution must return")
                 self.assertEqual(uc.reg_read(ux.UC_X86_REG_EAX), chains[ordinal & 1])
-                self.assertEqual(struct.unpack("<I", uc.mem_read(0x1000000, 4))[0], ordinal >> 1)
+                self.assertEqual(struct.unpack("<I", uc.mem_read(0x1000000, 4))[0],
+                                 ordinal if chains[0] == chains[1] else ordinal >> 1)
                 self.assertEqual(uc.reg_read(ux.UC_X86_REG_EBX), 0x1234)
                 self.assertEqual(uc.reg_read(ux.UC_X86_REG_EDI), 0x5678)
 

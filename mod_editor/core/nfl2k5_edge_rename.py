@@ -34,9 +34,9 @@ The formation-slot label records in ``.rdata`` (``0x5140D8 + 0x48 * (stride * un
 for the right end).  The abbreviation field cannot hold ``LEDGE`` (five characters plus NUL is
 one wchar too many, and the long name starts right behind it), so both sides become ``EDGE``
 and the side moves into the long name: ``LEFT EDGE RUSHER`` / ``RIGHT EDGE RUSHER``.
-The stride is read through ``nfl2k5_modern_positions.layout_stride`` (11 retail,
-13 with Tier 2). Scheme/pool-owned 3-4 DE text is preserved, so EDGE can be
-applied before or after those modules on either layout.
+The retail stride and active table base are read through
+``nfl2k5_modern_positions``. Scheme/pool-owned 3-4 DE text is preserved, so
+EDGE can be applied before or after relocation to the SPECIAL table.
 
 On the disc, 247 historic-team players are literally named "<Team> Def End" (ROST resources in
 pack ``0``, 16-byte last-name allocations, uniquely referenced) and two trivia questions say
@@ -178,7 +178,7 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     stride = modern.layout_stride(payload)
     for label, retail_va, abbrev, old_long, new_long in SLOT_RECORDS:
         unit, slot = divmod((retail_va - modern.SLOT_TABLE_VA) // SLOT_RECORD_STRIDE, modern.SLOTS_PER_UNIT)
-        va = modern.record_va(unit, slot, stride)
+        va = modern.record_va(unit, slot, stride, table_va=modern.layout_table(payload))
         sites.append((label, _offset(payload, va), _slot_record(abbrev, old_long),
                       _slot_record(ABBREVIATION, new_long)))
     return sites

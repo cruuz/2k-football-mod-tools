@@ -196,10 +196,13 @@ class ReservationManifest:
         spans = document.get("spans")
         if not isinstance(spans, list) or not spans:
             raise OracleError("reservation manifest contains no spans")
+        stack_size = document.get("stack_image_size", image.image_size)
+        if type(stack_size) is not int or not image.image_size <= stack_size <= 0x10000000:
+            raise OracleError("invalid reservation stack image size")
         self.spans = []
         for row in spans:
             a, b = int(row["start"], 0), int(row["end"], 0)
-            if not image.base <= a < b <= image.base + image.image_size or not row.get("owner"):
+            if not image.base <= a < b <= image.base + stack_size or not row.get("owner"):
                 raise OracleError("invalid reserved span")
             self.spans.append(Evidence(a, b, None, "reserved", row["owner"] + ": " + row["basis"], "reserved"))
         if source_root is not None:

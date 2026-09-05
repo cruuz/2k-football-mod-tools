@@ -23,14 +23,15 @@ from .nfl2k5_cave_oracle import MANIFEST_SCHEMA, RETAIL_SHA256, OracleError, Xbe
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def changed_runs(before: bytes, after: bytes):
+def changed_runs(before: bytes, after: bytes, *, allow_append: bool = False):
     """Exact half-open file spans, including the final changed byte."""
-    if len(before) != len(after):
+    if len(before) != len(after) and not (allow_append and len(after) > len(before)):
         raise OracleError("patch resized the XBE; ownership generation refused")
     start = None
     # Skip equal pages cheaply; only enumerate changed pages in Python.
     for page in range(0, len(before), 4096):
-        a, b = before[page:page + 4096], after[page:page + 4096]
+        end = min(page + 4096, len(before))
+        a, b = before[page:end], after[page:end]
         if a == b:
             if start is not None:
                 yield start, page
@@ -44,8 +45,10 @@ def changed_runs(before: bytes, after: bytes):
             elif start is not None:
                 yield start, off
                 start = None
+    if len(after) > len(before) and start is None:
+        start = len(before)
     if start is not None:
-        yield start, len(before)
+        yield start, len(after)
 
 
 class Recorder:
@@ -55,19 +58,28 @@ class Recorder:
         self.spans: list[dict] = []
         self.steps: list[dict] = []
         self.covered = bytearray(len(retail))
+        self.mapping_end = self.image.base + self.image.image_size
 
     def reserve(self, start: int, size: int, owner: str, basis: str):
         if not size:
             return
-        if not self.image.base <= start < start + size <= self.image.base + self.image.image_size:
+        if not self.image.base <= start < start + size <= self.mapping_end:
             raise OracleError(f"invalid declared reservation from {owner}")
         self.spans.append({"start": hex(start), "end": hex(start + size), "size": size,
                            "owner": owner, "basis": basis})
 
     def observe(self, module: ModuleType, function: str, before: bytes, after: bytes, receipt: dict):
         owner = module.__name__.split(".")[-1]
-        runs = list(changed_runs(before, after))
         post_image = XbeImage(after)
+        allow_append = False
+        if len(before) != len(after):
+            from . import nfl2k5_depth_chart_storage as storage
+            allow_append = (owner == "nfl2k5_depth_chart_rows" and storage.state(before) == "retail"
+                            and storage.state(after) == "applied")
+        runs = list(changed_runs(before, after, allow_append=allow_append))
+        self.mapping_end = max(self.mapping_end, post_image.base + post_image.image_size)
+        if len(after) > len(self.covered):
+            self.covered.extend(bytes(len(after) - len(self.covered)))
         for a, b in runs:
             self.covered[a:b] = b"\x01" * (b - a)
             # Split at mapping boundaries; raw padding is retained as a file-only
@@ -140,7 +152,9 @@ class Recorder:
         return observe
 
     def finish(self, final: bytes):
-        missing = [a for a, b in changed_runs(self.retail, final) if not all(self.covered[a:b])]
+        if len(final) > len(self.covered):
+            raise OracleError("unattributed final XBE growth")
+        missing = [a for a, b in changed_runs(self.retail, final, allow_append=True) if not all(self.covered[a:b])]
         if missing:
             raise OracleError(f"unattributed final XBE changes at {[hex(a) for a in missing[:8]]}")
         # Shared-page runtime storage is intentionally reserved even though zero
@@ -248,6 +262,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
         used_fingerprints = {name: digest for name, digest in fingerprints.items()
                              if str((ROOT / name).resolve()) in loaded_paths}
         return {"schema": MANIFEST_SCHEMA, "retail_sha256": RETAIL_SHA256, "complete": True,
+                "stack_image_size": XbeImage(final).image_size,
                 "model": "observed experimental disc build plus dormant seven-on-seven; exact diffs union declared capacity/runtime storage",
                 "preset": "softdrink_experimental", "preset_values": preset,
                 "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book"],

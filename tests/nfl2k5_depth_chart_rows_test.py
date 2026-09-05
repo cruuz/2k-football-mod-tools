@@ -13,7 +13,9 @@ import os
 from pathlib import Path
 import struct
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -21,6 +23,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 
 from mod_editor.core import nfl2k5_bump_strength as strength
 from mod_editor.core import nfl2k5_depth_chart_rows as rows
+from mod_editor.core import nfl2k5_depth_chart_storage as storage
 from mod_editor.core import nfl2k5_edge_rename as edge
 from mod_editor.core import nfl2k5_modern_positions as modern
 from mod_editor.core import nfl2k5_position_pools as pools
@@ -44,11 +47,18 @@ def put(buf, va, raw):
 
 def fixture():
     buf = bytearray(pool_fixture())
+    # Synthetic final section, with no private retail bytes. Only the test's
+    # content hash is overridden; production still pins the real .XTLID data.
+    buf.extend(bytes(storage.RETAIL_FILE_SIZE - len(buf)))
+    table = struct.unpack_from("<I", buf, 0x120)[0] - 0x10000
+    struct.pack_into("<5I", buf, table + 21 * 56, storage.RETAIL_FLAGS, storage.SECTION_VA,
+                     storage.RETAIL_SIZE, storage.RETAIL_RAW, storage.RETAIL_SIZE)
+    struct.pack_into("<I", buf, 0x10C, storage.RETAIL_IMAGE_SIZE)
     for unit, records in ((0, OFFENSE), (3, SPECIALS)):
         for slot, (abbrev, long_name, pos, chain) in enumerate(records):
             put(buf, modern.record_va(unit, slot), modern.slot_text(abbrev, long_name) + struct.pack("<II", pos, chain))
     put(buf, modern.record_va(3, 4), bytes(7 * rows.RECORD_SIZE))
-    for site in rows.code_sites():
+    for site in (*rows.code_sites(), *rows.title_sites()):
         put(buf, site.va, site.befores[0])
     put(buf, rows.TABLE_END_VA, rows.RETAIL_RETURNER_POSITIONS)
     _repin(buf)
@@ -62,25 +72,30 @@ def prepare(payload):
 class LayoutTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.storage_pin = patch.object(storage, "RETAIL_CONTENT_SHA256", hashlib.sha256(bytes(storage.RETAIL_SIZE)).hexdigest())
+        cls.storage_pin.start()
+        cls.addClassCleanup(cls.storage_pin.stop)
         cls.retail = fixture()
         cls.prepared = prepare(cls.retail)
         cls.patched, cls.receipt = rows.apply(cls.prepared)
 
     def test_full_table_pin_and_counts(self):
-        original = rows._read(self.retail, rows.TABLE_VA, rows.TABLE_SIZE)
+        original = rows._read(self.retail, rows.RETAIL_TABLE_VA, rows.RETAIL_TABLE_SIZE)
         self.assertEqual(hashlib.sha256(original).hexdigest(), rows.RETAIL_TABLE_SHA256)
         self.assertEqual(rows.status(self.retail), "retail")
         self.assertEqual(modern.SLOTS_PER_UNIT, 11)
-        self.assertEqual(modern.layout_stride(self.patched), 13)
-        self.assertEqual(rows.ROW_COUNTS, (12, 13, 13, 4))
+        self.assertEqual(modern.layout_stride(self.patched), 11)
+        self.assertEqual(rows.ROW_COUNTS, (11, 11, 11, 13))
         self.assertEqual(rows.TABLE_END_VA, 0x514D38)
         self.assertEqual(rows._read(self.patched, rows.TABLE_END_VA, 24), rows.RETAIL_RETURNER_POSITIONS)
-        for index in (12, 43):
-            self.assertEqual(rows._read(self.patched, rows.TABLE_VA + index * 72, 72), bytes(72))
+        self.assertEqual(rows._read(self.prepared, rows.RETAIL_TABLE_VA, rows.RETAIL_TABLE_SIZE),
+                         rows._read(self.patched, rows.RETAIL_TABLE_VA, rows.RETAIL_TABLE_SIZE))
         self.assertEqual([len(u) for u in modern.read_units(self.retail).values()], [11, 11])
-        self.assertEqual([len(u) for u in modern.read_units(self.patched).values()], [13, 13])
+        self.assertEqual([len(u) for u in modern.read_units(self.patched).values()], [11, 11])
         with self.assertRaises(modern.ModernPositionsError):
-            modern.record_va(3, 5, 13)  # past the allocation, although slot < stride
+            modern.record_va(3, 5, 13)  # obsolete unit stride
+        for site in rows.title_sites():
+            self.assertEqual(rows._read(self.patched, site.va, len(site.after)), site.after)
 
     def test_records_preserve_original_order_fields_and_specials(self):
         for unit in range(4):
@@ -114,9 +129,10 @@ class LayoutTests(unittest.TestCase):
             if section.index in self.receipt["sections_repinned"]:
                 allowed.update(range(section.header_offset + 36, section.header_offset + 56))
         diff = {i for i, (a, b) in enumerate(zip(self.prepared, self.patched)) if a != b}
-        self.assertEqual(len(self.prepared), len(self.patched))
+        self.assertEqual(len(self.patched) - len(self.prepared), storage.FILE_SIZE - storage.RETAIL_FILE_SIZE)
         self.assertLessEqual(diff, allowed)
-        self.assertEqual(len(diff), self.receipt["changed_bytes"])
+        self.assertEqual(len(diff) + self.receipt["file_growth"], self.receipt["changed_bytes"])
+        self.assertEqual(self.patched[storage.TABLE_RAW + storage.TABLE_SIZE:], bytes(storage.FILE_SIZE - storage.TABLE_RAW - storage.TABLE_SIZE))
         for mod in (rows, modern, pools, edge):
             self.assertEqual(mod.status(self.patched), "applied")
 
@@ -133,7 +149,7 @@ class LayoutTests(unittest.TestCase):
 
     def test_every_code_instruction_is_pinned_and_partial_layouts_refuse(self):
         for payload in (self.prepared, self.patched):
-            for site in rows.code_sites():
+            for site in (*rows.code_sites(), *rows.title_sites()):
                 # Corrupt opcode, interior and final bytes, including whole-block pins.
                 for delta in {0, len(site.after) // 2, len(site.after) - 1}:
                     broken = bytearray(payload)
@@ -141,17 +157,18 @@ class LayoutTests(unittest.TestCase):
                     self.assertEqual(rows.status(bytes(broken)), "foreign", (site.label, delta))
                     with self.assertRaises(rows.DepthChartRowsError):
                         rows.apply(bytes(broken))
-        for va, size in ((rows.TABLE_VA, rows.TABLE_SIZE), (rows.COUNT_VA, len(rows.RETAIL_COUNT))):
+        for va, size in ((0x243AED, 7), (rows.COUNT_VA, len(rows.RETAIL_COUNT))):
             broken = bytearray(self.prepared)
             put(broken, va, rows._read(self.patched, va, size))
             self.assertEqual(rows.status(bytes(broken)), "foreign")
 
     def test_table_padding_pool_fields_boundary_and_truncation_refuse(self):
         for payload in (self.prepared, self.patched):
-            for index in range(44):
+            table_va, records = (rows.RETAIL_TABLE_VA, 44) if payload is self.prepared else (rows.TABLE_VA, 46)
+            for index in range(records):
                 for delta in (8, 62, 67, 71):
                     broken = bytearray(payload)
-                    broken[modern._offset(broken, rows.TABLE_VA) + index * 72 + delta] ^= 0x80
+                    broken[modern._offset(broken, table_va) + index * 72 + delta] ^= 0x80
                     self.assertEqual(rows.status(bytes(broken)), "foreign", (index, delta))
             broken = bytearray(payload)
             broken[modern._offset(broken, rows.TABLE_END_VA)] ^= 1
@@ -175,12 +192,81 @@ class LayoutTests(unittest.TestCase):
                 self.assertEqual(rows.apply(payload)[0], payload)
                 finals.append(payload)
         self.assertEqual(len(finals), 8)
-        self.assertTrue(all(p == self.patched for p in finals))
+        # Label toggles after relocation touch the live copy. The retired
+        # original records remember the labels present when it was copied.
+        allowed = set(range(modern._offset(self.patched, rows.RETAIL_TABLE_VA),
+                            modern._offset(self.patched, rows.TABLE_END_VA)))
+        sec = strength._section_for_offset(strength._sections(self.patched), modern._offset(self.patched, rows.RETAIL_TABLE_VA))
+        allowed.update(range(sec.header_offset + 36, sec.header_offset + 56))
+        for payload in finals:
+            self.assertLessEqual({i for i, (a, b) in enumerate(zip(payload, self.patched)) if a != b}, allowed)
+
+    def test_storage_and_titles_are_pinned_and_obsolete_layout_refuses(self):
+        for payload in (self.prepared, self.patched):
+            for off in (storage.RETAIL_RAW, storage.RETAIL_RAW + storage.RETAIL_SIZE,
+                        storage._section(payload).header_offset, 0x10C):
+                broken = bytearray(payload)
+                broken[off] ^= 1
+                self.assertEqual(rows.status(bytes(broken)), "foreign")
+        broken = bytearray(self.prepared)
+        put(broken, modern.STRIDE_INSTRUCTION_VA, bytes.fromhex("6bc00d"))
+        self.assertEqual(rows.status(bytes(broken)), "foreign")
+
+    def test_disc_growth_relinks_only_xbe_preserves_neighbour_and_replays(self):
+        self._disc_storage_case(False)
+
+    def test_disc_growth_rolls_back_a_short_directory_write(self):
+        self._disc_storage_case(True)
+
+    def _disc_storage_case(self, fail):
+        from nfl2k5_xiso_fixture import dir_node, xiso
+        from mod_editor.core import platform_compat as io
+        root = dir_node([(64, len(self.prepared), 0x80, "default.xbe"),
+                         (64 + len(self.prepared) // 2048, 8, 0x80, "neighbour")])
+        image = bytearray(64 * 2048 + len(self.prepared) + 2048)
+        image[0x10000:0x10014] = image[0x107EC:0x10800] = xiso.XDVDFS_MAGIC
+        struct.pack_into("<II", image, 0x10014, 33, len(root))
+        image[33 * 2048:33 * 2048 + len(root)] = root
+        image[64 * 2048:64 * 2048 + len(self.prepared)] = self.prepared
+        image[-2048:-2040] = b"KEEPTHIS"
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "copy.iso"
+            path.write_bytes(image)
+            fd = os.open(path, os.O_RDWR | getattr(os, "O_BINARY", 0))
+            try:
+                if fail:
+                    real_write = io.pwrite
+                    failed = False
+
+                    def short_directory(descriptor, data, offset):
+                        nonlocal failed
+                        if len(data) == 8 and not failed:
+                            failed = True
+                            real_write(descriptor, data[:3], offset)
+                            return 3
+                        return real_write(descriptor, data, offset)
+
+                    with patch.object(io, "pwrite", side_effect=short_directory):
+                        with self.assertRaisesRegex(ValueError, "short SPECIAL"):
+                            storage.write_image_xbe(fd, self.patched)
+                    self.assertEqual(path.read_bytes(), image)
+                else:
+                    receipt = storage.write_image_xbe(fd, self.patched)
+                    self.assertTrue(receipt["relocated"])
+                    self.assertEqual(xiso.xbe_extent(fd, os.fstat(fd).st_size), (receipt["offset"], len(self.patched)))
+                    updated = path.read_bytes()
+                    self.assertEqual(updated[receipt["offset"]:], self.patched)
+                    changed = {i for i, (a, b) in enumerate(zip(image, updated)) if a != b}
+                    self.assertLessEqual(changed, set(range(receipt["directory_offset"], receipt["directory_offset"] + 8)))
+                    self.assertFalse(storage.write_image_xbe(fd, self.patched)["relocated"])
+                    self.assertEqual(path.read_bytes(), updated)
+            finally:
+                os.close(fd)
 
     def test_modern_labels_can_be_written_on_expanded_pools(self):
         buf = bytearray(self.patched)
         for site in modern.selected_sites():
-            put(buf, site.va_for(13), modern.slot_text(*site.before[0]))
+            put(buf, site.va_for(11, rows.TABLE_VA), modern.slot_text(*site.before[0]))
         _repin(buf)
         self.assertEqual(modern.status(bytes(buf)), "retail")
         self.assertEqual(rows.status(bytes(buf)), "applied")
@@ -191,6 +277,31 @@ class LayoutTests(unittest.TestCase):
 
 @unittest.skipUnless(XBE.is_file(), "private retail ESPN NFL 2K5 (USA)/default.xbe not present")
 class RetailTests(unittest.TestCase):
+    def test_reservation_recorder_accounts_for_every_appended_byte(self):
+        from mod_editor.core.nfl2k5_cave_manifest import Recorder
+        from mod_editor.core.nfl2k5_cave_oracle import ReservationManifest, XbeImage, MANIFEST_SCHEMA
+        prepared = prepare(XBE.read_bytes())
+        patched, receipt = rows.apply(prepared)
+        recorder = Recorder(prepared)
+        recorder.observe(rows, "apply", prepared, patched, receipt)
+        spans = recorder.finish(patched)
+        # In-memory ownership fixture only; the distributed manifest is never
+        # regenerated or replaced by this test.
+        doc = {"schema": MANIFEST_SCHEMA, "retail_sha256": hashlib.sha256(prepared).hexdigest(),
+               "complete": True, "stack_image_size": XbeImage(patched).image_size, "spans": spans}
+        manifest = ReservationManifest(doc, XbeImage(prepared))
+        self.assertTrue(manifest.overlaps(rows.TABLE_VA, rows.TABLE_VA + rows.TABLE_SIZE))
+        self.assertTrue(all(recorder.covered[len(prepared):]))
+
+    def test_all_retail_table_constants_are_accounted_for(self):
+        retail = XBE.read_bytes()
+        for field, expected in ((0, 2), (10, 1), (64, 7), (68, 8)):
+            word = struct.pack("<I", rows.RETAIL_TABLE_VA + field)
+            hits = [i for i in range(len(retail) - 3) if retail[i:i + 4] == word]
+            self.assertEqual(len(hits), expected, field)
+            covered = [(site.va, site.va + len(site.after)) for site in rows.code_sites()]
+            self.assertTrue(all(any(a <= off + 0x10000 < b for a, b in covered) for off in hits))
+
     @unittest.skipUnless(HAVE_CAPSTONE, "Capstone required for whole-instruction and table-reader audit")
     def test_whole_instruction_pins_and_all_retail_stride_sites(self):
         from capstone import Cs, CS_ARCH_X86, CS_MODE_32
@@ -212,8 +323,8 @@ class RetailTests(unittest.TestCase):
             for block in (*site.befores, site.after):
                 self.assertEqual(sum(i.size for i in md.disasm(block, site.va)), len(block), site.label)
         # Complete mov instructions at the operand addresses named in the brief.
-        self.assertEqual(rows._read(patched, 0x243AB0, 5), bytes.fromhex("b804000000"))
-        self.assertEqual(rows._read(patched, 0x243AB7, 5), bytes.fromhex("b80d000000"))
+        self.assertEqual(rows._read(patched, 0x243AB0, 5), bytes.fromhex("b80d000000"))
+        self.assertEqual(rows._read(patched, 0x243AB7, 5), bytes.fromhex("b80b000000"))
 
     def test_retail_pins_composition_and_shared_xbe_pass_replay(self):
         from mod_editor.core import nfl2k5_throw_tuning as tt
@@ -222,7 +333,7 @@ class RetailTests(unittest.TestCase):
         for site in rows.code_sites():
             self.assertEqual(rows._read(retail, site.va, len(site.after)), site.befores[0], site.label)
         patched, receipt = rows.apply(prepare(retail))
-        self.assertEqual(receipt["sections_repinned"], [0, 12])
+        self.assertEqual(receipt["sections_repinned"], [0, 14, 21])
         replay, _ = tt._apply_all(patched, None, False, edge_rename=True, scheme_labels=True)
         for mod in (edge, modern, pools, rows):
             self.assertEqual(mod.status(replay), "applied")
@@ -256,6 +367,7 @@ class ExecutionTests(unittest.TestCase):
         text = strength._sections(payload)[0]
         start, end = text.virtual_address, text.virtual_address + text.raw_size
         uc.mem_protect(start & ~0xFFF, (end & ~0xFFF) - (start & ~0xFFF), UC_PROT_READ | UC_PROT_EXEC)
+        uc.mem_protect(rows.TABLE_VA, 0x1000, UC_PROT_READ)
         team = bytearray(0x1F4)
         for i, (position, rank, side) in enumerate(players):
             ptr = self.player(i)
@@ -299,19 +411,15 @@ class ExecutionTests(unittest.TestCase):
             self.assertEqual(self.call(uc, rows.COUNT_VA, limit=20), count)
             for slot in range(count):
                 ptr = self.call(uc, 0x243AE0, ecx=slot, limit=10)
-                self.assertEqual(ptr, modern.record_va(unit, slot, 13))
+                self.assertEqual(ptr, modern.record_va(unit, slot, table_va=rows.TABLE_VA))
                 self.assertNotEqual(bytes(uc.mem_read(ptr, 2)), b"\0\0")
-        for unit, slot in ((0, 12), (3, 4)):
-            self.unit(uc, unit)
-            for column in range(1, 7):
-                self.assertEqual(self.call(uc, 0x242C00, ecx=column, edx=slot, limit=16), 0)
         self.assertEqual(self.call(uc, 0x243AC0, ecx=1, edx=4), 0xE88994)
         self.assertEqual(self.call(uc, 0x243B00, ecx=1, edx=4), 0xE88994)
 
     def test_summary_and_detail_lists_include_only_valid_shifted_rows(self):
         from unicorn import x86_const as x
         for count in (0, 1, 2, 3, 7, 8, 9):
-            players = [(p, i, {0: 2, 1: 0, 2: 1}.get(i, i)) for p in (3, 4) for i in range(count)]
+            players = [(p, i, {0: 2, 1: 0, 2: 1}.get(i, i)) for p in (3, 4, 7, 12) for i in range(count)]
             uc = self.boot(players)
             # The screen entry at 0x2439B0 invokes this retail compactor before
             # showing rows. In particular, a two-player side list starts with a
@@ -321,18 +429,51 @@ class ExecutionTests(unittest.TestCase):
                 self.unit(uc, unit, slot)
                 self.call(uc, 0x243D20, ecx=self.TEAM + 0x8000, until=0x243E2C)
                 actual_count = struct.unpack("<I", uc.mem_read(pools.DC_ROWS_VA, 4))[0]
-                self.assertEqual(actual_count, max(0, count - 1))
-                self.assertEqual(uc.reg_read(x.UC_X86_REG_EDX), modern.record_va(unit, slot, 13) + 10)
+                self.assertEqual(actual_count, max(0, count - (chain >> 1)))
+                self.assertEqual(uc.reg_read(x.UC_X86_REG_EDX), modern.record_va(unit, slot, table_va=rows.TABLE_VA) + 10)
                 for row in range(actual_count):
                     got = self.lookup(uc, row, pos, chain)
                     self.assertNotEqual(got, 0, (count, unit, slot, row))
-                    self.assertEqual(got, self.lookup(uc, row + 1, pos, chain & 1))
+                    self.assertEqual(got, self.lookup(uc, row + (chain >> 1), pos, chain & 1))
                 for column in range(1, 7):
                     got = self.call(uc, 0x242C00, ecx=column, edx=slot)
                     self.assertEqual(got, self.lookup(uc, (column - 1) // 2, pos, chain))
 
+    def test_native_on_field_picker_matches_role_view_and_skips_an_assigned_player(self):
+        # Exercise the real e8790 picker, e7530 ordinal decoder, e7810 list
+        # reader, e7580 dedup and e8340 starter gate. No calls are stubbed.
+        # The lineup context contains dense synthetic rank/side lists; this
+        # isolates selection from the separately unwitnessed lineup builder.
+        players = [(p, i, (i + 3) % 6) for p in (3, 4, 7, 12) for i in range(6)]
+        uc = self.boot(players)
+        context, lists, assigned = self.TEAM + 0x8000, self.TEAM + 0x9000, self.TEAM + 0x9800
+        uc.mem_write(context, struct.pack("<II", self.TEAM, 0))
+        kinds = {3: 9, 4: 18, 7: 10, 12: 6}
+        channels = {1: (7, 1), 4: (3, 1), 5: (3, 2), 10: (12, 1), 21: (4, 1), 22: (4, 2)}
+        cursor = lists
+        for channel in range(29):
+            uc.mem_write(context + 0x9C + channel * 4, struct.pack("<I", cursor))
+            if channel in channels:
+                position, field = channels[channel]
+                indices = sorted((i for i, p in enumerate(players) if p[0] == position), key=lambda i: players[i][field])
+                uc.mem_write(cursor, bytes(indices))
+                cursor += len(indices)
+        uc.mem_write(cursor, b"\xff")  # empty returner list sentinel
+        uc.mem_write(0xAC26B8, bytes(4))  # no saved formation substitution
+        for unit, slot, abbreviation, _name, pos, chain in rows.ROLE_ROWS:
+            ordinal = chain >> 1 if pos in (7, 12) else chain
+            expected = self.lookup(uc, 0, pos, chain)
+            self.assertNotEqual(expected, 0)
+            args = (0, 0, assigned, 0, 0, kinds[pos], ordinal)
+            got = self.call(uc, 0xE8790, ecx=context, edx=0, stack=args, limit=50000)
+            self.assertEqual(got, expected, abbreviation)
+            uc.mem_write(assigned, struct.pack("<I", expected))
+            args = (0, 0, assigned, 1, 0, kinds[pos], ordinal)
+            got = self.call(uc, 0xE8790, ecx=context, edx=0, stack=args, limit=50000)
+            self.assertEqual(got, self.lookup(uc, 1, pos, chain), abbreviation)
+
     def test_all_detail_selection_getters_use_expanded_record_and_encoded_chain(self):
-        players = [(p, i, (i + 3) % 6) for p in (3, 4) for i in range(6)]
+        players = [(p, i, (i + 3) % 6) for p in (3, 4, 7, 12) for i in range(6)]
         uc = self.boot(players)
         paths = ((0x242D10, 0x242D48), (0x242E00, 0x242E3C), (0x243514, 0x24353E),
                  (0x2436D6, 0x24370E), (0x244284, 0x2442C3))
@@ -348,7 +489,7 @@ class ExecutionTests(unittest.TestCase):
                 self.assertEqual(got, expected, (hex(entry), unit, slot))
 
     def test_swap_path_changes_only_the_correct_chain_field(self):
-        for unit, slot in ((0, 3), (0, 4), (0, 11), (1, 11), (1, 12), (2, 11), (2, 12)):
+        for unit, slot in ((0, 3), (0, 4), *((u, s) for u, s, *_ in rows.ROLE_ROWS)):
             uc = self.boot([(3, 1, 2), (3, 4, 5)])
             self.unit(uc, unit, slot)
             record = modern.read_record(self.patched, unit, slot)
@@ -360,9 +501,9 @@ class ExecutionTests(unittest.TestCase):
 
     def test_bench_threshold_bit_mask_confirmation_and_stack(self):
         from unicorn import UC_HOOK_CODE, x86_const as x
-        for unit, slot in ((0, 3), (0, 4), (0, 11), (1, 11), (1, 12)):
+        for unit, slot in ((0, 3), (0, 4), *((u, s) for u, s, *_ in rows.ROLE_ROWS)):
             chain = modern.read_record(self.patched, unit, slot)["chain"]
-            for display_row in (6, 7, 8):
+            for display_row in (5, 6, 7, 8):
                 for answer in (0, 1):
                     uc = self.boot([(3, 7, 7)])
                     self.unit(uc, unit, slot)
@@ -424,6 +565,11 @@ class ExecutionTests(unittest.TestCase):
         uc = self.boot([(3, 0, 0), (3, 1, 1)])
         self.unit(uc, 0)
         self.call(uc, 0x243B50, ecx=self.TEAM + 0x8000, until=0x243BEB)
+        # SPECIAL bypasses the ordinary duplicate-starter warning, as retail
+        # already did for KR/PR. GUNR and DCB intentionally share a list view.
+        uc = self.boot([(4, 0, 0), (4, 1, 1)])
+        self.unit(uc, 3)
+        self.call(uc, 0x243B50, ecx=self.TEAM + 0x8000)
 
 
 if __name__ == "__main__":
