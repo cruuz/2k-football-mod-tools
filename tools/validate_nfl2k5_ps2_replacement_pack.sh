@@ -20,6 +20,9 @@
 # check builds the real window offscreen, so it needs PyQt5; where PyQt5 is
 # absent it says so and is skipped, because a build with no GUI has no
 # tooltips to check.
+#
+# The kit tool's selftest runs alongside the verifier's: one pack copied per
+# emulator, byte for byte, with only that emulator's settings named.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -29,6 +32,12 @@ python3 -m py_compile mod_editor/core/ps2_export_service.py \
     tools/nfl2k5_ps2_replacement_pack_verify.py \
     tools/nfl2k5_ps2_replacement_pack_audit.py
 python3 tools/nfl2k5_ps2_replacement_pack_verify.py --selftest
+
+# The kit tool copies a pack per emulator. Its selftest proves the copy is the
+# pack byte for byte, that each kit names only the settings its emulator has,
+# and that a pack disagreeing with its own receipt is refused rather than
+# multiplied by three.
+python3 tools/nfl2k5_ps2_replacement_pack_kit.py --selftest
 
 if python3 -c "import PyQt5" >/dev/null 2>&1; then
     QT_QPA_PLATFORM=offscreen python3 -m mod_editor.gui.ps2_export_dialog_qt

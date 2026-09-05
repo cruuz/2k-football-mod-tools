@@ -253,6 +253,18 @@ It exits non-zero on any violation and names the offending path. Then
 `nfl2k5_ps2_replacement_pack_audit.py` runs on the same folder and must report
 `xbox_mapping_ready: true`.
 
+**`tools/nfl2k5_ps2_replacement_pack_kit.py`** — one pack, three emulators.
+A receipt names the one target its pack was exported for; handing the same
+pack to a second build means carrying the other build's instructions by hand,
+which is where the wrong setting gets copied. The kit tool writes
+`<out>/<target>/` holding `HOW-TO.txt`, `settings.ini`, `kit.v1.json` and a
+**byte-identical** copy of the pack under `pack/` — the extra files sit outside
+it, so `verify.py --pack <kit>/pack` still passes. It restates each target's
+settings rather than importing them and refuses a pack whose receipt disagrees
+with that table, whose bytes no longer match its own receipt, or whose output
+folder already exists; where a kit's target is not the receipt's, `HOW-TO.txt`
+says so. `--selftest` proves all of it and runs in the validator.
+
 **Tests** (`tests/mod_editor/test_ps2_export_service.py`,
 `tests/mod_editor/test_nfl2k5_ps2_replacement_pack_verify.py`), all synthetic:
 a fake project with two edited and one unedited uniform target, a synthetic

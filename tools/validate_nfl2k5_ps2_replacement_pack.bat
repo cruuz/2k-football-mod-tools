@@ -44,6 +44,10 @@ if not defined PY_CMD (
 %PY_CMD% -m py_compile mod_editor\core\ps2_export_service.py tools\nfl2k5_ps2_replacement_pack_verify.py tools\nfl2k5_ps2_replacement_pack_audit.py || exit /b 1
 %PY_CMD% tools\nfl2k5_ps2_replacement_pack_verify.py --selftest || exit /b 1
 
+rem The kit tool copies a pack per emulator; its selftest proves the copy is
+rem byte-identical and that each kit names only its own emulator's settings.
+%PY_CMD% tools\nfl2k5_ps2_replacement_pack_kit.py --selftest || exit /b 1
+
 set "QT_QPA_PLATFORM=offscreen"
 %PY_CMD% -c "import PyQt5" >nul 2>nul
 if errorlevel 1 (
