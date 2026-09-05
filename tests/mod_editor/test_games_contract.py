@@ -18,14 +18,14 @@ from pathlib import Path
 import shutil
 import sys
 import tempfile
-import textwrap
 import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+for _candidate in (ROOT, ROOT / "tests" / "mod_editor"):
+    if str(_candidate) not in sys.path:
+        sys.path.insert(0, str(_candidate))
 
 import mod_editor.games as games  # noqa: E402
 from mod_editor.games import conformance, contract, registry_merge  # noqa: E402
@@ -42,6 +42,7 @@ EXPECTED_SURFACE = {
     "CONTRACT_MAJOR": ("constant",),
     "CONTRACT_MINOR": ("constant",),
     "CONTRACT_SCHEMA": ("constant",),
+    "CONTRACT_VERSION": ("constant",),
     "Catalogue": ("schema", "lane_id", "source", "targets", "document"),
     "ContractError": ("exception",),
     "DeclaredRange": ("start", "length", "reason"),
@@ -81,95 +82,12 @@ EXPECTED_SURFACE = {
     "require": ("function",),
 }
 
-SHA = "0" * 64
-GOOD_GAME_SOURCE = textwrap.dedent(
-    '''
-    from __future__ import annotations
-    from pathlib import Path
-    from mod_editor.games.contract import (CONTRACT_SCHEMA, GameIdentity, GameModule,
-                                           SourceIdentity, WindowSpec, load_manifest)
-
-    HERE = Path(__file__).resolve().parent
-    CALLS = []
-
-    class Identifier:
-        accepted_suffixes = (".bin",)
-        def identify(self, path):
-            path = Path(path)
-            return SourceIdentity("fake", str(path), path.stat().st_size, "FAKE-00001", None,
-                                  True, False, f"{path.name} — fake source")
-
-    def window(parent=None, **context):
-        CALLS.append((parent, dict(context)))
-        return {"opened": True}
-
-    def failing(parent=None, **context):
-        raise RuntimeError("the window exploded")
-
-    GAME = GameModule(
-        contract=CONTRACT_SCHEMA,
-        identity=GameIdentity("okgame", "OK Game", "Test Console", ("FAKE-00001",), (), ()),
-        identifier=Identifier(),
-        lanes=(),
-        windows=(
-            WindowSpec("main", "OK Game window…", "Opens the fake window.", "okgame", window),
-            WindowSpec("broken", "Broken window…", "Always fails.", "okgame-broken", failing),
-            WindowSpec("session", "Needs session…", "Needs the studio.", "okgame-session", window,
-                       needs_studio_session=True),
-        ),
-        manifest=load_manifest(HERE),
-        package=__name__,
-    )
-    '''
+from games_fakes import (  # noqa: E402
+    OK_GAME_SOURCE as GOOD_GAME_SOURCE,
+    SHA,
+    manifest as _manifest,
+    write_fake_game,
 )
-
-
-def _manifest(game_id: str, **overrides) -> dict:
-    document = {
-        "schema": contract.MANIFEST_SCHEMA,
-        "game_id": game_id,
-        "package": f"mod_editor.games.{game_id}",
-        "title": f"{game_id} title",
-        "platform": "Test Console",
-        "version": "1.0.0",
-        "contract": contract.CONTRACT_SCHEMA,
-        "registry_fragment": "registry.fragment.json",
-        "allowlist_fragment": "allowlist.fragment.txt",
-        "pins": "pins.json",
-        "product_modules": [],
-        "tool_modules": [],
-    }
-    document.update(overrides)
-    return document
-
-
-def write_fake_game(root: Path, game_id: str, source: str, manifest: dict | None = None,
-                    *, with_fragments: bool = False) -> Path:
-    directory = root / game_id
-    directory.mkdir(parents=True)
-    (directory / "__init__.py").write_text(source, encoding="utf-8", newline="\n")
-    if manifest is not None:
-        (directory / contract.MANIFEST_NAME).write_text(
-            json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
-        )
-    if with_fragments:
-        fragment = {
-            "schema": contract.REGISTRY_FRAGMENT_SCHEMA,
-            "game": {"id": game_id, "platform": "Test Console", "public_input": "none",
-                     "retail_identity": {"content_sha256": SHA, "executable_sha256": SHA},
-                     "title": "OK Game"},
-            "surfaces": ["saves"],
-            "capabilities": [{"id": f"{game_id}.saves.fake", "game": game_id, "surface": "saves",
-                              "classification": "unknown", "backend": {"operation": "none"},
-                              "validation_command": None}],
-        }
-        (directory / "registry.fragment.json").write_bytes(registry_merge.canonical_bytes(fragment))
-        (directory / "allowlist.fragment.txt").write_text(
-            "mod_editor/games/contract.py\n", encoding="utf-8", newline="\n")
-        (directory / "pins.json").write_text(
-            json.dumps({"schema": contract.PINS_SCHEMA, "game_id": game_id, "rows": 1}) + "\n",
-            encoding="utf-8", newline="\n")
-    return directory
 
 
 class FrozenSurfaceTests(unittest.TestCase):
@@ -234,7 +152,7 @@ class ManifestTests(unittest.TestCase):
     def test_manifest_loads_and_rejects_drift(self) -> None:
         directory = write_fake_game(self.root, "okgame", GOOD_GAME_SOURCE, _manifest("okgame"))
         manifest = contract.load_manifest(directory)
-        self.assertEqual(manifest.version, "1.0.0")
+        self.assertEqual(manifest.version, "2.3.4")
         self.assertEqual(manifest.pins_path, directory / "pins.json")
         for bad in (
             {"contract": "vc_game_module/v9"},

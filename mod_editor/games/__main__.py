@@ -1,14 +1,17 @@
-"""``python -m mod_editor.games``: list, open or prove game modules.
+"""``python -m mod_editor.games``: list, open, prove, pin and scaffold game modules.
 
-This is the command line the studio's one ``--game`` flag delegates to, and it
-needs no other entry point: a user who owns only one game's release can run
-``python -m mod_editor.games <game-id> --window <id>`` with no studio state.
+This is the command line the studio's ``--game`` / ``--games-chooser`` flags
+delegate to, and it needs no studio state: a user who owns only one game's
+release can open its window with ``open <game-id> --window <id>``.
 
-    python -m mod_editor.games                       list hosted and refused modules
-    python -m mod_editor.games <game-id>             describe one module and its windows
-    python -m mod_editor.games <game-id> --window W  open one of its windows alone
-    python -m mod_editor.games --chooser             open the "Select other games" chooser
-    python -m mod_editor.games --conformance [ID]    run the conformance harness
+    list                                  hosted and refused modules (the default)
+    show <game-id>                        one module and its windows
+    open <game-id> --window <id>          open one window alone
+    chooser                               the "Select other games…" window
+    conformance [--game ID] [--static-only] [--work-dir DIR]
+    pins --check | --write | --release    the frozen contract pins (see CONTRACT_CHANGELOG.md)
+    fragments <game-id> --check | --write regenerate a module's fragments from the canonical files
+    new <game-id> --title T --platform P  scaffold a module that passes conformance
 """
 
 from __future__ import annotations
@@ -20,21 +23,74 @@ from typing import Optional, Sequence
 
 from . import discover
 from .chooser import chooser_headline, chooser_rows, open_window
-from .contract import Refusal
+from .contract import ContractError, Refusal
+
+
+def _parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="python -m mod_editor.games", description=__doc__.splitlines()[0])
+    parser.add_argument("--games-root", type=Path, help=argparse.SUPPRESS)
+    commands = parser.add_subparsers(dest="command")
+
+    commands.add_parser("list", help="hosted and refused modules")
+
+    show = commands.add_parser("show", help="one module and its windows")
+    show.add_argument("game")
+
+    opener = commands.add_parser("open", help="open one window of a module, alone")
+    opener.add_argument("game")
+    opener.add_argument("--window", required=True, metavar="ID")
+
+    commands.add_parser("chooser", help="open the game chooser window")
+
+    conformance = commands.add_parser("conformance", help="run the conformance harness")
+    conformance.add_argument("--game", help="one game id (default: every hosted game)")
+    conformance.add_argument("--work-dir", type=Path)
+    conformance.add_argument("--static-only", action="store_true")
+
+    pins = commands.add_parser("pins", help="check or rewrite the frozen contract pins")
+    mode = pins.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--check", action="store_true")
+    mode.add_argument("--write", action="store_true")
+    mode.add_argument("--release", action="store_true", help="drop the (unreleased) marker and pin")
+
+    fragments = commands.add_parser("fragments", help="regenerate a module's fragments")
+    fragments.add_argument("game")
+    fmode = fragments.add_mutually_exclusive_group(required=True)
+    fmode.add_argument("--check", action="store_true")
+    fmode.add_argument("--write", action="store_true")
+
+    new = commands.add_parser("new", help="scaffold a new game module")
+    new.add_argument("game")
+    new.add_argument("--title", required=True)
+    new.add_argument("--platform", required=True)
+    new.add_argument("--serial", default=None, help="the disc serial the module recognises, if any")
+    return parser
+
+
+def _list(rows) -> int:
+    print(chooser_headline(rows))
+    for row in rows:
+        print(f"  {row.game_id:<16} {row.status_text:<12} {row.detail}")
+    return 0
+
+
+def _row(rows, game_id: str):
+    matches = [row for row in rows if row.game_id == game_id]
+    if not matches:
+        print(f"error: no game module is called {game_id!r}; run 'list' to see them.", file=sys.stderr)
+        return None, 2
+    row = matches[0]
+    if not row.loadable:
+        print(f"error: {row.detail}", file=sys.stderr)
+        return None, 1
+    return row, 0
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
-    parser = argparse.ArgumentParser(prog="python -m mod_editor.games", description=__doc__.splitlines()[0])
-    parser.add_argument("game", nargs="?", help="a hosted game id, e.g. nfl2k5_ps2")
-    parser.add_argument("--window", metavar="ID", help="open this window of the game, alone")
-    parser.add_argument("--chooser", action="store_true", help="open the game chooser window")
-    parser.add_argument("--conformance", action="store_true", help="run the conformance harness")
-    parser.add_argument("--work-dir", type=Path, help="conformance: where synthetic sources go")
-    parser.add_argument("--static-only", action="store_true", help="conformance: skip the behavioural half")
-    parser.add_argument("--games-root", type=Path, help=argparse.SUPPRESS)
-    args = parser.parse_args(argv)
+    args = _parser().parse_args(argv)
+    command = args.command or "list"
 
-    if args.conformance:
+    if command == "conformance":
         from .conformance import main as conformance_main
 
         forwarded: list[str] = []
@@ -48,10 +104,48 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             forwarded.append("--static-only")
         return conformance_main(forwarded)
 
+    if command == "pins":
+        from . import pins
+
+        try:
+            if args.check:
+                problems = pins.check()
+                for problem in problems:
+                    print(f"PIN MISMATCH: {problem}")
+                if problems:
+                    return 1
+                print(f"CONTRACT_PINS_OK version={pins.read()['contract_version']} files={len(pins.FROZEN_FILES)}")
+                return 0
+            path = pins.write(release=args.release)
+        except ContractError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 1
+        print(f"CONTRACT_PINS_WRITTEN {path} version={pins.read()['contract_version']}")
+        return 0
+
+    if command == "fragments":
+        from .fragments import main as fragments_main
+
+        return fragments_main([args.game, "--write" if args.write else "--check"]
+                              + (["--games-root", str(args.games_root)] if args.games_root else []))
+
+    if command == "new":
+        from .scaffold import main as scaffold_main
+
+        forwarded = [args.game, "--title", args.title, "--platform", args.platform]
+        if args.serial:
+            forwarded += ["--serial", args.serial]
+        if args.games_root:
+            forwarded += ["--games-root", str(args.games_root)]
+        return scaffold_main(forwarded)
+
     report = discover(args.games_root)
     rows = chooser_rows(report)
 
-    if args.chooser:
+    if command == "list":
+        return _list(rows)
+
+    if command == "chooser":
         from PyQt5.QtWidgets import QApplication
 
         from .chooser_qt import GameChooserDialog
@@ -61,26 +155,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         dialog.show()
         return application.exec_()
 
-    if args.game is None:
-        print(chooser_headline(rows))
-        for row in rows:
-            print(f"  {row.game_id:<16} {row.status_text:<12} {row.detail}")
-        return 0
+    row, code = _row(rows, args.game)
+    if row is None:
+        return code
 
-    matches = [row for row in rows if row.game_id == args.game]
-    if not matches:
-        print(f"error: no game module is called {args.game!r}; run without arguments to list them.",
-              file=sys.stderr)
-        return 2
-    row = matches[0]
-    if not row.loadable:
-        print(f"error: {row.detail}", file=sys.stderr)
-        return 1
-    if args.window is None:
+    if command == "show":
         print(row.detail)
         for window in row.windows:
             needs = " (needs the studio's open project)" if window.needs_studio_session else ""
-            print(f"  --window {window.window_id:<12} {window.menu_label}{needs}")
+            print(f"  --window {window.window_id:<18} {window.menu_label}{needs}")
         return 0
 
     from PyQt5.QtWidgets import QApplication

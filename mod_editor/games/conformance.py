@@ -175,12 +175,19 @@ def _module_file(name: str, repo_root: Path) -> Optional[Path]:
 
 def check_manifest(manifest: GameManifest, repo_root: Path = REPO_ROOT) -> list[Check]:
     out = _Collector("manifest")
+
+    def shown(path: Path) -> str:
+        try:
+            return str(path.relative_to(repo_root))
+        except ValueError:  # a games root outside the repository (tests use one)
+            return str(path)
+
     for label, path in (
         ("registry_fragment_exists", manifest.registry_fragment_path),
         ("allowlist_fragment_exists", manifest.allowlist_fragment_path),
         ("pins_exist", manifest.pins_path),
     ):
-        out.record(label, path.is_file(), str(path.relative_to(repo_root)) if path.is_file() else f"missing: {path}")
+        out.record(label, path.is_file(), shown(path) if path.is_file() else f"missing: {path}")
     ok, fragment = out.attempt("registry_fragment_reads", manifest.registry_document)
     if ok:
         out.attempt("registry_fragment_valid", lambda: validate_fragment(fragment),

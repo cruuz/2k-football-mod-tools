@@ -8,22 +8,21 @@ through the chooser.  The dialog tests are skipped where PyQt5 is absent.
 
 from __future__ import annotations
 
-import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
-import textwrap
 import unittest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 os.environ.setdefault("MOD_STUDIO_NO_UPDATE_CHECK", "1")
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+for _candidate in (ROOT, ROOT / "tests" / "mod_editor"):
+    if str(_candidate) not in sys.path:
+        sys.path.insert(0, str(_candidate))
 
 import mod_editor.games as games  # noqa: E402
 from mod_editor.games import chooser, contract  # noqa: E402
@@ -35,78 +34,11 @@ try:
 except ImportError:  # PyQt5 is not installed here
     QApplication = None  # type: ignore[assignment]
 
-FAKE_SOURCE = textwrap.dedent(
-    '''
-    from __future__ import annotations
-    from pathlib import Path
-    from mod_editor.games.contract import (CONTRACT_SCHEMA, GameIdentity, GameModule,
-                                           SourceIdentity, WindowSpec, load_manifest)
-
-    HERE = Path(__file__).resolve().parent
-    CALLS = []
-
-    class Identifier:
-        accepted_suffixes = (".bin",)
-        def identify(self, path):
-            path = Path(path)
-            return SourceIdentity("fake", str(path), 0, None, None, False, False, "fake")
-
-    def window(parent=None, **context):
-        CALLS.append(dict(context))
-        try:
-            from PyQt5.QtWidgets import QDialog
-        except ImportError:
-            return {"opened": True}
-        dialog = QDialog(parent)
-        dialog.setWindowTitle("Fake window")
-        return dialog
-
-    def failing(parent=None, **context):
-        raise RuntimeError("the window exploded")
-
-    GAME = GameModule(
-        contract=CONTRACT_SCHEMA,
-        identity=GameIdentity("okgame", "OK Game", "Test Console"),
-        identifier=Identifier(),
-        lanes=(),
-        windows=(
-            WindowSpec("main", "OK Game window…", "Opens the fake window.", "okgame", window),
-            WindowSpec("broken", "Broken window…", "Always fails.", "okgame-broken", failing),
-            WindowSpec("session", "Needs session…", "Needs the studio.", "okgame-session", window,
-                       needs_studio_session=True),
-        ),
-        manifest=load_manifest(HERE),
-        package=__name__,
-    )
-    '''
-)
-
-
-def _manifest(game_id: str, **overrides) -> dict:
-    document = {
-        "schema": contract.MANIFEST_SCHEMA, "game_id": game_id,
-        "package": f"mod_editor.games.{game_id}", "title": f"{game_id} title",
-        "platform": "Test Console", "version": "2.3.4", "contract": contract.CONTRACT_SCHEMA,
-        "registry_fragment": "registry.fragment.json", "allowlist_fragment": "allowlist.fragment.txt",
-        "pins": "pins.json", "product_modules": [], "tool_modules": [],
-    }
-    document.update(overrides)
-    return document
+from games_fakes import write_fake_root  # noqa: E402
 
 
 def _fake_root() -> Path:
-    root = Path(tempfile.mkdtemp(prefix="chooser-root-"))
-    for game_id, source, manifest in (
-        ("okgame", FAKE_SOURCE, _manifest("okgame", title="OK Game")),
-        ("oldgame", FAKE_SOURCE, _manifest("oldgame", title="Old Game", contract="vc_game_module/v9")),
-        ("crashgame", "import a_dependency_nobody_has\n", _manifest("crashgame", title="Crash Game")),
-    ):
-        directory = root / game_id
-        directory.mkdir()
-        (directory / "__init__.py").write_text(source, encoding="utf-8", newline="\n")
-        (directory / "game.json").write_text(json.dumps(manifest, indent=2) + "\n",
-                                             encoding="utf-8", newline="\n")
-    return root
+    return write_fake_root(Path(tempfile.mkdtemp(prefix="chooser-root-")))
 
 
 class ChooserModelTests(unittest.TestCase):
@@ -151,21 +83,22 @@ class ChooserModelTests(unittest.TestCase):
 
     def test_the_command_line_lists_and_describes(self) -> None:
         env = {**os.environ, "PYTHONPATH": str(ROOT)}
-        listing = subprocess.run([sys.executable, "-m", "mod_editor.games", "--games-root", str(self.root)],
-                                 cwd=str(ROOT), capture_output=True, text=True, timeout=300, env=env)
+        def run(*verbs):
+            return subprocess.run([sys.executable, "-m", "mod_editor.games", "--games-root", str(self.root), *verbs],
+                                  cwd=str(ROOT), capture_output=True, text=True, timeout=300, env=env)
+
+        listing = run()
         self.assertEqual(listing.returncode, 0, listing.stderr)
         self.assertIn("1 game module ready", listing.stdout)
         self.assertIn("oldgame", listing.stdout)
-        described = subprocess.run([sys.executable, "-m", "mod_editor.games", "okgame", "--games-root", str(self.root)],
-                                   cwd=str(ROOT), capture_output=True, text=True, timeout=300, env=env)
+        self.assertEqual(run("list").stdout, listing.stdout)
+        described = run("show", "okgame")
         self.assertEqual(described.returncode, 0, described.stderr)
         self.assertIn("--window main", described.stdout)
-        refused = subprocess.run([sys.executable, "-m", "mod_editor.games", "oldgame", "--games-root", str(self.root)],
-                                 cwd=str(ROOT), capture_output=True, text=True, timeout=300, env=env)
+        refused = run("show", "oldgame")
         self.assertEqual(refused.returncode, 1)
         self.assertIn("cannot be loaded", refused.stderr)
-        absent = subprocess.run([sys.executable, "-m", "mod_editor.games", "nothing", "--games-root", str(self.root)],
-                                cwd=str(ROOT), capture_output=True, text=True, timeout=300, env=env)
+        absent = run("show", "nothing")
         self.assertEqual(absent.returncode, 2)
 
 

@@ -23,11 +23,13 @@ import unittest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+for _candidate in (ROOT, ROOT / "tests" / "mod_editor"):
+    if str(_candidate) not in sys.path:
+        sys.path.insert(0, str(_candidate))
 
 import mod_editor.games as games  # noqa: E402
-from mod_editor.games import conformance, contract  # noqa: E402
+from mod_editor.games import chooser, conformance, contract  # noqa: E402
+from games_fakes import incompatible_reason, write_fake_root  # noqa: E402
 
 
 class EveryHostedGameConformsTests(unittest.TestCase):
@@ -55,13 +57,55 @@ class EveryHostedGameConformsTests(unittest.TestCase):
 
     def test_the_command_line_entry_agrees(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "-m", "mod_editor.games", "--conformance", "--static-only"],
+            [sys.executable, "-m", "mod_editor.games", "conformance", "--static-only"],
             cwd=str(ROOT), capture_output=True, text=True, timeout=600,
             env={**os.environ, "PYTHONPATH": str(ROOT)},
         )
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
         self.assertIn("conformance checks passed", completed.stdout)
         self.assertNotIn("FAIL", completed.stdout)
+
+
+class FakeModulesTests(unittest.TestCase):
+    """A fake loadable module passes; a deliberately incompatible one is refused by sentence."""
+
+    def setUp(self) -> None:
+        self.root = write_fake_root(Path(tempfile.mkdtemp(prefix="conformance-fakes-")))
+        self.addCleanup(shutil.rmtree, self.root, True)
+        self.report = games.discover(self.root)
+
+    def test_the_loadable_fake_passes_the_harness_with_zero_lanes(self) -> None:
+        game = self.report.game("okgame")
+        result = conformance.run(game, self.root / "work")
+        self.assertTrue(result.passed, "\n".join(check.line() for check in result.failures))
+        names = {check.name for check in result.checks}
+        self.assertIn("module.has_a_lane_or_a_window", names)
+        self.assertIn("boundary.module_level_imports_stay_inside_the_contract", names)
+        self.assertFalse(any(name.startswith("lane.") for name in names), "no lanes, no behavioural checks")
+
+    def test_the_incompatible_fake_is_a_refusal_row_with_the_exact_sentence(self) -> None:
+        self.assertEqual(self.report.game_ids, ("okgame",))
+        refused = {item.directory: item for item in self.report.refused}
+        self.assertEqual(refused["oldgame"].reason, incompatible_reason(self.root))
+        rows = {row.game_id: row for row in chooser.chooser_rows(self.report)}
+        self.assertEqual(rows["oldgame"].status, chooser.STATUS_REFUSED)
+        self.assertEqual(rows["oldgame"].status_text, "Cannot load")
+        self.assertEqual(rows["oldgame"].detail, "Old Game cannot be loaded: " + incompatible_reason(self.root))
+        self.assertEqual(rows["oldgame"].contract, "vc_game_module/v9")
+        self.assertIn("a_dependency_nobody_has", rows["crashgame"].detail)
+        with self.assertRaisesRegex(contract.Refusal, "could not be hosted"):
+            games.load("oldgame", self.root)
+
+    def test_the_command_line_reports_the_refusal_and_fails(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, "-m", "mod_editor.games", "--games-root", str(self.root), "conformance", "--static-only"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=600,
+            env={**os.environ, "PYTHONPATH": str(ROOT)},
+        )
+        self.assertEqual(completed.returncode, 1, completed.stdout + completed.stderr)
+        self.assertIn("REFUSED oldgame: " + incompatible_reason(self.root), completed.stdout)
+        self.assertIn("okgame:", completed.stdout)
+        self.assertNotIn("FAIL ", completed.stdout)
 
 
 class Ps2AdapterBehaviourTests(unittest.TestCase):

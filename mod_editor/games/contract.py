@@ -51,9 +51,15 @@ from typing import Any, Callable, Mapping, Optional, Protocol, Sequence, runtime
 from mod_editor.core.errors import ValidationError
 
 
-CONTRACT_SCHEMA = "vc_game_module/v1"
-CONTRACT_MAJOR = 1
-CONTRACT_MINOR = 0
+#: The number the change procedure bumps (``major.minor``).  Everything else
+#: about the version is derived from it: ``CONTRACT_SCHEMA`` is what a game
+#: declares, ``CONTRACT_MAJOR``/``CONTRACT_MINOR`` what :func:`accepts_contract`
+#: compares.  See ``mod_editor/games/CONTRACT_CHANGELOG.md`` for the procedure.
+CONTRACT_VERSION = "1.0"
+CONTRACT_MAJOR, CONTRACT_MINOR = (int(part) for part in CONTRACT_VERSION.split("."))
+CONTRACT_SCHEMA = f"vc_game_module/v{CONTRACT_MAJOR}" + (
+    "" if CONTRACT_MINOR == 0 else f".{CONTRACT_MINOR}"
+)
 MANIFEST_SCHEMA = "vc_game_module_manifest/v1"
 REGISTRY_FRAGMENT_SCHEMA = "vc_mod_capability_registry_fragment/v1"
 PINS_SCHEMA = "vc_game_module_pins/v1"
@@ -779,6 +785,7 @@ __all__ = [
     "CONTRACT_MAJOR",
     "CONTRACT_MINOR",
     "CONTRACT_SCHEMA",
+    "CONTRACT_VERSION",
     "Catalogue",
     "ContractError",
     "DeclaredRange",
