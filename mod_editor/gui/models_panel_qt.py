@@ -35,6 +35,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui.ux_text import suggest_copy_name
+
 from mod_editor.core import nfl2k5_models as models
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
@@ -88,6 +90,8 @@ class _Task(QRunnable):
 
 
 class ModelsPanel(QWidget):
+    disc_written = pyqtSignal(str)   # a disc copy this page wrote and verified (Play latest can start it)
+
     """Export & Import Models."""
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
@@ -377,6 +381,10 @@ class ModelsPanel(QWidget):
         facade_source = getattr(self._facade, "source_path", None)
         if facade_source and not self.source_field.text().strip():
             self.source_field.setText(str(facade_source))
+        if facade_source and (not self.target_field.text().strip() or getattr(self, "_target_generated", False)):
+            self.target_field.setText(suggest_copy_name(str(facade_source), suffix="models"))
+            self._target_generated = True
+        display = str(getattr(self._facade, "source_display_name", "") or index_path.parent.name)
 
         def operation() -> object:
             source = models.ModelSource(index_path, inventory_path)
@@ -385,7 +393,7 @@ class ModelsPanel(QWidget):
         def done(result: object) -> None:
             source, entries = result  # type: ignore[misc]
             self._source, self._entries = source, list(entries)
-            self.source_label.setText(f"{len(self._entries):,} models on the loaded disc ({index_path.parent.name}).")
+            self.source_label.setText(f"{len(self._entries):,} models on {display}.")
             self._filter()
             self.status_label.setText("Pick a model, then export it or check an edited file.")
 
@@ -499,6 +507,7 @@ class ModelsPanel(QWidget):
         chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?", "ESPN NFL 2K5 (models).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
 
     def _check(self) -> None:
         edited = self.edited_field.text().strip()
@@ -611,10 +620,11 @@ class ModelsPanel(QWidget):
 
         def done(result: object) -> None:
             assert isinstance(result, dict)
-            self.status_label.setText(f"Written: {target_image} (receipt: {result.get('receipt_path')})")
+            self.status_label.setText(f"Disc ready: {target_image} (receipt: {result.get('receipt_path')})")
+            self.disc_written.emit(str(target_image))
             if self.isVisible():
-                QMessageBox.information(self, "Models copy written",
-                                        f"{target_image}\n\n{subject.summary()}\n\nReceipt: {result.get('receipt_path')}")
+                QMessageBox.information(self, "Disc ready",
+                                        f"{target_image}\n\n{subject.summary()}\n\nOpen it in xemu. Receipt: {result.get('receipt_path')}")
 
         self._run(operation, done)
 

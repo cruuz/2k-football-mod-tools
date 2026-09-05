@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions, suggest_copy_name
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
@@ -71,6 +71,9 @@ class BuildPanel(QWidget):
         self._task: _Task | None = None
         self._state: dict[str, object] | None = None
         self._available = mod_build.availability()
+        self._reading = False                 # the shell is inspecting the open disc for us
+        self._target_generated = False        # the target was suggested, not chosen by the user
+        self.pending_preset: str | None = None  # Getting Started asked for a preset before the disc was read
         self._build_ui()
         self._refresh()
 
@@ -307,6 +310,7 @@ class BuildPanel(QWidget):
         self.target_button = QPushButton("Choose…")
         self.target_button.clicked.connect(self._choose_target)
         out.addWidget(self.target_button)
+        self.target_field.textEdited.connect(lambda _t: self._user_target())
         root.addLayout(out)
 
         actions = QHBoxLayout()
@@ -337,10 +341,39 @@ class BuildPanel(QWidget):
         self.star_players: list[str] = []
 
     # ------------------------------------------------------------- state
+    def begin_reading(self, source: Path | str) -> None:
+        """The shell is inspecting the open disc; say so until the state arrives."""
+
+        self._reading = True
+        self.source_field.setText(str(source))
+        self.source_status.setText("Reading disc…")
+        self._refresh()
+
+    def reading_failed(self, message: str) -> None:
+        self._reading = False
+        self.source_status.setText(plain_failure("read this disc", message))
+        self._refresh()
+
+    def _user_target(self) -> None:
+        self._target_generated = False
+        self._refresh()
+
+    def suggest_target(self) -> None:
+        """A distinct, non-existing copy name beside the source when no target was chosen (BS-09)."""
+
+        source = self.source_field.text().strip()
+        if not source or not tt.is_disc_image(source):
+            return
+        if self.target_field.text().strip() and not self._target_generated:
+            return
+        self.target_field.setText(suggest_copy_name(source, suffix="modded"))
+        self._target_generated = True
+
     def apply_state(self, state: dict[str, object]) -> None:
         """Populate from mod_build.inspect output (also used by tests)."""
 
         self._state = state
+        self._reading = False
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"
         source_caption, target_caption = source_captions(is_image)
@@ -423,7 +456,29 @@ class BuildPanel(QWidget):
         gate(self.camera_check, "camera")
         gate(self.widescreen_check, "widescreen")
         self.throw_check.setEnabled(True)
+        self.suggest_target()
         self._refresh()
+        pending, self.pending_preset = self.pending_preset, None
+        if pending:
+            self.apply_preset_if_fresh(pending)
+
+    def apply_preset_if_fresh(self, name: str) -> bool:
+        """Tick a preset only when nothing is ticked yet; customised choices stay (BS-15)."""
+
+        if self._state is None:
+            self.pending_preset = name
+            return False
+        if any(box.isChecked() for box in self._toggle_boxes()):
+            self.preset_note.setText("Your current choices were kept; press a preset button to replace them.")
+            return False
+        self.apply_preset(name)
+        self.preset_note.setText(f"{mod_build.PRESET_TITLES.get(name, name)} selected; review changes below. "
+                                 + self.preset_note.text())
+        return True
+
+    def _toggle_boxes(self) -> tuple[QCheckBox, ...]:
+        return tuple(box for box in self.findChildren(QCheckBox)
+                     if box not in (self.realistic_check, self.arc_by_distance_check))
 
     def apply_preset(self, name: str) -> dict[str, list[str]]:
         """Tick the preset's toggles (only those the source can still take); returns what was skipped."""
@@ -537,7 +592,7 @@ class BuildPanel(QWidget):
         self.realistic_check.setEnabled(self.throw_check.isChecked())
         self.arc_by_distance_check.setEnabled(self.throw_check.isChecked())
         self.build_button.setEnabled(bool(self.source_field.text()) and bool(self.target_field.text())
-                                     and self.has_work() and self._task is None)
+                                     and self.has_work() and self._task is None and not self._reading)
 
     # ------------------------------------------------------------ actions
     def _choose_source(self) -> None:
@@ -590,6 +645,7 @@ class BuildPanel(QWidget):
                                                  IMAGE_FILTER if is_image else XBE_FILTER)
         if chosen:
             self.target_field.setText(mod_build.image_target_path(chosen) if is_image else chosen)
+            self._target_generated = False
             self._refresh()
 
     def _build(self) -> None:
@@ -628,6 +684,14 @@ class BuildPanel(QWidget):
             self.apply_state(mod_build.inspect(Path(str(receipt.get("target")))))
         except Exception:  # noqa: BLE001
             pass
+        else:
+            # the copy just written is now the source: the next copy needs its own name,
+            # never the same file (a build onto itself)
+            self._target_generated = True
+            self.target_field.setText("")
+            self.suggest_target()
+            self.source_status.setText(
+                f"Build source is now: {Path(str(receipt.get('target'))).name}. " + self.source_status.text())
         self._refresh()
 
     def _failed(self, message: str) -> None:

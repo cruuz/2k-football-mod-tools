@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_throw_tuning as tt
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions, write_caption
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions, suggest_copy_name, write_caption
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 
@@ -238,7 +238,8 @@ class GameplayPatchesPanel(QWidget):
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *,
                  patches: tuple[tuple[str, str, str], ...] = PATCHES,
                  title: str = "Gameplay Patches",
-                 intro: str = "Select fixes and write one copy. For presets and other changes, use ★ Build & Share.") -> None:
+                 intro: str = "Select fixes and write one copy. For presets and other changes, use ★ Build & Share.",
+                 target_suffix: str = "gameplay patched") -> None:
         super().__init__(parent)
         self._facade = facade
         self._pool = QThreadPool(self)
@@ -248,8 +249,32 @@ class GameplayPatchesPanel(QWidget):
         self._patches = tuple(patches)
         self._title = title
         self._intro = intro
+        self._target_suffix = target_suffix
+        self._reading = False
+        self._target_generated = False
         self._build_ui()
         self._refresh()
+
+    # ------------------------------------------------------------- the open-disc hook
+    def begin_reading(self, source: Path | str) -> None:
+        self._reading = True
+        self.source_field.setText(str(source))
+        self.source_status.setText("Reading disc…")
+        self._refresh()
+
+    def reading_failed(self, message: str) -> None:
+        self._reading = False
+        self.source_status.setText(plain_failure("read this disc", message))
+        self._refresh()
+
+    def suggest_target(self) -> None:
+        source = self.source_field.text().strip()
+        if not source or not tt.is_disc_image(source):
+            return
+        if self.target_field.text().strip() and not self._target_generated:
+            return
+        self.target_field.setText(suggest_copy_name(source, suffix=self._target_suffix))
+        self._target_generated = True
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
@@ -297,6 +322,7 @@ class GameplayPatchesPanel(QWidget):
         self.target_button = QPushButton("Choose…")
         self.target_button.clicked.connect(self._choose_target)
         out.addWidget(self.target_button)
+        self.target_field.textEdited.connect(lambda _t: self._user_target())
         root.addLayout(out)
         actions = QHBoxLayout()
         self.write_button = QPushButton("Make disc with these changes")
@@ -309,8 +335,13 @@ class GameplayPatchesPanel(QWidget):
         root.addWidget(self.status_label)
         root.addStretch(1)
 
+    def _user_target(self) -> None:
+        self._target_generated = False
+        self._refresh()
+
     def apply_state(self, state: dict[str, object]) -> None:
         self._state = state
+        self._reading = False
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"
         source_caption, target_caption = source_captions(is_image)
@@ -337,6 +368,7 @@ class GameplayPatchesPanel(QWidget):
             row_check.setToolTip("Not recognised: something these rows depend on (position groups, scheme names or playbook roles) "
                                  "is neither retail nor this patch, so they can't be added here.")
         self.source_status.setText("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches) + ".")
+        self.suggest_target()
         self._refresh()
 
     def plan(self) -> mod_build.BuildPlan:
@@ -357,7 +389,8 @@ class GameplayPatchesPanel(QWidget):
 
     def _refresh(self) -> None:
         any_on = any(c.isChecked() for c in self.checks.values())
-        self.write_button.setEnabled(any_on and bool(self.source_field.text()) and bool(self.target_field.text()) and self._task is None)
+        self.write_button.setEnabled(any_on and bool(self.source_field.text()) and bool(self.target_field.text())
+                                     and self._task is None and not self._reading)
 
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
@@ -374,6 +407,7 @@ class GameplayPatchesPanel(QWidget):
                                                  "ESPN NFL 2K5 (gameplay patched).xiso.iso" if is_image else "default_patched.xbe")
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
             self._refresh()
 
     def _write(self) -> None:

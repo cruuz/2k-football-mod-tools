@@ -75,6 +75,7 @@ from mod_editor.core.texture_master import (
 )
 from mod_editor.gui import branding
 from mod_editor.gui.ux_text import XEMU_LINE, tab_title  # noqa: F401
+from mod_editor.core import mod_build
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
 from mod_editor.core.capabilities import CapabilityRegistryLoader
@@ -1507,6 +1508,13 @@ class StudioMainWindow(QMainWindow):
         self._commentary_panel: CommentaryPanel | None = None
         self._build_panel: BuildPanel | None = None
         self._star_players_connected = False
+        # E2: the open-disc hook.  A generation counter drops inspection results
+        # of a disc that was superseded by a later open; the roster page loads
+        # lazily on first entry so an edited roster is never reset by navigation.
+        self._source_generation = 0
+        self._source_inspect_pending = False
+        self._roster_prefill_pending = False
+        self._last_prefilled_source: Path | None = None
         self._share_panel: SharePanel | None = None
         self._sounds_panel: SoundsPanel | None = None
         self._menus_panel: MenusPanel | None = None
@@ -3259,7 +3267,7 @@ class StudioMainWindow(QMainWindow):
 
         self.player_asset_search = QLineEdit()
         self.player_asset_search.setPlaceholderText(
-            "Search players by name…  (load your XISO first)"
+            "Player name…  (open your game disc first)"
         )
         self.player_asset_search.setClearButtonEnabled(True)
         layout.addWidget(self.player_asset_search)
@@ -6250,6 +6258,7 @@ class StudioMainWindow(QMainWindow):
                 if self._crib_panel is not None:
                     self._crib_panel.refresh(keep_selection=False)
                 self._load_selected_unif_colors()
+                self._prefill_panels_from_source(self._active_source_path)
 
             if recovery is not None:
                 if (
@@ -7229,6 +7238,155 @@ class StudioMainWindow(QMainWindow):
         if hasattr(self, "edit_count"):
             self._mark_workspace_changed()
 
+    # ------------------------------------------------------------ E2: the open-disc hook
+    def _navigation_key(self, row: int) -> str:
+        item = self.navigation.item(row)
+        return str(item.data(Qt.UserRole) or "") if item is not None else ""
+
+    def _prefill_panels_from_source(self, source: Path | None) -> None:
+        """Feed the disc that was just opened to every page that has its own source field.
+
+        The header said "Disc: …" while eleven pages still said "choose a disc".  Each page
+        is filled through its own existing load / inspect path, off the UI thread where the
+        page already works that way; nothing here writes a file, opens a chooser, or resets a
+        roster somebody has edited.  A later open supersedes an earlier one (generation).
+        """
+
+        if source is None or not bool(getattr(self.facade, "source_ready", False)):
+            return
+        source = Path(source)
+        self._source_generation += 1
+        generation = self._source_generation
+        self._last_prefilled_source = source
+        self._refresh_welcome_state()
+        # 1. one inspection for Build, Game Fixes and Position names
+        self._source_inspect_pending = True
+        for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+            if panel is not None and hasattr(panel, "begin_reading"):
+                panel.begin_reading(source)
+
+        def inspected(state: object) -> None:
+            if generation != self._source_generation:
+                return
+            self._source_inspect_pending = False
+            if not isinstance(state, dict):
+                return
+            for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+                if panel is not None:
+                    panel.apply_state(state)
+            self._describe_source_pill(state)
+            self._refresh_welcome_state()
+
+        def inspect_failed(message: str) -> None:
+            if generation != self._source_generation:
+                return
+            self._source_inspect_pending = False
+            for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+                if panel is not None and hasattr(panel, "reading_failed"):
+                    panel.reading_failed(message)
+
+        worker = _BackgroundTask(lambda progress: mod_build.inspect(source))
+        self._workers.add(worker)
+        worker.signals.result.connect(inspected)
+        worker.signals.error.connect(inspect_failed)
+        worker.signals.finished.connect(lambda: self._workers.discard(worker))
+        self.thread_pool.start(worker)
+        # 2. pages with their own background readers
+        if self._throw_tuning_panel is not None:
+            self._throw_tuning_panel.load_source(source, quiet=True)
+        if self._presentation_panel is not None:
+            self._presentation_panel.load_source(source)
+        if self._commentary_panel is not None:
+            self._commentary_panel.load_source(source)
+        if self._sounds_panel is not None:
+            self._sounds_panel.load_source(source)
+        if self._bump_panel is not None:
+            self._bump_panel.load_source(source)
+        if self._models_panel is not None:
+            self._models_panel.reload()
+        # 3. Share: the export "Starting disc" only while no build owns the pair; the
+        #    install "Your disc" whenever it is empty or still following the last disc
+        if self._share_panel is not None:
+            self._share_panel.follow_source(source)
+        # 4. ★ Rosters: only an empty or auto-filled, unedited session follows the disc,
+        #    and only when the page is entered (an edited roster is never reset)
+        self._roster_prefill_pending = True
+        if self._navigation_key(self.navigation.currentRow()) == "rosters":
+            self._prefill_roster_if_pending()
+        self._refresh_player_assets_hint()
+
+    def _prefill_roster_if_pending(self) -> None:
+        if not self._roster_prefill_pending:
+            return
+        panel = self._roster_editor_panel
+        if panel is None or not bool(getattr(self.facade, "source_ready", False)):
+            return
+        self._roster_prefill_pending = False
+        if panel.document is not None and not (panel.auto_filled and not panel.is_dirty()):
+            display = str(getattr(self.facade, "source_display_name", "") or "the disc")
+            panel.note_other_source(display)
+            return
+        panel.load_from_facade()
+
+    def _describe_source_pill(self, state: Mapping[str, object]) -> None:
+        """Header pill: the disc's name, and only the classification the identity check found."""
+
+        display = str(getattr(self.facade, "source_display_name", "") or "")
+        if not display:
+            return
+        identity = state.get("disc_identity")
+        kind = str(identity.get("kind", "")) if isinstance(identity, Mapping) else ""
+        badge = {"retail-xiso": "original", "retail-raw": "original",
+                 "repack": "repacked", "modified": "modified"}.get(kind, "")
+        self.source_pill.setText(f"●  Disc: {display}" + (f" · {badge}" if badge else ""))
+        line = str(state.get("disc_identity_line") or "")
+        self.source_pill.setToolTip(
+            (line + "\n\n" if line else "")
+            + "The game disc the app is reading. Click Open game disc… to change it."
+        )
+        self.source_pill.setAccessibleDescription(self.source_pill.toolTip())
+
+    def _refresh_welcome_state(self) -> None:
+        """Getting Started says what is open and what to do next (GS-04)."""
+
+        ready_label = getattr(self, "welcome_ready", None)
+        sub_label = getattr(self, "welcome_ready_sub", None)
+        if ready_label is None or sub_label is None:
+            return
+        if bool(getattr(self.facade, "source_ready", False)):
+            display = str(getattr(self.facade, "source_display_name", "") or "your disc")
+            ready_label.setText(f"Disc open: {display}")
+            sub_label.setText("Next: choose SOFTDRINK patches or edit rosters.")
+        else:
+            ready_label.setText("Start here")
+            sub_label.setText("Open a game disc file for disc edits. To edit a roster save, go to ★ Rosters.")
+        for button in getattr(self, "welcome_task_buttons", ()):
+            button.setEnabled(True)
+
+    def _refresh_player_assets_hint(self) -> None:
+        search = getattr(self, "player_asset_search", None)
+        if search is None:
+            return
+        if bool(getattr(self.facade, "source_ready", False)):
+            search.setPlaceholderText("Player name…")
+            if not self.player_asset_list.count():
+                self.player_asset_detail.setText("Type a name above.")
+        else:
+            search.setPlaceholderText("Player name…  (open your game disc first)")
+
+    def _register_external_disc(self, path: str) -> None:
+        """A disc written by ★ Rosters, ★ Models or Share is a disc Play latest can start (M09)."""
+
+        if not path:
+            return
+        try:
+            self.facade.register_external_build(Path(path))
+        except Exception as exc:  # noqa: BLE001 - a missing file only means Play stays blocked
+            self._set_status(str(exc))
+            return
+        self._refresh_action_states()
+        self._set_status(f"Disc ready: {Path(path).name}. Play latest disc in xemu starts this copy.")
+
     def _refresh_specialized_panels(
         self, *, reset: bool, include_crib: bool = True
     ) -> None:
@@ -7766,6 +7924,12 @@ class StudioMainWindow(QMainWindow):
         tabs.addTab(self._share_panel, "Share")
         self._build_panel.built.connect(self._share_panel.prefill_from_build)
         self._build_panel.built.connect(self._on_build_tab_built)
+        self._share_panel.disc_written.connect(self._register_external_disc)
+        if roster_editor is not None:
+            roster_editor.disc_written.connect(self._register_external_disc)
+        models_panel = getattr(self, "_models_panel", None)
+        if models_panel is not None:
+            models_panel.disc_written.connect(self._register_external_disc)
         tabs.setCurrentIndex(0)
         return tabs
 
@@ -7797,6 +7961,9 @@ class StudioMainWindow(QMainWindow):
     def _refresh_entered_page(
         self, row: int, *, refresh_embedded: bool = True
     ) -> None:
+        if self._navigation_key(row) == "rosters":
+            self._prefill_roster_if_pending()
+            return
         if row <= 0 or row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]

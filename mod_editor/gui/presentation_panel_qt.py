@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_throw_tuning as tt
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, suggest_copy_name
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 
@@ -69,6 +69,7 @@ class PresentationPanel(QWidget):
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
         self._state = "n/a"
+        self._target_generated = False
         self._build()
 
     def _build(self) -> None:
@@ -109,10 +110,13 @@ class PresentationPanel(QWidget):
         target_row = QHBoxLayout()
         target_row.addWidget(QLabel("Save disc copy as"))
         self.target_field = QLineEdit()
+        self.target_field.setPlaceholderText("Where the new disc goes (never the source)")
         target_row.addWidget(self.target_field, 1)
         self.target_button = QPushButton("Choose…")
         self.target_button.clicked.connect(self._choose_target)
         target_row.addWidget(self.target_button)
+        self.target_field.textEdited.connect(lambda _t: self._user_target())
+        self.target_field.textChanged.connect(lambda _t: self._refresh())
         files_layout.addLayout(target_row)
         layout.addWidget(files)
 
@@ -149,14 +153,51 @@ class PresentationPanel(QWidget):
             band = pix.copy(0, int(pix.height() * 0.78), pix.width(), int(pix.height() * 0.22))
             self.preview.setPixmap(band.scaledToWidth(1100, Qt.SmoothTransformation))
         else:
-            self.preview.setText("Choose a disc image to draw the planned look.")
+            self.preview.setText("Open your game disc to preview the layout.")
 
     # ------------------------------------------------------------------ state
+    def load_source(self, path: Path | str) -> None:
+        """Read the disc's scorebug state off the UI thread, then draw the preview (the open-disc hook)."""
+
+        path = Path(path)
+        if not tt.is_disc_image(path):
+            self.apply_state(path, "n/a")
+            return
+        self.source_field.setText(str(path))
+        self.source_status.setText("Reading disc…")
+        self.preview.setText("Preparing preview…")
+        module = scorebug_layout_module()
+
+        def operation() -> object:
+            return module.status(path)
+
+        def done(state: object) -> None:
+            if self.source_field.text() == str(path):
+                self.apply_state(path, str(state))
+
+        def failed(message: str) -> None:
+            if self.source_field.text() == str(path):
+                self.source_status.setText(plain_failure("read this disc", message))
+                self.preview.setText("Open your game disc to preview the layout.")
+
+        task = _Task(operation)
+        task.signals.finished.connect(done)
+        task.signals.failed.connect(failed)
+        self._task = task
+        self._pool.start(task)
+
+    def _user_target(self) -> None:
+        self._target_generated = False
+        self._refresh()
+
     def apply_state(self, path: Path, state: str) -> None:
         """Populate from a known layout state (also used by tests)."""
 
         self._state = state
         self.source_field.setText(str(path))
+        if state == "retail" and (not self.target_field.text().strip() or self._target_generated):
+            self.target_field.setText(suggest_copy_name(path, suffix="ESPN scorebug"))
+            self._target_generated = True
         text = {
             "retail": "Original scorebug: the ESPN bar can be written to a disc copy.",
             "applied": "Already installed: this disc carries the ESPN bar (mesh, placement, textures).",
@@ -187,6 +228,7 @@ class PresentationPanel(QWidget):
                                                  "ESPN NFL 2K5 (ESPN scorebug).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
             self._refresh()
 
     # ------------------------------------------------------------------ write

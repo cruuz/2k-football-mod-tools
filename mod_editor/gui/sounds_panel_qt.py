@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, suggest_copy_name
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 WAV_FILTER = "WAV audio (*.wav);;All files (*)"
@@ -445,6 +445,7 @@ class SoundsPanel(QWidget):
         # Tests and fixtures pin a different bank list / AUDO catalog; None = the retail pins.
         self.bank_pins = None
         self.audo_records = None
+        self._target_generated = False
         self._build()
 
     # ------------------------------------------------------------------ layout
@@ -546,6 +547,7 @@ class SoundsPanel(QWidget):
         self.target_field = QLineEdit()
         self.target_field.setPlaceholderText("Where the new disc goes (never the source)")
         self.target_field.textChanged.connect(self._refresh)
+        self.target_field.textEdited.connect(lambda _t: setattr(self, "_target_generated", False))
         target_button = QPushButton("Choose…")
         target_button.clicked.connect(self._choose_target)
         row.addWidget(self.target_field, 1)
@@ -602,6 +604,9 @@ class SoundsPanel(QWidget):
         self._catalog = catalog
         self._catalog_cache[Path(path)] = catalog
         self.source_field.setText(str(path))
+        if not self.target_field.text().strip() or self._target_generated:
+            self.target_field.setText(suggest_copy_name(path, suffix="sounds"))
+            self._target_generated = True
         current = self.current_container()
         self._fill_containers(list(catalog.banks))
         index = self.container_combo.findData(current)
@@ -784,6 +789,7 @@ class SoundsPanel(QWidget):
                                                  "ESPN NFL 2K5 (sounds).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
 
     def _export(self) -> None:
         row = self.current_row()

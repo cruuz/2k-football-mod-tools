@@ -448,6 +448,9 @@ class BumpPanel(QWidget):
     def _failed(self, message: str) -> None:
         self._set_status(f"Failed: {message}")
         self.error_raised.emit(message)
+        if getattr(self, "_quiet_failure", False):
+            self._quiet_failure = False
+            return
         QMessageBox.warning(self, "Bump map editor", message)
 
     def _refresh_controls(self) -> None:
@@ -494,6 +497,16 @@ class BumpPanel(QWidget):
         if chosen:
             self._load_source(Path(chosen))
 
+    def load_source(self, path: Path | str) -> None:
+        """Browse ``path`` (the open-disc hook); the working copy to update is never guessed.
+
+        A disc this page cannot read is reported on its status line, never as a dialog: the
+        hook runs for every page at once and nobody asked this page a question."""
+
+        if not self._busy:
+            self._quiet_failure = True
+            self._load_source(Path(path))
+
     def _load_source(self, path: Path) -> None:
         def load(progress: ProgressSink) -> dict[str, object]:
             is_retail = _retail_probe(path, progress)
@@ -502,6 +515,7 @@ class BumpPanel(QWidget):
 
         def done(result: object) -> None:
             assert isinstance(result, dict)
+            self._quiet_failure = False
             self.retail_warning.setVisible(bool(result["retail"]))
             self.source_field.setText(str(result["path"]))
             self._packages = list(result["rows"])  # type: ignore[arg-type]

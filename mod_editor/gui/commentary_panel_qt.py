@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, suggest_copy_name
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 AUDIO_FILTER = "Audio (*.wav *.mp3 *.flac *.ogg *.m4a *.aac);;All files (*)"
@@ -122,6 +122,7 @@ class CommentaryPanel(QWidget):
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
         self._source_loaded = False
+        self._target_generated = False
         self._build()
 
     # ------------------------------------------------------------------ layout
@@ -212,6 +213,7 @@ class CommentaryPanel(QWidget):
         self.target_field = QLineEdit()
         self.target_field.setPlaceholderText("Where the new disc goes (never the source)")
         self.target_field.textChanged.connect(self._refresh)
+        self.target_field.textEdited.connect(lambda _t: setattr(self, "_target_generated", False))
         target_button = QPushButton("Choose…")
         target_button.clicked.connect(self._choose_target)
         row.addWidget(self.target_field, 1)
@@ -241,6 +243,9 @@ class CommentaryPanel(QWidget):
 
         self._source_loaded = loaded
         self.source_field.setText(str(path))
+        if loaded and (not self.target_field.text().strip() or self._target_generated):
+            self.target_field.setText(suggest_copy_name(path, suffix="commentary"))
+            self._target_generated = True
         if banks:
             self.bank_combo.clear()
             self.bank_combo.addItems(banks)
@@ -270,9 +275,14 @@ class CommentaryPanel(QWidget):
     # ------------------------------------------------------------------ actions
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso)", str(Path.home()), IMAGE_FILTER)
-        if not chosen:
-            return
-        path = Path(chosen)
+        if chosen:
+            self.load_source(Path(chosen))
+
+    def load_source(self, path: Path | str) -> None:
+        """List the speech banks of ``path`` in the background (also the open-disc hook)."""
+
+        path = Path(path)
+        self.source_field.setText(str(path))
         self.status_label.setText("Reading the speech banks…")
 
         def operation() -> object:
@@ -319,6 +329,7 @@ class CommentaryPanel(QWidget):
                                                  "ESPN NFL 2K5 (commentary).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
 
     def _write(self) -> None:
         source = Path(self.source_field.text())

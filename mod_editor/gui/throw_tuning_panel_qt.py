@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_throw_tuning as tt
-from mod_editor.gui.ux_text import XEMU_LINE, show_operation_error, source_captions, write_caption
+from mod_editor.gui.ux_text import XEMU_LINE, show_operation_error, source_captions, suggest_copy_name, write_caption
 
 ProgressSink = Callable[[str, int, int], None]
 
@@ -498,11 +498,19 @@ class ThrowTuningPanel(QWidget):
         if chosen:
             self.load_source(Path(chosen))
 
-    def load_source(self, source: Path) -> None:
-        """Read the curve tables from ``source`` in the background."""
+    def load_source(self, source: Path, *, quiet: bool = False) -> None:
+        """Read the curve tables from ``source`` in the background.
+
+        ``quiet`` (the open-disc hook) keeps a read failure on the status line: the hook
+        fills every page at once, and a dialog from a page nobody asked would block them all."""
+
+        if self._busy:
+            return
+        self._quiet_failure = bool(quiet)
 
         def done(result: object) -> None:
             assert isinstance(result, dict)
+            self._quiet_failure = False
             self.apply_report(result)
 
         self._run(lambda progress: tt.read_any(source), done)
@@ -517,6 +525,9 @@ class ThrowTuningPanel(QWidget):
         self.source_caption.setText(source_caption)
         self.target_caption.setText(target_caption)
         self.write_button.setText(write_caption(is_image))
+        if is_image and (not self.target_field.text().strip() or getattr(self, "_target_generated", False)):
+            self.target_field.setText(suggest_copy_name(str(report["path"]), suffix="throw tuned"))
+            self._target_generated = True
         settings = report["settings"]
         assert isinstance(settings, tt.TuningSettings)
         self.set_settings(settings)
@@ -635,6 +646,7 @@ class ThrowTuningPanel(QWidget):
         )
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
             self._refresh_controls()
 
     # --------------------------------------------------------------- write
@@ -803,6 +815,10 @@ class ThrowTuningPanel(QWidget):
     def _failed(self, message: str) -> None:
         self.status_label.setText(f"Failed: {message}")
         self.error_raised.emit(message)
+        if getattr(self, "_quiet_failure", False):
+            self._quiet_failure = False
+            self.source_status.setText(f"Couldn't read this file's throw tables: {message}")
+            return
         show_operation_error(self, "finish the throw tuning", message)
 
     def _refresh_controls(self) -> None:

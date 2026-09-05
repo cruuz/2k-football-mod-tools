@@ -95,6 +95,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_roster_records as rr
+from mod_editor.gui.ux_text import show_operation_error, suggest_copy_name
 
 DISC_FILTER = "Disc images (*.iso *.xiso *.xiso.iso);;All files (*)"
 SAVE_FILTER = "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)"
@@ -728,6 +729,7 @@ class RosterEditorPanel(QWidget):
     """The ★ Rosters workspace."""
 
     roster_edits_changed = pyqtSignal(str)          # path of the saved roster-edits document
+    disc_written = pyqtSignal(str)                  # a disc copy this page wrote (Play latest can start it)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -738,6 +740,7 @@ class RosterEditorPanel(QWidget):
         self._source_kind = ""
         self._clipboard: rr.PlayerRecord | None = None
         self._dirty: set[tuple[str, int]] = set()
+        self.auto_filled = False        # the document came from the shell's open disc, not a button here
         self._rows: list[rr.Player] = []
         self._group: tuple[str, int] = ("team", 0)
         self._chip = "All"
@@ -1290,13 +1293,26 @@ class RosterEditorPanel(QWidget):
                 + "\n\nNothing has been changed. Press Repair to apply these, or leave them.")
 
     def load_from_facade(self) -> bool:
-        """Load the roster out of whatever XISO the studio already has open."""
+        """Load the roster out of whatever disc the studio already has open."""
 
         source = getattr(self._facade, "source_path", None) or getattr(self._facade, "source", None)
         if not source:
             self._set_status("No disc is open. Open your game disc (top right), or use Open disc roster… here.")
             return False
-        return self.load_disc(Path(str(source)))
+        loaded = self.load_disc(Path(str(source)))
+        self.auto_filled = loaded
+        return loaded
+
+    def is_dirty(self) -> bool:
+        """Whether this roster carries edits the user would lose on a reload."""
+
+        return bool(self._dirty) or self.undo_stack.can_undo()
+
+    def note_other_source(self, display: str) -> None:
+        """The shell opened another disc; this page keeps its own roster and says so."""
+
+        self._set_status(f"This roster stays loaded ({self.source_label.text()}). "
+                         f"Use the open disc replaces it with the roster of {display}.")
 
     def load_disc(self, path: Path | str) -> bool:
         try:
@@ -1366,14 +1382,14 @@ class RosterEditorPanel(QWidget):
         self.franchise_label.setVisible(True)
 
     def _choose_disc(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Open an NFL 2K5 disc image", "", DISC_FILTER)
-        if chosen:
-            self.load_disc(chosen)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Open a disc roster (.iso)", "", DISC_FILTER)
+        if chosen and self.load_disc(chosen):
+            self.auto_filled = False
 
     def _choose_save(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Open an Xbox NFL 2K5 save", "", SAVE_FILTER)
-        if chosen:
-            self.load_save(chosen)
+        if chosen and self.load_save(chosen):
+            self.auto_filled = False
 
     # ------------------------------------------------------------------ team list
     def _populate_teams(self) -> None:
@@ -2410,16 +2426,22 @@ class RosterEditorPanel(QWidget):
         if self._source_kind == "save":
             chosen = QFileDialog.getExistingDirectory(self, "Choose the folder for the signed Xbox save copy")
         else:
-            chosen, _f = QFileDialog.getSaveFileName(self, "Save disc copy as",
-                                                     "roster-edited.xiso.iso", DISC_FILTER)
+            suggested = (suggest_copy_name(self._source_path, suffix="roster edited")
+                         if self._source_path is not None and self._source_path.is_file() else "roster-edited.xiso.iso")
+            chosen, _f = QFileDialog.getSaveFileName(self, "Save disc copy as", suggested, DISC_FILTER)
         if not chosen:
             return
         try:
             receipt = self.write_copy_to(chosen)
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.warning(self, "Could not write the copy", f"{type(exc).__name__}: {exc}")
+            show_operation_error(self, "write the copy", f"{type(exc).__name__}: {exc}")
             return
-        self._set_status(f"Wrote {receipt.get('target', chosen)}")
+        written = str(receipt.get("target", chosen))
+        if self._source_kind == "save":
+            self._set_status(f"Xbox save copy written: {written}. Put SAVEGAME.DAT and EXTRA back together.")
+        else:
+            self._set_status(f"Disc ready: {written}. Open it in xemu.")
+            self.disc_written.emit(written)
 
     # ------------------------------------------------------------------ chrome
     def _refresh_pool_label(self) -> None:
