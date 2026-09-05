@@ -93,13 +93,16 @@ many copies exist**. Measured on the owner's retail disc [M]:
 | `/DATA/STRMDATA.DB`, `TEAM` | 234 | yes, plus 202 historical squads | **32 of 32** | **yes**, when it agrees |
 | `/DATA/TEMPLATE.DAT` member 1, `TEAM` | 33 | yes, plus the free-agent pool | **32 of 32** | no — `FE.QKL` |
 | `/DATA/TEMPLATE.DAT` members 2, 3, 4, `TEAM` | 185 / 194 / 194 | **no** — `TGID` 33..1011 | n/a | no |
+| `/DATA/TEMPLATE.DAT` members 6, 12, 16, `TEAM` | 0 each | **no** — shipped empty | n/a | no |
 | `/DATA/DB_TEAMS.DAT` members 32..234, `TEAM` | 1 per member (203 members, one empty) | **no** — the historical squads and the free-agent pool | n/a | no |
 | `TEXT` string banks, six containers | 543 members of 14,748 | spell a team's name as prose | n/a | no — §2.3 |
 
 `TEAM` is one schema wherever this page meets it: **65 fields, a 116-byte
 bit-packed little-endian record**, in all 235 `DB_TEAMS.DAT` members and in
-`STRMDATA.DB` [M][S]. `TEMPLATE.DAT`'s four `TEAM` tables are different schemas
-(66/116, 70/128, 68/128 fields/bytes) [M].
+`STRMDATA.DB` [M][S]. `TEMPLATE.DAT` carries `TEAM` in seven members and in
+four *other* schemas — 66 fields/116 bytes in member 1, 70/128 in 2, 68/128
+in 3, 128/180 in 4, 6, 12 and 16 [M] — so a page that assumed one shape would
+be wrong there even if it were allowed to write it.
 
 ### 2.1 The two copies the lane writes
 
