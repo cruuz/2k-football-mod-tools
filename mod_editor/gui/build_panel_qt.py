@@ -14,13 +14,16 @@ from pathlib import Path
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QFileDialog,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QListWidget,
     QMessageBox,
+    QPlainTextEdit,
     QProgressBar,
     QPushButton,
     QSpinBox,
@@ -31,7 +34,7 @@ from PyQt5.QtWidgets import (
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title
+from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
@@ -90,6 +93,11 @@ class BuildPanel(QWidget):
         self._reading = False                 # the shell is inspecting the open disc for us
         self._target_generated = False        # the target was suggested, not chosen by the user
         self.pending_preset: str | None = None  # Getting Started asked for a preset before the disc was read
+        # direct inputs the option list edits (initialised before the UI so the first refresh can read them)
+        self.commentary: list[mod_build.CommentarySwap] = []
+        self.star_players: list[str] = []
+        self._star_names: list[str] = []
+        self.playbook_packs: list[str] = []
         self._build_ui()
         self._refresh()
 
@@ -137,6 +145,8 @@ class BuildPanel(QWidget):
             "QCheckBox::indicator:disabled { border-color: #4a5060; background: #22262e; }"
             "QCheckBox:checked { color: #d8ffe6; font-weight: 600; }"
             "QCheckBox:disabled { color: #6b7385; }"
+            "QCheckBox::indicator:focus { border-color: #6ee7c7; }"
+            "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }"
             "QPushButton#presetButton { padding: 8px 14px; font-weight: 600; }")
         presets = QGroupBox("Choose a SOFTDRINK preset")
         pr = QVBoxLayout(presets)
@@ -215,152 +225,366 @@ class BuildPanel(QWidget):
         mk.addWidget(self.status_label)
         root.addWidget(make)
 
+        # ---------------------------------------------------------------- the option list
+        # Every BuildPlan field is on this page (E4).  Each row is a real QCheckBox (its text is
+        # the accessible name, label-click toggles it, Space toggles it) with a one-line helper
+        # under it and a small qualifier badge: Full disc required / Already installed / Not yet
+        # tested in-game / New franchises only / Not available in this release.  The long
+        # technical story sits under Details so the labels never push the page wide.
+        self._helpers: dict[str, QLabel] = {}
+        self._badges: dict[str, QLabel] = {}
+        self._static_badges: dict[str, str] = {}
+        self._needs_image: set[str] = set()
+        options = QGroupBox("Choose changes")
+        ol = QVBoxLayout(options)
+        ol.setSpacing(10)
+        self.options_hint = QLabel("A preset ticks a known-good set; untick anything here, or tick more. "
+                                   "Badges say when a change needs the full disc, is already on the disc, or is not yet tested in-game.")
+        self.options_hint.setObjectName("throwMuted")
+        self.options_hint.setWordWrap(True)
+        ol.addWidget(self.options_hint)
+
+        # ---- Gameplay
         gameplay = QGroupBox("Gameplay")
         g = QVBoxLayout(gameplay)
+        self.throw_check = self._option(g, "throw", "Change throw distance",
+                                        "How far the strongest arm can throw; the original maximum at 99 Pass Arm Strength is 55 yards.")
         throw_row = QHBoxLayout()
-        self.throw_check = QCheckBox("Throw distance: ceiling at 99 arm")
-        throw_row.addWidget(self.throw_check)
+        throw_row.addSpacing(30)
+        throw_row.addWidget(QLabel("Longest throw at 99 Pass Arm Strength"))
         self.ceiling_spin = QSpinBox()
         self.ceiling_spin.setRange(int(tt.MIN_MAX_DEEP_YARDS), int(tt.MAX_MAX_DEEP_YARDS))
         self.ceiling_spin.setValue(80)
         self.ceiling_spin.setSuffix(" yd")
+        self.ceiling_spin.setAccessibleName("Longest throw at 99 Pass Arm Strength, in yards")
         throw_row.addWidget(self.ceiling_spin)
-        self.realistic_check = QCheckBox("realistic deep-ball flight")
-        self.realistic_check.setChecked(True)
-        throw_row.addWidget(self.realistic_check)
-        self.arc_by_distance_check = QCheckBox("45-60 yd lobs hang high, 63+ flat (short game retail)")
-        self.arc_by_distance_check.setToolTip("Lob speed by distance: every throw up to 40 yards keeps the retail speed table, 45 to 60 yards get the high hanging arc, 63 yards and beyond keep the flat realistic bomb (eight-point table relocated into the XBE header).")
-        throw_row.addWidget(self.arc_by_distance_check)
         throw_row.addStretch(1)
         g.addLayout(throw_row)
-        self.catch_check = QCheckBox("Catching slider decides drops (to 200); Interception slider decides picks")
-        self.accel_check = QCheckBox("Acceleration ramp (players wind up to top speed by agility)")
-        self.draft_check = QCheckBox("Realistic, unpredictable CPU drafts and free agency in franchise")
-        self.returner_check = QCheckBox("Real kick and punt returners on CPU depth charts (no QB fielding punts)")
-        self.progression_check = QCheckBox("NFL-shaped player development (growth, age decline, more stars and busts)")
-        self.team_column_check = QCheckBox("TEAM column on the franchise Player Card's season-by-season stats (which team each season was played for)")
-        self.team_history_check = QCheckBox("Real team history for the roster's past seasons on the Player Card (built-in nflverse data; every other season falls back to that player's 2004 club, so 98 % of the rows name a team; new franchises; disc images only)")
-        self.team_history_check.setToolTip("Writes the real club of every past season the roster carries stats for into the roster template (one pool "
-                                           "dword per season row, so the game folds the oldest seasons a little earlier). Seasons the built-in data does not "
-                                           "cover are filled with the player's own 2004 club rather than left as '--'; only the retail free agents (on no 2004 "
-                                           "club) still read '--'. Only franchises created from the copy see it. Give a CSV below to replace the built-in data "
-                                           "(columns last_name, first_name, birth_date, season, team); a CSV row always wins over the fallback.")
-        history_row = QHBoxLayout()
-        history_row.addWidget(QLabel("Team history CSV (optional, replaces the built-in data)"))
-        self.team_history_field = QLineEdit()
-        self.team_history_field.setPlaceholderText("last_name,first_name,birth_date,season,team")
-        history_row.addWidget(self.team_history_field, 1)
-        self.team_history_button = QPushButton("Choose…")
-        self.team_history_button.clicked.connect(self._choose_team_history)
-        history_row.addWidget(self.team_history_button)
-        self.career_stats_check = QCheckBox("Career stats from your CSV: real per-season passing / rushing / receiving / defence / kicking counters for the roster's past seasons (imports only the rows you supply; disc images only)")
-        self.career_stats_check.setToolTip("Rewrites the historical counters the Player Card shows for seasons up to 2003 from a CSV you provide "
-                                           "(columns and identity pins in docs/mod_editor/career_stats.md). Export the roster's own counters first with "
-                                           "tools/nfl2k5_career_stats.py to get the pins, edit values, import. Half sacks are kept, field goals go by distance "
-                                           "bucket, and nothing is invented: a season the CSV does not name is left exactly as the roster has it. Runs right "
-                                           "after the team history and refuses to grow past the stat pool.")
-        career_row = QHBoxLayout()
-        career_row.addWidget(QLabel("Career stats CSV (required when ticked)"))
+        flight_row = QHBoxLayout()
+        flight_row.addSpacing(30)
+        self.realistic_check = QCheckBox("Realistic deep-ball flight")
+        self.realistic_check.setChecked(True)
+        self.realistic_check.setToolTip("The speed table elite NFL arms actually produce: 3.2-3.9 s hang for 60-80 air yards. "
+                                        "Overrides the manual arc below.")
+        flight_row.addWidget(self.realistic_check)
+        self.arc_by_distance_check = QCheckBox("Higher arc on 45–60 yard lobs")
+        self.arc_by_distance_check.setToolTip("Throws up to 40 yards keep the original speeds, 45-60 air yards get a high hanging arc, "
+                                              "63 yards and beyond keep the realistic flat flight.")
+        flight_row.addWidget(self.arc_by_distance_check)
+        flight_row.addStretch(1)
+        g.addLayout(flight_row)
+        self.throw_details = Details("Throw options")
+        arc_row = QHBoxLayout()
+        arc_row.addWidget(QLabel("Manual deep-ball arc (%)"))
+        self.arc_spin = QSpinBox()
+        self.arc_spin.setRange(0, 100)
+        self.arc_spin.setValue(0)
+        self.arc_spin.setSuffix(" %")
+        self.arc_spin.setAccessibleName("Manual deep-ball arc, per cent")
+        self.arc_spin.setToolTip("Used only when Realistic deep-ball flight is off: higher values slow the ball past the last "
+                                 "25 yards of the ceiling so it hangs longer and climbs higher (the same control as Throw Distance & Arc).")
+        arc_row.addWidget(self.arc_spin)
+        arc_row.addStretch(1)
+        self.throw_details.content.addLayout(arc_row)
+        self.throw_details.add_text("Realistic flight overrides the manual arc. The ceiling re-spaces the game's own curve: at 80, "
+                                    "a 70 arm throws 41, an 85 arm 52, a 95 arm 66 (original 40 / 45 / 50 / 55).")
+        g.addWidget(self.throw_details)
+        self.catch_check = self._option(g, "catch_slider", "Fix Catching & Interception sliders",
+                                        "Catching controls drops; Interception controls picks.",
+                                        details="The catch roll is divided by twice the receiver's side's Catching slider (the menu goes to 200) "
+                                                "and a defender's roll by twice the Interception slider (0 = no picks, 50 = original, 100 = double).")
+        self.accel_check = self._option(g, "accel_ramp", "Gradual player acceleration",
+                                        "Agility controls how quickly players reach top speed.",
+                                        details="The original has no acceleration: everyone is at top speed on the first step. Players now wind up "
+                                                "from 60 % to 100 % of their Speed, about 1 s at 99 Agility and 2 s at 30; standing still resets it.")
+        self.kick_rules_check = self._option(g, "kick_rules", "Modern kick spots & kicking power",
+                                             "Kickoff: 35 · touchback: 35 · PAT snap: 15.",
+                                             details="These describe the shipped patch, not a newly verified NFL ruleset. Two-point tries stay at the 2; "
+                                                     "the kick meter and kicker curves are re-spaced so a 99 leg reaches 65-69 yards; onside and safety "
+                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions.")
+        self.kick_power_check = self._option(g, "kick_power", "More kicking power; keep 2004 kick spots",
+                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots.")
+        self.kickoff_alignment_check = self._option(g, "kickoff_alignment", "Dynamic kickoff alignment",
+                                                    "Coverage on the receiving 40, return setup zone 35-30, two returners deep.",
+                                                    badge=NOT_TESTED, needs_image=True)
+        self.dynamic_kickoff_check = self._option(g, "dynamic_kickoff", "Dynamic kickoff rule (2024/2025)",
+                                                  "Nobody moves until the ball comes down; landing zone; the CPU kicks to it and takes touchbacks. "
+                                                  "Switches on the modern kick spots and the alignment.",
+                                                  badge=NOT_TESTED, needs_image=True,
+                                                  details="First contact in the landing zone then downed in the end zone puts the ball on the 20, a kick "
+                                                          "straight into the end zone is a touchback to the 35, short or out is the 40; the CPU kicker aims "
+                                                          "for the landing zone 90 % of the time and the CPU returner takes the touchback 90 % of the time. "
+                                                          "Your own kicks and returns stay in your hands; onside and safety kicks are untouched.")
+        self.overtime_check = self._option(g, "overtime", "Modern overtime rules",
+                                           "Both teams get a possession; regular-season ties remain.",
+                                           details="Each team is guaranteed a possession unless the kicking team scores a safety; after both have "
+                                                   "possessed the leader wins or the next score wins; regular-season overtime is one 10-minute period "
+                                                   "(scaled with the quarter length) and can tie; the postseason keeps playing.")
+        self.penalties_check = self._option(g, "penalties", "Adjusted penalty rates (experimental)",
+                                            "Estimated rates; includes the Chop Block toggle fix.", badge=NOT_TESTED,
+                                            details="Seven hidden curve tables are re-knotted so the default 50 lands near NFL 2024 per-game rates (0 still "
+                                                    "means none, 100 keeps the original extreme), the incidental face mask becomes 15 yards, and the Chop Block "
+                                                    "On/Off toggle really works (switch it On in Penalty Settings). Rates are ESTIMATED pending a playtest.")
+        self.kick_laces_check = self._option(g, "kick_laces", "Laces face the posts on kicks",
+                                             "On field goals and PATs the held ball is turned so the laces face the posts.", badge=NOT_TESTED)
+        self.uniform_choice_check = self._option(g, "uniform_choice", "Choose home/away jerseys at any stadium",
+                                                 "Up/down past the last era on Controller Assign or Team Select flips that side's colour "
+                                                 "(era cycling continues after the flip).", badge=NOT_TESTED)
+        mode_row = QHBoxLayout()
+        mode_row.addSpacing(30)
+        mode_row.addWidget(QLabel("Jersey mode"))
+        self.uniform_choice_mode = QComboBox()
+        self.uniform_choice_mode.setAccessibleName("Jersey choice mode")
+        self.uniform_choice_mode.addItem("Choose either jersey", "choice")
+        self.uniform_choice_mode.addItem("Home dark / away white", "rule")
+        self.uniform_choice_mode.setToolTip("Choose either jersey keeps the original default and adds the flip; Home dark / away white "
+                                            "applies one rule to every game (no Cowboys exception). Leave the box unticked for the original behavior.")
+        mode_row.addWidget(self.uniform_choice_mode)
+        mode_row.addStretch(1)
+        g.addLayout(mode_row)
+        ol.addWidget(gameplay)
+
+        # ---- Franchise
+        franchise = QGroupBox("Franchise")
+        f = QVBoxLayout(franchise)
+        self.draft_check = self._option(f, "draft_ai", "Smarter Franchise drafts & free agency",
+                                        "Changes CPU decisions; Fantasy Draft is separate.",
+                                        details="The pick is the prospect with the best edge over his own position's class average, times real "
+                                                "positional value, plus the team's need order and a little noise; CPU free-agent targets are scored the same way.")
+        self.returner_check = self._option(f, "returner_fix", "Fix CPU kick & punt returners",
+                                           "Changes automatic depth-chart selection.",
+                                           details="The original stores a punt-return score as the roster slot, so the punt returner is whoever sits in "
+                                                   "slot 0 (often a QB). Returners are now tracked by player, starters stay off the units unless nobody "
+                                                   "else is eligible, and only WR, CB, S, RB and FB can return.")
+        self.progression_check = self._option(f, "progression", "Change player growth & decline",
+                                              "Growth over years 1-5, harder decline after years 9-12; more stars and busts.",
+                                              details="The ten aging-curve tables grow by rating family and decline harder after year 9-12 (speed first); each "
+                                                      "position's archetype mix is widened. Draft-day ratings are unchanged.")
+        self.team_column_check = self._option(f, "team_column", "Show TEAM in Player Card season stats",
+                                              "Which team each season was played for.",
+                                              details="Seasons that ended before this change was in the save, the folded \"pre\" row and the Total row read "
+                                                      "\"--\" until their next rollover. Franchise saves stay loadable either way.")
+        self.team_history_check = self._option(f, "team_history", "Past teams in Player Card stats",
+                                               "New franchises only; missing seasons use the player's 2004 team.",
+                                               badge="New franchises only", needs_image=True,
+                                               details="Writes the real club of every past season the roster carries stats for (built-in nflverse data, "
+                                                       "CC-BY-4.0). Seasons the data does not cover are filled with the player's own 2004 club; only the 2004 "
+                                                       "free agents still read \"--\". A CSV under Custom data replaces the built-in data.")
+        self.career_stats_check = self._option(f, "career_stats", "Career stats from CSV",
+                                               "Real per-season counters for the roster's past seasons, from a CSV you supply.",
+                                               badge="New franchises only", needs_image=True,
+                                               details="Columns and identity pins are in docs/mod_editor/career_stats.md; export the roster's own counters "
+                                                       "first with tools/nfl2k5_career_stats.py. A season the CSV does not name is left as the roster has it. "
+                                                       "CSV only (.xlsx is not read).")
+        self.career_row = QWidget()
+        career_row = QHBoxLayout(self.career_row)
+        career_row.setContentsMargins(30, 0, 0, 0)
+        career_row.addWidget(QLabel("Career stats CSV"))
         self.career_stats_field = QLineEdit()
-        self.career_stats_field.setPlaceholderText("first_name,last_name,birth_date,season,stat,value,source,source_sha256,…")
+        self.career_stats_field.setPlaceholderText("Choose a CSV file")
         career_row.addWidget(self.career_stats_field, 1)
         self.career_stats_button = QPushButton("Choose…")
         self.career_stats_button.clicked.connect(self._choose_career_stats)
         career_row.addWidget(self.career_stats_button)
-        self.prospect_names_check = QCheckBox("Modern draft-prospect names: 485 first names and 52 surnames from 2015-2025 NFL rosters in the generated-player pool (recorded surnames keep their call-outs, new ones are announced by number; new franchises; disc images only)")
-        self.prospect_names_check.setToolTip("Rewrites the 485 first names and 485 surnames the game draws for rookies and free agents (the 1990 Census lists in retail) "
-                                             "inside the roster template's own 13,238 bytes and hooks the generator's audio id: the 433 surnames the announcer has "
-                                             "recorded stay at their index and are still called by name, the 52 replacements and every generated player with one are "
-                                             "announced by number. Only franchises created from the copy see it. Give a CSV below to replace the built-in list "
-                                             "(columns first,last; 485 rows; index optional; ASCII, up to 12 characters, total under 13,238 UTF-16 bytes).")
-        names_row = QHBoxLayout()
-        names_row.addWidget(QLabel("Prospect names CSV (optional, replaces the built-in list)"))
-        self.prospect_names_field = QLineEdit()
-        self.prospect_names_field.setPlaceholderText("first,last (485 rows; index optional)")
-        names_row.addWidget(self.prospect_names_field, 1)
-        self.prospect_names_button = QPushButton("Choose…")
-        self.prospect_names_button.clicked.connect(self._choose_prospect_names)
-        names_row.addWidget(self.prospect_names_button)
-        self.roster_edits_check = QCheckBox("Roster edits from the ★ Rosters page (ratings, appearance, equipment, contracts, names, depth; disc images only)")
-        self.roster_edits_check.setToolTip("Applies a roster-edits document (2k5_mod_studio_roster_edits/v1) written by ★ Rosters. "
-                                           "It runs last of the roster passes and writes only named record fields and shared name strings, "
-                                           "so the star tags, the team history, the prospect names and the position pools all survive. "
-                                           "Give the JSON file below.")
-        edits_row = QHBoxLayout()
-        edits_row.addWidget(QLabel("Roster edits document (from ★ Rosters -> Save roster edits…)"))
+        self.career_row.hide()
+        f.addWidget(self.career_row)
+        self.prospect_names_check = self._option(f, "prospect_names", "Modern draft-prospect names",
+                                                 "New franchises only; some new surnames are announced by number.",
+                                                 badge="New franchises only", needs_image=True,
+                                                 details="The 485 first names and 485 surnames the game draws for rookies and free agents become the most "
+                                                         "common names of 2015-2025 NFL players; the 433 surnames the announcer has recorded keep their "
+                                                         "call-out. A CSV under Custom data replaces the built-in list (columns first,last; 485 rows).")
+        self.season_check = self._option(f, "season_2026", "2026 Franchise season",
+                                         "2026 schedule, 17 games, 14-team playoffs; this does not update the player roster.",
+                                         needs_image=True,
+                                         details="Real 2026 schedule with the 3-game preseason, 17 games over 18 weeks with one bye, 2026 dates and rookie "
+                                                 "birth years.")
+        self.position_row_check = self._option(f, "position_row", "Change position in Edit Player",
+                                               "In-game: use Depth Chart → Auto afterward.", badge=NOT_TESTED,
+                                               details="The Position row (the game's own picker, 17 positions, ratings kept, overall recomputed) sits "
+                                                       "after Last Name on the first page of Edit Player, in roster mode and in Franchise.")
+        self.probowl_order_check = self._option(f, "probowl_order", "Pro Bowl Votes: offense, defense, kickers",
+                                                "The tabs run offence, defence, then K and P.", badge=NOT_TESTED)
+        self.franchise_practice_check = self._option(f, "franchise_practice", "Free Practice inside Franchise",
+                                                     "A Practice row on the Coach's Desk: your first team against itself, no stats or injuries.",
+                                                     badge=NOT_TESTED)
+        self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice",
+                                                 "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.",
+                                                 badge=NOT_TESTED, needs_image=True)
+        ol.addWidget(franchise)
+
+        # ---- Rosters & positions
+        rosters = QGroupBox(tab_title("Rosters & positions"))
+        r = QVBoxLayout(rosters)
+        self.edge_check = self._option(r, "edge_rename", "Call defensive ends EDGE",
+                                       "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.")
+        self.scheme_labels_check = self._option(r, "scheme_labels", "Use scheme-specific depth-chart names",
+                                                "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.")
+        self.position_pools_check = self._option(r, "position_pools", "Merge EDGE, LB & interior position groups",
+                                                 "Changes roster positions and playbook assignments; includes scheme-specific names.",
+                                                 needs_image=True)
+        self.depth_roles_check = self._option(r, "depth_roles", "X / Z / SLOT receivers and nickel / dime corners",
+                                              "Changes who lines up in every playbook, not how they play.",
+                                              badge=NOT_TESTED, needs_image=True,
+                                              details="The innermost receiver of a three-wide set becomes your third receiver (SLOT, with X and Z outside) "
+                                                      "and nickel / dime sets use your third and fourth corners inside. Groups whose formations disagree, "
+                                                      "bunch sets and special teams keep their original assignments; the build report lists them.")
+        self.depth_chart_rows_check = self._option(r, "depth_chart_rows", "SLOT, NICKEL and DIME rows on the depth chart",
+                                                   "Switches on the merged position groups and the playbook roles when the disc lacks them.",
+                                                   badge=NOT_TESTED, needs_image=True,
+                                                   details="Thirteen depth-chart rows per unit instead of eleven: a SLOT row on offence, NICKEL CORNER and "
+                                                           "DIME CORNER rows on both defences, LWR / RWR shown as X / Z. The new rows are views onto your "
+                                                           "receiver and corner lists.")
+        self.roster_edits_check = self._option(r, "roster_edits", "Include exported ★ Rosters edits",
+                                               "Export roster edits on ★ Rosters, then choose that JSON file here.", needs_image=True,
+                                               details="Applies a roster-edits snapshot written by ★ Rosters. It runs last of the roster passes and writes only "
+                                                       "named record fields and shared name strings, so star tags, team history, prospect names and the "
+                                                       "position groups all survive.")
+        self.edits_row = QWidget()
+        edits_row = QHBoxLayout(self.edits_row)
+        edits_row.setContentsMargins(30, 0, 0, 0)
+        edits_row.addWidget(QLabel("Roster edits JSON"))
         self.roster_edits_field = QLineEdit()
-        self.roster_edits_field.setPlaceholderText("roster_edits.json")
+        self.roster_edits_field.setPlaceholderText("Export roster edits on ★ Rosters or choose a JSON file")
         edits_row.addWidget(self.roster_edits_field, 1)
         self.roster_edits_button = QPushButton("Choose…")
         self.roster_edits_button.clicked.connect(self._choose_roster_edits)
         edits_row.addWidget(self.roster_edits_button)
-        self.kick_rules_check = QCheckBox("Modern kicking: kickoff 35, touchback 35, PAT from the 15, ~70-yard legs")
-        self.kick_power_check = QCheckBox("Kicking power only: ~70-yard legs for elite kickers, retail kick spots (the 2004 game)")
-        self.season_check = QCheckBox("2026 franchise: real 2026 schedule + 3-game preseason, 17 games over 18 weeks, 14-team playoffs, 2026 dates and rookie birth years (disc images only)")
-        self.overtime_check = QCheckBox("Modern overtime: both teams get a possession, 10 minutes with ties, playoffs play on")
-        self.kickoff_alignment_check = QCheckBox("Dynamic kickoff line-up: coverage on the receiving 40, return setup zone 35-30, two returners deep, 5-yd run-up (disc images only; unwitnessed)")
-        self.dynamic_kickoff_check = QCheckBox("Dynamic kickoff (2024/2025 rule): nobody moves until the ball comes down, landing zone, CPU kicks to it and takes touchbacks (switches on the kick spots and line-up; disc images only; experimental)")
-        self.dynamic_kickoff_check.setToolTip("Coverage and setup blockers hold until the ball touches the ground or a player; landing zone then end zone = the 20, "
-                                              "straight into the end zone = touchback to the 35 (30 for 2024), short or out = the 40; the CPU kicker aims for the landing zone "
-                                              "90 % of the time and the CPU returner takes the touchback 90 % of the time. Your kicks and returns stay yours. Unwitnessed in game.")
-        self.position_row_check = QCheckBox("Position on the first page of Edit Player, in roster mode and Franchise (Depth Chart -> Auto afterwards)")
-        self.probowl_order_check = QCheckBox("Pro Bowl Votes tabs in football order: offence, defence, then K and P")
-        self.penalties_check = QCheckBox("Penalties at NFL rates (estimated first cut: holding, DPI, roughing, face mask, clipping re-tuned; 15-yd face mask) + a working Chop Block toggle")
-        self.uniform_choice_check = QCheckBox("Home/away jerseys at any stadium: up/down past the last era on Controller Assign or Team Select flips that side's colour (retail default kept; unwitnessed)")
-        self.kick_laces_check = QCheckBox("Laces to the posts on field goals and PATs: the held ball rolls 180 degrees about its long axis on Field Goal formation plays (kickoff tee, punts and carries unchanged; unwitnessed)")
-        self.franchise_practice_check = QCheckBox("Free Practice inside Franchise: a Practice row on the Coach's Desk runs a full scrimmage with your franchise roster, your away kit vs your home kit, and returns to the desk (no stats or injuries; unwitnessed)")
-        self.seven_on_seven_check = QCheckBox("7-on-7 practice mode: Practice Type 7-On-7 + 7-on-7 sets in the practice playbook (linemen idle at the sideline, 4-second timer rusher; disc images only; unwitnessed)")
-        self.player_star_check = QCheckBox("Star decal under the players you tag: the retail controller star follows every player ticked ★ Star in Text & Rosters, up to 9 at once (nothing changes with no tags; unwitnessed)")
-        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.career_stats_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.dynamic_kickoff_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.franchise_practice_check, self.player_star_check, self.seven_on_seven_check, self.roster_edits_check):
-            g.addWidget(box)
-        if not mod_build.SEVEN_ON_SEVEN_RELEASED:
-            self.seven_on_seven_check.hide()
-        self.star_players_label = QLabel("★ Star players: none ticked (tick them in Text & Rosters -> Current Roster Players).")
+        self.edits_row.hide()
+        r.addWidget(self.edits_row)
+        self.roster_edits_status = QLabel("")
+        self.roster_edits_status.setObjectName("throwMuted")
+        self.roster_edits_status.setWordWrap(True)
+        self.roster_edits_status.hide()
+        r.addWidget(self.roster_edits_status)
+        self.player_star_check = self._option(r, "player_star", "Show a star under selected players",
+                                             "At most 9 stars at once; not yet tested in-game.", badge=NOT_TESTED,
+                                             details="The game's own controller star follows every player you select. With nobody selected nothing "
+                                                     "changes on screen. The same routine gates the on-field name/number indicator, so a selected player "
+                                                     "gets that too when Player Indicator Text is on. The tags reach franchises created from the copy.")
+        self.star_players_label = QLabel("")
         self.star_players_label.setObjectName("throwMuted")
         self.star_players_label.setWordWrap(True)
-        g.addWidget(self.star_players_label)
-        g.addLayout(history_row)
-        g.addLayout(career_row)
-        g.addLayout(names_row)
-        g.addLayout(edits_row)
-        root.addWidget(gameplay)
+        self.star_players_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        r.addWidget(self.star_players_label)
+        ol.addWidget(rosters)
 
-        text = QGroupBox("Text")
-        tl = QVBoxLayout(text)
-        self.edge_check = QCheckBox("Rename Defensive End to EDGE game-wide")
-        self.scheme_labels_check = QCheckBox("Depth-chart positions by scheme: 4-3 SAM/MIKE/WILL, 3-4 EDGE/MIKE/WILL/NT")
-        tl.addWidget(self.edge_check)
-        tl.addWidget(self.scheme_labels_check)
-        self.position_pools_check = QCheckBox("One EDGE / one LB / one interior pool across 4-3 and 3-4 (rosters, playbooks, free agency, draft; disc images only)")
-        tl.addWidget(self.position_pools_check)
-        self.depth_roles_check = QCheckBox("X / Z / SLOT receivers and nickel / dime corners in every playbook (the third receiver and the third / fourth corners on your depth chart line up inside; disc images only)")
-        self.depth_roles_check.setToolTip("Rewrites the personnel groups of all 37 playbooks so the innermost receiver of a three-wide set is your third receiver "
-                                          "(SLOT, with X and Z outside) and nickel / dime sets use your third and fourth corners inside. Groups whose formations "
-                                          "disagree about the inside spot, bunch sets and special teams keep their retail assignments; the build report lists them. "
-                                          "Changes who lines up, not how they play. Unwitnessed in game.")
-        tl.addWidget(self.depth_roles_check)
-        self.depth_roles_check.toggled.connect(lambda _checked: self._refresh())
-        self.depth_chart_rows_check = QCheckBox("SLOT, NICKEL and DIME rows on the depth chart, X / Z labels (switches on the one-pool positions and the playbook roles when the disc lacks them; disc images only; experimental)")
-        self.depth_chart_rows_check.setToolTip("Thirteen depth-chart rows per unit instead of eleven: a SLOT row on offence, NICKEL CORNER and DIME CORNER rows on both defences, "
-                                               "LWR / RWR shown as X / Z. The new rows are views onto your receiver and corner lists. Unwitnessed in game.")
-        tl.addWidget(self.depth_chart_rows_check)
-        self.depth_chart_rows_check.toggled.connect(lambda _checked: self._refresh())
-        root.addWidget(text)
-
-        pres = QGroupBox("Presentation (disc images only)")
+        # ---- Presentation
+        pres = QGroupBox("Presentation")
         pl = QVBoxLayout(pres)
-        self.scorebug_check = QCheckBox("Modern ESPN scorebug bar (bottom centre, never swaps sides, stays up during plays) + repainted textures, kick meter lifted, lineup strip off")
-        pl.addWidget(self.scorebug_check)
-        self.camera_check = QCheckBox("Default camera: the Standard preset becomes the Far look (retail Far geometry and lens)")
-        pl.addWidget(self.camera_check)
-        self.widescreen_check = QCheckBox("Widescreen hor+ 16:9 (wider 3D view, HUD and menus keep 4:3 sizing; set xemu Display aspect to 16x9)")
-        self.widescreen_check.setToolTip("v2 (9/3 night): one hook on camera activation - 3D full-screen views go hor+ (32/27), every 2D layer and every sub-window is pillarboxed and clipped to 4:3; "
-                                         "xemu must display 16x9 (Settings -> Display -> aspect ratio, or [display.ui] aspect_ratio in xemu.toml).")
-        pl.addWidget(self.widescreen_check)
-        self.commentary_label = QLabel("Commentary swaps: none queued (use the Commentary tab to pick lines).")
+        self.scorebug_check = self._option(pl, "scorebug", "Modern ESPN scorebar",
+                                           "One bar at the bottom centre that never swaps sides and stays up during plays.",
+                                           needs_image=True,
+                                           details="Also repaints the frame atlas and the ESPN strip, lifts the kick meter and turns the line-up strip off; "
+                                                   "the mesh lives in the field resource pack, which is why the full disc is needed.")
+        self.camera_check = self._option(pl, "camera", "Make Standard camera look like Far",
+                                         "The Standard preset takes Far's look-at, lens and offset; Far itself is untouched.")
+        self.widescreen_check = self._option(pl, "widescreen", "Widescreen 16:9",
+                                             "Set xemu Display aspect ratio to 16x9.", badge=NOT_TESTED,
+                                             details="Hor+: the 3D view widens, HUD and menus keep their 4:3 sizing (pillarboxed). "
+                                                     "xemu: Settings -> Display -> aspect ratio, or [display.ui] aspect_ratio in xemu.toml.")
+        ol.addWidget(pres)
+
+        # ---- Custom data (optional overrides) and the advanced inputs
+        self.custom_details = Details("Custom data (optional spreadsheets)")
+        history_row = QHBoxLayout()
+        history_row.addWidget(QLabel("Team history CSV (optional)"))
+        self.team_history_field = QLineEdit()
+        self.team_history_field.setPlaceholderText("last_name,first_name,birth_date,season,team — replaces the built-in data")
+        history_row.addWidget(self.team_history_field, 1)
+        self.team_history_button = QPushButton("Choose…")
+        self.team_history_button.clicked.connect(self._choose_team_history)
+        history_row.addWidget(self.team_history_button)
+        self.custom_details.content.addLayout(history_row)
+        names_row = QHBoxLayout()
+        names_row.addWidget(QLabel("Prospect names CSV (optional)"))
+        self.prospect_names_field = QLineEdit()
+        self.prospect_names_field.setPlaceholderText("first,last (485 rows) — replaces the built-in list")
+        names_row.addWidget(self.prospect_names_field, 1)
+        self.prospect_names_button = QPushButton("Choose…")
+        self.prospect_names_button.clicked.connect(self._choose_prospect_names)
+        names_row.addWidget(self.prospect_names_button)
+        self.custom_details.content.addLayout(names_row)
+        ol.addWidget(self.custom_details)
+
+        self.advanced_details = Details("More inputs (commentary, playbook packs, description)")
+        adv = self.advanced_details.content
+        self.commentary_box = QGroupBox("Commentary replacements (0)")
+        cb = QVBoxLayout(self.commentary_box)
+        self.commentary_list = QListWidget()
+        self.commentary_list.setAccessibleName("Commentary replacements")
+        self.commentary_list.setMaximumHeight(90)
+        cb.addWidget(self.commentary_list)
+        crow = QHBoxLayout()
+        crow.addWidget(QLabel("Line ID"))
+        self.commentary_stream_field = QLineEdit()
+        self.commentary_stream_field.setPlaceholderText("bank:index, e.g. cutsceneaudio:12 (Presentation ▸ Commentary lists them)")
+        crow.addWidget(self.commentary_stream_field, 1)
+        crow.addWidget(QLabel("Replacement WAV"))
+        self.commentary_wav_field = QLineEdit()
+        self.commentary_wav_field.setPlaceholderText("A WAV or other audio file")
+        crow.addWidget(self.commentary_wav_field, 1)
+        self.commentary_wav_button = QPushButton("Choose…")
+        self.commentary_wav_button.clicked.connect(self._choose_commentary_wav)
+        crow.addWidget(self.commentary_wav_button)
+        self.commentary_add_button = QPushButton("Add line…")
+        self.commentary_add_button.clicked.connect(self._add_commentary_line)
+        crow.addWidget(self.commentary_add_button)
+        self.commentary_remove_button = QPushButton("Remove selected")
+        self.commentary_remove_button.clicked.connect(self._remove_commentary_line)
+        crow.addWidget(self.commentary_remove_button)
+        cb.addLayout(crow)
+        self.commentary_label = QLabel("Each line is cut to its slot's length (a shorter recording is padded with silence). "
+                                       "Presentation ▸ Commentary previews the fit; this list is a direct input to the build.")
         self.commentary_label.setObjectName("throwMuted")
-        pl.addWidget(self.commentary_label)
-        root.addWidget(pres)
+        self.commentary_label.setWordWrap(True)
+        cb.addWidget(self.commentary_label)
+        adv.addWidget(self.commentary_box)
+        packs_box = QGroupBox("Playbook packs (.2k5book)")
+        pb = QVBoxLayout(packs_box)
+        self.packs_list = QListWidget()
+        self.packs_list.setAccessibleName("Playbook packs")
+        self.packs_list.setMaximumHeight(80)
+        pb.addWidget(self.packs_list)
+        prow = QHBoxLayout()
+        self.packs_add_button = QPushButton("Add pack…")
+        self.packs_add_button.clicked.connect(self._add_playbook_pack)
+        prow.addWidget(self.packs_add_button)
+        self.packs_remove_button = QPushButton("Remove selected")
+        self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
+        prow.addWidget(self.packs_remove_button)
+        prow.addStretch(1)
+        pb.addLayout(prow)
+        packs_note = QLabel("Installed in order into the copy's team books; full disc required. "
+                            "Playbooks & Plays ▸ Install Playbook Pack… previews what a pack replaces.")
+        packs_note.setObjectName("throwMuted")
+        packs_note.setWordWrap(True)
+        pb.addWidget(packs_note)
+        adv.addWidget(packs_box)
+        desc_box = QGroupBox("Build description (optional)")
+        db = QGridLayout(desc_box)
+        db.addWidget(QLabel("Mod name"), 0, 0)
+        self.name_field = QLineEdit()
+        self.name_field.setPlaceholderText("Recorded in the build receipt and the mod file; no effect on gameplay")
+        db.addWidget(self.name_field, 0, 1)
+        db.addWidget(QLabel("Author"), 1, 0)
+        self.author_field = QLineEdit()
+        db.addWidget(self.author_field, 1, 1)
+        db.addWidget(QLabel("Notes"), 2, 0)
+        self.notes_field = QPlainTextEdit()
+        self.notes_field.setMaximumHeight(56)
+        db.addWidget(self.notes_field, 2, 1)
+        adv.addWidget(desc_box)
+        ol.addWidget(self.advanced_details)
+        root.addWidget(options)
+        self.career_stats_check.toggled.connect(self.career_row.setVisible)
+        self.roster_edits_check.toggled.connect(self.edits_row.setVisible)
+        self.roster_edits_check.toggled.connect(lambda on: self.roster_edits_status.setVisible(on and bool(self.roster_edits_status.text())))
+        self.uniform_choice_mode.setEnabled(False)
+        self.uniform_choice_check.toggled.connect(self.uniform_choice_mode.setEnabled)
+        self.kick_rules_check.toggled.connect(lambda on: on and self.kick_power_check.setChecked(False))
+        self.kick_power_check.toggled.connect(lambda on: on and self.kick_rules_check.setChecked(False))
+        self.set_star_players([])
 
         root.addStretch(1)
 
@@ -371,9 +595,51 @@ class BuildPanel(QWidget):
         self.ceiling_spin.valueChanged.connect(lambda _v: self._refresh())
         for field in (self.team_history_field, self.career_stats_field, self.prospect_names_field, self.roster_edits_field):
             field.textChanged.connect(lambda _t: self._refresh())
-        self.commentary: list[mod_build.CommentarySwap] = []
-        self.star_players: list[str] = []
         self._refresh()
+
+    def _option(self, layout: QVBoxLayout, key: str, label: str, helper: str = "", *, badge: str = "",
+                needs_image: bool = False, details: str = "") -> QCheckBox:
+        """One change: a real check box, a helper line, a qualifier badge and an optional Details."""
+
+        row = QWidget()
+        rl = QVBoxLayout(row)
+        rl.setContentsMargins(0, 0, 0, 2)
+        rl.setSpacing(1)
+        head = QHBoxLayout()
+        head.setSpacing(8)
+        box = QCheckBox(label)
+        box.setAccessibleDescription(helper)
+        head.addWidget(box)
+        badge_label = QLabel(badge)
+        badge_label.setObjectName("optionBadge")
+        badge_label.setVisible(bool(badge))
+        head.addWidget(badge_label)
+        head.addStretch(1)
+        rl.addLayout(head)
+        helper_label = QLabel(helper)
+        helper_label.setObjectName("throwMuted")
+        helper_label.setWordWrap(True)
+        helper_label.setIndent(30)
+        helper_label.setVisible(bool(helper))
+        rl.addWidget(helper_label)
+        if details:
+            more = Details("Details")
+            more.add_text(details)
+            more.setContentsMargins(30, 0, 0, 0)
+            rl.addWidget(more)
+        layout.addWidget(row)
+        self._helpers[key] = helper_label
+        self._badges[key] = badge_label
+        self._static_badges[key] = badge
+        if needs_image:
+            self._needs_image.add(key)
+        return box
+
+    def _set_badge(self, key: str, text: str) -> None:
+        badge = self._badges.get(key)
+        if badge is not None:
+            badge.setText(text)
+            badge.setVisible(bool(text))
 
     # ------------------------------------------------------------- state
     def begin_reading(self, source: Path | str) -> None:
@@ -428,28 +694,60 @@ class BuildPanel(QWidget):
             bits.append(f"{label}: {state.get(key)}")
         # The disc's identity comes first: a repacked or pre-modded image decides whether Build
         # can work at all, and the user should read that before pressing the button, not after a
-        # step refuses 40 minutes in.
-        head = ("Disc image" if is_image else "default.xbe") + " read."
+        # step refuses 40 minutes in.  Then what is already on the disc, in the same short words
+        # the option list uses (BS-02).
+        head = ("Disc read." if is_image else "Executable (default.xbe) read.")
         identity = str(state.get("disc_identity_line") or "")
         if identity:
-            head += " " + identity
-        self.source_status.setText(head + " " + "; ".join(bits) + ".")
-        # a patch already applied cannot be re-applied; a foreign site disables the toggle
+            head += " " + identity.rstrip(".") + "."
+        applied = [f"{label}: applied" for key, label in (
+            ("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"), ("draft_ai", "draft AI"),
+            ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"),
+            ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
+            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"),
+            ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"),
+            ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"),
+            ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"),
+            ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"), ("player_tags", "star tags"),
+            ("roster_edits", "roster edits"), ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"),
+            ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
+            ("camera", "camera"), ("widescreen", "widescreen"), ("scorebug", "ESPN scorebug"))
+            if state.get(key) == "applied"]
+        foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
+                   if state.get(key) == "foreign"]
+        settings = state.get("throw")
+        if isinstance(settings, tt.TuningSettings) and settings.max_deep_yards != tt.RETAIL_MAX_DEEP_YARDS:
+            applied.insert(0, f"throw ceiling {settings.max_deep_yards:g} yd: applied")
+        parts = [head]
+        parts.append("Already on this disc: " + ", ".join(applied) + "." if applied
+                     else "No recognized patches found; everything the options list is original.")
+        if foreign:
+            parts.append("Not recognized (changed by another tool): " + ", ".join(foreign) + ".")
+        self.source_status.setText(" ".join(parts))
+        self.source_status.setToolTip("Full read-back: " + "; ".join(bits))
+        # a patch already applied cannot be re-applied; a foreign site disables the toggle; the
+        # badge next to the row says which (never a ticked box pretending to mean "installed")
         def gate(box: QCheckBox, key: str, needs_image: bool = False, module: str | None = None) -> None:
             value = str(state.get(key))
             available = self._available.get(module or key, True)
             box.setEnabled(available and value == "retail" and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
-                box.setToolTip("Not available in this build.")
+                box.setToolTip("Not available in this release.")
+                self._set_badge(key, "Not available in this release")
             elif value == "applied":
-                box.setToolTip("Already applied in this source.")
+                box.setToolTip("Already installed on this source.")
+                self._set_badge(key, "Already installed")
             elif value == "foreign":
-                box.setToolTip("Bytes at the patch sites are neither retail nor this patch; refusing.")
+                box.setToolTip("Not recognised: the bytes at this change's sites are neither retail nor this patch "
+                               "(changed by another tool), so it can't be added here.")
+                self._set_badge(key, "Unrecognized source data")
             elif needs_image and not is_image:
-                box.setToolTip("Needs a disc image.")
+                box.setToolTip("Full disc required (not a bare default.xbe).")
+                self._set_badge(key, "Full disc required")
             else:
                 box.setToolTip("")
+                self._set_badge(key, self._static_badges.get(key, ""))
         gate(self.catch_check, "catch_slider")
         gate(self.accel_check, "accel_ramp")
         gate(self.draft_check, "draft_ai")
@@ -462,11 +760,10 @@ class BuildPanel(QWidget):
         # an already-edited roster can take more edits: gate on availability and the container only
         self.roster_edits_check.setEnabled(self._available.get("roster_edits", True) and is_image)
         self.roster_edits_check.setChecked(False)
-        self.roster_edits_check.setToolTip("" if is_image else "Needs a disc image.")
+        self.roster_edits_check.setToolTip("" if is_image else "Full disc required (not a bare default.xbe).")
+        self._set_badge("roster_edits", "" if is_image else "Full disc required")
         gate(self.kick_rules_check, "kick_rules")
         gate(self.kick_power_check, "kick_power", module="kick_rules")
-        self.kick_rules_check.toggled.connect(lambda on: on and self.kick_power_check.setChecked(False))
-        self.kick_power_check.toggled.connect(lambda on: on and self.kick_rules_check.setChecked(False))
         gate(self.kickoff_alignment_check, "kickoff_alignment", needs_image=True)
         gate(self.dynamic_kickoff_check, "dynamic_kickoff", needs_image=True)
         gate(self.season_check, "season_2026", needs_image=True)
@@ -486,7 +783,11 @@ class BuildPanel(QWidget):
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
         if any(state.get(k) == "foreign" for k in ("position_pools", "scheme_labels", "depth_roles")):
             self.depth_chart_rows_check.setEnabled(False)
-            self.depth_chart_rows_check.setToolTip("A dependency of the rows (pools, scheme labels or playbook roles) is neither retail nor this patch.")
+            self.depth_chart_rows_check.setToolTip("Not recognised: something these rows depend on (position groups, scheme names or playbook roles) "
+                                                   "is neither retail nor this patch, so they can't be added here.")
+            self._set_badge("depth_chart_rows", "Unrecognized source data")
+        self.packs_add_button.setEnabled(is_image and self._available.get("playbook_packs", True))
+        self.packs_add_button.setToolTip("" if is_image else "Full disc required.")
         gate(self.scorebug_check, "scorebug", needs_image=True)
         gate(self.camera_check, "camera")
         gate(self.widescreen_check, "widescreen")
@@ -600,26 +901,35 @@ class BuildPanel(QWidget):
         }
 
     def set_star_players(self, tags: list[str], names: list[str] | None = None) -> None:
-        """The ★ Star ticks from Text & Rosters: the players the star decal follows."""
+        """The ★ Star ticks from Names, Numbers & Faces: the players the star follows."""
 
         self.star_players = [str(tag) for tag in tags]
-        shown = list(names or self.star_players)
-        if not self.star_players:
-            self.star_players_label.setText(
-                "★ Star players: none ticked (tick them in Text & Rosters -> Current Roster Players).")
-        else:
-            over = ("; the game draws at most 9 at once"
-                    if len(self.star_players) > player_star.STAR_LIST_LIMIT else "")
-            self.star_players_label.setText(
-                f"★ Star players: {len(self.star_players)} ticked ({', '.join(shown[:8])}"
-                + (", …" if len(shown) > 8 else "") + f"){over}. Needs a disc image.")
+        self._star_names = list(names or self.star_players)
+        self._refresh_star_players_label()
         self._refresh()
+
+    def _refresh_star_players_label(self) -> None:
+        route = "Choose ★ Star under Names, Numbers & Faces → Names & Numbers → Current Roster Players."
+        star_on = self.player_star_check.isChecked()
+        installed = str((self._state or {}).get("player_star")) == "applied"
+        names = getattr(self, "_star_names", [])
+        if not self.star_players:
+            text = "Selected star players (0): none selected. " + route
+        else:
+            over = (f" The game draws at most {player_star.STAR_LIST_LIMIT} at once."
+                    if len(self.star_players) > player_star.STAR_LIST_LIMIT else "")
+            text = (f"Selected star players ({len(self.star_players)}): {', '.join(names[:8])}"
+                    + (", …" if len(names) > 8 else "") + f".{over} Full disc required.")
+            if not star_on and not installed:
+                text += " Player tags are selected, but the star display is off."
+        self.star_players_label.setText(text)
 
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
             overwrite=Path(self.target_field.text()).exists() if self.target_field.text() else False,
-            throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()), arc=0.0,
+            throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()),
+            arc=float(self.arc_spin.value()) / 100.0,
             realistic_flight=self.realistic_check.isChecked(),
             arc_by_distance=self.arc_by_distance_check.isChecked(),
             catch_slider=self.catch_check.isChecked(), accel_ramp=self.accel_check.isChecked(),
@@ -636,7 +946,7 @@ class BuildPanel(QWidget):
             overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=self.seven_on_seven_check.isChecked(),
             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
-            uniform_choice=("choice" if self.uniform_choice_check.isChecked() else ""),
+            uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
             kick_laces=self.kick_laces_check.isChecked(),
             franchise_practice=self.franchise_practice_check.isChecked(),
             player_star=self.player_star_check.isChecked(), player_tags=list(self.star_players),
@@ -645,6 +955,9 @@ class BuildPanel(QWidget):
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
+            playbook_packs=tuple(self.playbook_packs),
+            name=self.name_field.text().strip(), author=self.author_field.text().strip(),
+            notes=self.notes_field.toPlainText().strip(),
         )
         if plan.depth_chart_rows:
             state = self._state or {}
@@ -657,7 +970,8 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
-                    or p.kickoff_alignment or p.dynamic_kickoff or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary
+                    or p.playbook_packs)
 
     def selected_labels(self) -> list[str]:
         """The short names of every ticked change, in page order."""
@@ -675,6 +989,8 @@ class BuildPanel(QWidget):
             labels.append(f"star players ({len(self.star_players)})")
         if self.commentary:
             labels.append(f"commentary lines ({len(self.commentary)})")
+        if self.playbook_packs:
+            labels.append(f"playbook packs ({len(self.playbook_packs)})")
         return labels
 
     def blocker(self) -> str:
@@ -710,6 +1026,9 @@ class BuildPanel(QWidget):
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
         self.realistic_check.setEnabled(self.throw_check.isChecked())
         self.arc_by_distance_check.setEnabled(self.throw_check.isChecked())
+        self.arc_spin.setEnabled(self.throw_check.isChecked() and not self.realistic_check.isChecked())
+        if hasattr(self, "star_players_label"):
+            self._refresh_star_players_label()
         labels = self.selected_labels()
         if labels:
             shown = ", ".join(labels[:6]) + (f" … (+{len(labels) - 6} more)" if len(labels) > 6 else "")
@@ -739,10 +1058,81 @@ class BuildPanel(QWidget):
             self.set_roster_edits(chosen)
 
     def set_roster_edits(self, path: str) -> None:
-        """★ Rosters calls this when it writes a roster-edits document."""
+        """★ Rosters calls this when it exports a roster-edits snapshot."""
 
         self.roster_edits_field.setText(path)
         self.roster_edits_check.setChecked(bool(path) and self.roster_edits_check.isEnabled())
+        if path:
+            self.roster_edits_status.setText(f"Snapshot: {Path(path).name}. Build uses this saved file; export again after further changes.")
+        else:
+            self.roster_edits_status.setText("")
+        self.roster_edits_status.setVisible(bool(path) and self.roster_edits_check.isChecked())
+        self._refresh()
+
+    def mark_roster_edits_stale(self) -> None:
+        """★ Rosters changed again after the export: the file on disk no longer matches."""
+
+        path = self.roster_edits_field.text().strip()
+        if path:
+            self.roster_edits_status.setText(f"Snapshot: {Path(path).name} is older than the roster on ★ Rosters. "
+                                             "Export roster edits again to include the latest changes.")
+            self.roster_edits_status.setVisible(self.roster_edits_check.isChecked())
+
+    def _choose_commentary_wav(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose the replacement recording", str(Path.home()),
+                                                 "Audio (*.wav *.mp3 *.flac *.ogg *.m4a);;All files (*)")
+        if chosen:
+            self.commentary_wav_field.setText(chosen)
+
+    def _add_commentary_line(self) -> None:
+        stream = self.commentary_stream_field.text().strip()
+        wav = self.commentary_wav_field.text().strip()
+        if ":" not in stream or not wav:
+            self.status_label.setText("A commentary line needs a Line ID (bank:index) and a recording.")
+            return
+        self.set_commentary(list(self.commentary) + [mod_build.CommentarySwap(stream, wav)])
+        self.commentary_stream_field.clear()
+        self.commentary_wav_field.clear()
+
+    def _remove_commentary_line(self) -> None:
+        rows = sorted({index.row() for index in self.commentary_list.selectedIndexes()}, reverse=True)
+        remaining = list(self.commentary)
+        for row in rows:
+            if 0 <= row < len(remaining):
+                del remaining[row]
+        self.set_commentary(remaining)
+
+    def set_commentary(self, swaps: list[mod_build.CommentarySwap]) -> None:
+        """The commentary lines the build replaces (a direct input; also used by tests)."""
+
+        self.commentary = list(swaps)
+        self.commentary_list.clear()
+        for swap in self.commentary:
+            self.commentary_list.addItem(f"{swap.stream}  ←  {Path(swap.wav).name}")
+        self.commentary_box.setTitle(f"Commentary replacements ({len(self.commentary)})")
+        self._refresh()
+
+    def _add_playbook_pack(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileNames(self, "Choose playbook packs", str(Path.home()),
+                                                  "Playbook packs (*.2k5book);;All files (*)")
+        if chosen:
+            self.set_playbook_packs(list(self.playbook_packs) + [str(path) for path in chosen])
+
+    def _remove_playbook_pack(self) -> None:
+        rows = sorted({index.row() for index in self.packs_list.selectedIndexes()}, reverse=True)
+        remaining = list(self.playbook_packs)
+        for row in rows:
+            if 0 <= row < len(remaining):
+                del remaining[row]
+        self.set_playbook_packs(remaining)
+
+    def set_playbook_packs(self, paths: list[str]) -> None:
+        """The community packs installed into the copy, in order (also used by tests)."""
+
+        self.playbook_packs = [str(path) for path in paths]
+        self.packs_list.clear()
+        for path in self.playbook_packs:
+            self.packs_list.addItem(Path(path).name)
         self._refresh()
 
     def _choose_career_stats(self) -> None:

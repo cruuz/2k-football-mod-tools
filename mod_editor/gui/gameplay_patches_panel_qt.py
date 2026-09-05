@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_throw_tuning as tt
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions, suggest_copy_name, write_caption
+from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title, write_caption
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 
@@ -207,6 +207,36 @@ class _Task(QRunnable):
 if not mod_build.SEVEN_ON_SEVEN_RELEASED:
     PATCHES = tuple(entry for entry in PATCHES if entry[0] != "seven_on_seven")
 
+# What each toggle is called on screen (the same words as the Build tab), a one-line helper, and
+# the qualifier badge that must stay visible outside Details (E4 / M12).
+LABELS: dict[str, tuple[str, str, str]] = {
+    "catch_slider": ("Fix Catching & Interception sliders", "Catching controls drops; Interception controls picks.", ""),
+    "accel_ramp": ("Gradual player acceleration", "Agility controls how quickly players reach top speed.", ""),
+    "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
+    "returner_fix": ("Fix CPU kick & punt returners", "Changes automatic depth-chart selection.", ""),
+    "progression": ("Change player growth & decline", "Growth over years 1-5, harder decline after years 9-12; more stars and busts.", ""),
+    "team_column": ("Show TEAM in Player Card season stats", "Which team each season was played for.", ""),
+    "kick_rules": ("Modern kick spots & kicking power", "Kickoff: 35 · touchback: 35 · PAT snap: 15.", ""),
+    "dynamic_kickoff": ("Dynamic kickoff rule (2024/2025)", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
+                        "Switches on the modern kick spots and the alignment.", NOT_TESTED),
+    "overtime": ("Modern overtime rules", "Both teams get a possession; regular-season ties remain.", ""),
+    "camera": ("Make Standard camera look like Far", "The Standard preset takes Far's look-at, lens and offset.", ""),
+    "position_row": ("Change position in Edit Player", "In-game: use Depth Chart → Auto afterward.", NOT_TESTED),
+    "probowl_order": ("Pro Bowl Votes: offense, defense, kickers", "The tabs run offence, defence, then K and P.", NOT_TESTED),
+    "penalties": ("Adjusted penalty rates (experimental)", "Estimated rates; includes the Chop Block toggle fix.", NOT_TESTED),
+    "uniform_choice": ("Choose home/away jerseys at any stadium", "Up/down past the last era flips that side's colour.", NOT_TESTED),
+    "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
+    "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
+    "franchise_practice": ("Free Practice inside Franchise", "A Practice row on the Coach's Desk: your first team against itself.", NOT_TESTED),
+    "seven_on_seven": ("7-on-7 practice", "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.", NOT_TESTED),
+    "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; at most 9 stars at once.", NOT_TESTED),
+    "depth_roles": ("X / Z / SLOT receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
+    "depth_chart_rows": ("SLOT, NICKEL and DIME rows on the depth chart",
+                         "Switches on the merged position groups and the playbook roles when the disc lacks them.", NOT_TESTED),
+    "edge_rename": ("Call defensive ends EDGE", "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.", ""),
+    "scheme_labels": ("Use scheme-specific depth-chart names", "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.", ""),
+}
+
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
@@ -237,7 +267,7 @@ class GameplayPatchesPanel(QWidget):
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *,
                  patches: tuple[tuple[str, str, str], ...] = PATCHES,
-                 title: str = "Gameplay Patches",
+                 title: str = "Game Fixes",
                  intro: str = "Select fixes and write one copy. For presets and other changes, use ★ Build & Share.",
                  target_suffix: str = "gameplay patched") -> None:
         super().__init__(parent)
@@ -302,18 +332,55 @@ class GameplayPatchesPanel(QWidget):
         self.source_status.setObjectName("throwMuted")
         self.source_status.setWordWrap(True)
         root.addWidget(self.source_status)
+        self.setStyleSheet(
+            "QCheckBox { padding: 4px 2px; spacing: 10px; }"
+            "QCheckBox::indicator { width: 20px; height: 20px; border: 2px solid #8a94a6; border-radius: 4px; background: #1b1f27; }"
+            "QCheckBox::indicator:unchecked:hover { border-color: #c9d1de; }"
+            "QCheckBox::indicator:checked { background: #2ecc71; border-color: #2ecc71; "
+            "image: url(:/qt-project.org/styles/commonstyle/images/standardbutton-apply-16.png); }"
+            "QCheckBox::indicator:disabled { border-color: #4a5060; background: #22262e; }"
+            "QCheckBox::indicator:focus { border-color: #6ee7c7; }"
+            "QCheckBox:checked { color: #d8ffe6; font-weight: 600; }"
+            "QCheckBox:disabled { color: #6b7385; }"
+            "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }")
+        self.badges: dict[str, QLabel] = {}
+        self._static_badges: dict[str, str] = {}
+        list_box = QGroupBox("Changes")
+        lb = QVBoxLayout(list_box)
+        lb.setSpacing(8)
         for key, label, explanation in self._patches:
-            box = QGroupBox(label)
-            lay = QVBoxLayout(box)
-            check = QCheckBox("Apply to the copy")
+            short, helper, badge = LABELS.get(key, (label, "", ""))
+            row = QWidget()
+            rl = QVBoxLayout(row)
+            rl.setContentsMargins(0, 0, 0, 2)
+            rl.setSpacing(1)
+            head = QHBoxLayout()
+            head.setSpacing(8)
+            check = QCheckBox(tab_title(short))
+            check.setAccessibleDescription(helper or label)
             check.toggled.connect(lambda _c: self._refresh())
-            lay.addWidget(check)
-            text = QLabel(explanation)
-            text.setObjectName("throwMuted")
-            text.setWordWrap(True)
-            lay.addWidget(text)
-            root.addWidget(box)
+            head.addWidget(check)
+            badge_label = QLabel(badge)
+            badge_label.setObjectName("optionBadge")
+            badge_label.setVisible(bool(badge))
+            head.addWidget(badge_label)
+            head.addStretch(1)
+            rl.addLayout(head)
+            if helper:
+                helper_label = QLabel(helper)
+                helper_label.setObjectName("throwMuted")
+                helper_label.setWordWrap(True)
+                helper_label.setIndent(30)
+                rl.addWidget(helper_label)
+            more = Details("Details")
+            more.add_text(explanation)
+            more.setContentsMargins(30, 0, 0, 0)
+            rl.addWidget(more)
+            lb.addWidget(row)
             self.checks[key] = check
+            self.badges[key] = badge_label
+            self._static_badges[key] = badge
+        root.addWidget(list_box)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -361,13 +428,28 @@ class GameplayPatchesPanel(QWidget):
                    "retail": ""}.get(value, "Unknown state.")
             # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
-            check.setToolTip("Full disc required (not a bare default.xbe)." if needs_image and value not in ("applied", "foreign", "partial") else tip)
+            full_disc = needs_image and value not in ("applied", "foreign", "partial")
+            check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
+            badge = ("Full disc required" if full_disc else
+                     {"applied": "Already installed", "foreign": "Unrecognized source data",
+                      "partial": "Unrecognized source data"}.get(value, self._static_badges.get(key, "")))
+            self.badges[key].setText(badge)
+            self.badges[key].setVisible(bool(badge))
         row_check = self.checks.get("depth_chart_rows")
         if row_check is not None and any(state.get(k) == "foreign" for k in ("position_pools", "scheme_labels", "depth_roles")):
             row_check.setEnabled(False)
             row_check.setToolTip("Not recognised: something these rows depend on (position groups, scheme names or playbook roles) "
                                  "is neither retail nor this patch, so they can't be added here.")
-        self.source_status.setText("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches) + ".")
+            self.badges["depth_chart_rows"].setText("Unrecognized source data")
+            self.badges["depth_chart_rows"].setVisible(True)
+        applied = [LABELS.get(k, (k, "", ""))[0] for k, _l, _e in self._patches if state.get(k) == "applied"]
+        foreign = [LABELS.get(k, (k, "", ""))[0] for k, _l, _e in self._patches if state.get(k) in ("foreign", "partial")]
+        text = ("Already on this source: " + ", ".join(applied) + "." if applied
+                else "No recognized changes found; everything listed is original.")
+        if foreign:
+            text += " Not recognized (changed by another tool): " + ", ".join(foreign) + "."
+        self.source_status.setText(text)
+        self.source_status.setToolTip("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches))
         self.suggest_target()
         self._refresh()
 
@@ -415,7 +497,7 @@ class GameplayPatchesPanel(QWidget):
         if not any(check.isChecked() for check in self.checks.values()):
             return
         is_image = tt.is_disc_image(plan.source)
-        chosen = [label for key, label, _e in self._patches if self.checks[key].isChecked()]
+        chosen = [LABELS.get(key, (label, "", ""))[0] for key, label, _e in self._patches if self.checks[key].isChecked()]
         answer = QMessageBox.question(self, "Make disc with these changes?" if is_image else "Save a patched executable?",
                                       f"Source (unchanged): {plan.source}\n"
                                       + (f"Replace existing copy: {plan.target}" if plan.overwrite

@@ -2333,8 +2333,10 @@ class StudioMainWindow(QMainWindow):
                 identity_tabs.setAccessibleName("Text and team identity workspaces")
                 identity_tabs.addTab(self._text_roster_panel, "Text && Team Identity")
                 self._edge_panel = GameplayPatchesPanel(
-                    self.facade, patches=TEXT_PATCHES, title="Text Patches",
-                    intro="Text patches that change what the game calls things.",
+                    self.facade, patches=TEXT_PATCHES, title="Position names",
+                    intro="Change what the game calls positions and write one copy. "
+                          "For presets and other changes, use ★ Build & Share.",
+                    target_suffix="position names",
                 )
                 identity_tabs.addTab(self._edge_panel, "EDGE Rename")
                 identity_tabs.setCurrentIndex(0)
