@@ -259,7 +259,11 @@ Source image both times: volume id `50137`, 2,277,872 blocks of 2,048 bytes,
 A note on cost: `replace_files` replaces whole files, and the packs are 1 GiB
 each, so a single eight-byte poke stages and rewrites a gibibyte. That is the
 price of the fixed-allocation guarantee, and it is why the writers stream the
-staging copy rather than holding it.
+staging copy rather than holding it. The ISO writer itself does read each
+staged pack into memory, so a colour recipe touching both packs that carry
+`Unif` resources costs about 2 GiB of RAM; split such a recipe if that matters.
+The roster lane never has this problem — the boot roster and all 75 historic
+rosters live in `/VC_20919/0.`, so a roster recipe is always one file.
 
 ---
 

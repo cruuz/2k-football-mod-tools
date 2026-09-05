@@ -29,6 +29,14 @@ Discipline, every rule enforced and each refusal saying so
 * Nothing is created until every check has passed, so a refusal leaves no
   destination behind.
 
+Cost, because it is not obvious: ``replace_files`` works at *file* granularity
+and each ``/VC_20919`` pack is 1 GiB, so an eight-byte poke stages and rewrites
+a whole gibibyte.  That is the price of the fixed-allocation guarantee.  The
+staging copy here is streamed rather than held, but the ISO writer does read
+each staged pack into memory, so a recipe touching both packs that carry ``Unif``
+resources (133 targets in ``/VC_20919/0.``, 501 in ``/1.``) costs about 2 GiB of
+RAM.  Split such a recipe if that matters on the machine at hand.
+
 Usage::
 
     nfl2k5_ps2_unif_color_patch.py --source <stock.iso> --destination <new.iso> \\
