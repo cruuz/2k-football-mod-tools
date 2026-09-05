@@ -2,6 +2,14 @@
 
 ## Beta 61 (unreleased) — NFL 2K5 (PS2): six on-disc writers, proven offline
 
+- **Multi-game interfaces — design and proof, nothing wired yet.** `mod_editor/games/` holds a
+  versioned game-module contract (`vc_game_module/v1`), filesystem discovery that fails closed per
+  package, per-game registry/allowlist/pin fragments with a lossless merge (proved byte-exact
+  against `registry.v1.json`), a generic conformance harness that proves a game on its own
+  synthetic source, and the core-owned "Select other games…" chooser. ESPN NFL 2K5 (PS2) is
+  expressed on it as an adapter wrapping its lane tools unchanged; 40 new tests. No registry row,
+  pin, allowlist line or upstream module changed. Plan and the exact one-time hooks:
+  `docs/product/MULTI_GAME_INTERFACES_PLAN.md`.
 - **PS2 uniform replacement-pack export** (`nfl2k5ps2.uniforms.replacement_pack_export`, extract-only):
   the edited uniform textures of the open Xbox project leave as a PCSX2 texture-replacement pack
   for `SLUS-20919`, each file named by the hashes PCSX2 computes at draw time, computed offline from
