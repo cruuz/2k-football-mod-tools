@@ -1,0 +1,18 @@
+{
+  "capability_rows": 1,
+  "game_id": "madden09_ps2",
+  "hidden_disc_writers": 1,
+  "lanes_on_contract": 1,
+  "product_modules": 2,
+  "retail_identity": {
+    "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "executable_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "save_writer_ids": [],
+  "schema": "vc_game_module_pins/v1",
+  "shipped_files": 9,
+  "surfaces": [
+    "menus"
+  ],
+  "windows": 1
+}

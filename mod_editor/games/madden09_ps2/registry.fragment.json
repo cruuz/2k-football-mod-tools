@@ -1,0 +1,80 @@
+{
+  "capabilities": [
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.example_lane --source <in.slot> --destination <new.slot> --recipe <recipe.json> [--receipt <receipt.json>]",
+        "module": "mod_editor/games/madden09_ps2/example_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_madden09_ps2_module.py"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "PLACEHOLDER: the scaffold's example lane over a synthetic slot file. Delete or replace it before the first real row; it never enters the canonical registry."
+      },
+      "id": "madden09_ps2.menus.example_slots",
+      "input_constraints": [
+        "Exact allocation, never longer: a slot holds 32 ASCII characters; longer text is refused before anything is written.",
+        "The source is opened read-only; the destination must not exist; every refusal leaves no destination behind."
+      ],
+      "portme": [
+        "Replace with the game's real lanes; this row documents the shape only."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, its validators and user-authored recipes; sources and outputs stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Synthetic only: a placeholder format no game uses.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "slot:<index> from the catalogue",
+            "name": "slot",
+            "required": true
+          },
+          {
+            "allowed": "up to 32 printable ASCII characters",
+            "name": "text",
+            "required": true
+          }
+        ],
+        "notes": "One recipe entry rewrites one slot inside its own 32-byte allocation."
+      },
+      "source_container": {
+        "format": "Synthetic SLOT file: header plus fixed 32-byte text slots.",
+        "hash_pins": [],
+        "resource": "N text slots, each 32 bytes",
+        "retail_file": "None: a synthetic example for Madden NFL 09 (USA, PlayStation 2) (PlayStation 2)."
+      },
+      "summary": "PLACEHOLDER example lane for Madden NFL 09 (USA, PlayStation 2): rewrite 32-character text slots of a synthetic slot file inside their allocation, with an independent verifier.",
+      "surface": "menus",
+      "title": "Madden NFL 09 (USA, PlayStation 2) example slot text (placeholder)",
+      "validation_command": "bash mod_editor/games/madden09_ps2/validate_example.sh"
+    }
+  ],
+  "game": {
+    "id": "madden09_ps2",
+    "platform": "PlayStation 2",
+    "public_input": "FILL IN: what the user supplies for Madden NFL 09 (USA, PlayStation 2) (their own legally obtained image or save); the tool never bundles game files.",
+    "retail_identity": {
+      "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "executable_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "title": "Madden NFL 09 (USA, PlayStation 2)"
+  },
+  "schema": "vc_mod_capability_registry_fragment/v1",
+  "surfaces": [
+    "menus"
+  ]
+}

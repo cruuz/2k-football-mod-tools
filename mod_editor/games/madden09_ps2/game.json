@@ -1,0 +1,20 @@
+{
+  "schema": "vc_game_module_manifest/v1",
+  "game_id": "madden09_ps2",
+  "package": "mod_editor.games.madden09_ps2",
+  "title": "Madden NFL 09 (USA, PlayStation 2)",
+  "platform": "PlayStation 2",
+  "console": "PS2",
+  "game": "Madden",
+  "year": "09",
+  "version": "0.1.0",
+  "contract": "vc_game_module/v1",
+  "registry_fragment": "registry.fragment.json",
+  "allowlist_fragment": "allowlist.fragment.txt",
+  "pins": "pins.json",
+  "product_modules": [
+    "mod_editor.games.madden09_ps2",
+    "mod_editor.games.madden09_ps2.example_lane"
+  ],
+  "tool_modules": []
+}
