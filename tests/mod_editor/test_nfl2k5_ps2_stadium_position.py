@@ -152,6 +152,35 @@ class Ps2StadiumPositionTests(unittest.TestCase):
         self.assertEqual("pass", result["verdict"])
         self.assertEqual(10, sum(lane["vertex_count"] for lane in result["lanes"]))
 
+    def test_a_chunk_that_straddles_two_pack_files(self) -> None:
+        """The retail layout addresses the packs as one flat byte range.
+
+        A resource may therefore begin in one pack file and end in the next,
+        which means the writer has to build two replacement files for one
+        edit and the verifier has to read the span across the seam. The
+        fixture puts the pack boundary inside the chunk on purpose.
+        """
+        disc = _Disc(self.root, split_packs=True, scratch=4096, slack_bytes=256)
+        layout = verifier.read_iso_packs(str(disc.source))
+        self.assertEqual(2, len(layout["packs"]))
+        target = disc.targets[0]
+        recipe = disc.recipe("straddle.json",
+                             [(target["target_id"], disc.moved(target))])
+        output = self.root / "straddle.iso"
+        report = patcher.patch(str(disc.source), str(disc.catalog), str(recipe),
+                               str(output))
+        self.assertEqual(["/VC_20919/0.", "/VC_20919/1."],
+                         [pack["iso_path"] for pack in report["packs"]])
+        self.assertEqual(report["scene"]["span_size"],
+                         sum(pack["bytes_spliced"] for pack in report["packs"]))
+
+        result = verifier.verify(str(disc.source), str(output),
+                                 str(disc.catalog), str(recipe))
+        self.assertEqual("pass", result["verdict"])
+        self.assertEqual(2, len(result["chunk"]["physical_windows"]))
+        self.assertEqual(["0", "1"],
+                         [w["pack"] for w in result["chunk"]["physical_windows"]])
+
     def test_a_no_op_recipe_reproduces_the_source_image_byte_for_byte(self) -> None:
         disc = _Disc(self.root)
         target = disc.targets[0]

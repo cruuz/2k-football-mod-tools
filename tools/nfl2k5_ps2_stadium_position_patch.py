@@ -607,13 +607,17 @@ SYNTHETIC_SERIAL = "SLUS_209.19"
 def build_synthetic_disc(vertex_counts: Sequence[int] = (4, 6),
                          slack_bytes: int = 96,
                          scratch: int = 96,
-                         uniform_positions: bool = False) -> bytes:
+                         uniform_positions: bool = False,
+                         split_packs: bool = False) -> bytes:
     """A tiny SLUS-20919-shaped ISO with one VC pack holding one SCNE.
 
     ``slack_bytes`` is how many bytes of the chunk's stored body the retail
     stream leaves spare, which is what decides whether an edit can fit.
     ``uniform_positions`` makes every vertex identical so the payload packs
     into one long match -- the fixture the overflow test needs.
+    ``split_packs`` cuts the archive into two pack files with the boundary
+    falling inside the chunk's span, which is the retail layout's documented
+    "an entry may straddle two packs" case.
     """
     system = bytearray(cat.build_synthetic_scene(vertex_counts))
     if uniform_positions:
@@ -626,7 +630,17 @@ def build_synthetic_disc(vertex_counts: Sequence[int] = (4, 6),
                                      lane["data_offset"] + vertex * ELEMENT,
                                      10.0, 20.0, 30.0, 0.0)
     system = bytes(system)
-    video = bytes(0x400)
+    if split_packs:
+        # An incompressible video buffer, so the chunk is bigger than the
+        # 0x800 pack alignment and a boundary can actually fall inside it.
+        state = 0x12345678
+        raw = bytearray()
+        for _ in range(0x2000):
+            state = (state * 1103515245 + 12345) & 0xFFFFFFFF
+            raw.append((state >> 16) & 0xFF)
+        video = bytes(raw)
+    else:
+        video = bytes(0x400)
     decoded = system + video
     stream, _metrics = txtr.compress_vc_lz(decoded, stream_tag=1, offset_bits=12,
                                            verify_roundtrip=True)
@@ -645,7 +659,21 @@ def build_synthetic_disc(vertex_counts: Sequence[int] = (4, 6),
     pack.extend(chunk)
     while len(pack) % inv.ALIGNMENT:
         pack.append(0)
-    struct.pack_into("<I", pack, 12, len(pack) // inv.ALIGNMENT)
+
+    if split_packs:
+        # Put the boundary in the middle of the chunk span so the writer has
+        # to splice two files and the verifier has to read across them.
+        chunk_start = entry_offset_blocks * inv.ALIGNMENT
+        cut = ((chunk_start + len(chunk) // 2) // inv.ALIGNMENT) * inv.ALIGNMENT
+        _require(chunk_start < cut < chunk_start + len(chunk),
+                 "the synthetic chunk is too small to straddle two packs")
+        struct.pack_into("<I", pack, 8, 2)
+        struct.pack_into("<I", pack, 12, cut // inv.ALIGNMENT)
+        struct.pack_into("<I", pack, 16, (len(pack) - cut) // inv.ALIGNMENT)
+        volumes = [(b"0.;1", bytes(pack[:cut])), (b"1.;1", bytes(pack[cut:]))]
+    else:
+        struct.pack_into("<I", pack, 12, len(pack) // inv.ALIGNMENT)
+        volumes = [(b"0.;1", bytes(pack))]
 
     boot = ("BOOT2 = cdrom0:\\%s;1\r\nVER = 1.00\r\nVMODE = NTSC\r\n"
             % SYNTHETIC_SERIAL).encode("ascii")
@@ -653,7 +681,7 @@ def build_synthetic_disc(vertex_counts: Sequence[int] = (4, 6),
         files=[(b"SYSTEM.CNF;1", boot),
                (SYNTHETIC_SERIAL.encode("ascii") + b";1", b"ELF" + bytes(2045))],
         sub_name=b"VC_20919",
-        sub_files=[(b"0.;1", bytes(pack))])
+        sub_files=volumes)
 
 
 def write_recipe(path: str, catalog_sha: str, edits: Sequence[Tuple[str, Sequence]]) -> None:
