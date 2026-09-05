@@ -2,7 +2,16 @@
 
 ## v1.0 RC84 — ★ Rosters does what Finn's did (real saves, Franchise tab, membership, templates), dynamic kickoff, slot / nickel / dime, practice squads, career stats, simpler words everywhere (2026-09-04)
 
-- **The Playoff Picture, the Playoff Tree and SportsCenter's playoff previews now show the seven-seed format.** Noah's
+- **Mod files are modular now (format 2): a `.2k5patch` can carry anything, including a change that resizes the disc.**
+  The old patch format could only carry same-size, in-place byte edits, so the SPECIAL depth-chart tab (which grows the
+  executable) could not travel in a shareable patch. The format is now an ordered list of typed, self-verifying operations
+  (in-place byte runs, an executable-grow that replays the appended page and the one directory repoint, and named
+  file-replace / file-grow), each with its own before-and-after hash, a reader-version stamp so an older Mod Studio refuses
+  a newer pack with a clear message instead of misapplying it, and a copy-then-rename apply so a failed patch never leaves a
+  half-written disc. Old packs keep working unchanged, and a new-format pack that only edits bytes produces exactly the same
+  disc the old format would. The upshot: the SOFTDRINK Experimental patch now includes SPECIAL, and no future feature will
+  hit "the patch can't carry this" again, it just adds an operation type. Built by GPT-6 Astra; verified applying to a retail
+  disc byte-for-byte.- **The Playoff Picture, the Playoff Tree and SportsCenter's playoff previews now show the seven-seed format.** Noah's
   first look at the pre-release disc found the franchise's seeding preview and the recap segments still describing the
   retail six-seed picture while the bracket itself played the 2020+ format. Built by GPT-6 Astra and now part of the 2026
   season step: the Playoff Picture always lists the seven projected qualifiers with a visible 7, the Playoff Tree binds
