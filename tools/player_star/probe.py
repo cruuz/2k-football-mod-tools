@@ -144,9 +144,16 @@ def evidence_records(original, body, source, extent):
                           'controller_count': vm.u32(ps.STAR_COUNT_VA)&255,
                           'retail_models': vm.models, 'star_strips': strips,
                           'shared_material_unchanged': material_before == bytes(vm.uc.mem_read(vm.u32(ps.MATERIAL_VA), 128))}
-    if len(results['fixed']['star_strips']) != len(selected):
-        raise AssertionError('a tagged runtime record failed to submit a star')
-    result = {'schema': 'nfl2k5-star-draw-proof/v1', 'source': source,
+    submitted = results['fixed']['star_strips']
+    if [row['diffuse'] for row in submitted] != ['0xff101010', '0xffffffff']*len(selected):
+        raise AssertionError('a tagged runtime record failed to submit its dark/white star pair')
+    if any(row['vertex_count'] != 22 or not row['closed'] for row in submitted):
+        raise AssertionError('a star band is incomplete')
+    if not results['fixed']['shared_material_unchanged']:
+        raise AssertionError('the shared controller material changed')
+    if results['fixed']['retail_models'] != results['source']['retail_models']:
+        raise AssertionError('ordinary controller model submissions changed')
+    result = {'schema': 'nfl2k5-star-draw-proof/v2', 'source': source,
               'xbe_extent': [extent[0], extent[1]],
               'tagged_players': [{'pool': p.pool, 'index': p.index, 'name': p.display, 'offset': hex(p.offset)} for p in players],
               'executed_lineup': 'synthetic on-field entities with real relocated/copied disc records; first player controlled',
@@ -178,5 +185,8 @@ if __name__ == '__main__':
     print(json.dumps({'source_status': result['execution']['source']['status'],
                       'fixed_status': result['execution']['fixed']['status'],
                       'players': [p['name'] for p in result['tagged_players']],
-                      'star_outlines': len(result['execution']['fixed']['star_strips']),
+                      'star_outlines': sum(row['diffuse'] == '0xffffffff'
+                                           for row in result['execution']['fixed']['star_strips']),
+                      'contrast_outlines': sum(row['diffuse'] == '0xff101010'
+                                               for row in result['execution']['fixed']['star_strips']),
                       'proof': str(args.json), 'copy': result.get('copy')}, indent=2))

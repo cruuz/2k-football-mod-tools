@@ -261,7 +261,8 @@ class StarColumnTests(unittest.TestCase):
             panel.set_star_players([str(i) for i in range(12)])
             self.assertNotIn("at most", panel.star_players_label.text())
             panel.set_star_players([str(i) for i in range(30)])
-            self.assertIn("at most 22", panel.star_players_label.text())
+            self.assertNotIn("at most", panel.star_players_label.text())
+            self.assertEqual(len(panel.plan().player_tags), 30)
         finally:
             panel.deleteLater()
             self.app.processEvents()

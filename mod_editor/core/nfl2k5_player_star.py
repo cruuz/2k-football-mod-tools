@@ -7,9 +7,10 @@ normal controller model is a circular ring, regardless of the resource name.
 
 The fixed pass wraps the frame call at 0x64F21, keeps the retail circles and
 their predicate unchanged, then draws a separate opaque white five-point
-outline for every tagged active entity. It reads entity+0x3C -> record+0x53
-bit 0 directly, independently of controller assignment and the nine-entry
-replay/controller queue. The 22-entity bound is the physical array capacity.
+band over a larger near-black outline for every tagged active entity. It reads
+entity+0x3C -> record+0x53 bit 0 directly, independently of controller assignment
+and the nine-entry replay/controller queue. The 22-entity bound is the physical
+array capacity.
 
 FUN_00061730 -> FUN_000c3c60 copies all 21 dwords of each roster record into
 0xB30C4C/0xB321A0. FUN_001d2620/001d27a0 installs these pointers at entity+0x3C.
@@ -17,8 +18,8 @@ The ROST relocator 0xE5E70 changes pointers only; the padding tag survives.
 
 All mutable draw state is stack-local. Five small, pinned, unreferenced code
 spans hold original instructions and immutable geometry. The controller
-material is copied, made white/untextured and uncullable; the shared material
-is never modified. See tools/player_star/runtime.S and ASTRA_STAR_FIX_REPORT.md.
+material is copied, recolored/untextured and uncullable; the shared material
+is never modified. See tools/player_star/runtime.S and ASTRA_STAR_VIS_REPORT.md.
 """
 from __future__ import annotations
 
@@ -65,12 +66,23 @@ CAVE_PINS = {
     0x31E650: '27ee7af3ecd76e1ceace682009c4fb62fef554159bbb90f52d5fdc1353c641c4',
 }
 
+# Exact first working outline, including every padding byte in all five spans.
+# This is upgradeable legacy, never a current installation. Mixed revisions
+# still fail closed. These hashes must not be regenerated with the runtime.
+LEGACY_OUTLINE_PINS = {
+    0x372D40: 'cdaa9cdf8012971b6b593dab7402d7977d11d5b8c86fd5f803bbf73d4eaa035f',
+    0x3DDD50: '6a6dc9e7bce122045d45644fd533d4a9aecf6771f1258321686374834c39c1ad',
+    0x38B0D0: 'b561ed25a4e6559ac950c490b2e3512ffbb90a3f486ff97a3db5630b3de30712',
+    0x2C9110: '38a66c817ae8dc5c52a794cee68539b52287b8ce9b503f2daa98e5078420dc0a',
+    0x31E650: 'b4f9425772ae0095aad09c5b881c807ec661138f5e90d29c64b2b3c25ec58632',
+}
+
 # BEGIN GENERATED RUNTIME
 SYMBOLS = {
-    'frame_done': 0x372D9E,
-    'frame_loop': 0x372D76,
-    'frame_next': 0x372D98,
-    'frame_return': 0x372DA0,
+    'frame_done': 0x372DB3,
+    'frame_loop': 0x372D74,
+    'frame_next': 0x372DAD,
+    'frame_return': 0x372DB5,
     'frame_visible': 0x372D69,
     'star_draw': 0x3DDD50,
     'star_frame': 0x372D40,
@@ -78,32 +90,32 @@ SYMBOLS = {
     'star_points': 0x31E654,
     'star_position': 0x38B0D0,
     'star_vertex': 0x2C9110,
-    'vertex_outer': 0x2C912D,
-    'vertex_same_point': 0x2C9158,
+    'vertex_outer': 0x2C9135,
+    'vertex_same_point': 0x2C9160,
 }
 
 # (VA, capacity, original generated code or immutable geometry)
 CAVES = (
     (0x372D40, 118, bytes.fromhex(
-        "e8db65d8ff833d1828ba00007452833d1c28ba00007449e864faceff85c07409e8cbabd0ff85c0743756578b356802e6"
-        "00bf1600000085f67424837e480075188b463c85c07411f6405301740b837e04007405e8b8af06008b76304f75d85f5e"
-        "c3"
+        "e8db65d8ff833d1828ba00007467833d1c28ba0000745ee864faceff85c07409e8cbabd0ff85c0744c56578b356802e6"
+        "006a165f85f6743b837e4800752f8b463c85c07428f64053017422837e0400741cb80000903fba101010ffe8b0af0600"
+        "b80000803f83caffe8a3af06008b76304f75c15f5ec3"
     )),
     (0x3DDD50, 83, bytes.fromhex(
-        "5589e553565783e4f081eca00000008b5e048b35ac28ba008d7c2420b920000000f3a5c7442438ffffffffc744245000"
-        "00000081a42480000000fffffff0c744240400004040c744240c0000803fe92dd3faff"
+        "5589e553565783e4f081eca00000008b5e048b35ac28ba008d7c2420b920000000f3a58944241889542438c744245000"
+        "00000081a42480000000fffffff0f7d8050000308089442404e932d3faff"
     )),
     (0x38B0D0, 83, bytes.fromhex(
         "d98330010000d88330020000d80d84414e00d95c2410d98338010000d88338020000d80d84414e00d95c24148d442420"
         "6a00506a0631c9ba01000000e88f21caffbb54e63100bf16000000e9f0dff3ff"
     )),
     (0x2C9110, 106, bytes.fromhex(
-        "d903d94304f7c7010000007410d80d50e63100d9c9d80d50e63100d9c9d8442414d95c2408d8442410d91c2489e1e82d"
-        "39d6fff7c701000000740d83c30883ff037505bb54e631004f75b5e8a038d6ff8d65f45f5e5b5dc3"
+        "d903d84c2418d94304d84c2418f7c7010000007410d80d50e63100d9c9d80d50e63100d9c9d8442414d95c2408d84424"
+        "10d91c2489e1e82539d6fff7c701000000740d83c30883ff037505bb54e631004f75ade89838d6ff8d65f45f5e5b5dc3"
     )),
     (0x31E650, 84, bytes.fromhex(
-        "3d0a573f00000000000090c2aae09f41790ddcc1bff3884269feb1c1fc570142f11a28413b48294234ff684200000000"
-        "000008423b4829c234ff6842fc5701c2f11a2841bff388c269feb1c1aae09fc1790ddcc1"
+        "e17a143f000000000000d8c2fed0ef411a0a25c29f6dcd42cf7e05c2fa0342426a287c4159ec7d4267bfae4200000000"
+        "00004c4259ec7dc267bfae42fa0342c26a287c419f6dcdc2cf7e05c2fed0efc11a0a25c2"
     )),
 )
 # END GENERATED RUNTIME
@@ -158,11 +170,11 @@ def sites() -> list[tuple[str, int, bytes]]:
 
 
 def status(payload: bytes) -> str:
-    """retail / legacy (beta 58..60, upgradeable) / applied / foreign.
+    """retail / legacy (gate-only or thin outline) / applied / foreign.
 
     Mixed or modified sites are foreign. 'applied' always means the complete
-    new renderer. The protected build dispatcher needs the legacy upgrade arm
-    described in WIRING_STAR.md when starting from an already patched disc.
+    bold renderer. The existing star-only legacy arm in the build dispatcher
+    upgrades either recognized earlier revision through apply().
     """
     try:
         if payload[:4] != b'XBEH' or struct.unpack_from('<I', payload, 0x104)[0] != IMAGE_BASE:
@@ -176,6 +188,10 @@ def status(payload: bytes) -> str:
         call = _read(payload, DRAW_CALL_VA, 5)
         if gate == RETAIL_GATE and all(_read(payload, va, len(code)) == code for _, va, code in sites()):
             return 'applied'
+        if gate == RETAIL_GATE and call == PATCHED_DRAW_CALL and all(
+                hashlib.sha256(_read(payload, va, size)).hexdigest() == LEGACY_OUTLINE_PINS[va]
+                for va, size, _ in CAVES):
+            return 'legacy'
         if call != RETAIL_DRAW_CALL or any(
                 hashlib.sha256(_read(payload, va, size)).hexdigest() != CAVE_PINS[va]
                 for va, size, _ in CAVES):
@@ -191,9 +207,12 @@ def status(payload: bytes) -> str:
 
 def read_settings(payload: bytes) -> dict[str, object]:
     state = status(payload)
-    return {'status': state, 'renderer': 'white_star_outline' if state == 'applied' else 'none',
+    thin = state == 'legacy' and _read(payload, DRAW_CALL_VA, 5) == PATCHED_DRAW_CALL
+    return {'status': state, 'renderer': 'white_star_outline' if state == 'applied' or thin else 'none',
+            'renderer_revision': ('bold_contrast_v2' if state == 'applied' else
+                                  'thin_v1' if thin else 'gate_only' if state == 'legacy' else 'none'),
             'tag': 'roster record +0x53 bit 0' if state in ('applied', 'legacy') else 'none',
-            'star_list_limit': ENTITY_LIMIT if state == 'applied' else 0,
+            'star_list_limit': ENTITY_LIMIT if state == 'applied' or thin else 0,
             'retail_controller_capacity': RETAIL_STAR_LIST_LIMIT,
             'needs_upgrade': state == 'legacy'}
 
@@ -203,6 +222,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     if state == 'applied':
         return payload, {'already_applied': True, 'edits': [], 'changed_bytes': 0, **read_settings(payload)}
     _require(state in ('retail', 'legacy'), f'player-star sites are {state}; refusing')
+    previous_renderer = read_settings(payload)['renderer_revision']
     buf = bytearray(payload)
     sections = _sections(payload)
     touched: set[int] = set()
@@ -225,6 +245,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     _require(status(patched) == 'applied', 'post-apply verification failed')
     return patched, {'edits': edits, 'changed_bytes': sum(a != b for a, b in zip(payload, patched)),
                      'sections_repinned': sorted(touched), 'upgraded_from': state,
-                     'controller_gate_restored': state == 'legacy',
+                     'upgraded_renderer': previous_renderer,
+                     'controller_gate_restored': _read(payload, GATE_VA, GATE_SIZE) == LEGACY_GATE,
                      'caves': [{'va': hex(va), 'bytes': size} for va, size, _ in CAVES],
                      'runtime_storage': 'stack only', **read_settings(patched)}

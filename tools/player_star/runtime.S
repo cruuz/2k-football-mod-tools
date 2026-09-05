@@ -22,7 +22,8 @@ frame_visible:
     push esi
     push edi
     mov esi, dword ptr [0x00e60268]
-    mov edi, 22                    /* physical entity array: 22 * 0x50 */
+    push 22                       /* physical entity array: 22 * 0x50 */
+    pop edi
 frame_loop:
     test esi, esi
     jz frame_done
@@ -35,6 +36,11 @@ frame_loop:
     jz frame_next
     cmp dword ptr [esi+4], 0
     je frame_next
+    mov eax, 0x3f900000            /* dark border: scale 1.125, radius 121.5 */
+    mov edx, 0xff101010            /* opaque near-black; no blend-mode assumption */
+    call star_draw
+    mov eax, 0x3f800000            /* white band: scale 1, radius 108 */
+    or edx, -1
     call star_draw
 frame_next:
     mov esi, dword ptr [esi+0x30]
@@ -48,7 +54,7 @@ frame_return:
 
 .section .star_setup,"ax"
 .global star_draw
-star_draw:                          /* esi = entity, preserves all nonvolatile regs */
+star_draw:                          /* esi = entity, eax = scale bits, edx = diffuse */
     push ebp
     mov ebp, esp
     push ebx
@@ -61,11 +67,17 @@ star_draw:                          /* esi = entity, preserves all nonvolatile r
     lea edi, [esp+0x20]
     mov ecx, 32
     rep movsd
-    mov dword ptr [esp+0x38], -1   /* material diffuse = opaque white */
+    mov dword ptr [esp+0x18], eax  /* stack-local outer scale */
+    mov dword ptr [esp+0x38], edx  /* private material diffuse */
     mov dword ptr [esp+0x50], 0    /* untextured; no controller ring atlas */
     and dword ptr [esp+0x80], 0xf0ffffff /* disable culling on our flat strip */
-    mov dword ptr [esp+4], 0x40400000 /* y = 3 above the field, below feet */
-    mov dword ptr [esp+12], 0x3f800000 /* homogeneous w = 1 */
+    /* The two exact scale encodings map to y=5 (dark), y=5.5 (white).
+     * Integer subtraction saves a constant table inside these fixed spans.
+     * Lift both above the turf and separate the white pass from its border.
+     * FUN_0002ca70 reads xyz only; no homogeneous w scratch is needed. */
+    neg eax
+    add eax, 0x80300000
+    mov dword ptr [esp+4], eax
     jmp star_position
 
 .section .star_position,"ax"
@@ -94,7 +106,9 @@ star_position:
 .global star_vertex
 star_vertex:
     fld dword ptr [ebx]
+    fmul dword ptr [esp+0x18]
     fld dword ptr [ebx+4]
+    fmul dword ptr [esp+0x18]
     test edi, 1
     jz vertex_outer
     fmul dword ptr [star_inset]
@@ -128,17 +142,17 @@ vertex_same_point:
 .section .star_points,"a"
 .global star_points, star_inset
 star_inset:
-    .float 0.84
+    .float 0.58
 star_points:
-    /* Ten perimeter points, alternating outer radius 72 and notch radius 34.
+    /* Ten perimeter points, alternating outer radius 108 and notch radius 51.
      * x/z pairs; draw tests verify the emitted perimeter and hollow rim area. */
-    .float 0.0, -72.0
-    .float 19.98469857794409, -27.50657780874821
-    .float 68.47606917325105, -22.24922359499622
-    .float 32.33592155403523, 10.50657780874821
-    .float 42.32053816505807, 58.24922359499622
-    .float 0.0, 34.0
-    .float -42.32053816505807, 58.24922359499622
-    .float -32.33592155403523, 10.50657780874821
-    .float -68.47606917325105, -22.24922359499622
-    .float -19.98469857794409, -27.50657780874821
+    .float 0.0, -108.0
+    .float 29.977047866916137, -41.25986671312232
+    .float 102.71410375987658, -33.37383539249433
+    .float 48.50388233105285, 15.759866713122316
+    .float 63.48080724758711, 87.37383539249433
+    .float 0.0, 51.0
+    .float -63.48080724758711, 87.37383539249433
+    .float -48.50388233105285, 15.759866713122316
+    .float -102.71410375987658, -33.37383539249433
+    .float -29.977047866916137, -41.25986671312232
