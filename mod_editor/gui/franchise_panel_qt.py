@@ -62,6 +62,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import nfl2k5_franchise_save as fs
 from mod_editor.core import nfl2k5_roster_records as rr
+from mod_editor.core.nfl2k5_season_cap import UI_LABEL as SEASON_CAP_LABEL
 
 # the coach numbers Finn's Statistics group edits, in his order, then the two ids and the playcalling split
 COACH_STATS: tuple[tuple[str, str], ...] = (
@@ -78,11 +79,11 @@ _CAPTIONS = {
     "qb": "QB", "rb": "RB", "te": "TE", "wr": "WR", "ol": "OL", "dl": "DL", "lb": "LB", "db": "DB",
     "rush_for": "Rush For", "pass_for": "Pass For", "i_form_run": "I Form: run", "i_form_pass": "I Form: pass",
 }
-YEAR_MIN, YEAR_MAX = fs.DISPLAY_YEAR_BASE, fs.DISPLAY_YEAR_BASE + 60           # the year field is a byte the core caps at 60
+YEAR_MIN, YEAR_MAX = fs.DISPLAY_YEAR_BASE, fs.DISPLAY_YEAR_BASE + fs.FRANCHISE_MAX_YEAR_INDEX
 CAP_MAX_MILLIONS = 0x7FFFFFFF / 1000
 GRID_ROW_TITLES = tuple(fs.ROW_NAMES.get(row, f"week {row + 1}").title() for row in range(fs.GRID_ROWS))
 EDITABLE_HERE = (
-    ("Season year", "PROVED", "display = 2004 + field, witnessed in game"),
+    ("Season year", "EXPERIMENTAL / UNWITNESSED", "base year + index; editable indices 0..127"),
     ("User-controlled teams", "PROVED", "FUN_000c4d70 reads the flags; Finn 0x913CC"),
     ("Salary cap", "PROVED", "DAT_00e3c278 in $1000 units; Finn 0x9ACCC"),
     ("Schedule cells", "PROVED", "the 22 x 17 grid; a played cell is refused unless you allow it; "
@@ -115,7 +116,10 @@ class FranchiseEdit:
     def apply(self, save: fs.FranchiseSave) -> None:
         a = self.args
         if self.kind == "year":
-            save.set_display_year(int(a["year"]))
+            if "index" in a:
+                save.set_year_field(int(a["index"]))
+            else:
+                save.set_display_year(int(a["year"]))
         elif self.kind == "cap":
             save.set_salary_cap(int(a["value"]))
         elif self.kind == "control":
@@ -177,6 +181,7 @@ class FranchisePanel(QWidget):
         self._edits: list[FranchiseEdit] = []
         self._cursor = 0
         self._quiet = False
+        self._base_year = fs.DISPLAY_YEAR_BASE
         self._players: dict[int, rr.Player] = {}
         self._coach_rows: list[int] = []
         self._coach_cards: dict[str, Any] = {}
@@ -259,6 +264,14 @@ class FranchisePanel(QWidget):
         page = QWidget()
         box = QVBoxLayout(page)
         form = QFormLayout()
+        self.base_year_spin = QSpinBox()
+        self.base_year_spin.setRange(100, 9744)
+        self.base_year_spin.setValue(self._base_year)
+        self.base_year_spin.setKeyboardTracking(False)
+        self.base_year_spin.setToolTip("Use your build's starting year: 2004 for Retail, 2026 for a 2026 build. "
+                                      "The save does not record this choice. This changes the view only.")
+        self.base_year_spin.valueChanged.connect(self._base_year_changed)
+        form.addRow("Build starting year", self.base_year_spin)
         year_row = QHBoxLayout()
         self.year_spin = QSpinBox()
         self.year_spin.setRange(YEAR_MIN, YEAR_MAX)
@@ -267,8 +280,14 @@ class FranchisePanel(QWidget):
         self.year_spin.valueChanged.connect(self._year_changed)
         year_row.addWidget(self.year_spin)
         self.year_rule_label = QLabel("")
+        self.year_rule_label.setWordWrap(True)
         year_row.addWidget(self.year_rule_label, 1)
         form.addRow("Season year", year_row)
+        self.season_cap_label = QLabel("EXPERIMENTAL / UNWITNESSED. " + SEASON_CAP_LABEL +
+            " The Patch is required to pass the Retail completion gate. "
+            "Game birth dates can already be wrong in 2053. Editing this year does not simulate seasons.")
+        self.season_cap_label.setWordWrap(True)
+        form.addRow(self.season_cap_label)
         self.stage_label = QLabel("")
         form.addRow("Stage / week", self.stage_label)
         cap_row = QHBoxLayout()
@@ -526,7 +545,9 @@ class FranchisePanel(QWidget):
         self._container = container
         self._document = document
         self._base = bytes(container.savegame)
-        self._save = fs.FranchiseSave(self._base, container=container, source=str(container.path))
+        self._base_year = document.base_year
+        self._save = fs.FranchiseSave(self._base, container=container, source=str(container.path),
+                                      base_year=self._base_year)
         self._players = {p.index: p for p in document.players if p.pool == "primary"}
         self._populate_static()
         self._refresh_all(force_checks=True)
@@ -576,7 +597,8 @@ class FranchisePanel(QWidget):
     # ------------------------------------------------------------------ the journal
     def _fresh_save(self) -> fs.FranchiseSave:
         assert self._container is not None
-        return fs.FranchiseSave(self._base, container=self._container, source=str(self._container.path))
+        return fs.FranchiseSave(self._base, container=self._container, source=str(self._container.path),
+                                base_year=self._base_year)
 
     def _rebuild(self) -> None:
         """The live save = base + edits[:cursor].  An edit the roster pulled the rug from under is dropped and said."""
@@ -759,8 +781,19 @@ class FranchisePanel(QWidget):
                 self.salary_table.setRowCount(0)
                 return
             header = self._save.header
+            self.base_year_spin.setValue(self._base_year)
+            # Preserve an out-of-range terminal/foreign index visibly on load.
+            # Disabling edits avoids QSpinBox silently clamping it to index 127.
+            self.year_spin.setRange(self._base_year,
+                                    self._base_year + max(fs.FRANCHISE_MAX_YEAR_INDEX, header.year_field))
+            self.year_spin.setEnabled(header.year_field <= fs.FRANCHISE_MAX_YEAR_INDEX)
             self.year_spin.setValue(header.display_year)
-            self.year_rule_label.setText(f"= 2004 + year field {header.year_field} (the game's own rule, witnessed in game)")
+            self.year_rule_label.setText(
+                f"season {header.season_ordinal} = index {header.year_field}; "
+                f"{self._base_year} + year field {header.year_field}" +
+                (". Outside the editable range 0..127." if header.year_field > fs.FRANCHISE_MAX_YEAR_INDEX else ""))
+            if self._document is not None:
+                self._document.set_reference_year(header.display_year)
             self.stage_label.setText(f"{header.stage_name}, week {header.week}/{header.stage_weeks} "
                                      f"(stage {header.stage}; read-only)")
             cap = self._save.salary_cap
@@ -969,14 +1002,25 @@ class FranchisePanel(QWidget):
         self._checks_stale = False
 
     # ------------------------------------------------------------------ overview edits
+    def _base_year_changed(self, year: int) -> None:
+        if self._quiet:
+            return
+        self._base_year = year
+        if self._document is not None:
+            self._document.base_year = year
+        if self._save is not None:
+            self._rebuild()
+            self._refresh_all()
+
     def _year_changed(self, year: int) -> None:
         if self._quiet or self._save is None:
             return
         before = self._save.header.display_year
         if before == year:
             return
-        self.push(FranchiseEdit("year", f"Season year {before} → {year} (year field {year - fs.DISPLAY_YEAR_BASE})",
-                                {"year": year}))
+        index = year - self._base_year
+        self.push(FranchiseEdit("year", f"Season year {before} → {year} (season {index + 1} = index {index})",
+                                {"year": year, "index": index}))
 
     def _cap_changed(self, millions: float) -> None:
         if self._quiet or self._save is None:
@@ -999,6 +1043,9 @@ class FranchisePanel(QWidget):
                                 {"team": team, "controlled": controlled}))
 
     def set_year(self, year: int) -> bool:
+        if (self._save is None or type(year) is not int
+                or not 0 <= year - self._base_year <= fs.FRANCHISE_MAX_YEAR_INDEX):
+            return False
         self.year_spin.setValue(year)
         return self._save is not None and self._save.header.display_year == year
 

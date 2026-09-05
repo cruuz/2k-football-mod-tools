@@ -633,7 +633,8 @@ ATTRIBUTE_CARDS: dict[str, tuple[str, ...]] = {
 }
 NUMERIC_LIMITS: dict[str, tuple[int, int]] = {
     "jersey": (0, 99), "years_pro": (0, 31), "height": (60, 84), "weight": (150, 405),
-    "birth_month": (1, 12), "birth_day": (1, 31), "birth_year": (1900, 2027),
+    # The record's century context further narrows this to one 100-year window.
+    "birth_month": (1, 12), "birth_day": (1, 31), "birth_year": (1, 9999),
     "pbp_id": (0, 65535), "photo_id": (0, 65535), "player_type": (0, 255),
     "contract_value": (0, 65535), "contract_length": (0, 15), "contract_remaining": (0, 15),
     "depth_rank": (0, 7), "depth_side": (0, 7),
@@ -784,26 +785,76 @@ def _signed(value: int) -> int:
     return value - (1 << 32) if value >= (1 << 31) else value
 
 
+def validate_reference_year(year: int | None) -> int | None:
+    _require(year is None or (type(year) is int and 100 <= year <= 9999),
+             "birth-year reference must be an integer in 100..9999, or None")
+    return year
+
+
+def decode_birth_year(raw: int, reference_year: int | None = None) -> int:
+    """Resolve live DOBs in [current year - 99, current year].
+
+    Modulo-100 storage cannot identify an archived person over a century old.
+    Without context retain the legacy 1955..2054 pivot and 100..127 encodings
+    produced by old Studio writers. Reading never rewrites those encodings.
+    """
+    _require(type(raw) is int and 0 <= raw <= 127, "birth-year bits must be in 0..127")
+    validate_reference_year(reference_year)
+    if reference_year is None:
+        return 1900 + raw if raw > 54 else 2000 + raw
+    return reference_year - (reference_year - raw % 100) % 100
+
+
+def encode_birth_year(year: int, reference_year: int | None = None) -> int:
+    """Write canonical modulo-100 births only when that context can round-trip."""
+    validate_reference_year(reference_year)
+    _require(type(year) is int and 1 <= year <= 9999, "birth year must be an integer in 1..9999")
+    ceiling = 2054 if reference_year is None else reference_year
+    _require(ceiling - 99 <= year <= ceiling,
+             f"birth year {year} is outside {ceiling - 99}..{ceiling}; set the current year context")
+    return year % 100
+
+
+def franchise_reference_year(payload: bytes | bytearray, preamble: int,
+                             base_year: int = 2004) -> int | None:
+    """Only infer a season index from the known full franchise envelope.
+
+    A bare/wrapped ROST or an arbitrary opaque suffix carries no year context.
+    The executable base year is never inferred from a save's bytes.
+    """
+    from . import nfl2k5_save_writer as writer
+    writer.validate_franchise_base_year(base_year)
+    if (len(payload) == writer.FRANCHISE_SAVE_SIZE and preamble == 0x300
+            and payload[0x2E0:0x2E4] == b"ROST"
+            and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020
+            and payload[0x30C:0x310] == b"ROST"
+            and struct.unpack_from("<I", payload, 0x310)[0] == 0):
+        return base_year + payload[writer.FRANCHISE_YEAR_OFFSET]
+    return None
+
+
 class PlayerRecord:
     """A decoded 0x54 record with typed access to every field and to the composites."""
 
-    __slots__ = ("values", "scheme")
+    __slots__ = ("values", "scheme", "reference_year")
 
-    def __init__(self, values: Mapping[str, int], scheme: str = "retail") -> None:
+    def __init__(self, values: Mapping[str, int], scheme: str = "retail", *,
+                 reference_year: int | None = None) -> None:
         self.values: dict[str, int] = dict(values)
         # which position table this record's code should be READ through; the stored bytes never
         # change with it (see POSITION_SCHEMES)
         self.scheme: str = normalise_scheme(scheme)
+        self.reference_year = validate_reference_year(reference_year)
 
     @classmethod
-    def decode(cls, raw: bytes, scheme: str = "retail") -> "PlayerRecord":
-        return cls(decode_record(raw), scheme)
+    def decode(cls, raw: bytes, scheme: str = "retail", *, reference_year: int | None = None) -> "PlayerRecord":
+        return cls(decode_record(raw), scheme, reference_year=reference_year)
 
     def encode(self) -> bytes:
         return encode_record(self.values)
 
     def copy(self) -> "PlayerRecord":
-        return PlayerRecord(self.values, self.scheme)
+        return PlayerRecord(self.values, self.scheme, reference_year=self.reference_year)
 
     @property
     def depth_locks(self) -> dict[str, bool]:
@@ -850,12 +901,13 @@ class PlayerRecord:
     @property
     def birth_year(self) -> int:
         raw = self.values["birth_year_low"] | (self.values["birth_year_high"] << 3)
-        return 1900 + raw if raw > 54 else 2000 + raw
+        return decode_birth_year(raw, self.reference_year)
 
     @birth_year.setter
     def birth_year(self, value: int) -> None:
-        raw = value - 1900 if value >= 1955 else value - 2000
-        _require(0 <= raw <= 127, f"birth year {value} is outside 1955..2054")
+        raw = encode_birth_year(value, self.reference_year)
+        if self.birth_year == value:
+            return  # Preserve legacy 100..127 encodings on a no-op assignment.
         self.values["birth_year_low"] = raw & 0x7
         self.values["birth_year_high"] = (raw >> 3) & 0xF
 
@@ -871,9 +923,9 @@ class PlayerRecord:
 
     @birth_date.setter
     def birth_date(self, value: dt.date) -> None:
+        self.birth_year = value.year  # Validate before mutating month/day.
         self.values["birth_month"] = value.month
         self.values["birth_day"] = value.day
-        self.birth_year = value.year
 
     @property
     def weight(self) -> int:
@@ -1242,7 +1294,8 @@ class RosterDocument:
 
     def __init__(self, body: bytes | bytearray, *, base: int = 0, source: str = "body",
                  container: "SaveContainer | None" = None, resource_header: bytes = b"",
-                 scheme: str = "retail") -> None:
+                 scheme: str = "retail", reference_year: int | None = None,
+                 base_year: int = 2004) -> None:
         self.body = bytearray(body)
         self.base = base
         self.source = source
@@ -1250,11 +1303,20 @@ class RosterDocument:
         self.resource_header = bytes(resource_header)
         self.original = bytes(body)
         self.scheme = normalise_scheme(scheme)
+        self.base_year = base_year
+        self.reference_year = validate_reference_year(
+            reference_year if reference_year is not None else franchise_reference_year(body, base, base_year))
         # what the data alone says; the panel overwrites it with the disc's patch states or the
         # user's choice (see detect_scheme)
         self.scheme_detection: dict[str, Any] = {}
         self._parse()
         self.set_scheme(self.scheme)
+
+    def set_reference_year(self, year: int | None) -> None:
+        """Change DOB interpretation only; no stored fields or dirty state change."""
+        self.reference_year = validate_reference_year(year)
+        for player in self.players:
+            player.record.reference_year = self.reference_year
 
     # ------------------------------------------------------------------ position scheme
     def set_scheme(self, scheme: str) -> str:
@@ -1325,7 +1387,7 @@ class RosterDocument:
                 offset = table + index * PLAYER_SIZE
                 player = Player(pool=pool, index=index, offset=offset,
                                 record=PlayerRecord.decode(bytes(b[offset: offset + PLAYER_SIZE]),
-                                                           self.scheme))
+                                                           self.scheme, reference_year=self.reference_year))
                 self.players.append(player)
                 self.by_offset[offset] = player
         self.primary_table = self.rel(ob + POOL_FIELDS["primary"][1])
@@ -2010,7 +2072,8 @@ class RosterDocument:
         original.body = bytearray(self.original)
         original.base = self.base
         for player in self.players:
-            before = PlayerRecord.decode(self.original[player.offset: player.offset + PLAYER_SIZE])
+            before = PlayerRecord.decode(self.original[player.offset: player.offset + PLAYER_SIZE],
+                                         reference_year=self.reference_year)
             changes = {name: (before.values[name], player.record.values[name])
                        for name in player.record.values
                        if name not in POINTER_FIELDS and before.values[name] != player.record.values[name]}
@@ -2094,13 +2157,14 @@ def find_block_base(payload: bytes) -> int:
     raise RosterRecordError("no ROST block found in this save")
 
 
-def load_body(body: bytes, *, scheme: str = "retail") -> RosterDocument:
+def load_body(body: bytes, *, scheme: str = "retail", reference_year: int | None = None) -> RosterDocument:
     """A bare ROST body (0x90F60 bytes on the retail disc)."""
 
-    return RosterDocument(body, base=0, source="body", scheme=scheme)
+    return RosterDocument(body, base=0, source="body", scheme=scheme, reference_year=reference_year)
 
 
-def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False) -> RosterDocument:
+def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False,
+               reference_year: int | None = None) -> RosterDocument:
     """The main roster resource of a disc image or a loose pack folder (read-only).
 
     With ``detect=True`` the disc's own patch states decide the position scheme (see
@@ -2112,7 +2176,8 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
         resource = archive.read(entry.virtual_offset, entry.size)
     _require(resource[:4] == b"ROST" and len(resource) == RESOURCE_SIZE, "the roster resource is foreign")
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
-                              resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme)
+                              resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
+                              reference_year=reference_year)
     if detect:
         document.scheme_detection = detect_scheme(document, source=path)
         document.set_scheme(str(document.scheme_detection["scheme"]))
@@ -2327,10 +2392,12 @@ class SaveContainer:
     def savegame(self) -> bytes:
         return self.members[self.savegame_name]
 
-    def document(self, *, scheme: str = "retail") -> RosterDocument:
+    def document(self, *, scheme: str = "retail", base_year: int = 2004,
+                 reference_year: int | None = None) -> RosterDocument:
         payload = self.savegame
         base = find_block_base(payload)
-        return RosterDocument(payload, base=base, source=str(self.path), container=self, scheme=scheme)
+        return RosterDocument(payload, base=base, source=str(self.path), container=self, scheme=scheme,
+                              base_year=base_year, reference_year=reference_year)
 
     def with_savegame(self, payload: bytes) -> dict[str, bytes]:
         members = dict(self.members)
@@ -2388,8 +2455,9 @@ def verify_extra(savegame: bytes, extra: bytes) -> bool:
 
 
 def load_save(path: Path | str, *, require_signature: bool = True, scheme: str = "retail",
-              detect: bool = False) -> RosterDocument:
-    document = SaveContainer.load(path, require_signature=require_signature).document(scheme=scheme)
+              detect: bool = False, base_year: int = 2004, reference_year: int | None = None) -> RosterDocument:
+    document = SaveContainer.load(path, require_signature=require_signature).document(
+        scheme=scheme, base_year=base_year, reference_year=reference_year)
     if detect:
         document.scheme_detection = detect_scheme(document)
         document.set_scheme(str(document.scheme_detection["scheme"]))

@@ -160,7 +160,8 @@ class SliderAndYearTests(unittest.TestCase):
         self.assertEqual(change["new_year_field"], 8)
         fields = saver.read_franchise_fields(bytes(payload))
         self.assertEqual(fields["display_year"], 2012)
-        self.assertEqual(fields["season_ordinal"], 1)
+        self.assertEqual(fields["season_ordinal"], 9)
+        self.assertEqual(fields["stage_weeks"], 1)
 
     def test_same_year_is_refused(self) -> None:
         payload = bytearray(_franchise_save(year_field=7))

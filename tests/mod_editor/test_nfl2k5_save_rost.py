@@ -3,8 +3,12 @@ from pathlib import Path
 import hashlib
 import os
 import struct
+import sys
 import tempfile
 import unittest
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 
 from mod_editor.core import nfl2k5_save_rost as codec
 from mod_editor.core import nfl2k5_roster_records as records

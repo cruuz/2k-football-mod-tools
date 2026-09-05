@@ -106,6 +106,10 @@ class PatchWriteTests(unittest.TestCase):
         cls.patched, _ = locks.apply(cls.patched)
         from mod_editor.core import nfl2k5_practice_reserves as practice_reserves
         cls.patched, _ = practice_reserves.apply(cls.patched)
+        from mod_editor.core import nfl2k5_season_cap as season_cap
+        cls.patched, _ = season_cap.apply(cls.patched)
+        if season_cap.status(cls.patched) != "applied":
+            raise AssertionError("season-cap owner missing from the composed XBE")
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 

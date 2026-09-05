@@ -44,6 +44,7 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from . import nfl2k5_roster_records as rr
+from .nfl2k5_save_writer import FRANCHISE_MAX_YEAR_INDEX, validate_franchise_base_year
 
 # --------------------------------------------------------------------------------------------- layout
 FRANCHISE_SAVE_SIZE = 720_044
@@ -216,10 +217,15 @@ class SeasonHeader:
     flag_0a: int
     seeds_a: tuple[int, ...]
     seeds_b: tuple[int, ...]
+    base_year: int = 2004
 
     @property
     def display_year(self) -> int:
-        return DISPLAY_YEAR_BASE + self.year_field
+        return self.base_year + self.year_field
+
+    @property
+    def season_ordinal(self) -> int:
+        return self.year_field + 1
 
     @property
     def stage_name(self) -> str:
@@ -316,7 +322,11 @@ class FranchiseSave:
     """Typed, lossless access to a franchise ``SAVEGAME.DAT``; ``to_bytes()`` is the input when untouched."""
 
     def __init__(self, payload: bytes | bytearray, *, container: rr.SaveContainer | None = None,
-                 source: str = "bytes") -> None:
+                 source: str = "bytes", base_year: int = DISPLAY_YEAR_BASE) -> None:
+        try:
+            self.base_year = validate_franchise_base_year(base_year)
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
         data = bytes(payload)
         _require(len(data) == FRANCHISE_SAVE_SIZE,
                  f"a franchise save is {FRANCHISE_SAVE_SIZE:,} bytes; this is {len(data):,}")
@@ -334,9 +344,10 @@ class FranchiseSave:
 
     # ------------------------------------------------------------------ construction / output
     @classmethod
-    def load(cls, path: Path | str, *, require_signature: bool = True) -> "FranchiseSave":
+    def load(cls, path: Path | str, *, require_signature: bool = True,
+             base_year: int = DISPLAY_YEAR_BASE) -> "FranchiseSave":
         container = rr.SaveContainer.load(path, require_signature=require_signature)
-        return cls(container.savegame, container=container, source=str(container.path))
+        return cls(container.savegame, container=container, source=str(container.path), base_year=base_year)
 
     def to_bytes(self) -> bytes:
         return bytes(self.buffer)
@@ -402,7 +413,8 @@ class FranchiseSave:
         """The ★ Rosters document over the same bytes (parsed lazily, from the ORIGINAL bytes)."""
 
         if self._roster is None:
-            self._roster = rr.RosterDocument(self.original, base=ARENA_PREAMBLE, source=self.source)
+            self._roster = rr.RosterDocument(self.original, base=ARENA_PREAMBLE, source=self.source,
+                                             base_year=self.base_year, reference_year=self.header.display_year)
         return self._roster
 
     @property
@@ -470,13 +482,17 @@ class FranchiseSave:
             week=self.u8(base + S_WEEK), year_field=self.u8(base + S_YEAR), word_08=self.u16(base + S_WORD_08),
             flag_0a=self.u8(base + S_FLAG_0A),
             seeds_a=tuple(self.buffer[base + S_SEEDS_A:base + S_SEEDS_A + 12]),
-            seeds_b=tuple(self.buffer[base + S_SEEDS_B:base + S_SEEDS_B + 12]))
+            seeds_b=tuple(self.buffer[base + S_SEEDS_B:base + S_SEEDS_B + 12]), base_year=self.base_year)
 
     def set_year_field(self, value: int) -> None:
-        self._set(SEASON_BLOCK + S_YEAR, "<B", value, label="year field", high=60)
+        _require(type(value) is int, "year field must be an integer index")
+        self._set(SEASON_BLOCK + S_YEAR, "<B", value, label="year field", high=FRANCHISE_MAX_YEAR_INDEX)
+        if self._roster is not None:
+            self._roster.set_reference_year(self.header.display_year)
 
     def set_display_year(self, year: int) -> None:
-        self.set_year_field(year - DISPLAY_YEAR_BASE)
+        _require(type(year) is int, "display year must be an integer")
+        self.set_year_field(year - self.base_year)
 
     @property
     def divisions(self) -> tuple[int, ...]:
@@ -804,6 +820,7 @@ class FranchiseSave:
         return {
             "source": self.source, "size": len(self.buffer), "display_year": header.display_year,
             "year_field": header.year_field, "stage": header.stage, "stage_name": header.stage_name,
+            "base_year": self.base_year, "season_ordinal": header.season_ordinal,
             "stage_weeks": header.stage_weeks, "week": header.week, "mode": header.mode, "substate": header.substate,
             "user_teams": users, "user_team_names": [self.team_abbreviation(t) for t in users],
             "salary_cap": self.salary_cap, "salary_cap_text": f"${self.salary_cap / 1000:.1f}M",
@@ -817,7 +834,8 @@ class FranchiseSave:
     def one_line(self) -> str:
         s = self.summary()
         users = ", ".join(s["user_team_names"]) or "none"
-        return (f"{s['display_year']} (year field {s['year_field']}), {s['stage_name']} week {s['week']}/{s['stage_weeks']}, "
+        return (f"{s['display_year']} (season {s['season_ordinal']} = index {s['year_field']}), "
+                f"{s['stage_name']} week {s['week']}/{s['stage_weeks']}, "
                 f"user team(s) {users}, cap {s['salary_cap_text']}, {s['games_played']}/{s['games_in_grid']} grid games "
                 f"played, {len(s['injured_reserve'])} on IR")
 
@@ -839,8 +857,8 @@ def _regions() -> list[Region]:
         (S + S_TEAM_COUNT, 1, "team count (DAT_00e576ac)", "PROVED", ""),
         (S + S_STAGE_WEEKS, 1, "stage week count (DAT_00e576b0)", "PROVED", ""),
         (S + S_WEEK, 1, "week in stage (DAT_00e576b4)", "HYPOTHESIS", "0 in both saves"),
-        (S + S_YEAR, 1, "year field (DAT_00e576b8), display = 2004 + field", "PROVED", "witnessed in game"),
-        (S + 7, 1, "unused", "OPAQUE", ""),
+        (S + S_YEAR, 1, "year field (DAT_00e576b8), display = build starting year + index", "PROVED", "u8 load/store; retail base 2004"),
+        (S + 7, 1, "opaque byte, not a high year byte", "OPAQUE", ""),
         (S + S_WORD_08, 2, "u16 (DAT_00e576bc)", "OPAQUE", ""),
         (S + S_FLAG_0A, 1, "flag (DAT_00e576c8)", "OPAQUE", ""),
         (S + S_SEEDS_A, 12, "playoff seeds A (DAT_00e578f4)", "PROVED", "team index, 0xFF none"),
@@ -910,8 +928,9 @@ def regions_cover_file() -> bool:
     return position == FRANCHISE_SAVE_SIZE
 
 
-def load_franchise(path: Path | str, *, require_signature: bool = True) -> FranchiseSave:
-    return FranchiseSave.load(path, require_signature=require_signature)
+def load_franchise(path: Path | str, *, require_signature: bool = True,
+                   base_year: int = DISPLAY_YEAR_BASE) -> FranchiseSave:
+    return FranchiseSave.load(path, require_signature=require_signature, base_year=base_year)
 
 
 def is_franchise_save(payload: bytes) -> bool:

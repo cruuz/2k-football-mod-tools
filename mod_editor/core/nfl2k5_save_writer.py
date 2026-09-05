@@ -14,8 +14,10 @@ Productizes three proven research lanes into one fail-closed editor module:
   construction; mode-0 XCalculateSignature skips the per-console HDKey path).
   Saves are resignable offline and are NOT console-bound.
 * A7 -- franchise fields.  Franchise1/SAVEGAME.DAT is 720,044 bytes; the
-  state block at 0x91320 carries the mode bytes, a season ordinal (u16,
-  +0x91324) and a year field (u16, +0x91326).  Runtime triple A_PROVEN:
+  state block at 0x91320 carries the mode bytes, stage extent/current week
+  (separate bytes at +0x91324/+0x91325) and a season index (u8, +0x91326).
+  Retail load/store at 0xC585F/0xC538C prove the byte width; +0x91327 is opaque.
+  Runtime triple A_PROVEN:
   year 7->8 was accepted in-game after resign and displayed franchise year
   advanced by one (displayed year = 2004 + field, B_INFERENCE); a stale
   EXTRA was rejected, proving the HMAC is enforced at load.
@@ -47,9 +49,19 @@ SETTINGS_SAVE_SIZE = 736
 SETTINGS_BLOCK_SIZE = 0x2E0
 FRANCHISE_SAVE_SIZE = 720044
 FRANCHISE_STATE_OFFSET = 0x91320
-FRANCHISE_SEASON_ORDINAL_OFFSET = 0x91324
+FRANCHISE_STAGE_WEEKS_OFFSET = 0x91324
+FRANCHISE_WEEK_OFFSET = 0x91325
+FRANCHISE_SEASON_ORDINAL_OFFSET = FRANCHISE_STAGE_WEEKS_OFFSET  # legacy name; not an ordinal
 FRANCHISE_YEAR_OFFSET = 0x91326
-FRANCHISE_DISPLAY_YEAR_BASE = 2004  # B_INFERENCE (A7 entry 12)
+FRANCHISE_DISPLAY_YEAR_BASE = 2004
+FRANCHISE_MAX_YEAR_INDEX = 127  # experimental completion-gate endpoint; reads retain all u8 values
+
+
+def validate_franchise_base_year(base_year: int) -> int:
+    """Presentation context, not stored in the save. Leave room for any raw u8 index."""
+    if type(base_year) is not int or not 100 <= base_year <= 9999 - 255:
+        raise SaveWriterError("franchise base year must be an integer in 100..9744")
+    return base_year
 
 SLIDER_ORDER = (
     "Blocking", "Passing", "Running", "Coverage", "Pursuit",
@@ -237,40 +249,47 @@ def save_kind(payload: bytes) -> str:
     return "unknown"
 
 
-def read_franchise_fields(payload: bytes) -> dict[str, object]:
+def read_franchise_fields(payload: bytes, *, base_year: int = FRANCHISE_DISPLAY_YEAR_BASE) -> dict[str, object]:
     _require(len(payload) == FRANCHISE_SAVE_SIZE,
              "save is not a 720,044-byte Franchise1 SAVEGAME.DAT")
     state = payload[FRANCHISE_STATE_OFFSET : FRANCHISE_STATE_OFFSET + 4]
-    season_ordinal = struct.unpack_from(
-        "<H", payload, FRANCHISE_SEASON_ORDINAL_OFFSET
-    )[0]
-    year_field = struct.unpack_from("<H", payload, FRANCHISE_YEAR_OFFSET)[0]
+    validate_franchise_base_year(base_year)
+    year_field = payload[FRANCHISE_YEAR_OFFSET]
     return {
         "state_bytes": state.hex(),
-        "season_ordinal": season_ordinal,
+        "stage_weeks": payload[FRANCHISE_STAGE_WEEKS_OFFSET],
+        "week": payload[FRANCHISE_WEEK_OFFSET],
+        "season_ordinal": year_field + 1,
         "year_field": year_field,
-        "display_year": FRANCHISE_DISPLAY_YEAR_BASE + year_field,
-        "display_year_grade": "B_INFERENCE (A7 entry 12)",
+        "base_year": base_year,
+        "display_year": base_year + year_field,
+        "display_year_grade": "PROVED arithmetic; base year supplied by caller",
     }
 
 
-def apply_franchise_year(payload: bytearray, display_year: int) -> dict[str, object]:
+def apply_franchise_year(payload: bytearray, display_year: int, *,
+                         base_year: int = FRANCHISE_DISPLAY_YEAR_BASE) -> dict[str, object]:
     _require(len(payload) == FRANCHISE_SAVE_SIZE,
              "save is not a 720,044-byte Franchise1 SAVEGAME.DAT")
-    _require(isinstance(display_year, int), "franchise year must be an int")
-    field = display_year - FRANCHISE_DISPLAY_YEAR_BASE
-    _require(0 <= field <= 60,
+    validate_franchise_base_year(base_year)
+    _require(type(display_year) is int, "franchise year must be an int")
+    field = display_year - base_year
+    _require(0 <= field <= FRANCHISE_MAX_YEAR_INDEX,
              f"franchise display year {display_year} implies field {field}; "
-             "expected 0..60 (30-season wall at 0x1E is separate)")
-    old_field = struct.unpack_from("<H", payload, FRANCHISE_YEAR_OFFSET)[0]
+             "expected index 0..127 (the executable gate is separate)")
+    old_field = payload[FRANCHISE_YEAR_OFFSET]
     _require(old_field != field,
              f"franchise year already equals {display_year}")
-    struct.pack_into("<H", payload, FRANCHISE_YEAR_OFFSET, field)
+    payload[FRANCHISE_YEAR_OFFSET] = field
     return {
         "offset": f"0x{FRANCHISE_YEAR_OFFSET:x}",
         "old_year_field": old_field,
         "new_year_field": field,
-        "old_display_year": FRANCHISE_DISPLAY_YEAR_BASE + old_field,
+        "bytes": 1,
+        "base_year": base_year,
+        "old_season_ordinal": old_field + 1,
+        "new_season_ordinal": field + 1,
+        "old_display_year": base_year + old_field,
         "new_display_year": display_year,
     }
 
@@ -279,7 +298,7 @@ def apply_franchise_year(payload: bytearray, display_year: int) -> dict[str, obj
 # Loose-file read/edit (A1 + A4 + A7)
 # ---------------------------------------------------------------------------
 
-def read_save(savegame_path: Path | str) -> dict[str, object]:
+def read_save(savegame_path: Path | str, *, base_year: int = FRANCHISE_DISPLAY_YEAR_BASE) -> dict[str, object]:
     path = Path(savegame_path).expanduser().resolve(strict=True)
     _regular_non_link(path)
     payload = path.read_bytes()
@@ -295,7 +314,7 @@ def read_save(savegame_path: Path | str) -> dict[str, object]:
         else {},
     }
     if kind == "franchise":
-        result["franchise"] = read_franchise_fields(payload)
+        result["franchise"] = read_franchise_fields(payload, base_year=base_year)
     return result
 
 
@@ -308,6 +327,7 @@ def edit_save_file(
     sliders: dict[str, float] | None = None,
     slider_mode: str = "consistent",
     franchise_year: int | None = None,
+    base_year: int = FRANCHISE_DISPLAY_YEAR_BASE,
     overwrite: bool = False,
 ) -> dict[str, object]:
     """Edit a loose SAVEGAME.DAT copy and emit a fresh 20-byte EXTRA.
@@ -346,7 +366,7 @@ def edit_save_file(
     )
     year_change = None
     if franchise_year is not None:
-        year_change = apply_franchise_year(payload, franchise_year)
+        year_change = apply_franchise_year(payload, franchise_year, base_year=base_year)
     _require(bool(slider_changes) or year_change is not None,
              "no edits were requested")
 
@@ -531,6 +551,7 @@ def write_back_to_hdd(
     sliders: dict[str, float] | None = None,
     slider_mode: str = "consistent",
     franchise_year: int | None = None,
+    base_year: int = FRANCHISE_DISPLAY_YEAR_BASE,
     partition: str = "E",
 ) -> dict[str, object]:
     """Edit a save inside a COPIED raw Xbox HDD image, extents-only."""
@@ -570,7 +591,7 @@ def write_back_to_hdd(
         )
         year_change = None
         if franchise_year is not None:
-            year_change = apply_franchise_year(payload, franchise_year)
+            year_change = apply_franchise_year(payload, franchise_year, base_year=base_year)
         _require(bool(slider_changes) or year_change is not None,
                  "no edits were requested")
         _require(len(payload) == save_entry.file_size,
