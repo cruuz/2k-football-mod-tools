@@ -751,7 +751,10 @@ evidenced first; research-verdict surfaces implement only on a "port" or
 into a sprint.
 
 **Hard gate: do not start Phase 2 until M1 is reached — a texture *witnessed*
-rendering in PenguinScreen2.** An earlier version gated on "Slice 1", which is
+rendering in PenguinScreen2.** *(Reached 2026-09-05: see `PS2_M1_PLAN.md` status
+and `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`. The
+Phase 2 lanes were built in parallel on the owner's instruction and are all
+offline-proved.)* An earlier version gated on "Slice 1", which is
 logically impossible: slice 1 is `read-only-mapped`/`view` with no writer and no
 exporter, so it can never produce a render. The gate names **M1**. Every
 Phase-2 surface depends on the disc-writing path being real, and that path has

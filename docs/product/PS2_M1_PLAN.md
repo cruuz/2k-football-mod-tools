@@ -1,5 +1,16 @@
 # PS2 M1 — implementation plan
 
+> **Status 2026-09-05 — M1 reached.** WP1–WP6 landed on `ps2-lane` (manifest 5,379 rows; export
+> service + independent verifier; export window + `--ps2-export`; registry row
+> `nfl2k5ps2.uniforms.replacement_pack_export`, classified `extract-only` because the validator
+> binds `offline-writer-proved` to writers with an edit surface and the registry's own definition of
+> an exporter fits). WP7 witnessed: a 13-file pack exported by the shipped service rendered in
+> PenguinScreen2 `8226182a` by GS-dump replay (ESPN shield, scorebug, kick-meter dial replaced;
+> the pack's uniform-part textures were not attributable at 640×480 and are not claimed). Report:
+> `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`. Open: a witness of a
+> uniform part on a near-camera player; `runtime-proved` needs a rule extension for exporters.
+
+
 **M1 is the first thing a modder can actually use.** A user edits a uniform in
 2K5 Mod Studio exactly as they do today for Xbox, chooses *Export PS2
 replacement pack…*, drops the resulting folder into PenguinScreen2, boots the

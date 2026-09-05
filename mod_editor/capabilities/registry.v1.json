@@ -5765,7 +5765,7 @@
         "Correct rendering requires PenguinScreen2 with LoadTextureReplacements=true and ClassicTextureNames=true (SLUS-20919 is not a classic-default serial); the receipt carries this warning verbatim from the manifest provenance."
       ],
       "portme": [
-        "A witnessed render is the next claim: an exported kit seen rendering in PenguinScreen2 build 8226182a by GS-dump replay (route proven 2026-09-04 with the community pack: V1-V4 PASS). The registry binds runtime-proved to a writer with an edit surface; this row is an exporter whose output the emulator applies, so the witness would also justify extending that rule (or a companion row) rather than relabelling this one. The runtime report goes in runtime.evidence either way.",
+        "A witnessed render of a uniform part specifically (sleeve, mask or shoe on a player near the camera) would extend the 2026-09-05 witness, which confirmed the shield, scorebug and dial identities. The registry binds runtime-proved to a writer with an edit surface; this row is an exporter whose output the emulator applies, so a rule extension (or a companion row) rather than a relabel is the honest route.",
         "Resolve the TSET fan-out via the shared (id, chunk) key (77% of PS2 TSETs) so more uniform parts gain unique rows; today only names resolving to exactly one Xbox asset are exported.",
         "Shared era art: the disc shares torso, sleeve, pants and helmet textures across a team's era variants, so no uniform kit maps all 8 mappable components today (the best-covered kit maps 7 of 8); a texture several kits share ships only under its texture id, and the unresolved sidecar names every losing claim with its reason (1,478 names shared by kits, 747 superseded by a logical id, 1,673 unexplained, 473 tex0-only, 288 without an Xbox id, 4 TCC-bit divergences).",
         "The 1,673 pack identities whose hash does not yet reproduce from disc bytes remain unexplained and are excluded from the manifest until a fix reproduces a real hash.",
@@ -5778,9 +5778,11 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "Offline-proved exporter, classified extract-only by the registry's own definition: a validated exporter creates a standard local asset (a PCSX2 replacement pack) and no path writes anything back into the game -- the emulator overlays the pack at draw time. The independent verifier confirms the folder holds exactly the receipted files, every name is a canonical PCSX2 replacement name present in the manifest for its claimed Xbox asset, every PNG parses, and no receipted target is unedited. In-game rendering is not claimed here.",
-        "status": "not-tested"
+        "evidence": [
+          "reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json"
+        ],
+        "scope": "Offline-proved exporter, classified extract-only by the registry's own definition: a validated exporter creates a standard local asset (a PCSX2 replacement pack) and no path writes anything back into the game -- the emulator overlays the pack at draw time. The independent verifier confirms the folder holds exactly the receipted files, every name is a canonical PCSX2 replacement name present in the manifest for its claimed Xbox asset, every PNG parses, and no receipted target is unedited. In-game rendering is not claimed here. Witnessed 2026-09-05 on PenguinScreen2 build 8226182a by GS-dump replay of the 2026-09-04 gameplay dump with a 13-file pack exported by this service: the ESPN shield, the scorebug and the kick-meter dial rendered as the exported art (stock reference frame from the same dump for comparison); the ten uniform-part identities in the pack are not attributable at the frame's scale and are not claimed. Frames stay on the rig (retail imagery); the report carries hashes only.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [

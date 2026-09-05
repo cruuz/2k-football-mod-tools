@@ -1,0 +1,179 @@
+{
+  "capability": "nfl2k5ps2.uniforms.replacement_pack_export",
+  "claim": "An exported PCSX2 replacement pack renders in PenguinScreen2: during a GS-dump replay the emulator loaded the exporter's PNGs by their hash names and drew them in place of the disc's textures. Three of the thirteen exported identities are visibly confirmed in the frame; the ten uniform-part identities (sleeves, masks, taped shoes) are not attributable at this frame's scale and are NOT claimed.",
+  "date": "2026-09-05",
+  "dump": {
+    "bytes": 13779541,
+    "file": "ESPN - NFL 2K5_SLUS-20919_20260904141150.gs.zst",
+    "identities_dumped": 396,
+    "identities_in_manifest": 13,
+    "scene": "gameplay, DEN at SF, pre-snap with the kick meter up; the same dump the 2026-09-04 route proof used",
+    "sha256": "053d82cac0e4bbc4e0886ef58e135dc220c327167eb59d94bba23f8ada44a6bd"
+  },
+  "emulator": {
+    "binary": "build/bin/pcsx2-gsrunner, 33,509,768 bytes",
+    "build": "penguinscreen2-dev @ 8226182aabe19640c6e676331678612f257356dd (branch pcsx2-vr-classic-dump, clean)",
+    "note": "SLUS-20919 is not a classic-default serial, so ClassicTextureNames=true must be set explicitly; the per-game ini's LoadTextureReplacements=false is neutralised by the harness and restored on exit.",
+    "renderer": "Vulkan, -surfaceless, -loop 1",
+    "settings_pack_on": {
+      "ClassicTextureNames": true,
+      "DumpReplaceableTextures": false,
+      "LoadTextureReplacements": true,
+      "LoadTextureReplacementsAsync": true
+    }
+  },
+  "frames": {
+    "pack_off": {
+      "bytes": 637751,
+      "frame": "frame00002",
+      "sha256": "2cbe04a46d5daff52619f4760982087283084ed4b3adb1af46ad4fa76e9e22c5"
+    },
+    "pack_on": {
+      "bytes": 734418,
+      "frame": "frame00002",
+      "sha256": "7fa7f763f907e0aa10670050caac54671082b9d44c4a35646d8988dd2f63160c"
+    },
+    "stock_reference_20260904_pack_off": {
+      "bytes": 636610,
+      "frame": "frame00002",
+      "sha256": "5c7c1c63afa250e37968e0aaa1b8caf64299a6a64bfde8ad840fa78f3977d628"
+    }
+  },
+  "harness": {
+    "caveat": "V4 was designed around the community pack. With this 13-file pack linked, the pack_off leg (ClassicTextureNames=false) ALSO rendered the exported art: a bit-14 name matches under modern naming through the known TCC alias. The visible witness therefore rests on the frame contents against the stock reference, not on V4.",
+    "duration_s": 10,
+    "evidence_dir": "~/classicdump-validate-20260905-023106 (rig; frames are retail imagery and are not committed)",
+    "exit": 0,
+    "script": "~/classicdump-validate-fixed.sh (rig)",
+    "sha256": "6ed75928d3e245d76ac8962e23d48ad1e07e268b78f3bb670dafab8c36774cf1",
+    "verdicts": [
+      "V1 PASS: classic superset of modern (0 missing, 214 classic-only additions)",
+      "V2 PASS: 0 region-suffixed names among classic additions",
+      "V3 PASS: classic dump names reproduce community-pack names (49)",
+      "V4 PASS: frame sets differ between the pack_off and pack_on legs"
+    ]
+  },
+  "observed": {
+    "not_attributable_in_frame": [
+      "tset:3:119:2:arm_02_02",
+      "tset:3:119:3:arm_03_02",
+      "tset:3:119:4:arm_04_02",
+      "tset:3:119:5:arm_05_02",
+      "p8:3:mask01",
+      "p8:3:mask04",
+      "p8:3:mask06",
+      "p8:3:shoes_taped"
+    ],
+    "pixel_stats_frame00002": {
+      "pack_on_cyan_px": 3477,
+      "pack_on_magenta_px": 1213,
+      "pack_on_orange_px": 6037,
+      "pack_on_vs_pack_off_differing_px": 257358
+    },
+    "visible_replaced": [
+      {
+        "seen": "the ESPN shield above the scorebug renders as magenta/white diagonal stripes (stock: red/white ESPN logo)",
+        "xbox_asset_id": "p8:346:shield_espn"
+      },
+      {
+        "seen": "the scorebug panel renders as cyan/black stripes (stock: grey/black panel)",
+        "xbox_asset_id": "p8:346:score_buga"
+      },
+      {
+        "seen": "the kick-meter MPH dial and its arrow art render as orange/blue stripes (stock: chrome dial with field inset)",
+        "xbox_asset_id": "nfl2k5.scene.o0346.c0075.t000 / c0076.t000 / c0076.t001"
+      }
+    ]
+  },
+  "pack": {
+    "exported_by": "mod_editor.core.ps2_export_service.run_export via plan_export on project_from_targets",
+    "files": [
+      {
+        "pcsx2_png": "244dccf1d5f0269f-e5e1a14f44a0a6ba-00005554.png",
+        "sha256": "cd01c13da0c551f71edb80c801b83fce4409447cf332c8b99f625333af7b22b3",
+        "xbox_asset_id": "nfl2k5.scene.o0346.c0075.t000"
+      },
+      {
+        "pcsx2_png": "d26abe843549d064-29ffce157a71024-00005993.png",
+        "sha256": "dbe444ae9e8178f92eec69ede3e4b809d8467a4067a078243c6d539b9fecb441",
+        "xbox_asset_id": "nfl2k5.scene.o0346.c0076.t000"
+      },
+      {
+        "pcsx2_png": "50a0590fef9b15fb-91e4ba7f1daaa01a-00005dd3.png",
+        "sha256": "f9b3c604cc312497bd515adf228ea0312959c9bc0474cec810e0bb1a99e6a6a9",
+        "xbox_asset_id": "nfl2k5.scene.o0346.c0076.t001"
+      },
+      {
+        "pcsx2_png": "b377e428747a8adf-68bf638cdb5a9be9-00005993.png",
+        "sha256": "420336ff211b0e92f85032b9af246e2c66029ea06f44fc9d30cec6500c2a2e53",
+        "xbox_asset_id": "p8:346:score_buga"
+      },
+      {
+        "pcsx2_png": "edea28d28c5018a7-61164d42f0333caf-000059d3.png",
+        "sha256": "a7ac437c18be73d42631be9e563be0b990bf6f8a71a11c209210bb36221eb30c",
+        "xbox_asset_id": "p8:346:shield_espn"
+      },
+      {
+        "pcsx2_png": "75fb8f040213858c-6551a860536f4f71-00005993.png",
+        "sha256": "dbe444ae9e8178f92eec69ede3e4b809d8467a4067a078243c6d539b9fecb441",
+        "xbox_asset_id": "p8:3:mask01"
+      },
+      {
+        "pcsx2_png": "783024657ef5a9bf-12aa83f7b510f57c-00005993.png",
+        "sha256": "dbe444ae9e8178f92eec69ede3e4b809d8467a4067a078243c6d539b9fecb441",
+        "xbox_asset_id": "p8:3:mask04"
+      },
+      {
+        "pcsx2_png": "b4ca053aeed57eca-bdb247d06f7a052b-00005993.png",
+        "sha256": "dbe444ae9e8178f92eec69ede3e4b809d8467a4067a078243c6d539b9fecb441",
+        "xbox_asset_id": "p8:3:mask06"
+      },
+      {
+        "pcsx2_png": "2fe99e4a31be4196-48a11c563ed23f72-00005dd3.png",
+        "sha256": "f9b3c604cc312497bd515adf228ea0312959c9bc0474cec810e0bb1a99e6a6a9",
+        "xbox_asset_id": "p8:3:shoes_taped"
+      },
+      {
+        "pcsx2_png": "fd928bebbac38f4c-c29bfc75da36736c-00005993.png",
+        "sha256": "dbe444ae9e8178f92eec69ede3e4b809d8467a4067a078243c6d539b9fecb441",
+        "xbox_asset_id": "tset:3:119:2:arm_02_02"
+      },
+      {
+        "pcsx2_png": "fd928bebbac38f4c-d4327c7bab56dd8d-00005993.png",
+        "sha256": "dbe444ae9e8178f92eec69ede3e4b809d8467a4067a078243c6d539b9fecb441",
+        "xbox_asset_id": "tset:3:119:3:arm_03_02"
+      },
+      {
+        "pcsx2_png": "fd928bebbac38f4c-1a488f464904f82-00005993.png",
+        "sha256": "dbe444ae9e8178f92eec69ede3e4b809d8467a4067a078243c6d539b9fecb441",
+        "xbox_asset_id": "tset:3:119:4:arm_04_02"
+      },
+      {
+        "pcsx2_png": "fd928bebbac38f4c-3d7c0f3935e0a03f-00005993.png",
+        "sha256": "dbe444ae9e8178f92eec69ede3e4b809d8467a4067a078243c6d539b9fecb441",
+        "xbox_asset_id": "tset:3:119:5:arm_05_02"
+      }
+    ],
+    "independent_verifier": {
+      "checks_true": [
+        "bundled_manifest_matches_receipt",
+        "folder_matches_receipt",
+        "names_canonical_and_mapped",
+        "png_headers_and_digests",
+        "provenance_matches_manifest"
+      ],
+      "downgrade_reason": "no .2k5mod project was supplied, so no_unedited_target could not be checked; the targets are synthetic and carry no retail pixels by construction",
+      "result": "INCOMPLETE",
+      "tool": "tools/nfl2k5_ps2_replacement_pack_verify.py --pack"
+    },
+    "manifest_bundled_sha256": "a658ac738a73257ab7fbb058a2b12ac70aa1d7bf63fdc8515061cc5ea9d931a2",
+    "receipt_sha256": "2548fa2bb59d00bfd3d146dbd4a4e20fa4d55d12737e73ebffeb15ce6e0ec3bb",
+    "source": "synthetic user-authored stripe PNGs at each identity's native size; no retail pixels"
+  },
+  "safety": {
+    "h2_check": "pgrep -x pcsx2-qt; pgrep -x mupen64plus; pgrep -f \"[q]emu-system-i386\" run as its own command first: no live session",
+    "iso": "not read; the dump embeds the serial",
+    "replacements_link": "swapped to the private kit for the run and restored to the community pack on exit (verified)"
+  },
+  "schema": "nfl2k5_ps2_replacement_pack_runtime_witness/v1"
+}
