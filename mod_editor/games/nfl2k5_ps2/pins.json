@@ -12,7 +12,7 @@
     "nfl2k5ps2.saves.roster_name_writer"
   ],
   "schema": "vc_game_module_pins/v1",
-  "shipped_files": 54,
+  "shipped_files": 60,
   "surfaces": [
     "audio",
     "colors",

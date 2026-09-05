@@ -16,6 +16,7 @@ tools/validate_nfl2k5_ps2_save.bat
 tools/validate_nfl2k5_ps2_save.sh
 mod_editor/core/ps2_export_service.py
 tools/nfl2k5_ps2_replacement_pack_audit.py
+tools/nfl2k5_ps2_replacement_pack_kit.py
 tools/nfl2k5_ps2_replacement_pack_verify.py
 tools/validate_nfl2k5_ps2_replacement_pack.bat
 tools/validate_nfl2k5_ps2_replacement_pack.sh
@@ -56,3 +57,8 @@ tools/validate_nfl2k5_ps2_stadium_position.sh
 tools/validate_nfl2k5_ps2_stadium_position.bat
 tools/nfl2k5_ps2_texture_map.py
 tools/xxh3.py
+mod_editor/core/ps2_disc_studio_lanes.py
+mod_editor/core/ps2_disc_studio_service.py
+mod_editor/core/ps2_disc_studio_worker.py
+mod_editor/gui/ps2_disc_studio_qt.py
+mod_editor/gui/ps2_disc_studio_tabs_qt.py
