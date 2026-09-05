@@ -716,20 +716,20 @@ one with fewer pages.
 2. ~~No `LZH1` encoder exists.~~ One does now (`EA_TERF_FORMAT.md` §5.3), and
    a replaced member re-packs at about the size EA shipped it [M]. The space
    question the stored-only fallback created is gone; the boot question is not.
-2. **What the preload caches carry is measured** [M]: `GAME.QKL` and `FE.QKL`
+3. **What the preload caches carry is measured** [M]: `GAME.QKL` and `FE.QKL`
    hold byte copies of container directories and of particular members (6,270
    copies across 39 containers, every one compared identical to the disc).
    `containers.preload_copies` names them, and a writer either keeps every copy
    in step or refuses the edit; what the game does when a copy and its container
    disagree is not known and not tested.
-3. **The container checksum question is open** [M/A]. No field in any
+4. **The container checksum question is open** [M/A]. No field in any
    container header varies with content in any way the reader could find, and
    the layout rules hold with zero residue across 47,769 members — but that is
    the whole of the search, and it is not proof. The circumstantial evidence
    is good (the community's Deluxe disc rewrites five containers, carries two
    defects the retail disc does not, and still plays [S]); it does not close
    the question.
-4. **The PCSX2 replacement identity is learned, never derived.** A
+5. **The PCSX2 replacement identity is learned, never derived.** A
    replacement filename is built from the GS TEX0 and CLUT hashes PCSX2
    computes at draw time, and no disc file carries them.
    `tools/madden09_ps2_texture_identities.py` pairs a real texture dump with
@@ -737,11 +737,11 @@ one with fewer pages.
    §6.5 has the counts. A texture no dump has shown still gets `None`, and the
    *Write PCSX2 pack* step is not offered from either row: what is proved is
    the pairing, not that the emulator loads a pack built from it.
-5. **One gameplay patch is mapped**, the playbook editor caps (§3.5); the
+6. **One gameplay patch is mapped**, the playbook editor caps (§3.5); the
    runtime capacity layer behind them is measured and not shipped, for the
    reason `MADDEN09_PS2_CODE_PATCHES.md` gives. The other subject areas remain
    named questions with no located site.
-6. **`SMF` and `DMF` geometry, `SCHl` audio and `BNKl` banks are identified
+7. **`SMF` and `DMF` geometry, `SCHl` audio and `BNKl` banks are identified
    and not decoded.** Knowing a member's magic is not the same as reading it,
    and the module does not blur the two.
 
