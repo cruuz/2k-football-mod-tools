@@ -315,3 +315,13 @@ docs/mod_editor/playbook_packs.md
 mod_editor/core/nfl2k5_playbook_pack.py
 mod_editor/gui/playbook_pack_dialog_qt.py
 tools/nfl2k5_playbook_pack.py
+
+# PS2 M1 (WP4): exporting an edited Xbox uniform as a PCSX2 replacement pack --
+# the Qt-free export service, the independent verifier that proves a pack emits
+# only edited art, the audit tool the verifier's self-test gates on, and the
+# validator pair the registry row names.
+mod_editor/core/ps2_export_service.py
+tools/nfl2k5_ps2_replacement_pack_audit.py
+tools/nfl2k5_ps2_replacement_pack_verify.py
+tools/validate_nfl2k5_ps2_replacement_pack.bat
+tools/validate_nfl2k5_ps2_replacement_pack.sh
