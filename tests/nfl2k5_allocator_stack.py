@@ -16,11 +16,11 @@ REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
-def compose(payload, *, reverse=False):
+def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     from mod_editor.core import nfl2k5_scorebug_ingame as scene
     payload, _ = scene.apply_xbe(payload)
     payload, policy_receipt = policy.apply(payload, music_unlock=True, music_userlist=True)
-    payload, _ = space.apply(payload, REQUESTS)
+    payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
     owners = ((defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}))
@@ -30,6 +30,6 @@ def compose(payload, *, reverse=False):
     for module, kwargs in owners:
         if module.status(payload) != "applied" or module.apply(payload, **kwargs)[0] != payload:
             raise AssertionError(f"{module.OWNER} failed complete composition/replay")
-    if space.apply(payload, REQUESTS)[0] != payload:
+    if space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)[0] != payload:
         raise AssertionError("allocator replay changed the complete owner union")
     return payload, policy_receipt

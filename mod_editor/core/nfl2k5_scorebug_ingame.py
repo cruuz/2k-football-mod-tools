@@ -505,7 +505,7 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
     if pack_entry is None or xbe_entry is None:
         raise ScorebugError("missing scorebug disc files")
     if pack_entry.size not in (PACK_SIZE, PACK_SIZE + resources.RUNTIME_GROWTH) or xbe_entry.size not in (
-            space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, space.FILE_SIZE, space.EXT_FILE_SIZE):
+            space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, *space.accepted_file_sizes()):
         raise ScorebugError("unknown scorebug disc extents")
     pack = io.pread(fd, pack_entry.size, pack_entry.byte_offset)
     xbe = io.pread(fd, xbe_entry.size, xbe_entry.byte_offset)
@@ -527,14 +527,14 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
 def runtime_image_status(path):
     """Recognize the complete owned HUD and XBE, resolving current archive offsets."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
-    from . import nfl2k5_xbe_space as space, nfl2k5_music_storage as music_storage, platform_compat as io
+    from . import nfl2k5_xbe_space as space, platform_compat as io
     try:
         with Path(path).open("rb") as stream:
             fd = stream.fileno()
             entries, _ = layout.xc.parse_xdvdfs(fd, os.fstat(fd).st_size)
             p, x = entries["vc_53450030/0"], entries["default.xbe"]
             if x.size not in (space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE,
-                              space.FILE_SIZE, music_storage.FILE_SIZE, space.EXT_FILE_SIZE):
+                              *space.accepted_file_sizes()):
                 return "foreign"
             xbe_state = runtime.status(io.pread(fd, x.size, x.byte_offset))
             resource_state = "foreign"

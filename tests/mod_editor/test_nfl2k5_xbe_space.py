@@ -255,7 +255,7 @@ class RetailTests(unittest.TestCase):
 
     def test_fresh_allocation_proof_and_retired_cave_pin(self):
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         from tests.nfl2k5_allocator_stack import REQUESTS as all_requests
         combined, _ = space.apply(self.retail, all_requests)
         self.assertEqual(space.allocation_evidence(self.retail, manifest, allocated=combined)["encoded_references"], [])

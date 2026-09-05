@@ -121,8 +121,11 @@ class CompleteOwnerTests(unittest.TestCase):
                     space.apply(bad, REQUESTS)
         with self.assertRaisesRegex(ValueError, "differ"):
             space.apply(self.full, tt.momentum_patch.REQUESTS)
+        overflow, _ = space.apply(self.retail, REQUESTS + (("extra", "code", 4096, 16),))
+        self.assertTrue(space.is_scaleout(overflow))
+        self.assertEqual(space.status(overflow), "applied")
         with self.assertRaisesRegex(ValueError, "capacity exceeded"):
-            space.apply(self.retail, REQUESTS + (("extra", "code", 4096, 16),))
+            space.plan(REQUESTS + (("extra", "code", 98305, 16),))
 
     def test_dispatcher_and_raw_writer_status_roundtrip(self):
         patched, receipt = tt._apply_all(self.retail, None, False, accel_ramp=True, **OPTIONS)

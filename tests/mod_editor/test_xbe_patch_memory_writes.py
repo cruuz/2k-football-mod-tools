@@ -119,7 +119,7 @@ class PatchWriteTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
-        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False))
+        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -347,7 +347,16 @@ class ReverseOwnerOrderTests(PatchWriteTests):
 
     def test_both_installation_orders_are_byte_identical(self):
         from tests.nfl2k5_allocator_stack import compose
-        self.assertEqual(compose(self.before_allocator)[0], self.patched)
+        self.assertEqual(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0], self.patched)
+
+
+class ScaleoutOwnerTests(PatchWriteTests):
+    """All existing owner gates against the v3 page map."""
+    scaleout = True
+
+
+class ScaleoutReverseOwnerTests(ReverseOwnerOrderTests):
+    scaleout = True
 
 
 if __name__ == "__main__":

@@ -102,7 +102,7 @@ class Recorder:
                 if va is not None:
                     from . import nfl2k5_xbe_space as space
                     page_owner = space.OWNER if any(r["va"] <= va < r["va"] + r["size"]
-                        for r in grown_regions if r["kind"] != "read_only") else owner
+                        for r in grown_regions if not r.get("music")) else owner
                     self.reserve(va, stop - at, page_owner, "observed byte diff")
                 at = stop
         self.steps.append({"owner": owner, "function": function,
@@ -212,7 +212,7 @@ def source_fingerprints() -> dict[str, str]:
             for p in sorted(paths) if not p.name.startswith("nfl2k5_cave_")}
 
 
-def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) -> dict:
+def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, synthetic_owner_bytes=0) -> dict:
     """Actual experimental image build plus the dormant seven-on-seven owner.
 
     The source disc is read-only. Only the temporary target is passed to studio
@@ -231,6 +231,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     from . import nfl2k5_roster_storage as roster_storage
     from . import nfl2k5_coverage_slider as coverage, nfl2k5_scramble_tuning as scramble
     from . import nfl2k5_throw_arc as flight
+    all_requests = relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
+    if type(synthetic_owner_bytes) is not int or synthetic_owner_bytes < 0:
+        raise OracleError("synthetic owner size must be a nonnegative integer")
+    probe_requests = (("synthetic_scaleout", "code", synthetic_owner_bytes, space.PAGE),) if synthetic_owner_bytes else ()
+    space.plan(all_requests + probe_requests)  # refuse before any disc build
     progress = progress or (lambda _message: None)
     xiso = xiso.resolve(strict=True)
     work_dir = work_dir.resolve(strict=True)
@@ -288,7 +293,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
             # Observe their real pure-byte writers after every disc/XBE pass.
             # The generalized writer resolves the grown extent directly, so
             # manifest generation does not depend on the protected dispatcher.
-            final, _ = space.apply(final, relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS)
+            allocation_base = final
+            final, _ = space.apply(final, all_requests, scaleout=True)
             final, _ = roster_storage.apply(final)
             final, _ = defensive_try.apply(final)
             final, _ = zone_drop.apply(final)
@@ -320,6 +326,34 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
         if any(section_digest(final, s) != s.stored_digest for s in _sections(final)):
             raise OracleError("final stack has stale XBE section digests")
         spans = recorder.finish(final)
+        synthetic_proof = None
+        if synthetic_owner_bytes:
+            progress(f"Building synthetic {synthetic_owner_bytes}-byte owner on the real disposable disc")
+            probe, _ = space.apply(allocation_base, all_requests + probe_requests, scaleout=True)
+            for module, kwargs in ((defensive_try, {}), (zone_drop, {}), (relocated, {}),
+                                   (runtime, {}), (momentum, dict(momentum=100, momentum_contact=True)),
+                                   (music, dict(song_records=[dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256) for i in range(200)]))):
+                probe, _ = module.apply(probe, **kwargs)
+            probe, _ = space.install_code(probe, "synthetic_scaleout", b"\xc3" + b"\x90" * (synthetic_owner_bytes - 1))
+            if any(module.status(probe) != "applied" for module in (space, relocated, runtime, momentum, defensive_try, zone_drop, music)):
+                raise OracleError("synthetic owner does not compose with the complete real owner union")
+            descriptor = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
+            try:
+                written = storage.write_image_xbe(descriptor, probe)
+                offset, length = tt._xdvdfs_module().xbe_extent(descriptor, os.fstat(descriptor).st_size)
+                if io.pread(descriptor, length, offset) != probe:
+                    raise OracleError("synthetic real-disc read-back differs")
+                replay = storage.write_image_xbe(descriptor, probe)
+                synthetic_proof = dict(owner_bytes=synthetic_owner_bytes, xbe_sha256=hashlib.sha256(probe).hexdigest(),
+                    xbe_bytes=len(probe), disc_bytes=os.fstat(descriptor).st_size, write=written, replay=replay,
+                    kickoff_relocated=relocated.status(probe), section_digests_verified=True,
+                    allocation=space.layout(probe), runtime_witnessed=False)
+                storage.write_image_xbe(descriptor, final)
+                if io.pread(descriptor, len(final), offset) != final:
+                    raise OracleError("synthetic owner removal read-back differs")
+                synthetic_proof["removed_from_final_disc"] = True
+            finally:
+                os.close(descriptor)
         if fingerprints != source_fingerprints():
             raise OracleError("patch sources changed during manifest generation")
         # Fingerprint the loaded stack, not unrelated research tools absent from
@@ -339,7 +373,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,
                 "preset_xbe_sha256": hashlib.sha256(preset_xbe).hexdigest(),
                 "stack_xbe_sha256": hashlib.sha256(final).hexdigest(),
-                "section_digests_verified": True,
+                "section_digests_verified": True, "allocator_layout": space.layout(final),
+                "synthetic_disc_proof": synthetic_proof,
                 "image_options": {"scorebug_textures": True, "runtime_panel_resources": False,
                                   "reason": "Manifest proves XBE ownership only; panel transport has its own resource tests"},
                 "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated", "scorebug_runtime", "music_metadata", "momentum", "defensive_try", "zone_drop_cap", "all_stadiums"],

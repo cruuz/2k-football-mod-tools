@@ -76,7 +76,7 @@ class CaveReferenceTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
-        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False))
+        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -179,7 +179,7 @@ class CaveReferenceTests(unittest.TestCase):
         dependency, _ = season.apply(self.patched, groups=("playoffs_14",))
         patched, _ = picture.apply(dependency)
         self.assertEqual(picture.status(patched), "applied")
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         # the regenerated manifest now observes the playoff presentation itself (it rides the season step);
         # nothing ELSE may own its sites
         for site in picture.sites():
@@ -206,7 +206,7 @@ class CaveReferenceTests(unittest.TestCase):
         # The supplied manifest predates this rebase. The relocation brief permits
         # inspecting its reservations without source_root; current stack bytes
         # are checked separately below. Keep the oracle's drift guard unchanged.
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         for start in (0x1AFDF0, 0x28B410, 0x1D82D0, 0x325E70, 0x2979F0, 0xB4A60, 0x2BA840):
             self.assertTrue(manifest.overlaps(start, start + 1), hex(start))
 
@@ -216,7 +216,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         retail = XbeImage(self.retail)
         stack = XbeImage(self.stack)
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, retail)
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), retail)
         for start, size, _ in ps.CAVES:
             # the manifest now observes the practice squad itself; nothing ELSE may own its caves
             self.assertEqual(manifest.overlaps(start, start + size, exclude_owner='nfl2k5_practice_squad'), [], hex(start))
@@ -244,7 +244,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_depth_chart_storage as storage
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         image = XbeImage(self.retail)
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, image)
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), image)
         evidence = storage.allocation_evidence(self.retail, manifest)
         self.assertEqual(evidence["encoded_references"], [])
         self.assertEqual(evidence["manifest_overlaps"], [])
@@ -267,7 +267,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         # the regenerated manifest records the lock rewrites as their own owner; exclude them so the
         # check below only sees reservations that belong to OTHER owners (rows' chain test)
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         self.assertEqual(locks.CAVES, ())
         self.assertEqual(locks.RUNTIME_GLOBALS, ())
         self.assertEqual(locks.status(self.before_depth_locks), "retail")
@@ -283,8 +283,15 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
         from mod_editor.core import nfl2k5_defensive_try as defensive_try
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
-        self.assertEqual(space.allocation_evidence(self.retail, manifest, allocated=self.patched)["encoded_references"], [])
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
+        proof = space.allocation_evidence(self.retail, manifest, allocated=self.patched)
+        self.assertEqual(proof["legacy_encoded_references"], [])
+        if getattr(self, "scaleout", False):
+            self.assertEqual(proof["retail_mapping_overlaps"], [])
+            self.assertEqual(len(proof["pages"]), 52)
+            self.assertTrue(proof["encoded_references"])  # raw candidates stay visible
+        else:
+            self.assertEqual(proof["encoded_references"], [])
         self.assertEqual(relocated.status(self.patched), "applied")
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         self.assertEqual(runtime.status(self.patched), "applied")
@@ -297,7 +304,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_momentum as momentum
         from mod_editor.core import nfl2k5_xbe_space as space
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         self.assertEqual(momentum.status(self.patched), "applied")
         for r in momentum.reservations(self.patched):
             start, end = int(r["start"], 0), int(r["end"], 0)
@@ -313,7 +320,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         self.assertEqual(zone_drop.status(self.patched), "applied")
         self.assertEqual(relocated.status(self.patched), "applied")
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         self.assertEqual(manifest.overlaps(zone_drop.HOOK_VA, zone_drop.CONTINUE_VA,
                                            exclude_owner=zone_drop.OWNER), [])
         site = zone_drop.site(self.patched)
@@ -322,7 +329,7 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual({va: refs for va, refs in self.targets.items()
                           if site["va"] <= va < site["va"] + site["size"]}, {})
         self.assertEqual(space.allocation_evidence(self.retail, manifest,
-                                                   allocated=self.patched)["encoded_references"], [])
+                                                   allocated=self.patched)["legacy_encoded_references"], [])
         instructions = list(Cs(CS_ARCH_X86, CS_MODE_32).disasm(
             XbeImage(self.patched).read(zone_drop.HOOK_VA, 5), zone_drop.HOOK_VA))
         self.assertEqual([(i.mnemonic, i.size) for i in instructions], [("call", 5)])
@@ -338,7 +345,7 @@ class ScorebugReferenceReservations(unittest.TestCase):
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         retail=XBE.read_bytes()
         image=XbeImage(retail)
-        manifest=ReservationManifest.load(DEFAULT_MANIFEST,image)
+        manifest=ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)),image)
         reservations=manifest.overlaps(0x10a40,0x10a48)
         self.assertTrue(reservations)
         patched,_=scorebug.apply_xbe(retail)
@@ -359,7 +366,16 @@ class ReverseOwnerOrderTests(CaveReferenceTests):
 
     def test_both_installation_orders_are_byte_identical(self):
         from tests.nfl2k5_allocator_stack import compose
-        self.assertEqual(compose(self.before_allocator)[0], self.patched)
+        self.assertEqual(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0], self.patched)
+
+
+class ScaleoutOwnerTests(CaveReferenceTests):
+    """All existing owner gates against the v3 page map."""
+    scaleout = True
+
+
+class ScaleoutReverseOwnerTests(ReverseOwnerOrderTests):
+    scaleout = True
 
 
 if __name__ == "__main__":

@@ -179,6 +179,19 @@ three existing codec suites and `test_rosters_reserves_abilities.py`, then the
 existing packaging/runtime closure gates. The supplied standalone tests skip
 precisely for missing retail evidence or Capstone and do not read whole packs
 or disc images into RAM. No release-tag/updater/CI changes are requested.
+# Beta 62 allocator scale-out: image_xbe_extent accepted sizes
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, replace only the grown-size
+membership check in `image_xbe_extent` with:
+
+```python
+_require(length in (depth_chart_storage.FILE_SIZE, *xbe_space_patch.accepted_file_sizes()),
+         f"default.xbe inside the image is {length} bytes, not the retail size or a recognised grown size")
+```
+
+Retain the subsequent bounded read and `recognized_grown_xbe(candidate)` check.
+Size acceptance alone does not establish a valid allocation. The new accepted
+extent is **12,300,288 bytes (`0xBBB000`)**; prior accepted sizes are unchanged.
 
 # Defensive try handoff, 2026-09-05
 

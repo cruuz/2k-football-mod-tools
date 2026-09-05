@@ -131,8 +131,12 @@ class ImageTests(unittest.TestCase):
         self.assertEqual(patch.status(left), "applied")
         with self.assertRaises(ValueError): patch.apply(kickoff.apply(self.retail)[0])
         with self.assertRaises(ValueError): kickoff.apply(self.patched)
+        overflow = space.apply(self.retail, patch.REQUESTS + kickoff.REQUESTS +
+                               (("capacity_probe", "code", 4096, 16), ("capacity_probe2", "code", 4096, 16)))[0]
+        self.assertTrue(space.is_scaleout(overflow))
         with self.assertRaisesRegex(ValueError, "capacity exceeded"):
-            space.apply(self.retail, patch.REQUESTS + kickoff.REQUESTS + (("capacity_probe", "code", 4096, 16), ("capacity_probe2", "code", 4096, 16)))
+            space.plan(patch.REQUESTS + kickoff.REQUESTS +
+                       (("capacity_probe", "code", 98304, 16), ("capacity_probe2", "code", 1, 16)))
 
     def test_defensive_try_both_orders_with_actual_owner(self):
         from mod_editor.core import nfl2k5_defensive_try as other
