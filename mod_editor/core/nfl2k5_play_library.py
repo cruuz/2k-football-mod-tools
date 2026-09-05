@@ -293,7 +293,7 @@ def fit_template(book: Nfl2k5Playbook, body: bytes, players: Sequence[TemplatePl
 # Assignment building blocks
 # ---------------------------------------------------------------------------
 
-Chain = list[tuple[int, list[float]]]
+Chain = list[codec.AuthoredNode]
 
 
 def start(role: int = 3) -> tuple[int, list[float]]:
@@ -715,12 +715,12 @@ def build_chains(spec: PlaySpec, scheme: str | None = None) -> list[Chain]:
 def validate_chains(play_flags: int, donor_chains: list[tuple[int, list[bytes]]], chains: list[Chain]) -> str | None:
     assignments = []
     for s in range(11):
-        nodes = [codec.Node(op, 0, list(vals)) for op, vals in chains[s]]
-        codec.assign_node_flags(nodes)
+        nodes = codec.encode_chain(chains[s], donor_chains[s][1])
         assignments.append((donor_chains[s][0], [n.to_bytes() for n in nodes]))
     for s in range(11):
         desc = codec.build_descriptor(play_flags, assignments, s, donor_chains[s][0] >> 24)
         assignments[s] = (desc, assignments[s][1])
+    codec.validate_sync(assignments)
     return codec.validate_play(play_flags, assignments)
 
 
@@ -1076,7 +1076,7 @@ def defense_personnel(book: Nfl2k5Playbook, body: bytes, formation_index: int) -
 
 
 def decoded_chains(body: bytes, play_index: int) -> list[Chain]:
-    return [[(n.op, list(n.operands)) for n in map(codec.Node.from_bytes, nodes)]
+    return [codec.authored_chain(list(map(codec.Node.from_bytes, nodes)))
             for _, nodes in play_chains(body, play_index)[1]]
 
 
@@ -1444,3 +1444,201 @@ RETAIL_DEFENSE_PERSONNEL_FINGERPRINTS = {
     "fb66f60e58933a973e49b7077a7ac42fdd0223d56b85b8e7019309a9262fe51d": frozenset(('KC',)),
     "fd2430de039ebc2bba65b57434e0b9c35054a9b7c9547dbb4da7341d5fb4be48": frozenset(('ARZ', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 'DET', 'GB', 'HOU', 'IND', 'JAX', 'KC', 'MIN', 'NE', 'NO', 'NYG', 'NYJ', 'OAK', 'PHI', 'PIT', 'SD', 'SEA', 'SF', 'STL', 'TB', 'TEN', 'WAS')),
 }
+
+
+# Native option authoring: data only, no runtime target resolver or mesh timer.
+OPTION_PRESETS = ('Speed option', 'Zone read (experimental)', 'RPO (experimental)')
+OPTION_INTENT_SCHEMA = 'nfl2k5_option_intent/v1'
+OPTION_NOTICE = ('EXPERIMENTAL / UNWITNESSED. The read is position/velocity based; '
+                 'a dependable modern read needs the later runtime tier. '
+                 'Opponent slots are fixed to the selected test formation. The game cannot '
+                 'check that formation or find an edge defender for you. For zone read and RPO, '
+                 'a true result gives; a false or missing target keeps or enters the pass. '
+                 'Blocks, exchange timing and pass readiness need play tests.')
+STOCK_SPEED_OPTIONS = (('MIN', 24), ('NO', 57), ('NO', 66), ('PHI', 175), ('TEN', 144))
+
+
+def mirror_option_chains(chains: Sequence) -> list:
+    """Use the retail operand mirror, leaving graph/cache indices and flags intact."""
+    return [codec.authored_chain([codec.Node.from_bytes(n.to_bytes(), mirror=True)
+                                  for n in codec.encode_chain(chain)]) for chain in chains]
+
+
+def stock_speed_option_chains(weak: bool = False) -> list:
+    """Logical stock grammar shared by MIN 24, NO 57/66, PHI 175 and TEN 144.
+
+    These are grammar recipes, not a serialized PLAY resource. The five retail
+    donors are compared byte for byte in the acceptance tests.
+    """
+    qb = [(1, [1, 4, 0, 0, 0, 0], 0x10), (3, [0], 0x10),
+          (4, [1, -4 * YD, -4 * YD, 0], 0x14),
+          (26, [4, -14 * YD, 0, 10, 4, 0, 13, 1], 0x12), (19, [10, 1], 0x13)]
+    hb = [(1, [1, 3, 0, 0, 0, 0], 0x10),
+          (26, [6, -5 * YD, -4 * YD, 0, 3, 0, 3, 0], 0x14),
+          (24, [2, -5 * YD, -4 * YD, 0, 15, 0, 0], 0x02),
+          (22, [0, 0, 0], 0x11), (21, [1, 0, 10 * YD, 0, 15, 0, 0], 0x03)]
+    line = lambda: [start(3), (17, [0, 0, 1, 0, 1, -YD, YD, 0])]
+    block = lambda: [start(3), (17, [3, 0, 1, 0, 2, 0, 5 * YD, 1])]
+    chains = [qb, line(), line(), [start(2), (2, [0]), line()[1]], line(), line(),
+              block(), block(), block(),
+              [start(3), (24, [0, -9 * YD, -YD, 0, 15, 0, 0]),
+               (17, [4, 0, 1, 0, 2, 0, 10 * YD, 1])], hb]
+    if weak:
+        chains = mirror_option_chains(chains)
+        # Retail NO 66 selects the other take animation; this is not a decoder mirror bit.
+        chains[10][3][1][0] = 1
+    return chains
+
+
+def opponent_signature(book: Nfl2k5Playbook, body: bytes, formation_index: int) -> str:
+    import hashlib
+    import json
+    rec = formation_record(body, formation_index)
+    if not 4 <= rec.type_code <= 7:
+        raise ValueError('Choose a defensive test formation')
+    info = defense_personnel(book, body, formation_index)
+    payload = [rec.type_code, info['codes'], list(rec.package_map),
+               [[s.x, s.z] for s in rec.slots]]
+    return hashlib.sha256(json.dumps(payload, separators=(',', ':')).encode()).hexdigest()
+
+
+@dataclass
+class OptionDesign:
+    chains: list
+    donor_play_index: int
+    play_flags: int
+    intent: dict
+
+
+def make_option_design(book: Nfl2k5Playbook, body: bytes, formation_index: int,
+                       preset: str = 'Speed option', *, weak: bool = False, back_slot: int = 10,
+                       opponent_formation_index: int | None = None, read_slot: int = 2,
+                       receiver_slot: int = 7) -> OptionDesign:
+    if preset not in OPTION_PRESETS:
+        raise ValueError('Choose a supported option preset')
+    if type(formation_index) is not int or not 0 <= formation_index < len(book.formations):
+        raise ValueError('Choose a native option formation')
+    if type(weak) is not bool:
+        raise ValueError('Choose strong or weak direction')
+    rec = formation_record(body, formation_index)
+    codes = category_positions(body, formation_category(body, formation_index))
+    kinds = [c & 31 for c in codes]
+    if (rec.type_code >= 4 or rec.qb_alignment != 1 or kinds[0] != QB
+            or kinds[1:6] != [T, T, C, G, G]
+            or any(k not in (TE, WR) for k in kinds[6:9]) or set(kinds[9:11]) != {FB, HB}):
+        raise ValueError('Option presets need a native under-center I formation with QB 0, C 3, receivers 6-8 and backs 9/10')
+    if type(back_slot) is not int or back_slot not in (9, 10) or kinds[back_slot] not in (HB, FB):
+        raise ValueError('Choose the pitch/run back in assignment slot 9 or 10')
+    chains = stock_speed_option_chains(weak)
+    if back_slot != 10:
+        from .nfl2k5_playbook_pack import permute_assignments
+        order = list(range(11)); order[9], order[10] = order[10], order[9]
+        chains = list(permute_assignments(chains, order))
+    native = next((p.index for p in book.plays if p.family_id == 0
+                   and any(n[0] == 26 for n in play_chains(body, p.index)[1][0][1])), None)
+    donor, flags = reference_play_for(book, body, 'run')
+    if native is not None:
+        donor = native
+        flags = book.plays[donor].flags_or_id
+    intent = dict(schema=OPTION_INTENT_SCHEMA, preset=preset, weak=weak, back_slot=back_slot,
+                  formation_name=book.formations[formation_index].name)
+    if preset != 'Speed option':
+        if (type(opponent_formation_index) is not int or not 0 <= opponent_formation_index < len(book.formations)
+                or type(read_slot) is not int or not 0 <= read_slot <= 10):
+            raise ValueError('Choose a defensive test formation and its opponent assignment slot 0-10')
+        intent['opponent'] = dict(formation_index=opponent_formation_index,
+            formation_name=book.formations[opponent_formation_index].name,
+            signature=opponent_signature(book, body, opponent_formation_index), slot=read_slot)
+        side = 1 if weak else -1
+        # Normal path keeps/passes; the true branch gives. This is deliberately
+        # the geometric experiment, not the later football read policy.
+        normal = (21, [0, -side * 4 * YD, 3 * YD, 2, 15, 0, 0], 0x02)
+        if preset == 'RPO (experimental)':
+            if type(receiver_slot) is not int or receiver_slot not in (6, 7, 8) or kinds[receiver_slot] not in (WR, TE):
+                raise ValueError('Choose a quick-pass receiver in assignment slot 6, 7 or 8')
+            normal = (6, [0, receiver_slot - 5, 0, 0, 0, .3], 0x02)
+            chains[receiver_slot] = route_chain('Slant', 3, 1 if rec.slots[receiver_slot].x[0] >= 0 else -1)
+            intent['receiver_slot'] = receiver_slot
+            # A pass-capable header exposes receivers. Mixed give/pass AI is
+            # still unproved; retain this donor's family/category bits.
+            flags = class_flags_for('pass', flags)
+        chains[0] = [(1, [1, 4, 0, 0, 0, 0], 0x10), (3, [0], 0x10),
+                     (26, [4, side * YD, -3 * YD, read_slot, 4, 1, 13, 0], 0x14),
+                     normal, (19, [back_slot, 0], 0x13)]
+        hb = list(chains[back_slot])
+        hb[1] = (26, [6, side * YD, -3 * YD, 0, 3, 0, 2, 0], 0x14)
+        hb[2] = (24, [0, side * 3 * YD, 0, 0, 15, 0, 0], 0x02)
+        hb[3] = (22, [int(weak), .1, 8], 0x11)
+        hb[4] = (21, [0, side * 2 * YD, 5 * YD, 2, 15, 0, 0], 0x03)
+        chains[back_slot] = hb
+    error = validate_chains(flags, play_chains(body, donor)[1], chains)
+    if error:
+        raise ValueError(error)
+    return OptionDesign(chains, donor, flags, intent)
+
+
+def option_intent_from(value: object) -> dict | None:
+    """Strict, portable test-fixture identity. No claim of runtime enforcement."""
+    import json
+    if value is None:
+        return None
+    if not isinstance(value, dict) or value.get('schema') != OPTION_INTENT_SCHEMA:
+        raise ValueError('Unknown option intent schema')
+    required = {'schema', 'preset', 'weak', 'back_slot', 'formation_name'}
+    if not required <= value.keys() or value.keys() - required - {'opponent', 'receiver_slot'}:
+        raise ValueError('Option intent has missing or unsupported fields')
+    if (value['preset'] not in OPTION_PRESETS or type(value['weak']) is not bool
+            or type(value['back_slot']) is not int or value['back_slot'] not in (9, 10)
+            or not isinstance(value['formation_name'], str) or not value['formation_name']):
+        raise ValueError('Invalid option preset, direction, back or formation')
+    read = value['preset'] != OPTION_PRESETS[0]
+    if read != ('opponent' in value):
+        raise ValueError('A geometric read needs its expected opponent formation and personnel signature')
+    if read:
+        import re
+        o = value['opponent']
+        if (not isinstance(o, dict) or set(o) != {'formation_index', 'formation_name', 'signature', 'slot'}
+                or type(o['slot']) is not int or not 0 <= o['slot'] <= 10
+                or type(o['formation_index']) is not int or not 0 <= o['formation_index'] < 50
+                or not isinstance(o['formation_name'], str) or not o['formation_name']
+                or not isinstance(o['signature'], str) or not re.fullmatch('[0-9a-f]{64}', o['signature'])):
+            raise ValueError('Invalid fixed opponent test fixture')
+    if (value['preset'] == OPTION_PRESETS[2]) != ('receiver_slot' in value):
+        raise ValueError('RPO intent needs its intended receiver')
+    if 'receiver_slot' in value and (type(value['receiver_slot']) is not int or value['receiver_slot'] not in (6, 7, 8)):
+        raise ValueError('RPO receiver must be slot 6, 7 or 8')
+    return json.loads(json.dumps(value))
+
+
+def validate_option_intent(intent: dict | None, assignments: Sequence,
+                           book: Nfl2k5Playbook | None = None, body: bytes | None = None) -> None:
+    intent = option_intent_from(intent)
+    if intent is None:
+        return
+    qb = [codec.Node.from_bytes(n) for n in assignments[0][1]]
+    back = [codec.Node.from_bytes(n) for n in assignments[intent['back_slot']][1]]
+    read = intent['preset'] != OPTION_PRESETS[0]
+    index = 2 if read else 3
+    if (len(qb) != 5 or len(back) != 5 or qb[index].op != 26 or back[1].op != 26
+            or back[1].operands[0] != 6 or back[3].op != 22 or back[4].op != 21
+            or qb[4].op != 19 or qb[4].operands[:2] != [intent['back_slot'], 0 if read else 1]
+            or back[1].operands[3:7] != [0, 3, 0, index]
+            or qb[index].operands[0] != 4 or qb[index].operands[4] != 4
+            or qb[index].operands[5] != int(read)
+            or qb[index].operands[7] != int(not read)):
+        raise ValueError('Option intent no longer matches the synchronized QB/back graph')
+    if qb[index].operands[3] != (intent['opponent']['slot'] if read else intent['back_slot']):
+        raise ValueError('Option intent disagrees with its selected actor slot')
+    if read and qb[3].op != (6 if 'receiver_slot' in intent else 21):
+        raise ValueError('Option intent disagrees with its normal continuation')
+    if 'receiver_slot' in intent:
+        if qb[3].operands[1] != intent['receiver_slot'] - 5:
+            raise ValueError('RPO first read disagrees with the intended receiver slot')
+        if not any(n[0] == 0x12 for n in assignments[intent['receiver_slot']][1]):
+            raise ValueError('RPO needs a route for the intended receiver')
+    if read and book is not None and body is not None:
+        o = intent['opponent']
+        fi = o['formation_index']
+        if (fi >= len(book.formations) or book.formations[fi].name != o['formation_name']
+                or opponent_signature(book, body, fi) != o['signature']):
+            raise ValueError('Opponent formation/personnel signature mismatch; select a new test fixture')

@@ -200,6 +200,15 @@ class FieldScene(QGraphicsScene):
                     self.art_items.append(self.addLine(
                         end.x() - size * math.cos(ang), end.y() - size * math.sin(ang),
                         end.x() + size * math.cos(ang), end.y() + size * math.sin(ang), pen))
+                elif seg.end_marker == "branch":
+                    poly = QPolygonF([QPointF(end.x(), end.y() - 6), QPointF(end.x() + 6, end.y()),
+                                      QPointF(end.x(), end.y() + 6), QPointF(end.x() - 6, end.y())])
+                    marker = self.addPolygon(poly, pen)
+                    marker.setToolTip(seg.label)
+                    self.art_items.append(marker)
+                    text = self.addSimpleText("Branch")
+                    text.setBrush(QBrush(color)); text.setPos(end.x() + 7, end.y())
+                    text.setToolTip(seg.label); self.art_items.append(text)
                 elif seg.end_marker == "zone":
                     self.art_items.append(self.addEllipse(end.x() - 14, end.y() - 14, 28, 28, pen))
                 elif seg.end_marker == "man":
@@ -859,7 +868,9 @@ class PlayDesignerDialog(QDialog):
                 for slot in range(11):
                     if self.changed[slot]:
                         codec.validate_defense_operands([(n.op, n.operands) for n in self.chains[slot]])
-            error = codec.validate_play(self.play_flags, self._assignments_bytes())
+            assignments = self._assignments_bytes()
+            codec.validate_sync(assignments)
+            error = codec.validate_play(self.play_flags, assignments)
             if sum(len(c) for c, changed in zip(self.chains, self.changed) if changed) > 3500 - self.book.node_count:
                 error = "Cloned chains exceed the remaining node pool"
         except Exception as exc:  # noqa: BLE001 - surfaced to the user
@@ -887,7 +898,7 @@ class PlayDesignerDialog(QDialog):
             if not self.changed[slot]:
                 assignments.append(None)
             else:
-                assignments.append([[n.op, [float(v) for v in n.operands]] for n in self.chains[slot]])
+                assignments.append(codec.chain_json(codec.authored_chain(self.chains[slot])))
         self.result_payload = {
             "custom_name": self.name_edit.text().strip() or None,
             "donor_play_index": self.donor_play_index,

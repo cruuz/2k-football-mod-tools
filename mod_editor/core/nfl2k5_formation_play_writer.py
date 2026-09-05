@@ -169,20 +169,23 @@ class PlayCreateRequest:
     asset_id: str
     donor_play_index: int
     custom_name: str | None = None
-    assignments: tuple[tuple[tuple[int, tuple[float, ...]], ...] | None, ...] | None = None
+    assignments: tuple[tuple[codec.AuthoredNode, ...] | None, ...] | None = None
     replace_index: int | None = None
     play_flags: int | None = None   # header word (+4); None keeps the donor's
     spy_slots: tuple[int, ...] = ()
+    option_intent: dict | None = None
 
     @property
     def selector(self) -> str:
         base = f"play-create:{self.asset_id}:donor{self.donor_play_index}"
-        if self.assignments is not None or self.replace_index is not None or self.play_flags is not None or self.spy_slots:
+        if self.assignments is not None or self.replace_index is not None or self.play_flags is not None or self.spy_slots or self.option_intent:
             payload: list[object] = [self.assignments, self.custom_name, self.replace_index]
             if self.play_flags is not None:
                 payload.append(self.play_flags)
             if self.spy_slots:
                 payload.append(list(self.spy_slots))
+            if self.option_intent:
+                payload.append(self.option_intent)
             base += ":" + _payload_tag(payload)
         return base
 
@@ -192,7 +195,7 @@ class PlayCreateRequest:
                                   "custom_name": self.custom_name}
         if self.assignments is not None:
             row["assignments"] = [
-                None if chain is None else [[int(op), list(vals)] for op, vals in chain]
+                None if chain is None else codec.chain_json(chain)
                 for chain in self.assignments
             ]
         if self.replace_index is not None:
@@ -201,6 +204,8 @@ class PlayCreateRequest:
             row["play_flags"] = self.play_flags
         if self.spy_slots:
             row["spy_intent"] = {"schema": "nfl2k5_spy_intent/v1", "slots": list(self.spy_slots)}
+        if self.option_intent is not None:
+            row["option_intent"] = self.option_intent
         return row
 
 
@@ -285,21 +290,11 @@ def _assignments_from(value: object) -> tuple | None:
             continue
         if not isinstance(chain, (list, tuple)) or not 1 <= len(chain) <= 15:
             raise ValidationError("An authored chain needs 1 through 15 nodes.")
-        nodes: list = []
-        for node in chain:
-            if not isinstance(node, (list, tuple)) or len(node) != 2:
-                raise ValidationError("Each node must be [opcode, [operands...]].")
-            op, vals = node
-            if type(op) is bool or not isinstance(op, int) or not 0 <= op < codec.OPCODE_COUNT or op == 0x19:
-                raise ValidationError(f"Opcode {op!r} is not a usable PLAY node opcode.")
-            if not isinstance(vals, (list, tuple)) or any(
-                type(v) is bool or not isinstance(v, (int, float)) for v in vals
-            ):
-                raise ValidationError("Node operands must be numbers.")
-            specs = codec.OPERAND_SCHEMAS.get(op, ())
-            if len(vals) > len(specs):
-                raise ValidationError(f"Opcode {op:#x} takes at most {len(specs)} operands.")
-            nodes.append((op, tuple(float(v) for v in vals)))
+        try:
+            codec.encode_chain(chain)
+        except (ValueError, TypeError, IndexError) as exc:
+            raise ValidationError(str(exc)) from exc
+        nodes = [(n[0], tuple(float(v) for v in n[1]), *n[2:]) for n in chain]
         chains.append(tuple(nodes))
     return tuple(chains)
 
@@ -353,7 +348,7 @@ def formation_request_from_mapping(value: Mapping[str, object]) -> FormationCrea
 def play_request_from_mapping(value: Mapping[str, object]) -> PlayCreateRequest:
     if value.get("kind") == PROVIDER_KIND_PLAY:
         value = {k: v for k, v in value.items() if k != "kind"}
-    fields = {"asset_id", "donor_play_index", "custom_name", "assignments", "replace_index", "play_flags", "spy_intent"}
+    fields = {"asset_id", "donor_play_index", "custom_name", "assignments", "replace_index", "play_flags", "spy_intent", "option_intent"}
     if not set(value) <= fields or not {"asset_id", "donor_play_index"} <= set(value):
         raise ValidationError("A play create has unsupported fields.")
     asset_id = value.get("asset_id")
@@ -373,6 +368,7 @@ def play_request_from_mapping(value: Mapping[str, object]) -> PlayCreateRequest:
         replace,
         play_flags,
         spy_slots_from(value.get("spy_intent")),
+        _option_intent_from(value.get("option_intent")),
     )
 
 
@@ -804,12 +800,10 @@ def compile_formation_play_creations(
                     codec.validate_defense_operands(chain)
                 except ValueError as exc:
                     raise ValidationError(str(exc)) from exc
-            nodes = []
-            for op, vals in chain:
-                specs = codec.OPERAND_SCHEMAS.get(op, ())
-                operands = list(vals) + [0.0] * (len(specs) - len(vals))
-                nodes.append(codec.Node(op, 0, operands))
-            codec.assign_node_flags(nodes)
+            try:
+                nodes = codec.encode_chain(chain, assignments[slot_index][1])
+            except ValueError as exc:
+                raise ValidationError(str(exc)) from exc
             raw_nodes = [node.to_bytes() for node in nodes]
             need = len(raw_nodes)
             if node_cursor + need > node_capacity:
@@ -836,6 +830,11 @@ def compile_formation_play_creations(
             )
             assignments[slot_index] = (desc, assignments[slot_index][1])
             struct.pack_into("<I", replacement, body_off + dst_p + 8 + slot_index * 8, desc)
+        try:
+            codec.validate_sync(assignments)
+            lib.validate_option_intent(req.option_intent, assignments, source, body)
+        except ValueError as exc:
+            raise ValidationError(str(exc)) from exc
         error = codec.validate_play(play_flags, assignments)
         if error:
             raise ValidationError(
@@ -1031,10 +1030,37 @@ def compile_formation_play_creations(
             spy_lookup.append(dict(play_index=pi, slot=slot, intent="spy", runtime_available=False,
                                    zone_donor_play_index=donor_matches[0]))
 
+    option_lookup = []
+    for req, pi in zip(norm_plays, new_play_indices):
+        if req.option_intent is None:
+            continue
+        if req.replace_index is None:
+            raise ValidationError("Option presets replace existing plays; they never append")
+        try:
+            flags, assignments = lib.play_chains(rebuilt[RESOURCE_HEADER_SIZE:], pi)
+            codec.validate_sync(assignments)
+            lib.validate_option_intent(req.option_intent, assignments, reparsed, rebuilt[RESOURCE_HEADER_SIZE:])
+            if 'receiver_slot' in req.option_intent and lib.play_class_label(flags) != 'pass':
+                raise ValueError("Experimental RPO needs a pass-capable header")
+            fi = next((f.index for f in source.formations if f.name == req.option_intent['formation_name']), None)
+            if fi is None or not any(l.play_index == pi for l in source.formations[fi].play_links):
+                raise ValueError("Option replacement must already belong to its native formation menu")
+            start = FORMATION_BASE + fi * FORMATION_SIZE
+            end = start + FORMATION_SIZE
+            if (body[start:end] != rebuilt[RESOURCE_HEADER_SIZE + start:RESOURCE_HEADER_SIZE + end]
+                    or lib.category_positions(body, lib.formation_category(body, fi)) !=
+                    lib.category_positions(rebuilt[RESOURCE_HEADER_SIZE:], lib.formation_category(rebuilt[RESOURCE_HEADER_SIZE:], fi))):
+                raise ValueError("Option presets keep their native formation and personnel")
+        except ValueError as exc:
+            raise ValidationError(str(exc)) from exc
+        option_lookup.append(dict(play_index=pi, intent=req.option_intent,
+                                  runtime_target_check=False, gameplay_witnessed=False))
+
     report: dict[str, Any] = {
         "schema": REPORT_SCHEMA,
         "defense_menus": defense_audit,
         "spy_intent": {"schema": lib.SPY_INTENT_SCHEMA, "records": spy_lookup},
+        "option_intent": {"schema": lib.OPTION_INTENT_SCHEMA, "records": option_lookup},
         "asset_id": asset_id,
         "source_sha256": _sha256(raw_resource),
         "replacement_sha256": _sha256(rebuilt),
@@ -1167,3 +1193,11 @@ def spy_slots_from(value: object) -> tuple[int, ...]:
     if len(set(slots)) != len(slots):
         raise ValidationError("Spy intent has duplicate slots")
     return tuple(sorted(slots))
+
+
+def _option_intent_from(value):
+    from .nfl2k5_play_library import option_intent_from
+    try:
+        return option_intent_from(value)
+    except ValueError as exc:
+        raise ValidationError(str(exc)) from exc

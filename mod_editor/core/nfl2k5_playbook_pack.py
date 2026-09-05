@@ -40,9 +40,9 @@ all** -- only the JSON and the codec:
 7. ``compile``      - a dry compile through the real writer; needs a book body,
                       so it only runs when one is supplied
 
-What a pack does **not** promise: the engine has no pre-snap motion, no
-give-or-throw RPO and no tempo.  Option routes and keep-or-throw RPOs pass the
-ported validator but have never been witnessed in game.
+Native conditions support alternate paths and fixed-opponent position/velocity
+experiments. Their encoding can be checked offline; option gameplay and a
+dependable modern read remain EXPERIMENTAL / UNWITNESSED.
 """
 
 from __future__ import annotations
@@ -73,6 +73,7 @@ from .nfl2k5_playbook_inspector import (
 
 SCHEMA = "nfl2k5_playbook_pack/v1"
 DEFENSE_SCHEMA = "nfl2k5_playbook_pack/v2"
+OPTION_SCHEMA = "nfl2k5_playbook_pack/v3"
 PACK_EXTENSION = ".2k5book"
 MAX_PACK_BYTES = 8 << 20             # a recipe is text; 8 MiB is far past any real book
 MAX_CUSTOM_NAME_CHARS = 40
@@ -231,7 +232,7 @@ class PackPlay:
     id: str
     custom_name: str
     play_type: str
-    assignments: tuple[tuple[tuple[int, tuple[float, ...]], ...] | None, ...]
+    assignments: tuple[tuple[codec.AuthoredNode, ...] | None, ...]
     donor: PackDonor
     play_flags: int | None = None
     replace_index: int | None = None
@@ -245,6 +246,7 @@ class PackPlay:
     component: str = ""
     spy_slots: tuple[int, ...] = ()
     preset_recipe: bool = False
+    option_intent: dict | None = None
 
     def to_json(self) -> dict[str, Any]:
         out: dict[str, Any] = {
@@ -259,10 +261,12 @@ class PackPlay:
             "link_formation": self.link_formation,
             "link_group": self.link_group,
             "assignments": [
-                None if chain is None else [[int(op), [_number(v) for v in vals]] for op, vals in chain]
+                None if chain is None else codec.chain_json(chain)
                 for chain in self.assignments
             ],
         }
+        if self.option_intent is not None:
+            out["option_intent"] = self.option_intent
         if self.play_type == "defense":
             out.update(defense_formation=self.defense_formation, front_index=self.front_index,
                        component=self.component, preset_recipe=self.preset_recipe,
@@ -276,7 +280,7 @@ class PackPlay:
             raise PlaybookPackError(f"{label} must be an object.")
         fields = {"id", "custom_name", "play_type", "concept", "donor", "play_flags",
                   "replace_index", "replace_name", "link_formation", "link_group", "assignments",
-                  "defense_formation", "front_index", "component", "spy_intent", "preset_recipe"}
+                  "defense_formation", "front_index", "component", "spy_intent", "preset_recipe", "option_intent"}
         extra = set(value) - fields
         if extra:
             raise PlaybookPackError(f"{label} has unsupported fields {sorted(extra)}.")
@@ -309,6 +313,7 @@ class PackPlay:
             _text(value.get("component", ""), "defense component", allow_empty=True),
             _spy_slots(value.get("spy_intent")),
             _boolean(value.get("preset_recipe", False), "preset_recipe"),
+            _option_intent(value.get("option_intent")),
         )
 
     @property
@@ -325,7 +330,7 @@ class PackPlay:
             "donor_play_index": self.donor.index,
             "custom_name": self.custom_name,
             "assignments": [
-                None if chain is None else [[int(op), list(vals)] for op, vals in chain]
+                None if chain is None else codec.chain_json(chain)
                 for chain in self.assignments
             ],
         }
@@ -333,6 +338,8 @@ class PackPlay:
             row["replace_index"] = self.replace_index
         if self.play_flags is not None:
             row["play_flags"] = self.play_flags
+        if self.option_intent is not None:
+            row["option_intent"] = self.option_intent
         if self.spy_slots:
             row["spy_intent"] = {"schema": lib.SPY_INTENT_SCHEMA, "slots": list(self.spy_slots)}
         return row
@@ -590,7 +597,7 @@ def _optional_position_codes(value: object, label: str) -> tuple[int, ...] | Non
     return tuple(out)
 
 
-def _assignments(value: object, label: str) -> tuple[tuple[tuple[int, tuple[float, ...]], ...] | None, ...]:
+def _assignments(value: object, label: str) -> tuple[tuple[codec.AuthoredNode, ...] | None, ...]:
     if not isinstance(value, (list, tuple)) or len(value) != SLOT_COUNT:
         raise PlaybookPackError(
             f"{label}: assignments needs exactly eleven entries (null keeps the donor's chain)."
@@ -604,23 +611,11 @@ def _assignments(value: object, label: str) -> tuple[tuple[tuple[int, tuple[floa
             raise PlaybookPackError(
                 f"{label}: slot {slot} needs 1 through {MAX_CHAIN_NODES} nodes (the descriptor's count is four bits)."
             )
-        nodes: list[tuple[int, tuple[float, ...]]] = []
-        for node in chain:
-            if not isinstance(node, (list, tuple)) or len(node) != 2:
-                raise PlaybookPackError(f"{label}: slot {slot} node must be [opcode, [operands…]].")
-            op, vals = node
-            if isinstance(op, bool) or not isinstance(op, int) or not 0 <= op < codec.OPCODE_COUNT or op == 0x19:
-                raise PlaybookPackError(f"{label}: slot {slot} opcode {op!r} is not a usable PLAY node opcode.")
-            if not isinstance(vals, (list, tuple)) or any(
-                isinstance(v, bool) or not isinstance(v, (int, float)) for v in vals
-            ):
-                raise PlaybookPackError(f"{label}: slot {slot} node operands must be numbers.")
-            specs = codec.OPERAND_SCHEMAS.get(op, ())
-            if len(vals) > len(specs):
-                raise PlaybookPackError(
-                    f"{label}: slot {slot} opcode {op:#x} takes at most {len(specs)} operands."
-                )
-            nodes.append((op, tuple(float(v) for v in vals)))
+        try:
+            codec.encode_chain(chain)
+        except (ValueError, TypeError, IndexError) as exc:
+            raise PlaybookPackError(f"{label}: slot {slot}: {exc}") from exc
+        nodes = [(n[0], tuple(float(v) for v in n[1]), *n[2:]) for n in chain]
         chains.append(tuple(nodes))
     return tuple(chains)
 
@@ -651,7 +646,7 @@ def pack_from_json(document: object) -> PlaybookPack:
     if extra:
         raise PlaybookPackError(f"The pack has unsupported top-level fields {sorted(extra)}.")
     schema = document.get("schema")
-    if schema not in (SCHEMA, DEFENSE_SCHEMA):
+    if schema not in (SCHEMA, DEFENSE_SCHEMA, OPTION_SCHEMA):
         raise PlaybookPackError(
             f"This file declares schema {schema!r}; this studio reads {SCHEMA!r}."
         )
@@ -687,8 +682,12 @@ def pack_from_json(document: object) -> PlaybookPack:
             raise PlaybookPackError(
                 f"play “{play.id}” lists itself in formation “{play.link_formation}”, which this pack does not define."
             )
-    if any(p.play_type == "defense" for p in plays) != (schema == DEFENSE_SCHEMA):
+    if schema != OPTION_SCHEMA and any(p.play_type == "defense" for p in plays) != (schema == DEFENSE_SCHEMA):
         raise PlaybookPackError("Defense needs schema v2; offense-only packs use schema v1")
+    if schema != OPTION_SCHEMA and any(p.option_intent or any(c and any(len(n) == 3 for n in c) for c in p.assignments) for p in plays):
+        raise PlaybookPackError("Explicit branch flags and option intent require schema v3")
+    if any(p.option_intent for p in plays) and (formations or any(p.replace_index is None for p in plays)):
+        raise PlaybookPackError("Option packs keep native formations and replace existing plays only")
     for p in plays:
         if p.play_type == "defense" and (not p.defense_formation or p.component not in ("front", "coverage", "full")):
             raise PlaybookPackError("Defense needs a formation and a front / coverage / full component")
@@ -801,12 +800,10 @@ def _descriptor_assignments(play: PackPlay, flags: int) -> tuple[list[tuple[int,
         chain = play.assignments[slot]
         if chain is None:
             return [], f"slot {slot} keeps the donor's chain, so the validator needs the book body"
-        nodes = []
-        for op, vals in chain:
-            specs = codec.OPERAND_SCHEMAS.get(op, ())
-            operands = list(vals) + [0.0] * (len(specs) - len(vals))
-            nodes.append(codec.Node(op, 0, operands))
-        codec.assign_node_flags(nodes)
+        try:
+            nodes = codec.encode_chain(chain)
+        except ValueError as exc:
+            return [], f"slot {slot}: {exc}"
         assignments.append((0, [node.to_bytes() for node in nodes]))
     for slot in range(SLOT_COUNT):
         try:
@@ -858,7 +855,7 @@ def check_pack(
     if resource is not None and body is None:
         body = resource[RESOURCE_HEADER_SIZE:]
 
-    if resource is None and body is not None and any(p.play_type == "defense" for p in pack.plays):
+    if resource is None and body is not None and any(p.play_type == "defense" or p.option_intent for p in pack.plays):
         import struct
         resource = struct.pack("<4s7I", b"PLAY", BODY_SIZE, BODY_SIZE, 0, 0, 0, 0, 0) + body
     stages: list[CheckStage] = []
@@ -872,6 +869,8 @@ def check_pack(
     if book is not None and body is not None:
         digest = book_fingerprint(body)
         if digest != pack.base.book_fingerprint:
+            if any(p.option_intent for p in pack.plays):
+                schema_errors.append("Option source fingerprint changed; regenerate and review the intended test fixture")
             notes.append(
                 "the supplied book is not the one this pack was authored on "
                 f"(fingerprint {digest[:12]}… vs {pack.base.book_fingerprint[:12]}…) — "
@@ -967,7 +966,12 @@ def check_pack(
             if why is not None:
                 errors.append(f"play “{p.id}”: {why}")
                 continue
-        reason = codec.validate_play(flags, assignments)
+        try:
+            codec.validate_sync(assignments)
+            lib.validate_option_intent(p.option_intent, assignments, book, body)
+            reason = codec.validate_play(flags, assignments)
+        except ValueError as exc:
+            reason = str(exc)
         if reason:
             errors.append(f"the game would reject “{p.custom_name}” ({p.id}): {reason}")
         else:
@@ -994,6 +998,11 @@ def check_pack(
             notes.append(f"play “{p.id}” is family {family} (not offence); the QB rule does not apply")
             continue
         qb_chain = p.assignments[0]
+        if p.option_intent and p.option_intent['preset'] == lib.OPTION_PRESETS[2]:
+            if lib.play_class_label(flags) != 'pass':
+                errors.append(f"play {p.id}: experimental RPO needs a pass-capable header")
+            notes.append(f"play {p.id}: mixed give/pass classification is UNWITNESSED")
+            continue
         if qb_chain is None:
             notes.append(f"play “{p.id}” keeps the donor's QB chain")
             continue
@@ -1149,11 +1158,10 @@ def _book_assignments(play: PackPlay, flags: int, body: bytes) -> tuple[list[tup
     for slot, chain in enumerate(play.assignments):
         if chain is None:
             continue
-        nodes = []
-        for op, vals in chain:
-            specs = codec.OPERAND_SCHEMAS.get(op, ())
-            nodes.append(codec.Node(op, 0, list(vals) + [0.0] * (len(specs) - len(vals))))
-        codec.assign_node_flags(nodes)
+        try:
+            nodes = codec.encode_chain(chain, donor_chains[slot][1])
+        except ValueError as exc:
+            return [], f"slot {slot}: {exc}"
         assignments[slot] = (assignments[slot][0], [n.to_bytes() for n in nodes])
     for slot, chain in enumerate(play.assignments):
         if chain is None:
@@ -1209,6 +1217,13 @@ def pack_requests(
             play.replace_index if play.replace_index is not None
             else base_plays + appended_plays.index(play)
         )
+        if play.option_intent and book is not None:
+            links = [l for l in book.formations[formation_index].play_links if l.play_index == play_index]
+            if not links:
+                raise PlaybookPackError("Option replacement must already belong to its native formation menu")
+            if play.link_group is not None and any(l.group != play.link_group for l in links):
+                raise PlaybookPackError("Option presets preserve existing audible groups")
+            continue
         row: dict[str, Any] = {
             "asset_id": asset_id, "formation_index": formation_index, "play_index": play_index,
         }
@@ -1235,6 +1250,11 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
         for p in pack.plays:
             if p.play_type == "defense":
                 validate_defense_pack_play(p, book, body)
+    if any(p.option_intent for p in pack.plays):
+        if book_fingerprint(body) != pack.base.book_fingerprint:
+            raise PlaybookPackError("Option source fingerprint changed; regenerate against the intended test fixture")
+        if pack.formations or any(p.replace_index is None for p in pack.plays):
+            raise PlaybookPackError("Option packs keep native formations and replace existing plays only")
     formation_rows, play_rows, link_rows = pack_requests(pack, asset_id, book)
     return compile_formation_play_creations(resource, formation_rows, play_rows, link_rows)
 
@@ -1265,7 +1285,8 @@ SLOT_OPERANDS: Mapping[int, tuple[int, Callable[[Sequence[float]], bool] | None]
     0x13: (0, None),                                          # Handoff To
     0x14: (0, None),                                          # Fake Handoff To
     0x15: (5, lambda vals: int(vals[0]) == 2),                # Move: follow slot (mode 2)
-    0x1A: (3, lambda vals: int(vals[0]) in (2, 3, 5, 6)),     # Conditional: the slot it reads
+    0x18: (5, lambda vals: int(vals[0]) == 2),
+    0x1A: (3, lambda vals: int(vals[5]) == 0),     # Conditional: the slot it reads
 }
 
 
@@ -1289,7 +1310,8 @@ def permute_assignments(
             out.append(None)
             continue
         nodes = []
-        for op, vals in chain:
+        for node in chain:
+            op, vals = node[:2]
             fresh = list(vals)
             rule = SLOT_OPERANDS.get(op)
             if rule is not None:
@@ -1298,7 +1320,7 @@ def permute_assignments(
                     value = int(fresh[index])
                     if 0 <= value < SLOT_COUNT:
                         fresh[index] = float(inverse[value])
-            nodes.append((op, tuple(fresh)))
+            nodes.append((op, tuple(fresh), *node[2:]))
         out.append(tuple(nodes))
     return tuple(out)
 
@@ -1330,6 +1352,8 @@ def retarget_pack(
     donor supplies the header family the validator checks, so it cannot be a bare
     index), and the header flags are re-stamped from it."""
 
+    if any(p.option_intent for p in pack.plays):
+        return retarget_option_pack(pack, team, book, body)
     if any(p.play_type == "defense" for p in pack.plays):
         return retarget_defense_pack(pack, team, book, body)
     formation_names = [f.name for f in book.formations]
@@ -1557,6 +1581,9 @@ def pack_from_staged_rows(
         play_type, scheme = _SIGNATURE_PLAY_TYPE.get(
             lib.qb_signature(qb_chain) if qb_chain is not None else signature, ("pass", "")
         )
+        if request.option_intent:
+            scheme = request.option_intent['preset']
+            play_type = 'pass' if scheme == lib.OPTION_PRESETS[2] else 'run'
         play_index = (request.replace_index if request.replace_index is not None
                       else len(book.plays) + appended)
         if request.replace_index is None:
@@ -1566,6 +1593,10 @@ def pack_from_staged_rows(
         if play_index in staged_links:
             formation_index, link_group = staged_links[play_index]
             link_formation = formation_ids_by_index.get(formation_index, formation_index)
+        if request.option_intent:
+            # These replacements already inhabit their native menus. Keeping
+            # this empty also avoids staging duplicate links through the facade.
+            link_formation = link_group = None
         defense = (donor_flags >> 6) & 7 == 1
         defense_fi = next((f.index for f in book.formations if any(l.play_index == request.donor_play_index for l in f.play_links)), None)
         if isinstance(link_formation, int):
@@ -1580,7 +1611,7 @@ def pack_from_staged_rows(
             _name(custom, f"play “{custom}”"),
             play_type,
             tuple(
-                None if chain is None else tuple((int(op), tuple(float(v) for v in vals)) for op, vals in chain)
+                None if chain is None else tuple((n[0], tuple(float(v) for v in n[1]), *n[2:]) for n in chain)
                 for chain in assignments
             ),
             PackDonor(request.donor_play_index, book.plays[request.donor_play_index].name,
@@ -1596,6 +1627,7 @@ def pack_from_staged_rows(
             lib.defense_component([chain if chain is not None else lib.decoded_chains(body, request.donor_play_index)[s]
                                    for s, chain in enumerate(assignments)]) if defense else "",
             request.spy_slots,
+            option_intent=request.option_intent,
         ))
 
     return PlaybookPack(
@@ -1605,7 +1637,7 @@ def pack_from_staged_rows(
                  xiso_sha256),
         tuple(formations),
         tuple(plays),
-        DEFENSE_SCHEMA if any(p.play_type == "defense" for p in plays) else SCHEMA,
+        OPTION_SCHEMA if any(p.option_intent or any(c and any(len(n) == 3 for n in c) for c in p.assignments) for p in plays) else DEFENSE_SCHEMA if any(p.play_type == "defense" for p in plays) else SCHEMA,
     )
 
 
@@ -2028,3 +2060,77 @@ def retarget_defense_pack(pack: PlaybookPack, team: str, book: Nfl2k5Playbook, b
     if team == pack.book.team and book_fingerprint(body) == pack.base.book_fingerprint:
         return pack, ()
     raise PlaybookPackError("Custom defense source changed. Re-author against the target's native formation; automatic slot guesses are refused")
+
+
+def _option_intent(value):
+    try:
+        return lib.option_intent_from(value)
+    except ValueError as exc:
+        raise PlaybookPackError(str(exc)) from exc
+
+
+def option_pack(book: Nfl2k5Playbook, body: bytes, team: str = 'MIN') -> PlaybookPack:
+    """Eight calls in a native I menu; only changed chains use pool space.
+
+    Four native strong options share the same grammar, one is weak. Their
+    source names identify retail donors awaiting play tests, not copied resources.
+    """
+    dfi = next((f.index for f in book.formations if f.name == '4-3'), None)
+    if dfi is None:
+        raise PlaybookPackError('SOFTDRINK option needs the native 4-3 test formation')
+    templates = [(f'SD {t}{i} Speed EXPERIMENTAL', lib.OPTION_PRESETS[0], (t, i) == ('NO', 66), 10)
+                 for t, i in lib.STOCK_SPEED_OPTIONS]
+    templates += [('SD Speed Weak EXPERIMENTAL', lib.OPTION_PRESETS[0], True, 9),
+                  ('SD Zone Read EXPERIMENTAL', lib.OPTION_PRESETS[1], False, 10),
+                  ('SD RPO EXPERIMENTAL', lib.OPTION_PRESETS[2], False, 10)]
+    # Gun packs can replace I Jokers. Select another unchanged I alignment,
+    # excluding calls now shared with a gun menu so its scripts survive.
+    gun_calls = {l.play_index for f in book.formations
+                 if lib.formation_record(body, f.index).qb_alignment == 2 for l in f.play_links}
+    candidates = sorted((f for f in book.formations if 'I ' in f.name),
+                        key=lambda f: (f.name != 'I Jokers', f.index))
+    fi = None
+    for f in candidates:
+        try:
+            lib.make_option_design(book, body, f.index)
+        except ValueError:
+            continue
+        targets = list(dict.fromkeys(l.play_index for l in f.play_links
+                   if l.play_index not in gun_calls and book.plays[l.play_index].family_id == 0
+                   and not any(n[0] == 26 for n in lib.play_chains(body, l.play_index)[1][0][1])))
+        if len(targets) >= len(templates):
+            fi = f.index
+            break
+    if fi is None:
+        raise PlaybookPackError('SOFTDRINK option needs a native under-center I formation with eight replacement calls outside gun menus')
+    plays = []
+    for ordinal, ((name, preset, weak, back), target) in enumerate(zip(templates, targets)):
+        d = lib.make_option_design(book, body, fi, preset, weak=weak, back_slot=back,
+                                   opponent_formation_index=dfi, read_slot=2 if preset == lib.OPTION_PRESETS[1] else 6,
+                                   receiver_slot=7)
+        donor_flags, donor_chains = lib.play_chains(body, d.donor_play_index)
+        chains = tuple(None if [n.to_bytes() for n in codec.encode_chain(c)] == donor_chains[s][1]
+                       else tuple((n[0], tuple(n[1]), *n[2:]) for n in c)
+                       for s, c in enumerate(d.chains))
+        plays.append(PackPlay(f'option-{ordinal + 1}', name,
+            'pass' if preset == lib.OPTION_PRESETS[2] else 'run', chains,
+            PackDonor(d.donor_play_index, book.plays[d.donor_play_index].name, donor_flags,
+                      lib.qb_signature(donor_chains[0][1])), d.play_flags, target, book.plays[target].name,
+            preset, option_intent=d.intent))
+    return PlaybookPack(PackBook(team, 'SOFTDRINK option', 'SOFTDRINK', '1.0.0', 'CC0-1.0', (),
+        lib.OPTION_NOTICE + ' Five native speed-option recipes plus speed, zone-read and RPO presets. '
+        f'Replaces eight {book.formations[fi].name} calls, never appends. The 4-3 fixture is an authoring check only; '
+        'use matching defensive personnel in play tests. False/missing target does not guarantee a safe give.'),
+        PackBase(book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
+        (), tuple(plays), OPTION_SCHEMA)
+
+
+def retarget_option_pack(pack: PlaybookPack, team: str, book: Nfl2k5Playbook, body: bytes):
+    """Never discard authored edits or guess a different opponent namespace.
+
+    The seed targets MIN only. For a different or previously edited book, call
+    option_pack on that book, then review its replacements and test fixture.
+    """
+    if team == pack.book.team and book_fingerprint(body) == pack.base.book_fingerprint:
+        return pack, ()
+    raise PlaybookPackError('Option source or team changed. Regenerate the pack against that book and review its native formation, replacements and opponent test fixture')

@@ -1,37 +1,39 @@
-"""Offscreen smoke tests for the Formation / Play Designer dialogs (private cache required)."""
+"""Standalone offscreen smoke tests using the read-only retail extraction."""
 import os
 import pathlib
 import struct
+import sys
 import unittest
 
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+for entry in (pathlib.Path(__file__).resolve().parents[2], pathlib.Path(__file__).resolve().parents[2] / 'tools'):
+    if str(entry) not in sys.path:
+        sys.path.insert(0, str(entry))
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
-INDEX = pathlib.Path("/home/noah/.cache/2k5-mod-studio/7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/extracted/ESPN NFL 2K5 (USA)/vc_53450030/0")
-INVENTORY = pathlib.Path("/home/noah/.cache/2k5-mod-studio/7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9/indexes/nfl2k5_resource_chunks_v2.json")
+EXTRACT = pathlib.Path('/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)')
 ATL = "nfl2k5.resource.o0308.c0000.k504c4159"
 
 
 def _has_cache() -> bool:
-    return INDEX.exists() and INVENTORY.exists()
+    return (EXTRACT / 'vc_53450030/0').is_file()
 
 
 def _load_atl():
-    import sys
-    from mod_editor.core.nfl2k5_universal_asset_index import Nfl2k5UniversalAssetIndex
     from mod_editor.core import nfl2k5_playbook_inspector as insp
-    sys.path.insert(0, "tools")
-    from nfl_outer import read_entry_range
-    index = Nfl2k5UniversalAssetIndex(INVENTORY, INDEX, INVENTORY.parent / "universal-assets-v1.sqlite3")
-    record = index.get(ATL)
-    raw = read_entry_range(index.archive, index.archive.entries[record.outer_index], record.chunk_offset, record.raw_size)
+    from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
+    with OuterImage(EXTRACT) as archive:
+        raw = archive.read_entry(BOOK_ENTRIES['ATL'])
     return insp.parse_playbook_resource(raw, asset_id=ATL), raw[0x20:]
 
 
-@unittest.skipUnless(_has_cache(), "private 2K5 cache missing")
+@unittest.skipUnless(_has_cache(), "retail extracted vc_53450030/0 missing")
 class DesignerDialogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        from PyQt5.QtWidgets import QApplication
+        try:
+            from PyQt5.QtWidgets import QApplication
+        except ImportError:
+            raise unittest.SkipTest('PyQt5 missing; offscreen Qt required')
         cls.app = QApplication.instance() or QApplication([])
         cls.book, cls.body = _load_atl()
 

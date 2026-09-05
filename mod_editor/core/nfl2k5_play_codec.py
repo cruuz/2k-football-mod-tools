@@ -191,7 +191,11 @@ OPERAND_SCHEMAS: dict[int, tuple[OperandSpec, ...]] = {
     0x17: (_int("a", 4, "A"), T, _int("lane", 4, "Aim lane")),
     0x18: (_int("mode", 2, "Mode"), X, Y, _int("a", 2, "A"), _int("b", 4, "B"), _int("c", 4, "C"), _int("d", 4, "D")),
     0x19: (_int("a", 3, "A"), X, Y, _int("b", 4, "B"), _int("c", 3, "C"), _int("d", 1, "D"), _int("e", 4, "E")),
-    0x1A: (_int("kind", 3, "Kind"), X, Y, _int("slot", 4, "Slot"), _int("k", 3, "K"), _int("f", 1, "F"), _int("node", 4, "Node"), _int("h", 1, "H")),
+    0x1A: (_int("kind", 3, "Condition kind", {0: "Assignment test", 1: "Play header test", 4: "Position / velocity", 5: "Target geometry", 6: "Follow decision", 7: "Personnel test"}), X, Y,
+           _int("slot", 4, "Selected actor slot"), _int("alternate", 3, "Alternate node index"),
+           _int("opponent", 1, "Selected team", {0: "Friendly", 1: "Opponent"}),
+           _int("argument", 4, "Condition argument (kind 6: source node)"),
+           _int("human", 1, "Human input enabled", {0: "No", 1: "Yes"})),
     0x1B: (_int("a", 2, "A"), _int("b", 2, "B"), X, Y, LANE, _int("f", 1, "F")),
     0x1C: (_int("a", 2, "A"), LANE, _int("b", 2, "B"), _int("z", 0, "0"), _int("c", 4, "C"), _int("z2", 0, "0")),
 }
@@ -421,7 +425,116 @@ class Node:
                 parts.append(f"{spec.key}={spec.choices[int(val)]}")
             else:
                 parts.append(f"{spec.key}={int(val)}")
-        return f"{self.name} [{', '.join(parts)}]"
+        path = " alternate" if self.flags & 1 else " normal"
+        terminal = " terminal" if self.flags & NODE_FLAG_TERM else ""
+        return f"{self.name} [{', '.join(parts)}] flags=0x{self.flags:02x}{path}{terminal}"
+
+
+AuthoredNode = tuple[int, Sequence[float]] | tuple[int, Sequence[float], int]
+
+
+def authored_chain(nodes: Sequence[Node]) -> list[AuthoredNode]:
+    """Portable nodes. Conditional graphs carry every flag byte explicitly."""
+    explicit = any(n.op == 0x1A or n.flags & 1 for n in nodes)
+    return [(n.op, list(n.operands), n.flags) if explicit else (n.op, list(n.operands)) for n in nodes]
+
+
+def chain_json(chain: Sequence) -> list:
+    return [[n[0], [int(v) if int(v) == v else v for v in n[1]], *n[2:]] for n in chain]
+
+
+def encode_chain(chain: Sequence, donor: Sequence[bytes] = ()) -> list[Node]:
+    """Accept legacy pairs or explicit [opcode, operands, flag byte] nodes.
+
+    Legacy conditional pairs are reconstructed as one forward fork. Explicit
+    flags are never normalized; graph validation rejects flattened branches.
+    """
+    import math
+    if not isinstance(chain, (list, tuple)) or not 1 <= len(chain) <= 15:
+        raise ValueError("An authored chain needs 1 through 15 nodes")
+    if any(not isinstance(n, (list, tuple)) or len(n) not in (2, 3) for n in chain):
+        raise ValueError("A node needs opcode, operands and an optional flag byte")
+    nodes = []
+    explicit = [len(n) == 3 for n in chain]
+    if any(explicit) and not all(explicit):
+        raise ValueError("A chain must supply every flag byte or none of them")
+    for row in chain:
+        if len(row) not in (2, 3):
+            raise ValueError("A node needs opcode, operands and an optional flag byte")
+        op, vals = row[:2]
+        if type(op) is not int or not 0 <= op < OPCODE_COUNT or op == 0x19:
+            raise ValueError("Not a usable PLAY opcode")
+        specs = OPERAND_SCHEMAS[op]
+        if not isinstance(vals, (list, tuple)) or len(vals) > len(specs) or any(type(v) is bool or not isinstance(v, (int, float)) or not math.isfinite(v) for v in vals):
+            raise ValueError("Node operands must be finite numbers within the opcode schema")
+        if op == 0x1A and len(vals) != 8:
+            raise ValueError("A condition needs all eight operands")
+        flags = row[2] if len(row) == 3 else 0
+        if type(flags) is not int or not 0 <= flags <= 255:
+            raise ValueError("Node flags must be a byte")
+        nodes.append(Node(op, flags, list(vals) + [0.] * (len(specs) - len(vals))))
+    if not any(explicit):
+        if (any(n.op == 0x1A for n in nodes) and len(donor) == len(nodes)
+                and all(n.op == d[0] for n, d in zip(nodes, donor))
+                and all(n.operands[4] == Node.from_bytes(d).operands[4]
+                        for n, d in zip(nodes, donor) if n.op == 0x1A)):
+            for n, d in zip(nodes, donor):
+                n.flags = d[1]
+        else:
+            assign_node_flags(nodes)
+    validate_fork(nodes)
+    return nodes
+
+
+def validate_fork(nodes: Sequence[Node]) -> None:
+    """Authoring guard beyond retail's permissive validator (memo sections 4-6)."""
+    conditions = [i for i, n in enumerate(nodes) if n.op == 0x1A]
+    if not conditions:
+        return
+    if len(conditions) != 1:
+        raise ValueError("Supported option chains need one condition")
+    i = conditions[0]
+    v = nodes[i].operands
+    if len(v) != 8 or any(v[k] != int(v[k]) for k in (0, 3, 4, 5, 6, 7)):
+        raise ValueError("A condition needs eight operands with whole-number selectors")
+    alt = int(v[4])
+    if not (i < alt < len(nodes) and i <= 7 and 1 <= alt <= 7):
+        raise ValueError("Condition and cache indices must fit 0-7; alternate must point forward to node 1-7")
+    if not (0 <= v[0] <= 7 and 0 <= v[3] <= 10 and v[5] in (0, 1) and 0 <= v[6] <= 15 and v[7] in (0, 1)):
+        raise ValueError("Condition kind, actor slot, team, argument or human input is out of range")
+    if int(v[0]) == 6 and not 0 <= v[6] <= 7:
+        raise ValueError("A synchronized decision source must be node 0-7")
+    if not (-128 * FT_CM <= v[1] <= 127 * FT_CM and -64 * FT_CM <= v[2] <= 191 * FT_CM):
+        raise ValueError("Condition coordinates exceed their stored range")
+    for j, n in enumerate(nodes):
+        if bool(n.flags & 1) != (j >= alt):
+            raise ValueError("Conditional alternate-path flags disagree with the alternate index")
+        if bool(n.flags & NODE_FLAG_TERM) != (j in (alt - 1, len(nodes) - 1)):
+            raise ValueError("Both conditional paths must end at their own terminal node")
+
+
+def validate_sync(assignments: Sequence[tuple[int, Sequence[bytes]]]) -> None:
+    dependencies = {}
+    for slot, (_desc, raw) in enumerate(assignments):
+        nodes = [Node.from_bytes(n) for n in raw]
+        validate_fork(nodes)
+        for node_index, n in enumerate(nodes):
+            if n.op == 0x1A and int(n.operands[0]) == 6:
+                v = n.operands
+                if v[5]:
+                    raise ValueError("Decision synchronization requires a friendly actor")
+                source = assignments[int(v[3])][1]
+                index = int(v[6])
+                if index >= len(source) or source[index][0] != 0x1A:
+                    raise ValueError("Decision synchronization must reference the partner's condition node")
+                dependencies[(slot, node_index)] = (int(v[3]), index)
+    for source in dependencies:
+        seen = set()
+        while source in dependencies:
+            if source in seen:
+                raise ValueError("Decision synchronization cannot wait on itself or form a cycle")
+            seen.add(source)
+            source = dependencies[source]
 
 
 def entry_flags(op: int) -> int:
@@ -449,6 +562,29 @@ def assign_node_flags(nodes: Sequence[Node], ball_carrier: bool | None = None) -
     """
     n = len(nodes)
     if n == 0:
+        return
+    conditions = [i for i, nd in enumerate(nodes) if nd.op == 0x1A]
+    if conditions:
+        if any(nd.flags for nd in nodes):
+            validate_fork(nodes)
+            return
+        if len(conditions) != 1:
+            raise ValueError("Supported option chains need one condition")
+        fork = conditions[0]
+        alt = int(nodes[fork].operands[4])
+        if not fork < alt < n or alt > 7 or fork > 7:
+            raise ValueError("Alternate node must point forward within indices 1-7")
+        for k, nd in enumerate(nodes):
+            nd.flags = int(k >= alt)
+        nodes[alt - 1].flags |= NODE_FLAG_TERM
+        nodes[-1].flags |= NODE_FLAG_TERM
+        action = next((k for k in range(1, n) if nodes[k].op != 0x03), n - 1)
+        nodes[action].flags |= NODE_FLAG_ACTION
+        for path in (list(range(alt)), list(range(fork + 1)) + list(range(alt, n))):
+            last = max((p for p, k in enumerate(path) if nodes[k].op in CARRIER_OPS), default=-1)
+            for k in path[:last + 1]:
+                nodes[k].flags |= NODE_FLAG_CARRIER
+        validate_fork(nodes)
         return
     if ball_carrier is None:
         ball_carrier = chain_is_carrier(nodes)
@@ -943,6 +1079,7 @@ class ArtSegment:
     points: list[tuple[float, float]]
     style: str = "solid"      # solid / dashed / arrow / block / zone / man
     end_marker: str = ""
+    label: str = ""
 
 
 def _rot(dx: float, dy: float, deg: float) -> tuple[float, float]:
@@ -960,7 +1097,13 @@ def play_art(nodes: Sequence[Node], start_xy: tuple[float, float], side: int = 1
     for nd in nodes:
         v = nd.operands
         op = nd.op
-        if op == 0x11:
+        if op == 0x1A:
+            team = "Opponent" if v[5] else "Friendly"
+            label = f"{team} slot {int(v[3])}: alternate node {int(v[4])}"
+            segs.append(ArtSegment([(x, y), (x + v[1] * side, y + v[2])],
+                                   style="dashed", end_marker="branch", label=label))
+            # A branch marker shows the fork, not a claimed runtime trajectory.
+        elif op == 0x11:
             leg, _t, rel, end, turn, dx, dy, _g = v
             if leg == 9:
                 dx = NAMED_SPOT_X_FT[int(dx) % 12] * FT_CM

@@ -1331,3 +1331,93 @@ Input constraints: stable pool/index, version-0 save for reserve moves, valid
 ownership/IR and storage, 53 promotion limit, 12 reserves, 65 physical slots,
 masked lock/star/ability fields, and signed output copies. Do not widen the
 older `nfl2k5.players.disc_roster` entry's narrow legacy writer claims.
+
+---
+
+# Beta 61b option authoring handoff (2026-09-05)
+
+Data-only **EXPERIMENTAL / UNWITNESSED** option authoring. This section supplements,
+and does not replace, the defense handoff above. No protected file was edited.
+The continuation delivers the core writer/codec/inspector, Create a Play and
+Designer changes, standalone tests, and `data/playbooks/softdrink_option.2k5book`.
+See `ASTRA_READ_OPTION_BUILD_REPORT.md` for exact replacements and limitations.
+
+- **Dispatcher `_apply_all` tuple, kwarg, four status dictionaries:** none. There
+  is no XBE patch or status/apply pair in this data tier. Add no tuple, keyword,
+  or status key to `read_xbe`, `read_image`, `write_xbe_copy`, or `write_image_copy`.
+- **BuildPlan field and presets:** reuse `playbook_packs: tuple[str, ...] = ()`.
+  Basic and Advanced leave this pack off. Experimental may offer explicit
+  selection, also off by default. The shipped file targets **MIN only**, pinned
+  to its retail PLAY body. Do not silently retarget it or enable it for all teams.
+- **Build tab `_option` caption:** `SOFTDRINK option (experimental)` (30 characters).
+  Route selection to the existing `playbook_packs` list and deduplicate the path;
+  do not introduce an XBE Boolean. Existing Add Playbook Pack can use the file
+  now. Helper text: `Eight replacement calls in MIN I Jokers. Experimental and
+  unwitnessed. The read is position/velocity based; a dependable modern read
+  needs the later runtime tier. Use the selected defensive test formation.`
+- **Gameplay Patches PATCHES / NEEDS_IMAGE:** no runtime patch entry is needed.
+  If a pack shortcut is added there, key it `option_playbook` and use:
+  `Retail: stock offensive calls. Patch: eight experimental replacement option
+  calls, including fixed-defender zone-read and RPO tests. Unwitnessed in play;
+  dependable modern reads need the later runtime tier.` Put `option_playbook`
+  in `NEEDS_IMAGE` and route it to the same pack list, not to throw tuning.
+- **Allowlist:** add exactly `data/playbooks/softdrink_option.2k5book` to
+  `packaging/release-allowlist.txt`. The seven changed product modules already
+  have entries. Keep those entries; no new dependency is required.
+- **Runtime closure:** retain imports of
+  `mod_editor.core.nfl2k5_formation_play_writer`,
+  `mod_editor.core.nfl2k5_play_codec`, `mod_editor.core.nfl2k5_play_library`,
+  `mod_editor.core.nfl2k5_playbook_inspector`, `mod_editor.core.nfl2k5_playbook_pack`,
+  `mod_editor.gui.create_play_wizard_qt`, `mod_editor.gui.play_designer_qt`, and
+  `mod_editor.gui.playbook_pack_dialog_qt`, plus the existing CLI/archive readers.
+  In `packaging/check_2k5_mod_studio_runtime.py`, load the bundled seed and assert
+  `schema == OPTION_SCHEMA` (`nfl2k5_playbook_pack/v3`), eight replacements, no new
+  formations, and `check_pack(pack).ok`. Offline checks legitimately defer
+  retained donor chains until a source book is supplied.
+- **Capability registry:** extend `nfl2k5.scripts.director_playbook` in
+  `mod_editor/capabilities/registry.v1.json`. List v3 explicit branch flags and
+  `nfl2k5_option_intent/v1`, the three experimental presets, native under-center
+  I personnel, replacement-only packs, and pinned opponent fixtures. Keep
+  classification `offline-writer-proved`, runtime status `not-tested`; add
+  `tests/mod_editor/test_nfl2k5_read_option.py`,
+  `tests/mod_editor/test_nfl2k5_read_option_qt.py` and
+  `ASTRA_READ_OPTION_BUILD_REPORT.md` as evidence. Do not register a runtime
+  read, dynamic edge selector, modern mesh policy, or RPO readiness fallback.
+
+**Share and inspection surfaces outside this job's owned GUI files:**
+
+1. `playbook_pack_dialog_qt.py::target_choices` should offer only `pack.book.team`
+   for any pack with `p.option_intent`. The core already refuses cross-book and
+   changed-source guesses. For multi-pack installation, preflight every target
+   before staging, as the defense dialog does. Give the source-mismatch error a
+   visible explanation; never discard authored changes to regenerate silently.
+2. `playbooks_panel_qt.py::_assignment_selected` should use
+   `book.assignment_chain(selected_play.assignments[target_slot])` rather than
+   `book.chain(start_index)`. The latter can include orphaned old nodes after
+   reauthoring. Add a decoded-details column or tooltip using `node.description`;
+   use `node.condition` to expose kind, actor slot, alternate index, selected
+   team, argument/source-cache index, human-input enable, terminal and alternate
+   flags. Preserve the raw hex columns. These core properties are implemented
+   and tested; the Play Designer already displays the decoded descriptions and
+   a diamond labelled `Branch` with the selected actor and alternate index.
+3. The existing create-only `.2k5mod` loader issue applies unchanged: add
+   `and not loaded_creates` and `and not loaded_links` to the empty-project check
+   in `project_archive.py::load_project_archive`, as detailed above. Option
+   intent and all explicit flag bytes already survive actual saved manifests,
+   request parsing, `.2k5book` export/import, and recompilation. The existing
+   defense expected-failure test remains the live integration gate.
+
+**Composition ordering:** The seed is bound to the unmodified MIN book. Compile
+it before position-pool recoding or any other mutation of that body, and preserve
+its I Jokers formation and eight target records in all later passes. Merely
+moving it earlier does not resolve overlapping gun replacements. The current
+Modern Gun Core replaces MIN I Jokers and leaves fewer than eight independent
+compatible calls. The generator correctly refuses that combination. Do not
+advertise the two stock MIN seeds as composable. A later integration must reserve
+the option formation/targets while resolving gun replacements, then review both
+resulting menus. For a changed source or different team, explicitly generate
+`option_pack(book, body, team)` against the actual intermediate book and review
+its replacements and 4-3 fixture before selecting it. CHI and ARZ have passing
+Gun Core -> modern defense -> regenerated option proofs (3462 and 3378 nodes).
+Basic/Advanced and unrelated builds must remain unchanged. No cave manifest,
+allocator, XBE status, or memory-write/cave-reference test registration applies.

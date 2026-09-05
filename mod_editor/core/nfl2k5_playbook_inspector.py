@@ -74,6 +74,23 @@ class PlaybookNode:
     raw_hex: str
 
     @property
+    def condition(self) -> dict | None:
+        """Decoded branch details, including the two distinct node indices."""
+        if self.opcode != 0x1A:
+            return None
+        from .nfl2k5_play_codec import Node
+        v = Node.from_bytes(bytes.fromhex(self.raw_hex)).operands
+        return dict(kind=int(v[0]), x_cm=v[1], y_cm=v[2], actor_slot=int(v[3]),
+                    alternate_index=int(v[4]), team="opponent" if v[5] else "friendly",
+                    argument=int(v[6]), human_input=bool(v[7]), flags=self.flags,
+                    alternate_path=bool(self.flags & 1), terminal=self.ends_chain)
+
+    @property
+    def description(self) -> str:
+        from .nfl2k5_play_codec import Node
+        return Node.from_bytes(bytes.fromhex(self.raw_hex)).describe()
+
+    @property
     def ends_chain(self) -> bool:
         """Corpus-proved candidate terminal marker (flags bit 1)."""
 
