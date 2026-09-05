@@ -89,6 +89,11 @@ A build also proves it did not have to touch the header copies: a same-size
 replacement leaves the container's header block identical, and the build
 compares it before and after rather than trusting that.
 
+The reader was checked against the disc rather than against the table above:
+every copy either cache declares of any of the seven audio containers was
+compared with the bytes it copies — **5,805 copies, 0 differing** [M], which is
+also an independent confirmation of the member offsets this lane computes.
+
 ## 4. The independent verifier
 
 `verify` imports neither the writer nor the ISO writer's report beyond the

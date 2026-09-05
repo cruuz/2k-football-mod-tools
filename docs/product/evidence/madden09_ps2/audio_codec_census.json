@@ -536,6 +536,182 @@
       "streams": 4483
     }
   ],
+  "preload_caches": {
+    "audio_containers": [
+      {
+        "cache": "/DATA/FE.QKL",
+        "carried_members": [],
+        "carried_members_elided": false,
+        "container": "BGM.DAT",
+        "header_copies": 1,
+        "member_copies": 0,
+        "member_index_range": null
+      },
+      {
+        "cache": "/DATA/FE.QKL",
+        "carried_members": [
+          0,
+          8,
+          9,
+          23
+        ],
+        "carried_members_elided": false,
+        "container": "SOUNDDAT.DAT",
+        "header_copies": 1,
+        "member_copies": 4,
+        "member_index_range": [
+          0,
+          23
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": [
+          1,
+          2,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          22,
+          24,
+          25,
+          26,
+          28,
+          30,
+          35,
+          36,
+          218,
+          219,
+          224,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435
+        ],
+        "carried_members_elided": false,
+        "container": "SOUNDDAT.DAT",
+        "header_copies": 1,
+        "member_copies": 41,
+        "member_index_range": [
+          1,
+          435
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": [
+          0,
+          2,
+          3,
+          4,
+          5,
+          6,
+          8,
+          9
+        ],
+        "carried_members_elided": false,
+        "container": "SPCHDATA.DAT",
+        "header_copies": 1,
+        "member_copies": 8,
+        "member_index_range": [
+          0,
+          9
+        ]
+      },
+      {
+        "cache": "/DATA/FE.QKL",
+        "carried_members": [
+          0,
+          1
+        ],
+        "carried_members_elided": false,
+        "container": "SPCHFEDT.DAT",
+        "header_copies": 1,
+        "member_copies": 2,
+        "member_index_range": [
+          0,
+          1
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": [
+          0
+        ],
+        "carried_members_elided": false,
+        "container": "SPCHMAD1.DAT",
+        "header_copies": 1,
+        "member_copies": 1,
+        "member_index_range": [
+          0,
+          0
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": [
+          0
+        ],
+        "carried_members_elided": false,
+        "container": "SPCHMAD2.DAT",
+        "header_copies": 1,
+        "member_copies": 1,
+        "member_index_range": [
+          0,
+          0
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": null,
+        "carried_members_elided": true,
+        "container": "SPCHHDRS.DAT",
+        "header_copies": 1,
+        "member_copies": 5740,
+        "member_index_range": [
+          0,
+          5739
+        ]
+      }
+    ],
+    "caches": [
+      {
+        "copies": 186,
+        "files": 28,
+        "path": "/DATA/FE.QKL"
+      },
+      {
+        "copies": 6084,
+        "files": 29,
+        "path": "/DATA/GAME.QKL"
+      }
+    ],
+    "copies_checked_against_the_container_they_copy": 5805,
+    "copies_that_differ": 0,
+    "what": "GAME.QKL and FE.QKL (QL01) carry byte copies of some container members and of some container header blocks; the game loads the copy, so an edit to a carried member that leaves the copy alone is an edit the game never sees",
+    "writer_position": "BGM.DAT has a header copy and no member copies, so replacing a music stream needs no cache rewrite; SOUNDDAT.DAT has 45 member copies across the two caches and the lane rewrites the copy with the member. A copy offset another untouched member also points at is refused rather than written."
+  },
   "real_disc_write": {
     "build_seconds": 122.54,
     "catalogue_seconds": 14.53,
