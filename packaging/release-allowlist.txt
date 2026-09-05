@@ -325,3 +325,10 @@ tools/nfl2k5_ps2_replacement_pack_audit.py
 tools/nfl2k5_ps2_replacement_pack_verify.py
 tools/validate_nfl2k5_ps2_replacement_pack.bat
 tools/validate_nfl2k5_ps2_replacement_pack.sh
+# PS2 playbooks (Phase 2): the fixed-allocation PLAY writer, its independent
+# verifier, the target catalog and the two offline validators.
+tools/nfl2k5_ps2_playbook_patch.py
+tools/nfl2k5_ps2_playbook_verify.py
+tools/nfl2k5_ps2_playbook_target_catalog.py
+tools/validate_nfl2k5_ps2_playbook.sh
+tools/validate_nfl2k5_ps2_playbook.bat
