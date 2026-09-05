@@ -248,13 +248,22 @@ class OuterImage:
         self.writable = writable
         self._fd: int | None = None
         self.packs: list[PackSpan] = []
-        if self.path.is_dir():
-            _require(not writable, "loose pack folders are read-only here")
-            folder = self.path / PACK_FOLDER if (self.path / PACK_FOLDER).is_dir() else self.path
-            self._open_loose(folder)
-        else:
-            self._open_image()
-        self.entries: list[OuterEntry] = self._read_table()
+        try:
+            if self.path.is_dir():
+                _require(not writable, "loose pack folders are read-only here")
+                folder = self.path / PACK_FOLDER if (self.path / PACK_FOLDER).is_dir() else self.path
+                self._open_loose(folder)
+            else:
+                self._open_image()
+            self.entries: list[OuterEntry] = self._read_table()
+        except BaseException:
+            # A failed constructor never reaches __enter__/__exit__. Recipe
+            # probes may catch the error and later replace this same image.
+            # Construction only reads, so close directly without a writable fsync.
+            if self._fd is not None:
+                os.close(self._fd)
+                self._fd = None
+            raise
 
     # -- construction
     def _open_loose(self, folder: Path) -> None:

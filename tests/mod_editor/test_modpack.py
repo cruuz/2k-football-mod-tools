@@ -925,7 +925,10 @@ class GrowingSpecialPackTests(unittest.TestCase):
 
     def test_special_round_trip_and_raw_partition(self):
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        # Track export too: recipe probes can open the image before apply starts.
+        open_paths = self.enterContext(windows_file_locks())
         receipt = modpack.export(self.base, self.patched, self.pack, {"name": "SPECIAL"}, recipe=True)
+        self.assertEqual(open_paths(), [], "recipe recognition leaked an image handle")
         self.assertEqual([op["type"] for op in receipt["ops"]], [0, 1])
         self.assertTrue(any(op["op"] == "depth_chart_rows" and op["enabled"] for op in receipt["operations"]))
         for prefix in (0, 3 * SECTOR):
@@ -949,6 +952,7 @@ class GrowingSpecialPackTests(unittest.TestCase):
                 os.close(fd)
         modpack.apply_in_place(self.pack, self.base)
         self.assertEqual(self.base.read_bytes(), self.patched.read_bytes())
+        self.assertEqual(open_paths(), [])
 
     def test_unrecognised_size_change_and_extra_tail_refused(self):
         for tail in (b"extra bytes", b"\0"):
