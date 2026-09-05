@@ -1,5 +1,31 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
+
+- Six new `nfl2k5_ps2` capability rows, all `offline-writer-proved` and CLI-only for now
+  (hidden from the studio sidebar; each will surface as a separate PS2 window like the save
+  and disc windows): `nfl2k5ps2.menus.text_banks` (display text inside its own allocation —
+  shorter or equal, never longer; 6,658 editable strings), `nfl2k5ps2.scripts.director_playbook`
+  (formations and plays inside the 37 fixed-capacity books, the Xbox writer unchanged),
+  `nfl2k5ps2.colors.unif_words` (the facemask and turtleneck words of 634 uniform records),
+  `nfl2k5ps2.players.disc_roster` (names and jersey numbers in the boot and 75 historic
+  rosters), `nfl2k5ps2.stadiums.position_lanes` (bounded vertex moves inside VC-LZ scenes;
+  one scene catalogued so far) and `nfl2k5ps2.audio.audo_exact_slot_replace` (any of 844
+  AUDO sounds, SPU-ADPCM encoded to the slot's exact byte count).
+- Every writer produces a NEW image from the user's own SLUS-20919 ISO through the
+  fixed-allocation ISO9660 writer `tools/ps2_iso9660_writer.py`: no extent moves, no size
+  changes, refusal before anything is created. Each lane ships an independent verifier that
+  re-derives its claims from the two images plus a whole-image byte comparison, `.sh`/`.bat`
+  validators and synthetic tests; the ISO9660 writer and verifier ship with them.
+- Each lane was proven on the real disc once, offline — nothing has been on a screen or heard:
+  text 13 bytes in 13 runs; playbook 258 bytes in 74 ranges; colours 8 bytes; roster 16 bytes
+  in two ranges; stadium 1,282,669 bytes inside one declared window after an optimal-parse
+  refit into a chunk with 3 spare bytes; audio 6,080 bytes with none outside the slot.
+- Catalogues and trial receipts under `reports/gameplay_tuning/` are evidence, not release
+  payload; every catalogue tool rebuilds its catalogue from the user's own disc.
+- Registry 71 -> 77 rows; the `audio`, `colors`, `menus`, `players_rosters`, `scripts_config`
+  and `stadiums_fields` surfaces now cover the PS2 target.
+
 ## v1.0 RC84 — NFL 2K5 (PS2): the disc, read by name (unreleased)
 
 - **The studio admits a PlayStation 2 disc for the first time.** A new capability row,

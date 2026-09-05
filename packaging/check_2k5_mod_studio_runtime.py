@@ -1699,6 +1699,27 @@ def main() -> int:
         "nfl2k5_ps2_save",
         "nfl2k5_ps2_disc_inventory",
         "ps2_iso9660",
+        "nfl2k5_ps2_text_patch",
+        "nfl2k5_ps2_text_verify",
+        "nfl2k5_ps2_text_target_catalog",
+        "nfl2k5_ps2_playbook_patch",
+        "nfl2k5_ps2_playbook_verify",
+        "nfl2k5_ps2_playbook_target_catalog",
+        "nfl2k5_ps2_unif_color_patch",
+        "nfl2k5_ps2_unif_color_verify",
+        "nfl2k5_ps2_unif_color_target_catalog",
+        "nfl2k5_ps2_disc_roster_patch",
+        "nfl2k5_ps2_disc_roster_verify",
+        "nfl2k5_ps2_disc_roster_target_catalog",
+        "nfl2k5_ps2_stadium_position_patch",
+        "nfl2k5_ps2_stadium_position_verify",
+        "nfl2k5_ps2_stadium_target_catalog",
+        "spu_adpcm",
+        "nfl2k5_ps2_audo_patch",
+        "nfl2k5_ps2_audo_verify",
+        "nfl2k5_ps2_audo_target_catalog",
+        "ps2_iso9660_writer",
+        "ps2_iso9660_verify",
         "mod_editor.core.ps2_save_service",
         "mod_editor.gui.ps2_save_dialog_qt",
         "mod_editor.core.ps2_disc_service",
@@ -1799,7 +1820,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 71,
+    require(len(registry.capabilities) == 77,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -2206,7 +2227,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=71 sections=12 nfl2k5_capabilities=32 "
+        "registry=77 sections=12 nfl2k5_capabilities=32 "
         "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

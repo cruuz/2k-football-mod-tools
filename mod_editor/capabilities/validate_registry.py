@@ -52,6 +52,13 @@ SURFACE_GAMES["crib_assets"] = ("nfl2k5_xbox",)
 SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox")
 # PS2 staged surfaces (each must carry at least one nfl2k5_ps2 row):
 SURFACE_GAMES["saves"] = GAMES
+# PS2 Phase 2 on-disc writers (each surface carries an nfl2k5ps2.* row):
+SURFACE_GAMES["audio"] = GAMES
+SURFACE_GAMES["colors"] = GAMES
+SURFACE_GAMES["menus"] = GAMES
+SURFACE_GAMES["players_rosters"] = GAMES
+SURFACE_GAMES["scripts_config"] = GAMES
+SURFACE_GAMES["stadiums_fields"] = GAMES
 CLASSIFICATIONS = (
     "extract-only",
     "offline-writer-proved",

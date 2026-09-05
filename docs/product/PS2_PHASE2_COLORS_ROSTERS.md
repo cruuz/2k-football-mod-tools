@@ -329,7 +329,8 @@ For **both**:
    `validate_registry.py` asserts `coverage == expected_coverage` by equality,
    so a row without its `SURFACE_GAMES` entry and the entry without its row
    both fail CI. `colors` and `players_rosters` are currently
-   `_LEGACY_GAMES`; each must become `("nfl2k5_ps2", "nfl2k5_xbox")`.
+   `_LEGACY_GAMES`; each must become `GAMES` (a 2-tuple would drop the APF rows those
+   surfaces already carry out of the coverage rule and fail CI).
 2. **The pin cycle.** Every `*_PINS` dict and every capability-count literal
    moves. Two audits have named the covered-capabilities pin as the likeliest
    CI breaker; treat the row commit as the watched one.

@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC84 — Getting Started
+# 2K5 Mod Studio v1.0 RC85 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -358,9 +358,11 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 71 cross-title rows, including 32 Xbox NFL 2K5
-capabilities and two NFL 2K5 PS2 rows: the separate PS2 save-import bridge and
-the read-only PS2 disc inventory. No current 2K5 capability
+The current registry has 77 cross-title rows, including 32 Xbox NFL 2K5
+capabilities and 8 NFL 2K5 PS2 rows: the separate PS2 save-import bridge, the
+read-only PS2 disc inventory and six on-disc writers (display text, playbooks,
+uniform colours, the disc roster, stadium positions and one-shot AUDO sounds),
+which are CLI-only today. No current 2K5 capability
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.
 
