@@ -229,8 +229,10 @@ class RetailTests(unittest.TestCase):
         helper._writer(self.grown, first)
 
     def test_fresh_allocation_proof_and_retired_cave_pin(self):
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
-        self.assertEqual(space.allocation_evidence(self.retail, manifest)["encoded_references"], [])
+        combined, _ = space.apply(self.retail, relocated.REQUESTS + runtime.REQUESTS)
+        self.assertEqual(space.allocation_evidence(self.retail, manifest, allocated=combined)["encoded_references"], [])
         old = kickoff._offset(self.grown, kickoff.CAVE_VA, kickoff.CAVE_SIZE)
         self.assertEqual(self.grown[old:old+kickoff.CAVE_SIZE], self.legacy[old:old+kickoff.CAVE_SIZE])
         retail_direct = relocated.apply(self.retail)[0]

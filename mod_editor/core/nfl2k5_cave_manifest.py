@@ -187,9 +187,10 @@ class Recorder:
         self.reserve(playoffs.LAST7_VA, 4, "nfl2k5_playoffs14", "runtime saved seed dword: LAST7_VA")
         self.reserve(logo._fields(final)[0], logo.LOGO_SIZE, "nfl2k5_boot_logo", "complete relocated loader bitmap")
         from . import nfl2k5_xbe_space as space
-        for reservation in space.reservations(final):
-            self.reserve(int(reservation["start"], 0), reservation["size"],
-                         reservation["owner"], reservation["basis"])
+        if space.status(final) == "applied":
+            for reservation in space.reservations(final):
+                self.reserve(int(reservation["start"], 0), reservation["size"],
+                             reservation["owner"], reservation["basis"])
         # Preserve the whole shared host, including alignment padding between owners.
         self.reserve(0xB4A60, 16, "nfl2k5_penalties", "shared host allocation including stub padding")
         self.reserve(0xB4A70, 32, "nfl2k5_prospect_names", "shared host allocation")
