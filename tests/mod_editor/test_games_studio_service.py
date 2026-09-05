@@ -504,6 +504,47 @@ class BuildTests(_Fixture):
         self.assertFalse((destination.parent / (destination.name + service.RECEIPT_SUFFIX)).exists())
 
 
+class RealModuleTests(unittest.TestCase):
+    """The same service over a shipped module, on that lane's own synthetic disc.
+
+    The toy game proves the service's own rules; this proves the service is not
+    quietly shaped around it. Nothing retail is read: the source is the one the
+    lane builds for CI, and the destination is a scratch file.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.room = Path(tempfile.mkdtemp(prefix="shell-real-")).resolve()
+        cls.module = games.load("nfl2k5_ps2")
+        cls.lane = cls.module.lane("colors.unif_words")
+        cls.source = cls.lane.synthetic_source(cls.room)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        shutil.rmtree(cls.room, ignore_errors=True)
+
+    def test_a_real_lane_goes_catalogue_to_verified_build_through_the_shell(self) -> None:
+        studio = service.GameStudioService(self.module, cache_root=self.room / "cache",
+                                           poll_seconds=0.02)
+        studio.open(self.source)
+        studio.build_catalogue("colors.unif_words")
+        target = studio.catalogue("colors.unif_words").target("18H0")
+        self.assertEqual([(item.key, item.kind) for item in target.fields],
+                         [("facemask", "colour_argb"), ("turtleneck", "colour_argb")],
+                         "a packed colour word is drawn as a colour, not as text")
+        refusal = studio.check_edit("colors.unif_words", target, {"facemask": "nope"})
+        self.assertIn("not a colour", refusal, "the lane's own sentence, not the shell's")
+        edit = studio.stage("colors.unif_words", target, {"facemask": "#00FF00"})
+        self.assertEqual(studio.plan_lane("colors.unif_words", [edit]).target_keys, ("18H0",))
+        destination = self.room / "built.iso"
+        receipt = studio.build({"colors.unif_words": [edit]}, destination)
+        self.assertTrue(receipt.all_verified, receipt.message)
+        self.assertEqual(destination.stat().st_size, self.source.stat().st_size,
+                         "a fixed-allocation lane keeps the source's length")
+        self.assertIn("every verifier passed", receipt.message)
+        self.assertTrue(receipt.receipt_path.is_file())
+
+
 class GatingTests(unittest.TestCase):
     def test_nothing_but_open_before_a_source(self) -> None:
         state = service.studio_action_state(source_open=False, busy=False, catalogue_built=False,
