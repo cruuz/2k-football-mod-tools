@@ -117,7 +117,7 @@ print(json.dumps(facts, sort_keys=True), flush=True)
 assert facts["version"] == "3.12.10", facts
 assert (sys.platform, os.name, platform.system()) == ("win32", "nt", "Windows"), facts
 assert facts["O_BINARY"] is not None and app.platformName() == "offscreen", facts
-assert pathlib.Path(facts["temp_directory"]) == pathlib.Path(os.environ["TEMP"]), facts
+assert pathlib.Path(facts["temp_directory"]) == pathlib.Path(os.environ.get("TMPDIR") or os.environ["TEMP"]), facts
 assert pathlib.Path(facts["temp_directory"]).is_relative_to(pathlib.Path(os.environ["LOCALAPPDATA"])), facts
 '''
 
@@ -696,7 +696,10 @@ def main(argv: list[str] | None = None) -> int:
             ensure_prefix(prefix, env, logs)
             temp_windows = checked(["wine", str(runtime / "python.exe"), "-c", TEMP_PROBE],
                                    env, work, logs / "temp-check.log")
-            env.update(TEMP=temp_windows, TMP=temp_windows)
+            # Wine re-applies TEMP/TMP from its registry when the process starts, so the Unix-side
+            # override does not reach the child; CPython's tempfile consults TMPDIR first, which Wine
+            # passes through untouched (observed 2026-09-05: TEMP stayed C:\users\noah\Temp).
+            env.update(TEMP=temp_windows, TMP=temp_windows, TMPDIR=temp_windows)
             print(f"TEMP/TMP: {temp_windows}", flush=True)
             facts = checked(["wine", str(runtime / "python.exe"), "-c", OS_PROBE],
                             env, work, logs / "os-check.log")
