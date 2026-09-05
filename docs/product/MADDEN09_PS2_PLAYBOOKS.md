@@ -161,13 +161,17 @@ own** [M]. Three places were looked at and none holds one:
   fields all belong to a formation, a set, a group or a play;
 * **beside the books** — `GAMEDATA.DAT`'s only `TEXT` member is a 64-byte
   `Xbe8…` blob, and its eight `MMAP` members are UI screens;
-* **elsewhere on the image** — a raw scan finds two short string tables whose
-  entries read like book names, and neither is one: both are the AI
-  *coaching-philosophy* and gameplan lists, one in the boot ELF beside the
-  team/coach text and one in the story generator's bank, and they run to nine
-  and thirteen entries rather than 102. `DB_TEAMS.DAT`'s `TEAM` table carries
-  no playbook column either — its 65 fields are ids, colours and team
-  ratings.
+* **elsewhere on the image** — a raw scan of the whole 1.66 GB image for
+  book-name-shaped strings finds only short AI *coaching-philosophy* and
+  gameplan lists, in the boot ELF beside the team and coach text and again in
+  the story generator's bank. Each is a handful of entries offered as a
+  *style*, not a list of 102 books, and none sits next to anything that indexes
+  `GAMEDATA.DAT`. `DB_TEAMS.DAT`'s `TEAM` table carries no playbook column
+  either — its 65 fields are ids, colours and team ratings.
+
+  This third bullet is the bounded one: it is a search, and a search that finds
+  nothing bounds the claim rather than closing it. The first two are structural
+  and are closed.
 
 So a book is described by what it holds — its formation, set and play counts —
 and the row targets inside it carry the names the file does have, read from the
