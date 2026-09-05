@@ -139,6 +139,25 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertIn(0x1AC260, self.targets)
         self.assertEqual(self.patched[0x1AC260 - BASE: 0x1AC270 - BASE], self.retail[0x1AC260 - BASE: 0x1AC270 - BASE])
 
+    def test_playoff_presentation_rewrites_only_owned_callbacks(self) -> None:
+        from mod_editor.core import nfl2k5_playoff_picture as picture, nfl2k5_season_length as season
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        dependency, _ = season.apply(self.patched, groups=("playoffs_14",))
+        patched, _ = picture.apply(dependency)
+        self.assertEqual(picture.status(patched), "applied")
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        for site in picture.sites():
+            self.assertEqual(manifest.overlaps(site.va, site.va + site.size), [], site.label)
+        for start, size in ((picture.TREE_UPDATE_VA, picture.TREE_UPDATE_SIZE),
+                            (picture.TREE_SCORES_VA, picture.TREE_SCORES_SIZE)):
+            for target, refs in self.targets.items():
+                if start < target < start + size:
+                    self.assertEqual([r for r in refs if not (
+                        isinstance(r, int) and start <= r < start + size) and not (
+                        isinstance(r, tuple) and r[1] == ".text" and start <= r[2] + BASE < start + size)], [], hex(target))
+        # Existing entry 0x372C60 remains callable from its retail callback table.
+        self.assertIn(picture.TREE_SCORES_VA, self.targets)
+
     def test_oracle_projection_preserves_the_existing_gate(self) -> None:
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, legacy_external_references, legacy_references
         targets = legacy_references(XbeImage(self.retail))

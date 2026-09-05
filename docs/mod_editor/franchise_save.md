@@ -69,6 +69,32 @@ serialiser at `0xC5310..0xC5800` was never made a function, which is why nobody 
 | `0x60BC` | `0x973DC` | `0x22A0` | league stat tail (`FUN_001349a0`) | — | HYPOTHESIS |
 | `0x835C` | `0x9967C` | `0x80` | tail (`FUN_00031000(0x80)`); zero in the 2004 save | — | OPAQUE |
 
+## Seven-seed bracket and the two saved seed arrays
+
+With `nfl2k5_playoffs14`, the twelve entries at season `+0x0B` remain
+**AFC seeds 1–6 followed by NFC seeds 1–6**. They are not a fourteen-team field.
+The other twelve-entry array at `+0x17` is separate: its first runtime dword,
+`0xE57924` (`LAST7`), holds the seventh team from the **most recent** seeding
+call. The next conference or a clinch calculation can overwrite it. Saving
+that dword does not preserve two independent seventh seeds.
+
+Both seventh seeds are instead durable in the ordinary saved game grid:
+the away-team byte in wild-card slots **0 (AFC)** and **3 (NFC)**. For an
+18-week patched season these bytes are at file `0x9217C` and `0x92194`;
+for the 17-week layout they are at `0x920F4` and `0x9210C`. In general:
+`0x917EA + 8 * (17 * wild_card_row + slot) + 2`.
+The two #1 seeds occupy the home bytes of divisional slots 0 and 2. Other
+wild-card home/away pairs encode seeds 2v7, 3v6, 4v5 in each conference.
+
+PROVED: the patched builder at `0x2A7E57` writes these records; the advance
+routine at `0x325E70` reconstructs the seed order from them. The dependent
+`nfl2k5_playoff_picture` callbacks at `0x372BB0` / `0x372C60` read the same
+saved grid and flags, deriving the wild-card row from `0x5151C4`. Bounded
+instruction tests clear both seed arrays, restore grid/flags/scores, and
+verify names, scores, and a forced seventh seed advancing after a mid-round
+reload. This models the documented serialized fields; it does not claim an
+in-game save/load observation. No save format or serializer changes are made.
+
 ## Front-office block (`F = 0x996FC`)
 
 | F+ | file | size | field | RAM | status |

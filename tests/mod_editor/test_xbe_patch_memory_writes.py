@@ -164,6 +164,24 @@ class PatchWriteTests(unittest.TestCase):
                                     f"{insn.address:#x}: {insn.mnemonic} {insn.op_str}")
         self.assertGreater(checked, 0)
 
+    def test_playoff_presentation_storage_and_complete_callback_spans(self) -> None:
+        from mod_editor.core import nfl2k5_playoff_picture as picture, nfl2k5_season_length as season
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        dependency, _ = season.apply(self.patched, groups=("playoffs_14",))
+        patched, _ = picture.apply(dependency)
+        image = XbeImage(patched)
+        self.assertTrue(image.runtime_writable(picture.WIDGET_REGION, len(picture.widget_bytes())))
+        self.assertTrue(image.runtime_writable(picture.HEADINGS_VA, len(picture.heading_bytes())))
+        self.assertTrue(image.runtime_writable(picture.STATE_VA, 13 * picture.STATE_SIZE))
+        for start, size in ((picture.TREE_UPDATE_VA, picture.TREE_UPDATE_SIZE),
+                            (picture.TREE_SCORES_VA, picture.TREE_SCORES_SIZE)):
+            self.assertFalse(image.runtime_writable(start, size))
+            for write in absolute_writes(patched, [(start, start + size)]):
+                if write["target"] is not None:
+                    self.assertTrue(write["writable"], write)
+        # Indexed writes are exercised with memory hooks and protected .text in
+        # tests.nfl2k5_playoff_picture_test.InstructionTests.
+
 
 if __name__ == "__main__":
     unittest.main()
