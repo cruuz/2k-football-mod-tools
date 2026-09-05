@@ -110,7 +110,8 @@ class GameStudioShellTests(unittest.TestCase):
             for lane in dialog.lanes_for_page(page_id)
         }
         self.assertEqual(placed, {"colors.unif_words": "identity",
-                                  "gameplay.executable_patches": "gameplay"})
+                                  "gameplay.executable_patches": "gameplay",
+                                  "uniforms.art": "uniforms"})
         self.assertEqual(len(placed), len(module.lanes), "every lane is on exactly one page")
         for lane in module.lanes:
             page = dialog.page_widget(contract.lane_page(lane))
