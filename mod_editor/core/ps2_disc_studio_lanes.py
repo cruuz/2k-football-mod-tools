@@ -1031,7 +1031,8 @@ class PlaybooksLane(Lane):
             slots = row.get("slot_positions")
             if slots is not None and (not isinstance(slots, (list, tuple)) or len(slots) != 11
                                       or any(not isinstance(pair, (list, tuple)) or len(pair) != 2 for pair in slots)):
-                return "A formation needs exactly 11 [x, depth] slot positions in centimetres."
+                return ("Give the formation exactly 11 [x, depth] slot positions in centimetres, "
+                        "one per player.")
             if not isinstance(row.get("donor_formation_index", 0), int):
                 return "The donor formation must be chosen from the book."
         for row in plays:
@@ -1043,7 +1044,7 @@ class PlaybooksLane(Lane):
                 return "The donor play must be chosen from the book."
         for row in links:
             if not isinstance(row.get("formation_index"), int) or not isinstance(row.get("play_index"), int):
-                return "A link needs a formation index and a play index."
+                return "Enter both a formation index and a play index for the link."
         for other in staged:
             if other.lane_id == self.id and other.target_key == target.key:
                 return "This book is already in the recipe; remove that edit first to change it."
@@ -1237,7 +1238,7 @@ class StadiumLane(Lane):
             other_row = other.values.get("_row")
             if isinstance(other_row, dict) and self._span_key(other_row) == self._span_key(target.data):
                 return (f"This lane shares its position span with {other.target_key}, which is already in the "
-                        "recipe; one span can be edited once.")
+                        "recipe; one span can be edited once. Remove that edit or choose another lane.")
         return None
 
     def edit_summary(self, target, values):
