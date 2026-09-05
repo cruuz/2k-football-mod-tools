@@ -20,6 +20,12 @@
 > below describe the hooks as they were planned; the table's "one-time" entries for
 > `studio_qt.py` and `__main__.py` are now done, the registry/validator/gate entries remain.
 
+> **Status, 2026-09-05 (RC86).** §4.9 (a chooser listing windows) and §8's delivery unit (each game writes its own
+> window) are superseded by `GAME_STUDIO_SHELL_PLAN.md`: the chooser lists studios, one per game, and every game gets the
+> core-owned Game Studio shell with the Xbox studio's pages, so a module writes lanes and never UI. §8.1's first-game
+> choice changed by the owner's decision to Madden NFL 09 (PS2), disc-based, on that shell (RC87). Everything else here
+> stands: the contract, discovery, fragments, pins, conformance, `_formats/`, the freeze fallback and §10's questions.
+
 ## 0. The ask, and the answer in one paragraph
 
 The owner wants game support for **Madden NFL** (04/08/09/12 PS2; 12/25 PS3), **NCAA Football**
