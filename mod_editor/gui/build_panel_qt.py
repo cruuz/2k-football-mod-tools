@@ -437,7 +437,7 @@ class BuildPanel(QWidget):
                                               details="The innermost receiver of a three-wide set becomes your third receiver (SLOT, with X and Z outside) "
                                                       "and nickel / dime sets use your third and fourth corners inside. Groups whose formations disagree, "
                                                       "bunch sets and special teams keep their original assignments; the build report lists them.")
-        self.depth_chart_rows_check = self._option(r, "depth_chart_rows", "SPECIAL tab: role depth charts (SLOT, nickel, dime, gadget, gunners, long snapper, 3rd-down / power back)",
+        self.depth_chart_rows_check = self._option(r, "depth_chart_rows", "SPECIAL tab: role depth charts",
                                                    "Offence and defence keep eleven rows; the role views live on a renamed SPECIAL tab. Switches on the pools and roles when the disc lacks them.",
                                                    badge=NOT_TESTED, needs_image=True,
                                                    details="Thirteen depth-chart rows per unit instead of eleven: a SLOT row on offence, NICKEL CORNER and "

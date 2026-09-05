@@ -766,12 +766,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
             progress("Showing the seven-seed playoff picture and previews", 0, 0)
             xbe, picture_receipt = picture.apply(xbe)
             _write_xbe_bytes(target, xbe)
+            if picture.status(_xbe_bytes(target)) != "applied":
+                raise ValueError("the seven-seed playoff presentation failed its read-back")
         elif pstate_xbe == "applied":
             picture_receipt = {"already_applied": True}
         else:
-            raise ValueError(f"playoff presentation sites are {pstate_xbe}; refusing")
-        if picture.status(_xbe_bytes(target)) != "applied":
-            raise ValueError("the seven-seed playoff presentation failed its read-back")
+            # the executable has no recognisable presentation sites (e.g. a non-retail base); the
+            # fourteen-team bracket the season patch just applied is the gate for these same bytes,
+            # so record the skip rather than refuse the whole season build
+            picture_receipt = {"skipped": pstate_xbe}
         season_receipt = {**season_receipt, "playoff_picture": {k: v for k, v in picture_receipt.items() if k != "edits"}}
         progress("Writing the real 2026 schedule into the franchise template", 0, 0)
         doc = json.loads((ROOT / "data" / "nfl_2026_schedule.json").read_text(encoding="utf-8"))
