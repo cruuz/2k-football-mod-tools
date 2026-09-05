@@ -2796,12 +2796,13 @@
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.games.madden09_ps2.text_lane --source <SLUS-21770.iso> [--out <report.json>] [--preview CONTAINER:INDEX]",
+        "command": "python3 -m mod_editor.games.madden09_ps2.text_lane --source <SLUS-21770.iso> --recipe <edits.json> --destination <new.iso> [--out <catalogue.json>] [--report <receipt.json>] [--dry-run] [--preview CONTAINER:INDEX:OFFSET]",
         "module": "mod_editor/games/madden09_ps2/text_lane.py",
-        "operation": "inspect"
+        "operation": "write"
       },
-      "classification": "read-only-mapped",
+      "classification": "offline-writer-proved",
       "evidence": [
+        "docs/mod_editor/2k5_mod_studio_changelog.md",
         "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
@@ -2809,21 +2810,22 @@
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "view",
-        "reason": "Surfaced on the Menus & UI page of the PS2 Madden 09 Studio as a table and no editor. The counts come from the shared TERF reader; a preview is an explicit read of the user's own image rather than anything the catalogue kept. No text writer is offered: rebuilding a bank needs an LZH1 encoder that exists nowhere public, and the disc keeps packed copies of some members in GAME.QKL and FE.QKL that an edit would have to match."
+        "mode": "edit",
+        "reason": "Surfaces on the Menus & UI page of the PS2 Madden 09 Studio as an editor. Each target is one string slot inside a bank, addressed by its byte offset; the budget on screen is that slot's own allocation, a shorter replacement is padded with the format's terminator, and a longer one is refused with the length it has to fit. A dry run resolves every edit before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing has been seen in-game -- no rebuilt Madden 09 disc has been booted in an emulator, so no claim is made about how the game draws the replacement."
       },
       "id": "madden09ps2.menus.text_members",
       "input_constraints": [
-        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
-        "The catalogue is counts, lengths and digests. Not one string from the game reaches it, which a test asserts by searching the serialised document for the fixture's own strings.",
-        "A preview reads the member from the source the caller hands it, elides a string longer than 120 characters, and writes nothing anywhere.",
-        "Strings are decoded latin-1, never utf-8: EA stores 8-bit characters, and a decoder that raised on them would refuse banks that are perfectly readable.",
-        "Bounded: a container over 96 MB is left unread, and at most 4,000 members are listed as targets while the document's totals stay complete."
+        "Fixed allocation: a replacement is written inside the slot's own bytes and padded to them with NULs, so the member, its container and the image all keep their exact length. A longer replacement is refused with the length it must fit.",
+        "Six containers are editable -- OSDKSTRN.DAT and the five story banks. GAMEDATA.DAT, LOADDATA.DAT and STADATA.DAT are named in the FE.QKL and GAME.QKL preload caches, which carry a copy of at least some of what they name, so editing one copy and not the other is refused; the list is read off the user's own image rather than a table written down here.",
+        "The catalogue document is still counts, lengths and digests and carries no string, which a test asserts by searching the serialised document for the fixture's own strings; the strings reach a screen only through the targets built from the user's image and through an explicit preview.",
+        "Strings are encoded latin-1, never utf-8: EA stores 8-bit characters. A replacement carrying a NUL is refused -- that byte is what ends a string here.",
+        "The source is opened read-only and never written; the destination must not already exist and may not be the source. An edit made against a string that has since changed is refused on its digest rather than written over. The verifier imports none of the writer and fails on any byte changed outside the edited slots."
       ],
       "portme": [
-        "A text writer needs an LZH1 encoder (so an edited bank fits its slot) and has to keep the GAME.QKL and FE.QKL preload copies consistent; neither is done.",
-        "Group the story generator's banks by their role so a user can find the one they mean without opening each in turn.",
-        "Offer a search across banks, which needs an index the catalogue deliberately does not carry -- it would be payload."
+        "Real-disc trial: one 50,519-byte slot of OSDKSTRN.DAT member 0 replaced, declaring 741,088 bytes in two ranges; the verifier passed with 1,656,598,816 unchanged bytes compared across 197 entries, and failed when one byte outside every declared range was flipped.",
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced string drawn, and showing that a menu which lays out from a measured width does not re-flow when a string shortens.",
+        "On this disc a bank is usually one string with no NUL in it, so its slot is the whole member: replacing it replaces the whole bank. A finer unit -- the pipe-delimited KEY=value pairs OSDKSTRN.DAT carries, say -- would need that inner grammar decoded, which has not been done.",
+        "Group the story generator's banks by their role so a user can find the one they mean without opening each in turn."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -2833,13 +2835,13 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "Inspection only: nothing is written to the disc, a save or the emulator.",
-        "status": "not-applicable"
+        "scope": "Offline only: bytes proven, pixels not; nothing has been on a screen. The real-disc trial replaced the string at byte 0 of OSDKSTRN.DAT member 0 -- a 50,519-byte allocation rewritten with 37 bytes and padded with NULs -- declaring 741,088 bytes in two ranges, and the independent verifier passed: the replacement read back at its own offset, no other byte of the bank differed, and ps2_iso9660_verify compared 197 entries and 1,656,598,816 unchanged bytes of the two 1,657,339,904-byte images. Flipping one byte outside every declared range made the same verifier fail, and restoring it made it pass. No PCSX2 run.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "a /DATA file name, e.g. STRYTEXT.DAT",
+            "allowed": "OSDKSTRN.DAT, STORYMSG.DAT, STRYCPTN.DAT, STRYEMAL.DAT, STRYHDLN.DAT or STRYTEXT.DAT to edit; GAMEDATA.DAT, LOADDATA.DAT and STADATA.DAT are listed read-only",
             "name": "container",
             "required": false
           },
@@ -2849,37 +2851,43 @@
             "required": false
           },
           {
+            "allowed": "the byte offset of a string inside that member",
+            "name": "offset",
+            "required": false
+          },
+          {
             "allowed": "an integer count, for filtering by bank size",
             "name": "strings",
             "required": false
           }
         ],
-        "notes": "Filters over a read-only table. The GUI may show a preview, which re-reads the user's own disc each time; it must not offer an edit, and the catalogue it filters carries no string to leak."
+        "notes": "A slot target is spelled text:<container>:<member>:<byte offset> and carries the string it offers to replace, read from the user's own image. The GUI must not offer an edit to a container a preload cache names, nor a replacement past the slot's allocation; the lane refuses both with the reason."
       },
       "source_container": {
-        "format": "TEXT members inside EA TERF containers: NUL-separated printable strings, identified after decompression from a 32-byte printable head",
+        "format": "TEXT members inside EA TERF containers: printable strings separated by NULs, identified after decompression from a printable 32-byte head with any NUL padding discounted",
         "hash_pins": [
           "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
           "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
           "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
           "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
         ],
-        "resource": "TEXT members across the disc's /DATA containers, most of them the story generator's template banks",
+        "resource": "14,760 string banks across eight /DATA containers, 17,822 strings, most of them the story generator's template banks",
         "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
       },
-      "summary": "Find every TEXT member on a user's SLUS-21770 disc -- a member whose decompressed bytes are printable NUL-separated strings -- and measure it: which container, which member, how many strings, the longest and mean length, the printable ratio and the SHA-256 of the decompressed bytes. The catalogue carries those numbers and no string at all, because a catalogue is a file that can be shipped; the strings themselves are read from the user's own image on demand and never stored.",
+      "summary": "Find every TEXT member on a user's SLUS-21770 disc -- a member whose decompressed bytes are printable strings separated by NULs -- measure it, and rewrite its strings in place. The catalogue carries which container, which member, how many strings, the longest and mean length, the printable ratio and the SHA-256 of the decompressed bytes; measured on the retail disc, 14,760 banks holding 17,822 strings. Each string is a fixed allocation -- the room between it and the next one -- so a replacement is padded to it with the format's terminator and a longer one is refused; the member, its container and the image all keep their exact size. Six of the eight containers are editable; the other two, and STADATA.DAT, are named in the disc's own preload caches and stay read-only. Nothing has been booted.",
       "surface": "menus",
       "title": "Madden 09 (PS2) text banks",
       "validation_command": "bash tools/validate_madden09_ps2_text.sh"
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.games.madden09_ps2.team_data --source <SLUS-21770.iso> [--out <report.json>] [--selftest]",
+        "command": "python3 -m mod_editor.games.madden09_ps2.team_data --source <SLUS-21770.iso> --recipe <edits.json> --destination <new.iso> [--out <catalogue.json>] [--report <receipt.json>] [--dry-run]",
         "module": "mod_editor/games/madden09_ps2/team_data.py",
-        "operation": "inspect"
+        "operation": "write"
       },
-      "classification": "read-only-mapped",
+      "classification": "offline-writer-proved",
       "evidence": [
+        "docs/mod_editor/2k5_mod_studio_changelog.md",
         "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
@@ -2887,21 +2895,21 @@
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "view",
-        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 Madden 09 Studio as a table and no editor. The EA TDB reader is proved by round-tripping every field type through a synthetic database, including signed values and fields that straddle byte boundaries, and it read all 355 databases on the retail disc. Writers are not offered: an edited member cannot be re-packed to its slot without an LZH1 encoder, and no rebuilt Madden 09 disc has been booted."
+        "mode": "edit",
+        "reason": "Surfaces on the Names, Numbers & Faces page of the PS2 Madden 09 Studio as an editor. Targets come from this lane's catalogue over the user's own disc -- 12,499 editable rows on the retail image -- and each row offers a player's first and last name, jersey number, age and twenty ratings, or a team's nickname, city, abbreviation and short name. Budgets are on screen (a name's is its field's bytes less the terminator; a rating's is 0-99), refusals are inline, a dry run resolves every edit before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing has been seen in-game -- no rebuilt Madden 09 disc has been booted in an emulator, so no claim is made about what the game does with the edit."
       },
       "id": "madden09ps2.players.team_databases",
       "input_constraints": [
-        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
-        "Schema only: table names, record counts, strides, index counts and field names, types and bit widths. No record is decoded and no field value reaches a catalogue.",
-        "Named containers only: DB_TEAMS.DAT, TEMPLATE.DAT, GAMEDATA.DAT and the bare STRMDATA.DB, so a 415 MB speech container is never opened looking for a database.",
-        "The four CRC sites EA stores in a TDB header are reported as integers and never checked or recomputed; this lane only reads.",
-        "One database this reader cannot open becomes a note on its own row, so a single malformed member never empties a catalogue of the other 354."
+        "Fixed allocation, twice over: a TDB field owns a fixed run of bits in a fixed-stride record, so a record edit cannot change a length, and the ISO writer replaces a file only inside the extent it already owns. A rewrite that changed the member's, the container's or the image's length is refused.",
+        "One container only: DB_TEAMS.DAT. TEMPLATE.DAT and GAMEDATA.DAT are named in the FE.QKL and GAME.QKL preload caches, which carry a copy of at least some of what they name, so editing one copy and not the other is refused; the list is read off the user's own image rather than a table written down here.",
+        "Two tables only, and an explicit field list: PLAY's PFNA, PLNA, PJEN, PAGE and twenty ratings, and TEAM's TDNA, TLNA, TSNA and TMNC. A rating stops at 99 -- the game's own scale -- not at the 127 its seven-bit field would hold; a name stops one byte short of its field so the terminator survives.",
+        "All four CRC-32/MPEG-2 checksum sites are recomputed on every write and re-derived from the destination's own bytes by the verifier. The algorithm was proved first: 4,806 stored checksums across 252 databases on the retail disc equal the recomputed value at every one.",
+        "The source is opened read-only and never written; the destination must not already exist and may not be the source. The verifier imports none of the writer, and fails on a byte changed outside the declared ranges, on a record changed behind the receipt's back, and on a stale checksum."
       ],
       "portme": [
-        "Decode records, not just schema, once there is somewhere honest to show them; the reader can already unpack every field type.",
-        "Add the big-endian PS3 variant of the same format so a Madden 12 PS3 module reuses this reader; only the multi-byte integers and the four-character name order differ.",
-        "A TDB writer waits on two things that are not this lane's to fix: an LZH1 encoder so an edited member can be re-packed to its slot, and one rebuilt disc booted in an emulator."
+        "Real-disc trial: DB_TEAMS.DAT member 0, PLAY record 0 -- first name, last name and jersey number -- built a 1,657,339,904-byte destination, and the verifier passed with 44 checksum slots correct and 1,654,754,104 unchanged bytes compared across 197 entries.",
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the renamed player on a roster screen, and showing that a team whose abbreviation changed still draws.",
+        "Not offered yet: adding or removing a record (the table's capacity and every PGID-keyed table would have to move with it), height and weight (PWGT's unit is not established here), and the depth-chart table, whose rows point at players by id."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -2911,13 +2919,13 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "Inspection only: nothing is written to the disc, a save or the emulator. That the schema read here matches what the game loads is not claimed -- it would need a rebuilt disc booted, which has not been done.",
-        "status": "not-applicable"
+        "scope": "Offline only: bytes proven, pixels not; nothing has been on a screen. The real-disc trial rewrote one PLAY record of DB_TEAMS.DAT member 0 -- two names and a jersey number -- declaring 2,585,800 bytes in two ranges (the container's whole extent and its directory record's 8-byte length field), and the independent verifier passed: every edited value read back, all 44 checksum slots of the edited database correct, every byte of the member that differed inside a declared field span or a checksum slot, and ps2_iso9660_verify comparing 197 entries and 1,654,754,104 unchanged bytes of the two 1,657,339,904-byte images. No PCSX2 run. A runtime witness would be a boot showing the renamed player on a roster screen.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "DB_TEAMS.DAT | TEMPLATE.DAT | GAMEDATA.DAT | STRMDATA.DB",
+            "allowed": "DB_TEAMS.DAT to edit; TEMPLATE.DAT, GAMEDATA.DAT and STRMDATA.DB are listed read-only",
             "name": "container",
             "required": false
           },
@@ -2927,17 +2935,22 @@
             "required": false
           },
           {
-            "allowed": "a four-character table name, e.g. TEAM or PLAY",
+            "allowed": "PLAY or TEAM for an editable row; any four-character name to browse the schema",
             "name": "table",
             "required": false
           },
           {
-            "allowed": "a four-character field name, matched case-insensitively",
+            "allowed": "0..recordCount-1 within that table",
+            "name": "record",
+            "required": false
+          },
+          {
+            "allowed": "one of the field names this lane lists: PFNA, PLNA, PJEN, PAGE, the twenty ratings, TDNA, TLNA, TSNA, TMNC",
             "name": "field",
             "required": false
           }
         ],
-        "notes": "Filters over a read-only schema table. The GUI must not offer a record edit, a database export or a container rebuild from this row; no Madden 09 TDB writer exists and none is claimed."
+        "notes": "A row target is spelled row:<container>#<member>:<table>:<record> and carries the values it offers, read from the user's own image. The GUI must not offer a record to be added or removed, a container to be rebuilt, or an edit to a container a preload cache names; each of those is refused by the lane with the reason."
       },
       "source_container": {
         "format": "EA TDB v8: a 24-byte header, an 8-byte-per-table directory whose offsets are relative to the directory's end, a 40-byte table header, a 16-byte-per-field directory, then tightly bit-packed little-endian records",
@@ -2947,10 +2960,10 @@
           "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
           "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
         ],
-        "resource": "355 databases, 2,151 tables, 354,812 records, 60,537 fields",
+        "resource": "355 databases, 2,151 tables, 354,812 records, 60,537 fields; 12,499 editable rows in DB_TEAMS.DAT's 235 databases",
         "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
       },
-      "summary": "Read every EA TDB v8 database on a user's SLUS-21770 disc and say what its schema is: the tables, how many records each holds against its capacity, the record stride in bytes and bits, and every field's name, type and bit width. Measured on the retail disc: 355 databases (235 in DB_TEAMS.DAT, 104 in GAMEDATA.DAT, 15 in TEMPLATE.DAT and the bare /DATA/STRMDATA.DB), 2,151 tables, 354,812 records and 60,537 fields. Field names are the schema and are the same on every disc; a record's contents are the user's game data and are never read into a catalogue.",
+      "summary": "Read every EA TDB v8 database on a user's SLUS-21770 disc and say what its schema is -- the tables, how many records each holds against its capacity, the record stride in bytes and bits, and every field's name, type and bit width -- and edit the rows of /DATA/DB_TEAMS.DAT: a player's first and last name, jersey number, age and twenty ratings, and a team's nickname, city, abbreviation and short name. Measured on the retail disc: 355 databases (235 in DB_TEAMS.DAT, 104 in GAMEDATA.DAT, 15 in TEMPLATE.DAT and the bare /DATA/STRMDATA.DB), 2,151 tables, 354,812 records and 60,537 fields, of which 12,499 rows are editable. A record edit changes no length, so the member, the container and the image all keep their exact size; the four CRC-32/MPEG-2 checksums EA stores are recomputed on every write. Nothing has been booted.",
       "surface": "players_rosters",
       "title": "Madden 09 (PS2) team and roster databases",
       "validation_command": "bash tools/validate_madden09_ps2_team_data.sh"
