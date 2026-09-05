@@ -316,8 +316,11 @@ hand-authored words while a translation is proved. See `PS2_CODE_PATCH_PIPELINE.
 Frozen files: `mod_editor/games/contract.py`, `__init__.py`, `registry_merge.py`,
 `conformance.py`, `chooser.py`, `chooser_qt.py`, `pins.py`; `tests/mod_editor/games_fakes.py`,
 `test_games_contract.py`, `test_games_contract_frozen.py`, `test_games_conformance.py`,
-`test_games_chooser.py`. Not frozen: `__main__.py`, `fragments.py`, `scaffold.py`, `_formats/`,
-the game directories, `CONTRACT_PINS.json` and `CONTRACT_CHANGELOG.md` themselves.
+`test_games_chooser.py`. Not frozen: `__main__.py`, `fragments.py`, `scaffold.py`,
+`studio_qt.py`, `lane_cli.py`, `_formats/`, the game directories, `CONTRACT_PINS.json` and
+`CONTRACT_CHANGELOG.md` themselves. The shell and the `lane` verb are core-owned but still
+being written; they join the frozen set when the shell is finished, which is itself a pinned
+edit to `pins.py`.
 
 The pins are **loud, not preventive**. Moving them is an event with a procedure: bump
 `CONTRACT_VERSION`; add `## <version> (unreleased)` to the changelog; `python -m

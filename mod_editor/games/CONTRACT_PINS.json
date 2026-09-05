@@ -1,17 +1,17 @@
 {
   "contract_version": "1.0",
   "files": {
-    "mod_editor/games/__init__.py": "fba15a62e10e6cb7d857b29de7acce81c6ee2f9194d83abc9c31d41bd6a7a9ad",
-    "mod_editor/games/chooser.py": "1ef94bfcc05fc4899c89320919140c7f86e71bdb114869cd1c5479e0eb939178",
-    "mod_editor/games/chooser_qt.py": "37513b9b63ce08c3e559bd7f4fb0da3fde5ac4e0d20c85fdd138478e6887badf",
-    "mod_editor/games/conformance.py": "6d01da61264c38f47abe8c03bf9893575b06081053ef65c63d4014bcd3c1599f",
-    "mod_editor/games/contract.py": "6fbdf4b340fc66d1dcf0c3002d72a852f4df1ebd3ab832d487dc2bd006dd0841",
+    "mod_editor/games/__init__.py": "6d6cd09c31059d97834dc5cc7b44d1c4191b9eda10eed4d1982fd4ce7ba3c13f",
+    "mod_editor/games/chooser.py": "7cc819924370677b38d248fdf13c4b63cfe88959a9d53a83e353c0355a96d429",
+    "mod_editor/games/chooser_qt.py": "6164e13fcf34a3636b8e61af50d81057546cb8634886c6a3ddc5f962013e6d76",
+    "mod_editor/games/conformance.py": "47ca81b27db9fe1151a7b3466f730a80680dcb87c12e4aaadadf95cf757c6904",
+    "mod_editor/games/contract.py": "658de0654a960320c22dbd85706fba30a29fd1aeecd358cb601fbbe702a90d07",
     "mod_editor/games/pins.py": "75de2153561ca7184516e9360d2df805fe8261c95cf1ae61845e9d46575e7647",
     "mod_editor/games/registry_merge.py": "4407313c47a62f25ec2a651f2b0045fde47052b5abfac813135ebc5c6ef0facf",
-    "tests/mod_editor/games_fakes.py": "597a42592730441734915066445b9eed5efe66effdc3e88c167425940c4ec9a9",
-    "tests/mod_editor/test_games_chooser.py": "bf2871fd13b412a0e332afbc3bc390aa5812e245cede14bad1650517053fbb15",
-    "tests/mod_editor/test_games_conformance.py": "115c76f6b61dbaacc56723af7097984df4cdf93ca53842af172d1a311f770be8",
-    "tests/mod_editor/test_games_contract.py": "a65868e0da376a9392c16218dcb99a2ec1de6179cfd6e9bafb0540afbbf89fbe",
+    "tests/mod_editor/games_fakes.py": "da40bbefc402bca1070652f8655313edfb5e5c03524b10fb94a5065d65689d4c",
+    "tests/mod_editor/test_games_chooser.py": "5ea9aa2c248e6bb98475ef214a0630805e71d84672c51ff8a257ef77226b8fe2",
+    "tests/mod_editor/test_games_conformance.py": "9053271d82659dab867116068098dbced300aeaaa0b5cb79e4d3b883dc2cd304",
+    "tests/mod_editor/test_games_contract.py": "b0c795afe8a34dafd1655aff2a38511e5a4aa29742601fcfcffa9b8c961891d5",
     "tests/mod_editor/test_games_contract_frozen.py": "c32deb7ed8faf546515dbbddfb11db8697791c86b43dad0779dbff4d69a4dc98"
   },
   "schema": "vc_game_module_contract_pins/v1"
