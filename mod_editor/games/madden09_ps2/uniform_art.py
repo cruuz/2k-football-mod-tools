@@ -278,7 +278,14 @@ def _file_name(container: str, member: int, image: int, width: int, height: int)
 
 
 class UniformArtLane:
-    """Every ``MMAP`` texture on the disc: preview, export, and a checked import."""
+    """Every ``MMAP`` texture on the disc: preview, export, and a checked import.
+
+    **Container-parameterised.**  Which containers a lane walks, which page it
+    lands on and which schemas it writes are class attributes, so a second art
+    page is this class with a different :attr:`art_containers` rather than a
+    second copy of the catalogue, the decoder and the PNG reader.  The uniform
+    rows are the defaults; :mod:`.art_pages` sets the rest.
+    """
 
     lane_id = LANE_ID
     capability_id = CAPABILITY_ID
@@ -286,7 +293,14 @@ class UniformArtLane:
     page = "uniforms"
     title = "Uniform, face and tattoo textures"
     classification = "extract-only"
+    #: ``(container file name, group, what the file says about its structure)``
+    #: -- the containers this lane catalogues and is willing to write.
+    art_containers: Tuple[Tuple[str, str, str], ...] = ART_CONTAINERS
+    #: How many textures the catalogue offers as targets.
+    max_targets = MAX_TARGETS
+    catalog_schema = CATALOG_SCHEMA
     recipe_schema = RECIPE_SCHEMA
+    write_schema = WRITE_SCHEMA
     validators = (
         "tools/validate_madden09_ps2_uniform_art.sh",
         "tools/validate_madden09_ps2_uniform_art.bat",
@@ -294,6 +308,20 @@ class UniformArtLane:
     #: The lane publishes files rather than rewriting the source, so it
     #: declares artifacts instead of byte ranges.
     fixed_allocation = False
+
+    #: What a catalogue says about the members it lists but cannot open.  Every
+    #: art container on this disc carries members that are not textures, and
+    #: they are **listed read-only** rather than hidden: a page that showed only
+    #: the textures would leave a user thinking the rest of the file was empty.
+    NOT_TEXTURE_NOTE = (
+        "Members counted by format. Only MMAP members are textures this lane reads or writes. "
+        "SMF and DMF members are EA geometry -- SMF static (fields, stadium shells), DMF "
+        "animated (players, coaches, fans) -- and NO decoder for either is built here and no "
+        "layout for either is documented anywhere in this repository, so they are listed and "
+        "left alone. An empty member is a real zero-length slot the container declares, and an "
+        "unclassified one is a member whose first 32 bytes match no format id this reader "
+        "knows. None of the three is opened, previewed or written."
+    )
 
     NO_IDENTITY = (
         "This lane can only name a PCSX2 replacement file for a texture the emulator has "
@@ -325,8 +353,9 @@ class UniformArtLane:
         totals = {"members": 0, "images": 0, "decodable": 0}
         skipped: Dict[str, str] = {}
         refusals: Dict[str, int] = {}
+        census: Dict[str, Dict[str, int]] = {}
 
-        for name, group, note in ART_CONTAINERS:
+        for name, group, note in self.art_containers:
             entry = present.get(name)
             if entry is None:
                 skipped[name] = "not on this image"
@@ -337,7 +366,21 @@ class UniformArtLane:
             if container is None:
                 skipped[name] = "could not be opened as a TERF container"
                 continue
+            counted = census.setdefault(name, {})
             for index in range(len(container)):
+                # Classify from the member's first 32 bytes -- the codec stops
+                # there -- and unpack only the textures.  ``FIELDART.DAT`` is
+                # 642 SMF geometry members against 73 textures and
+                # ``STADIUMS.DAT`` 651 against 434 [M]; decompressing all of
+                # them to read a four-byte magic is most of a catalogue's cost
+                # for an answer the head already gives.
+                try:
+                    kind = container.member_format(index) or "unclassified"
+                except Exception:  # noqa: BLE001 - one bad member must not end the walk
+                    kind = "undecodable"
+                counted[kind] = counted.get(kind, 0) + 1
+                if kind != "MMAP":
+                    continue
                 try:
                     payload = containers.member_uncached(container, index)
                 except Exception:  # noqa: BLE001 - one bad member must not end the walk
@@ -377,28 +420,37 @@ class UniformArtLane:
                                                 surface.width, surface.height),
                     }
                     rows.append(row)
-                    if len(targets) < MAX_TARGETS:
+                    if len(targets) < self.max_targets:
                         targets.append(self._target(row, note))
         document = {
-            "schema": CATALOG_SCHEMA,
+            "schema": self.catalog_schema,
             "source": str(source),
             "containers": [
                 {"name": name, "group": group, "structure": note}
-                for name, group, note in ART_CONTAINERS
+                for name, group, note in self.art_containers
             ],
             "members_read": totals["members"],
             "images_seen": totals["images"],
             "images_decodable": totals["decodable"],
             "rows_listed": len(rows),
             "targets_listed": len(targets),
-            "targets_cap": MAX_TARGETS,
+            "targets_cap": self.max_targets,
             "skipped": skipped,
             "not_decodable": refusals,
+            "members_by_format": census,
+            "members_not_texture": {
+                container_name: {kind: count for kind, count in sorted(kinds.items())
+                                 if kind != "MMAP"}
+                for container_name, kinds in sorted(census.items())
+                if any(kind != "MMAP" for kind in kinds)
+            },
+            "members_not_texture_note": self.NOT_TEXTURE_NOTE,
             "rows": rows,
             "note": "Dimensions, formats and counts only. A texture's pixels are decoded when "
                     "you ask to see or export one, and are never stored in this catalogue.",
         }
-        return Catalogue(CATALOG_SCHEMA, self.lane_id, str(source), tuple(targets), document)
+        return Catalogue(self.catalog_schema, self.lane_id, str(source), tuple(targets),
+                         document)
 
     @staticmethod
     def _target(row: Mapping[str, Any], structure: str) -> Target:
@@ -620,13 +672,13 @@ class UniformArtLane:
             if edit.note:
                 row["note"] = edit.note
             rows.append(row)
-        return {"schema": RECIPE_SCHEMA, "textures": rows}
+        return {"schema": self.recipe_schema, "textures": rows}
 
     def _entries(self, recipe: Mapping[str, Any]) -> List[Dict[str, Any]]:
-        require(isinstance(recipe, Mapping) and recipe.get("schema") == RECIPE_SCHEMA,
+        require(isinstance(recipe, Mapping) and recipe.get("schema") == self.recipe_schema,
                 f"recipe schema is "
                 f"{recipe.get('schema') if isinstance(recipe, Mapping) else recipe!r}, "
-                f"expected {RECIPE_SCHEMA}")
+                f"expected {self.recipe_schema}")
         rows = recipe.get("textures")
         require(isinstance(rows, list) and rows,
                 "a recipe must carry a non-empty 'textures' list; choose at least one texture "
@@ -663,7 +715,7 @@ class UniformArtLane:
                 "identity_note": self.identity_note(target),
             })
         return Plan(self.lane_id, tuple(entry["texture"] for entry in entries), (), {
-            "schema": RECIPE_SCHEMA,
+            "schema": self.recipe_schema,
             "textures": rows,
             "identity_note": self.NO_IDENTITY,
         })
@@ -713,7 +765,7 @@ class UniformArtLane:
         readme.write_text(self._how_to(len(rows)), encoding="utf-8", newline="\n")
         artifacts.append(Artifact(str(readme), _sha256(readme.read_bytes()), "text"))
         document = {
-            "schema": WRITE_SCHEMA,
+            "schema": self.write_schema,
             "source": str(source),
             "destination": str(destination),
             "export_folder": export_root.as_posix(),
@@ -726,7 +778,7 @@ class UniformArtLane:
             handle.write(payload)
         document["manifest_sha256"] = _sha256(payload)
         artifacts.insert(0, Artifact(str(destination), _sha256(payload), "export-manifest"))
-        return Receipt(WRITE_SCHEMA, self.lane_id, str(source), str(destination), (),
+        return Receipt(self.write_schema, self.lane_id, str(source), str(destination), (),
                        document, artifacts=tuple(artifacts))
 
     def _how_to(self, count: int) -> str:
@@ -882,6 +934,7 @@ class UniformDiscArtWriteLane(UniformArtLane):
     title = "Write uniform, face and tattoo textures back to a new disc image"
     classification = "offline-writer-proved"
     recipe_schema = DISC_RECIPE_SCHEMA
+    write_schema = DISC_WRITE_SCHEMA
     validators = (
         "tools/validate_madden09_ps2_uniform_disc_art.sh",
         "tools/validate_madden09_ps2_uniform_disc_art.bat",
@@ -970,13 +1023,13 @@ class UniformDiscArtWriteLane(UniformArtLane):
             if edit.note:
                 row["note"] = edit.note
             rows.append(row)
-        return {"schema": DISC_RECIPE_SCHEMA, "textures": rows}
+        return {"schema": self.recipe_schema, "textures": rows}
 
     def _entries(self, recipe: Mapping[str, Any]) -> List[Dict[str, Any]]:
-        require(isinstance(recipe, Mapping) and recipe.get("schema") == DISC_RECIPE_SCHEMA,
+        require(isinstance(recipe, Mapping) and recipe.get("schema") == self.recipe_schema,
                 f"recipe schema is "
                 f"{recipe.get('schema') if isinstance(recipe, Mapping) else recipe!r}, "
-                f"expected {DISC_RECIPE_SCHEMA}")
+                f"expected {self.recipe_schema}")
         rows = recipe.get("textures")
         require(isinstance(rows, list) and rows,
                 "a recipe must carry a non-empty 'textures' list; choose at least one texture "
@@ -1017,10 +1070,11 @@ class UniformDiscArtWriteLane(UniformArtLane):
             if catalogue is not None:
                 catalogue.target(entry["texture"])       # the catalogue's own refusal
             container_name, member, image_index = self.parse_key(entry["texture"])
-            require(any(container_name == name for name, _group, _note in ART_CONTAINERS),
+            require(any(container_name == name
+                        for name, _group, _note in self.art_containers),
                     f"{entry['texture']}: {container_name} is not one of the art containers "
                     f"this lane writes "
-                    f"({', '.join(name for name, _g, _n in ART_CONTAINERS)}).")
+                    f"({', '.join(name for name, _g, _n in self.art_containers)}).")
             require(container_name in present,
                     f"{entry['texture']}: {container_name} is not on this image.")
             slot = by_member.setdefault((container_name, member), {})
@@ -1085,7 +1139,16 @@ class UniformDiscArtWriteLane(UniformArtLane):
                         **({"note": entry["note"]} if entry.get("note") else {}),
                     })
                 new_member = mmap_art.encode(payload, levels=levels, texture=texture)
-                plan = ea_terf.plan_member_rewrite(blob, member, new_member)
+                # A plain ``DATA`` container carries no ``COMP`` codec table, so a
+                # member packed under LZH1 would be handed back to the game still
+                # packed.  ``PLYRFACE``, ``TATTOOS`` and every ``UIS_*`` container
+                # are that shape [M]; offering LZH1 there is a refusal waiting to
+                # happen, so the codec list is narrowed to what the container can
+                # record rather than chosen and then rejected.
+                plan = ea_terf.plan_member_rewrite(
+                    blob, member, new_member,
+                    codecs=((ea_terf.CODEC_STORED,) if container.chunk("COMP") is None
+                            else (ea_terf.CODEC_STORED, ea_terf.CODEC_LZH1)))
                 blob = ea_terf.rewrite_member(blob, member, new_member, codec=plan.codec)
                 container = ea_terf.parse_terf(blob, allow_size_mismatch=True)
                 member_notes.append({
@@ -1243,7 +1306,7 @@ class UniformDiscArtWriteLane(UniformArtLane):
                        for item in report["declared_ranges"])
         return Plan(self.lane_id, tuple(row["texture"] for row in composed["textures"]),
                     ranges, {
-                        "schema": DISC_RECIPE_SCHEMA,
+                        "schema": self.recipe_schema,
                         "textures": [{k: v for k, v in row.items() if k != "png_sha256"}
                                      for row in composed["textures"]],
                         "members": composed["members"],
@@ -1274,7 +1337,7 @@ class UniformDiscArtWriteLane(UniformArtLane):
         ranges = tuple(DeclaredRange(item["start"], item["length"], item["reason"])
                        for item in json_report["declared_ranges"])
         document = {
-            "schema": DISC_WRITE_SCHEMA,
+            "schema": self.write_schema,
             "source": str(source),
             "destination": str(destination),
             "textures": composed["textures"],
@@ -1291,7 +1354,7 @@ class UniformDiscArtWriteLane(UniformArtLane):
             "identity_note": self.NO_IDENTITY,
             "runtime_note": self.NOT_BOOTED,
         }
-        return Receipt(DISC_WRITE_SCHEMA, self.lane_id, str(source), str(destination),
+        return Receipt(self.write_schema, self.lane_id, str(source), str(destination),
                        ranges, document)
 
     def verify(self, source: Path, destination: Path, receipt: Receipt) -> Verdict:
