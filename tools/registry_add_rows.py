@@ -133,11 +133,19 @@ class Plan:
         return written
 
 
-def counts(rows: Sequence[dict]) -> tuple[int, int, int]:
+def counts(rows: Sequence[dict]) -> tuple[int, int, int, int]:
+    """Rows, covered rows, distinct validators, and the Xbox NFL 2K5 rows.
+
+    The last one is the ``nfl2k5_capabilities`` figure the runtime gate and
+    the getting-started page quote; it moved from 32 to 45 with upstream's
+    Beta 61, so it is read off the registry rather than written into this
+    tool.
+    """
     total = len(rows)
     covered = sum(1 for row in rows if row.get("classification") not in ("unknown", "unsafe/deferred"))
     validators = len({row.get("validation_command") for row in rows if row.get("validation_command")})
-    return total, covered, validators
+    nfl2k5 = sum(1 for row in rows if row.get("game") == "nfl2k5_xbox")
+    return total, covered, validators, nfl2k5
 
 
 def canonical(document: Any) -> str:
@@ -188,17 +196,17 @@ def add_rows(plan: Plan, game: str, row_files: Sequence[Path], new_game: Optiona
     return added, before, after
 
 
-def move_count_pins(plan: Plan, before: tuple[int, int, int], after: tuple[int, int, int]) -> None:
-    (rows, covered, validators), (n_rows, n_covered, n_validators) = before, after
+def move_count_pins(plan: Plan, before: tuple[int, int, int, int], after: tuple[int, int, int, int]) -> None:
+    (rows, covered, validators, k), (n_rows, n_covered, n_validators, n_k) = before, after
     plan.edit(RUNTIME_GATE, [
         (f"require(len(registry.capabilities) == {rows},", f"require(len(registry.capabilities) == {n_rows},"),
-        (f'"registry={rows} sections=12 nfl2k5_capabilities=32 "', f'"registry={n_rows} sections=12 nfl2k5_capabilities=32 "'),
+        (f'"registry={rows} sections=12 nfl2k5_capabilities={k} "', f'"registry={n_rows} sections=12 nfl2k5_capabilities={n_k} "'),
     ])
     plan.edit(APF_RUNTIME_GATE, [(f"len(registry.capabilities) == {rows}", f"len(registry.capabilities) == {n_rows}")])
     plan.edit(INSTALLER_TEST, [(f'"len(registry.capabilities) == {rows}"', f'"len(registry.capabilities) == {n_rows}"')])
     plan.edit(PACKAGING_TEST, [
         (f'"registry has {rows} cross-title rows"', f'"registry has {n_rows} cross-title rows"'),
-        (f'"registry={rows} sections=12 nfl2k5_capabilities=32"', f'"registry={n_rows} sections=12 nfl2k5_capabilities=32"'),
+        (f'"registry={rows} sections=12 nfl2k5_capabilities={k}"', f'"registry={n_rows} sections=12 nfl2k5_capabilities={n_k}"'),
     ])
     plan.edit(VALIDATE_ALL, [
         (f"EXPECTED_CAPABILITIES = {rows}", f"EXPECTED_CAPABILITIES = {n_rows}"),
@@ -211,12 +219,12 @@ def move_count_pins(plan: Plan, before: tuple[int, int, int], after: tuple[int, 
     )])
     plan.edit(APF_STATUS, [(f"contains {rows} records globally and 37 APF", f"contains {n_rows} records globally and 37 APF")])
     plan.edit(GETTING_STARTED, [(
-        f"The current registry has {rows} cross-title rows, including 32 Xbox NFL 2K5",
-        f"The current registry has {n_rows} cross-title rows, including 32 Xbox NFL 2K5",
+        f"The current registry has {rows} cross-title rows, including {k} Xbox NFL 2K5",
+        f"The current registry has {n_rows} cross-title rows, including {n_k} Xbox NFL 2K5",
     )])
     plan.edit(STATUS, [(
-        f"| Capability registry | {rows} rows total; 32 Xbox NFL 2K5 rows; ",
-        f"| Capability registry | {n_rows} rows total; 32 Xbox NFL 2K5 rows; ",
+        f"| Capability registry | {rows} rows total; {k} Xbox NFL 2K5 rows; ",
+        f"| Capability registry | {n_rows} rows total; {n_k} Xbox NFL 2K5 rows; ",
     )])
     plan.log.append(
         f"[counts] rows {rows}->{n_rows}  covered {covered}->{n_covered}  validators {validators}->{n_validators}"

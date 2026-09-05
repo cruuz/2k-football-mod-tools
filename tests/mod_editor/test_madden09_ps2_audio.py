@@ -410,7 +410,7 @@ class QklTests(_Room):
 
         plain = self.room / "no-cache.iso"
         if not plain.exists():
-            plain.write_bytes(containers.build_synthetic_disc())
+            plain.write_bytes(containers.build_synthetic_disc(preload_caches=False))
         self.assertEqual(audio_lane.preload_copies(containers.open_disc(plain)), {})
 
     def test_the_cache_names_its_files_and_its_copies(self) -> None:

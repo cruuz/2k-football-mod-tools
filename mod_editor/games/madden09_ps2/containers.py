@@ -929,7 +929,8 @@ def build_synthetic_preload_cache(payload: Sequence[Tuple[str, int, Optional[int
 
 def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
                          tdb_members: Optional[Sequence[bytes]] = None,
-                         stream_database: Optional[bytes] = None) -> bytes:
+                         stream_database: Optional[bytes] = None,
+                         preload_caches: bool = True) -> bytes:
     """A tiny ``SLUS-21770``-shaped image carrying two synthetic containers.
 
     ``UNIFORMS.DAT`` is built as a ``COMP`` container whose members are stored
@@ -946,6 +947,8 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     a bare database with no container around it [M], for a lane that writes
     the second copy of a record living there.  Both default to absent, so a
     caller that wants what this built before gets exactly that.
+    ``preload_caches=False`` leaves out the two ``QL01`` caches, for a test that
+    needs an image with no cache at all.
     """
 
     uniform_members = [
@@ -985,10 +988,11 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
         (UNIFORM_CONTAINER.encode("ascii") + b";1", uniforms),
         (TEAM_DATABASE_CONTAINER.encode("ascii") + b";1", teams),
     ]
-    sub_files += [
-        (PRELOAD_CACHES[0].encode("ascii") + b";1", game_cache),
-        (PRELOAD_CACHES[1].encode("ascii") + b";1", fe_cache),
-    ]
+    if preload_caches:
+        sub_files += [
+            (PRELOAD_CACHES[0].encode("ascii") + b";1", game_cache),
+            (PRELOAD_CACHES[1].encode("ascii") + b";1", fe_cache),
+        ]
     if stream_database is not None:
         sub_files.append((STREAM_DATABASE_FILE.encode("ascii") + b";1", stream_database))
     return iso_lib.build_synthetic_iso(

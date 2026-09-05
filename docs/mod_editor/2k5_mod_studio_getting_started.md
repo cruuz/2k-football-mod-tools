@@ -358,19 +358,8 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 99 cross-title rows, including 45 Xbox NFL 2K5
+The current registry has 106 cross-title rows, including 45 Xbox NFL 2K5
 capabilities, 9 NFL 2K5 PS2 rows (the separate PS2 save-import bridge, the
-The current registry has 86 cross-title rows, including 32 Xbox NFL 2K5
-The current registry has 89 cross-title rows, including 32 Xbox NFL 2K5
-capabilities and 9 NFL 2K5 PS2 rows: the separate PS2 save-import bridge, the
-read-only PS2 disc inventory, the PCSX2 replacement-pack export for edited uniform
-art -- the PS2 studio's Windows menu, or --ps2-export -- and six on-disc writers:
-display text, playbooks, uniform colours, the disc roster, stadium positions and
-one-shot AUDO sounds, which the PS2 NFL 2K5 Studio window drives, see below) and
-the PS2 Madden 09 Studio's rows (see below). No current 2K5 capability
-is labeled Coming Soon, and an asset never becomes writable merely because it
-has a preview.
-
 ## PS2 Madden 09 Studio (RC87)
 
 **A second game is on the *Select other games…* list.** Pick **PS2 Madden 09 Studio** and it

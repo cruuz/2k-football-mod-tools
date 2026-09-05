@@ -74,9 +74,9 @@ class ExistingGameRowsTests(unittest.TestCase):
             id="nfl2k5ps2.colors.zz_probe", title="Probe row", validation_command="bash tools/validate_zz_probe.sh",
         ))
         plan = tool.apply(self.root, game="nfl2k5_ps2", rows=[row], modules=["zz_probe_module"])
-        rows, covered, validators = self.before
+        rows, covered, validators, k = self.before
         registry = _registry(self.root)
-        self.assertEqual(tool.counts(registry["capabilities"]), (rows + 1, covered + 1, validators + 1))
+        self.assertEqual(tool.counts(registry["capabilities"]), (rows + 1, covered + 1, validators + 1, k))
         self.assertEqual([r["id"] for r in registry["capabilities"]], sorted(r["id"] for r in registry["capabilities"]))
         raw = (self.root / tool.REGISTRY).read_bytes()
         self.assertEqual(raw, tool.canonical(registry).encode("utf-8"), "the registry stays canonical")
@@ -86,12 +86,12 @@ class ExistingGameRowsTests(unittest.TestCase):
             (tool.VALIDATE_ALL, f"EXPECTED_COVERED_CAPABILITIES = {covered + 1}"),
             (tool.VALIDATE_ALL, f"EXPECTED_UNIQUE_VALIDATORS = {validators + 1}"),
             (tool.RUNTIME_GATE, f"require(len(registry.capabilities) == {rows + 1},"),
-            (tool.RUNTIME_GATE, f'"registry={rows + 1} sections=12 nfl2k5_capabilities=32 "'),
+            (tool.RUNTIME_GATE, f'"registry={rows + 1} sections=12 nfl2k5_capabilities={k} "'),
             (tool.RUNTIME_GATE, '        "zz_probe_module",\n    )'),
             (tool.APF_RUNTIME_GATE, f"len(registry.capabilities) == {rows + 1}"),
             (tool.INSTALLER_TEST, f'"len(registry.capabilities) == {rows + 1}"'),
             (tool.PACKAGING_TEST, f'"registry has {rows + 1} cross-title rows"'),
-            (tool.PACKAGING_TEST, f'"registry={rows + 1} sections=12 nfl2k5_capabilities=32"'),
+            (tool.PACKAGING_TEST, f'"registry={rows + 1} sections=12 nfl2k5_capabilities={k}"'),
             (tool.APF_README, f"APF capabilities ({rows + 1} across all three"),
             (tool.APF_STATUS, f"contains {rows + 1} records globally"),
             (tool.GETTING_STARTED, f"The current registry has {rows + 1} cross-title rows"),
