@@ -156,21 +156,34 @@ it. The frozen surface test lists the new names.
 ## 5. Madden NFL 09 (PS2) — RC87 on this shell, disc-based
 
 Module `madden09_ps2`: `console="PS2"`, `game="Madden"`, `year="09"`; serial `SLUS-21770`,
-vanilla and Deluxe images recognised by their executable digests. Day one: every page present.
-Lanes earn rungs in this order, each with an independent verifier and a synthetic source:
+vanilla and Deluxe images recognised by their boot-ELF digests (vanilla ELF CRC `38014255`,
+Deluxe `084562FF`; whole-image sha256 `b34e8a6a…` / `d331c5e4…`). Day one: every page present.
 
-1. **Inventory** (`ReadOnlyLane`, `read-only-mapped`): the EA disc container (TERF/DIR1) walked
-   and named; sizes and digests; nothing written.
-2. **Uniform art** (`ArtLane`, `extract-only`): FSH inside BIG decoded to PNG; PCSX2 identities
-   from a GS-dump capture of Madden 09 on the rig (one human session, or the headless dump seam
-   once a save state exists); pack out. The NCAA 06 + Madden 08 community pack proves the route.
-3. **Text and team data** (writers, `offline-writer-proved`): on-disc EA TDB payloads
-   (`DB_TEAMS.DAT`, `TEMPLATE.DAT`, `STRMDATA.DB`) once TERF per-member compression and the
-   container checksum are settled; until then the pages say so.
-4. **Audio**: EA SCHl decode to WAV (`AudioLane`, `extract-only`); no writer exists publicly, so
-   the page states that and stays export-only.
-5. **Stadiums, playbooks, gameplay patches**: inventory first; the pnach scaffold is the same
-   lane class as 2K5's, every translation refused until mapped.
+**Prior art — measured, not assumed.** The owner's `nfl-online-revival` repository (read-only
+reference; no licence file, so the fork re-expresses rather than copies) already holds the disc
+research this module needs: `tools/lzh1.py` (the `TERF` `COMP` member codecs `LZH1` id 5 and
+`RLE1` id 1, reversed from the Madden 2004 executable), `tools/madden_tdb.py` (the `TERF → DIR1 →
+[COMP] → DATA` walk and the EA TDB reader), `docs/madden09-container-census.md` (every member of
+every container, with decompressed formats), `docs/madden09-iso-contents.md`, `-tdb-schema.md`,
+`-data-layer.md`, `-deluxe-diff.md`, `-player-struct.md`, `-playbook-map.md`, `-funcmap.md`. Its
+census settles what the pages edit:
+
+| page | on the disc | format | first rung |
+|---|---|---|---|
+| Uniforms & Equipment | `UNIFORMS.DAT`: 455 `MMAP` textures (+270 empty slots); faces in `PLYRFACE`/`COACFACE`, tattoos | `MMAP` v2: 40-byte header, width/height at +0x28, palettised pixels + palette | inventory → PCSX2 pack (`ArtLane`, extract-only) → write-back once the `COMP` writer round-trips |
+| Stadiums | `STADIUMS.DAT`: 651 `SMF\0` geometry + 434 `MMAP`; `STADATA.DAT` | `SMF` geometry, `MMAP` textures | inventory; textures as art; geometry read-only |
+| Field Art | `FIELDART.DAT`: 642 `SMF\0` + 73 `MMAP` | same | same |
+| Text & Team Identity / Menus | `TEXT` members: 14,049 strings, mostly the story generator (`STRYTEXT` 6,973 …); team data in `DB_TEAMS.DAT` (234 EA TDB v8 members) and `STRMDATA.DB` (bare TDB) | `TEXT`, EA TDB | TDB rows as writers (`offline-writer-proved` with an independent verifier) once the container writer is proved; `GAME.QKL`/`FE.QKL` are copies a data patch must keep consistent |
+| Audio | `SOUNDDAT.DAT`, `BGM.DAT` (TERF audio variant), speech `SPCH*.DAT` (`SCHl`) | EA `SCHl` | decode-to-WAV export only; no public writer, the page says so |
+| Rosters | on-disc roster/team TDBs; memory-card saves are out of scope for RC87 | EA TDB | inventory, then writers |
+| Playbooks, Gameplay | executable + data; the owner's funcmap and pnach→ISO pipeline exist | R5900 | `CodePatchLane` scaffold, translations refused until mapped |
+
+Lanes earn rungs in this order, each with an independent verifier and a synthetic source:
+inventory (`ReadOnlyLane`) for every container → uniform art via PCSX2 packs (identities need a
+GS-dump capture of Madden 09 on the rig: one human session, or the headless dump seam once a save
+state exists; the NCAA 06 + Madden 08 community pack proves the route) → TDB writers through the
+`TERF` rewrite path (`DATA` containers first, `COMP` when the encoder round-trips; the owner's
+`docs/lzh1-encoder-design.md` is the design) → audio export → code patches.
 
 ## 6. Work packages
 
@@ -181,7 +194,8 @@ Lanes earn rungs in this order, each with an independent verifier and a syntheti
 | C | PS2 uniform art `ArtLane`: decode to PNG, encode checks, identities, pack, verifier, tests, Uniforms page data | agent (own worktree; no contract or registry edits) | spec §1.3 |
 | D | PS2 module on the shell: `Target.fields` for the six lanes, manifest fields, `studio_window`, retire the hand-written dialog when parity is green; PS2 rows to the fragment | me + agent | A2, C |
 | E | docs (contract, adding a game, getting started, handoff), changelog, STATUS, pins, release RC86, Windows smoke, runbook | me | D |
-| F | Madden 09 module: identity, inventory lane, uniform-art lane (needs the dump session), page notes; RC87 | agents | E, disc dumps |
+| F1 | `_formats/ea_terf` (TERF/DIR1, `DATA` + `COMP`, LZH1/RLE1 decode re-expressed from the owner's tools, member-format ids, `MMAP` header, `DATA` rewrite, inspect CLI, synthetic tests) | agent (own worktree) | prior art |
+| F | Madden 09 module: identity, inventory lane, uniform-art lane (needs the dump session), TDB lanes, page notes; RC87 | agents | E, F1, disc dumps |
 
 Acceptance for RC86: every game module renders all 14 pages offscreen in conformance; the PS2
 studio shows the six writers, the code-patch lane, the inventory and the uniform art on the
