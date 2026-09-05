@@ -252,3 +252,24 @@ error: pathspec 'ASTRA_WIN_LOCAL_CI_REPORT.md' did not match any file(s) known t
 No commit was created. The four deliverables remain in this worktree for
 review and an explicit-path commit when Git metadata is writable. No
 permission escalation, sandbox bypass or push was attempted.
+
+## Acceptance run by Claude outside the sandbox (2026-09-05 09:45, wine-9.0, this machine)
+
+Blocker found first: with stdout redirected to a regular file, Wine's python.exe dies in `init_sys_streams`
+(`OSError: [WinError 6] Invalid handle`) before any Python frame; on a pipe it starts. Every variant of stdin, setsid,
+env and prefix failed the same way with a file stdout and passed with a pipe. Fixed in commit d28ab96: `run_process`
+reads a pipe in a pump thread and writes the log itself.
+
+`--os-check`: Windows CPython 3.12.10, `os.name nt`, `platform.system() Windows`, `O_BINARY` 32768, Qt 5.15.2 with
+`qt_platform offscreen`; import probes resolve `mod_editor` to the checkout in normal mode and to the synthetic stage in
+the isolated child. 8 s.
+
+RED, `--repo /tmp/winci-red` (89938fa) `--only test_modpack.py`: `FAIL test_modpack.py (rc=1)`,
+`ERROR: test_special_round_trip_and_raw_partition ... modpack.py line 144 os.replace(part, target)
+PermissionError: [WinError 5] Access denied: '...\\modpack-special-...\\base.iso.part' -> '...\\base.iso'`.
+36 tests, 22.7 s, wall clock 34.8 s. This is the exact windows-latest failure that held beta 60.
+
+GREEN, `--repo /tmp/winci-green` (b8d55f4) `--only test_modpack.py`: `PASS test_modpack.py (36 tests)`,
+`ALL TEST FILES PASSED`, wall clock 34.0 s.
+
+Wine therefore does reproduce the handle-sharing rename refusal. Full-matrix timing follows in the next section.
