@@ -352,3 +352,11 @@ tools/validate_nfl2k5_ps2_text.sh
 # PS2 M1 (WP5): the Qt window over that export service -- File > Export PS2
 # replacement pack, and the --ps2-export entry point.
 mod_editor/gui/ps2_export_dialog_qt.py
+# PS2 Phase 2: on-disc uniform colours for ESPN NFL 2K5 (SLUS-20919) — the
+# target catalogue, the bounded writer, its independent verifier and both
+# validators.
+tools/nfl2k5_ps2_unif_color_target_catalog.py
+tools/nfl2k5_ps2_unif_color_patch.py
+tools/nfl2k5_ps2_unif_color_verify.py
+tools/validate_nfl2k5_ps2_unif_color.sh
+tools/validate_nfl2k5_ps2_unif_color.bat
