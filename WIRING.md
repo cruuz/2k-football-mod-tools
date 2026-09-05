@@ -1,3 +1,161 @@
+# r62 calendar engine handoff, 2026-09-05
+
+This section supersedes the old season-cap limitation and wave-2 specification
+below. Backend: `mod_editor/core/nfl2k5_calendar_engine.py`; allocator owner:
+`nfl2k5_calendar`. **EXPERIMENTAL / UNWITNESSED.** See
+`ASTRA_CALENDAR_ENGINE_REPORT.md` for results, the precise schedule rule and
+Noah's required witnesses. Protected implementation files remain unchanged.
+
+## BuildPlan and presets (protected mod_build.py)
+
+Add `calendar_engine: bool = False` beside `season_cap`. Both must be exact
+bools in plan validation, recipe loading, Studio forwarding, availability,
+inspection, receipt maps and `wants_xbe_patch`. The public 128-season option
+means the complete repair: normalize `season_cap or calendar_engine` to
+`season_cap=True`, `calendar_engine=True`, `season_2026=True`, `xbe_space=True`.
+The 2026 dependency installs the matching regular/preseason ROST templates;
+XBE-only application cannot certify that external resource. Backend 2004
+support remains available for a deliberately matched 2004 template build.
+
+Explicit preset values: Basic false/false; Advanced false/false; Experimental
+true/true **only after** the new standalone suites, both XBE gates, protected
+wiring/runtime checks and regenerated manifest pass on the integrated stack.
+If an integration gate fails, set both Experimental values false together.
+Do not ship the older gate alone under a complete-calendar caption. The old
+`nfl2k5_season_cap` primitive stays available for diagnostic/core callers and
+retains its honest gate-only receipt.
+
+Defer `calendar_engine` to the final grown executable pass, after the existing
+`season_2026` image step. Include `calendar_engine=False` in early `replace`
+passes. Add `or plan.calendar_engine` to the final-pass condition, pass its
+real value to the final `_apply_all`, and retain `calendar_engine_patch` and
+`calendar_engine` in the final step receipt. The scorebug resource installer's
+`extra_requests` must already include calendar even when its own runtime is
+selected. The allocator union must be complete before ANY owner allocates.
+
+## Dispatcher tuple, kwargs, allocation and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_calendar_engine as calendar_engine_patch
+```
+
+Add keyword `calendar_engine: bool = False` to `_apply_all`, `write_xbe_copy`,
+`write_image_copy` and their forwarding/nonempty-selection/type-validation
+paths. Do the public option normalization in BuildPlan, not in an early
+low-level call that intentionally defers growth. Add the argument at the end
+of `_selected_space_requests`, `_xbe_space_adapter` and inherited defensive
+adapter constructors, and append:
+
+```python
++ (calendar_engine_patch.REQUESTS if calendar_engine else ())
+```
+
+Forward the flag into both allocator-capable adapters and the scorebug
+resource lane's complete union. Include `or calendar_engine` in the allocator
+condition. After the allocator entry in `_apply_all`'s final owners tuple add:
+
+```python
+(calendar_engine, calendar_engine_patch,
+ "calendar_engine_patch", "128-season calendar (experimental)"),
+```
+
+Keep apply-on-applied replay so a sealed mixed install refuses. The module
+coordinates the existing year, calendar, season-length, preseason and
+playoffs14 groups and the cap gate, adding only complete missing prerequisites.
+Do not apply those older groups after the calendar pass. Their public status
+readers now recognize the validated overlay; a raw group reapply still refuses,
+as before. Do not use the old predecessor projection as a writer output.
+
+In `write_image_copy`'s early runtime-resource lane use
+`calendar_engine=calendar_engine and not scorebug_runtime`; include the real
+flag in the resource writer's `extra_requests` and final post-resource call.
+A previously sealed union missing calendar refuses and requires a clean build.
+
+The four public status dictionaries require these exact entries (or one shared
+helper called by all four, using the appropriate byte variable):
+
+| Return dictionary | Entry |
+| --- | --- |
+| `read_xbe` | `"calendar_engine": calendar_engine_patch.status(payload)` |
+| `read_image` | `"calendar_engine": calendar_engine_patch.status(payload)` |
+| `write_xbe_copy` | `"calendar_engine": calendar_engine_patch.status(result)` |
+| `write_image_copy` | `"calendar_engine": calendar_engine_patch.status(after)` |
+
+Keep the separate `season_cap` status: an applied cap byte does not prove a
+calendar installation. Surface the calendar receipt's base year, byte encoding,
+zero persistent data, exact hashes, touched sites and unwitnessed status.
+
+## Gameplay Patches, Build tab and Franchise wording (protected GUI)
+
+Expose ONE combined 128-season option under the existing `season_cap` key.
+Its BuildPlan normalization carries the implementation field `calendar_engine`.
+Add both keys to `NEEDS_IMAGE`; neither is a folder-only or save-only feature.
+Replace the `season_cap` PATCHES row and matching short-label/help maps with:
+
+```python
+("season_cap", "128-season franchise (experimental)",
+ "Retail: Franchise dates and birth dates use a fixed century. Patch: Repairs "
+ "dates, weekdays, live player birth years and season labels through index 127, "
+ "with the final postseason in the following year. EXPERIMENTAL / UNWITNESSED. "
+ "Natural rollovers and save reloads still need testing. History keeps its existing limits."),
+```
+
+The Build `_option` is:
+
+```python
+self.season_cap_check = self._option(
+    f, "season_cap", "128-season franchise (experimental)",
+    calendar_engine_patch.UI_TEXT, badge=NOT_TESTED)
+```
+
+Caption: 35 characters, below 60. Wire checkbox eligibility, load/reset,
+inspection and Gameplay-to-Build forwarding. Availability for this combined
+option requires both modules and the allocator plus the existing 2026 image
+resources. `studio_qt.py` must forward `calendar_engine` with default false.
+
+No Franchise data-view or codec change is needed: it already uses a full base
+year plus the saved byte index and a moving live-DOB century. A save has no
+new field and cannot identify the executable's installed calendar patch.
+When replacing its old informational warning during integration, use:
+“Use the calendar patch with your build's starting year for long franchises.
+A save alone does not identify that patch. Editing this year does not simulate
+seasons.” Keep index/ordinal display and terminal-index read-only behavior.
+Do not globally replace the gate-only module's warning with a repair claim.
+
+## Packaging, closure, capability and manifest
+
+Add these explicit protected release-allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_calendar_engine.py
+mod_editor/core/nfl2k5_calendar_engine_code.py
+docs/mod_editor/nfl2k5_calendar_engine_capability.json
+ASTRA_CALENDAR_ENGINE_REPORT.md
+```
+
+The modified preseason, playoffs14 and season-length modules must be staged
+from this revision. Their existing paths remain in the closure. Add
+`mod_editor.core.nfl2k5_calendar_engine` and
+`mod_editor.core.nfl2k5_calendar_engine_code` to the protected runtime import
+probe. Transitive runtime imports are the existing preseason, playoffs14,
+season-length, season-cap, allocator, rdata-site, bump-strength, cave-oracle
+and draft-assembler helpers, plus standard-library datetime/hashlib/struct.
+GNU as, Capstone and Unicorn are development/proof dependencies only. The
+annotated `.S`, assembler CLI and tests are developer files, not runtime inputs.
+
+Merge `docs/mod_editor/nfl2k5_calendar_engine_capability.json` into the existing
+capability registry using its standard workflow. Refresh closure fingerprints
+and the protected cave manifest with Claude's manifest command. The shared
+allocator gate union and all three manifest owner lists/request composition
+are already updated. Recorder ownership uses the Python module suffix
+`nfl2k5_calendar_engine`; named allocator children use `nfl2k5_calendar`.
+Do not rename the budget owner to get a second reservation. No protected
+manifest JSON was regenerated in this task.
+
+---
+
 # r62 storage growth handoff, 2026-09-05
 
 Backend: `mod_editor/core/nfl2k5_roster_storage.py`, owner

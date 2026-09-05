@@ -90,6 +90,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
             raise AssertionError("QB spy owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_calendar_engine as calendar
+        if calendar.status(cls.patched) != "applied":
+            raise AssertionError("calendar owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -147,7 +150,43 @@ class CaveReferenceTests(unittest.TestCase):
                 merged[-1][1] = b
             else:
                 merged.append([a, b])
-        return [(a, b) for a, b in merged if b - a >= CAVE_MIN]
+        # Calendar composes the existing complete-function preseason rewrite.
+        # Its retained eight-byte retail island must not turn displaced internal
+        # branches into "external" callers. Conversely, never merge the playoff
+        # seeder across the independently called builder entry at 0x2A7E50.
+        ranges = set()
+        for a, b in merged:
+            if a < 0x2BF1B0 and b > 0x2BEC20:
+                a, b = 0x2BEC20, 0x2BF1B0
+            if a < 0x2A7E50 < b:
+                ranges.add((a, 0x2A7E50))
+                a = 0x2A7E50
+            if b - a >= CAVE_MIN:
+                ranges.add((a, b))
+        return sorted((a, b) for a, b in ranges if b - a >= CAVE_MIN)
+
+    def _calendar_noninstruction(self, source, target):
+        """A single pinned E9 is the displacement of JG, not a rel32 opcode.
+
+        This is an instruction-boundary proof, not an oracle unknown/free
+        exemption. The generic oracle and its raw candidate inventory stay intact.
+        """
+        if (source, target) != (0x2A268D, 0x2BEDF8):
+            return False
+        start, end = 0x2A2640, 0x2A2693
+        raw = self.retail[start - BASE:end - BASE]
+        self.assertEqual(self.patched[start - BASE:end - BASE], raw)
+        import hashlib
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         "2420e43e3b55e9d3d4ef952cb9ea881178ce98a2f6915d356ae5b287bf491f08")
+        instructions = list(Cs(CS_ARCH_X86, CS_MODE_32).disasm(raw, start))
+        self.assertEqual(instructions[0].address, start)
+        self.assertEqual(instructions[-1].address + instructions[-1].size, end)
+        self.assertNotIn(source, {i.address for i in instructions})
+        branch = next(i for i in instructions if i.address == source - 1)
+        self.assertEqual((branch.bytes.hex(), branch.mnemonic, branch.op_str),
+                         ("7fe9", "jg", "0x2a2677"))
+        return True
 
     def test_stadium_patch_changes_only_existing_instruction_operands(self) -> None:
         from mod_editor.core import nfl2k5_roster_storage as storage
@@ -173,7 +212,8 @@ class CaveReferenceTests(unittest.TestCase):
                     continue
                 outside = [r for r in refs
                            if not (isinstance(r, int) and a <= r < b)                       # a jump inside the range
-                           and not (isinstance(r, tuple) and r[1] == ".text" and a <= r[2] + BASE < b)]  # a pointer inside it
+                           and not (isinstance(r, tuple) and r[1] == ".text" and a <= r[2] + BASE < b)
+                           and not self._calendar_noninstruction(r, t)]
                 if outside:
                     hits.append((hex(t), outside[:3]))
             if hits:
@@ -189,7 +229,8 @@ class CaveReferenceTests(unittest.TestCase):
     def test_playoff_presentation_rewrites_only_owned_callbacks(self) -> None:
         from mod_editor.core import nfl2k5_playoff_picture as picture, nfl2k5_season_length as season
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
-        dependency, _ = season.apply(self.patched, groups=("playoffs_14",))
+        self.assertEqual(season.group_status(self.patched, "playoffs_14"), "applied")
+        dependency = self.patched
         patched, _ = picture.apply(dependency)
         self.assertEqual(picture.status(patched), "applied")
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
@@ -212,7 +253,8 @@ class CaveReferenceTests(unittest.TestCase):
         targets = legacy_references(XbeImage(self.retail))
         self.assertEqual(set(targets), set(self.targets))
         for start, end in self._caves():
-            self.assertEqual(legacy_external_references(targets, start, end), [], hex(start))
+            self.assertEqual([r for r in legacy_external_references(targets, start, end)
+                              if not self._calendar_noninstruction(r.source, r.start)], [], hex(start))
 
     def test_current_owners_are_reserved_for_new_allocations(self) -> None:
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
@@ -302,6 +344,8 @@ class CaveReferenceTests(unittest.TestCase):
         # The complete union now requires RO storage and selects v3 even
         # when the caller did not explicitly request scale-out.
         if space.is_scaleout(self.patched):
+        # Calendar requires v3 even when the caller does not force scale-out.
+        if space.layout(self.patched)["version"] == 3:
             self.assertEqual(proof["retail_mapping_overlaps"], [])
             self.assertEqual(len(proof["pages"]), 52)
             self.assertEqual(len(proof["encoded_references"]), 1081)  # disclosed raw inventory

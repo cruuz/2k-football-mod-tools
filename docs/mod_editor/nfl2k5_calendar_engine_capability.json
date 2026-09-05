@@ -1,0 +1,50 @@
+[
+  {
+    "id": "nfl2k5.franchise.calendar_engine",
+    "game": "nfl2k5_xbox",
+    "surface": "franchise",
+    "title": "128-season franchise calendar (experimental, unwitnessed)",
+    "summary": "Gregorian current-franchise dates, moving live birth-year century and full year labels, with the existing bounded history and save schema.",
+    "classification": "offline-writer-proved",
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_calendar_engine.py",
+      "operation": "write"
+    },
+    "gui": {
+      "expose": true,
+      "mode": "edit",
+      "default_enabled": false,
+      "reason": "Combined season_cap option; protected wiring pending. EXPERIMENTAL / UNWITNESSED."
+    },
+    "input_constraints": [
+      "Pinned USA executable and a complete allocator union.",
+      "Recognized complete season owners; base year 2004 or 2026 with matching source templates.",
+      "Current dates encode year minus 2000; historical/templates retain their source context. No automatic migration of ambiguous older wrapped dates."
+    ],
+    "evidence": [
+      "ASTRA_CALENDAR_ENGINE_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_calendar_engine.py",
+      "tests/mod_editor/test_nfl2k5_calendar_engine_unicorn.py"
+    ],
+    "runtime": {
+      "status": "not-tested",
+      "scope": "Bounded isolated x86 instructions and synthetic-league generators only. No naturally advanced franchise, loader or save/reload gameplay witness."
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "season_cap",
+          "required": true,
+          "allowed": "Implies calendar_engine, season_2026 and xbe_space; false in Basic/Advanced, Experimental only after all integration gates pass."
+        }
+      ]
+    },
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_calendar_engine.py",
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "tooling": "source-and-schemas-only",
+      "rule": "Do not distribute generated executables, discs or saves."
+    }
+  }
+]

@@ -129,6 +129,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
             raise AssertionError("QB spy owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_calendar_engine as calendar
+        if calendar.status(cls.patched) != "applied":
+            raise AssertionError("calendar owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -231,7 +234,8 @@ class PatchWriteTests(unittest.TestCase):
     def test_playoff_presentation_storage_and_complete_callback_spans(self) -> None:
         from mod_editor.core import nfl2k5_playoff_picture as picture, nfl2k5_season_length as season
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
-        dependency, _ = season.apply(self.patched, groups=("playoffs_14",))
+        self.assertEqual(season.group_status(self.patched, "playoffs_14"), "applied")
+        dependency = self.patched
         patched, _ = picture.apply(dependency)
         image = XbeImage(patched)
         self.assertTrue(image.runtime_writable(picture.WIDGET_REGION, len(picture.widget_bytes())))

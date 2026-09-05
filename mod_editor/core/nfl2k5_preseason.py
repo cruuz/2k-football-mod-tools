@@ -138,10 +138,13 @@ RETAIL_GENERATOR = bytes.fromhex(
 )
 
 
-def generator_code() -> tuple[bytes, dict[str, int]]:
+def generator_code(*, calendar: dict[str, int] | None = None) -> tuple[bytes, dict[str, int]]:
     """The rewritten FUN_002bec20 (see the module docstring); returns (code, labels)."""
 
     a = _Asm(GENERATOR_VA)
+    weekday = calendar["weekday"] if calendar else FN_WEEKDAY
+    add_days = calendar["add_days"] if calendar else FN_ADD_DAYS
+    sub_days = calendar["sub_days"] if calendar else FN_SUB_DAYS
     # frame: [ebp-0x08] rec, [ebp-0x10] prev (unused), [ebp-0x18] anchor {month, day, yy, pad},
     #        [ebp-0x1c] day number of template record 0, [ebp-0x20] season, [ebp-0x24] count,
     #        [ebp-0x28] row, [ebp-0x2c] slot, [ebp-0x30] i, [ebp-0x34] template records
@@ -171,15 +174,19 @@ def generator_code() -> tuple[bytes, dict[str, int]]:
     a.call(FN_SEASON_INDEX); a.b("8945e0"); a.b("85c0"); a.j8("74", "init")
     # ---- season > 0: anchor = Thanksgiving(template year + season) - 119 days
     a.b("c645e80b"); a.b("c645e901")                                  # anchor = Nov 1
-    a.b("8a4605"); a.b("0245e0"); a.b("8845ea")                       # yy = template[0].yy + season
-    a.b("8d4de8"); a.call(FN_WEEKDAY)                                 # eax = weekday of Nov 1 (Mon 0)
+    if calendar:
+        # The template remains in its source year. Only the current anchor is encoded.
+        a.b("8d4de8"); a.call(calendar["regular_anchor"])
+    else:
+        a.b("8a4605"); a.b("0245e0"); a.b("8845ea")
+    a.b("8d4de8"); a.call(weekday)                                    # Monday = 0
     a.b("ba03000000"); a.b("2bd0"); a.b("83c207")                     # edx = 10 - wd
     a.b("83fa07"); a.j8("72", "nowrap"); a.b("83ea07")                # (3 - wd + 7) mod 7
     a.label("nowrap")
     a.b("83c215")                                                     # + 21 = fourth Thursday
-    a.b("8d4de8"); a.call(FN_ADD_DAYS)
-    a.b("ba" + struct.pack("<I", PRESEASON_ANCHOR_DAYS_BEFORE_THANKSGIVING).hex())
-    a.b("8d4de8"); a.call(FN_SUB_DAYS)                                # anchor = HOF Thursday
+    a.b("8d4de8"); a.call(add_days)
+    a.b("ba" + struct.pack("<I", 112 if calendar else PRESEASON_ANCHOR_DAYS_BEFORE_THANKSGIVING).hex())
+    a.b("8d4de8"); a.call(sub_days)                                   # anchor = HOF Thursday
     a.b("8b4dcc"); a.call(FN_DAY_NUMBER); a.b("8945e4")               # [day0] = daynum(template[0])
     a.label("init")
     a.b("33c0"); a.b("8945d8"); a.b("8945d4"); a.b("8945d0")          # row = slot = i = 0
@@ -195,7 +202,7 @@ def generator_code() -> tuple[bytes, dict[str, int]]:
     a.b("8b45e0"); a.b("85c0"); a.j8("74", "write")                   # season 0: dates verbatim
     a.b("8d4df8"); a.call(FN_DAY_NUMBER); a.b("2b45e4")               # eax = daynum(rec) - day0
     a.b("668b4de8"); a.b("66894dfb"); a.b("8a4dea"); a.b("884dfd")    # rec.date = anchor
-    a.b("8bd0"); a.b("8d4dfb"); a.call(FN_ADD_DAYS)                   # rec.date += delta
+    a.b("8bd0"); a.b("8d4dfb"); a.call(add_days)                      # rec.date += delta
     a.label("write")
     a.b("8b5dd8"); a.b("8b7dd4")                                      # ebx = row, edi = slot
     a.b("6a01"); a.b("8bd7"); a.b("8bcb"); a.call(FN_FLAG_A)
@@ -217,9 +224,18 @@ def generator_code() -> tuple[bytes, dict[str, int]]:
     return code, {k: GENERATOR_VA + v for k, v in a.labels.items()}
 
 
-def generator_bytes() -> bytes:
-    code, _labels = generator_code()
-    return code + b"\xcc" * (GENERATOR_SIZE - len(code))
+def generator_bytes(*, calendar: dict[str, int] | None = None) -> bytes:
+    code, _labels = generator_code(calendar=calendar)
+    result = bytearray(code + b"\xcc" * (GENERATOR_SIZE - len(code)))
+    if calendar:
+        # Retain the conservative oracle candidate at 0x2BEDF8 in this owner's
+        # unused tail. Its source is the E9 displacement byte of JG at 0x2A268C,
+        # not an instruction boundary. Keeping the original island also leaves
+        # the unchanged conservative reference gate fully effective.
+        start = 0x2BEDF8 - GENERATOR_VA
+        _require(len(code) <= start, "calendar preseason body reaches retained retail island")
+        result[start:start + 8] = RETAIL_GENERATOR[start:start + 8]
+    return bytes(result)
 
 
 def cave_labels() -> dict[str, int]:
