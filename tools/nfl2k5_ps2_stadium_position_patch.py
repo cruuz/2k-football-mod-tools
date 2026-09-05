@@ -256,7 +256,7 @@ def apply_positions(decoded: bytes, edits: Sequence[dict]) -> Tuple[bytes, List[
     """
     buffer = bytearray(decoded)
     written: List[dict] = []
-    claimed: List[Tuple[int, int]] = []
+    spans: List[Tuple[int, int]] = []
     for edit in edits:
         payload = edit["row"]["position"]["payload"]
         count = edit["row"]["position"]["vertex_count"]
@@ -266,19 +266,24 @@ def apply_positions(decoded: bytes, edits: Sequence[dict]) -> Tuple[bytes, List[
                  % edit["target_id"])
         _require(0 <= start and start + payload["size"] <= len(buffer),
                  "%s payload span is outside the decoded buffer" % edit["target_id"])
+        # One lane can be reachable under several target_ids, so two edits may
+        # name the same bytes.  Check payload spans, not the 12-byte runs: it
+        # is the same test in O(n log n) rather than O(n^2) over every vertex.
+        spans.append((start, start + payload["size"]))
         ranges = []
         for vertex, triple in enumerate(edit["positions"]):
             at = start + vertex * ELEMENT
             struct.pack_into("<3f", buffer, at, *triple)
             ranges.append((at, at + LANE))
-        for low, high in ranges:
-            for other_low, other_high in claimed:
-                _require(high <= other_low or low >= other_high,
-                         "recipe edits overlap inside the decoded buffer")
-        claimed.extend(ranges)
         written.append({"target_id": edit["target_id"], "ranges": ranges,
                         "vertex_count": count,
                         "payload_offset": start, "payload_size": payload["size"]})
+    ordered = sorted(spans)
+    for index in range(1, len(ordered)):
+        _require(ordered[index][0] >= ordered[index - 1][1],
+                 "recipe edits overlap inside the decoded buffer; one position "
+                 "lane can be reachable under several target_ids, so edit it "
+                 "once")
     edited = bytes(buffer)
 
     # Prove containment rather than trusting the loop above.
