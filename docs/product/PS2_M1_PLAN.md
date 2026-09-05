@@ -362,7 +362,11 @@ disambiguation and WP7's first-try success.
 ## 6. Hard rules carried into M1
 
 - **Never emit an unedited texture.** That is retail pixels leaving the disc.
-  The service refuses, the verifier checks, and the tests prove both.
+  The service refuses, the verifier checks, and the tests prove both — and
+  the guarantee starts *upstream* of the exporter: the canonical input is the
+  `.2k5mod` archive, whose writer **refuses any edit whose RGBA equals the
+  retail original** (`mod_editor/core/project_archive.py:381-386`), so every
+  row the exporter ever sees is provably user-authored (WP4, measured).
 - **Never commit a screenshot or a replacement PNG.** Reports and receipts only.
 - **Only both-hash-proved rows ship.** TEX0-only and unresolved rows are
   evidence, not data.
