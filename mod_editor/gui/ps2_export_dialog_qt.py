@@ -657,11 +657,17 @@ class Ps2ExportDialog(QDialog):
             self._plan = service.plan_export(
                 self._project_source, self._manifest_source
             )
-        except Ps2ExportError as exc:
+        # OSError as well as the service's own error: ``project_from_archive``
+        # stats the project before its own try block, so a path that has been
+        # moved or deleted since it was chosen arrives here as a bare
+        # FileNotFoundError. Letting that escape would take the window down
+        # during construction, which is exactly the case ``--ps2-export
+        # <typo>`` produces.
+        except (Ps2ExportError, OSError, ValueError) as exc:
             self.table.setRowCount(0)
             self.info_label.setText(self._plan_failure_text(exc))
             self.status_label.setStyleSheet(f"color: {_INVALID_COLOUR};")
-            self._status(str(exc).strip())
+            self._status(self._failure_message(exc))
             self._refresh_controls()
             return
         self._fill_table()
@@ -670,10 +676,24 @@ class Ps2ExportDialog(QDialog):
     def _plan_failure_text(self, exc: BaseException) -> str:
         """Say why nothing can be planned, in the terms the cause deserves."""
 
-        message = str(exc).strip()
+        message = self._failure_message(exc)
         if not self._manifest_ready():
             return f"{MISSING_MANIFEST_NOTE}\n\n{message}"
         return f"This project could not be planned for export.\n\n{message}"
+
+    def _failure_message(self, exc: BaseException) -> str:
+        """The cause, with the project named when the exception omits it.
+
+        The service's own errors always quote the path. A bare OSError does not
+        -- ``FileNotFoundError`` stringifies to "[Errno 2] No such file or
+        directory" and leaves the user guessing which file.
+        """
+
+        message = str(exc).strip() or exc.__class__.__name__
+        path = self._project_path
+        if path is not None and str(path) not in message:
+            message = f"{message}: {path}"
+        return message
 
     def _manifest_ready(self) -> bool:
         """Whether this build ships the texture map at all.

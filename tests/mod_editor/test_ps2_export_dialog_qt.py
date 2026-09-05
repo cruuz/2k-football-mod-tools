@@ -436,6 +436,40 @@ class DialogTests(unittest.TestCase):
         finally:
             dialog.done(0)
 
+    def test_a_project_that_is_not_there_is_reported_not_raised(self) -> None:
+        """``--ps2-export <typo>`` must open a window, not a traceback.
+
+        ``project_from_archive`` stats the path before its own try block, so a
+        missing project surfaces as a bare FileNotFoundError rather than the
+        service's Ps2ExportError. Construction has to survive it -- and name the
+        file, which "[Errno 2] No such file or directory" does not.
+        """
+
+        missing = self.root / "gone.2k5mod"
+        dialog = self._dialog(project=missing)
+        try:
+            self.assertIsNone(dialog._plan)
+            self.assertEqual(dialog.table.rowCount(), 0)
+            self.assertIn(str(missing), dialog.info_label.text())
+            self.assertIn(str(missing), dialog.status_label.text())
+            self.assertFalse(dialog.export_button.isEnabled())
+            # Recoverable: choosing a real project from here still works.
+            dialog.set_project(self.project)
+            self.assertEqual(dialog.table.rowCount(), 4)
+        finally:
+            dialog.done(0)
+
+    def test_a_project_that_is_not_a_zip_is_reported_not_raised(self) -> None:
+        junk = self.root / "junk.2k5mod"
+        junk.write_bytes(b"this is not a zip archive")
+        dialog = self._dialog(project=junk)
+        try:
+            self.assertIsNone(dialog._plan)
+            self.assertIn("could not be planned", dialog.info_label.text())
+            self.assertFalse(dialog.export_button.isEnabled())
+        finally:
+            dialog.done(0)
+
     def test_no_project_leaves_the_chooser_as_the_only_action(self) -> None:
         dialog = self._dialog(project=None)
         try:
