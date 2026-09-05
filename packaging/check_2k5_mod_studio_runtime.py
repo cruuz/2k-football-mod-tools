@@ -2378,8 +2378,6 @@ def main() -> int:
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
         "registry=101 sections=12 nfl2k5_capabilities=45 "
         "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
-        "registry=101 sections=12 nfl2k5_capabilities=32 "
-        "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
         "text_read_only=3272 roster_numbers=6522 "
