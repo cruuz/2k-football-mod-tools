@@ -1042,8 +1042,12 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         if not flag:
             continue
         state = module.status(patched)
-        if state == "retail":
+        # the star patch knows a "legacy" state (the beta-58..60 gate-only version) and upgrades it in place;
+        # every other module still only ever goes retail -> applied
+        if state == "retail" or (state == "legacy" and key == "player_star_patch"):
             patched, sub_receipt = module.apply(patched)
+            if state == "legacy":
+                sub_receipt = {**sub_receipt, "upgraded_from": "legacy"}
             receipt = {**receipt, key: sub_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])}
         else:

@@ -466,7 +466,7 @@ class BuildPanel(QWidget):
         self.roster_edits_status.hide()
         r.addWidget(self.roster_edits_status)
         self.player_star_check = self._option(r, "player_star", "Show a star under selected players",
-                                             "At most 9 stars at once; not yet tested in-game.", badge=NOT_TESTED,
+                                             "A white star outline under every tagged player on the field; not yet tested in-game.", badge=NOT_TESTED,
                                              details="The game's own controller star follows every player you select. With nobody selected nothing "
                                                      "changes on screen. The same routine gates the on-field name/number indicator, so a selected player "
                                                      "gets that too when Player Indicator Text is on. The tags reach franchises created from the copy.")
@@ -907,8 +907,7 @@ class BuildPanel(QWidget):
         if not self.star_players:
             text = "Selected star players (0): none selected. " + route
         else:
-            over = (f" The game draws at most {player_star.STAR_LIST_LIMIT} at once."
-                    if len(self.star_players) > player_star.STAR_LIST_LIMIT else "")
+            over = ""      # every tagged player on the field gets an outline; there is no selection quota
             text = (f"Selected star players ({len(self.star_players)}): {', '.join(names[:8])}"
                     + (", …" if len(names) > 8 else "") + f".{over} Full disc required.")
             if not star_on and not installed:

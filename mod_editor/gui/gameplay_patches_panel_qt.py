@@ -157,15 +157,13 @@ PATCHES = (
      "five skill players) with nine pass concepts and two coverage sets (4-3 and Nickel looks) with six coverages. The "
      "engine always fields eleven, so the four linemen of each side stand idle at the sideline by design, and one "
      "parked defender rushes after a 4-second count as the throw timer. Needs a disc image; unwitnessed in game."),
-    ("player_star", "Star decal under the players you tag",
-     "Retail already draws a star at a player's feet and the art is called icon_controller_star: it is a "
-     "world-space decal the game puts under whoever a controller is driving, and one 80-byte routine decides "
-     "who gets one. Patch: that routine is rewritten in place (same 80 bytes, same entry, no cave) so it keeps "
-     "every retail answer and also says yes when the player's roster record carries the studio's star bit, "
-     "refusing once the game's 9-entry star list is full. Tick the players in Text & Rosters (★ Star); with no "
-     "player ticked nothing changes on screen. The same routine gates the on-field name/number indicator, so a "
-     "tagged player gets that too when Player Indicator Text is on. The tags need a disc image and reach "
-     "franchises created from the copy. Unwitnessed in game."),
+    ("player_star", "White star outline under the players you tag",
+     "Retail: the game draws a coloured circle under the player a controller is driving and nothing under anyone else. "
+     "Patch: every player you tag under Names, Numbers & Faces (★ Star) gets a closed white five-point outline at his feet "
+     "whenever he is on the field, whoever is controlling him, in games, practice and franchise, following the same HUD and "
+     "coach-camera visibility as the ordinary circle, which is untouched. The tag is one bit of the roster record; existing "
+     "franchise saves need tags in their own roster. A disc patched with the beta-58 version of this (which never drew) "
+     "is upgraded when rebuilt. Unwitnessed in game."),
     ("depth_roles", "X / Z / SLOT receivers and nickel / dime corners (disc images only)",
      "Retail playbooks have no slot receiver: the inside man of a three-wide set is the #1 receiver in 196 formations, "
      "the #2 in 115, the #3 in 100. Patch: every personnel group is rewritten so the innermost receiver is the third "
@@ -236,7 +234,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
     "franchise_practice": ("Free Practice inside Franchise", "A Practice row on the Coach's Desk: your first team against itself.", NOT_TESTED),
     "seven_on_seven": ("7-on-7 practice", "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.", NOT_TESTED),
-    "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; at most 9 stars at once.", NOT_TESTED),
+    "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white star outline.", NOT_TESTED),
     "depth_roles": ("X / Z / SLOT receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
     "depth_chart_rows": ("SLOT, NICKEL and DIME rows on the depth chart",
                          "Switches on the merged position groups and the playbook roles when the disc lacks them.", NOT_TESTED),
@@ -432,6 +430,7 @@ class GameplayPatchesPanel(QWidget):
                    "foreign": "Not recognised: the bytes at this change's sites are neither retail nor this patch "
                               "(changed by another tool), so it can't be added here.",
                    "partial": "Only one half of this change is on the source (executable or name pool), so it can't be added here.",
+                   "legacy": "An earlier version of this change is on the source (beta 58-60, which never drew the star); build from the retail disc to upgrade it.",
                    "retail": ""}.get(value, "Unknown state.")
             # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
