@@ -360,3 +360,12 @@ tools/nfl2k5_ps2_unif_color_patch.py
 tools/nfl2k5_ps2_unif_color_verify.py
 tools/validate_nfl2k5_ps2_unif_color.sh
 tools/validate_nfl2k5_ps2_unif_color.bat
+
+# PS2 Phase 2: the on-disc ROST roster seed for ESPN NFL 2K5 (SLUS-20919).
+# Catalogue, bounded writer, independent verifier, and the two validators
+# CI runs for this surface.
+tools/nfl2k5_ps2_disc_roster_target_catalog.py
+tools/nfl2k5_ps2_disc_roster_patch.py
+tools/nfl2k5_ps2_disc_roster_verify.py
+tools/validate_nfl2k5_ps2_disc_roster.sh
+tools/validate_nfl2k5_ps2_disc_roster.bat
