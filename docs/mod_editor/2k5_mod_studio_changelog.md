@@ -16,10 +16,10 @@
   TERF members**, so `mod_editor/games/_formats/ea_tdb.py` joins the container reader as a shared format: header,
   table directory, field directory and bit-packed records. On the retail disc: **355 databases, 2,151 tables, 354,812
   records, 60,537 field definitions**. Field *names* are catalogued — they are the schema; a record's contents are
-  your game data and stay on your disc.
+  your game data and stay on your disc. The page also edits; see below.
 - **Menus & UI — the text banks**, counted and measured. The catalogue carries string counts, lengths and digests and
   **not one string**, because a catalogue is a file you might share; the strings are read off your own image when you
-  ask to see them.
+  ask to see them. The page also edits; see below.
 - **Uniforms & Equipment — the textures come off the disc.** `MMAP` turns out to be a table-of-tables, not a header
   and a bitmap, and reading it that way gets the pixels out: **7,082 of 7,616 images** in the uniform, player-face,
   coach-face and tattoo containers decode to PNG, and the 534 that do not fall in three groups the page names rather
@@ -30,9 +30,39 @@
 - **Gameplay — the pnach pipeline, with nothing mapped.** Six subject areas named, zero sites located, every
   translation refused by name. Classified `unknown`, so the page states that and offers no control. The pipeline
   around a translation is complete and proved on a synthetic ELF, so locating one site is a one-entry change.
-- **Nothing writes to a Madden 09 disc, and the module says so.** Rebuilding a container has never been booted in an
-  emulator, and no `LZH1` encoder exists publicly, so an edited member cannot be re-packed to its slot. Both limits
-  are written down in `docs/product/MADDEN09_PS2_MODULE.md` rather than worked around.
+- **Two Madden 09 pages that only listed now write.** *Names, Numbers & Faces* edits the rows of
+  `/DATA/DB_TEAMS.DAT` — **12,499 of them** on the retail disc — a player's first and last name, jersey number, age
+  and twenty ratings, and a team's nickname, city, abbreviation and short name. *Menus & UI* replaces the strings in a
+  text bank. Both are `offline-writer-proved`: a bounded write, a NEW image, an independent verifier that can fail —
+  and **nothing has been booted**, which both pages and both registry rows say in as many words.
+- **EA TDB's four checksums, computed and proved before anything used them.** `ea_tdb` gained `crc32_mpeg2`,
+  `crc_sites`, `recompute_crcs` and `verify_crcs`, and the algorithm was checked against the disc first: **4,806
+  stored checksum slots across 252 databases, and the stored value equalled the recomputed value at every one**. (The
+  103 members not in that count are refused by the *reader* — each declares a table whose four-character name carries
+  a NUL — which is a reader limit, written down rather than worked around.)
+- **A record edit cannot change a length**, and all four places that matters are checked: the database, the container
+  member, the container, and the image. So a destination is the source's exact byte count, and `rewrite_member` handed
+  a member's own bytes reproduces `DB_TEAMS.DAT` byte for byte.
+- **The old refusal was half right, and the half that was wrong is gone.** Both lanes used to refuse citing a missing
+  `LZH1` encoder; the containers they touch store their members uncompressed, so there was nothing to encode. The
+  other half of that refusal — the `GAME.QKL` and `FE.QKL` preload caches — turned out to be *under*-stated, so
+  `containers.preload_names` now reads the cache manifest off your own image and refuses any container it names. That
+  catches `STADATA.DAT`, which a table written down by hand had missed.
+- **Real-disc trial, then deleted.** One player renamed and re-numbered, one string replaced, on the owner's own
+  retail image: two 1,657,339,904-byte destinations, 2,585,800 and 741,088 declared bytes, both verifiers passing
+  with 1,654,754,104 and 1,656,598,816 unchanged bytes compared — and the same verifier failing when one byte outside
+  every declared range was flipped, then passing when it was put back. Both images were deleted; nothing was written
+  beside the disc.
+- **A shortened bank is still a bank.** `identify_member` reads 32 printable bytes, which stops being true of a
+  string this lane has cut short, so the text lane discounts the padding before asking. On the retail disc that finds
+  **14,760** banks instead of 14,748 — the twelve extra are NUL-padded name strings in `STADATA.DAT` the stricter
+  rule was missing.
+- **Nothing has been booted, and the module says so.** No rebuilt Madden 09 container has ever been loaded by the
+  game, so the two writing lanes above are `offline-writer-proved` and can go no higher, and the art and gameplay
+  lanes still write nothing to a disc at all. No `LZH1` encoder exists publicly either, which does not block the two
+  writers — the containers they touch store their members uncompressed — but does block any writer that would have to
+  replace a packed member. Both limits are written down in `docs/product/MADDEN09_PS2_MODULE.md` rather than worked
+  around.
 
 ## v1.0 RC86 — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container (unreleased)
 

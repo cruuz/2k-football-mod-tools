@@ -9,6 +9,9 @@ This document is the honest inventory: what each page does today, what is
 measured, what is merely sourced, what is assumed, and — at the end — the list
 of things this module deliberately does **not** claim.
 
+**Two pages write now** (§3.3, §3.4) and **nothing has been booted** (§7,
+§7a). Every claim about a written image is about its bytes.
+
 **Evidence tags, on every load-bearing claim.**
 **[M]** measured — a read-only command was run against a disc this box holds
 and the number is quoted. **[S]** sourced — someone else's finding, cited.
@@ -92,12 +95,12 @@ The shell's fourteen pages, in its order, and what Madden 09 has on each.
 | page | lane | classification | what it does today |
 |---|---|---|---|
 | Uniforms & Equipment | `uniforms.mmap_export` | `extract-only` | see §3.1 |
-| Names, Numbers & Faces | `players_rosters.team_databases` | `read-only-mapped` | §3.3 |
+| Names, Numbers & Faces | `players_rosters.team_databases` | `offline-writer-proved` | §3.3 — **edits** |
 | Text & Team Identity | — | — | page note |
 | Field Art & Create-Team Art | — | — | page note |
 | Stadiums | — | — | page note |
 | Presentation | — | — | page note |
-| Menus & UI | `menus.text_members` | `read-only-mapped` | §3.4 |
+| Menus & UI | `menus.text_members` | `offline-writer-proved` | §3.4 — **edits** |
 | The Crib | — | — | page note |
 | Audio | — | — | page note |
 | Gameplay | `gameplay.executable_patches` | `unknown` | §3.5 — not drawn |
@@ -194,7 +197,7 @@ The lane caps its *target list* at 4,000 rows because a table is a table and
 
 ### 3.3 Names, Numbers & Faces — the team databases
 
-`ReadOnlyLane`, `read-only-mapped`. Madden 09's team, roster and tuning data
+**Writer**, `offline-writer-proved`. Madden 09's team, roster and tuning data
 lives in **EA TDB v8 databases packed as `TERF` members** — plus one bare
 database, `/DATA/STRMDATA.DB`, with no container around it [M]. The reader is
 new and shared: `mod_editor/games/_formats/ea_tdb.py`.
@@ -231,10 +234,77 @@ assumed:
 - **Strings are latin-1, never utf-8** [M]. EA stores 8-bit characters; a
   utf-8 decoder mangles them or refuses.
 
-Reported but never checked: the four CRC sites (a file-header CRC, a per-table
-prior-CRC and header-CRC, and an EOF CRC). This lane only reads, so verifying
-them would be work with no consequence; recomputing them would be a writer,
-which this is not.
+**The four checksums, now computed.** EA stores four CRC-32/MPEG-2 values in
+every TDB — a file-header CRC over the header's first 20 bytes, a *prior-block*
+and a *header* CRC per table, and an end-of-file CRC over the last table's data
+— and a Madden save with a stale one is refused by the game outright [S]. The
+algorithm was proved before anything was written with it: `verify_crcs` was run
+over **every TDB on the retail disc, and the stored value equalled the
+recomputed value at 4,806 of 4,806 checksum slots across 252 databases** [M].
+
+| where | databases | slots | mismatches |
+|---|---|---|---|
+| `DB_TEAMS.DAT` | 235 of 235 members | 3,462 | 0 |
+| `TEMPLATE.DAT` | 14 of 15 members | 902 | 0 |
+| `GAMEDATA.DAT` | 2 of 104 members | 16 | 0 |
+| `STRMDATA.DB` | 1 of 1 | 426 | 0 |
+| **total** | **252** | **4,806** | **0** |
+
+The 103 members not counted are refused by the *reader*, not the checksum pass:
+each declares a table named `SGF\x00`, and a four-character name with a NUL in
+it fails the reader's printable-name rule [M]. That is a reader limitation, it
+is not worked around here, and none of those members is in what this lane edits.
+
+**What it writes.** `/DATA/DB_TEAMS.DAT` only, and inside it two tables:
+
+- `PLAY` — first name, last name, jersey number, age, and twenty ratings
+  (`POVR PSPD PACC PAGI PSTR PAWR PCTH PCAR PTHP PTHA PJMP PTAK PBTK PPBK PRBK
+  PSTA PINJ PKPR PKAC PMOR`). The list is explicit in `PLAYER_FIELDS`, not
+  "whatever is numeric", so what the page offers is something a reader can
+  check. A rating stops at **99** — the scale the game's own data is on — not
+  at the 127 its seven-bit field would hold. A name stops one byte short of its
+  field so the terminator survives.
+- `TEAM` — `TDNA` nickname, `TLNA` city, `TSNA` abbreviation, `TMNC` short
+  name. What each holds was read off the owner's disc (`Bears` / `Chicago` /
+  `CHI` / `Brownies` for Cleveland) [M]; no value from that reading is stored
+  in this repository.
+
+On the retail disc that is **12,499 editable rows** across 235 databases [M].
+Height and weight are deliberately absent: `PWGT` looks like pounds less 160 on
+the records sampled, and "looks like" is not a unit this page will label a
+spinner with.
+
+**Why it is a bounded write.** A TDB field owns a fixed run of bits in a
+fixed-stride record, so a record edit **cannot change a length**. The database
+comes back the same size, so the `TERF` member does, so the container does —
+measured: `rewrite_member` handed a member's own bytes reproduces
+`DB_TEAMS.DAT` byte for byte [M] — so the ISO extent is rewritten in place and
+the destination image is the source's exact size. Every one of those four
+invariants is checked at build time and refused rather than approximated.
+
+**What stays read-only, and why the disc says so.** `/DATA/GAME.QKL` and
+`/DATA/FE.QKL` are preload caches: a `QL01` header, a `FILS` chunk naming 29
+and 28 `/DATA` files, and a body carrying at least some of them verbatim — the
+first 256 bytes of `UIS_BANR.DAT`, `UNIFORMS.DAT`, `PLYRFACE.DAT`,
+`GAMEDATA.DAT`, `TEMPLATE.DAT` and `LOADDATA.DAT` each appear inside the cache
+that names them [M]. Editing one copy and not the other would leave the game
+reading whichever it reached first, so `containers.preload_names` reads that
+list off the user's own image and any container it names is refused.
+`DB_TEAMS.DAT` is named in neither [M]. `STRMDATA.DB` is out of scope: it is a
+5 MB bare database of league and presentation tables with no `PLAY` table [M].
+
+Not every named file is demonstrably copied — `STADATA.DAT` is named in both
+and its head is in neither [A] — so *what* a cache carries of a file it names
+is not established. The refusal is deliberately the conservative reading.
+
+**The verifier imports none of the writer.** It runs
+`ps2_iso9660_verify.verify_replacement` for the container-level claim, re-parses
+the destination's member with the plain reader to read every edited value back,
+re-derives all four checksums from the destination's own bytes, and byte-compares
+the edited member against the source requiring every differing byte to fall
+inside a declared field span or a checksum slot. Its tests prove it fails on a
+byte flipped outside the declared ranges, on a record changed behind the
+receipt's back *inside* a declared range, and on a stale checksum.
 
 Also measured and recorded rather than used as a bound [M]: `lenBits` is
 `lenBytes * 8 - 1` in 561 of 561 tables (it is *not* the last field's end);
@@ -243,10 +313,10 @@ the last table's end plus four, not the file length.
 
 ### 3.4 Menus & UI — the text banks
 
-`ReadOnlyLane`, `read-only-mapped`. Finds every `TEXT` member — a member whose
-decompressed bytes are printable NUL-separated strings — and measures it:
-string count, longest and mean length, printable ratio, and the SHA-256 of the
-decompressed bytes.
+**Writer**, `offline-writer-proved`. Finds every `TEXT` member — a member whose
+decompressed bytes are printable strings separated by NULs — measures it (string
+count, longest and mean length, printable ratio, and the SHA-256 of the
+decompressed bytes) and rewrites its strings in place.
 
 **Measured on the retail disc** [M]:
 
@@ -274,6 +344,36 @@ Classifying by full decompression instead ran for over ten minutes on the
 retail disc and was abandoned: 36,195 members, 4,269 of them `LZH1` streams
 decoded in pure Python, for an answer the head already gave.
 
+**What it writes: a string slot.** One run of characters inside a member,
+addressed by its **byte offset** rather than by its position in a split, because
+an edit changes how a split comes out and an offset does not. Its *allocation*
+is the room up to the next string — the NUL padding a previous edit left
+included — so shortening a string does not spend it: the same room is offered
+next time. A shorter replacement is padded with the format's terminator; a
+longer one is refused with the length it has to fit. The member keeps its exact
+byte count, so the container does, so the ISO extent does.
+
+On this disc a bank is usually **one string with no NUL in it**, so its slot is
+the whole member and replacing it replaces the whole bank; the label shows the
+whole (elided) text and the budget shows the whole allocation, so what is being
+replaced is on screen. A finer unit — the pipe-delimited `KEY=value` pairs
+`OSDKSTRN.DAT` carries, say — would need that inner grammar decoded, and it has
+not been.
+
+**Six of the eight containers are editable.** `GAMEDATA.DAT`, `LOADDATA.DAT` and
+`STADATA.DAT` are named in the `FE.QKL` / `GAME.QKL` preload caches and are
+refused for the reason §3.3 gives; `OSDKSTRN.DAT`, `STORYMSG.DAT`,
+`STRYCPTN.DAT`, `STRYEMAL.DAT`, `STRYHDLN.DAT` and `STRYTEXT.DAT` are named in
+neither [M].
+
+**One classifier change, worth 12 members.** `identify_member` calls a member
+`TEXT` when its first 32 bytes are printable, which stops being true of a bank
+this lane has shortened — two printable bytes and thirty NULs. `is_text_member`
+therefore discounts the padding before asking. On the retail disc that finds
+**14,760** banks rather than 14,748, and every one of the twelve extra is a
+NUL-padded name string in `STADATA.DAT` that the stricter rule was missing [M].
+It changes nothing about what the shared reader calls a member; the widened rule
+lives in this lane.
 ### 3.5 Gameplay — executable patches, nothing mapped
 
 `CodePatchLane`, classification **`unknown`**, so the studio draws no editor
@@ -351,10 +451,14 @@ produced it. All read-only; nothing was written to either image.
 | Deluxe boot ELF PCSX2 CRC | `084562FF` | code-patch lane [M] |
 | inventory walk | ~10 s | wall clock [M] |
 | team-data walk | ~19 s | wall clock [M] |
-| `TEXT` members (full walk) | 14,748 | text lane [M] |
-| strings in them | 14,748 (one per member) | text lane [M] |
+| `TEXT` members (full walk) | 14,760 | text lane [M] |
+| strings in them | 17,822 | text lane [M] |
 | their decompressed bytes | 3,242,117 | text lane [M] |
 | text walk | ~9 s | wall clock [M] |
+| TDB checksum slots verified | 4,806 across 252 databases | `ea_tdb.verify_crcs` [M] |
+| of those, mismatching | 0 | `ea_tdb.verify_crcs` [M] |
+| editable roster rows | 12,499 | team-data lane [M] |
+| team-data catalogue with rows | ~29 s | wall clock [M] |
 | texture members (4 art containers) | 1,780 | uniform-art lane [M] |
 | images in them | 7,616 | uniform-art lane [M] |
 | images that decode | 7,082 | uniform-art lane [M] |
@@ -385,6 +489,16 @@ python3 -m mod_editor.games.madden09_ps2.inventory_lane --source "<your>.iso"
 python3 -m mod_editor.games.madden09_ps2.team_data     --source "<your>.iso"
 python3 -m mod_editor.games.madden09_ps2.text_lane     --source "<your>.iso"
 python3 -m mod_editor.games.madden09_ps2.code_patches  --source "<your>.iso"
+```
+
+The two writing lanes take the same command one step further — a recipe in,
+a NEW image out, and the independent verifier's verdict printed:
+
+```
+python3 -m mod_editor.games.madden09_ps2.team_data --source "<your>.iso" \
+    --recipe edits.json --destination new.iso --report receipt.json
+python3 -m mod_editor.games.madden09_ps2.text_lane --source "<your>.iso" \
+    --recipe edits.json --dry-run
 ```
 
 Every one of them also runs with no disc at all — `--selftest`, or the five
@@ -476,34 +590,79 @@ written from the same measurements, byte-identical on every member compared.
 Said plainly, because a page that stays quiet about its limits is worse than
 one with fewer pages.
 
-1. **No writer.** Nothing here writes to a disc image. Not one byte.
-2. **No container rebuild has ever been booted.** `ea_terf.build_terf` and
-   `rewrite_member` exist and are tested against synthetic containers, but the
-   honest test — rebuild a container, put it back in an ISO, boot it in
-   PCSX2, see the game load it — **has not been run** and cannot be run from
-   this box. Until it is, no on-disc writer in this module can rise above
-   `offline-writer-proved`, and none is offered at all.
-3. **No `LZH1` encoder exists** [S], here or anywhere public. A replaced
-   member must be stored uncompressed and pays about 3:1 in space; the
-   fixed-allocation discipline the ISO9660 writer needs makes that a real
-   budget question, not a detail.
-4. **The container checksum question is open** [M/A]. No field in any
+1. **Nothing has been booted.** Two lanes now write — the team databases and
+   the text banks — and both are `offline-writer-proved` and can go no higher.
+   The honest next test is: rebuild a container, put it back in an ISO, boot it
+   in PCSX2, see the game load it and see the change on a screen. **That has not
+   been run** and cannot be run from this box. Every claim in §3.3 and §3.4 is
+   about bytes.
+2. **Two lanes still write nothing at all**: the uniform art (which exports and
+   imports but does not put an image back on a disc) and the executable patches
+   (which emit a `.pnach` beside the image, never into it).
+3. **No `LZH1` encoder exists** [S], here or anywhere public. It does not block
+   the two writers — the containers they touch store their members
+   uncompressed, so a same-size member goes back in its own slot and the
+   container comes out byte-identical outside it [M] — but it does block any
+   writer that would have to replace a *packed* member, which is most of the
+   art containers.
+4. **What a preload cache carries is not established** [A]. `GAME.QKL` and
+   `FE.QKL` name 29 and 28 files and demonstrably carry six of them verbatim;
+   whether they carry all of what they name is unknown, so every named container
+   is refused rather than half-written.
+5. **The container checksum question is open** [M/A]. No field in any
    container header varies with content in any way the reader could find, and
    the layout rules hold with zero residue across 47,769 members — but that is
    the whole of the search, and it is not proof. The circumstantial evidence
    is good (the community's Deluxe disc rewrites five containers, carries two
    defects the retail disc does not, and still plays [S]); it does not close
    the question.
-5. **No PCSX2 replacement identity.** Naming a texture for a replacement pack
+6. **No PCSX2 replacement identity.** Naming a texture for a replacement pack
    needs the GS TEX0 and CLUT hashes PCSX2 computes at draw time, which come
    from a **GS dump of Madden 09 running on the rig**. No such dump exists.
    `replacement_identity` therefore returns `None` and the *Write PCSX2 pack*
    step refuses with that sentence rather than inventing a filename that would
    silently never match.
-6. **No gameplay patch is mapped.** Six subject areas, zero located sites.
-7. **`SMF` and `DMF` geometry, `SCHl` audio and `BNKl` banks are identified
+7. **No gameplay patch is mapped.** Six subject areas, zero located sites.
+8. **`SMF` and `DMF` geometry, `SCHl` audio and `BNKl` banks are identified
    and not decoded.** Knowing a member's magic is not the same as reading it,
    and the module does not blur the two.
+
+---
+
+## 7a. The real-disc trial
+
+Run once, on the owner's own retail `SLUS-21770` image, opened read-only. Both
+destinations were built in a scratch directory and **deleted immediately
+afterwards**; nothing was written next to the disc.
+
+**Team data.** Catalogue: 14,518 targets, 12,499 editable rows, 26 s. Edit:
+`DB_TEAMS.DAT` member 0, `PLAY` record 0 — first name, last name and jersey
+number. Declared **2,585,800 bytes in two ranges**: the container's whole
+extent (2,585,792 bytes at 1,177,688,064) and its directory record's 8-byte
+length field (at 538,410). Built a **1,657,339,904-byte** destination — the
+source's exact size — in 89 s. The verifier passed: three values read back from
+the destination's own container, all **44 checksum slots** of the edited
+database correct, **0** bytes of the member changed outside a declared field
+span or checksum slot, and `ps2_iso9660_verify` comparing **197 entries and
+1,654,754,104 unchanged bytes**.
+
+**Text.** Catalogue of that built image: 14,760 banks, 17,822 strings, 4 s.
+Edit: `OSDKSTRN.DAT` member 0, the slot at byte 0 — a 50,519-byte allocation
+rewritten with 37 bytes and padded with terminators. Declared **741,088 bytes
+in two ranges**. Built a 1,657,339,904-byte destination in 65 s; the verifier
+passed with **1,656,598,816 unchanged bytes** compared across 197 entries.
+
+**The negative control.** One byte at offset 1,657,339,903 — outside every
+declared range — was flipped, and the same verifier **failed**, naming the
+offset. Putting the byte back made it pass again.
+
+Read back out of the final image with the plain readers, not the writers:
+the edited `PLAY` record's names and jersey number are the new ones, its
+overall rating is untouched, all 44 checksum slots are correct, and the text
+slot holds the replacement.
+
+**What this does not show.** Whether Madden 09 loads either image. Nothing was
+booted.
 
 ---
 
@@ -575,17 +734,19 @@ mod_editor/games/madden09_ps2/
   inventory_lane.py   the container inventory (ReadOnlyLane)
   uniform_art.py      the MMAP art lane
   mmap_art.py         the MMAP pixel decoder
-  team_data.py        the EA TDB databases (ReadOnlyLane)
-  text_lane.py        the TEXT banks (ReadOnlyLane)
+  team_data.py        the EA TDB databases: catalogue, writer, verifier
+  text_lane.py        the TEXT banks: catalogue, writer, verifier
   code_patches.py     executable patches (CodePatchLane, nothing mapped)
   game.json  registry.fragment.json  allowlist.fragment.txt  pins.json
 
 mod_editor/games/_formats/
   ea_terf.py          the container (RC86; shared)
-  ea_tdb.py           the database reader (RC87; shared)
+  ea_tdb.py           the database reader (RC87) and writer (RC88); shared
 
 tools/validate_madden09_ps2_{inventory,uniform_art,team_data,text,code_patches}.{sh,bat}
-tests/mod_editor/test_madden09_ps2_*.py  tests/mod_editor/test_ea_tdb.py
+tools/ps2_iso9660_writer.py  tools/ps2_iso9660_verify.py   the bounded ISO half
+tests/mod_editor/test_madden09_ps2_*.py
+tests/mod_editor/test_ea_tdb.py  tests/mod_editor/test_ea_tdb_writer.py
 ```
 
 The shared format packages are the point: a Madden 08, Madden 12 or NCAA

@@ -95,7 +95,7 @@ class FieldShapeTests(unittest.TestCase):
         """Twelve thousand rows must not carry twelve thousand copies."""
 
         lane = team_data.TeamDataLane()
-        work = Path(tempfile.mkdtemp(prefix="madden09-shape-"))
+        work = Path(tempfile.mkdtemp(prefix="madden09-shape-")).resolve()
         self.addCleanup(shutil.rmtree, work, True)
         catalogue = lane.build_catalogue(lane.synthetic_source(work))
         rows = [t for t in catalogue.targets if t.key.startswith(team_data.ROW_PREFIX)
@@ -106,7 +106,7 @@ class FieldShapeTests(unittest.TestCase):
 
 class TeamDataLaneTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.work = Path(tempfile.mkdtemp(prefix="madden09-teamdata-"))
+        self.work = Path(tempfile.mkdtemp(prefix="madden09-teamdata-")).resolve()
         self.addCleanup(shutil.rmtree, self.work, True)
         self.lane = team_data.TeamDataLane()
         self.source = self.lane.synthetic_source(self.work)

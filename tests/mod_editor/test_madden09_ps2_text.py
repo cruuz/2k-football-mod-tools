@@ -111,7 +111,7 @@ class KeyTests(unittest.TestCase):
 
 class TextLaneTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.work = Path(tempfile.mkdtemp(prefix="madden09-text-"))
+        self.work = Path(tempfile.mkdtemp(prefix="madden09-text-")).resolve()
         self.addCleanup(shutil.rmtree, self.work, True)
         self.lane = text_lane.TextLane()
         self.source = self.lane.synthetic_source(self.work)
