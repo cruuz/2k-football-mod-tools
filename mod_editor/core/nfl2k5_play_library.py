@@ -434,6 +434,102 @@ class PlayerAssignment:
 
 
 @dataclass
+class ScreenPreset:
+    """Coordinated native grammar; WR/TE adaptations are unwitnessed hypotheses."""
+    variant: str = "HB"
+    receiver_slot: int | None = None
+    side: int = -1
+    hold_seconds: float = 0.8
+    drop_yards: float = 7.0
+    pass_delay: float = 0.6
+
+
+SCREEN_CONCEPTS = {"HB Screen": "HB", "WR Screen": "WR", "TE Screen": "TE"}
+
+
+def screen_preset(variant: str, receiver_slot: int | None = None,
+                  side: int = -1, level: str = "D") -> ScreenPreset:
+    if variant not in ("HB", "WR", "TE") or level not in ("Retail", "A", "B", "C", "D"):
+        raise ValueError("Choose an HB, WR or TE screen and Retail/A/B/C/D timing.")
+    return ScreenPreset(variant, receiver_slot, side,
+                        0.8 if level in ("A", "D") else 0.5,
+                        7.0 if level in ("B", "D") else 10.0,
+                        0.6 if level in ("C", "D") else 0.0)
+
+
+def screen_receiver_chain(side: int) -> Chain:
+    # ATL:178 HB, not the old chip/flat sequence. Type 9 ends 1.5 yd behind LOS;
+    # its signed distance is not an ordinary downfield route depth.
+    return [start(3), seg(9, 11 * side)]
+
+
+def screen_endpoint(incoming_x_cm: float, actor_x_cm: float, route_type: int = 9,
+                    direction: int = 1, line_cm: float = 0.0) -> tuple[float, float]:
+    """Proved endpoint adjustment (0x225BEB), not travel or catch prediction.
+
+    incoming_x_cm is the movement solver's lateral endpoint, not encoded depth.
+    """
+    if route_type not in (9, 10) or direction not in (-1, 1):
+        raise ValueError("Screen endpoint needs route type 9/10 and direction -1/1.")
+    bound = 1798.32
+    x = incoming_x_cm
+    if route_type == 9:
+        x = actor_x_cm if abs(actor_x_cm) >= bound else max(-bound, min(bound, x))
+    return x, line_cm - direction * (1.5 if route_type == 9 else 1.0) * YD
+
+
+def screen_blocker_chain(kind: int, settings: ScreenPreset, qb_slot: int) -> Chain:
+    side = settings.side
+    turn = 1 if side < 0 else 0
+    chain = [start(2 if kind == C else 3)]
+    if kind == C:
+        chain.append((0x02, [qb_slot]))
+    chain.extend([
+        leg(1, side / 3, -1, turn=turn, end=2, t=settings.hold_seconds),
+        (0x18, [0, side * {T: 14, C: 10, G: 12}[kind] * YD, -2 * YD, 2, 15, 0, 0]),
+        leg(3, 0, 2, turn=turn),
+    ])
+    return chain
+
+
+def screen_qb_chain(settings: ScreenPreset) -> Chain:
+    if settings.receiver_slot is None or not 6 <= settings.receiver_slot <= 10:
+        raise ValueError("The intended screen receiver must be in assignment slot 6 through 10.")
+    return [start(4), (0x03, [0]), (0x04, [0, 0.0, -settings.drop_yards * YD, 0]),
+            (0x06, [5, settings.receiver_slot - 5, 0, 0, 0, settings.pass_delay])]
+
+
+def _screen_assignments(spec: "PlaySpec", variant: str) -> None:
+    settings = spec.screen or screen_preset(variant)
+    settings.variant = variant
+    kind = {"HB": HB, "WR": WR, "TE": TE}[variant]
+    candidates = [s for s in range(6, 11) if spec.kinds[s] == kind]
+    if settings.receiver_slot is None:
+        settings.receiver_slot = next(iter(candidates), None)
+    if settings.receiver_slot not in candidates:
+        raise ValueError(f"This screen needs a {variant} in assignment slot 6 through 10.")
+    if settings.side not in (-1, 1):
+        raise ValueError("Choose left or right for the screen.")
+    if (not math.isfinite(settings.hold_seconds) or not 0.1 <= settings.hold_seconds <= 6.3
+            or not math.isfinite(settings.drop_yards) or not 0 <= settings.drop_yards <= 20
+            or not math.isfinite(settings.pass_delay) or not 0 <= settings.pass_delay <= 6.3):
+        raise ValueError("Screen timing is outside the supported range; releasing blockers need a finite hold.")
+    spec.screen = settings
+    # Keep two protectors. The center and the tackle/guard on the chosen side release.
+    for k in (C, T, G):
+        slots = [s for s in range(1, 6) if spec.kinds[s] == k]
+        if not slots:
+            raise ValueError("The native screen needs a center, tackles and guards in slots 1 through 5.")
+        slot = max(slots, key=lambda s: settings.side * spec.positions[s][0])
+        spec.assignments[slot] = PlayerAssignment("screen_release")
+    for s in range(6, 11):
+        if s == settings.receiver_slot:
+            spec.assignments[s] = PlayerAssignment("screen_receiver")
+        elif spec.kinds[s] in (HB, FB, TE):
+            spec.assignments[s] = PlayerAssignment("block", block_style="pass")
+
+
+@dataclass
 class PlaySpec:
     name: str
     play_type: str                  # "pass" | "run" | "pa_pass" | "sneak" | "keeper" | "reverse"
@@ -446,6 +542,7 @@ class PlaySpec:
     reverse_slot: int | None = None
     shotgun: bool | None = None
     direct_snap: bool = False       # wildcat: the ball is snapped straight to the carrier
+    screen: ScreenPreset | None = None
 
 
 RUN_SCHEMES: dict[str, dict] = {
@@ -475,7 +572,9 @@ PASS_CONCEPTS: dict[str, dict] = {
     "Curl-Flat": {"blurb": "curls outside, backs to the flat", "outside": "Curl", "inside": "Curl", "te": "Out", "back": "Flat"},
     "Y-Cross": {"blurb": "the tight end crosses on a dig under a post, comeback outside", "outside": "Comeback", "inside": "Post", "te": "In / Dig", "back": "Flat"},
     "Snag": {"blurb": "slant inside, corner over the top of it, back to the flat", "outside": "Slant", "inside": "Corner", "te": "Stick", "back": "Flat"},
-    "HB Screen": {"blurb": "back slips out behind the line", "outside": "Go", "inside": "Go", "te": "Block (stay in)", "back": "Screen"},
+    "HB Screen": {"blurb": "EXPERIMENTAL / UNWITNESSED: back with releasing blockers", "outside": "Go", "inside": "Go", "te": "Block (stay in)", "back": "Screen"},
+    "WR Screen": {"blurb": "EXPERIMENTAL / UNWITNESSED: receiver with releasing blockers", "outside": "Go", "inside": "Go", "te": "Block (stay in)", "back": "Screen"},
+    "TE Screen": {"blurb": "EXPERIMENTAL / UNWITNESSED: tight end with releasing blockers", "outside": "Go", "inside": "Go", "te": "Block (stay in)", "back": "Screen"},
     "Wheel": {"blurb": "back wheels up the sideline", "outside": "Post", "inside": "Drag", "te": "Out", "back": "Wheel"},
 }
 
@@ -485,6 +584,8 @@ def default_assignments(spec: PlaySpec, concept: str | None = None, scheme: str 
     kinds = spec.kinds
     xs = [x for x, _ in spec.positions]
     spec.assignments.clear()
+    if concept not in SCREEN_CONCEPTS or spec.play_type != "pass":
+        spec.screen = None
     receivers = [s for s in range(11) if kinds[s] in (WR, TE)]
     backs = [s for s in range(11) if kinds[s] in (HB, FB)]
     outer = sorted(receivers, key=lambda s: -abs(xs[s]))
@@ -502,6 +603,10 @@ def default_assignments(spec: PlaySpec, concept: str | None = None, scheme: str 
                 spec.assignments[s] = PlayerAssignment("route", route=con["outside"] if s in outer[:2] else con["inside"])
             else:
                 spec.assignments[s] = PlayerAssignment("route", route=con["back"])
+        if concept in SCREEN_CONCEPTS:
+            if spec.play_type != "pass":
+                raise ValueError("The experimental screen preset requires the Pass play type.")
+            _screen_assignments(spec, SCREEN_CONCEPTS[concept])
     else:
         sch = RUN_SCHEMES.get(scheme or "Inside Zone", RUN_SCHEMES["Inside Zone"])
         dir_sign = {"left": -1, "middle": 0, "right": 1}[spec.run_direction]
@@ -549,6 +654,13 @@ def build_chains(spec: PlaySpec, scheme: str | None = None) -> list[Chain]:
         a = spec.assignments.get(s) or PlayerAssignment("block", block_style="pass" if not run else "straight")
         side = 1 if xs[s] >= 0 else -1
         k = kinds[s]
+        if spec.screen is not None:
+            if a.kind == "screen_release":
+                chains.append(screen_blocker_chain(k, spec.screen, qb_slot)); continue
+            if a.kind == "screen_receiver":
+                chains.append(screen_receiver_chain(spec.screen.side)); continue
+            if k == QB and a.kind == "qb":
+                chains.append(screen_qb_chain(spec.screen)); continue
         if a.kind == "custom" and a.custom:
             chains.append(list(a.custom)); continue
         if s == snapper:

@@ -67,10 +67,10 @@ def read_order_of(chain: list) -> tuple[int, int, int, int] | None:
     return None
 
 
-def with_read_order(chain: list, order: "tuple[int, ...] | list[int]") -> list:
+def with_read_order(chain: list, order: "tuple[int, ...] | list[int]", *, allow_zero: bool = False) -> list:
     """A copy of ``chain`` whose Dropback node carries ``order`` (four 1-5 values)."""
 
-    values = [max(READ_ORDER_MIN, min(READ_ORDER_MAX, int(v))) for v in order]
+    values = [max(0 if allow_zero else READ_ORDER_MIN, min(READ_ORDER_MAX, int(v))) for v in order]
     if len(values) != 4:
         raise ValueError("a read order is four values")
     out = []
@@ -573,7 +573,8 @@ class PlayTypePage(QWizardPage):
         self.concepts = QListWidget()
         self.concepts.setStyleSheet(BIG)
         for name, con in lib.PASS_CONCEPTS.items():
-            it = QListWidgetItem(f"{name} — {con['blurb']}")
+            separator = ": " if name in lib.SCREEN_CONCEPTS else " — "
+            it = QListWidgetItem(f"{name}{separator}{con['blurb']}")
             it.setData(Qt.UserRole, name)
             self.concepts.addItem(it)
         self.concepts.setCurrentRow(0)
@@ -606,7 +607,86 @@ class PlayTypePage(QWizardPage):
         self.fake_to = QComboBox()
         fl.addRow("Fake handoff to", self.fake_to)
         right.addWidget(self.fake_box)
+        self._make_screen_options(right)
         right.addStretch(1)
+
+    def _make_screen_options(self, layout: QVBoxLayout) -> None:
+        self.screen_box = QGroupBox("Screen: EXPERIMENTAL / UNWITNESSED")
+        form = QFormLayout(self.screen_box)
+        self.screen_receiver = QComboBox()
+        form.addRow("Intended receiver", self.screen_receiver)
+        self.screen_side = QComboBox()
+        self.screen_side.addItem("Left", -1)
+        self.screen_side.addItem("Right", 1)
+        form.addRow("Release side", self.screen_side)
+        self.screen_level = QComboBox()
+        for label, level in (("Retail timing", "Retail"), ("A: Longer line hold", "A"),
+                             ("B: Shallower QB drop", "B"), ("C: Explicit pass delay", "C"),
+                             ("D: Combine A, B and C", "D")):
+            self.screen_level.addItem(label, level)
+        self.screen_level.setCurrentIndex(4)
+        form.addRow("Timing starting point", self.screen_level)
+        self.screen_hold = QDoubleSpinBox()
+        self.screen_hold.setRange(0.1, 6.3); self.screen_hold.setSingleStep(0.1)
+        self.screen_hold.setDecimals(1); self.screen_hold.setSuffix(" seconds")
+        form.addRow("Line hold before release", self.screen_hold)
+        self.screen_drop = QDoubleSpinBox()
+        self.screen_drop.setRange(0, 20); self.screen_drop.setSingleStep(1)
+        self.screen_drop.setSuffix(" yards")
+        form.addRow("Nominal QB drop", self.screen_drop)
+        self.screen_delay = QDoubleSpinBox()
+        self.screen_delay.setRange(0, 6.3); self.screen_delay.setSingleStep(0.1)
+        self.screen_delay.setDecimals(1); self.screen_delay.setSuffix(" seconds")
+        self.screen_delay.setSpecialValueText("Retail default timer")
+        form.addRow("Pass delay", self.screen_delay)
+        note = QLabel("Three linemen hold, release, then block. Two keep protecting. "
+                      "A zero pass delay uses the retail timer; it does not mean an immediate throw. "
+                      "The QB looks at the chosen slot first, but may choose another receiver. "
+                      "WR and TE screens adapt the HB sequence and need separate play tests.")
+        note.setWordWrap(True)
+        form.addRow(note)
+        layout.addWidget(self.screen_box)
+        self.screen_level.currentIndexChanged.connect(self._screen_timing)
+        self.concepts.currentItemChanged.connect(self._screen_options)
+        self.screen_receiver.currentIndexChanged.connect(lambda _i: self.completeChanged.emit())
+        self._screen_timing()
+        self.screen_box.hide()
+
+    def _screen_timing(self, *_args: object) -> None:
+        settings = lib.screen_preset("HB", level=self.screen_level.currentData())
+        self.screen_hold.setValue(settings.hold_seconds)
+        self.screen_drop.setValue(settings.drop_yards)
+        self.screen_delay.setValue(settings.pass_delay)
+
+    def _screen_options(self, *_args: object) -> None:
+        if not hasattr(self, "screen_box"):
+            return
+        item = self.concepts.currentItem()
+        concept = item.data(Qt.UserRole) if item else None
+        active = concept in lib.SCREEN_CONCEPTS and self.play_type() in ("pass", "pa_pass")
+        self.screen_box.setVisible(active)
+        previous = self.screen_receiver.currentData()
+        self.screen_receiver.blockSignals(True)
+        self.screen_receiver.clear()
+        cur = self.wiz.current
+        if active and cur is not None:
+            kind = {"HB": lib.HB, "WR": lib.WR, "TE": lib.TE}[lib.SCREEN_CONCEPTS[concept]]
+            for slot in range(6, 11):
+                if cur.kinds[slot] == kind:
+                    self.screen_receiver.addItem(f"{cur.labels[slot]} (assignment slot {slot})", slot)
+            index = self.screen_receiver.findData(previous)
+            if index >= 0:
+                self.screen_receiver.setCurrentIndex(index)
+        self.screen_receiver.blockSignals(False)
+        self.screen_box.setToolTip("Choose Pass and a formation containing the receiver's position.")
+        self.completeChanged.emit()
+
+    def isComplete(self) -> bool:
+        item = self.concepts.currentItem()
+        if (item and item.data(Qt.UserRole) in lib.SCREEN_CONCEPTS
+                and self.play_type() in ("pass", "pa_pass")):
+            return self.play_type() == "pass" and self.screen_receiver.currentData() is not None
+        return super().isComplete()
 
     def initializePage(self) -> None:
         cur = self.wiz.current
@@ -636,6 +716,7 @@ class PlayTypePage(QWizardPage):
         self.reverse_to.setVisible(t == "reverse")
         self.carrier.setVisible(t in ("run", "reverse"))
         self.direct_snap.setVisible(t == "run")
+        self._screen_options()
 
     def build_spec(self) -> tuple[lib.PlaySpec, str]:
         cur = self.wiz.current
@@ -652,6 +733,12 @@ class PlayTypePage(QWizardPage):
             reverse_slot=self.reverse_to.currentData() if t == "reverse" else None,
             direct_snap=self.direct_snap.isChecked() if t == "run" else False,
         )
+        if concept in lib.SCREEN_CONCEPTS and t in ("pass", "pa_pass"):
+            spec.screen = lib.ScreenPreset(
+                lib.SCREEN_CONCEPTS[concept], self.screen_receiver.currentData(),
+                self.screen_side.currentData(), self.screen_hold.value(),
+                self.screen_drop.value(), self.screen_delay.value(),
+            )
         lib.default_assignments(spec, concept=concept, scheme=scheme if t == "run" else None)
         if t == "pa_pass" and spec.carrier_slot is not None:
             spec.assignments[spec.carrier_slot] = lib.PlayerAssignment("fake_carry")
@@ -803,6 +890,11 @@ class AssignPage(QWizardPage):
             x0, z0 = cur.positions[s]
             nodes = [codec.Node(op, 0, list(vals)) for op, vals in chains[s]]
             segs = codec.play_art(nodes, (float(x0), float(z0)), side=1 if x0 >= 0 else -1, wide_left=x0 < 0)
+            if self.spec.screen and self.spec.assignments[s].kind == "screen_receiver":
+                # Show the proved behind-line endpoint band; lateral movement needs gameplay.
+                _x, endpoint_z = lib.screen_endpoint(x0, x0)
+                segs = [codec.ArtSegment([(-1798.32, endpoint_z), (1798.32, endpoint_z)], style="dashed"),
+                        codec.ArtSegment([(x0, z0), (x0, endpoint_z)], style="dashed", end_marker="arrow")]
             self.scene.draw_art(segs, QColor("#ffd54f") if s == self.spec.carrier_slot else QColor("#ffffff"))
         self.jobs.clear()
         for s in range(11):
@@ -812,17 +904,38 @@ class AssignPage(QWizardPage):
         donor, flags = self.wiz.reference_play(self.spec.play_type, self.scheme)
         _donor_flags, donor_chains = lib.play_chains(self.wiz.body, donor)
         self._error = lib.validate_chains(flags, donor_chains, chains)
+        screen_note = ""
+        if self.spec.screen:
+            from mod_editor.core.nfl2k5_formation_play_writer import NODE_CAPACITY, authored_node_cost
+            cost = authored_node_cost(chains)
+            staged = sum(authored_node_cost(p.chains) for f in self.wiz.designed for p in f.plays)
+            remaining = NODE_CAPACITY - self.wiz.book.node_count - staged
+            if cost > remaining:
+                self._error = f"This screen needs {cost} nodes, with {remaining} remaining in this design."
+            screen_note = (f"EXPERIMENTAL / UNWITNESSED. {cost} nodes ({cost * 8} bytes); "
+                           f"{remaining} available before this play. Receiver: assignment slot "
+                           f"{self.spec.screen.receiver_slot}. Dashed guide: endpoint 1.5 yards behind "
+                           "the line, bounded laterally to 19 2/3 yards unless already outside. "
+                           "The guide does not predict lateral travel, arrival time or a catch.")
         if self._error:
             self.status.setText("✖ " + self._error)
             self.status.setStyleSheet("color:#c62828;" + BIG)
         else:
-            self.status.setText("✔ The game accepts this play.")
+            self.status.setText("The play passes the data checks. " + screen_note if self.spec.screen
+                                else "✔ The game accepts this play.")
             self.status.setStyleSheet("color:#2e7d32;" + BIG)
         self.completeChanged.emit()
 
     def _describe(self, s: int) -> str:
         a = self.spec.assignments.get(s)
         kinds = self.spec.kinds
+        if self.spec.screen and a is not None:
+            if a.kind == "screen_release":
+                return f"hold {self.spec.screen.hold_seconds:g} seconds, release, then block"
+            if a.kind == "screen_receiver":
+                return f"intended screen receiver (assignment slot {s}); endpoint behind the line"
+            if a.kind == "qb":
+                return f"drop, look at assignment slot {self.spec.screen.receiver_slot}, then pass"
         if a is not None and a.kind == "custom":
             return f"✏ drawn — {a.route}"
         if kinds[s] == lib.QB and not self.spec.direct_snap:
@@ -892,6 +1005,9 @@ class AssignPage(QWizardPage):
                              kinds=list(self.spec.kinds), assignments={}, carrier_slot=self.spec.carrier_slot,
                              handoff_kind=self.spec.handoff_kind, run_direction=self.spec.run_direction,
                              reverse_slot=self.spec.reverse_slot, direct_snap=self.spec.direct_snap)
+        if self.spec.screen:
+            from dataclasses import replace
+            probe.screen = replace(self.spec.screen)
         lib.default_assignments(probe, concept=self.concept, scheme=self.scheme)
         return probe.assignments.get(slot) or lib.PlayerAssignment("block", block_style="pass")
 
@@ -1123,13 +1239,17 @@ class FinalizePage(QWizardPage):
         spins: list[QSpinBox] = []
         for value in order:
             spin = QSpinBox()
-            spin.setRange(READ_ORDER_MIN, READ_ORDER_MAX)
+            screen = play.concept_or_scheme in lib.SCREEN_CONCEPTS
+            spin.setRange(0 if screen else READ_ORDER_MIN, READ_ORDER_MAX)
             spin.setValue(int(value))
             spin.setToolTip(
                 "One of the Dropback node's four ordered 1-5 values — the quarterback's read "
                 "order. Retail sets them on every dropback; what each number selects is read "
                 "from the corpus, not witnessed in game."
             )
+            if screen:
+                spin.setToolTip("1 to 5 select assignment slots 6 to 10. First zero defaults to slot 7; "
+                                "later zeros skip reads. The final target is not forced. UNWITNESSED in play.")
             box.addWidget(spin)
             spins.append(spin)
         self.table.setCellWidget(row, 4, holder)
@@ -1152,7 +1272,8 @@ class FinalizePage(QWizardPage):
         staged = 0
         for play, spins, qb_slot in self._read_orders.values():
             play.chains[qb_slot] = with_read_order(
-                play.chains[qb_slot], [spin.value() for spin in spins]
+                play.chains[qb_slot], [spin.value() for spin in spins],
+                allow_zero=play.concept_or_scheme in lib.SCREEN_CONCEPTS,
             )
         groups = {id(play): combo.currentData() for play, combo in self._groups.values()}
         try:

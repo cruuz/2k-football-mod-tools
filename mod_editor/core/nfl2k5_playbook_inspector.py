@@ -99,6 +99,11 @@ class PlaybookAssignment:
     descriptor_word: int
     chain_start_index: int
 
+    @property
+    def declared_length(self) -> int:
+        """Runtime reader 0x1A8C00 uses only the descriptor's low nibble."""
+        return self.descriptor_word & 0xF
+
 
 @dataclass(frozen=True)
 class PlaybookPlay:
@@ -161,6 +166,19 @@ class Nfl2k5Playbook:
         raise ValidationError(
             f"Playbook {self.book_name} has no chain beginning at node {start_index}."
         )
+
+    def assignment_chain(self, assignment: PlaybookAssignment) -> PlaybookChain:
+        """The runtime span, excluding orphan nodes in an inferred extent."""
+        start = assignment.chain_start_index
+        end = start + assignment.declared_length
+        if not assignment.declared_length or end > self.node_count:
+            raise ValidationError("PLAY assignment has an invalid declared length.")
+        nodes = tuple(node for chain in self.chains
+                      if chain.end_index > start and chain.start_index < end
+                      for node in chain.nodes if start <= node.index < end)
+        if len(nodes) != assignment.declared_length:
+            raise ValidationError("PLAY assignment has a truncated declared chain.")
+        return PlaybookChain(start, end, nodes)
 
     def plays_for_formation(
         self, formation: PlaybookFormation | int
@@ -286,6 +304,12 @@ def _parse_body(
                     f"play {play_index}, slot {slot_index}."
                 )
             start = (target - NODE_BASE) // NODE_SIZE
+            count = descriptor & 0xF
+            if not count or start + count > node_count:
+                raise ValidationError(
+                    f"PLAY assignment has an invalid declared length: "
+                    f"play {play_index}, slot {slot_index}."
+                )
             chain_starts.add(start)
             assignments.append(PlaybookAssignment(slot_index, descriptor, start))
         play_rows.append(PlaybookPlay(

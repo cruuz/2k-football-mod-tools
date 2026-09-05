@@ -80,6 +80,16 @@ REPORT_SCHEMA = "nfl2k5_formation_play_create/v1"
 POOL_COUNT_WORD = 0x1083C
 MAX_CUSTOM_NAME_CHARS = 40
 EMPTY_LINK = 0x1FF
+NODE_CAPACITY = (POOL_COUNT_WORD - NODE_BASE) // NODE_SIZE
+
+
+def authored_node_cost(assignments: Sequence) -> int:
+    """Nodes cloned by this writer; None retains the existing shared chain."""
+    if len(assignments) != 11:
+        raise ValidationError("An authored play needs eleven assignments.")
+    if any(chain is not None and not 1 <= len(chain) <= 15 for chain in assignments):
+        raise ValidationError("An authored chain needs 1 through 15 nodes.")
+    return sum(len(chain) for chain in assignments if chain is not None)
 
 
 def _sha256(data: bytes) -> str:
@@ -477,6 +487,16 @@ def compile_formation_play_creations(
     asset_id = next(iter(asset_ids))
 
     source = parse_playbook_resource(raw_resource, asset_id=asset_id)
+    need = sum(authored_node_cost(req.assignments) for req in norm_plays
+               if req.assignments is not None)
+    if source.node_count + need > NODE_CAPACITY:
+        raise ValidationError(
+            f"This book's node pool is full ({NODE_CAPACITY} nodes); "
+            f"the authored chains need {need}, with {NODE_CAPACITY - source.node_count} remaining."
+        )
+    tail_start = RESOURCE_HEADER_SIZE + NODE_BASE + source.node_count * NODE_SIZE
+    if any(raw_resource[tail_start:tail_start + need * NODE_SIZE]):
+        raise ValidationError("The node pool tail is not the expected zero padding.")
     old_formation_count = len(source.formations)
     old_play_count = len(source.plays)
     appended_formations = [r for r in norm_formations if r.replace_index is None]
@@ -666,7 +686,7 @@ def compile_formation_play_creations(
     # ---- Stage 3: authoring (formation geometry, personnel, node chains) ----
     node_count = struct.unpack_from("<I", raw_resource, body_off + 0x40)[0]
     node_cursor = node_count
-    node_capacity = (STRING_BASE - NODE_BASE) // NODE_SIZE
+    node_capacity = NODE_CAPACITY
     authored_node_start = NODE_BASE + node_count * NODE_SIZE
     category_positions: dict[int, bytes] = {}
     for cat_index in range(len(source.categories)):

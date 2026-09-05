@@ -540,3 +540,203 @@ exact bench bytes and preserve the same runtime patch bytes. Return address
 be refreshed for this file too. Do not restore the old stride-13 assumption.
 7. Check normal KR/PR/K/P and existing SLOT/NCB/DCB rows, plus normal CPU roster
    sorting. An untouched older save begins without these lock bits.
+
+# r61b screen-pass handoff (2026-09-05)
+
+This section is additive to the depth-lock handoff above. The screen resource
+compiler, archive transaction adapter, screen-only wizard path and standalone
+tests are implemented. Protected files below were inspected but not edited.
+Everything is **EXPERIMENTAL / UNWITNESSED**. See `ASTRA_SCREEN_PASS_REPORT.md`
+for scope, exact measurements, the skipped-play inventory and Noah's protocol.
+
+## BuildPlan, presets and dispatch
+
+In `mod_editor/core/mod_build.py` add:
+
+```python
+screen_timing: str | None = None  # None/off or A/B/C/D; PLAY data only
+```
+
+Accept exactly `None`, `"A"`, `"B"`, `"C"`, `"D"`; reject booleans, empty strings
+and other values before copying an image. Include this field in recipe parsing,
+round trips and build receipts. `to_recipe()` already uses `asdict`. Set it
+**explicitly** in all three `PRESETS` so switching away from Experimental clears
+an earlier selection:
+
+```python
+"softdrink_basic":        { ..., "screen_timing": None },
+"softdrink_advanced":     { ..., "screen_timing": None },
+"softdrink_experimental": { ..., "screen_timing": "D" },
+```
+
+Add availability under `screen_timing`, requiring core
+`nfl2k5_screen_timing`, core `nfl2k5_formation_play_writer`, core
+`nfl2k5_playbook_pack`, and tool `nfl2k5_playbook_position_recode` (the existing
+OuterImage owner). This option requires a disc image. Include it in the existing
+image-only source check and in any early “nothing selected”/build eligibility
+checks. It does not imply an XBE patch or depend on the depth-row allocator.
+
+Dispatcher position in `build()`: **after the `plan.depth_roles` block**, hence
+after position-pool recoding, kickoff alignment, seven-on-seven books and
+community playbook packs. Category-only recodes commute with the screen pass.
+An authored pack that changed a named retail screen conflicts and must refuse;
+never bypass pins with `allow_custom`. An authored replacement of an unrelated
+play is allowed, subject to remaining node capacity.
+
+The resource dispatcher tuple and level kwarg are concretely:
+
+```python
+# In the PLAY-resource portion of mod_build.build(), after depth_roles:
+for level, module, key, label in (
+    (plan.screen_timing, _core_module("nfl2k5_screen_timing"),
+     "screen_timing", "Screen pass timing (experimental)"),
+):
+    if level is None:
+        continue
+    if module is None:
+        raise RuntimeError("The screen timing module is not available in this build")
+    step = module.apply_to_image(
+        target, level=level,
+        progress=lambda msg: progress(msg, 0, 0),
+    )
+    receipt["steps"].append({"step": key, **step})
+```
+
+`apply_to_image` opens the existing `OuterImage` owner with a context manager;
+`apply_to_archive` preflights all 37 books, requires each book at its pinned outer
+entry, refuses mixed retail/applied books, writes only exact byte differences,
+checks all preimages/read-backs and rolls back attempted writes, including short
+writes. Rollback failure explicitly requires discarding the output copy. Build
+must continue to pass its disposable **target copy**, never the source image.
+The resource API remains `status(raw, level="D")` and
+`apply(raw, level="D") -> (bytes, receipt)`. `inspect` gives individual play
+reasons/capacity; `inspect_archive` and `inspect_image` give all-book status.
+
+**`nfl2k5_throw_tuning._apply_all` tuple/kwarg: no screen entry and no
+`screen_timing` kwarg.** That dispatcher operates on executable bytes.
+`screen_timing.apply(default_xbe)` deliberately refuses. Passing this module to
+its XBE tuple would be a type/ownership error. The tuple above is the required
+PLAY-resource pass, not an executable hook. Tier 2 remains deferred.
+
+## The four throw-tuning status dictionaries and build inspection
+
+Spell these out when wiring the protected `nfl2k5_throw_tuning.py`:
+
+| Dictionary/function | `screen_timing` value and source |
+| --- | --- |
+| `read_xbe` | `"n/a"`; an XBE has no PLAY resources |
+| `read_image` | `"unchecked"` at this low-level XBE reader; `mod_build.inspect` replaces it using `inspect_image` |
+| `write_xbe_copy` | `"n/a"`; this writer cannot apply screen data |
+| `write_image_copy` | `"unchecked"`; its shared executable pass precedes the later PLAY pass |
+
+Never infer `applied` from an XBE or advertise an XBE-copy screen switch.
+In `mod_build.inspect`, initialize `screen_timing` to `"n/a"`; for disc images
+call `inspect_image(source, level=selected_level or "D")`. Preserve `level` and
+per-book diagnostics in a sibling `screen_timing_details` entry. Refresh when
+the selected level changes. A different installed level is `foreign` for the
+requested experiment; rebuilding from the baseline is required. Some levels
+are byte-equivalent in books without a matching value; status reflects bytes,
+not historical provenance. Books with no eligible action are successful no-ops.
+A mix of baseline and applied books is refused, except no-effect books.
+The final build step receipt supersedes the early `unchecked` value and includes
+all 37 book receipts. Keep exact `changes`, `shared_changes`, play names/indices,
+outer indices, hashes and changed-byte counts in the **local** build receipt.
+Do not copy preimages, retail names/nodes or book dumps into shareable recipes.
+
+## Gameplay Patches and Build controls
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, add this `PATCHES`
+entry and add `"screen_timing"` to `NEEDS_IMAGE`:
+
+```python
+("screen_timing", "Screen pass timing (EXPERIMENTAL / UNWITNESSED)",
+ "Retail: some screens already tell linemen to hold, release and block. "
+ "Patch: A changes half-second holds to 0.8 seconds; B changes nominal "
+ "ten-yard QB drops to seven; C sets an explicit 0.6-second pass delay; "
+ "D combines them. Screens without the full release sequence are listed "
+ "and left alone. These are experiments, not measured improvements. "
+ "Requires a disc image and paired play tests."),
+```
+
+Add corresponding compact label/helper text if the panel uses `PATCH_LABELS`
+(the existing display overrides); preserve EXPERIMENTAL / UNWITNESSED there.
+Use an enable checkbox plus an A/B/C/D combo, default D; serialize the selected
+**string**, not the checkbox boolean. Unticked means `None`. Restore both controls
+from a recipe, and use the combo value for inspection and `BuildPlan` creation.
+Apply the same mapping to `build_panel_qt.py` and any `studio_qt.py` forwarding.
+Do not make A, B, C or D separate independently stackable booleans.
+
+Build `_option` caption (33 characters, below 60):
+
+```python
+self._option(g, "screen_timing", "Screen pass timing (experimental)",
+             "UNWITNESSED. Choose A, B, C or D and compare paired snaps.")
+```
+
+Show the level combo beside that option. Include it in preset reset/restore,
+plan collection and image-required enable/disable logic. Add “screen timing”
+to the Experimental preset's explanatory caption. Basic and Advanced remain
+explicitly off. The Create a Play screen preset controls already ship here;
+no additional wizard wiring is needed for these presets.
+
+## Packaging, closure and registry
+
+Add this exact new line to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_screen_timing.py
+```
+
+Keep the existing lines for `nfl2k5_play_library.py`,
+`nfl2k5_formation_play_writer.py`, `nfl2k5_playbook_inspector.py`,
+`nfl2k5_play_codec.py`, `nfl2k5_playbook_pack.py`,
+`mod_editor/gui/create_play_wizard_qt.py`, and
+`tools/nfl2k5_playbook_position_recode.py`. No assets, memo copies, test fixtures,
+private receipts or `.scratch/` paths belong in the release.
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, add
+`"mod_editor/core/nfl2k5_screen_timing.py"` to required runtime paths and
+`"mod_editor.core.nfl2k5_screen_timing"` to runtime import smoke coverage. The
+transitive closure is the existing codec, formation writer, PLAY inspector,
+universal asset index, source-cache constants, playbook-pack adapter, `nfl_outer`
+and `nfl2k5_playbook_position_recode`/OuterImage. No assembler, capstone or unicorn
+is required at runtime. The wizard's screen-only lazy import of the formation
+writer uses an already packaged module.
+
+Registry handoff (`mod_editor/capabilities/registry.v1.json`): add capability
+`nfl2k5.screens.timing`, game `nfl2k5_xbox`, existing surface `scripts_config`,
+classification `offline-writer-proved`; backend module
+`mod_editor/core/nfl2k5_screen_timing.py`, operation `write`, command
+`python3 -c "from mod_editor.core.nfl2k5_screen_timing import apply_to_image; apply_to_image('<output-copy.iso>', level='D')"`.
+This calls the shipped image adapter; there is no separate feature CLI. Set title to
+“Experimental screen timing”, GUI `expose: true`, `mode: edit`,
+`default_enabled: false`, runtime `status: not-tested`, runtime evidence `[]`.
+Selectors: `level` required, `A/B/C/D`; book selection is the complete pinned
+37-resource census, never a guessed subset. Source: fixed NFL PLAY spans in
+USA XISO; hash pin `7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9`.
+Public distribution: source/schemas only, never bundle retail data, mod payload
+metadata-only (the level). Evidence: `ASTRA_SCREEN_PASS_REPORT.md` and the three
+`test_nfl2k5_screen_*.py` files. Validation command:
+`python3 tests/mod_editor/test_nfl2k5_screen_timing.py`. Constraints: all 37
+books, declared-length pins, verified zero pool tail, capacity and transaction
+checks, refusal on changed named screens. Portme: Noah's paired snaps, then
+consider tier 2 only with independent evidence and the allocator.
+Extend the existing NFL PLAY authoring capability's description/constraints
+with the HB/WR/TE screen preset, actual assignment-slot reads, 31-node full
+play cost, type-9 endpoint guide and UNWITNESSED label. No new schema surface
+enum is needed.
+
+## Existing XBE gate failure, independently reproduced
+
+Both `test_xbe_patch_memory_writes.py` and `test_xbe_patch_cave_references.py`
+fail in their existing `setUpClass` when `nfl2k5_depth_locks.apply` reports
+`unknown bench promotion call sites`. The same failure reproduces in a clean
+`git archive HEAD` snapshot of the starting branch, without any screen changes.
+The report records exact outcomes. This requires the depth-lock/practice-squad
+integration owner's repair; these files and their patches are outside the
+screen task's ownership. No tests were weakened or skipped to conceal it.
+
+There is **no screen XBE apply to compose into those setUpClass chains**, and
+no new XBE owner, reservation, section digest or cave-manifest regeneration
+is needed for this data-only task. The screen tests explicitly reject XBE
+input. Once the existing stack failure is repaired, rerun both unchanged gates.

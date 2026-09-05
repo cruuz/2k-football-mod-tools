@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import struct
 import unittest
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_playbook_inspector import (
@@ -54,7 +58,7 @@ def _fixture() -> bytes:
     for play_index, start in ((0, 0), (1, 2)):
         play = PLAY_BASE + play_index * 0x60
         for slot in range(11):
-            struct.pack_into("<I", body, play + 8 + slot * 8, 0x1000 + slot)
+            struct.pack_into("<I", body, play + 8 + slot * 8, 0x1002 + slot * 16)
             _relative(body, play + 0x0C + slot * 8, NODE_BASE + start * 8)
 
     # Four nodes partition into two exact two-node chains.  Start low flag bits
@@ -79,6 +83,24 @@ def _fixture() -> bytes:
 
 
 class Nfl2k5PlaybookInspectorTests(unittest.TestCase):
+    def test_declared_length_excludes_orphan_tail(self) -> None:
+        raw = bytearray(_fixture())
+        for slot in range(11):
+            field = PLAY_BASE + 0x60 + 0x0C + slot * 8
+            struct.pack_into("<i", raw, 32 + field, NODE_BASE - field + 1)
+        book = parse_playbook_resource(raw)
+        assignment = book.plays[0].assignments[0]
+        self.assertEqual(assignment.declared_length, 2)
+        self.assertEqual(book.chain(assignment.chain_start_index).node_count, 4)
+        self.assertEqual(book.assignment_chain(assignment).node_count, 2)
+
+    def test_zero_or_out_of_pool_declared_length_refused(self) -> None:
+        for count in (0, 15):
+            raw = bytearray(_fixture())
+            struct.pack_into("<I", raw, 32 + PLAY_BASE + 8, 0x1000 | count)
+            with self.assertRaisesRegex(ValidationError, "declared length"):
+                parse_playbook_resource(raw)
+
     def test_structured_fixture_is_fully_partitioned(self) -> None:
         book = parse_playbook_resource(
             _fixture(), asset_id="nfl2k5.resource.test.PLAY", outer_index=307
