@@ -138,12 +138,18 @@ def map_terf(data, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_00
     nested = 0
     tdb_members: List[Dict[str, Any]] = []
     undecodable = 0
+    unknown_heads: Counter = Counter()
     for index in range(container.member_count):
         try:
             kind = container.member_format(index)
         except ea_terf.TerfError:
             undecodable += 1
             continue
+        if kind in (None, "unclassified"):
+            try:
+                unknown_heads[container.member(index, max_output=4)[:4].hex() or "empty"] += 1
+            except ea_terf.TerfError:
+                unknown_heads["undecodable"] += 1
         if kind == "MMAP":
             try:
                 head = ea_terf.parse_mmap_header(container.member(index, max_output=0x80))
@@ -172,6 +178,7 @@ def map_terf(data, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_00
     result["text_bytes"] = text_bytes
     result["nested_terf"] = nested
     result["undecodable"] = undecodable
+    result["unclassified_heads"] = dict(unknown_heads.most_common(8))
     result["tdb_members"] = tdb_members
     return result
 
@@ -359,6 +366,15 @@ def render_markdown(m: Dict[str, Any]) -> str:
             fields = ", ".join(f"{f['name']}:{f['type']}{f['bits']}" for f in t.get("fields", []))
             out.append(f"- **{t.get('name')}** — {t.get('record_bytes')} B/rec ({t.get('record_bits')} bits), max {t.get('max_records')}, {len(t.get('fields', []))} fields: {fields}")
         out.append("")
+    heads: Counter = Counter(); where: Dict[str, set] = {}
+    for path, c in m["containers"].items():
+        for head, n in (c.get("unclassified_heads") or {}).items():
+            heads[head] += n; where.setdefault(head, set()).add(path.rsplit("/", 1)[-1])
+    if heads:
+        out += ["", "## Unclassified member magics (first 4 bytes after decompression, top 20)", "",
+                "| magic | members | containers (up to 4) |", "|---|---:|---|"]
+        for head, n in heads.most_common(20):
+            out.append(f"| `{head}` | {n} | {', '.join(sorted(where[head])[:4])}{' …' if len(where[head]) > 4 else ''} |")
     others = [f for f in m["files"] if f["kind"].startswith("other:")]
     if others:
         out += ["## Files with an unrecognised magic", "", "| path | bytes | first bytes |", "|---|---:|---|"]
