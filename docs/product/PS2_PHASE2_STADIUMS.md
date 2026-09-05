@@ -171,21 +171,25 @@ Measured on the trial scene (1,917,856 decoded bytes, `offset_bits` 13):
 |---|---|
 | greedy encode, refuses — the edit does not fit | 43 s |
 | optimal-parse encode — 1,296,233 bytes, **10,311 spare** | 73 s |
-| `fill_stream` expanding those 10,311 bytes back into literals | **~20 min** |
+| `fill_stream` expanding those 10,311 bytes back into literals | **tens of minutes** |
 
-`nfl_vc_lz_fill.fill_stream` re-serializes the entire ~700,000-token stream on
-every candidate expansion, and rebuilds the token list with a slice-concat each
-time. A match holds at most 10 bytes at `offset_bits` 13, so closing a 10 kB gap
-takes well over a thousand successful expansions, each O(n). That is where a
-one-lane stadium edit spends 95% of its wall clock.
+`nfl_vc_lz_fill.fill_stream` re-serializes the entire token stream on every
+candidate expansion and rebuilds the token list with a slice-concat each time.
+Measured on this scene: **961,758 tokens, 1.478 s per `serialize`**, 10,295
+bytes to close, and a mean match length of 5.46, so each successful expansion
+recovers only about four bytes and roughly **2,600 expansions** are needed —
+each one O(n). That is where a one-lane stadium edit spends the overwhelming
+majority of its wall clock.
 
 This is a **property of the shared helper, not of this writer**, and nothing
 here was changed to work around it — `nfl_vc_lz_fill.py` belongs to the Xbox
 lane and is used exactly as written. But anyone putting a progress bar or a GUI
-in front of this needs to know that one stadium edit is a ~20-minute operation
-today, and that making it interactive is an afternoon's work in `fill_stream`
-(track the serialized length incrementally instead of re-serializing) rather
-than a research problem.
+in front of this needs to know that one stadium edit is a tens-of-minutes
+operation today, and that making it interactive is an afternoon's work inside
+`fill_stream` (track the serialized length incrementally instead of
+re-serializing the whole stream) rather than a research problem. The Xbox lane
+never hit this because it only ever fills a few bytes; a PS2 stadium starts
+10 kB short because the optimal parse is what made it fit at all.
 
 ## What shipped
 
