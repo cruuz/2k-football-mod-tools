@@ -9,6 +9,10 @@ that still carry per-game facts today are edited by one command (step 8), never 
 
 - Python 3.11+, `PyQt5 Pillow` installed, the suite runnable as `CONTRIBUTING.md` says.
 - A **game id**: lowercase, digits and underscores, e.g. `madden08_ps2`, `espn_nba2k5_ps2`.
+- The three **display fields** the studio label is composed from: `console` (1–8 characters, no
+  whitespace), `game` (1–24), `year` (1–8, no whitespace) — `PS2` / `Madden` / `08` gives
+  **PS2 Madden 08 Studio**. Never write the label itself anywhere; conformance refuses a module
+  that does.
 - The game's **identity**: disc serial(s), the retail executable digest, the whole-image digest
   if there is one. Hashes only; nothing else about the game enters the repository.
 - For every lane you plan: a **catalogue tool**, a **patcher** and an **independent verifier**,
@@ -19,9 +23,10 @@ that still carry per-game facts today are edited by one command (step 8), never 
 
 ```bash
 python -m mod_editor.games new madden08_ps2 --title "Madden NFL 08 (USA, PlayStation 2)" \
-    --platform "PlayStation 2" --serial SLUS-21638
+    --platform "PlayStation 2" --console PS2 --game Madden --year 08 --serial SLUS-21638
 python -m mod_editor.games conformance --game madden08_ps2      # passes on day one
 PYTHONPATH=. python tests/mod_editor/test_madden08_ps2_module.py
+python -m mod_editor.games open madden08_ps2                    # its studio, fourteen pages
 ```
 
 The scaffold writes `mod_editor/games/madden08_ps2/` — `__init__.py` (`GAME`), `__main__.py`,
@@ -30,6 +35,10 @@ validators), `registry.fragment.json` (one complete placeholder row), `allowlist
 `pins.json` — and `tests/mod_editor/test_madden08_ps2_module.py`. The example lane is a teaching
 template: delete it (and its row) before the first real row; its summary says PLACEHOLDER
 everywhere so it can never be mistaken for a capability.
+
+The module's `studio_window` points at the **core shell**
+(`mod_editor.games.studio_qt.GameStudioDialog`), so the new game already has all fourteen
+pages, each saying honestly what it has and has not. You write lanes; the pages appear.
 
 ## 2. Identity
 
@@ -44,7 +53,8 @@ One lane = one registry row. Wrap the trio without changing it, the way
 `mod_editor/games/nfl2k5_ps2/__init__.py` wraps the uniform-colour tools:
 
 - `build_catalogue(source)` → the tool's catalogue, verbatim, as `Catalogue.document`; targets
-  with a `key` the recipe takes and a `budget` in the user's words;
+  with a `key` the recipe takes, a `budget` in the user's words, and the `fields` an editor
+  draws (`Field(key, kind, label, help, …)`; `check_edit` is still the only rule);
 - `check_edit(target, values)` → the inline refusal, or `None`;
 - `compose_recipe(edits)` → **exactly** the document the patcher's own parser accepts;
 - `plan` / `build` / `verify` → the tool's dry run, apply and independent verifier; every
@@ -56,14 +66,38 @@ byte ranges); `False` for a lane that writes files (declare `Receipt.artifacts`)
 `validate_<lane>.sh/.bat` under the package (CRLF for `.bat`, executable LF for `.sh`) and name
 them in `validators`; the registry row's `validation_command` runs one of them.
 
-For executable patches use the `CodePatchLane` shape — see `PS2_CODE_PATCH_PIPELINE.md`.
+For executable patches use the `CodePatchLane` shape — see `PS2_CODE_PATCH_PIPELINE.md`. For
+texture art implement `ArtLane` (`decode_png`, `encode`, `replacement_identity`) and for sounds
+`AudioLane` (`decode_wav`); a lane that only catalogues declares `read_only = True` and answers
+`ReadOnlyLane`. Each one gives the shell's page its controls and nothing else does.
 
-## 4. Windows
+**Which page a lane lands on** comes from its surface (`SURFACE_PAGES`); set `Lane.page` to one
+of `PAGE_ORDER`'s ids when the default is wrong (a field-art lane on the `textures` surface
+sets `page = "field_art"`). Conformance refuses a lane whose page is not a studio page. If a
+page has no lane yet, say why in `game.json`'s `page_notes`: one sentence, shown on the page
+under the core's own.
 
-Expose each window as a `WindowSpec` whose factory imports Qt **inside the function**. A
-window that works on the Xbox studio's open project sets `needs_studio_session=True` and reads
-`context["facade"]`. The chooser lists windows; `python -m mod_editor.games open <id> --window
-<window-id>` opens one alone. Do not add File-menu entries or CLI flags upstream.
+Every step of a lane is runnable without a window, which is how to develop one:
+
+```bash
+python -m mod_editor.games lane madden08_ps2 example.slots catalogue --source in.slot --out c.json
+python -m mod_editor.games lane madden08_ps2 example.slots build --source in.slot \
+    --destination new.slot --recipe recipe.json --catalogue c.json --receipt receipt.json
+python -m mod_editor.games lane madden08_ps2 example.slots verify --source in.slot \
+    --destination new.slot --receipt receipt.json --out verdict.json
+```
+
+## 4. The studio, and any other windows
+
+`GameModule.studio_window` names the window the chooser opens and the one
+`python -m mod_editor.games open <game-id>` opens: keep it pointed at the core shell unless the
+game genuinely needs a window of its own. Expose any further window as a `WindowSpec` whose
+factory imports Qt **inside the function**; a window that works on the Xbox studio's open
+project sets `needs_studio_session=True` and reads `context["facade"]`. The chooser lists
+studios, not windows — a second window is reached with `python -m mod_editor.games open
+<game-id> --window <window-id>` and from the studio's own Windows menu. Do not add File-menu
+entries or CLI flags upstream, and do not type the studio label into a menu label: the core
+composes it.
 
 ## 5. Fragments and pins
 
@@ -89,8 +123,9 @@ CI globs `tests/mod_editor/test_*.py`; nothing in `.github/` changes.
 ```bash
 python -m mod_editor.games conformance --game <game_id>     # every check named
 python -m mod_editor.games fragments <game_id> --check
-python -m mod_editor.games                                 # the module is Ready
-python -m mod_editor.games open <game_id> --window <id>    # a window opens alone
+python -m mod_editor.games                                 # the studio is listed and Ready
+python -m mod_editor.games open <game_id>                  # the studio opens alone
+python -m mod_editor.games open <game_id> --window <id>    # any other window opens alone
 ```
 
 ## 8. What still touches upstream files today — one command
@@ -142,6 +177,9 @@ what is being asked for when that is the truth.
 - [ ] `python -m mod_editor.games fragments <game_id> --check` OK
 - [ ] every lane has a synthetic source, a known-good edit, an independent verifier that fails
       on a tampered output, and refusal sentences that name the fix
+- [ ] `console`, `game` and `year` in `game.json`; the composed label typed nowhere
+- [ ] every lane lands on the right page, and every page without one has a `page_notes` sentence
+      or is honestly empty
 - [ ] the example lane and its row are gone
 - [ ] no game data: hashes, offsets, lengths, names only
 - [ ] `python -m mod_editor.games pins --check` untouched (game files are not frozen)
