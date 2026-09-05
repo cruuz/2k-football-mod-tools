@@ -181,10 +181,11 @@ PLAYER_FIELDS: Tuple[Tuple[str, str, str, Optional[int]], ...] = (
     _rating("PMOR", "Morale"),
 )
 
-#: The ``TEAM`` fields this lane offers.  What each holds was read off the
-#: owner's own disc -- ``TDNA`` "Bears", ``TLNA`` "Chicago", ``TSNA`` "CHI",
-#: ``TMNC`` "Brownies" for Cleveland -- so the labels are measured, not guessed
-#: [M].  No value from that reading is stored here.
+#: The ``TEAM`` fields this lane offers.  Which of the four holds which kind of
+#: name was settled by reading all 32 of a retail disc's team records and
+#: seeing what each column consistently was -- a nickname, a city, a two-to-
+#: five character code, and a familiar short form -- so the labels are
+#: measured, not guessed [M].  No value from that reading is stored here.
 TEAM_FIELDS: Tuple[Tuple[str, str, str, Optional[int]], ...] = (
     ("TDNA", "Nickname", "The name the team is drawn under, e.g. its mascot.", None),
     ("TLNA", "City", "The city or region the team plays for.", None),

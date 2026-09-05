@@ -265,9 +265,9 @@ is not worked around here, and none of those members is in what this lane edits.
   at the 127 its seven-bit field would hold. A name stops one byte short of its
   field so the terminator survives.
 - `TEAM` — `TDNA` nickname, `TLNA` city, `TSNA` abbreviation, `TMNC` short
-  name. What each holds was read off the owner's disc (`Bears` / `Chicago` /
-  `CHI` / `Brownies` for Cleveland) [M]; no value from that reading is stored
-  in this repository.
+  name. Which column is which was settled by reading all 32 team records off a
+  retail disc and seeing what each consistently held [M]; no value from that
+  reading is stored in this repository.
 
 On the retail disc that is **12,499 editable rows** across 235 databases [M].
 Height and weight are deliberately absent: `PWGT` looks like pounds less 160 on
