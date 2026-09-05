@@ -410,6 +410,8 @@ class QklTests(_Room):
 
         plain = self.room / "no-cache.iso"
         if not plain.exists():
+            # The synthetic disc carries both caches by default since the art
+            # writer landed; this test wants an image with neither.
             plain.write_bytes(containers.build_synthetic_disc(preload_caches=False))
         self.assertEqual(audio_lane.preload_copies(containers.open_disc(plain)), {})
 

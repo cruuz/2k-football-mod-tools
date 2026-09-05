@@ -949,6 +949,8 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     caller that wants what this built before gets exactly that.
     ``preload_caches=False`` leaves out the two ``QL01`` caches, for a test that
     needs an image with no cache at all.
+    ``preload_caches=False`` leaves out the two ``QL01`` caches, for a test of
+    what a reader answers on an image that has none.
     """
 
     uniform_members = [
@@ -980,7 +982,6 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
         (TEAM_DATABASE_CONTAINER, PRELOAD_KIND_MEMBER, 1, teams_member_one),
     ])
     fe_cache = build_synthetic_preload_cache([
-        (UNIFORM_CONTAINER, PRELOAD_KIND_HEADER, None, directory),
         (UNIFORM_CONTAINER, PRELOAD_KIND_HEADER, None, directory),
     ])
     boot = b"BOOT2 = cdrom0:\\%s;1\r\nVER = 1.00\r\nVMODE = NTSC\r\n" % BOOT_FILE.encode("ascii")
