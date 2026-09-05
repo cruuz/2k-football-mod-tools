@@ -29,7 +29,13 @@ class CreatePlayWizardTests(unittest.TestCase):
         QMessageBox.warning = staticmethod(lambda _p, _t, text, *a, **k: cls.warnings.append(str(text)))
         QMessageBox.critical = staticmethod(lambda _p, _t, text, *a, **k: cls.warnings.append(str(text)))
         from mod_editor.studio.facade import Nfl2k5StudioFacade
-        cls.facade = Nfl2k5StudioFacade()
+        from mod_editor.studio.session import StudioSession
+        from functools import partial
+        import tempfile
+        temporary = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(temporary.cleanup)
+        cls.facade = Nfl2k5StudioFacade(
+            session_factory=partial(StudioSession, root=pathlib.Path(temporary.name)))
         cls.facade.load_source(SRC, lambda *a: None)
 
     def test_full_flow_stages_replacements(self):
