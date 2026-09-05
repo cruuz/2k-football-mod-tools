@@ -2,6 +2,16 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **Practice squads in franchise: 53 active plus up to 12 reserves (Experimental).** Built by GPT-6 Astra: when the
+  CPU's season gate cuts a 65-man roster to 53, each team now keeps up to twelve of the players it cut as team-owned
+  reserves, in the same 65-slot roster table the game already carries through the off-season (three spare bytes mark
+  the list; every pointer keeps the game's own relative encoding, so saves, team exports and the season rollover carry
+  them). Reserves stay off the active roster, the depth chart and the team rating, cost no cap space and keep their
+  contract terms; a full 53 + 12 roster has to release players to draft. Promote and demote run as transactions in the
+  executable (eight small caves, none on a live function; the first draft shared a cave with the dynamic kickoff and was
+  moved). The requested sixteen-player tail was disproved: those bytes hold live cap and statistics data. No in-game
+  reserve screen yet and no automatic promotion; only use reserve-bearing saves on a disc that carries the patch.
+  Unwitnessed in game.
 - **Franchise tab on ★ Rosters (Beta 60).** A franchise save now gets a second page beside the roster — the
   part of Flying Finn's editor the studio did not have — and both pages write ONE re-signed copy, roster edits
   first. **Overview**: the season year (the game's `2004 + field` rule shown beside it), stage and week

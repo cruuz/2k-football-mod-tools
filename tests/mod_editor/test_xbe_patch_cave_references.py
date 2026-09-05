@@ -50,12 +50,11 @@ class CaveReferenceTests(unittest.TestCase):
         cls.sec = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
                                           "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
-        cls.patched, _receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True)
+        cls.patched, _receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True, practice_squad=True)
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         cls.patched, _ = pools.apply(cls.patched)
         cls.patched, _ = rows.apply(cls.patched)
-        from mod_editor.core import nfl2k5_practice_squad as ps
         cls.stack = cls.patched
         cls.patched, _ps_receipt = ps.apply(cls.stack)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
@@ -157,7 +156,6 @@ class CaveReferenceTests(unittest.TestCase):
 
     def test_practice_squad_spans_preserve_stack_owners(self) -> None:
         from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
-        from mod_editor.core import nfl2k5_practice_squad as ps
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         retail = XbeImage(self.retail)
         stack = XbeImage(self.stack)

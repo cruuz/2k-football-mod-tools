@@ -178,6 +178,13 @@ PATCHES = (
      "rows (thirteen rows per unit instead of eleven; LWR / RWR become X / Z). The new rows are views onto your receiver "
      "and corner lists, so moving a player there moves him in that list. Needs the one-pool positions and the X / Z / SLOT "
      "playbook roles and switches them on when the disc lacks them. Special teams keep KR, PR, K and P. Unwitnessed in game."),
+    ("practice_squad", "Practice squads: 53 active + up to 12 reserves in franchise (experimental)",
+     "Retail: the season gate cuts every franchise roster to 53 and the rest become free agents. Patch: each team keeps up to "
+     "twelve of the players it cuts as team-owned reserves (the same 65-slot roster table; three spare bytes mark the list). "
+     "Reserves stay off the active roster, the depth chart and the team rating, cost no cap space, keep their contract terms, "
+     "and survive saves, team imports and the season rollover. There is no in-game reserve screen or automatic promotion yet; "
+     "a full 53 + 12 roster must release players to draft. Only use saves with reserves on a disc that carries this patch. "
+     "Unwitnessed in game."),
 )
 
 

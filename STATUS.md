@@ -4,6 +4,8 @@
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
+- **Practice squads, 53 + 12 (Experimental).** Team-owned reserves kept by the season cut, surviving saves and the
+  rollover; no reserve screen yet. Astra-built, gate-proved, unwitnessed.
 - **SLOT / NICKEL / DIME depth-chart rows, X / Z labels (Experimental).** Thirteen-row depth chart on top of
   the one-pool positions and the playbook roles. Astra Tier 2, gate-proved, unwitnessed.
 - **Franchise saves decoded** (season block + front office: cap, IR, schedule grid, coaches, seeds, user control);
