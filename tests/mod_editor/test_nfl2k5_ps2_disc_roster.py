@@ -181,6 +181,27 @@ class WriteTests(_RosterTestCase):
         self.edited({"player": 0, "jersey_number": 7})
         self.assertEqual(self.source.read_bytes(), before)
 
+    def test_a_historic_roster_is_written_with_its_own_geometry(self) -> None:
+        destination, receipt = self.edited({"player": 0, "jersey_number": 21},
+                                           roster="outer:1")
+        self.assertEqual(receipt["roster"]["outer_index"], 1)
+        self.assertEqual(receipt["roster"]["label"], "historic")
+        arena = receipt["roster"]["body_offset_in_iso"]
+        for row in receipt["edits"]:
+            self.assertGreaterEqual(row["offset_in_iso"], arena)
+            self.assertLessEqual(row["offset_in_iso"] + row["span_size"],
+                                 arena + receipt["roster"]["stored_size"])
+        self.assertNotEqual(arena, self.boot["body_offset_in_iso"])
+
+    def test_an_index_that_exists_only_in_the_boot_roster_is_refused(self) -> None:
+        # Index 2 exists in the boot roster's three primary records and not in
+        # the historic roster's one. Borrowing the boot roster's geometry -- the
+        # obvious shortcut, since both objects have the same shape -- would
+        # accept this and write to the wrong bytes.
+        message = self.refused({"player": 2, "jersey_number": 1},
+                               roster="outer:1")
+        self.assertIn("outer 1 has no primary_players record at index 2", message)
+
 
 class RefusalTests(_RosterTestCase):
     def test_an_over_length_name_is_refused(self) -> None:

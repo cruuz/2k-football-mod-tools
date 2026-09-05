@@ -266,18 +266,37 @@ def plan(source: Path, recipe: Dict[str, Any],
     body_base_in_iso = roster["body_offset_in_iso"]
     stored = roster["stored_size"]
 
+    # Player geometry is decoded from the *resolved* arena, never borrowed from
+    # the catalogue's boot-roster listing: a historic roster has its own record
+    # offsets, and reusing the boot roster's would aim every write at the wrong
+    # bytes inside a structurally similar object.
+    with open(str(source), "rb") as stream:
+        stream.seek(body_base_in_iso)
+        body = stream.read(stored)
+    _require(len(body) == stored,
+             "outer %d: short read of the %d-byte ROST arena"
+             % (roster["outer_index"], stored))
+    _require(_digest(body) == roster["body_sha256"],
+             "outer %d: the ROST arena changed while it was planned"
+             % roster["outer_index"])
+    decoded = catalog_tool.decode_roster(body, "outer %d" % roster["outer_index"])
+    arena_players = catalog_tool.decode_players(body, decoded["tables"])
+    by_slot = {(row["pool"], row["index"]): row for row in arena_players}
+    counts = {pool: sum(1 for row in arena_players if row["pool"] == pool)
+              for pool in POOLS}
+
     planned = []  # type: List[Dict[str, Any]]
     with open(str(source), "rb") as stream:
         for edit in recipe["edits"]:
-            try:
-                player = catalog_tool.find_player(live, edit["player"], edit["pool"])
-            except catalog_tool.RosterCatalogError as exc:
-                raise RosterPatchError(
-                    "%s. The boot roster holds %d primary and %d secondary "
-                    "records; an out-of-range index is refused rather than "
-                    "guessed at."
-                    % (exc, live["summary"]["boot_primary_players"],
-                       live["summary"]["boot_secondary_players"]))
+            player = by_slot.get((edit["pool"], edit["player"]))
+            _require(
+                player is not None,
+                "outer %d has no %s record at index %d. It holds %d primary and "
+                "%d secondary records; an out-of-range index is refused rather "
+                "than guessed at."
+                % (roster["outer_index"], edit["pool"], edit["player"],
+                   counts["primary_players"], counts["secondary_players"]),
+            )
             label = "%s %d" % (edit["pool"], edit["player"])
 
             packed = {name: edit["changes"][name] for name in PACKED_FIELDS
@@ -557,6 +576,31 @@ def selftest(tmp: Optional[str] = None) -> int:
                               parse_recipe({"schema": RECIPE_SCHEMA, "edits": [
                                   {"player": 99, "jersey_number": 1}]})),
                 "out-of-range index")
+        # A historic roster has its own record offsets and its own population.
+        # Index 2 exists in the boot roster and not here, so borrowing the boot
+        # roster's geometry would silently accept it and write to the wrong
+        # bytes of a structurally similar object.
+        refuses("an index that exists only in the boot roster",
+                lambda: apply(source, room / "g.iso",
+                              parse_recipe({"schema": RECIPE_SCHEMA,
+                                            "roster": "outer:1",
+                                            "edits": [{"player": 2,
+                                                       "jersey_number": 1}]})),
+                "outer 1 has no primary_players record at index 2")
+        check(not (room / "g.iso").exists(),
+              "a refusal must not leave g.iso behind")
+        historic = room / "historic.iso"
+        receipt = apply(source, historic,
+                        parse_recipe({"schema": RECIPE_SCHEMA,
+                                      "roster": "outer:1",
+                                      "edits": [{"player": 0,
+                                                 "jersey_number": 21}]}))
+        check(receipt["roster"]["outer_index"] == 1
+              and receipt["roster"]["label"] == "historic",
+              "a historic roster must be writable in its own right")
+        check(receipt["edits"][0]["offset_in_iso"]
+              >= receipt["roster"]["body_offset_in_iso"],
+              "a historic edit must land inside the historic arena")
         refuses("an over-length name",
                 lambda: apply(source, room / "b.iso",
                               parse_recipe({"schema": RECIPE_SCHEMA, "edits": [
