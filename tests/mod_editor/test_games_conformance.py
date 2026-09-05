@@ -69,7 +69,9 @@ class FakeModulesTests(unittest.TestCase):
     """A fake loadable module passes; a deliberately incompatible one is refused by sentence."""
 
     def setUp(self) -> None:
-        self.root = write_fake_root(Path(tempfile.mkdtemp(prefix="conformance-fakes-")))
+        # Resolved: discovery reports real paths (macOS /var -> /private/var, Windows RUNNER~1 -> runneradmin),
+        # and the exact refusal sentence is compared below.
+        self.root = write_fake_root(Path(tempfile.mkdtemp(prefix="conformance-fakes-")).resolve())
         self.addCleanup(shutil.rmtree, self.root, True)
         self.report = games.discover(self.root)
 

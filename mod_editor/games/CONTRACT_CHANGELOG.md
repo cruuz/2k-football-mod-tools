@@ -8,7 +8,7 @@ refuses pins that do not match the entry for the current `CONTRACT_VERSION`.
 `python -m mod_editor.games pins --release` drops the marker when the version ships.
 
 ## 1.0 (unreleased)
-pins: a395634510a8171e380bee28ce1d24c197a0a481005a82cb24c287029674133f
+pins: 3eee10387db0bfa5e327693a588aa9eba424ab2ca613eef48c62e5bdfd976ca4
 
 First version. A game is a directory `mod_editor/games/<game>/` with a `game.json`
 manifest, a registry fragment, an allowlist fragment, its own pins and a module-level
