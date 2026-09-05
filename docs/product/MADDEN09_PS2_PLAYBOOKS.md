@@ -377,9 +377,17 @@ have, and cannot get offline:
   formations list, the plays under the renamed set, and the CPU calling from it —
   because a re-packed member is a new byte stream even when the directory is
   untouched.
-* Third, if a future edit takes the **growth path** on a real disc: that the
-  game still loads after `FE.QKL`'s directory copies have been rewritten. The
-  retail books all fit their own slots, so no shipped edit has needed it yet.
+* Third — and this is the load-bearing assumption of the ordinary path — that
+  **the game's own decoder ignores the padding**, as ours does. Our decoder
+  stops when it has produced the declared number of bytes, which happens before
+  the trailing NULs, and EA's reads the same two numbers off the same
+  directory; but "the engine reads it the way our reader does" is an inference
+  [A], not a measurement, and a boot is the only thing that settles it. If it
+  turned out otherwise the fix is small and known -- take the growth path
+  always -- but it would be a fix, not a surprise to absorb.
+* Fourth, if an edit takes the **growth path** on a real disc: that the game
+  still loads after `FE.QKL`'s directory copies have been rewritten. The retail
+  books all fit their own slots, so no shipped edit has needed it yet.
 
 Until then the row stays `offline-writer-proved` and says so on the page.
 
