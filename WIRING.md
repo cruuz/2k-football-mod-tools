@@ -4162,6 +4162,72 @@ The extent adapter must accept `space.SCALEOUT_SIZE` via the existing
 scale-out WIRING handoff, not a new arbitrary image length.
 
 ## Dispatcher tuple, keyword arguments and all four dictionaries
+# r62 dedicated zone QB spy runtime handoff, 2026-09-05
+
+Backend: `mod_editor/core/nfl2k5_qb_spy_runtime.py`, allocator owner
+`nfl2k5_qb_spy`, option **`qb_spy`**. This is **EXPERIMENTAL / UNWITNESSED**.
+The protected implementation files and reservation JSON were not edited.
+`ASTRA_QB_SPY_RUNTIME_REPORT.md` describes the five live hooks, bounded proofs,
+31-record authored lookup limit, and exact deferred man/rush work.
+
+## BuildPlan, presets and paired intent
+
+In protected `mod_editor/core/mod_build.py`, add `qb_spy: bool = False`.
+Explicitly set `"qb_spy": False` in Basic, Advanced (the current `modern`
+preset key), and Experimental. Include it in exact-bool validation,
+`wants_xbe_patch`, availability, recipe/project serialization, inspection,
+selection/status maps, source gating and plan forwarding. Availability requires
+`nfl2k5_qb_spy_runtime`, its generated `_code` module and `nfl2k5_xbe_space`.
+`qb_spy=True` implies `xbe_space=True`; apply the existing grown-owner
+image-only product preflight. No preset enables it.
+
+Before any image mutation, compile the staged PLAY resources using the existing
+formation/play and pack writers. Keep **each exact replacement resource paired
+with its original compiler report**, including `spy_intent.schema`, resolved
+`play_index`/`slot`, `asset_id`, and `replacement_sha256`. Project rows and
+`.2k5book` files already retain versioned authoring intent. Feed those pairs to:
+
+```python
+spy_table, spy_table_receipt = qb_spy_patch.compile_intent_table(
+    [(compiled.replacement, compiled.report), ...])
+```
+
+The empty input produces a valid table with zero records and enables command
+spies only. Compile once before allocation; keep `spy_table` as transient build
+bytes, not a user-editable BuildPlan field. Store `spy_table_receipt` alongside
+the build's authoring receipts. Pass **all** intended records together; never
+install one book's table and subsequently try to replace it. More than 31
+records, duplicate/colliding identities, invalid slots/scripts, or stale
+resource/report pairs refuse before writes. All 32 books with one authored
+spy each exceed this revision's limit; command spies consume no RO rows.
+
+For packs, retain the per-resource `CompiledFormationPlay.report` from the
+actual compiler, not the enclosing pack summary. If multiple passes touch the
+same book, compose and validate the final resource first, then resolve retained
+intent to its final indices and produce a matching compiler report. Do not
+change `replacement_sha256` to conceal a stale report or infer Spy from zone
+bytes. A resource-only import without retained intent remains a shallow zone.
+The table hashes only immutable names, assignment descriptor and two nodes;
+loaded relocation addresses are not persisted. No runtime byte is written into
+PLAY. Custom names may use at most 63 UTF-16 units for this lookup.
+
+Defer `qb_spy` with the other grown flags: add `qb_spy=False` to the early
+`replace(plan, ...)` and early XBE writer calls. At the final growth pass,
+include it in the condition, request union and `_apply_all` arguments, with
+`qb_spy_intent_table=spy_table`. Preserve `qb_spy_patch`, `qb_spy`, and the
+lookup receipt in final build reporting. In the scorebug resource lane, forward
+`qb_spy` to `extra_requests` before its first allocator call and enable it only
+in the final executable pass. Apply no allocator after an incomplete union.
+
+Keep the authoring notice accurate until these protected paths are wired.
+Then replace the old "not yet shipped" notice with:
+"Shallow middle zone. Dedicated QB tracking requires QB spy (experimental)
+and the paired authored play lookup in Build." Show the same text in existing
+Spy assignment help. A global `runtime_available=True` on a compiler receipt
+would be incorrect: only the final paired XBE/table establishes availability.
+No GUI file was changed in this branch.
+
+## Dispatcher tuple, kwargs, allocator union and four status dictionaries
 
 In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
 
@@ -4339,3 +4405,124 @@ manifest for the last three commands. After protected integration, validate
 staged runtime closure and capability registry and build a disposable disc
 with explicit abilities on/off plus a configured week. No user-facing
 checkbox is wired by this branch; that is the brief's protected-file boundary.
+from . import nfl2k5_qb_spy_runtime as qb_spy_patch
+```
+
+Add keyword-only `qb_spy: bool = False` and
+`qb_spy_intent_table: bytes | None = None` to `_apply_all`, `write_xbe_copy`,
+`write_image_copy` and all their forwarding calls. Append parameters to existing
+union/adaptor signatures to preserve positional compatibility. Check exact bool
+and reject a supplied table when `qb_spy` is false. Keep nonempty-selection
+checks and image eligibility consistent. `_selected_space_requests` adds:
+
+```python
++ (qb_spy_patch.REQUESTS if qb_spy else ())
+```
+
+Forward this flag through `_xbe_space_adapter` **and** its inherited
+`_defensive_try_adapter`, both constructors/calls in the final tuple, and all
+scorebug `extra_requests` lanes. Extend the allocator condition with
+`or qb_spy`. Preserve all other landed owners' requests. The spy requests move
+512 bytes of its 2,048-byte immutable budget into general RO; they do not use
+additional RW budget or any retail tail.
+
+A concrete table-aware adapter follows the existing owner adapter conventions:
+
+```python
+class _qb_spy_adapter:
+    def __init__(self, table):
+        self.table = table
+    def status(self, payload):
+        return qb_spy_patch.status(payload)
+    def apply(self, payload):
+        return qb_spy_patch.apply(payload, intent_table=self.table)
+```
+
+After the allocator and its other final owners, add:
+
+```python
+(qb_spy, _qb_spy_adapter(qb_spy_intent_table),
+ "qb_spy_patch", "dedicated zone QB spy (experimental)"),
+```
+
+Keep apply-on-applied behavior: exact replay checks the complete runtime, table,
+hooks, zero offline state and dependency pins. An omitted table on replay keeps
+the installed one; explicit different bytes require a rebuild. Expose table
+pairing/count in the receipt without treating a successful code install as a
+played witness.
+
+Add the following projection to `_allocator_feature_status` (the current shared
+grown status helper) or each of its four consumers:
+
+| Return dictionary | Required entry |
+| --- | --- |
+| `read_xbe` | `"qb_spy": qb_spy_patch.status(payload)` |
+| `read_image` | `"qb_spy": qb_spy_patch.status(payload)` |
+| `write_xbe_copy` | `"qb_spy": qb_spy_patch.status(patched)` |
+| `write_image_copy` | `"qb_spy": qb_spy_patch.status(final)` |
+
+Use each function's actual final byte variable. Do not project an early,
+pre-growth result. For `write_image_copy`'s scorebug lane, forward false/no table
+in the initial pass, reserve real requests before resource installation, and
+forward the real flag/table to the post-resource `_apply_all` call.
+
+## Gameplay Patches, Build and Studio (protected)
+
+Add `"qb_spy"` to `NEEDS_IMAGE`. Use this PATCHES row:
+
+```python
+("qb_spy", "QB spy for zone defenders (experimental)", qb_spy_patch.HELP_TEXT),
+```
+
+The help constant contains **Retail** and **Patch** and explains the zone-only,
+paired-lookup and unwitnessed limits. The Build `_option` caption is 40
+characters (under 60):
+
+```python
+self.qb_spy_check = self._option(
+    gameplay_layout, "qb_spy", "QB spy for zone defenders (experimental)",
+    qb_spy_patch.HELP_TEXT)
+```
+
+Use the current layout variable and normal experimental badge. Include checkbox
+loading, reset, preset clearing, source eligibility, selection summary,
+`_make_plan`, and `studio_qt.py` Gameplay-to-Build/worker plan forwarding.
+No man/rush enable switch or new standalone GUI panel belongs to this revision.
+
+## Release, closure, capability and manifest
+
+Add these exact protected release-allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_qb_spy_runtime.py
+mod_editor/core/nfl2k5_qb_spy_runtime_code.py
+ASTRA_QB_SPY_RUNTIME_REPORT.md
+```
+
+The `.S` source, assembler, standalone tests and capability handoff JSON are
+developer evidence; the generated Python template is the runtime asset. Add
+explicit imports to `packaging/check_2k5_mod_studio_runtime.py`:
+
+```text
+mod_editor.core.nfl2k5_qb_spy_runtime
+mod_editor.core.nfl2k5_qb_spy_runtime_code
+```
+
+Retain transitive closure for the already shipped allocator, bump-strength
+section digest helper, cave-oracle XBE reader, PLAY inspector/library/codec,
+formation/play compiler and pack compiler. Runtime application never invokes
+GNU as, Unicorn, Capstone or the Ghidra corpus. Recompute provider and staged
+closure pins using the existing packaging tools after integration.
+
+Merge `docs/mod_editor/nfl2k5_qb_spy_runtime_capability.json` through the current
+registry serializer/validator: ID `nfl2k5.gameplay.qb_spy`, existing surface
+`gameplay_tuning_sliders`, classification `offline-writer-proved`, runtime
+`not-tested`, GUI default false. No new surface schema is needed.
+
+The unprotected manifest builder and both XBE gates already compose the spy
+owner, with the same canonical allocator name, in both installation orders.
+Claude alone regenerates the protected `data/nfl2k5_cave_reservations.json`
+after integration. Retain the source fingerprint guard and include all five
+live hook spans plus the three named child allocations. Run the spy writer and
+Unicorn suites, both XBE gates and the normal protected Build/closure checks.
+No release-tag/updater/workflow changes are requested; no push.

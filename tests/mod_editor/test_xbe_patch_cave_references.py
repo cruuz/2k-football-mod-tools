@@ -87,6 +87,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_abilities_runtime as abilities
         if abilities.status(cls.patched) != "applied":
             raise AssertionError("abilities owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
+        if qb_spy.status(cls.patched) != "applied":
+            raise AssertionError("QB spy owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -296,6 +299,8 @@ class CaveReferenceTests(unittest.TestCase):
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         proof = space.allocation_evidence(self.retail, manifest, allocated=self.patched)
         self.assertEqual(proof["legacy_encoded_references"], [])
+        # The complete union now requires RO storage and selects v3 even
+        # when the caller did not explicitly request scale-out.
         if space.is_scaleout(self.patched):
             self.assertEqual(proof["retail_mapping_overlaps"], [])
             self.assertEqual(len(proof["pages"]), 52)
@@ -321,6 +326,17 @@ class CaveReferenceTests(unittest.TestCase):
                 self.assertEqual(manifest.overlaps(start, end, exclude_owner=playlist.OWNER), [], row)
         code, data, ro = playlist.sites(self.patched)
         self.assertEqual({code["kind"], data["kind"], ro["kind"]}, {"code", "data", "read_only"})
+    def test_qb_spy_hooks_are_complete_instructions_and_have_no_foreign_owner(self) -> None:
+        from mod_editor.core import nfl2k5_qb_spy_runtime as spy, nfl2k5_xbe_space as space
+        image = XbeImage(self.patched)
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for name, (va, old) in spy.HOOKS.items():
+            self.assertEqual(sum(i.size for i in md.disasm(old, va)), len(old), name)
+            self.assertEqual(manifest.overlaps(va, va+len(old), exclude_owner=spy.OWNER), [], name)
+        for row in spy.reservations(self.patched):
+            if int(row["start"], 0) >= space.CODE_VA:
+                self.assertEqual(row["parent_owner"], space.OWNER)
+        self.assertEqual(spy.status(self.patched), "applied")
 
     def test_momentum_owns_named_children_and_pinned_live_spans_without_new_caves(self) -> None:
         from mod_editor.core import nfl2k5_momentum as momentum

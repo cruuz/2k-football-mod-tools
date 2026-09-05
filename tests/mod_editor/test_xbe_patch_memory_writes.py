@@ -126,6 +126,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
         if practice_screen.status(cls.patched) != "applied":
             raise AssertionError("Practice Squad screen missing from the composed XBE")
+        from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
+        if qb_spy.status(cls.patched) != "applied":
+            raise AssertionError("QB spy owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -340,6 +343,22 @@ class PatchWriteTests(unittest.TestCase):
         self.assertTrue(writes)
         self.assertTrue(all(write["target"] is None for write in writes), writes)
         # Actual indirect destinations are bounded in the instruction suite.
+    def test_qb_spy_complete_code_and_immutable_lookup_permissions(self) -> None:
+        from mod_editor.core import nfl2k5_qb_spy_runtime as spy
+        places = spy.allocations(self.patched)
+        code, data, ro = (places[k] for k in ("code", "data", "read_only"))
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        self.assertFalse(image.runtime_writable(ro["va"], ro["size"]))
+        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+        self.assertEqual(image.read(data["va"], data["size"]), bytes(768))
+        self.assertEqual(spy.validate_intent_table(image.read(ro["va"], ro["size"])), 0)
+        writes = absolute_writes(self.patched, [(code["va"], code["va"] + spy.assembly.LABELS["config"])])
+        absolute = [w for w in writes if w["target"] is not None]
+        self.assertTrue(absolute)
+        for write in absolute:
+            self.assertTrue(write["writable"], write)
+            address = int(write["target"], 0)
+            self.assertTrue(data["va"] <= address < data["va"]+data["size"] or address == 0xE602B8, write)
 
     def test_momentum_complete_code_writes_only_named_data_or_caller_state(self) -> None:
         from mod_editor.core import nfl2k5_momentum as momentum
