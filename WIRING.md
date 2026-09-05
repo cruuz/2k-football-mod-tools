@@ -740,3 +740,209 @@ There is **no screen XBE apply to compose into those setUpClass chains**, and
 no new XBE owner, reservation, section digest or cave-manifest regeneration
 is needed for this data-only task. The screen tests explicitly reject XBE
 input. Once the existing stack failure is repaired, rerun both unchanged gates.
+# Animations handoff: r61b-bone-anim, 2026-09-05
+
+This section is independent of the depth-lock handoff above. Keep that existing
+handoff intact. Animations is EXPERIMENTAL / UNWITNESSED, an offline inspector
+and exporter with an in-memory existing-SMCD replacement API. It has no XBE
+patch, cave, archive write operation, or disc-copy writer. Import stays disabled.
+The implementation and evidence are in `ASTRA_BONE_ANIM_REPORT.md`.
+
+## Studio registration (Claude edits protected studio_qt.py)
+
+1. Add `from mod_editor.gui.animations_panel_qt import AnimationsPanel` next to
+   the Models import. Do not modify ModelsPanel or models_panel_qt.py.
+2. Immediately after the Models navigation item (currently around line 2244),
+   add the navigation item below. The visible tab/page name is **Animations**;
+   the panel itself has a persistent **EXPERIMENTAL / UNWITNESSED** badge.
+
+   ```python
+   animations_item = QListWidgetItem("  Animations")
+   animations_item.setData(Qt.UserRole, "animations")
+   animations_item.setSizeHint(QSize(210, 44))
+   animations_item.setToolTip(
+       "Experimental, unwitnessed animation inspection and export. Import is disabled."
+   )
+   self.navigation.addItem(animations_item)
+   ```
+
+3. Immediately after the Models page registration (currently around line 2503),
+   register the matching page in exactly the same relative order:
+
+   ```python
+   self._animations_panel = AnimationsPanel(self.facade)
+   self.pages.addWidget(self._page_scroll_host(self._animations_panel))
+   ```
+
+   The shell directly connects navigation row to stacked-page index. Adding
+   only the navigation item or only the page would shift all later pages.
+   Keep navigation identifiers and any shell tests/row expectations in sync.
+4. The panel uses the existing `facade.models_source_paths` tuple (pack index,
+   resource inventory). No new archive extraction or facade cache is needed.
+   Beside the Models reload around line 7457, call
+   `self._animations_panel.reload()` after those paths are ready. For explicit
+   sources/tests, call `set_source_paths(index_path, inventory_path, xbe_path=None)`
+   followed by `reload()`. On source replacement, use `set_source_paths` first
+   to invalidate old asynchronous results and clear the old selection.
+5. In `_refresh_entered_page`, before the category-row bounds check, handle
+   `_navigation_key(row) == "animations"`: refresh the panel if the source
+   paths are ready and return. Avoid repeated whole-catalogue reloads while
+   a job is running; `reload()` already refuses concurrent jobs.
+6. The optional executable picker reads only the two pinned embedded roots;
+   it does not search an executable or infer roster style names. No automatic
+   facade XBE inference is necessary. On a different source, clear this optional
+   path unless the caller has explicitly selected its matching retail XBE.
+7. There is no `disc_written` signal to wire into Launch Latest Build. Neither
+   export nor What would change produces a game build. Keep the disabled
+   `import_button` disconnected; changing `IMPORT_ENABLED` alone deliberately
+   does not enable it. Claude must add a reviewed transport and explicitly wire
+   import after the gates, rather than relabelling a preflight as an import.
+8. Keep the worker pool/`task_delivery.bound` lifetime handling and close/wait
+   behavior. The panel has direct offscreen-test seams (`apply_clip`,
+   `apply_catalog`, `select_identity`, `export_to`, `wait_idle`).
+
+## Dispatcher, BuildPlan and patch UI: explicit applicability decision
+
+The common brief's executable-patch integration fields are **not applicable**
+to this data-only inspection surface. Adding a dummy build flag would imply a
+write path that is deliberately unavailable. In particular:
+
+| Requested integration point | Animations decision |
+| --- | --- |
+| `nfl2k5_throw_tuning._apply_all` tuple | No tuple entry; there is no XBE apply function. |
+| `_apply_all` kwarg | No animation kwarg. |
+| Four status dictionaries (`read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy`) | No animation entries in any of these four `nfl2k5_throw_tuning.py` dictionaries. The panel owns read/export status; `Replacement.status(payload)` is an offline whole-resource check only. |
+| `BuildPlan` field | None for this tier. |
+| Basic / advanced / experimental build presets | None enables animation import or patches. The inspector is separately labelled experimental. |
+| Gameplay Patches `PATCHES` text | No entry. If a future release creates one after the writer/transport gates, reserve the explicit caption `Retail Animation Patch`; it contains both **Retail** and **Patch**. Do not add it now. |
+| Gameplay Patches `NEEDS_IMAGE` | No entry; the inspector reads the facade archive, not a build patch. |
+| Build tab `_option` caption | No option now. Future reserved caption `Replace an existing animation` is 29 characters, below 60. |
+| Cave reservations and XBE section digests | No allocations or executable writes; no manifest regeneration for Animations. Embedded replacement remains refused. |
+| XBE guard owner enumeration | No new owner or apply step in either `setUpClass`; there is no executable patch to compose. |
+
+`Replacement.apply(bytes)` returns a same-length **SMCD wrapper plus body** and
+receipt. It never accepts an XBE as a replacement target. Exact changed bytes,
+4-byte key words, and pack-coordinate byte spans are separately reported.
+A future archive transport must reread and pin the complete source span before
+writing only into an output copy, handle cross-pack spans transactionally, and
+verify the final bytes. The current CLI/UI never performs that transport.
+
+## Release allowlist and runtime closure (Claude edits protected files)
+
+Add these exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_animation.py
+mod_editor/core/nfl2k5_animation_math.py
+mod_editor/gui/animations_panel_qt.py
+tools/nfl_motion_inventory.py
+```
+
+Retain these existing allowlist entries, which close the lazy read path:
+
+```text
+mod_editor/gui/task_delivery.py
+tools/nfl_outer.py
+tools/nfl_scene_probe.py
+tools/nfl_scne_inventory.py
+tools/nfl_txtr.py
+tools/xbe_info.py
+```
+
+Add to the runtime import check in `packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_animation",
+"mod_editor.core.nfl2k5_animation_math",
+"mod_editor.gui.animations_panel_qt",
+```
+
+Also force the lazy closure during that smoke check, since importing the core
+alone intentionally does not open an archive:
+
+```python
+from mod_editor.core import nfl2k5_animation
+for module_name in (
+    "nfl_outer", "nfl_motion_inventory", "nfl_scene_probe",
+    "nfl_scne_inventory", "nfl_txtr", "xbe_info",
+):
+    nfl2k5_animation._tool(module_name)
+```
+
+The portable math helper embeds the already recovered fixed sine table and
+constants. It needs no shared library, compiler, NumPy, Capstone, Unicorn,
+research report, or retail executable for archive inspection. The compiler is
+used only by the optional numerical reference tests. No `.scratch` data,
+retail native sidecars, or exported animations belong in a release.
+
+## Capability registry entry (Claude adds this reviewed row)
+
+Add the following to `mod_editor/capabilities/registry.v1.json`, sorted by id.
+Use the existing `models_shap_scne` registry surface to avoid inventing another
+surface enum in its locked 20-surface schema. The separate workspace is still
+named Animations. No `core/capabilities.py` edit is needed: operation `export`
+and GUI mode `export` ensure `can_queue_replacement` remains false. The
+experimental badge is explicit in the new panel and title, independent of the
+adapter's surface-derived badge.
+
+```json
+{
+  "id": "nfl2k5.animations.inspect_export",
+  "title": "Animations (EXPERIMENTAL / UNWITNESSED)",
+  "game": "nfl2k5_xbox",
+  "surface": "models_shap_scne",
+  "classification": "read-only-mapped",
+  "summary": "Catalogue archive animation roots and two explicitly identified embedded roots separately; preview local poses and export glTF with mandatory native bytes and metadata. Import is disabled.",
+  "backend": {
+    "module": "mod_editor/core/nfl2k5_animation.py",
+    "command": "python3 -m mod_editor.core.nfl2k5_animation --index <vc_53450030/0> --inventory <resource-inventory.json> export <archive:outer/chunk> --output <new-export-directory>",
+    "operation": "export"
+  },
+  "gui": {
+    "default_enabled": true,
+    "expose": true,
+    "mode": "export",
+    "reason": "Experimental inspector with disabled import. What would change checks an edited native-key JSON file and writes no game data."
+  },
+  "input_constraints": [
+    "Use a canonical resource inventory and the user's matching archive. Only referee 3107/27 and player 3092/163 have named skeleton bindings; other families remain unresolved.",
+    "Embedded inspection accepts only the pinned retail XBE and headers 0x0086dfe0 and 0x008528e8. This is not an exhaustive embedded-root census.",
+    "Existing SMCD key preflight fixes identity, name, channels, frames, rate, multiplier, duration and flags; events, trajectory, auxiliary fields and slack retain their bytes.",
+    "MMCD and embedded replacement, arbitrary edited-glTF ingestion and disc writes remain disabled."
+  ],
+  "selectors": {
+    "fields": [{"name": "identity", "required": true, "allowed": "archive:<outer>/<chunk> or one of xbe:0086dfe0 and xbe:008528e8"}],
+    "notes": "Multi-root resources are separate selectable parts; packed channel count alone never assigns a skeleton family."
+  },
+  "source_container": {
+    "format": "Uncompressed SMCD/MMCD archive resources and explicitly identified absolute-pointer XBE roots",
+    "retail_file": "vc_53450030/0 and optional default.xbe",
+    "resource": "5,198 inventoried archive resources, 6,068 roots; two separately identified embedded roots",
+    "hash_pins": ["73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9", "75b67ce8f338943a8cc6bdc46718f61c7c2d9c4945d186983796a090aa31363f", "a86c827b09db69990c4070cbb59d5c989db420a9d03427acd814823361a82e52"]
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "No gameplay witness. Local portable poses have no captured actor root, live player proportions or high-body postprocess. glTF bakes are inspection representations.",
+    "evidence": ["ASTRA_BONE_ANIM_REPORT.md"]
+  },
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "tooling": "source-and-schemas-only",
+    "rule": "Ship source and tests only. Native sidecars and inspection exports contain original game data and stay with the user's local extraction."
+  },
+  "evidence": ["ASTRA_BONE_ANIM_REPORT.md", "tests/mod_editor/test_nfl2k5_animation.py", "tests/mod_editor/test_nfl2k5_animation_retail.py", "tests/mod_editor/test_animations_panel_qt.py"],
+  "portme": ["Complete Noah's witness plan and transactional archive transport before explicitly enabling import.", "Resolve additional skeleton ownership and live root/proportion state before claiming gameplay-equivalent exports."],
+  "validation_command": "python3 tests/mod_editor/test_nfl2k5_animation.py"
+}
+```
+
+## Existing stack gate failure requiring a separate fix
+
+Both `test_xbe_patch_memory_writes.py` and `test_xbe_patch_cave_references.py`
+currently fail in `setUpClass` at `nfl2k5_depth_locks.apply`, with
+`DepthLockError: ... unknown bench promotion call sites`. The same failures
+were reproduced from a clean `git archive HEAD` snapshot within `.scratch`.
+No animation module is imported by either failing setup. No protected file or
+other feature's patch was changed to mask the failure. Claude must repair the
+existing stack composition before declaring those global gates green.
