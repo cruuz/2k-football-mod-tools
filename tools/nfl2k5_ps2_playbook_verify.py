@@ -71,6 +71,19 @@ COMPRESSED_SENTINEL = 0xFEEDBEEF
 DIFF_CHUNK = 4 * 1024 * 1024
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read without ``os.pread``, which Windows does not have."""
+    os.lseek(fd, offset, os.SEEK_SET)
+    parts = []
+    while count:
+        block = os.read(fd, count)
+        if not block:
+            break
+        parts.append(block)
+        count -= len(block)
+    return b"".join(parts)
+
+
 class PlaybookVerifyError(AssertionError):
     """A check failed.  The message says which."""
 
@@ -131,7 +144,7 @@ def _read_archive(descriptor, packs, virtual_offset, size):
         inside = virtual_offset - pack[3]
         take = min(size, pack[2] - inside)
         _require(take > 0, "read past the end of the archive")
-        block = os.pread(descriptor, take, pack[1] + inside)
+        block = _pread(descriptor, take, pack[1] + inside)
         _require(len(block) == take, "short archive read")
         parts.append(block)
         virtual_offset += take

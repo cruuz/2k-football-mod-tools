@@ -89,6 +89,19 @@ PLAY_FOURCC = b"PLAY"
 COPY_CHUNK = 8 * 1024 * 1024
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read without ``os.pread``, which Windows does not have."""
+    os.lseek(fd, offset, os.SEEK_SET)
+    parts = []
+    while count:
+        block = os.read(fd, count)
+        if not block:
+            break
+        parts.append(block)
+        count -= len(block)
+    return b"".join(parts)
+
+
 class PlaybookPatchError(ValueError):
     """A refusal: a bad recipe, a missing book, or a rule the writer enforces."""
 
@@ -215,7 +228,7 @@ class _Archive(object):
             pack = self.pack_of(virtual_offset)
             inside = virtual_offset - pack.virtual_start
             take = min(size, pack.size - inside)
-            block = os.pread(self._fd, take, pack.byte_offset + inside)
+            block = _pread(self._fd, take, pack.byte_offset + inside)
             _require(len(block) == take, "short read from pack %s" % pack.letter)
             parts.append(block)
             virtual_offset += take
