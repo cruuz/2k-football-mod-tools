@@ -141,6 +141,7 @@ class FileReplace:
     version = 1
     min_reader_version = 2
     grow = False
+    shrink = False
     special = False
 
     @classmethod
@@ -160,6 +161,10 @@ class FileReplace:
             m._require(new["sector"] * 2048 == (before + 2047) // 2048 * 2048,
                        "growth must append at the first sector after the image")
             m._require(op["after_size"] == new["sector"] * 2048 + new["size"], "growth result size differs from append extent")
+        elif cls.shrink:
+            m._require(0 < new['size'] < old['size'], 'file_shrink must shorten a nonempty named file')
+            m._require(new['sector'] == old['sector'] and op['after_size'] == before,
+                       'file_shrink keeps its sector and physical image size')
         else:
             m._require((new["sector"], new["size"], op["after_size"]) == (old["sector"], old["size"], before),
                        "file_replace keeps its extent; use file_grow for a larger file")
@@ -193,7 +198,7 @@ class FileReplace:
                 padding = start - view.size
                 view.put(view.size, padding, literal(bytes(padding)))
         view.put(start, new["size"], read)
-        if cls.grow:
+        if cls.grow or cls.shrink:
             view.put(node, 8, literal(struct.pack("<II", new["sector"], new["size"])))
         if verify:
             actual = storage.image_file_node(view.read, view.partition, view.size, op["path"])
@@ -232,6 +237,12 @@ class XbeGrow(FileGrow):
         storage.write_image_xbe(descriptor, blob_reader(pack, op["payload"])(op["after"]["size"], 0))
 
 
+class FileShrink(FileReplace):
+    """Shorten the named extent; retain all physical allocation slack."""
+    name = 'file_shrink'
+    shrink = True
+
+
 # Never reuse IDs. Registering a handler is the only dispatcher change needed.
 REGISTRY: dict[int, Any] = {}
 
@@ -247,6 +258,7 @@ register(0, ByteRuns)
 register(1, XbeGrow)
 register(2, FileReplace)
 register(3, FileGrow)
+register(5, FileShrink)  # ID 4 remains reserved for file_add.
 # 4 is reserved for file_add, whose directory-tree allocation is not implemented.
 
 
@@ -445,7 +457,14 @@ def detect(base, patched, size, patched_size, partition, ranges, named_files):
             from . import nfl2k5_depth_chart_rows as rows
             m._require(rows.status(m._pread_exact(patched, new.size, new.byte_offset, name)) == "applied",
                        "unrecognised SPECIAL storage transition")
-        op_type = 1 if special else 3 if growing else 2
+        shrinking = new.size < old.size
+        if shrinking:
+            m._require(new.sector == old.sector, 'file_shrink cannot relocate a file')
+            tail = old.size - new.size
+            m._require(digest(lambda n, at: m._pread_exact(base, n, old.byte_offset + new.size + at, 'old file slack'), tail)
+                       == digest(lambda n, at: m._pread_exact(patched, n, old.byte_offset + new.size + at, 'new file slack'), tail),
+                       'file_shrink must preserve unused physical allocation bytes')
+        op_type = 1 if special else 3 if growing else 5 if shrinking else 2
         member = f"operations/file-{len(file_ops):04d}.bin"
         payload = Payload(new.size, lambda n, at, start=new.byte_offset: m._pread_exact(patched, n, start + at, "named file payload"))
         payloads[member] = payload

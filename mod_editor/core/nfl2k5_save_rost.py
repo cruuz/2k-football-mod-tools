@@ -100,9 +100,16 @@ class SaveRost:
     This is not a drop-in RosterDocument GUI adapter (see wiring notes).
     """
 
-    def __init__(self, payload: bytes, layout: Layout):
+    def __init__(self, payload: bytes, layout: Layout, *, reference_year: int | None = None,
+                 base_year: int = 2004):
         self.original = bytes(payload)
         self.layout = layout
+        try:
+            self.reference_year = records.validate_reference_year(
+                reference_year if reference_year is not None else
+                records.franchise_reference_year(payload, layout.preamble, base_year))
+        except ValueError as exc:
+            raise SaveRostError(str(exc)) from exc
         self.tables: dict[str, Table] = {}
         self.players: list[Player] = []
         self.teams: list[Team] = []
@@ -179,7 +186,8 @@ class SaveRost:
                 _require(college is None or college in college_records, 'player college is not a college record')
                 self.players.append(Player(pool, index, off, self.string(off + 0x10),
                                            self.string(off + 0x14), records.PlayerRecord.decode(
-                                               self.original[off:off + records.PLAYER_SIZE])))
+                                               self.original[off:off + records.PLAYER_SIZE],
+                                               reference_year=self.reference_year)))
         self.by_key = {p.key: p for p in self.players}
         offsets = {p.offset for p in self.players}
         table = self.tables['teams']
@@ -247,7 +255,7 @@ class SaveRost:
             player = self.by_key[pool, index]
         except KeyError as exc:
             raise SaveRostError(f'unknown player {pool}/{index}') from exc
-        trial = records.PlayerRecord.decode(player.record.encode())
+        trial = player.record.copy()
         for name, value in changes.items():
             _require(name not in records.POINTER_FIELDS, f'{name}: pointer edits require a typed relocation writer')
             _require(type(value) is int, f'{name}: expected integer')
@@ -277,7 +285,8 @@ class SaveRost:
                 'history_used': self.pool_used, 'history_capacity': self.pool_capacity}
 
 
-def decode(payload: bytes | bytearray, *, preamble: int | None = None) -> SaveRost:
+def decode(payload: bytes | bytearray, *, preamble: int | None = None,
+           reference_year: int | None = None, base_year: int = 2004) -> SaveRost:
     """Find exactly one supported framed ROST, or use an explicit preamble.
 
     Bare bodies are accepted only at offset zero and only at their exact known
@@ -317,7 +326,8 @@ def decode(payload: bytes | bytearray, *, preamble: int | None = None) -> SaveRo
                 expected = 0x91020 if version == 0 else 0x90F60
                 _require(base == 0 and len(data) == expected, 'unframed ROST has unknown boundaries')
                 end = len(data)
-            candidates.append(SaveRost(data, Layout(version, wrapper, base, root, end)))
+            candidates.append(SaveRost(data, Layout(version, wrapper, base, root, end),
+                                       reference_year=reference_year, base_year=base_year))
         except SaveRostError as exc:
             failures.append(str(exc))
     _require(len(candidates) == 1, 'ambiguous ROST resources' if len(candidates) > 1
@@ -329,11 +339,12 @@ def encode(document: SaveRost) -> bytes:
     return document.to_bytes()
 
 
-def load_save(path: Path | str, *, require_signature: bool = True) -> tuple[SaveRost, records.SaveContainer]:
+def load_save(path: Path | str, *, require_signature: bool = True, base_year: int = 2004,
+              reference_year: int | None = None) -> tuple[SaveRost, records.SaveContainer]:
     """Verify via the unchanged container layer, then decode without its v17 scanner.
 
     The caller signs/writes a COPY with container.write(target, document.to_bytes()).
     No signature key, EXTRA bytes or authentication policy is changed here.
     """
     container = records.SaveContainer.load(path, require_signature=require_signature)
-    return decode(container.savegame), container
+    return decode(container.savegame, base_year=base_year, reference_year=reference_year), container

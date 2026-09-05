@@ -58,16 +58,17 @@ REPORT_RESIDUAL_LIMITATION = (
     "runner does not print its success marker."
 )
 ALLOWED_LAUNCHERS = {"bash", "python3"}
-EXPECTED_CAPABILITIES = 86
-EXPECTED_COVERED_CAPABILITIES = 80
+EXPECTED_CAPABILITIES = 99
+EXPECTED_COVERED_CAPABILITIES = 93
 EXPECTED_DEFERRED_CAPABILITIES = 5
-EXPECTED_UNIQUE_VALIDATORS = 68
+EXPECTED_UNIQUE_VALIDATORS = 69
 EXPECTED_DEFERRED_IDS = (
     "apf2k8.catching_drops.behavior",
     "apf2k8.franchise_restoration_cross_title.mode",
     "apf2k8.saves.profile",
     "nfl2k5.catching_drops.behavior",
     "nfl2k5.franchise_restoration_cross_title.port",
+    "nfl2k5ps2.gameplay.executable_patches",
 )
 def _discover_rg_path() -> Path:
     """Return the host's ripgrep without embedding a workstation path."""

@@ -25,6 +25,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_play_codec as codec
+from mod_editor.core import nfl2k5_play_library as lib
 from mod_editor.core.nfl2k5_playbook_inspector import (
     CATEGORY_BASE, CATEGORY_SIZE, FORMATION_AUX_BASE, FORMATION_AUX_SIZE, FORMATION_BASE,
     FORMATION_SIZE, NODE_BASE, NODE_SIZE, PLAY_BASE, PLAY_SIZE, Nfl2k5Playbook,
@@ -199,6 +200,15 @@ class FieldScene(QGraphicsScene):
                     self.art_items.append(self.addLine(
                         end.x() - size * math.cos(ang), end.y() - size * math.sin(ang),
                         end.x() + size * math.cos(ang), end.y() + size * math.sin(ang), pen))
+                elif seg.end_marker == "branch":
+                    poly = QPolygonF([QPointF(end.x(), end.y() - 6), QPointF(end.x() + 6, end.y()),
+                                      QPointF(end.x(), end.y() + 6), QPointF(end.x() - 6, end.y())])
+                    marker = self.addPolygon(poly, pen)
+                    marker.setToolTip(seg.label)
+                    self.art_items.append(marker)
+                    text = self.addSimpleText("Branch")
+                    text.setBrush(QBrush(color)); text.setPos(end.x() + 7, end.y())
+                    text.setToolTip(seg.label); self.art_items.append(text)
                 elif seg.end_marker == "zone":
                     self.art_items.append(self.addEllipse(end.x() - 14, end.y() - 14, 28, 28, pen))
                 elif seg.end_marker == "man":
@@ -437,8 +447,8 @@ DEFENSE_RECIPES: list[RouteRecipe] = [
     RouteRecipe("Man coverage (LB, 3 yd cushion)", lambda d, s: [(0x1B, [2, 0, 0, 4 * YD, 17, 0]), (0x0E, [0, 3 * YD, 0, 0, 0, 0, 0, 0])], "man on the assigned receiver"),
     RouteRecipe("Man coverage (DB, 2 yd cushion)", lambda d, s: [(0x1B, [2, 0, 0, 2 * YD, 17, 0]), (0x0E, [0, 2 * YD, 0, 13, 0, 0, 0, 0])], "press-ish man"),
     RouteRecipe("Deep half zone", lambda d, s: [(0x1B, [0, 0, 0, 0, 17, 1]), (0x0D, [12 * YD * s, 18 * YD, 10 if s > 0 else 7, 9 if s > 0 else 6, 11, 0, 0])], "deep half"),
-    RouteRecipe("Hook / curl zone", lambda d, s: [(0x1B, [2, 0, 0, 4 * YD, 17, 1]), (0x0D, [6 * YD * s, 10 * YD, 10 if s > 0 else 7, 9 if s > 0 else 6, 11, 0, 0])], "underneath zone"),
-    RouteRecipe("Flat zone", lambda d, s: [(0x1B, [2, 0, 0, 4 * YD, 17, 1]), (0x0D, [15 * YD * s, 5 * YD, 10 if s > 0 else 7, 9 if s > 0 else 6, 11, 0, 0])], "flat zone"),
+    RouteRecipe("Hook / curl zone", lambda d, s: [(0x1B, [2, 0, 0, 4 * YD, 17, 1]), (0x0D, [6 * YD * s, 10 * YD, 10 if s > 0 else 7, 9 if s > 0 else 6, 4, 0, 0])], "underneath zone"),
+    RouteRecipe("Flat zone", lambda d, s: [(0x1B, [2, 0, 0, 4 * YD, 17, 1]), (0x0D, [15 * YD * s, 5 * YD, 10 if s > 0 else 7, 9 if s > 0 else 6, 5 if s > 0 else 6, 0, 0])], "flat zone"),
 ]
 
 
@@ -461,7 +471,8 @@ class PlayDesignerDialog(QDialog):
         self.family = (self.play_flags >> 6) & 7
         self.chains: list[list[codec.Node]] = [[codec.Node.from_bytes(n) for n in nodes] for _d, nodes in self.donor_chains]
         self.changed: list[bool] = [False] * 11
-        self.current_slot = 6
+        self.spy_slots: set[int] = set()
+        self.current_slot = 5 if self.family == 1 else 6
         self.current_node: int | None = None
         self.result_payload: dict | None = None
         self.setWindowTitle(f"Play Designer — {book.plays[donor_play_index].name} in {formation_name or book.formations[formation_index].name}")
@@ -539,15 +550,30 @@ class PlayDesignerDialog(QDialog):
         block_row.addWidget(block_button)
         quick_form.addRow("Blocking", block_row)
         self.defense_combo = QComboBox()
-        for recipe in DEFENSE_RECIPES:
-            self.defense_combo.addItem(recipe.label, recipe)
+        if self.family == 1:
+            for label, key in DEFENSE_ASSIGNMENT_CHOICES:
+                self.defense_combo.addItem(label, key)
+        else:
+            for recipe in DEFENSE_RECIPES:
+                self.defense_combo.addItem(recipe.label, recipe)
         def_row = QHBoxLayout()
         def_row.addWidget(self.defense_combo, 1)
         def_button = QPushButton("Defense")
-        def_button.clicked.connect(lambda: self._apply_recipe(self.defense_combo.currentData(), self.depth_spin.value()))
+        def_button.clicked.connect(self._edit_defense if self.family == 1 else lambda: self._apply_recipe(self.defense_combo.currentData(), self.depth_spin.value()))
         def_row.addWidget(def_button)
         quick_form.addRow("Coverage / rush", def_row)
         right.addWidget(quick)
+        if self.family == 1:
+            warning = QLabel(lib.DEFENSE_EVIDENCE + ". " + lib.SPY_NOTICE)
+            warning.setWordWrap(True)
+            right.addWidget(warning)
+            presets = QComboBox()
+            for preset in lib.DEFENSE_PRESETS:
+                presets.addItem(preset)
+            right.addWidget(presets)
+            apply_preset = QPushButton("Apply defense preset")
+            apply_preset.clicked.connect(lambda: self._defense_preset(presets.currentText()))
+            right.addWidget(apply_preset)
         self.editor_box = QGroupBox("Selected node")
         self.editor_form = QFormLayout(self.editor_box)
         self.opcode_label = QLabel("—")
@@ -688,6 +714,7 @@ class PlayDesignerDialog(QDialog):
             item.setText(f"{mark}{slot}: {self._labels()[slot]} — {summary}")
 
     def _mark_changed(self) -> None:
+        self.spy_slots.discard(self.current_slot)
         self.changed[self.current_slot] = True
         self._refresh_slot_labels()
         self._refresh_art()
@@ -738,6 +765,7 @@ class PlayDesignerDialog(QDialog):
         self._mark_changed()
 
     def _reset_slot(self) -> None:
+        self.spy_slots.discard(self.current_slot)
         self.chains[self.current_slot] = [codec.Node.from_bytes(n) for n in self.donor_chains[self.current_slot][1]]
         self.changed[self.current_slot] = False
         self._select_slot(self.current_slot)
@@ -765,6 +793,39 @@ class PlayDesignerDialog(QDialog):
         self._select_slot(slot)
         self._mark_changed()
 
+    def _defense_design(self):
+        front, _ = lib.defense_donors(self.book, self.body, self.formation_index)
+        return lib.DefenseDesign(self.formation_index, front, self.donor_play_index, self.play_flags,
+                                 [[(n.op, list(n.operands)) for n in c] for c in self.chains],
+                                 lib.decoded_chains(self.body, front), set(self.spy_slots))
+
+    def _take_defense_design(self, design):
+        self.donor_play_index = design.donor_play_index
+        self.play_flags, self.donor_chains = lib.play_chains(self.body, design.donor_play_index)
+        self.chains = [[codec.Node(op, 0, list(v)) for op, v in c] for c in design.chains]
+        self.changed = [True] * 11
+        self.spy_slots = set(design.spy_slots)
+        self._refresh_slots(); self._select_slot(self.current_slot); self._refresh_art(); self._validate()
+
+    def _edit_defense(self):
+        try:
+            design = self._defense_design()
+            if edit_defense_assignment(self, design, self.book, self.body, self.current_slot, self.defense_combo.currentData()):
+                self._take_defense_design(design)
+        except ValueError as exc:
+            QMessageBox.warning(self, "Defense", str(exc))
+
+    def _defense_preset(self, name):
+        try:
+            design = lib.make_defense_design(self.book, self.body, self.formation_index, name)
+            if name == "Double A Show EXPERIMENTAL":
+                positions = lib.double_a_positions(self.book, self.body, self.formation_index)
+                if self._positions() != positions:
+                    raise ValueError("Create a separate Double A formation in Create a Play first")
+            self._take_defense_design(design)
+        except ValueError as exc:
+            QMessageBox.warning(self, "Defense", str(exc))
+
     # -- art + validation
     def _assignments_bytes(self) -> list[tuple[int, list[bytes]]]:
         out: list[tuple[int, list[bytes]]] = []
@@ -783,6 +844,12 @@ class PlayDesignerDialog(QDialog):
         return out
 
     def _refresh_art(self) -> None:
+        if self.family == 1:
+            try:
+                draw_defense_design(self.scene, self._defense_design(), self._positions())
+                return
+            except ValueError:
+                pass
         self.scene.clear_art()
         positions = self._positions()
         palette = [QColor("#ffffff"), QColor("#ffd54f"), QColor("#80deea"), QColor("#f48fb1")]
@@ -797,14 +864,24 @@ class PlayDesignerDialog(QDialog):
 
     def _validate(self) -> str | None:
         try:
-            error = codec.validate_play(self.play_flags, self._assignments_bytes())
+            if self.family == 1:
+                for slot in range(11):
+                    if self.changed[slot]:
+                        codec.validate_defense_operands([(n.op, n.operands) for n in self.chains[slot]])
+            assignments = self._assignments_bytes()
+            codec.validate_sync(assignments)
+            error = codec.validate_play(self.play_flags, assignments)
+            if sum(len(c) for c, changed in zip(self.chains, self.changed) if changed) > 3500 - self.book.node_count:
+                error = "Cloned chains exceed the remaining node pool"
         except Exception as exc:  # noqa: BLE001 - surfaced to the user
             error = f"cannot encode: {exc}"
         if error:
             self.status.setText(f"✖ The game would refuse this play: {error}")
             self.status.setStyleSheet("color:#c62828")
         else:
-            self.status.setText("✔ Structure check passed; test in-game.")
+            count = sum(len(c) for c, changed in zip(self.chains, self.changed) if changed)
+            self.status.setText(f"Structure check passed. Cloned nodes {count}; pool {count * 8} bytes. "
+                                + (lib.DEFENSE_EVIDENCE if self.family == 1 else "Test in-game."))
             self.status.setStyleSheet("color:#2e7d32")
         self._error = error
         return error
@@ -821,12 +898,14 @@ class PlayDesignerDialog(QDialog):
             if not self.changed[slot]:
                 assignments.append(None)
             else:
-                assignments.append([[n.op, [float(v) for v in n.operands]] for n in self.chains[slot]])
+                assignments.append(codec.chain_json(codec.authored_chain(self.chains[slot])))
         self.result_payload = {
             "custom_name": self.name_edit.text().strip() or None,
+            "donor_play_index": self.donor_play_index,
             "assignments": assignments,
             "link": self.link_check.isChecked(),
             "play_flags": self._class_flags(),
+            "spy_intent": {"schema": lib.SPY_INTENT_SCHEMA, "slots": sorted(self.spy_slots)},
         }
         self.accept()
 
@@ -855,3 +934,72 @@ def codec_family_label(family: int) -> str:
 
 
 __all__ = ["FormationDesignerDialog", "PlayDesignerDialog", "ROUTE_RECIPES", "BLOCK_RECIPES", "DEFENSE_RECIPES"]
+
+
+DEFENSE_ASSIGNMENT_CHOICES = (
+    ("Man coverage", "man"), ("Zone landmark", "zone"), ("Rush lane", "rush"),
+    ("Retail paired exchange script", "exchange"), ("Spy", "spy"),
+    ("Restore donor assignment", "inherited"),
+)
+
+
+def draw_defense_design(scene, design, positions, *, mirrored=False):
+    """Effective front/coverage art, with separate authoring intent marks."""
+    from mod_editor.core import nfl2k5_play_library as lib
+    scene.clear_art()
+    active = lib.defense_active(design.chains)
+    for slot, chain in enumerate(design.effective()):
+        start = positions[slot]
+        segs = codec.play_art([codec.Node(op, 0, list(vals)) for op, vals in chain], start,
+                              side=1 if start[0] >= 0 else -1)
+        if mirrored:
+            for segment in segs:
+                segment.points = [(-x, z) for x, z in segment.points]
+        scene.draw_art(segs, QColor('#ffd54f') if slot in active else QColor('#b0bec5'))
+        if slot in design.spy_slots:
+            mark = scene.addSimpleText("S: shallow zone")
+            mark.setBrush(QBrush(QColor('#ff80ab')))
+            mark.setPos(to_scene(-start[0] if mirrored else start[0], start[1] + YD))
+            scene.art_items.append(mark)
+
+
+def edit_defense_assignment(parent, design, book, body, slot, initial="zone"):
+    from mod_editor.core import nfl2k5_play_library as lib
+    dialog = QDialog(parent)
+    dialog.setWindowTitle(f"Defender {slot}: {lib.defense_personnel(book, body, design.formation_index)['labels'][slot]}")
+    form = QFormLayout(dialog)
+    choices = QComboBox()
+    for label, key in DEFENSE_ASSIGNMENT_CHOICES:
+        choices.addItem(label, key)
+    choices.setCurrentIndex(max(0, choices.findData(initial)))
+    form.addRow("Assignment", choices)
+    x = QDoubleSpinBox(); x.setRange(-26, 26); x.setSuffix(" yd")
+    depth = QDoubleSpinBox(); depth.setRange(0, 40); depth.setValue(4 if initial == 'spy' else 8); depth.setSuffix(" yd")
+    lane = QSpinBox(); lane.setRange(0, 17); lane.setValue(8)
+    delay = QDoubleSpinBox(); delay.setRange(0, 6.3); delay.setSingleStep(.1); delay.setSuffix(" s")
+    target = QSpinBox(); target.setRange(0, 14)
+    cushion = QDoubleSpinBox(); cushion.setRange(0, 20); cushion.setValue(3); cushion.setSuffix(" yd")
+    for label, widget in (("Zone lateral", x), ("Zone depth", depth), ("Rush lane (17 = none)", lane),
+                          ("Rush delay", delay), ("Opponent selector (0 = automatic)", target), ("Man cushion", cushion)):
+        form.addRow(label, widget)
+    notice = QLabel(lib.DEFENSE_EVIDENCE + ". " + lib.SPY_NOTICE + ". Exchanges replace the whole paired script.")
+    notice.setWordWrap(True); form.addRow(notice)
+    error = QLabel(); error.setWordWrap(True); form.addRow(error)
+    def changed():
+        spy = choices.currentData() == 'spy'
+        depth.setRange(3 if spy else 0, 5 if spy else 40)
+        if spy:
+            x.setValue(0)
+        x.setEnabled(not spy)
+    choices.currentIndexChanged.connect(changed)
+    changed()
+    buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+    def accept():
+        try:
+            design.set_assignment(book, body, slot, choices.currentData(), x_yd=x.value(), depth_yd=depth.value(),
+                                  lane=lane.value(), delay=delay.value(), target=target.value(), cushion_yd=cushion.value())
+        except ValueError as exc:
+            error.setText(str(exc)); return
+        dialog.accept()
+    buttons.accepted.connect(accept); buttons.rejected.connect(dialog.reject); form.addRow(buttons)
+    return dialog.exec_() == dialog.Accepted

@@ -107,10 +107,10 @@ def _print_check(team: str, report: pack_mod.PackCheck, *, header: bool = True) 
 def cmd_check(args: argparse.Namespace) -> int:
     pack = pack_mod.load_pack(Path(args.pack))
     teams = [args.team or pack.book.team]
-    if args.all_teams:
+    if args.all_teams or args.all_books:
         if not args.image:
             raise PackToolError("--all-teams reads every team's own book: pass --image.")
-        teams = list(pack_mod.TEAM_BOOKS)
+        teams = list(pack_mod.DEFENSE_BOOKS if args.all_books else pack_mod.TEAM_BOOKS)
     if not args.image and not args.book:
         # no game data at all: rules 1-6 on the pack as authored
         teams = [pack.book.team]
@@ -233,6 +233,7 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--team", help="which book in --image to use (default: the pack's own team)")
     check.add_argument("--all-teams", action="store_true",
                        help="retarget and check against all 32 team books in --image")
+    check.add_argument("--all-books", action="store_true", help="check all 37 retail books (defense pack)")
     check.add_argument("--retarget", action="store_true",
                        help="retarget even when the team matches (re-resolves every index by name)")
     check.add_argument("--json", help="write the machine-readable report here")
@@ -257,7 +258,30 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("--pack-version", default="1.0.0")
     export.add_argument("--license", default="CC0-1.0")
     export.set_defaults(func=cmd_export)
+    defense = sub.add_parser("modern-defense", help="generate SOFTDRINK modern defense from native retail donors")
+    defense.add_argument("--image")
+    defense.add_argument("--book")
+    defense.add_argument("--team", default="ATL")
+    defense.add_argument("-o", "--output", required=True)
+    defense.set_defaults(func=cmd_modern_defense)
     return parser
+
+
+def cmd_modern_defense(args):
+    resource = _resolve_book(args, args.team)
+    if resource is None:
+        raise PackToolError("modern-defense needs --image or --book")
+    book = parse_playbook_resource(resource, asset_id=f"book:{args.team}")
+    pack = pack_mod.modern_defense_pack(book, resource[RESOURCE_HEADER_SIZE:], args.team)
+    report = pack_mod.check_pack(pack, resource=resource)
+    print(report.text())
+    if not report.ok:
+        return 1
+    from dataclasses import replace
+    pack = replace(pack, book=replace(pack.book, targets=pack_mod.TEAM_BOOKS + ("GEN", "reference")))
+    pack_mod.save_pack(pack, args.output)
+    print(f"Wrote {args.output}. EXPERIMENTAL / UNWITNESSED.")
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:

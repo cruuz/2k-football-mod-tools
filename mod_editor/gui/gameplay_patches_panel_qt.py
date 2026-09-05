@@ -13,6 +13,7 @@ from pathlib import Path
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QFileDialog,
     QGroupBox,
     QHBoxLayout,
@@ -36,10 +37,19 @@ PATCHES = (
      "and floored at a 10 % pick chance, which is why the forums call it broken. Patch: the catch roll is "
      "divided by twice the receiver's side's Catching slider (goes to 200) and a defender's roll by twice the "
      "Interception slider (0 = no picks, 50 = retail, 100 = double)."),
-    ("accel_ramp", "Acceleration ramp",
-     "Retail has no acceleration: everyone is at top speed on the first step, so linemen keep pace with "
-     "receivers and slow quarterbacks burst out of the pocket. Patch: players wind up from 60 % to 100 % of "
-     "their Speed rating, about 1 s at 99 Agility and 2 s at 30; standing still resets it."),
+    ("accel_ramp", "Legacy acceleration ramp",
+     "Retail: native movement already accelerates. Patch: adds a rating-based speed envelope "
+     "to controller-driven players. This legacy profile does not apply equally to CPU players."),
+    ("momentum", "Player momentum (experimental, unwitnessed)",
+     "Retail: stock turning and stopping. Patch: wider turns at speed and more room to stop "
+     "during ordinary running. Experimental / Unwitnessed."),
+    ("momentum_contact", "Running start in contact (experimental, unwitnessed)",
+     "Retail: speed and weight already affect contact. Patch: a sustained running start can give "
+     "the ball carrier a small extra boost through contact. Experimental / Unwitnessed. Requires player momentum."),
+    ("defensive_try", "Defensive two-point returns (experimental)", tt.defensive_try_patch.UI_TEXT),
+    ("zone_drop_cap", "Corner deep-zone backpedal (experimental, unwitnessed)",
+     "Retail: corners can request full depth during their initial deep-zone drop. Patch: caps that initial "
+     "depth request for cornerbacks. Later steering and ball response stay native. Experimental / Unwitnessed."),
     ("draft_ai", "Realistic, unpredictable CPU drafts and free agency in franchise",
      "Retail: on the clock a CPU team takes the best raw overall among its neediest positions, and raw "
      "overall is compared across positions, so the positions whose rookies roll the highest overalls (HB, DE, "
@@ -164,23 +174,15 @@ PATCHES = (
      "coach-camera visibility as the ordinary circle, which is untouched. The tag is one bit of the roster record; existing "
      "franchise saves need tags in their own roster. A disc patched with the beta-58 version of this (which never drew) "
      "is upgraded when rebuilt. Unwitnessed in game."),
-    ("depth_roles", "X / Z / SLOT receivers and nickel / dime corners (disc images only)",
+    ("depth_roles", "X / Z / SLWR receivers and nickel / dime corners (disc images only)",
      "Retail playbooks have no slot receiver: the inside man of a three-wide set is the #1 receiver in 196 formations, "
      "the #2 in 115, the #3 in 100. Patch: every personnel group is rewritten so the innermost receiver is the third "
-     "receiver on your depth chart (SLOT) with X and Z outside, and nickel / dime sets use your third and fourth "
+     "receiver on your depth chart (SLWR) with X and Z outside, and nickel / dime sets use your third and fourth "
      "corners inside (retail already did for 66 of 71 and 36 of 38 sets). Twelve shared groups whose formations "
      "disagree by more than two yards, bunch sets and special teams keep their retail assignments and are listed in "
      "the build report. Changes who lines up, not how they play: Advanced. No new depth-chart rows yet. Unwitnessed in game."),
-    ("depth_chart_rows", "SPECIAL tab: role depth charts, X / Z labels (disc images only, experimental)",
-     "Retail: the depth chart lists two receivers (LWR / RWR) and two corners and a four-row Special Teams tab; who plays the "
-     "slot, the nickel or the gadget is whoever the formation happens to pick. Patch: offence and both defences keep their "
-     "eleven rows, with LWR / RWR shown as X / Z, and the Special Teams tab is renamed "
-     "SPECIAL and carries KR, PR, K, P, then SLOT, NICKEL CORNER, DIME CORNER, GADGET, left and right GUNNER, LONG SNAPPER, "
-     "3RD DOWN BACK and POWER BACK. SPECIAL scrolls. These are shared depth lists, so moving a player into one role can "
-     "change another row (right gunner and dime corner share a list). The book pass also lines up those players: the slot "
-     "and nickel / dime men, the punt gunners and long snapper, the 3rd-down back in passing sets and the power back in "
-     "goal-line sets. Needs the one-pool positions and the roles and switches them on when the disc lacks them. This grows "
-     "the executable, so it needs an in-game boot check. Unwitnessed."),
+    ("depth_chart_rows", "SPECIAL: 13 rows and complete player names (experimental)",
+     "Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED."),
     ("practice_squad", "Practice squads: 53 active + up to 12 reserves in franchise (experimental)",
      "Retail: the season gate cuts every franchise roster to 53 and the rest become free agents. Patch: each team keeps up to "
      "twelve of the players it cuts as team-owned reserves (the same 65-slot roster table; three spare bytes mark the list). "
@@ -188,6 +190,42 @@ PATCHES = (
      "and survive saves, team imports and the season rollover. There is no in-game reserve screen or automatic promotion yet; "
      "a full 53 + 12 roster must release players to draft. Only use saves with reserves on a disc that carries this patch. "
      "Unwitnessed in game."),
+    ("xbe_space", "Extra patch space (experimental, unwitnessed)",
+     "Retail: patches have no spare room for larger changes. Patch: adds room for "
+     "experimental features. Needs a disc boot check before regular use."),
+    ("kickoff_relocated", "Kickoff in extra space (experimental, unwitnessed)",
+     "Retail: the extra patch space is unused. Patch: moves the dynamic kickoff "
+     "there with the same settings. Check that both teams still line up, hold "
+     "until contact and return normally. Unwitnessed in game."),
+    ("screen_timing", "Screen pass timing (EXPERIMENTAL / UNWITNESSED)",
+     "Retail: some screens already tell linemen to hold, release and block. "
+     "Patch: A changes half-second holds to 0.8 seconds; B changes nominal "
+     "ten-yard QB drops to seven; C sets an explicit 0.6-second pass delay; "
+     "D combines them. Screens without the full release sequence are listed "
+     "and left alone. These are experiments, not measured improvements. "
+     "Requires a disc image and paired play tests."),
+    ('music_policy', 'Use jukebox songs in menus (experimental)', "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes."),
+    ('music_unlock', 'Make every music collection available (experimental)', 'Retail: collections need Crib purchases. Patch: every collection is available without spending credits or setting purchase bits.'),
+    ('music_userlist', 'Use jukebox songs instead of user playlists (experimental)', "Retail: UserList follows the user's disc or HDD playlist. Patch: UserList uses the 59-song jukebox bank instead. Requires jukebox menus."),
+    ('scorebug', 'Experimental ESPN scorebar', 'Retail: a stacked score display near the top of the screen. Patch: a wider display at the bottom, a white clock strip, an ESPN corner mark and a short slide when the down panel appears. Experimental and not tested in game. Team logos and events require the separate scorebug effects option.'),
+    ('scorebug_runtime', 'Team logos and scorebug effects (experimental, unwitnessed)', 'Retail: team panels and timeout marks use the stock display. Patch: adds team logos, remaining timeout marks, a score flash, down refresh and a red play clock below five seconds. Unwitnessed in game; use a separate disc copy.'),
+    ("guardian_cap", "Guardian caps on helmet C (experimental)",
+     "Retail: Helmet C has its normal hard-shell look. Patch: Every player wearing "
+     "helmet C shows a guardian cap. Helmet C's normal look is replaced while this is on. "
+     "Only Detroit's current away uniform gets the neutral gray cap artwork. "
+     "Other uniforms keep their current artwork. This affects C wearers in practice "
+     "and games alike. It does not add a separate player choice or put caps on everyone "
+     "in practice. Appearance and shine still need an in-game check. EXPERIMENTAL / UNWITNESSED."),
+    ("season_cap", "128-season franchise gate (experimental)",
+     "Retail: the franchise completion check stops advancement after index 30 in retirement. "
+     "Patch: the check accepts indices through 127. "
+     "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet. "
+     "Game birth dates can already be wrong in 2053. EXPERIMENTAL / UNWITNESSED. "
+     "Editing a save year does not simulate seasons."),
+    ("depth_locks", "Depth chart locks: tackles, guards and returners stay where you put them (experimental)",
+     "Retail: the weekly auto-depth ranks tackles and guards by rating, so the better RT slides over to LT, and it rewrites "
+     "KR and PR every week. Patch: moving a player on the depth chart, or confirming a returner, locks that choice in the "
+     "player's record and the weekly sort keeps it. Unlock from the Rosters tab. No new screen or button. Unwitnessed in game."),
 )
 
 
@@ -219,8 +257,18 @@ if not mod_build.SEVEN_ON_SEVEN_RELEASED:
 # What each toggle is called on screen (the same words as the Build tab), a one-line helper, and
 # the qualifier badge that must stay visible outside Details (E4 / M12).
 LABELS: dict[str, tuple[str, str, str]] = {
+    "screen_timing": ("Screen pass timing (experimental)",
+                      "A: longer holds; B: shorter QB drops; C: explicit pass delay; D: all three. UNWITNESSED.", NOT_TESTED),
+    "guardian_cap": ("Guardian caps on helmet C (experimental)",
+                     "Every player wearing helmet C shows a guardian cap. "
+                     "Helmet C's normal look is replaced while this is on. "
+                     "Neutral gray artwork is for Detroit current away only.", NOT_TESTED),
+    "xbe_space": ("Extra patch space (experimental)", "Needs a disc boot check before regular use.", NOT_TESTED),
+    "kickoff_relocated": ("Kickoff in extra space (experimental)", "Check lineup, hold until contact and returns.", NOT_TESTED),
+    "season_cap": ("128-season franchise gate (experimental)",
+                   "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet.", NOT_TESTED),
     "catch_slider": ("Fix Catching & Interception sliders", "Catching controls drops; Interception controls picks.", ""),
-    "accel_ramp": ("Gradual player acceleration", "Agility controls how quickly players reach top speed.", ""),
+    "accel_ramp": ("Legacy acceleration ramp", "A separate rating-based envelope for controller-driven players.", ""),
     "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
     "returner_fix": ("Fix CPU kick & punt returners", "Changes automatic depth-chart selection.", ""),
     "progression": ("Change player growth & decline", "Growth over years 1-5, harder decline after years 9-12; more stars and busts.", ""),
@@ -239,17 +287,17 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "franchise_practice": ("Free Practice inside Franchise", "A Practice row on the Coach's Desk: your first team against itself.", NOT_TESTED),
     "seven_on_seven": ("7-on-7 practice", "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.", NOT_TESTED),
     "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white star outline.", NOT_TESTED),
-    "depth_roles": ("X / Z / SLOT receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
-    "depth_chart_rows": ("SPECIAL tab: role depth charts",
-                         "SLOT, nickel, dime, gadget, gunners, long snapper and 3rd-down / power backs on a renamed SPECIAL tab; offence and defence keep eleven rows.", NOT_TESTED),
+    "depth_roles": ("X / Z / SLWR receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
+    "depth_chart_rows": ("SPECIAL: 13 rows and complete player names (experimental)",
+                         "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", NOT_TESTED),
     "edge_rename": ("Call defensive ends EDGE", "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.", ""),
     "scheme_labels": ("Use scheme-specific depth-chart names", "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.", ""),
 }
 
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
-STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
+STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -359,6 +407,9 @@ class GameplayPatchesPanel(QWidget):
         lb.setSpacing(8)
         for key, label, explanation in self._patches:
             short, helper, badge = LABELS.get(key, (label, "", ""))
+            if key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap"):
+                badge = "EXPERIMENTAL / UNWITNESSED"
+                helper = explanation if key == "defensive_try" else "Select a level in Build or here; rebuild from the supported source." if key == "momentum" else ""
             row = QWidget()
             rl = QVBoxLayout(row)
             rl.setContentsMargins(0, 0, 0, 2)
@@ -369,6 +420,23 @@ class GameplayPatchesPanel(QWidget):
             check.setAccessibleDescription(helper or label)
             check.toggled.connect(lambda _c: self._refresh())
             head.addWidget(check)
+            if key == "momentum":
+                self.momentum_level = QComboBox()
+                for text, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
+                    self.momentum_level.addItem(text, value)
+                self._momentum_last_positive = 50
+                self.momentum_level.setCurrentIndex(0)
+                self.momentum_level.setAccessibleName("Player momentum level, experimental and unwitnessed")
+                self.momentum_level.currentIndexChanged.connect(self._momentum_changed)
+                check.toggled.connect(self._momentum_toggled)
+                head.addWidget(self.momentum_level)
+            if key == "screen_timing":
+                self.screen_timing_combo = QComboBox()
+                self.screen_timing_combo.setAccessibleName("Screen timing experiment")
+                self.screen_timing_combo.addItems(("A", "B", "C", "D"))
+                self.screen_timing_combo.setCurrentText("D")
+                self.screen_timing_combo.currentTextChanged.connect(self._screen_level_changed)
+                head.addWidget(self.screen_timing_combo)
             badge_label = QLabel(badge)
             badge_label.setObjectName("optionBadge")
             badge_label.setVisible(bool(badge))
@@ -416,10 +484,17 @@ class GameplayPatchesPanel(QWidget):
         self._refresh()
 
     def apply_state(self, state: dict[str, object]) -> None:
+        combo = getattr(self, "screen_timing_combo", None)
+        if combo is not None and state.get("container") == "xiso" and (
+                state.get("screen_timing_details", {}).get("level", "D") != combo.currentText()):
+            details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
+            state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
         self._state = state
         self._reading = False
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"
+        if combo is not None:
+            combo.setEnabled(is_image)
         source_caption, target_caption = source_captions(is_image)
         self.source_caption.setText(source_caption)
         self.target_caption.setText(target_caption)
@@ -463,6 +538,17 @@ class GameplayPatchesPanel(QWidget):
         self.suggest_target()
         self._refresh()
 
+    def _screen_level_changed(self, level: str) -> None:
+        if self._state is not None and self._state.get("container") == "xiso":
+            choices = {key: box.isChecked() for key, box in self.checks.items()}
+            details = mod_build.inspect_screen_timing(self._state["path"], level)
+            self.apply_state({**self._state, "screen_timing": details["status"],
+                              "screen_timing_details": details})
+            for key, box in self.checks.items():
+                if box.isEnabled():
+                    box.setChecked(choices.get(key, False))
+        self._refresh()
+
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
@@ -470,16 +556,68 @@ class GameplayPatchesPanel(QWidget):
         )
         for key, check in self.checks.items():
             on = check.isChecked()
-            setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
+            if key == "screen_timing":
+                plan.screen_timing = self.screen_timing_combo.currentText() if on else None
+            elif key == "momentum":
+                plan.momentum = int(self.momentum_level.currentData() or 50) if on else 0
+            elif key == "music_policy":
+                plan.music_policy = "jukebox_menus" if on else "retail"
+            else:
+                setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
+        if plan.scorebug_runtime:
+            plan.scorebug = plan.xbe_space = True
+        if plan.music_userlist:
+            plan.music_policy = "jukebox_menus"
         if plan.depth_chart_rows:
             # the rows build on the pools, the scheme labels and the playbook roles: switch on whatever the source lacks
             state = self._state or {}
             plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
             plan.scheme_labels = plan.scheme_labels or state.get("scheme_labels") != "applied"
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
+        if getattr(self, "_momentum_legacy_disabled", False):
+            plan.notes = (plan.notes + "\nlegacy_accel_ramp_disabled_by_momentum_profile=true").strip()
         return plan
 
+    def _momentum_toggled(self, on):
+        if on and "accel_ramp" in self.checks:
+            if self.checks["accel_ramp"].isChecked():
+                self._momentum_legacy_disabled = True
+            self.checks["accel_ramp"].setChecked(False)
+        self._refresh()
+
+    def _momentum_changed(self):
+        if self.momentum_level.currentData() > 0:
+            self._momentum_last_positive = int(self.momentum_level.currentData())
+        legacy = self.checks.get("accel_ramp")
+        if legacy is not None and legacy.isChecked():
+            self._momentum_legacy_disabled = True
+        level = int(self.momentum_level.currentData())
+        self.checks["momentum"].setChecked(level > 0 and self.checks["momentum"].isEnabled())
+        if "accel_ramp" in self.checks:
+            self.checks["accel_ramp"].setChecked(False)
+        self._refresh()
+
     def _refresh(self) -> None:
+        if "momentum_contact" in self.checks:
+            enabled = self.checks["momentum"].isChecked()
+            self.checks["momentum_contact"].setEnabled(enabled and (self._state or {}).get("momentum_contact") == "retail")
+            if not enabled:
+                self.checks["momentum_contact"].setChecked(False)
+            installed = (self._state or {}).get("momentum") == "applied"
+            level = (self._state or {}).get("momentum_settings", {})
+            level = level.get("momentum", 0) if isinstance(level, dict) else 0
+            selected = level if installed else self._momentum_last_positive if enabled else 0
+            self.momentum_level.blockSignals(True)
+            if installed and self.momentum_level.findData(selected) < 0:
+                self.momentum_level.addItem(f"Installed ({selected})", selected)
+            self.momentum_level.setCurrentIndex(self.momentum_level.findData(selected))
+            self.momentum_level.blockSignals(False)
+            self.momentum_level.setEnabled(self.checks["momentum"].isEnabled())
+        if "music_userlist" in self.checks:
+            enabled = self.checks["music_policy"].isChecked() or (self._state or {}).get("music_policy") == "applied"
+            self.checks["music_userlist"].setEnabled(enabled and (self._state or {}).get("music_userlist") == "retail")
+            if not enabled:
+                self.checks["music_userlist"].setChecked(False)
         any_on = any(c.isChecked() for c in self.checks.values())
         self.write_button.setEnabled(any_on and bool(self.source_field.text()) and bool(self.target_field.text())
                                      and self._task is None and not self._reading)

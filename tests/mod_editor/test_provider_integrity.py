@@ -140,10 +140,12 @@ def local_import_closure(
 
     pending = [(relative, relative in exact_path_entries) for relative in entries]
     closure: set[str] = set()
+    visited: set[tuple[str, bool]] = set()
     while pending:
         relative, exact_path_mode = pending.pop()
-        if relative in closure:
+        if (relative, exact_path_mode) in visited:
             continue
+        visited.add((relative, exact_path_mode))
         closure.add(relative)
         tree = ast.parse((WORKSPACE / relative).read_text(encoding="utf-8"))
         visitor = _RuntimeImportVisitor()
@@ -161,7 +163,7 @@ def local_import_closure(
                 for count in range(len(parts), 0, -1):
                     candidate = _local_module_path(".".join(parts[:count]))
                     if candidate is not None:
-                        if candidate not in closure:
+                        if (candidate, False) not in visited:
                             pending.append((candidate, False))
                         break
     return closure
@@ -185,12 +187,14 @@ class ProviderIntegrityTests(unittest.TestCase):
         )
         self.assertEqual(
             [len(provider.module_pins) for provider in providers],
-            # 81: the unified visual provider includes standalone/SCNE Crib
+            # The reviewed closure includes the original visual adapters and
+            # the integrated music, scorebug, animation and gameplay compilers.
+            # The unified visual provider includes standalone/SCNE Crib
             # textures, bounded Crib/Stadium geometry, stock PLAY route copy,
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [83, 9, 8, 9, 8, 9],   # 83 since RC82: nfl2k5_models joined the unified visual closure (per-shape UV)
+            [177, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -204,6 +208,29 @@ class ProviderIntegrityTests(unittest.TestCase):
                 # Both package init files stay absent so their unrelated eager
                 # GUI/provider imports cannot escape the finite pin closure.
                 adapters = frozenset({
+                    "mod_editor/core/nfl2k5_momentum.py",
+                    "mod_editor/core/nfl2k5_momentum_code.py",
+                    "mod_editor/core/nfl2k5_defensive_try.py",
+                    "mod_editor/core/nfl2k5_zone_drop.py",
+
+                    "mod_editor/core/nfl2k5_guardian_cap.py",
+                    "mod_editor/core/nfl2k5_animation.py",
+                    "mod_editor/core/nfl2k5_animation_math.py",
+                    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+                    "mod_editor/core/nfl2k5_scorebug_resources.py",
+                    "mod_editor/core/nfl2k5_scorebug_ingame.py",
+                    "mod_editor/core/nfl2k5_music_policy.py",
+                    "mod_editor/core/nfl2k5_music_catalog.py",
+                    "mod_editor/core/nfl2k5_music_build.py",
+                    "mod_editor/core/nfl2k5_music_banks.py",
+                    "mod_editor/core/nfl2k5_music_metadata.py",
+                    "mod_editor/core/nfl2k5_music_storage.py",
+                    "mod_editor/core/nfl2k5_music_archive.py",
+                    "mod_editor/core/nfl2k5_xbe_space.py",
+                    "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py",
+                    "mod_editor/core/nfl2k5_season_cap.py",
+                    "mod_editor/core/nfl2k5_screen_timing.py",
+
                     "mod_editor/core/nfl2k5_audo_fixed_slots.py",
                     "mod_editor/core/nfl2k5_safe_text_banks.py",
                     "mod_editor/core/nfl2k5_scorebug_unified_adapter.py",
@@ -213,7 +240,15 @@ class ProviderIntegrityTests(unittest.TestCase):
                     "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
                 })
                 expected_closure.update(local_import_closure(
-                    *adapters, exact_path_entries=adapters
+                    *adapters, exact_path_entries=frozenset({
+                        "mod_editor/core/nfl2k5_audo_fixed_slots.py",
+                        "mod_editor/core/nfl2k5_safe_text_banks.py",
+                        "mod_editor/core/nfl2k5_scorebug_unified_adapter.py",
+                        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+                        "mod_editor/core/nfl2k5_p8_texture_writer.py",
+                        "mod_editor/core/nfl2k5_unif_color_writer.py",
+                        "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+                    })
                 ))
                 self.assertNotIn("mod_editor/__init__.py", expected_closure)
                 self.assertNotIn("mod_editor/core/__init__.py", expected_closure)

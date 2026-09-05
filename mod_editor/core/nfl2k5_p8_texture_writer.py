@@ -264,6 +264,68 @@ def target_record(
     }
 
 
+def compile_live_helmet_span(template_span: bytes, rgba: bytes) -> tuple[bytes, dict[str, Any]]:
+    """Repaint one live helmet from resource bytes, preserving its entire wrapper.
+
+    Reuses the live-helmet mip/quantizer and the Models fixed-span fill encoder.
+    Source identity and ownership belong to the caller; no inventory, archive
+    growth, PNG file, or raised loader scratch allocation is needed here.
+    """
+    from dataclasses import asdict
+    import struct
+    import nfl_live_helmet_txtr_png_import as helmet
+    import nfl_tset_png_import as palette_tools
+    import nfl_txtr as txtr
+    import nfl_vc_lz_fill as fill
+
+    template_span = bytes(template_span)
+    _require(len(template_span) >= 32, "Live helmet wrapper is truncated")
+    kind, stored, system, video, magic, scratch, r0, r1 = struct.unpack_from("<4s7I", template_span)
+    _require(kind == b"TXTR" and stored == len(template_span) - 32
+             and system == 128 and video == helmet.VIDEO_BYTES
+             and magic == txtr.COMPRESSED_SENTINEL and r0 == r1 == 0,
+             "Live helmet allocation changed")
+    chunk = txtr.Chunk(0, 0, "TXTR", stored, system, video, magic, scratch, r0, r1)
+    decoded, info = txtr.decode_chunk(template_span, chunk)
+    texture = txtr.parse_texture(decoded, chunk)
+    _require(info is not None and texture.name in {"helmet00", "helmet02"}
+             and texture.name_offset == 32 and texture.descriptor_offset == 52
+             and texture.pixel_offset == 0 and texture.palette_offset == helmet.PALETTE_OFFSET
+             and texture.packed_format == 0x08860B29 and texture.packed_size == 0
+             and texture.descriptor_flags == 0x80000000 and texture.format_name == "P8"
+             and texture.mip_levels == 6 and (texture.width, texture.height, texture.depth) == (256, 256, 1),
+             "Live helmet texture descriptor changed")
+    mips = helmet.generate_mips(bytes(rgba))
+
+    def candidate(palette, levels):
+        chain = b"".join(txtr.swizzle_2d(indices, mip.width, mip.height, 1)
+                         for indices, mip in zip(levels, mips))
+        return decoded[:system] + chain + palette_tools.palette_bytes(palette)
+
+    bounded = palette_tools.quantize_levels_to_vc_lz_bound(
+        mips, candidate, stream_tag=info.stream_tag, offset_bits=info.offset_bits,
+        max_encoded_size=stored)
+    rebuilt, fill_info = fill.rebuild_fixed_span_filled(template_span, bounded.decoded, encoder="auto")
+    roundtrip, _ = txtr.decode_chunk(rebuilt, chunk)
+    _require(len(rebuilt) == len(template_span) and rebuilt[:32] == template_span[:32]
+             and roundtrip == bounded.decoded and roundtrip[:system] == decoded[:system],
+             "Live helmet fixed-span round trip failed")
+    levels = helmet.decode_levels(roundtrip)
+    for actual, mip, indices in zip(levels, mips, bounded.index_levels):
+        _require(actual.rgba == palette_tools.rgba_from_indices(indices, bounded.palette)
+                 and (actual.width, actual.height) == (mip.width, mip.height),
+                 "Live helmet mip round trip failed")
+    return rebuilt, {
+        "schema": "nfl2k5_live_helmet_resource_import/v1", "texture": texture.name,
+        "decoded_before_sha256": _digest(decoded), "decoded_after_sha256": _digest(roundtrip),
+        "system_bytes_identical": True, "wrapper_identical": True, "archive_growth": 0,
+        "input_rgba_sha256": _digest(bytes(rgba)), "fill": asdict(fill_info),
+        "palette_entries": len(bounded.palette), "palette_fit_attempts": list(bounded.attempts),
+        "mips": [{"width": level.width, "height": level.height,
+                  "rgba_sha256": _digest(level.rgba)} for level in levels],
+    }
+
+
 def build_unified_p8_texture_imports(
     index: Path,
     asset_id: str,
@@ -380,6 +442,7 @@ __all__ = [
     "EXPECTED_TARGETS",
     "P8Target",
     "P8TextureWriterError",
+    "compile_live_helmet_span",
     "build_unified_p8_texture_import",
     "build_unified_p8_texture_imports",
     "load_inventory",

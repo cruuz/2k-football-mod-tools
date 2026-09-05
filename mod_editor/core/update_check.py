@@ -38,7 +38,7 @@ COMMUNITY_DISCORD = "https://discord.gg/dpMJCnJZD"
 #: The release this build was cut from. Packaging updates it when a release is
 #: tagged; the check compares it with the newest published tag, which works
 #: across the two products' different version schemes without parsing either.
-BUILD_RELEASE_TAG = "beta-60"
+BUILD_RELEASE_TAG = "beta-61"
 
 DEFAULT_TIMEOUT_SECONDS = 6.0
 MAX_RESPONSE_BYTES = 1024 * 1024

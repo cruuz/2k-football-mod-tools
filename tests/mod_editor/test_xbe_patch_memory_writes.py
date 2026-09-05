@@ -101,7 +101,21 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         cls.patched, _ = pools.apply(cls.patched)
-        cls.patched, _ = rows.apply(cls.patched)
+        cls.patched, cls.rows_receipt = rows.apply(cls.patched)
+        if rows.status(cls.patched) != "applied":
+            raise AssertionError("SPECIAL rows and summary spacing did not compose")
+        from mod_editor.core import nfl2k5_depth_locks as locks
+        cls.patched, _ = locks.apply(cls.patched)
+        from mod_editor.core import nfl2k5_practice_reserves as practice_reserves
+        cls.patched, _ = practice_reserves.apply(cls.patched)
+        from mod_editor.core import nfl2k5_season_cap as season_cap
+        cls.patched, _ = season_cap.apply(cls.patched)
+        if season_cap.status(cls.patched) != "applied":
+            raise AssertionError("season-cap owner missing from the composed XBE")
+        from tests.nfl2k5_allocator_stack import compose
+        cls.before_allocator = cls.patched
+        cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False))
+        cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 
@@ -192,6 +206,130 @@ class PatchWriteTests(unittest.TestCase):
         self.assertFalse(section.executable)
         self.assertTrue(section.flags & 2)
         self.assertFalse(image.runtime_writable(rows.TABLE_VA, rows.TABLE_SIZE))
+
+    def test_grown_code_owner_writes_only_to_the_named_writable_data_allocation(self) -> None:
+        from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        self.assertEqual(space.status(self.patched), "applied")
+        for module, getter in ((relocated, relocated._sites), (runtime, runtime.sites)):
+            self.assertEqual(module.status(self.patched), "applied")
+            code, data = getter(self.patched)
+            writes = absolute_writes(self.patched, [(code["va"], code["va"] + code["size"])])
+            checked = 0
+            for write in writes:
+                if write["target"] is not None:
+                    self.assertTrue(write["writable"], write)
+                    target = int(write["target"], 0)
+                    if space.CODE_VA <= target < space.DATA_VA + space.PAGE:
+                        checked += 1
+                        self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
+            self.assertGreater(checked, 0)
+            self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+            self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+
+    def test_defensive_try_grown_storage_and_writes(self) -> None:
+        from mod_editor.core import nfl2k5_defensive_try as defensive_try
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        self.assertEqual(defensive_try.status(self.patched), "applied")
+        code, data = defensive_try._sites(self.patched)
+        image = XbeImage(self.patched)
+        self.assertFalse(image.runtime_writable(code["va"],code["size"]))
+        self.assertTrue(image.runtime_writable(data["va"],data["size"]))
+        checked=0
+        for write in absolute_writes(self.patched,[(code["va"],code["va"]+1300)]):
+            if write["target"] is not None:
+                checked+=1
+                self.assertTrue(write["writable"],write)
+                target=int(write["target"],0)
+                if space.CODE_VA<=target<space.DATA_VA+space.PAGE:
+                    self.assertTrue(data["va"]<=target<data["va"]+data["size"],write)
+        self.assertGreater(checked,0)
+
+
+    def test_zone_drop_has_no_absolute_runtime_storage_and_only_stack_writes(self) -> None:
+        from capstone import CS_AC_WRITE
+        from capstone.x86 import X86_REG_ESP
+        from mod_editor.core import nfl2k5_zone_drop as zone_drop
+        from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        self.assertEqual(zone_drop.status(self.patched), "applied")
+        self.assertEqual(relocated.status(self.patched), "applied")
+        image = XbeImage(self.patched)
+        code = zone_drop.site(self.patched)
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        writes = absolute_writes(self.patched, [(code["va"], code["va"] + zone_drop.BODY_SIZE)])
+        self.assertTrue(all(w["target"] is None for w in writes), writes)
+        insns = list(self.md.disasm(image.read(code["va"], zone_drop.BODY_SIZE), code["va"]))
+        self.assertEqual(sum(i.size for i in insns), zone_drop.BODY_SIZE)
+        for insn in insns:
+            for operand in insn.operands:
+                if operand.type == X86_OP_MEM and operand.access & CS_AC_WRITE:
+                    self.assertEqual(operand.mem.base, X86_REG_ESP, str(insn))
+
+    def test_special_spacing_is_an_existing_data_descriptor_not_code_storage(self) -> None:
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        self.assertEqual(image.section(rows.SUMMARY_STYLE_VA, 48).name, ".data")
+        self.assertTrue(image.runtime_writable(rows.SUMMARY_STYLE_VA, 48))
+        self.assertEqual(rows._read(self.patched, rows.SUMMARY_STYLE_VA, 48), rows.SUMMARY_STYLE_BYTES)
+        self.assertTrue(any(e["label"] == "summary_row_spacing" and e["size"] == 48
+                            for e in self.rows_receipt["edits"]))
+        self.assertEqual(image.section(rows.SUMMARY_LABEL_WIDTH_VA, 4).name, ".rdata")
+
+    def test_momentum_complete_code_writes_only_named_data_or_caller_state(self) -> None:
+        from mod_editor.core import nfl2k5_momentum as momentum
+        from mod_editor.core import nfl2k5_momentum_code as code
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        owner, data = momentum._sites(self.patched)
+        self.assertEqual(momentum.status(self.patched), "applied")
+        self.assertFalse(image.runtime_writable(owner["va"], owner["size"]))
+        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+        self.assertEqual(image.read(data["va"], data["size"]), bytes(data["size"]))
+        writes = absolute_writes(self.patched, [(owner["va"], owner["va"] + code.LABELS["config"])])
+        checked = 0
+        for write in writes:
+            if write["target"] is not None:
+                checked += 1
+                self.assertTrue(write["writable"], write)
+                self.assertTrue(data["va"] <= int(write["target"], 0) < data["va"] + data["size"], write)
+        self.assertGreater(checked, 0)
+        # Indexed state/stack writes are checked by bounded instruction tests
+        # with protected executable pages in test_nfl2k5_momentum.py.
+
+
+@unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
+class ScorebugReferenceWrites(unittest.TestCase):
+    def test_complete_scorebug_instructions_and_data_destinations(self):
+        from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        retail=XBE.read_bytes()
+        patched,_=scorebug.apply_xbe(retail)
+        image=XbeImage(patched)
+        for va,old,new,label in scorebug.xbe_specs():
+            if va < 0x11000:
+                continue  # existing reserved header constants, never runtime writes
+            section=image.section(va,len(new))
+            if section.name != ".text":
+                self.assertTrue(image.runtime_writable(va,len(new)),label)
+            else:
+                for write in absolute_writes(patched,[(va,va+len(new))]):
+                    if write["target"] is not None:
+                        self.assertTrue(write["writable"],write)
+        self.assertEqual(scorebug.apply_xbe(patched)[0],patched)
+
+
+class ReverseOwnerOrderTests(PatchWriteTests):
+    """Run every gate against the same complete union installed in reverse."""
+    reverse_owners = True
+
+    def test_both_installation_orders_are_byte_identical(self):
+        from tests.nfl2k5_allocator_stack import compose
+        self.assertEqual(compose(self.before_allocator)[0], self.patched)
 
 
 if __name__ == "__main__":

@@ -606,7 +606,7 @@ def save_project_archive(
         raise ValidationError(
             "There is not enough free space to save this project safely."
         )
-    temporary = output.with_name(f".{output.name}.{os.getpid()}.{uuid4().hex}.tmp")
+    temporary = platform_compat.temporary_sibling(output)
     descriptor = os.open(
         temporary,
         os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
@@ -995,6 +995,8 @@ def load_project_archive(
                 and not loaded_annotations
                 and not loaded_uniform_colors
                 and not loaded_play_routes
+                and not loaded_creates
+                and not loaded_links
             ):
                 if empty_marker is not True:
                     raise ValidationError(

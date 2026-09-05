@@ -358,12 +358,13 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 85 cross-title rows, including 32 Xbox NFL 2K5
-capabilities and 9 NFL 2K5 PS2 rows: the separate PS2 save-import bridge, the
+The current registry has 99 cross-title rows, including 45 Xbox NFL 2K5
+capabilities, 9 NFL 2K5 PS2 rows (the separate PS2 save-import bridge, the
 read-only PS2 disc inventory, the PCSX2 replacement-pack export for edited uniform
-art (the PS2 studio's Windows menu, or --ps2-export) and six on-disc writers
-(display text, playbooks, uniform colours, the disc roster, stadium positions and
-one-shot AUDO sounds), which the PS2 NFL 2K5 Studio window drives (see below). No current 2K5 capability
+art -- the PS2 studio's Windows menu, or --ps2-export -- and six on-disc writers:
+display text, playbooks, uniform colours, the disc roster, stadium positions and
+one-shot AUDO sounds, which the PS2 NFL 2K5 Studio window drives, see below) and
+the PS2 Madden 09 Studio's rows (see below). No current 2K5 capability
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.
 
@@ -519,7 +520,7 @@ yet, on a drive with room for two images.
 
 ## What v1.0 covers
 
-The complete 12-tab sidebar is present even where a feature remains read-only.
+The complete 18-tab sidebar is present even where a feature remains read-only.
 The whole-game resource browser is the fallback home for anything that does not
 yet have a specialized editor, so indexed assets are not hidden.
 

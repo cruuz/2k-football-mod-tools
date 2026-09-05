@@ -125,20 +125,41 @@ def set_reserve_list(team_record: bytes | bytearray | memoryview, identities: It
     return bytes(out)
 
 
-def remap_reserve_list(team_record: bytes, identity_map: Mapping[int, int | None], **coordinates) -> bytes:
+def remap_reserve_list(team_record: bytes, identity_map: Mapping[int, int | None], *,
+                      old_team_offset: int | None = None,
+                      old_player_pool_offset: int | None = None,
+                      new_team_record: bytes | None = None, **coordinates) -> bytes:
     """Explicit complete remap for import/compaction; None retires an identity.
 
-    Active pointers must be remapped separately by the containing roster writer.
-    No absent map entry is silently retained after a pool move.
+    Decode the original record at old_* coordinates. For a relocated team with
+    active players, supply new_team_record with its active pointers already
+    remapped; the original tail is read before that candidate is interpreted.
+    The containing writer must also remap FA and IR references. No absent map
+    entry is silently retained after a pool move.
     """
     read_coordinates = {k:v for k,v in coordinates.items() if k != 'player_count'}
+    if old_team_offset is not None:
+        read_coordinates['team_offset'] = old_team_offset
+    if old_player_pool_offset is not None:
+        read_coordinates['player_pool_offset'] = old_player_pool_offset
     values = reserve_list(team_record, **read_coordinates)
     _require(all(x in identity_map for x in values), 'incomplete reserve identity remap')
-    return set_reserve_list(team_record, (identity_map[x] for x in values if identity_map[x] is not None),
+    # The containing writer has already remapped active references. Clear the old
+    # tail before interpreting the record in its new coordinate system.
+    relocating = (old_team_offset is not None and old_team_offset != coordinates.get('team_offset', 0)
+                  or old_player_pool_offset is not None and old_player_pool_offset != coordinates.get('player_pool_offset'))
+    _require(not relocating or team_record[ACTIVE_COUNT] == 0 or new_team_record is not None,
+             'relocation requires a new team record with remapped active references')
+    empty = bytearray(team_record if new_team_record is None else new_team_record)
+    _require(len(empty) == TEAM_SIZE and empty[ACTIVE_COUNT] <= 65, 'invalid remapped team record')
+    empty[empty[ACTIVE_COUNT]*4:260] = bytes(260-empty[ACTIVE_COUNT]*4)
+    empty[COUNT] = 0
+    return set_reserve_list(empty, (identity_map[x] for x in values if identity_map[x] is not None),
                             **coordinates)
 
 
-def validate_roster(payload: bytes, *, ir_player_indices: Iterable[int] = ()) -> dict[int, tuple[int, ...]]:
+def validate_roster(payload: bytes, *, ir_player_indices: Iterable[int] = (),
+                    strict_owners: bool = False, allow_legacy_tail: bool = False) -> dict[int, tuple[int, ...]]:
     """Check ownership in a complete disc/v0-save ROST using the shared codec.
 
     IR belongs to the franchise container, not its ROST resource. The caller
@@ -148,27 +169,35 @@ def validate_roster(payload: bytes, *, ir_player_indices: Iterable[int] = ()) ->
     from .nfl2k5_save_rost import decode
     document = decode(payload)
     owners: dict[int, str] = {}
+    def claim(index: int, owner: str) -> None:
+        _require(not strict_owners or index not in owners,
+                 f'player {index}: duplicate owner {owners.get(index)} / {owner}')
+        owners.setdefault(index, owner)
     primary = document.tables['primary']
     by_offset = {p.offset: p.index for p in document.players if p.pool == 'primary'}
     for team in document.teams:
         kind = struct.unpack_from('<I', payload, team.offset + 0x128)[0]
         if team.index < 32 or kind in (2, 4):
             for off in team.player_offsets:
+                _require(not strict_owners or off in by_offset, 'active owner references a non-primary player')
                 if off in by_offset:
-                    owners.setdefault(by_offset[off], f'active team {team.index}')
+                    claim(by_offset[off], f'active team {team.index}')
     agents = document.tables['free_agents']
     if agents.offset is not None:
         for i in range(agents.count):
             off = document.rel(agents.offset + i * 4)
+            _require(not strict_owners or off in by_offset, 'free agent owner references a non-primary player')
             if off in by_offset:
-                owners.setdefault(by_offset[off], 'free agent')
+                claim(by_offset[off], 'free agent')
     for index in ir_player_indices:
         _require(type(index) is int and 0 <= index < primary.count, 'invalid IR player index')
-        owners.setdefault(index, 'injured reserve')
+        claim(index, 'injured reserve')
     squads = {}
     for team in document.teams:
-        values = reserve_list(payload[team.offset:team.offset + TEAM_SIZE],
-                              team_offset=team.offset, player_pool_offset=primary.offset)
+        raw = payload[team.offset:team.offset + TEAM_SIZE]
+        legacy = (raw[VERSION_OFFSET], raw[COUNT], raw[MARKER_OFFSET]) == (0, 0, 0)
+        values = (() if allow_legacy_tail and legacy else reserve_list(
+            raw, team_offset=team.offset, player_pool_offset=primary.offset))
         squads[team.index] = values
         for index in values:
             _require(index < primary.count, f'team {team.index}: reserve index outside primary pool')
@@ -179,6 +208,168 @@ def validate_roster(payload: bytes, *, ir_player_indices: Iterable[int] = ()) ->
                      f'team {team.index}: reserve {index} is inactive, retired, or a draft prospect')
             owners[index] = f'reserve team {team.index}'
     return squads
+
+def repack_team(team_record: bytes, active_indices: Iterable[int], reserve_indices: Iterable[int], *,
+                team_offset: int, player_pool_offset: int, player_count: int,
+                mark: bool = True) -> bytes:
+    """Rebuild the combined array without decoding an invalid intermediate tail."""
+    active = tuple(active_indices)
+    reserves = tuple(reserve_indices)
+    _require(len(active) <= 65 and len(active) + len(reserves) <= 65, 'physical roster is full (65 players)')
+    _require(len(set(active)) == len(active), 'duplicate active identity')
+    _require(all(type(i) is int and 0 <= i < player_count for i in active), 'invalid active primary index')
+    out = bytearray(team_record)
+    _require(len(out) == TEAM_SIZE, 'expected one 500-byte team record')
+    out[:260] = bytes(260)
+    out[ACTIVE_COUNT] = len(active)
+    out[VERSION_OFFSET] = out[COUNT] = out[MARKER_OFFSET] = 0
+    for slot, index in enumerate(active):
+        struct.pack_into('<i', out, slot*4, player_pool_offset + 84*index - team_offset - slot*4 + 1)
+    result = set_reserve_list(out, reserves, team_offset=team_offset,
+                              player_pool_offset=player_pool_offset, player_count=player_count)
+    if not mark and not reserves:
+        out = bytearray(result)
+        out[VERSION_OFFSET] = out[COUNT] = out[MARKER_OFFSET] = 0
+        return bytes(out)
+    return result
+
+
+def _f32(value: float) -> float:
+    return struct.unpack('<f', struct.pack('<f', value))[0]
+
+
+def contract_bonus_salary(value: int, bonus: int, length: int) -> int:
+    """Retail E6020/E5FF0: annual bonus in $1000, signed integer division."""
+    _require(0 <= value <= 65535 and 0 <= bonus <= 15 and 1 <= length <= 15,
+             'invalid contract value, bonus, or length for salary recomputation')
+    return value * bonus // length
+
+
+def contract_base_salary(value: int, kind: int, bonus: int, year: int, length: int) -> int:
+    """Port of E6040's eight curves, including float32 stores and truncation.
+
+    E6380 supplies year = length - remaining. Do not use display dollars or
+    Python round(): E3F10 is cvttss2si, and half salaries use arithmetic shift.
+    """
+    _require(0 <= kind <= 7 and 0 <= year <= length, 'unsupported contract type or remaining years')
+    annual_bonus = contract_bonus_salary(value, bonus, length)
+    if year >= length:
+        return 0
+    base = int(_f32(value * 10 / length)) - annual_bonus
+    half = base >> 1
+    at = year + 0.5
+    middle = length * 0.5
+    factor = _f32(2 * at / length - 1)
+    if kind == 2 or (length == 1 and kind in (3, 4, 5)):
+        return base
+    if kind in (0, 7):
+        scale = (12 if kind == 0 else 8) if at < middle else (8 if kind == 0 else 12)
+        return base if at == middle else int(base * scale / 10)
+    if kind == 5:
+        return int(base * (8 if year % 2 else 12) / 10)
+    if kind in (3, 4):
+        factor = _f32(2 * (at if at <= middle else at - middle) / middle - 1)
+        sign = 1 if (kind == 3) == (at <= middle) else -1
+    else:
+        sign = -1 if kind == 1 else 1
+    return int(_f32(base + sign * half * factor))
+
+
+def player_salary(record: bytes, *, active: bool = True) -> int:
+    """C3F00 active charge / 246F20 IR charge; contracts are retained on reserves."""
+    _require(len(record) == 84, 'expected one player record')
+    word = struct.unpack_from('<I', record, 0x24)[0]
+    remaining, length = word & 15, (word >> 24) & 15
+    if active and remaining == 0:
+        return 0
+    value = struct.unpack_from('<H', record, 0x0a)[0]
+    bonus, kind = (word >> 20) & 15, (word >> 16) & 15
+    return (contract_base_salary(value, kind, bonus, length - remaining, length)
+            + contract_bonus_salary(value, bonus, length))
+
+
+def validate_save(payload: bytes, *, strict_owners: bool = True, strict_storage: bool = False) -> dict[int, tuple[int, ...]]:
+    """Validate final composed bytes, including the complete franchise IR list."""
+    from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
+    ir = (FranchiseSave(payload).injured_reserve() if is_franchise_save(payload) else ())
+    return validate_roster(payload, ir_player_indices=[e.player_index for e in ir],
+                           strict_owners=strict_owners, allow_legacy_tail=not strict_storage)
+
+
+def recompute_salary(payload: bytes, team_index: int) -> bytes:
+    from .nfl2k5_save_rost import decode
+    from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
+    doc = decode(payload)
+    team = doc.teams[team_index]
+    total = sum(player_salary(payload[o:o+84]) for o in team.player_offsets)
+    if is_franchise_save(payload):
+        save = FranchiseSave(payload)
+        if save.header.mode == 2:
+            for entry in save.injured_reserve():
+                if entry.team == team_index:
+                    off = save.player_offset(entry.player_index)
+                    total += player_salary(payload[off:off+84], active=False)
+    _require(0 <= total <= 0x7fffffff, 'team salary is outside the supported integer range')
+    out = bytearray(payload)
+    struct.pack_into('<I', out, team.offset + 0x124, total)
+    return bytes(out)
+
+
+def reserve_transaction(payload: bytes, team_index: int, primary_index: int, *, promote: bool,
+                        check_only: bool = False) -> tuple[bytes, dict[str, object]]:
+    """One copy-only host transaction. A refusal cannot publish partial bytes.
+
+    Caller supplies the fully composed save, then publishes the returned bytes
+    as a single undo/journal entry. Primary identities never change.
+    """
+    from .nfl2k5_save_rost import decode
+    doc = decode(payload)
+    _require(doc.layout.version == 0, 'reserve moves require a signed-save copy')
+    squads = validate_save(payload, strict_storage=True)
+    _require(type(team_index) is int and 0 <= team_index < min(32, len(doc.teams)), 'select an NFL team')
+    player = doc.by_key.get(('primary', primary_index))
+    _require(player is not None, 'invalid primary player identity')
+    team = doc.teams[team_index]
+    by_offset = {p.offset: p for p in doc.players}
+    active = [by_offset[o].index for o in team.player_offsets]
+    reserves = list(squads[team_index])
+    flags = payload[player.offset + 8]
+    _require(bool(flags & 4) and not flags & 0x18, 'player is inactive, retired, or a draft prospect')
+    _require(payload[player.offset + 0x28] != 0xee, 'player is marked injured reserve')
+    if promote:
+        _require(primary_index in reserves, 'player is not a reserve owned by this team')
+        _require(len(active) < ACTIVE_LIMIT, 'promotion requires fewer than 53 active players')
+        reserves.remove(primary_index)
+        active.append(primary_index)
+    else:
+        _require(active.count(primary_index) == 1, 'player is not active on this team')
+        _require(len(reserves) < RESERVE_LIMIT, 'practice squad is full (12 players)')
+        removed_slot = active.index(primary_index)
+        active.remove(primary_index)
+        reserves.append(primary_index)
+    out = bytearray(payload)
+    pool = doc.tables['primary']
+    out[team.offset:team.offset+TEAM_SIZE] = repack_team(
+        payload[team.offset:team.offset+TEAM_SIZE], active, reserves,
+        team_offset=team.offset, player_pool_offset=pool.offset, player_count=pool.count)
+    if not promote:
+        out[player.offset + 0x25] &= 0x1f       # C3A90 removal flags 0xE000
+        out[player.offset + 0x52] &= ~0x1f     # composed persistent-lock removal
+        out[player.offset + 8] = (flags | 4) & ~0x10
+        for field in range(team.offset+0x194, team.offset+0x19a):
+            value = out[field]
+            if value == removed_slot:
+                out[field] = 0xff
+            elif removed_slot < value < 0x80:  # retail signed-byte comparison
+                out[field] -= 1
+    candidate = recompute_salary(bytes(out), team_index)
+    validate_save(candidate)
+    decode(candidate)
+    receipt = {'operation': 'promote_reserve' if promote else 'demote_active',
+               'team_index': team_index, 'pool': 'primary', 'index': primary_index,
+               'active': len(active), 'reserve': len(reserves),
+               'salary': struct.unpack_from('<I', candidate, team.offset+0x124)[0]}
+    return (payload if check_only else candidate), receipt
 
 
 @dataclass(frozen=True)

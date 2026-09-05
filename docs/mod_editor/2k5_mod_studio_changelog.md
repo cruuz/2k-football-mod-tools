@@ -229,6 +229,110 @@
   provenance markers and BOM-first JSON, and follows a symlinked pack root.
 - Registry 70 -> 71 rows; the `textures` surface now covers the PS2 target; the published schema
   admits the third game and the twenty-first surface the registry already carried.
+## v1.0 RC85 — defense Create a Play, the Music tab and 200-track banks, the Momentum option, Rosters locks / reserves / abilities, the reference scorebug with real logos, and the allocator that makes native features possible
+Beta 61 was built almost entirely by GPT-6 Astra under Claude's review: research memo first, build session second, one
+integration session per wave on the stack. Every patch passed the retail byte pins, both executable safety gates
+(memory writes and cave references, now composed with every owner in both orders), a real image build of the
+experimental preset, a second real build with every opt-in switched on, and the full standalone CI loop. Nothing in this
+section has been played in xemu or on a console unless it says so; every new option is labelled experimental and
+defaults to off or retail in every preset unless stated.
+- **Owned executable space: two code pages and one writable page past the retail image, plus a 64 KiB read-only
+  section (experimental, default off).** Every native feature people asked for this year stopped at the same wall: the
+  free-space oracle certifies no unused code in the retail executable. Beta 60 grew the executable's final read-only
+  section for the SPECIAL tab, and Noah witnessed that disc booting. This beta generalises the idea:
+  `nfl2k5_xbe_space.py` appends new section descriptors (two executable, one writable, one read-only) beyond every retail
+  section, hands out named, deterministic allocations per owner (a replay checks the same request set), records them in
+  the reservation manifest, and the disc writer appends the grown executable and repoints its directory entry as before.
+  The witness for the loader is `kickoff_relocated`: the complete 1,939-byte dynamic kickoff moved into the new pages
+  with all eleven hooks retargeted, so if kickoffs still line up on a disc built with it, code in the new pages runs.
+  Capacity after this beta: 6,501 bytes of owner code across the two code pages, 3,242 bytes of state in the writable
+  page. Built by Astra; both allocator flags stay off in every preset.
+- **Create a Play for DEFENSE, and a modern defense pack.** The Defense family joins the wizard and the Play Designer:
+  native donor formations and personnel, eleven slot assignments with man, zone landmark, rush lane and exchange-script
+  choices, mirror preview, capacity display and refusal at the smallest book budget. Presets build Cover 0, Cover 1,
+  Cover 2 Man / Hard / Soft, Cover 3, four-deep spot quarters, Cover 6 split-field, a five-man replacement Fire 3 and a
+  four-rush replacement 3 from retail building blocks; Tampa MLB drop and a Double A look are experiments. The
+  `softdrink_modern_defense.2k5book` pack installs ten core calls into all 32 books plus GEN and reference (it replaces
+  plays, never appends: eight books sit at the 270-play cap). A Spy assignment writes the legal shallow-middle-zone
+  donor and records spy intent for a later runtime; the UI says plainly that a true spy is not here yet.
+- **Read option and RPO.** Five stock plays (MIN 24, NO 57 and 66, PHI 175, TEN 144) are real conditional speed options,
+  and retail has a generic branch on an opponent's position and velocity. The studio's play writer used to strip the
+  branch flags on any rebuild, which quietly turned an option into a straight handoff; fixed, with all five options
+  byte-exact through clone, mirror, retarget, pack and import. Conditional nodes now show honestly in the inspector and
+  designer, and experimental Speed option, Zone read and RPO presets plus a small option pack ship with the same
+  "position and velocity read, not a dependable modern read yet" label.
+- **Screen passes: measured timing levels and a real screen preset.** Every stock screen that uses the retail hold,
+  release and block grammar (64 of the 129 named screens) can take one of four timing levels: A holds the line 0.8 s
+  instead of 0.5, B shortens the quarterback's nominal drop from 10 to 7 yards, C sets an explicit 0.6 s pass delay, D
+  combines them (the experimental preset uses D). Only declared assignment lengths change; shared chains and node
+  budgets are enforced per book. The Create a Play HB Screen generator, which gave all five linemen permanent pass
+  protection, now authors the stock sequence with HB, WR and TE variants. No hook code; Noah's paired-snap witness
+  decides whether that tier is needed.
+- **★ Rosters: Locks, Reserves, Abilities.** A Locks column (Rank, Side, KR1, KR2, PR) uses the new depth-lock record
+  bits so the weekly auto-depth keeps your tackles, guards and returners where you put them (LT/LG and RT/RG labels,
+  conflicts diagnosed before saving, an Unlock action). Every NFL team gets a Reserves group with the same cards and
+  filters; Promote and Demote are one atomic host transaction (53 active, 12 reserve, 65 total, salary recomputed by the
+  ported integer helpers, journal replay, signed-copy write). An Abilities card edits the data-only flags (Speedster,
+  Right-Stick Moves and the phase-two move bits) with the honest label that they have no gameplay effect until the
+  runtime ships. The franchise view now builds from the composed save bytes and knows the configured starting year.
+- **Depth-chart locks (executable, experimental preset).** Six in-place rewrites in the depth-chart routines: moving a
+  player on the depth chart or confirming a returner locks that choice in his record and the weekly sort keeps it. No
+  cave, no runtime variable. The module recognises both the retail rows and the shipped SPECIAL layout.
+- **SPECIAL tab fixes (Noah's first look).** Third-column names were never drawn because thirteen rows at the retail
+  pitch summoned both scrollbars and the sheet's frame lost two pixels; the row pitch is now 25 and the label column 57
+  pixels, so all thirteen rows fit without scrolling and every column draws names. Rows are now `KR, PR, K, P, LS, LGUN,
+  RGUN, NCB, DCB, SLWR, GAD, 3DRB, PWRB` in that order.
+- **Practice squad in the game, part 1.** The Coach's Desk lists Schedule before Practice, and Free Practice in Franchise
+  (modes 0 to 2) draws reserves into the disposable practice roster, so a practice-squad player can be practised. The
+  reserve list, Promote and Demote inside the game wait for the native screen.
+- **Franchise beyond 30 seasons (experimental).** One signed byte at `0x2480CD` (`1E` to `7F`) lets the franchise run
+  to index 127, 128 seasons. Both save writers accept indices 0 to 127, the birth-year codec drops its fixed century, and
+  the Franchise tab shows the raw index beside the ordinal. Dates and ages after 2099 are not repaired yet; the label says so.
+- **Guardian caps, route B (experimental, opt-in).** Helmet C's low and high shells are sculpted into a cap inside their
+  fixed spans with zero archive growth and identical wrappers; one test uniform (Detroit current away) gets a neutral
+  quilt texture. Every C wearer shows the cap while it is on. Per-player caps are a later job.
+- **Music.** Two tiers. First, a menu policy: a four-byte pointer swap plays the 59 jukebox songs in the menus, fourteen
+  unlock-key fields make every collection available on a new profile without Crib purchases, and an optional UserList
+  policy uses the same bank. Second, the Music tab: 66 core rows (7 menu recordings and 59 jukebox songs with their
+  linked mono stadium twins) plus 20 presentation beds, drag a WAV, MP3, FLAC or OGG onto a slot or the list, automatic
+  fit to the slot's exact length with RMS level matching and a 50 ms end fade, source and current playback, export, one-
+  click Restore and shared undo. Third, any-count and any-length banks: a transactional rebuild of the outer archive
+  with named XDVDFS pack writes (grow and shrink), a new format-2 `file_shrink` operation, a 64 KiB read-only section for
+  the jukebox titles, artists and durations, and a synthetic 200-track menu bank proved on four real image builds. Twelve
+  jukebox tracks are spoken outtakes and are named as such.
+- **Scorebug: the reference bar, with real team logos and live events (experimental).** The bar is rebuilt from the SVG
+  design to match the broadcast reference: rounded frame at the bottom centre, team panels, big white scores, timeout
+  dashes, a red down-and-distance pill over a white quarter, clock and play-clock strip, and the literal ESPN NFL mark
+  top right. A runtime owner in the new pages binds each panel to the current teams' logos (appended as ordinary native
+  textures the game's own loader registers), dims timeout dashes from the real counts, flashes a score change, drives the
+  native slide on a new down, and colours the play clock under five seconds. The scorebug option itself is now off in the
+  advanced preset until witnessed, on in experimental.
+- **Momentum (experimental, off in every preset).** Retail already has acceleration, an Agility-based turning limit,
+  weight-based acceleration and velocity and weight in contact, which corrects the acceleration ramp's old "retail has
+  no acceleration model" note (docstring fixed; behaviour unchanged). The option tightens fast cuts through the 44-byte
+  turn record, adds consistent braking when the stick releases with the run animation still coupled, and, behind its
+  own flag, a bounded run-up bonus to Break Tackle.
+- **Defensive two-point returns on tries (experimental, opt-in).** After a defensive possession on a try the play
+  continues; a return to the end zone scores two for the defense through the game's own two-point routine; kickoff
+  ownership and the packed scoring history are corrected; a try safety scores one; play-by-play distinguishes the
+  events; the CPU tries to return. Not implemented: the defensive-conversion box-score row (a diagnostic tally only).
+- **Deep-zone corners stop turning their backs (experimental, opt-in).** The zone-drop initializer gives a defender
+  aligned at five yards or less a throttle of 1.0, which selects the running animation, while seven yards gets 0.84 and a
+  backpedal: the Cover 3 exploit the Discord described. An 80-byte owned wrapper caps the initial drop for deep-zone
+  corners at the backpedal band. Ball reaction and interceptions are unchanged by design.
+- **Animations workspace (experimental).** Catalogue of archive and embedded animation resources, native frame data,
+  a skeleton scrubber, glTF export with the native sidecar that keeps every byte needed to reconstruct the clip, and a
+  constrained existing-clip writer whose import stays disabled until its gates pass.
+- **Windows path-length fix.** A Windows user's whole-kit import failed with "no such file" because the temporary file
+  name during an atomic write pushed the path past Windows' 260-character limit. Every atomic writer now uses a short
+  temporary name, the Windows-only writers go through the `\\?\` long-path prefix, and the message names the limit.
+- **A local Windows tester.** `packaging/windows/local_windows_ci.py` runs the CI test matrix under Wine with the
+  installer's own pinned Windows Python and Qt, so a Windows-only failure takes 35 seconds to reproduce instead of a
+  30-minute GitHub round trip. It reproduced the beta-60 handle bug exactly. Two Wine facts learned on the way: Python
+  cannot start when its stdout is a plain file (it needs a pipe), and Wine re-applies TEMP from its registry.
+- **Under the hood.** The cave manifest records every owner including the grown pages; provider closures pin every new
+  module; the release and runtime gates cover the new tabs; the Playbooks panel offers the defense and option packs; a
+  standalone `validate_beta61_integrated_features.py` runs every new capability's checks.
 ## v1.0 RC84 — ★ Rosters does what Finn's did (real saves, Franchise tab, membership, templates), dynamic kickoff, slot / nickel / dime, practice squads, career stats, simpler words everywhere (2026-09-04)
 
 - **Mod files are modular now (format 2): a `.2k5patch` can carry anything, including a change that resizes the disc.**
@@ -294,8 +398,8 @@
   moved). The requested sixteen-player tail was disproved: those bytes hold live cap and statistics data. No in-game
   reserve screen yet and no automatic promotion; only use reserve-bearing saves on a disc that carries the patch.
   Unwitnessed in game.
-- **Franchise tab on ★ Rosters (Beta 60).** A franchise save now gets a second page beside the roster — the
-  part of Flying Finn's editor the studio did not have — and both pages write ONE re-signed copy, roster edits
+- **Franchise tab on ★ Rosters (Beta 60).** A franchise save now gets a second page beside the roster. Flying Finn's editor already turned into a franchise editor when you
+  loaded a franchise save; this is the studio's version of that page, which it did not have before. Both pages write ONE re-signed copy, roster edits
   first. **Overview**: the season year (the game's `2004 + field` rule shown beside it), stage and week
   read-only, the user-controlled teams as a checkable list, the salary cap in $M with the raw $1000-unit value,
   and every team's salary against the cap. **Schedule**: the 22 × 17 grid week by week — away, home, date,

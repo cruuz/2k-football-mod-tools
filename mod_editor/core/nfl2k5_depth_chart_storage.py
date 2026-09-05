@@ -36,6 +36,9 @@ def _section(payload: bytes):
 
 def state(payload: bytes) -> str:
     try:
+        if struct.unpack_from("<I", payload, 0x11C)[0] in (24, 25, 26):
+            from . import nfl2k5_xbe_space as space
+            return space.special_state(payload)
         s = _section(payload)
         h = s.header_offset
         flags, va, size, raw, raw_size = struct.unpack_from("<5I", payload, h)
@@ -65,12 +68,16 @@ def extend(payload: bytes) -> tuple[bytearray, list[dict]]:
         if other.index != s.index and other.virtual_address < TABLE_VA + TABLE_SIZE and TABLE_VA < other.virtual_address + other.raw_size:
             raise ValueError("fresh table overlaps another section")
     buf = bytearray(payload)
-    buf.extend(bytes(FILE_SIZE - len(buf)))
+    grown = len(buf) > FILE_SIZE
+    if not grown:
+        buf.extend(bytes(FILE_SIZE - len(buf)))
     edits = []
     for label, off, value in (("storage_preload", s.header_offset, FLAGS),
                                ("storage_virtual_size", s.header_offset + 8, SIZE),
                                ("storage_raw_size", s.header_offset + 16, SIZE),
                                ("image_size", 0x10C, TABLE_VA + TABLE_SIZE - 0x10000)):
+        if grown and label == "image_size":
+            continue
         struct.pack_into("<I", buf, off, value)
         edits.append({"label": label, "file_offset": hex(off), "va": hex(0x10000 + off), "size": 4})
     return buf, edits
@@ -129,17 +136,20 @@ def write_image_xbe(descriptor: int, payload: bytes) -> dict:
     """
     from . import platform_compat as io
     from . import nfl2k5_throw_tuning as tt
-    from . import nfl2k5_depth_chart_rows as rows
-    if rows.status(payload) != "applied" or len(payload) != FILE_SIZE:
-        raise ValueError("expected a complete SPECIAL XBE")
+    if not recognized_grown_xbe(payload):
+        raise ValueError("expected a complete recognised grown XBE")
     xc = tt._xdvdfs_module()
     image_size = os.fstat(descriptor).st_size
     entries, directory = xc.parse_xdvdfs(descriptor, image_size)
     entry = entries.get("default.xbe")
-    if entry is None or entry.size not in (RETAIL_FILE_SIZE, FILE_SIZE):
+    from . import nfl2k5_xbe_space as space
+    from . import nfl2k5_music_storage as music_storage
+    if entry is None or entry.size not in (RETAIL_FILE_SIZE, FILE_SIZE, space.FILE_SIZE, music_storage.FILE_SIZE, space.EXT_FILE_SIZE):
         raise ValueError("unknown default.xbe extent")
     original = io.pread(descriptor, entry.size, entry.byte_offset)
-    if len(original) != entry.size or state(original) not in ("retail", "applied"):
+    if (len(original) != entry.size or
+            not (entry.size == RETAIL_FILE_SIZE and state(original) == "retail"
+                 or recognized_grown_xbe(original))):
         raise ValueError("unknown default.xbe storage before write")
     node, sector, length = image_file_node(
         lambda count, offset: io.pread(descriptor, count, offset),
@@ -154,7 +164,7 @@ def write_image_xbe(descriptor: int, payload: bytes) -> dict:
 
     def write(data, at):
         if io.pwrite(descriptor, data, at) != len(data):
-            raise ValueError("short SPECIAL XBE write")
+            raise ValueError("short grown XBE write")
 
     try:
         if growth and offset > image_size:
@@ -182,6 +192,16 @@ def write_image_xbe(descriptor: int, payload: bytes) -> dict:
         raise
     return {"offset": offset, "size": len(payload), "directory_offset": node,
             "image_growth": os.fstat(descriptor).st_size - image_size, "relocated": growth}
+
+
+def recognized_grown_xbe(payload: bytes) -> bool:
+    """One recognition policy shared by the writer and protected extent handoff."""
+    from . import nfl2k5_depth_chart_rows as rows
+    from . import nfl2k5_xbe_space as space
+    from . import nfl2k5_music_storage as music_storage
+    if len(payload) in (space.FILE_SIZE, music_storage.FILE_SIZE, space.EXT_FILE_SIZE) and space.status(payload) == "applied":
+        return space.special_state(payload) == "retail" or rows.status(payload) == "applied"
+    return len(payload) == FILE_SIZE and rows.status(payload) == "applied"
 
 
 def allocation_evidence(retail: bytes, manifest) -> dict:

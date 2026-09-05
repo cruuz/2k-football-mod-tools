@@ -67,8 +67,7 @@ class RecodeCompositionTests(unittest.TestCase):
             book.build_replacement(bytes(tampered))
 
 
-if __name__ == "__main__":
-    unittest.main()
+
 
 
 @unittest.skipUnless((LOOSE / "0").is_file(), "retail extraction not present")
@@ -106,3 +105,7 @@ class MenuLinkShapeTests(unittest.TestCase):
         real = [w for w in words if w not in (0, book.EMPTY_LINK)]
         self.assertTrue(real)
         self.assertTrue(all(w & book.LINK_PRESENT for w in real))
+
+
+if __name__ == "__main__":
+    unittest.main()

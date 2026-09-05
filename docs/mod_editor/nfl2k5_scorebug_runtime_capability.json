@@ -1,0 +1,70 @@
+[
+  {
+    "id": "nfl2k5.scorebug_presentation.runtime",
+    "game": "nfl2k5_xbox",
+    "surface": "scorebug_presentation",
+    "title": "Team logos and scorebug effects (experimental, unwitnessed)",
+    "summary": "Bind native team panels and show timeout counts, score flashes, down refresh and play-clock urgency.",
+    "classification": "offline-writer-proved",
+    "backend": {
+      "command": "nfl2k5_scorebug_reference.py apply --runtime",
+      "module": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+      "operation": "write"
+    },
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Enable only in the experimental preset after the protected integration handoff."
+    },
+    "input_constraints": [
+      "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
+      "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
+      "An XBE alone cannot install the required 264 native panel textures. Rebuild from base when changing the owner set."
+    ],
+    "portme": [
+      "Apply the runtime scorebug section of WIRING.md and regenerate the reservation manifest.",
+      "Complete Noah's boot, team identity, scoring, timeout, clock, down-slide and next-game witness list."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "tooling": "source-and-schemas-only",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Distribute the compiler and recipes; derive native resources from the user's own disc. Do not distribute generated game resources, executables or discs."
+    },
+    "runtime": {
+      "status": "not-tested",
+      "evidence": [
+        "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
+        "docs/scorebug_runtime/evidence.json"
+      ],
+      "scope": "Static analysis and bounded Unicorn execution prove the native descriptor relocation, lookup, binding and event paths. Actual kernel loading, asynchronous collection lifetime, GPU rendering, memory pressure and gameplay remain unwitnessed."
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "scorebug_runtime",
+          "required": true,
+          "allowed": "false by default; true only for an experimental disc build"
+        }
+      ],
+      "notes": "Implies scorebug and xbe_space. Relocated kickoff is independent and requires its existing alignment prerequisites."
+    },
+    "source_container": {
+      "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0",
+      "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc",
+      "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+        "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
+        "5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49"
+      ]
+    },
+    "evidence": [
+      "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_resources.py"
+    ],
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py"
+  }
+]

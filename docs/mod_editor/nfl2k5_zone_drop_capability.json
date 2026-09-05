@@ -1,0 +1,67 @@
+[
+  {
+    "backend": {
+      "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes())\nwith Path(sys.argv[3]).open('xb') as output:\n    output.write(payload)\nprint(receipt)\" mod_editor/core/nfl2k5_zone_drop.py <source.xbe> <new-copy.xbe>",
+      "module": "mod_editor/core/nfl2k5_zone_drop.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_ZONE_DROP_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_zone_drop.py",
+      "tests/mod_editor/test_nfl2k5_zone_drop_unicorn.py",
+      "ASTRA_INTEGRATION_3_REPORT.md"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in witness disc only; off in every preset."
+    },
+    "id": "nfl2k5.gameplay.zone_drop_cap",
+    "input_constraints": [
+      "User-owned pinned USA executable or a recognized composed stack with the full selected owner request set reserved.",
+      "Exact position byte 18 and ordinary deep modes only; depth cap 0.50..0.84, default 0.84. Lateral demand still reaches 0.84.",
+      "The integrated allocator reserves two RX pages when required. The full selected owner union must be sealed before growth; rebuild from base when changing the union."
+    ],
+    "portme": [
+      "Run Noah's paired Cover 3 go/curl/comeback, Cover 2 safety, Cover 4 and lifecycle witness list."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_ZONE_DROP_REPORT.md"
+      ],
+      "scope": "Static and bounded instruction proofs, complete allocator composition and offline disc builds. No game boot, rendered backpedal or full-play interception outcome witnessed.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "false in Basic, Advanced and Experimental; explicit witness opt-in only",
+          "name": "zone_drop_cap",
+          "required": true
+        }
+      ],
+      "notes": "Implies xbe_space. Backend apply(cap=...) accepts 0.50..0.84 and requires a clean rebuild for a different cap. Only consider Experimental preset promotion after Noah's witness."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "five-byte initial depth-curve call and an 80-byte named RX allocation; no persistent writable state",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Cap the initial deep-zone depth request for exact cornerback identities. Later steering and ball-response code remain unchanged.",
+    "surface": "gameplay_tuning_sliders",
+    "title": "Corner deep-zone backpedal (experimental, unwitnessed)",
+    "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+  }
+]

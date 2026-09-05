@@ -1,0 +1,73 @@
+{
+  "id": "nfl2k5.gameplay.momentum",
+  "game": "nfl2k5_xbox",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Player momentum (experimental, unwitnessed)",
+  "summary": "Adjust fast turning and ordinary braking, with an optional bounded running-start contact bonus.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_momentum.py <source.xbe> <new-copy.xbe>",
+    "module": "mod_editor/core/nfl2k5_momentum.py",
+    "operation": "write"
+  },
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Opt in manually after protected build integration; all presets default off."
+  },
+  "input_constraints": [
+    "Pinned USA retail hook/table bytes and supported XBE geometry; all spans and section digests validated.",
+    "Integer level 0..100; contact requires a positive level; all presets retail/off.",
+    "Combined named grown allocation requests chosen before installing any owner; rebuild to change settings.",
+    "Ordinary running only for braking/contact history; special states fall back to retail. Legacy rating ramp must be off for parity witnesses."
+  ],
+  "portme": [
+    "Integrate and test both orders with the absent defensive-try owner.",
+    "Witness cuts, stop-and-go, contact, catches, pursuit, both controllers and CPU movement."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "tooling": "source-and-schemas-only",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute the generated game executable or disc."
+  },
+  "runtime": {
+    "status": "not-tested",
+    "evidence": [
+      "ASTRA_MOMENTUM_BUILD_REPORT.md"
+    ],
+    "scope": "Bounded Unicorn hooks and deterministic retail resolver fixtures passed. Loader, animation assets, gameplay feel and full tackle reactions remain unwitnessed."
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "momentum",
+        "required": true,
+        "allowed": "integer 0..100, default 0"
+      },
+      {
+        "name": "momentum_contact",
+        "required": true,
+        "allowed": "Boolean, default false; true requires momentum > 0"
+      }
+    ],
+    "notes": "The two controls share one configured executable owner. Exact zero adds no Momentum hooks or history."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc",
+    "resource": "ordinary turn curve, pinned locomotion/contact hooks, named grown RX/RW allocations",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ]
+  },
+  "evidence": [
+    "ASTRA_MOMENTUM_BUILD_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_momentum.py",
+    "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "ASTRA_INTEGRATION_3_REPORT.md"
+  ],
+  "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+}

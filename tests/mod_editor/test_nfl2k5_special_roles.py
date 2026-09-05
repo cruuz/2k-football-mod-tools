@@ -148,3 +148,19 @@ class RetailSpecialTests(unittest.TestCase):
                     changed[off] ^= 0xE0
                     self.assertEqual(roles.book_status(bytes(changed)), "foreign")
             self.assertEqual(roles.normalise(result.replacement).replacement, result.replacement)
+
+
+class SpecialChartContractTests(unittest.TestCase):
+    def test_noahs_labels_keep_the_book_ordinals(self):
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        expected = {'LS': (6, 1), 'LGUN': (9, 3), 'RGUN': (18, 3),
+                    'NCB': (18, 2), 'DCB': (18, 3), 'SLWR': (9, 2),
+                    'GAD': (9, 4), '3DRB': (10, 1), 'PWRB': (10, 2)}
+        kinds = {3: 9, 4: 18, 7: 10, 12: 6}
+        actual = {abbr: (kinds[pos], chain >> 1 if pos in (7, 12) else chain)
+                  for _, _, abbr, _, pos, chain in rows.ROLE_ROWS}
+        self.assertEqual(actual, expected)
+
+
+if __name__ == '__main__':
+    unittest.main()

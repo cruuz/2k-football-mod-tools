@@ -1,0 +1,67 @@
+{
+  "id": "nfl2k5.gameplay_tuning_sliders.defensive_try",
+  "game": "nfl2k5_xbox",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Defensive two-point returns (experimental)",
+  "summary": "Enable defensive try returns, split scoring history, original-team kickoff, try safeties and CPU return selection. Includes a temporary diagnostic team tally; the retail box-score category remains unimplemented.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_defensive_try.py <source.xbe> <new-copy.xbe>",
+    "module": "mod_editor/core/nfl2k5_defensive_try.py",
+    "operation": "write"
+  },
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. All presets leave this off. Manual witness-disc selection only after protected integration, with the missing box-score category disclosed."
+  },
+  "input_constraints": [
+    "User-owned USA NFL 2K5 executable in a disposable disc image; pinned instructions and recognized section geometry.",
+    "Allocate the complete owner union before growth. Changing owners requires rebuilding from base.",
+    "Exhibition witness build only. No saved defensive-conversion player, season or franchise category is implemented."
+  ],
+  "portme": [
+    "Implement and prove the missing retail box-score row and persistent category before calling the full stat requirement complete.",
+    "Complete every Noah witness in ASTRA_DEFENSIVE_TRY_REPORT.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "tooling": "source-and-schemas-only",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Distribute source and recipes, never a generated retail executable or disc."
+  },
+  "runtime": {
+    "status": "not-tested",
+    "evidence": [
+      "ASTRA_DEFENSIVE_TRY_REPORT.md"
+    ],
+    "scope": "Static and bounded Unicorn proofs only. Actual loader, score bug, box score, commentary, CPU motion, penalties and period/OT behavior remain unwitnessed. The diagnostic tally is limited to retained drive history."
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "defensive_try",
+        "required": true,
+        "allowed": "false in all presets; explicit true only for a witness disc"
+      }
+    ],
+    "notes": "Implies grown executable space. Both retail and modern kick spots are supported. Does not imply relocated kickoff."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc",
+    "resource": "pinned try handlers and named grown code/data sections",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ]
+  },
+  "evidence": [
+    "ASTRA_DEFENSIVE_TRY_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_defensive_try.py",
+    "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "tests/mod_editor/test_xbe_patch_cave_references.py",
+    "ASTRA_INTEGRATION_3_REPORT.md"
+  ],
+  "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+}

@@ -145,15 +145,13 @@ def parse_body(body: bytes) -> TagRoster:
 
 
 def body_status(body: bytes) -> str:
-    """retail (no record tagged) | applied (some are) | foreign (a pad byte carries other bits)."""
+    """retail (no record tagged) | applied (some are) | foreign (invalid roster layout)."""
 
     try:
         roster = parse_body(body)
     except (PlayerTagError, struct.error):
         return "foreign"
-    for player in roster.players:
-        if body[player.offset + TAG_RECORD_OFFSET] & ~TAG_BIT:
-            return "foreign"
+    # High bits now contain abilities and reserved future flags. Star writes mask bit 0 only.
     return "applied" if roster.tagged else "retail"
 
 

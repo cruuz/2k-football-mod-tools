@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Re-lay the NFL 2K5 field scorebug into one horizontal, ESPN-style bar (static, local, xemu-only).
+"""Build and preview the experimental NFL 2K5 ESPN reference scorebug offline.
+
+Default commands and product status/apply use nfl2k5_scorebug_ingame (v7): a
+two-row center, corner watermark and native down slide. See
+ASTRA_SCOREBUG_INGAME_REPORT.md for installed behavior and remaining runtime work.
+The mesh parser and v6 research implementation below remain available through
+--legacy-v6. The historical layout notes describe v6, not the default output.
 
 What the retail bug is (outer 346 chunk 78 ``score_bug``, one shape, 286 NORMSHORT3 vertices,
 11 material submeshes, 29 named transforms):
@@ -11,11 +17,11 @@ What the retail bug is (outer 346 chunk 78 ``score_bug``, one shape, 286 NORMSHO
   T5/T6 Quarter        text anchor "1st"       (centred)        -
   T7-T10 Gameclock     text anchors "3:30"     (right-aligned)  -
   T11 drop_down        down & distance box + text               dscore_buga
-  T13 drop_yellow      play-clock warning flash box             bscore_buga2
+  T13 drop_yellow      FLAG box                                bscore_buga2
   T15 drop_clock       play-clock box + text                    cscore_buga
   T17 drop_ball_on     "Ball on ATL 30" box (child text T18)    bscore_buga1
   T19 drop_hangtime    punt hang-time box                       hscore_buga
-  T21 drop_red         penalty box                              bscore_buga
+  T21 drop_red         FUMBLE box                              bscore_buga
   T23/T24 away_box/score  team-colour cell + away score text    zscore_buga
   T26/T27 home_box/score  team-colour cell + home score text    zscore_buga
 
@@ -40,7 +46,7 @@ wcscmp-equality): mode 0 shows ``yscore_buga`` + ``zz_ESPN_bug1``, mode 1 shows 
 offense's drive direction, so v5 (which parked ``zz_ESPN_bug1`` off-screen) lost the mark on
 every other drive.  v6 lays both copies identically.
 
-Commands:
+Legacy commands (--legacy-v6; default commands use --help):
   preview  OUT.png                       mockup of the planned bar (approximate colours/font)
   scne     RETAIL.scne OUT.scne          write the edited decoded SCNE and test the fixed-span refit
   apply    SRC.xiso DST.xiso [--overwrite]  copy the disc, refit chunk 78, patch the XBE
@@ -222,9 +228,13 @@ def sha(b: bytes) -> str:
 
 
 class Mesh:
-    def __init__(self, data: bytes):
-        if len(data) != SCNE_SIZE or sha(data) != SCNE_SHA:
-            raise SystemExit(f"not the retail decoded score_bug SCNE ({len(data)} bytes, {sha(data)[:12]})")
+    def __init__(self, data: bytes, *, runtime: bool = False):
+        expected = SCNE_SHA
+        if runtime:
+            from mod_editor.core.nfl2k5_scorebug_resources import RUNTIME_SCENE_SHA256
+            expected = RUNTIME_SCENE_SHA256
+        if len(data) != SCNE_SIZE or sha(data) != expected:
+            raise SystemExit(f"not the pinned decoded score_bug SCNE ({len(data)} bytes, {sha(data)[:12]})")
         self.buf = bytearray(data)
         self.scale = struct.unpack_from("<f", data, SHAPE + 0x10)[0]
         self.offset = struct.unpack_from("<3f", data, SHAPE + 0x20)
@@ -277,7 +287,7 @@ def _lin(x: float, a: float, b: float, c: float, d: float) -> float:
     return (x - a) / (b - a) * (d - c) + c
 
 
-def espn_layout(m: Mesh) -> None:
+def legacy_espn_layout(m: Mesh) -> None:
     """Move vertices and text anchors into the horizontal bar (in place)."""
 
     xl = BAR_LEFT - (-107.3)   # shift for the left edge pieces
@@ -357,6 +367,9 @@ def espn_layout(m: Mesh) -> None:
     anchor("away_score", center("away_score"), SCORE_Y)
     anchor("home_box", center("home_city"), 5.9)
     anchor("home_score", center("home_score"), SCORE_Y)
+
+
+espn_layout = legacy_espn_layout  # compatibility for explicit v6 research callers
 
 
 # ---- preview -------------------------------------------------------------------------------
@@ -645,7 +658,7 @@ def patch_xbe(payload: bytes, *, freeze_elements: bool, persistent: bool = True)
 ESPN_TEXTURES = ROOT / "mod_editor" / "assets" / "nfl2k5_scorebug_espn"
 
 
-def status(xiso: Path) -> str:
+def _legacy_status(xiso: Path) -> str:
     """'retail' (chunk 78 + placement untouched), 'applied' (this layout), or 'foreign'."""
 
     try:
@@ -776,7 +789,7 @@ def resolve_textures(xiso: Path) -> dict:
         raise SystemExit(str(exc)) from exc
 
 
-def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool = True) -> dict:
+def _legacy_apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool = True) -> dict:
     """Re-lay the scorebug inside an existing (already copied) image: chunk 78, XBE, textures."""
 
     absolute, span = read_retail_span(xiso)
@@ -831,7 +844,101 @@ def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool =
     return receipt
 
 
+def status(xiso: Path) -> str:
+    from mod_editor.core import nfl2k5_scorebug_ingame as reference
+    return reference.image_status(xiso)
+
+
+def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool = True) -> dict:
+    from mod_editor.core import nfl2k5_scorebug_ingame as reference
+    if not textures:
+        raise ValueError("the reference scene requires its matching atlas")
+    return reference.apply_in_place(xiso)
+
+
+def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: bool = False,
+                      team_panels: dict | None = None, samples: dict | None = None,
+                      slide: float = 1.0, runtime: bool = False, text_colors: dict | None = None) -> None:
+    """Render actual SCNE strips, patched P8 texels and measured text anchors.
+
+    Fonts approximate the game. Optional staged team panels are labelled as a target
+    requiring the runtime hook. slide is a native visibility ramp sample, not a video.
+    """
+    from PIL import Image, ImageDraw, ImageFont
+    from mod_editor.core import nfl2k5_scorebug_ingame as r
+    im=Image.new("RGBA",(640*scale,480*scale),(44,83,39,255))
+    dr=ImageDraw.Draw(im)
+    for x in range(0,640,80):
+        dr.line((x*scale,0,(x+95)*scale,480*scale),fill=(224,235,215,155),width=2*scale)
+    dr.rectangle((0,440*scale,640*scale,480*scale),fill=(12,16,20,255))
+    order={"yscore_buga":0,"zscore_buga":1,"cscore_buga":2,"dscore_buga":3,"zz_ESPN_bug":4}
+    if runtime:
+        order["hscore_buga"] = 1
+    def point(v):
+        x,y,_=m.pos[v]
+        if m.tindex[v] == 11:
+            x+=6*slide
+        return ((r.ROOT[0]+x)*scale,(r.ROOT[1]-y)*scale)
+    for k,indices in sorted(strips(bytes(m.buf)),key=lambda item:order.get(SUBMESHES[item[0]][2],99)):
+        mat=SUBMESHES[k][2]
+        if mat not in order:
+            continue
+        for i in range(len(indices)-2):
+            vs=indices[i:i+3]
+            if len(set(vs)) < 3:
+                continue
+            selected = texture
+            if runtime and team_panels and mat in ("hscore_buga", "zscore_buga"):
+                selected = team_panels["home" if mat == "hscore_buga" else "away"]
+            _textured_triangle(im,selected,[point(v) for v in vs],[m.uv_edit.get(v,m.uv[v]) for v in vs])
+    if team_panels and not runtime:
+        for side,panel in team_panels.items():
+            a,b,c,d=r.PANELS[side]
+            im.alpha_composite(panel.resize((round((c-a)*scale),round((d-b)*scale)),Image.Resampling.LANCZOS),
+                               (round((320+a)*scale),round((424-d)*scale)))
+    values={"away_city":"OAK","home_city":"HOU","away_score":"0","home_score":"0",
+            "quarter":"1ST","clock_a":"13:10","drop_down":"1st & 10","drop_clock":":12"}
+    if widest:
+        values.update(WIDEST_SAMPLES)
+    if samples:
+        values.update(samples)
+    dr=ImageDraw.Draw(im)
+    from nfl2k5_scorebug_espn_art import font as getfont,FONT_BOLD
+    for name,(x,y,z) in r.ANCHORS.items():
+        if name not in values or (team_panels and not runtime and name.endswith("city")):
+            continue
+        if runtime:
+            x, y, z = m.world[T[name]]
+        text=values[name]
+        size=18 if name.endswith("score") else 9
+        font=getfont(FONT_BOLD,size*scale)
+        width=dr.textlength(text,font=font)
+        px=(320+x+(6*slide if name=="drop_down" else 0))*scale
+        if name.endswith("city"):
+            pass
+        elif name.startswith("clock"):
+            px-=width
+        else:
+            px-=width/2
+        py=(424-y)*scale
+        color=(255,255,255,255) if name in ("away_city","home_city","away_score","home_score","drop_down") else (17,17,24,255)
+        color = (text_colors or {}).get(name, color)
+        dr.text((px,py),text,font=font,fill=color,anchor="ls")
+    label="TARGET WITH STAGED LOGOS / RUNTIME HOOK REQUIRED" if team_panels else "INSTALLABLE DATA / NEUTRAL TEAM FALLBACK"
+    if runtime:
+        label = "COMPILED RUNTIME STATE / STATIC PREVIEW"
+    dr.text((14*scale,12*scale),label,fill="white",font=getfont(FONT_BOLD,10*scale))
+    dr.text((14*scale,453*scale),"EXPERIMENTAL / UNWITNESSED / FONT APPROXIMATION",fill="white",font=getfont(FONT_BOLD,8*scale))
+    path.parent.mkdir(parents=True,exist_ok=True)
+    im.convert("RGB").save(path)
+
+
 def main() -> int:
+    # v7 is the product path; --legacy-v6 retains explicit old research operations.
+    if "--legacy-v6" not in sys.argv:
+        from nfl2k5_scorebug_reference import main as reference_main
+        return reference_main()
+    sys.argv.remove("--legacy-v6")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("preview"); p.add_argument("out"); p.add_argument("--retail", action="store_true")

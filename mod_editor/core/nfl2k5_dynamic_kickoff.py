@@ -92,8 +92,14 @@ def _imm(n: int) -> str:
     return struct.pack("<I", n).hex()
 
 
-def _code(settings):
-    a = _Asm(CAVE_VA)
+def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
+    # The relocation compiles this identical instruction stream with different
+    # base addresses; the assembler owns all relative call/jump fixups.
+    FLAGS = storage_ranges[0][0]
+    AIM_PROB, TB_PROB, KICK_SPOT = FLAGS + 1, FLAGS + 2, FLAGS + 3
+    TB_YARD = storage_ranges[1][0]
+    TARGET_MIN, TARGET_MAX = TB_YARD + 1, TB_YARD + 2
+    a = _Asm(cave_va)
     imm = _imm
     def b(code): a.b(code)
     def label(name): a.label(name)
@@ -360,7 +366,7 @@ def _code(settings):
     label("spot_done"); restore(); replay("spot")
     code = a.assemble()
     _require(len(code) <= CAVE_SIZE, f"dynamic kickoff code {len(code)} exceeds cave {CAVE_SIZE}")
-    return code + b"\xcc" * (CAVE_SIZE - len(code)), {k: CAVE_VA + v for k, v in a.labels.items()}
+    return code + b"\xcc" * (CAVE_SIZE - len(code)), {k: cave_va + v for k, v in a.labels.items()}
 
 
 def cave_labels() -> dict[str, int]:
@@ -385,7 +391,7 @@ def _hook_bytes(name, labels):
     return b"\xe9" + struct.pack("<i", labels[name] - va - 5) + b"\x90" * (len(original) - 5)
 
 
-def _decode_settings(payload):
+def _decode_legacy_settings(payload):
     labels = cave_labels()
     vals = {key: payload[_offset(payload, labels["config_" + key] + 6, 1)]
             for key in ("aim_prob", "tb_prob", "tb_yard", "target_min", "target_max")}
@@ -408,7 +414,7 @@ def _validate_storage(payload):
                      for s in ss), "runtime storage is no longer an unowned section gap")
 
 
-def status(payload: bytes) -> str:
+def _legacy_status(payload: bytes) -> str:
     try:
         _validate_storage(payload)
         off = _offset(payload, CAVE_VA, CAVE_SIZE)
@@ -418,7 +424,7 @@ def status(payload: bytes) -> str:
         patched = False
         if not retail:
             try:
-                patched = got == cave_bytes(**_decode_settings(payload))
+                patched = got == cave_bytes(**_decode_legacy_settings(payload))
             except (ValueError, struct.error, IndexError):
                 pass
         expected = "retail" if retail else "applied" if patched else "foreign"
@@ -431,6 +437,26 @@ def status(payload: bytes) -> str:
         return expected
     except (ValueError, struct.error, IndexError):
         return "foreign"
+
+
+def status(payload: bytes) -> str:
+    legacy = _legacy_status(payload)
+    if legacy != "foreign":
+        return legacy
+    if payload[0xDA0:0xDA8] in (b"XSPACE1\0", b"XSPACE2\0"):
+        from . import nfl2k5_dynamic_kickoff_relocated as relocated
+        if relocated.status(payload) == "applied":
+            return "applied"
+    return "foreign"
+
+
+def _decode_settings(payload):
+    if _legacy_status(payload) == "applied":
+        return _decode_legacy_settings(payload)
+    from . import nfl2k5_dynamic_kickoff_relocated as relocated
+    result = relocated.read_settings(payload)
+    _require(result.pop("status") == "applied", "unknown kickoff settings")
+    return result
 
 
 def read_settings(payload: bytes) -> dict[str, object]:

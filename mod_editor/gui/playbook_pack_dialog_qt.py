@@ -48,6 +48,12 @@ def pack_summary_lines(pack: pack_mod.PlaybookPack) -> tuple[str, ...]:
         f"{pack.base.donor_play_count} plays, {pack.base.donor_node_count} nodes "
         f"(fingerprint {pack.base.book_fingerprint[:12]}…)",
     ]
+    if any(p.play_type == "defense" for p in pack.plays):
+        from mod_editor.core import nfl2k5_play_library as lib
+        totals = pack_mod.budget_totals(pack)
+        lines.append(f"{lib.DEFENSE_EVIDENCE}. Cloned nodes {totals['cloned_nodes']}; "
+                     f"node pool {totals['node_pool_bytes']} bytes, names {totals['name_pool_bytes']} bytes.")
+        lines.append(lib.SPY_NOTICE)
     if pack.book.notes:
         lines.append(pack.book.notes)
     return tuple(lines)
@@ -62,12 +68,18 @@ def team_choices(pack: pack_mod.PlaybookPack, available: Sequence[str]) -> tuple
     choices: list[tuple[str, object]] = []
     if pack.book.team in available:
         choices.append((f"As authored — {pack.book.team}", pack.book.team))
+    if any(p.option_intent for p in pack.plays):
+        return tuple(choices)
     for team in available:
         if team == pack.book.team:
             continue
         choices.append((f"Retarget to {team}", team))
+    if pack.schema == pack_mod.DEFENSE_SCHEMA and pack.book.targets:
+        targets = tuple(t for t in pack.book.resolved_targets() if t in available)
+        if targets:
+            choices.append((f"Pack targets ({len(targets)} books)", targets))
     if available:
-        choices.append((f"All {len(available)} team books", pack_mod.ALL_TEAMS))
+        choices.append((f"All {len(available)} team books", tuple(available) if pack.schema == pack_mod.DEFENSE_SCHEMA else pack_mod.ALL_TEAMS))
     return tuple(choices)
 
 
@@ -136,6 +148,9 @@ class PlaybookPackInstallDialog(QDialog):
         self.team_combo = QComboBox()
         try:
             available = list(host.playbook_teams())
+            if self.pack.schema == pack_mod.DEFENSE_SCHEMA and hasattr(host, "browse_playbooks"):
+                available = [b.book_name for b in host.browse_playbooks("", _quiet)
+                             if b.book_name in pack_mod.DEFENSE_BOOKS]
         except Exception:  # noqa: BLE001 - a host without a source still opens the dialog
             available = []
         for label, value in team_choices(self.pack, available):
@@ -162,7 +177,8 @@ class PlaybookPackInstallDialog(QDialog):
         self.status = QLabel("")
         self.status.setWordWrap(True)
         layout.addWidget(self.status)
-        limits = QLabel(ENGINE_LIMITS_TEXT)
+        limits = QLabel(("Defense uses retail front and coverage pairs. New calls are EXPERIMENTAL / UNWITNESSED. "
+                         + pack_mod.lib.SPY_NOTICE) if any(p.play_type == 'defense' for p in self.pack.plays) else ENGINE_LIMITS_TEXT)
         limits.setWordWrap(True)
         limits.setObjectName("playBoundary")
         layout.addWidget(limits)
@@ -179,6 +195,8 @@ class PlaybookPackInstallDialog(QDialog):
     # -- model ------------------------------------------------------------------
     def selected_teams(self) -> tuple[str, ...]:
         value = self.team_combo.currentData()
+        if isinstance(value, (tuple, list)):
+            return tuple(value)
         if value == pack_mod.ALL_TEAMS:
             try:
                 return tuple(self.host.playbook_teams())
@@ -238,6 +256,13 @@ class PlaybookPackInstallDialog(QDialog):
             QMessageBox.information(self, "Install Playbook Pack", "Choose a team first.")
             return
         try:
+            # Refuse the smallest target before staging any of the selected books.
+            if self.pack.schema == pack_mod.DEFENSE_SCHEMA:
+                for team in teams:
+                    preview = self.host.preview_playbook_pack(self.pack, team, _quiet)
+                    blocked = install_blockers(preview)
+                    if blocked:
+                        raise pack_mod.PlaybookPackError(f"{team}: {blocked[0]}")
             result = self.host.install_playbook_pack(self.pack, teams, _quiet)
         except Exception as exc:  # noqa: BLE001
             QMessageBox.warning(self, "Install Playbook Pack", str(exc))

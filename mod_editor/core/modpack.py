@@ -1030,6 +1030,18 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
 
 def describe_operation(operation: Mapping[str, Any]) -> str:
     op = str(operation.get("op", "?"))
+    if op == "music_fixed_slots":
+        streams = operation.get("streams")
+        logical = set()
+        if isinstance(streams, list):
+            for stream in streams:
+                if isinstance(stream, Mapping) and isinstance(stream.get("stream_id"), str):
+                    logical.add(stream["stream_id"].replace("crib22:", "cribmusic:", 1))
+        text = (f"Replace {len(logical)} music slot{'s' if len(logical) != 1 else ''}; "
+                "keep original lengths and linked stadium versions.") if logical else "Music policies."
+        if logical and operation.get("music_policy"):
+            text += " Apply the selected music policies."
+        return text + " Experimental, not yet tested in game."
     if op == "depth_chart_rows":
         return "SPECIAL depth-chart tab (expanded read-only XBE storage): " + ("on" if operation.get("enabled") else str(operation.get("status", "off")))
     if op == "throw_tuning":

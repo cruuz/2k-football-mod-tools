@@ -105,7 +105,7 @@ class SyntheticTests(unittest.TestCase):
         self.assertEqual(self.save.header.year_field, 8)
         self.assertEqual(self.save.changed_ranges(), [(fs.SEASON_BLOCK + fs.S_YEAR, fs.SEASON_BLOCK + fs.S_YEAR + 1)])
         with self.assertRaisesRegex(fs.FranchiseSaveError, "year field"):
-            self.save.set_year_field(61)
+            self.save.set_year_field(128)
         with self.assertRaises(fs.FranchiseSaveError):
             self.save.set_display_year(2003)
 

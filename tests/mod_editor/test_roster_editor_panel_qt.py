@@ -66,7 +66,9 @@ class RosterEditorPanelTests(unittest.TestCase):
     # ------------------------------------------------------------------ layout
     def test_the_page_opens_with_the_teams_pools_and_the_first_squad(self) -> None:
         rows = [self.panel.team_list.item(i).text() for i in range(self.panel.team_list.count())]
-        self.assertEqual(rows[:3], ["IND · 3", "ATL · 3", "SF · 0"])
+        self.assertEqual(rows[:6], ["IND · 3 active + 0 reserve", "    Reserves · 0",
+                                  "ATL · 3 active + 0 reserve", "    Reserves · 0",
+                                  "SF · 0 active + 0 reserve", "    Reserves · 0"])
         self.assertEqual(rows[-3:], ["Free Agents · 1", "Draft Class · 1", "Other pools · 0"])
         self.assertEqual([p.display for p in self.panel.visible_players()],
                          ["Peyton Manning", "Marvin Harrison", "Edgerrin James"])
@@ -81,7 +83,7 @@ class RosterEditorPanelTests(unittest.TestCase):
 
     def test_every_card_group_from_the_core_module_is_on_a_tab(self) -> None:
         titles = [self.panel.tabs.tabText(i) for i in range(self.panel.tabs.count())]
-        self.assertEqual(titles[:-1], list(rr.ATTRIBUTE_CARDS))
+        self.assertEqual(titles[:-1], list(rr.ATTRIBUTE_CARDS) + ["Abilities"])
         self.assertEqual(titles[-1], "Checks")
         placed = [name for fields in rr.ATTRIBUTE_CARDS.values() for name in fields]
         self.assertEqual(len(placed), len(set(placed)), "a field may only sit on one card")
@@ -230,7 +232,7 @@ class RosterEditorPanelTests(unittest.TestCase):
 
     def test_a_name_edit_shares_a_pool_string_and_a_long_one_is_refused(self) -> None:
         self.panel._chip_clicked("All")
-        self.panel.team_list.setCurrentRow(1)               # ATL: Vick, Dunn, Moss
+        self.panel.team_list.setCurrentRow(2)               # ATL: Vick, Dunn, Moss
         self.application.processEvents()
         self.assertTrue(self.panel.select_player(self.panel.visible_players()[0]))
         player = self.panel.selected_player()
@@ -509,10 +511,13 @@ class MembershipPanelTests(unittest.TestCase):
         self.application.processEvents()
 
     def rows(self) -> list[str]:
-        return [self.panel.team_list.item(i).text() for i in range(self.panel.team_list.count())]
+        return [self.panel.team_list.item(i).text() for i in range(self.panel.team_list.count())
+                if self.panel.team_list.item(i).data(Qt.UserRole)[0] != "reserve"]
 
     def goto(self, row: int, cell: int = 0) -> rr.Player:
-        self.panel.team_list.setCurrentRow(row)
+        rows = [i for i in range(self.panel.team_list.count())
+                if self.panel.team_list.item(i).data(Qt.UserRole)[0] != "reserve"]
+        self.panel.team_list.setCurrentRow(rows[row])
         self.application.processEvents()
         self.panel.player_table.setCurrentCell(cell, 0)
         self.application.processEvents()
@@ -521,16 +526,16 @@ class MembershipPanelTests(unittest.TestCase):
         return player
 
     def test_the_buttons_follow_the_selection(self) -> None:
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0 reserve"])
         self.assertTrue(self.panel.release_button.isEnabled())
         self.assertTrue(self.panel.swap_button.isEnabled())
         self.assertEqual(self.panel.team_menu_button.text(), "Move to ▾")
-        self.goto(self.panel.team_list.count() - 3)                  # Free Agents
+        self.goto(len(self.rows()) - 3)                  # Free Agents
         self.assertFalse(self.panel.release_button.isEnabled())
         self.assertFalse(self.panel.swap_button.isEnabled())
         self.assertTrue(self.panel.team_menu_button.isEnabled())
         self.assertEqual(self.panel.team_menu_button.text(), "Sign to ▾")
-        self.goto(self.panel.team_list.count() - 2)                  # Draft Class
+        self.goto(len(self.rows()) - 2)                  # Draft Class
         self.assertFalse(self.panel.release_button.isEnabled())
         self.assertFalse(self.panel.team_menu_button.isEnabled())
         self.assertFalse(self.panel.swap_button.isEnabled())
@@ -542,18 +547,18 @@ class MembershipPanelTests(unittest.TestCase):
         receipt = self.panel.release_selected()
         assert receipt is not None
         self.assertEqual(receipt["from"]["slot"], 5)
-        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1}")
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1} active + 0 reserve")
         self.assertEqual(self.rows()[-3], "Free Agents · 4")
         self.assertIn((player.pool, player.index), self.panel._dirty)
         self.assertNotIn(player, self.panel.visible_players())
         self.assertIn("Released", self.panel.status_label.text())
         self.assertEqual(self.panel.undo(), f"{player.display}: release")
-        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE}")
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE} active + 0 reserve")
         self.assertIs(self.panel.visible_players()[5], player)
         self.assertNotIn((player.pool, player.index), self.panel._dirty)
         self.assertEqual(self.panel.document.to_body(), self.body)
         self.panel.redo()
-        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1}")
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1} active + 0 reserve")
 
     def test_a_refusal_is_reported_on_the_status_line_and_changes_nothing(self) -> None:
         self.panel.load_document(rr.load_body(league_body(rr.TEAM_MIN_PLAYERS)), label="tight")
@@ -565,14 +570,14 @@ class MembershipPanelTests(unittest.TestCase):
         self.assertEqual(self.panel.document.diff(), [])
 
     def test_sign_and_move_through_the_team_menu(self) -> None:
-        free_agent = self.goto(self.panel.team_list.count() - 3)
+        free_agent = self.goto(len(self.rows()) - 3)
         self.panel._fill_team_menu()
         labels = [a.text() for a in self.panel.team_menu.actions() if a.text()]
         self.assertTrue(labels[0].startswith("IND ·"))
         receipt = self.panel.send_selected_to(1)
         assert receipt is not None
         self.assertEqual((receipt["operation"], receipt["to"]["team"]), ("sign", "ATL"))
-        self.assertEqual(self.rows()[1], f"ATL · {LEAGUE_CLUB_SIZE + 1}")
+        self.assertEqual(self.rows()[1], f"ATL · {LEAGUE_CLUB_SIZE + 1} active + 0 reserve")
         self.assertIn("Sign:", self.panel.status_label.text())
         self.goto(1, LEAGUE_CLUB_SIZE)                    # he sits at the bottom of ATL
         self.assertIs(self.panel.selected_player(), free_agent)
@@ -581,7 +586,7 @@ class MembershipPanelTests(unittest.TestCase):
         moved = self.panel.send_selected_to(0)
         assert moved is not None
         self.assertEqual((moved["operation"], moved["from"]["team"], moved["to"]["team"]), ("transfer", "ATL", "IND"))
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0 reserve"])
         self.panel.undo()
         self.panel.undo()
         self.assertEqual(self.panel.document.to_body(), self.body)
@@ -598,7 +603,7 @@ class MembershipPanelTests(unittest.TestCase):
         self.assertEqual(receipt["operation"], "swap")
         self.assertIs(self.panel.visible_players()[2], other)
         self.assertIs(self.panel.document.team_players(1)[4], player)
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0 reserve"])
         entries = self.panel.refresh_diff()
         self.assertEqual({e["name"] for e in entries}, {player.display, other.display})
         report = self.panel.report.toPlainText()
@@ -612,7 +617,7 @@ class MembershipPanelTests(unittest.TestCase):
         edited = text.replace(f"primary,{mover.index},ATL,", f"primary,{mover.index},IND,")
         receipt = self.panel.import_csv_text(edited)
         self.assertEqual(receipt["changed"], 1)
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1}", f"ATL · {LEAGUE_CLUB_SIZE - 1}"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE - 1} active + 0 reserve"])
         self.assertIn((mover.pool, mover.index), self.panel._dirty)
         document = self.panel.edits_document()
         self.assertEqual(len(document["moves"]), 1)
@@ -621,7 +626,7 @@ class MembershipPanelTests(unittest.TestCase):
         self.assertEqual(replay["players_moved"], 1)
         self.assertEqual(replayed, self.panel.document.to_body())
         self.panel.undo()
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0 reserve"])
         self.assertEqual(self.panel.document.to_body(), self.body)
         self.assertNotIn((mover.pool, mover.index), self.panel._dirty)
 
@@ -669,7 +674,8 @@ class RepairPanelTests(unittest.TestCase):
         self.assertFalse(self.panel.repair_button.isEnabled())
         self.assertEqual(self.panel.document.players[0].record.values["headless"], 0)
         self.assertIn(("primary", 0), self.panel._dirty)
-        self.assertEqual([self.panel.team_list.item(i).text() for i in range(2)], ["IND · 3", "ATL · 3"])
+        self.assertEqual([self.panel.team_list.item(i).text() for i in (0, 2)],
+                         ["IND · 3 active + 0 reserve", "ATL · 3 active + 0 reserve"])
         self.assertEqual(self.panel.undo(), "repair (3)")
         self.assertEqual(self.panel.document.to_body(), self.body)
         self.assertEqual(self.panel.repair_button.text(), "Repair (3)")
@@ -704,6 +710,8 @@ class ShellPlacementTests(unittest.TestCase):
     def test_the_studio_offers_the_rosters_row_and_its_page(self) -> None:
         from mod_editor.gui.studio_qt import BrowseOnlyFacade, StudioMainWindow
 
+        if not (ROOT / "reports" / "assets").exists():
+            self.skipTest("Studio shell requires the private uniform catalog under reports/assets")
         window = StudioMainWindow(facade=BrowseOnlyFacade(), offer_recovery=False)
         try:
             rows = [window.navigation.item(i).text().strip() for i in range(window.navigation.count())]
@@ -772,7 +780,7 @@ class PositionSchemePanelTests(unittest.TestCase):
         self.assertNotIn("EDGE", RosterEditorPanel().chips, "a fresh page starts on the retail set")
         self.assertIn("no primary-pool player carries the retired OLB code",
                       self.panel.scheme_label.text())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         grid = self._grid()
         self.assertEqual(grid["Ray Lewis"], "LB")
@@ -783,7 +791,7 @@ class PositionSchemePanelTests(unittest.TestCase):
         self._load(retail_front_body())
         self.assertEqual(self.panel.scheme, "retail")
         self.assertNotIn("EDGE", self.panel.chips)
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         grid = self._grid()
         self.assertEqual(grid["Peter Boulware"], "OLB")
@@ -798,7 +806,7 @@ class PositionSchemePanelTests(unittest.TestCase):
         self.panel._scheme_chosen(index)
         self.application.processEvents()
         self.assertEqual(self.panel.scheme, "retail")
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         self.assertEqual(self._grid()["Ray Lewis"], "ILB")
         self.assertIn("chosen by you", self.panel.scheme_label.text())
@@ -811,7 +819,7 @@ class PositionSchemePanelTests(unittest.TestCase):
 
     def test_the_chips_filter_by_code_under_one_pool(self) -> None:
         self._load(one_pool_body())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.panel._chip_clicked("EDGE")
         self.application.processEvents()
         self.assertEqual(sorted(p.last for p in self.panel.visible_players()),
@@ -831,7 +839,7 @@ class PositionSchemePanelTests(unittest.TestCase):
         model = card.combo.model()
         self.assertFalse(model.item(10).isEnabled(), "the retired row cannot be picked or cycled")
         self.assertTrue(model.item(11).isEnabled())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
         player = self.panel.selected_player()
@@ -850,7 +858,7 @@ class PositionSchemePanelTests(unittest.TestCase):
         except ImportError:                                     # pragma: no cover - Qt build choice
             self.skipTest("PyQt5.QtTest is not available")
         self._load(one_pool_body())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
         combo = self.panel.cards["position"].combo
@@ -864,7 +872,7 @@ class PositionSchemePanelTests(unittest.TestCase):
         card = self.panel.cards["position"]
         self.assertEqual(card.combo.itemText(10), "OLB")
         self.assertTrue(card.combo.model().item(10).isEnabled())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
         self.panel._card_changed("position", 10)
         self.assertEqual(self.panel.selected_player().record.values["position"], 10)
@@ -872,7 +880,7 @@ class PositionSchemePanelTests(unittest.TestCase):
     # ------------------------------------------------------------------ cards and header
     def test_the_header_names_the_position_and_the_card_set_it_is_rated_on(self) -> None:
         self._load(one_pool_body())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Suggs"))
         text = self.panel.header_profile.text()
@@ -889,7 +897,7 @@ class PositionSchemePanelTests(unittest.TestCase):
 
     def test_the_depth_cell_says_where_the_player_sits_in_his_own_pool(self) -> None:
         self._load(one_pool_body())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         rows = [self.panel.player_table.item(r, 2).text() for r in range(self.panel.player_table.rowCount())]
         row = rows.index("Terrell Suggs")
@@ -917,13 +925,13 @@ class PositionSchemePanelTests(unittest.TestCase):
 
     def test_loading_a_second_roster_reswitches_the_scheme(self) -> None:
         self._load(one_pool_body())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         self.assertEqual(self.panel.scheme, "one_pool")
         self._load(retail_front_body())
         self.assertEqual(self.panel.scheme, "retail")
         self.assertNotIn("EDGE", self.panel.chips)
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         self.assertEqual(self._grid()["Peter Boulware"], "OLB")
 
@@ -932,7 +940,7 @@ class PositionSchemePanelTests(unittest.TestCase):
         index = self.panel.scheme_combo.findData("one_pool")
         self.panel.scheme_combo.setCurrentIndex(index)
         self.panel._scheme_chosen(index)
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         findings = self.panel.run_validation()
         parked = [f for f in findings if f["check"] == "position"]
@@ -941,7 +949,7 @@ class PositionSchemePanelTests(unittest.TestCase):
 
     def test_the_diff_names_a_position_change_in_the_loaded_scheme(self) -> None:
         self._load(one_pool_body())
-        self.panel.team_list.setCurrentRow(2)
+        self.panel.team_list.setCurrentRow(4)
         self.application.processEvents()
         self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
         self.panel._card_changed("position", 16)

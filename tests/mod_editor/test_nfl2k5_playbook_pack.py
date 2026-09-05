@@ -392,10 +392,10 @@ class PackCliTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn("schema", err.getvalue())
 
-    def test_the_cli_declares_the_three_subcommands(self) -> None:
+    def test_the_cli_declares_the_pack_subcommands(self) -> None:
         parser = self.cli.build_parser()
         actions = [a for a in parser._actions if getattr(a, "choices", None)]
-        self.assertEqual(sorted(actions[0].choices), ["check", "export", "retarget"])
+        self.assertEqual(sorted(actions[0].choices), ["check", "export", "modern-defense", "retarget"])
 
 
 class _FakeEntry:
@@ -695,7 +695,15 @@ class FacadeInstallTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         from mod_editor.studio.facade import Nfl2k5StudioFacade
 
-        cls.facade = Nfl2k5StudioFacade()
+        from mod_editor.core.nfl2k5_uniform_catalog import DEFAULT_REPORT
+        if not DEFAULT_REPORT.is_file():
+            raise unittest.SkipTest("private uniform catalog report missing; facade requires it")
+        from mod_editor.studio.session import StudioSession
+        from functools import partial
+        temporary = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(temporary.cleanup)
+        cls.facade = Nfl2k5StudioFacade(
+            session_factory=partial(StudioSession, root=pathlib.Path(temporary.name)))
         cls.facade.load_source(SRC, lambda *a: None)
 
     def test_installing_into_two_teams_stages_ordinary_reversible_edits(self) -> None:

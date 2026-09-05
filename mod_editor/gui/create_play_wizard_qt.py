@@ -61,39 +61,40 @@ def read_order_of(chain: list) -> tuple[int, int, int, int] | None:
     """The four ordered values of a chain's Dropback node, or ``None`` when the
     chain has no Dropback node (a run, a sneak, a blocker)."""
 
-    for op, vals in chain:
+    for node in chain:
+        op, vals = node[:2]
         if op == DROPBACK_OPCODE and len(vals) >= 5:
             return tuple(int(v) for v in vals[READ_ORDER_SLICE])  # type: ignore[return-value]
     return None
 
 
-def with_read_order(chain: list, order: "tuple[int, ...] | list[int]") -> list:
+def with_read_order(chain: list, order: "tuple[int, ...] | list[int]", *, allow_zero: bool = False) -> list:
     """A copy of ``chain`` whose Dropback node carries ``order`` (four 1-5 values)."""
 
-    values = [max(READ_ORDER_MIN, min(READ_ORDER_MAX, int(v))) for v in order]
+    values = [max(0 if allow_zero else READ_ORDER_MIN, min(READ_ORDER_MAX, int(v))) for v in order]
     if len(values) != 4:
         raise ValueError("a read order is four values")
     out = []
-    for op, vals in chain:
+    for node in chain:
+        op, vals = node[:2]
         if op == DROPBACK_OPCODE and len(vals) >= 5:
             fresh = list(vals)
             fresh[READ_ORDER_SLICE] = values
-            out.append((op, fresh))
+            out.append((op, fresh, *node[2:]))
         else:
-            out.append((op, list(vals)))
+            out.append((op, list(vals), *node[2:]))
     return out
 
 
-#: Menu selection groups.  Every populated retail formation carries exactly one
-#: link in each of groups 0, 1 and 2 (938 formations, no exceptions) -- the three
-#: audible slots, the same structure proved in APF's SPLB.  Group 3 exists in the
-#: format and is what the tutorial book uses.
+#: Offensive menus use groups 0, 1 and 2 for the three audible slots.
+#: All 5,013 observed retail defensive links use group 3; it also appears
+#: in tutorial menus. Do not label defensive group 3 as tutorial-only.
 AUDIBLE_GROUPS: tuple[tuple[str, object], ...] = (
     ("Inherit from the formation", None),
     ("Audible 1 (group 0)", 0),
     ("Audible 2 (group 1)", 1),
     ("Audible 3 (group 2)", 2),
-    ("Group 3 (tutorial books)", 3),
+    ("Group 3 (defense and tutorials)", 3),
 )
 
 
@@ -121,7 +122,10 @@ class DesignedPlay:
     chains: list[lib.Chain]
     donor_play_index: int
     replace_index: int | None = None
-    play_flags: int | None = None   # header class word (0x6000 pass / 0x8000 run) from a stock play of the same shape
+    play_flags: int | None = None   # same-shape retail donor
+    spy_slots: tuple[int, ...] = ()
+    front_index: int | None = None
+    option_intent: dict | None = None
 
 
 class CreatePlayWizard(QWizard):
@@ -149,8 +153,17 @@ class CreatePlayWizard(QWizard):
             self.addPage(page)
         self.setButtonText(QWizard.FinishButton, "Close")
 
+    @property
+    def is_defense(self) -> bool:
+        return self.page_team.family.currentData() == "defense"
+
     # -- helpers
     def load_book(self, book: Nfl2k5Playbook) -> None:
+        if self.book is not None and (self.book.asset_id != book.asset_id or any(
+                (p.play_type == "defense") != self.is_defense for f in self.designed for p in f.plays)):
+            self.designed.clear()
+            self.current = None
+            self.page_formation.positions = []
         self.book = book
         self.body = self.host.playbook_raw_body(book.asset_id)
         self._reference_cache.clear()
@@ -182,6 +195,10 @@ class TeamPage(QWizardPage):
         self.setTitle("Step 1 — Whose playbook are we changing?")
         self.setSubTitle("Pick the team you'll play as. Your new formations and plays go into that team's playbook.")
         layout = QVBoxLayout(self)
+        self.family = QComboBox()
+        self.family.addItem("Offense", "offense")
+        self.family.addItem("Defense EXPERIMENTAL / UNWITNESSED", "defense")
+        layout.addWidget(self.family)
         self.list = QListWidget()
         self.list.setStyleSheet(HUGE)
         self.list.setSpacing(4)
@@ -336,6 +353,9 @@ class FormationPage(QWizardPage):
         self.flip = QPushButton("Flip left ↔ right")
         self.flip.clicked.connect(self._flip)
         right.addWidget(self.flip)
+        self.mug_button = QPushButton("Double A look EXPERIMENTAL")
+        self.mug_button.clicked.connect(self._double_a)
+        right.addWidget(self.mug_button)
         right.addWidget(QLabel("<b>NFL alignment check</b>"))
         self.legal = QListWidget()
         self.legal.setMaximumHeight(140)
@@ -360,9 +380,24 @@ class FormationPage(QWizardPage):
         book, body = self.wiz.book, self.wiz.body
         assert book is not None and body is not None
         self.stock.clear()
-        for idx in lib.offense_formations(book, body):
+        self.scene.offense = not self.wiz.is_defense
+        self.templates.setVisible(not self.wiz.is_defense)
+        self.mug_button.setVisible(self.wiz.is_defense)
+        self.allow_illegal.setVisible(not self.wiz.is_defense)
+        self.setSubTitle("Defense: choose native personnel with a stock donor, then move any of eleven players. "
+                         + lib.DEFENSE_EVIDENCE if self.wiz.is_defense else "Start from a template or a stock formation.")
+        for idx in (lib.defense_formations(book, body) if self.wiz.is_defense else lib.offense_formations(book, body)):
             self.stock.addItem(book.formations[idx].name, idx)
-        if not self.positions:
+        if self.wiz.is_defense:
+            preferred = next((n for n in range(self.stock.count()) if self.stock.itemText(n) == "Nickel"), 0)
+            if self.stock.count():
+                previous = self.stock.findData(self.donor_index)
+                if not self.positions or not self.kinds or self.kinds[0] < 12 or previous < 0:
+                    self._use_stock(preferred)
+                    previous = preferred
+                self.stock.setCurrentIndex(previous)
+            return
+        if not self.positions or (self.kinds and self.kinds[0] >= 12):
             self._use_template(list(lib.FORMATION_TEMPLATES)[0])
             self.templates.setCurrentRow(0)
 
@@ -384,7 +419,7 @@ class FormationPage(QWizardPage):
         self._show_personnel()
 
     def _show_personnel(self) -> None:
-        text = ", ".join(self.labels[6:]) + "   —   " + self.note
+        text = ", ".join(self.labels if self.wiz.is_defense else self.labels[6:]) + "   -   " + self.note
         if self.warnings:
             text += "\n⚠ " + " ".join(self.warnings)
         self.personnel.setText(text)
@@ -442,6 +477,10 @@ class FormationPage(QWizardPage):
         self.labels = [codec.position_label(c) for c in self.codes]
         self.category_positions = None
         self.note = f"stock group “{self.wiz.book.categories[self.category_index].name}”"
+        if self.wiz.is_defense:
+            info = lib.defense_personnel(self.wiz.book, self.wiz.body, idx)
+            self.note = (f"Native personnel row {info['category_index']}, CPU category {info['category_code']}. "
+                         f"Shared by {len(info['category_users'])} formation(s); kept unchanged.")
         self.warnings = []
         self.positions = [[float(s.x[0]), float(s.z[0])] for s in rec.slots]
         self.name_edit.setText(f"{self.wiz.book.formations[idx].name} v2"[:40])
@@ -465,7 +504,7 @@ class FormationPage(QWizardPage):
         self.sel_label.setText(f"{self.labels[slot]}  (slot {slot})")
         self.x_spin.setValue(self.positions[slot][0] / YD)
         self.z_spin.setValue(self.positions[slot][1] / YD)
-        skill = slot in lib.SKILL_SLOTS
+        skill = slot in lib.SKILL_SLOTS and not self.wiz.is_defense
         self.pos_combo.setEnabled(skill)
         if skill:
             row = next((k for k in range(self.pos_combo.count()) if self.pos_combo.itemData(k) == self.kinds[slot]), 0)
@@ -501,9 +540,17 @@ class FormationPage(QWizardPage):
             p[0] = -p[0]
         self._refresh()
 
+    def _double_a(self) -> None:
+        try:
+            self.positions = [list(p) for p in lib.double_a_positions(self.wiz.book, self.wiz.body, self.donor_index)]
+            self.name_edit.setText("SD Double A EXPERIMENTAL")
+            self._refresh()
+        except ValueError as exc:
+            QMessageBox.warning(self, "Double A", str(exc))
+
     def _legality(self) -> None:
         slots = [codec.FormationSlot(0, codec.NO_MIRROR, 3, [int(round(x))] * 3, [int(round(z))] * 3) for x, z in self.positions]
-        self._issues = codec.formation_legality(slots, self.codes, True)
+        self._issues = codec.formation_legality(slots, self.codes, not self.wiz.is_defense)
         self.legal.clear()
         if not self._issues:
             it = QListWidgetItem("Legal ✔")
@@ -516,7 +563,7 @@ class FormationPage(QWizardPage):
         self.completeChanged.emit()
 
     def isComplete(self) -> bool:
-        return bool(self.positions) and (not self._issues or self.allow_illegal.isChecked())
+        return bool(self.positions) and (not self._issues or (not self.wiz.is_defense and self.allow_illegal.isChecked()))
 
     def validatePage(self) -> bool:
         name = self.name_edit.text().strip() or "Custom"
@@ -556,6 +603,7 @@ class PlayTypePage(QWizardPage):
             ("run", "Run", "hand off (dive, zone, power, toss, draw…)"),
             ("sneak", "QB sneak / Tush push", "QB follows the center, backs push"),
             ("keeper", "QB keeper", "QB keeps it around the edge"),
+            ("option", "Option reads EXPERIMENTAL", "native speed option and fixed-opponent read experiments"),
             ("reverse", "Reverse", "handoff to the back, who hands to a receiver going the other way"),
         ):
             rb = QRadioButton(label)
@@ -573,7 +621,8 @@ class PlayTypePage(QWizardPage):
         self.concepts = QListWidget()
         self.concepts.setStyleSheet(BIG)
         for name, con in lib.PASS_CONCEPTS.items():
-            it = QListWidgetItem(f"{name} — {con['blurb']}")
+            separator = ": " if name in lib.SCREEN_CONCEPTS else " — "
+            it = QListWidgetItem(f"{name}{separator}{con['blurb']}")
             it.setData(Qt.UserRole, name)
             self.concepts.addItem(it)
         self.concepts.setCurrentRow(0)
@@ -601,16 +650,187 @@ class PlayTypePage(QWizardPage):
         self.reverse_to = QComboBox()
         rl.addRow("Reverse to", self.reverse_to)
         right.addWidget(self.run_box)
+        self.defense_box = QGroupBox("Defense EXPERIMENTAL / UNWITNESSED")
+        dl = QVBoxLayout(self.defense_box)
+        self.coverages = QComboBox()
+        dl.addWidget(self.coverages)
+        self.defense_note = QLabel("Spot coverages, retail exchanges and replacement pressures. " + lib.SPY_NOTICE)
+        self.defense_note.setWordWrap(True)
+        dl.addWidget(self.defense_note)
+        right.addWidget(self.defense_box)
         self.fake_box = QGroupBox("Play action")
         fl = QFormLayout(self.fake_box)
         self.fake_to = QComboBox()
         fl.addRow("Fake handoff to", self.fake_to)
         right.addWidget(self.fake_box)
+        self._make_screen_options(right)
+        self._make_option_options(right)
         right.addStretch(1)
+
+    def _make_option_options(self, layout):
+        self.option_box = QGroupBox("Option reads: EXPERIMENTAL / UNWITNESSED")
+        form = QFormLayout(self.option_box)
+        self.option_preset = QComboBox()
+        self.option_preset.addItems(lib.OPTION_PRESETS)
+        form.addRow("Preset", self.option_preset)
+        self.option_side = QComboBox()
+        self.option_side.addItem("Strong (stock left)", False)
+        self.option_side.addItem("Weak (stock right)", True)
+        form.addRow("Run side", self.option_side)
+        self.option_back = QComboBox()
+        form.addRow("Pitch / run back", self.option_back)
+        self.option_defense = QComboBox()
+        form.addRow("Expected opponent test formation", self.option_defense)
+        self.option_read = QSpinBox(); self.option_read.setRange(0, 10); self.option_read.setValue(2)
+        self.option_read.setPrefix("Opponent slot ")
+        form.addRow("Intended read defender", self.option_read)
+        self.option_receiver = QComboBox()
+        form.addRow("RPO quick slant receiver", self.option_receiver)
+        note = QLabel(lib.OPTION_NOTICE + " Native under-center I personnel only. "
+            "Speed option keeps stock supporting blocks. Read mesh: 1 yard to the run side, "
+            "3 yards back. Keep: 4 yards opposite, 3 up. Back: 2 yards to the run side, 5 up. "
+            "The selected defender is not guaranteed to remain unblocked. "
+            "RPO uses a 3-yard slant and a nominal 0.3-second pass delay.")
+        note.setWordWrap(True); form.addRow(note)
+        layout.addWidget(self.option_box)
+        for combo in (self.option_preset, self.option_side, self.option_back, self.option_defense, self.option_receiver):
+            combo.currentIndexChanged.connect(lambda _i: self.completeChanged.emit())
+        self.option_read.valueChanged.connect(lambda _i: self.completeChanged.emit())
+        self.option_problem = QLabel()
+        self.option_problem.setWordWrap(True)
+        form.addRow(self.option_problem)
+        self.option_preset.currentIndexChanged.connect(self._option_controls)
+        self._option_controls()
+        self.option_box.hide()
+
+    def _option_controls(self, *_args):
+        preset = self.option_preset.currentText()
+        read = preset != lib.OPTION_PRESETS[0]
+        self.option_defense.setEnabled(read)
+        self.option_read.setEnabled(read)
+        self.option_receiver.setEnabled(preset == lib.OPTION_PRESETS[2])
+        self.option_read.setValue(6 if preset == lib.OPTION_PRESETS[2] else 2)
+
+    def option_design(self):
+        cur = self.wiz.current
+        if any(not p.option_intent for f in self.wiz.designed for p in f.plays):
+            raise ValueError("Stage the existing designs first, then open a separate wizard for option presets")
+        rec = lib.formation_record(self.wiz.body, cur.donor_formation_index)
+        actual = [(s.x[0], s.z[0]) for s in rec.slots]
+        if list(cur.positions) != actual or cur.category_positions is not None:
+            raise ValueError("Option presets keep the native under-center formation. Restore its stock positions and personnel first.")
+        return lib.make_option_design(self.wiz.book, self.wiz.body, cur.donor_formation_index,
+            self.option_preset.currentText(), weak=self.option_side.currentData(),
+            back_slot=self.option_back.currentData(), opponent_formation_index=self.option_defense.currentData(),
+            read_slot=self.option_read.value(), receiver_slot=self.option_receiver.currentData())
+
+    def _make_screen_options(self, layout: QVBoxLayout) -> None:
+        self.screen_box = QGroupBox("Screen: EXPERIMENTAL / UNWITNESSED")
+        form = QFormLayout(self.screen_box)
+        self.screen_receiver = QComboBox()
+        form.addRow("Intended receiver", self.screen_receiver)
+        self.screen_side = QComboBox()
+        self.screen_side.addItem("Left", -1)
+        self.screen_side.addItem("Right", 1)
+        form.addRow("Release side", self.screen_side)
+        self.screen_level = QComboBox()
+        for label, level in (("Retail timing", "Retail"), ("A: Longer line hold", "A"),
+                             ("B: Shallower QB drop", "B"), ("C: Explicit pass delay", "C"),
+                             ("D: Combine A, B and C", "D")):
+            self.screen_level.addItem(label, level)
+        self.screen_level.setCurrentIndex(4)
+        form.addRow("Timing starting point", self.screen_level)
+        self.screen_hold = QDoubleSpinBox()
+        self.screen_hold.setRange(0.1, 6.3); self.screen_hold.setSingleStep(0.1)
+        self.screen_hold.setDecimals(1); self.screen_hold.setSuffix(" seconds")
+        form.addRow("Line hold before release", self.screen_hold)
+        self.screen_drop = QDoubleSpinBox()
+        self.screen_drop.setRange(0, 20); self.screen_drop.setSingleStep(1)
+        self.screen_drop.setSuffix(" yards")
+        form.addRow("Nominal QB drop", self.screen_drop)
+        self.screen_delay = QDoubleSpinBox()
+        self.screen_delay.setRange(0, 6.3); self.screen_delay.setSingleStep(0.1)
+        self.screen_delay.setDecimals(1); self.screen_delay.setSuffix(" seconds")
+        self.screen_delay.setSpecialValueText("Retail default timer")
+        form.addRow("Pass delay", self.screen_delay)
+        note = QLabel("Three linemen hold, release, then block. Two keep protecting. "
+                      "A zero pass delay uses the retail timer; it does not mean an immediate throw. "
+                      "The QB looks at the chosen slot first, but may choose another receiver. "
+                      "WR and TE screens adapt the HB sequence and need separate play tests.")
+        note.setWordWrap(True)
+        form.addRow(note)
+        layout.addWidget(self.screen_box)
+        self.screen_level.currentIndexChanged.connect(self._screen_timing)
+        self.concepts.currentItemChanged.connect(self._screen_options)
+        self.screen_receiver.currentIndexChanged.connect(lambda _i: self.completeChanged.emit())
+        self._screen_timing()
+        self.screen_box.hide()
+
+    def _screen_timing(self, *_args: object) -> None:
+        settings = lib.screen_preset("HB", level=self.screen_level.currentData())
+        self.screen_hold.setValue(settings.hold_seconds)
+        self.screen_drop.setValue(settings.drop_yards)
+        self.screen_delay.setValue(settings.pass_delay)
+
+    def _screen_options(self, *_args: object) -> None:
+        if not hasattr(self, "screen_box"):
+            return
+        item = self.concepts.currentItem()
+        concept = item.data(Qt.UserRole) if item else None
+        active = concept in lib.SCREEN_CONCEPTS and self.play_type() in ("pass", "pa_pass")
+        self.screen_box.setVisible(active)
+        previous = self.screen_receiver.currentData()
+        self.screen_receiver.blockSignals(True)
+        self.screen_receiver.clear()
+        cur = self.wiz.current
+        if active and cur is not None:
+            kind = {"HB": lib.HB, "WR": lib.WR, "TE": lib.TE}[lib.SCREEN_CONCEPTS[concept]]
+            for slot in range(6, 11):
+                if cur.kinds[slot] == kind:
+                    self.screen_receiver.addItem(f"{cur.labels[slot]} (assignment slot {slot})", slot)
+            index = self.screen_receiver.findData(previous)
+            if index >= 0:
+                self.screen_receiver.setCurrentIndex(index)
+        self.screen_receiver.blockSignals(False)
+        self.screen_box.setToolTip("Choose Pass and a formation containing the receiver's position.")
+        self.completeChanged.emit()
+
+    def isComplete(self) -> bool:
+        if self.play_type() == "option":
+            try:
+                self.option_design()
+                self.option_problem.clear()
+                return True
+            except (ValueError, TypeError, IndexError) as exc:
+                self.option_problem.setText(str(exc))
+                return False
+        item = self.concepts.currentItem()
+        if (item and item.data(Qt.UserRole) in lib.SCREEN_CONCEPTS
+                and self.play_type() in ("pass", "pa_pass")):
+            return self.play_type() == "pass" and self.screen_receiver.currentData() is not None
+        return super().isComplete()
 
     def initializePage(self) -> None:
         cur = self.wiz.current
         assert cur is not None
+        self.setTitle("Step 3 - Choose coverage or pressure" if self.wiz.is_defense else "Step 3 - Run or pass?")
+        for rb in self.radios.values():
+            rb.setVisible(not self.wiz.is_defense)
+        existing = [p for f in self.wiz.designed for p in f.plays]
+        for kind, rb in self.radios.items():
+            rb.setEnabled(not existing or (kind == 'option') == bool(existing[0].option_intent))
+        if existing and existing[0].option_intent:
+            self.radios['option'].setChecked(True)
+        elif existing and self.radios['option'].isChecked():
+            self.radios['pass'].setChecked(True)
+        self.coverages.clear()
+        if self.wiz.is_defense:
+            for preset in lib.DEFENSE_PRESETS:
+                try:
+                    lib.make_defense_design(self.wiz.book, self.wiz.body, cur.donor_formation_index, preset)
+                except ValueError:
+                    continue
+                self.coverages.addItem(preset)
         for combo in (self.carrier, self.reverse_to, self.fake_to):
             combo.clear()
         for s in range(11):
@@ -620,15 +840,34 @@ class PlayTypePage(QWizardPage):
                 self.fake_to.addItem(f"{cur.labels[s]} (slot {s})", s)
             if cur.kinds[s] in (lib.WR, lib.TE):
                 self.reverse_to.addItem(f"{cur.labels[s]} (slot {s})", s)
+        self.option_back.clear(); self.option_receiver.clear(); self.option_defense.clear()
+        for slot in (9, 10):
+            if cur.kinds[slot] in lib.BACK_KINDS:
+                self.option_back.addItem(f"{cur.labels[slot]} (assignment slot {slot})", slot)
+        self.option_back.setCurrentIndex(self.option_back.findData(10))
+        for slot in (6, 7, 8):
+            if cur.kinds[slot] in (lib.WR, lib.TE):
+                self.option_receiver.addItem(f"{cur.labels[slot]} (assignment slot {slot})", slot)
+        self.option_receiver.setCurrentIndex(self.option_receiver.findData(7))
+        if self.wiz.book is not None:
+            for f in self.wiz.book.formations:
+                try:
+                    lib.opponent_signature(self.wiz.book, self.wiz.body, f.index)
+                except ValueError:
+                    continue
+                self.option_defense.addItem(f.name, f.index)
         self._refresh_options()
 
     def play_type(self) -> str:
+        if self.wiz.is_defense:
+            return "defense"
         return next(k for k, rb in self.radios.items() if rb.isChecked())
 
     def _refresh_options(self, *_a: object) -> None:
         if not hasattr(self, "fake_box"):
             return
         t = self.play_type()
+        self.defense_box.setVisible(t == "defense")
         self.concept_box.setVisible(t in ("pass", "pa_pass"))
         self.run_box.setVisible(t in ("run", "keeper", "sneak", "reverse"))
         self.fake_box.setVisible(t == "pa_pass")
@@ -636,11 +875,18 @@ class PlayTypePage(QWizardPage):
         self.reverse_to.setVisible(t == "reverse")
         self.carrier.setVisible(t in ("run", "reverse"))
         self.direct_snap.setVisible(t == "run")
+        self._screen_options()
+        if hasattr(self, "option_box"):
+            self.option_box.setVisible(t == "option")
 
     def build_spec(self) -> tuple[lib.PlaySpec, str]:
         cur = self.wiz.current
         assert cur is not None
         t = self.play_type()
+        if t == "option":
+            return lib.PlaySpec("", "option", list(cur.positions), list(cur.kinds), {}), self.option_preset.currentText()
+        if t == "defense":
+            return lib.PlaySpec("", "defense", list(cur.positions), list(cur.kinds), {}), self.coverages.currentText()
         concept = self.concepts.currentItem().data(Qt.UserRole) if self.concepts.currentItem() else "4 Verts"
         scheme = self.schemes.currentItem().data(Qt.UserRole) if self.schemes.currentItem() else "Inside Zone"
         sch = lib.RUN_SCHEMES.get(scheme, {})
@@ -652,6 +898,12 @@ class PlayTypePage(QWizardPage):
             reverse_slot=self.reverse_to.currentData() if t == "reverse" else None,
             direct_snap=self.direct_snap.isChecked() if t == "run" else False,
         )
+        if concept in lib.SCREEN_CONCEPTS and t in ("pass", "pa_pass"):
+            spec.screen = lib.ScreenPreset(
+                lib.SCREEN_CONCEPTS[concept], self.screen_receiver.currentData(),
+                self.screen_side.currentData(), self.screen_hold.value(),
+                self.screen_drop.value(), self.screen_delay.value(),
+            )
         lib.default_assignments(spec, concept=concept, scheme=scheme if t == "run" else None)
         if t == "pa_pass" and spec.carrier_slot is not None:
             spec.assignments[spec.carrier_slot] = lib.PlayerAssignment("fake_carry")
@@ -758,6 +1010,9 @@ class AssignPage(QWizardPage):
         self.jobs.setStyleSheet(BIG)
         self.jobs.itemClicked.connect(lambda item: self._menu_for(item.data(Qt.UserRole)))
         side.addWidget(self.jobs, 1)
+        self.mirror_preview = QCheckBox("Mirror defense preview")
+        self.mirror_preview.toggled.connect(lambda _checked: self._refresh() if self.spec is not None else None)
+        side.addWidget(self.mirror_preview)
         self.status = QLabel("")
         self.status.setWordWrap(True)
         side.addWidget(self.status)
@@ -770,6 +1025,9 @@ class AssignPage(QWizardPage):
                       "Next ➜ adds this play and goes to Finalize. Use “Back” twice to lay out another formation.")
         hint.setWordWrap(True)
         side.addWidget(hint)
+        self.option_design: lib.OptionDesign | None = None
+        self._option_error: str | None = None
+        self.defense_design: lib.DefenseDesign | None = None
         self.spec: lib.PlaySpec | None = None
         self.label = ""
         self.scheme: str | None = None
@@ -779,6 +1037,23 @@ class AssignPage(QWizardPage):
 
     def initializePage(self) -> None:
         self.spec, self.label = self.wiz.page_type.build_spec()
+        self.defense_design = None
+        self.option_design = None
+        self._option_error = None
+        if self.spec.play_type == "option":
+            try:
+                self.option_design = self.wiz.page_type.option_design()
+            except (ValueError, TypeError, IndexError) as exc:
+                self._option_error = str(exc)
+        self.mirror_preview.setVisible(self.spec.play_type == "defense")
+        if self.spec.play_type == "defense":
+            self.defense_design = lib.make_defense_design(self.wiz.book, self.wiz.body,
+                                                         self.wiz.current.donor_formation_index, self.label)
+            if self.label == "Double A Show EXPERIMENTAL":
+                self.wiz.current.positions = lib.double_a_positions(self.wiz.book, self.wiz.body, self.wiz.current.donor_formation_index)
+                self.wiz.current.name = "SD Double A EXPERIMENTAL"
+            self.scene.offense = False
+            self.setSubTitle("Click any of eleven defenders for man, zone, rush, paired exchange or Spy. " + lib.SPY_NOTICE)
         self.scheme = self.label if self.spec.play_type == "run" else None
         self.concept = self.label if self.spec.play_type in ("pass", "pa_pass") else None
         self._raw = {}
@@ -789,11 +1064,21 @@ class AssignPage(QWizardPage):
         self._refresh()
 
     def _chains(self) -> list[lib.Chain]:
+        if self.option_design is not None:
+            return self.option_design.chains
+        if self.defense_design is not None:
+            return self.defense_design.chains
         return lib.build_chains(self.spec, self.scheme)
 
     def _refresh(self) -> None:
         cur = self.wiz.current
+        if self.spec.play_type == "option":
+            self._refresh_option()
+            return
         chains = self._chains()
+        if self.defense_design is not None:
+            self._refresh_defense()
+            return
         self.scene.clear_art()
         faint = QColor(255, 138, 101, 110)
         for s, pts in self._raw.items():
@@ -803,6 +1088,11 @@ class AssignPage(QWizardPage):
             x0, z0 = cur.positions[s]
             nodes = [codec.Node(op, 0, list(vals)) for op, vals in chains[s]]
             segs = codec.play_art(nodes, (float(x0), float(z0)), side=1 if x0 >= 0 else -1, wide_left=x0 < 0)
+            if self.spec.screen and self.spec.assignments[s].kind == "screen_receiver":
+                # Show the proved behind-line endpoint band; lateral movement needs gameplay.
+                _x, endpoint_z = lib.screen_endpoint(x0, x0)
+                segs = [codec.ArtSegment([(-1798.32, endpoint_z), (1798.32, endpoint_z)], style="dashed"),
+                        codec.ArtSegment([(x0, z0), (x0, endpoint_z)], style="dashed", end_marker="arrow")]
             self.scene.draw_art(segs, QColor("#ffd54f") if s == self.spec.carrier_slot else QColor("#ffffff"))
         self.jobs.clear()
         for s in range(11):
@@ -812,17 +1102,66 @@ class AssignPage(QWizardPage):
         donor, flags = self.wiz.reference_play(self.spec.play_type, self.scheme)
         _donor_flags, donor_chains = lib.play_chains(self.wiz.body, donor)
         self._error = lib.validate_chains(flags, donor_chains, chains)
+        screen_note = ""
+        if self.spec.screen:
+            from mod_editor.core.nfl2k5_formation_play_writer import NODE_CAPACITY, authored_node_cost
+            cost = authored_node_cost(chains)
+            staged = sum(authored_node_cost(p.chains) for f in self.wiz.designed for p in f.plays)
+            remaining = NODE_CAPACITY - self.wiz.book.node_count - staged
+            if cost > remaining:
+                self._error = f"This screen needs {cost} nodes, with {remaining} remaining in this design."
+            screen_note = (f"EXPERIMENTAL / UNWITNESSED. {cost} nodes ({cost * 8} bytes); "
+                           f"{remaining} available before this play. Receiver: assignment slot "
+                           f"{self.spec.screen.receiver_slot}. Dashed guide: endpoint 1.5 yards behind "
+                           "the line, bounded laterally to 19 2/3 yards unless already outside. "
+                           "The guide does not predict lateral travel, arrival time or a catch.")
         if self._error:
             self.status.setText("✖ " + self._error)
             self.status.setStyleSheet("color:#c62828;" + BIG)
         else:
-            self.status.setText("✔ The game accepts this play.")
+            self.status.setText("The play passes the data checks. " + screen_note if self.spec.screen
+                                else "✔ The game accepts this play.")
             self.status.setStyleSheet("color:#2e7d32;" + BIG)
+        self.completeChanged.emit()
+
+    def _refresh_option(self):
+        self.scene.clear_art(); self.jobs.clear()
+        self._error = self._option_error
+        if self.option_design is not None:
+            from mod_editor.core.nfl2k5_formation_play_writer import NODE_CAPACITY, authored_node_cost
+            d = self.option_design
+            cost = authored_node_cost(d.chains)
+            staged = sum(authored_node_cost(p.chains) for f in self.wiz.designed for p in f.plays)
+            available = NODE_CAPACITY - self.wiz.book.node_count - staged
+            try:
+                self._error = lib.validate_chains(d.play_flags, lib.play_chains(self.wiz.body, d.donor_play_index)[1], d.chains)
+            except ValueError as exc:
+                self._error = str(exc)
+            if cost > available:
+                self._error = f"This option needs {cost} nodes, with {available} remaining in this design."
+            for slot, chain in enumerate(d.chains):
+                nodes = codec.encode_chain(chain)
+                self.scene.draw_art(codec.play_art(nodes, self.wiz.current.positions[slot]), QColor('#ffd54f'))
+                item = QListWidgetItem(f"{self.wiz.current.labels[slot]}: " + " / ".join(n.name for n in nodes))
+                item.setToolTip("\n".join(n.describe() for n in nodes)); item.setData(Qt.UserRole, slot)
+                self.jobs.addItem(item)
+            self.status.setText((self._error + " " if self._error else "Data checks passed. ") +
+                f"{cost} nodes ({cost * 8} bytes); {available} available. Each chain 1-15 nodes; "
+                "condition/cache indices 0-7, alternate 1-7. " + lib.OPTION_NOTICE)
+        else:
+            self.status.setText(self._error or "Choose an option preset")
         self.completeChanged.emit()
 
     def _describe(self, s: int) -> str:
         a = self.spec.assignments.get(s)
         kinds = self.spec.kinds
+        if self.spec.screen and a is not None:
+            if a.kind == "screen_release":
+                return f"hold {self.spec.screen.hold_seconds:g} seconds, release, then block"
+            if a.kind == "screen_receiver":
+                return f"intended screen receiver (assignment slot {s}); endpoint behind the line"
+            if a.kind == "qb":
+                return f"drop, look at assignment slot {self.spec.screen.receiver_slot}, then pass"
         if a is not None and a.kind == "custom":
             return f"✏ drawn — {a.route}"
         if kinds[s] == lib.QB and not self.spec.direct_snap:
@@ -846,7 +1185,7 @@ class AssignPage(QWizardPage):
 
     # -- drawing
     def _can_draw(self, slot: int) -> bool:
-        if self.spec is None:
+        if self.spec is None or self.spec.play_type == "option":
             return False
         kind = self.spec.kinds[slot]
         if kind in (lib.WR, lib.TE, lib.HB, lib.FB):
@@ -892,6 +1231,9 @@ class AssignPage(QWizardPage):
                              kinds=list(self.spec.kinds), assignments={}, carrier_slot=self.spec.carrier_slot,
                              handoff_kind=self.spec.handoff_kind, run_direction=self.spec.run_direction,
                              reverse_slot=self.spec.reverse_slot, direct_snap=self.spec.direct_snap)
+        if self.spec.screen:
+            from dataclasses import replace
+            probe.screen = replace(self.spec.screen)
         lib.default_assignments(probe, concept=self.concept, scheme=self.scheme)
         return probe.assignments.get(slot) or lib.PlayerAssignment("block", block_style="pass")
 
@@ -901,7 +1243,42 @@ class AssignPage(QWizardPage):
         self._refresh()
 
     # -- menu
+    def _refresh_defense(self) -> None:
+        from mod_editor.gui.play_designer_qt import draw_defense_design
+        design = self.defense_design
+        mirrored = self.mirror_preview.isChecked()
+        for slot, (x, z) in enumerate(self.wiz.current.positions):
+            self.scene.tokens[slot].setPos(to_scene(-x if mirrored else x, z))
+        draw_defense_design(self.scene, design, self.wiz.current.positions, mirrored=mirrored)
+        self.jobs.clear()
+        active = lib.defense_active(design.chains)
+        for slot, chain in enumerate(design.effective()):
+            mark = "Spy intent" if slot in design.spy_slots else ("coverage override" if slot in active else "inherited front")
+            self.jobs.addItem(f"{self.wiz.current.labels[slot]}: {mark}, " + " / ".join(codec.OPCODE_NAMES[op] for op, _ in chain[1:]))
+            self.jobs.item(slot).setData(Qt.UserRole, slot)
+        self._error = lib.validate_chains(design.play_flags, lib.play_chains(self.wiz.body, design.donor_play_index)[1], design.chains)
+        count = lib.defense_counts(design.effective())
+        nodes = sum(len(c) for c in design.chains)
+        remaining = 3500 - self.wiz.book.node_count
+        if nodes > remaining:
+            self._error = "The cloned nodes do not fit the remaining pool"
+        text = (f"{lib.DEFENSE_EVIDENCE}. {len(count['rushers'])} rushers, {len(count['deep'])} deep defenders. "
+                f"Front: {self.wiz.book.plays[design.front_index].name}. "
+                f"Cloned nodes {nodes} / {remaining} free; pool {nodes * 8} bytes. ")
+        self.status.setText(text + (self._error or "Structure check passed. ") + "\n" + lib.SPY_NOTICE)
+        self.completeChanged.emit()
+
     def _menu_for(self, slot: int) -> None:
+        if self.spec.play_type == "option":
+            if self.option_design:
+                QMessageBox.information(self, "Option branch details", "\n".join(
+                    n.describe() for n in codec.encode_chain(self.option_design.chains[slot])))
+            return
+        if self.defense_design is not None:
+            from mod_editor.gui.play_designer_qt import edit_defense_assignment
+            edit_defense_assignment(self, self.defense_design, self.wiz.book, self.wiz.body, slot)
+            self._refresh()
+            return
         cur = self.wiz.current
         kind = self.spec.kinds[slot]
         menu = QMenu(self)
@@ -985,6 +1362,18 @@ class AssignPage(QWizardPage):
 
     def _commit(self) -> None:
         cur = self.wiz.current
+        if self.option_design is not None:
+            d = self.option_design
+            cur.plays.append(DesignedPlay(self.name_edit.text().strip() or self.label,
+                "pass" if d.intent['preset'] == lib.OPTION_PRESETS[2] else "run", self.label,
+                d.chains, d.donor_play_index, play_flags=d.play_flags, option_intent=d.intent))
+            return
+        if self.defense_design is not None:
+            design = self.defense_design
+            cur.plays.append(DesignedPlay(self.name_edit.text().strip() or self.label, "defense", self.label,
+                                          design.chains, design.donor_play_index, play_flags=design.play_flags,
+                                          spy_slots=tuple(sorted(design.spy_slots)), front_index=design.front_index))
+            return
         donor, flags = self.wiz.reference_play(self.spec.play_type, self.scheme)
         cur.plays.append(DesignedPlay(
             name=self.name_edit.text().strip() or self.label, play_type=self.spec.play_type,
@@ -1073,10 +1462,14 @@ class FinalizePage(QWizardPage):
             self.table.setItem(r, 0, QTableWidgetItem("Formation"))
             self.table.setItem(r, 1, QTableWidgetItem(f.name + (f"   ({f.personnel_note})" if f.personnel_note else "")))
             combo = QComboBox()
-            suggestions = [(i, why) for i, why in lib.suggest_formations_to_replace(book, body, f.category_index) if i not in used_f]
+            suggestions = [] if self.wiz.is_defense else [(i, why) for i, why in lib.suggest_formations_to_replace(book, body, f.category_index) if i not in used_f]
             for i, why in suggestions[:8]:
                 combo.addItem(f"Replace “{book.formations[i].name}”", ("formation", i, why))
-            combo.addItem("Add as a new formation", ("formation", None, "keeps every stock formation"))
+            if any(p.option_intent for p in f.plays):
+                combo.clear()
+                combo.addItem("Keep native formation", ("formation", f.donor_formation_index, "native option alignment"))
+            else:
+                combo.addItem("Add as a new formation", ("formation", None, "keeps every stock formation"))
             if f.replace_index is not None:
                 combo.setCurrentIndex(max(0, next((k for k in range(combo.count()) if combo.itemData(k)[1] == f.replace_index), 0)))
             combo.currentIndexChanged.connect(lambda _i, c=combo, r=r: self.table.setItem(r, 3, QTableWidgetItem(c.currentData()[2])))
@@ -1091,27 +1484,37 @@ class FinalizePage(QWizardPage):
                 self.table.setItem(r, 1, QTableWidgetItem(p.name))
                 pc = QComboBox()
                 # plays are suggested from the donor formation's menu (the plays the new formation inherits)
-                psugg = [(i, why) for i, why in lib.suggest_plays_to_replace(book, f.donor_formation_index) if i not in used_p]
+                psugg = ([(p.donor_play_index, "same defensive donor; all linked menus checked")] if p.play_type == "defense" and p.donor_play_index not in used_p else []) if self.wiz.is_defense else [(i, why) for i, why in lib.suggest_plays_to_replace(book, f.donor_formation_index) if i not in used_p]
                 for i, why in psugg[:8]:
                     pc.addItem(f"Replace “{book.plays[i].name}”", ("play", i, why))
-                pc.addItem("Add as a new play", ("play", None, "keeps every stock play"))
+                if not p.option_intent:
+                    pc.addItem("Add as a new play", ("play", None, "keeps every stock play"))
                 pc.currentIndexChanged.connect(lambda _i, c=pc, r=r: self.table.setItem(r, 3, QTableWidgetItem(c.currentData()[2])))
                 self.table.setCellWidget(r, 2, pc)
-                self.table.setItem(r, 3, QTableWidgetItem(pc.currentData()[2]))
+                self.table.setItem(r, 3, QTableWidgetItem(pc.currentData()[2] if pc.currentData() else "No unused replacement remains"))
                 if psugg:
                     used_p.add(psugg[0][0])
                 self._choices.append((p, pc))
                 self._add_read_order(r, p, f)
                 self._add_audible_group(r, p)
         self.table.resizeColumnsToContents()
+        if any(p.option_intent for f in self.wiz.designed for p in f.plays):
+            self.apply.setEnabled(all(combo.currentData() is not None for _, combo in self._choices))
         self.status.setText(f"{len(self.wiz.designed)} formation(s), {sum(len(f.plays) for f in self.wiz.designed)} play(s) designed. "
                             "Replacing keeps the playbook the same size; adding grows it (50 formations / 270 plays max).")
+        if self.wiz.is_defense:
+            for _, combo in self._choices:
+                combo.currentIndexChanged.connect(lambda _i: self._defense_preview())
+            self._defense_preview()
 
     def _add_read_order(self, row: int, play: "DesignedPlay", formation: "DesignedFormation") -> None:
         """Four 1-5 spin boxes over the QB's Dropback node (pass plays only)."""
 
         qb_slot = next((s for s in range(11) if formation.kinds[s] == lib.QB), 0)
         order = read_order_of(play.chains[qb_slot]) if qb_slot < len(play.chains) else None
+        if play.option_intent:
+            self.table.setItem(row, 4, QTableWidgetItem("Preset receiver slot " + str(play.option_intent.get('receiver_slot', 'none'))))
+            return
         if order is None:
             item = QTableWidgetItem("— (no dropback)")
             item.setFlags(Qt.ItemIsEnabled)
@@ -1123,21 +1526,28 @@ class FinalizePage(QWizardPage):
         spins: list[QSpinBox] = []
         for value in order:
             spin = QSpinBox()
-            spin.setRange(READ_ORDER_MIN, READ_ORDER_MAX)
+            screen = play.concept_or_scheme in lib.SCREEN_CONCEPTS
+            spin.setRange(0 if screen else READ_ORDER_MIN, READ_ORDER_MAX)
             spin.setValue(int(value))
             spin.setToolTip(
                 "One of the Dropback node's four ordered 1-5 values — the quarterback's read "
                 "order. Retail sets them on every dropback; what each number selects is read "
                 "from the corpus, not witnessed in game."
             )
+            if screen:
+                spin.setToolTip("1 to 5 select assignment slots 6 to 10. First zero defaults to slot 7; "
+                                "later zeros skip reads. The final target is not forced. UNWITNESSED in play.")
             box.addWidget(spin)
             spins.append(spin)
         self.table.setCellWidget(row, 4, holder)
         self._read_orders[row] = (play, spins, qb_slot)
 
     def _add_audible_group(self, row: int, play: "DesignedPlay") -> None:
+        if play.option_intent:
+            self.table.setItem(row, 5, QTableWidgetItem("Keep native audible group"))
+            return
         combo = QComboBox()
-        for label, value in AUDIBLE_GROUPS:
+        for label, value in (("Defense menu (group 3)", 3),) if play.play_type == "defense" else AUDIBLE_GROUPS:
             combo.addItem(label, value)
         combo.setToolTip(
             "Which of the formation's three audible slots lists this play. Every populated "
@@ -1147,12 +1557,19 @@ class FinalizePage(QWizardPage):
         self._groups[row] = (play, combo)
 
     def _apply(self) -> None:
+        if any(p.option_intent for f in self.wiz.designed for p in f.plays):
+            self._apply_options()
+            return
+        if self.wiz.is_defense:
+            self._apply_defense()
+            return
         book = self.wiz.book
         host = self.wiz.host
         staged = 0
         for play, spins, qb_slot in self._read_orders.values():
             play.chains[qb_slot] = with_read_order(
-                play.chains[qb_slot], [spin.value() for spin in spins]
+                play.chains[qb_slot], [spin.value() for spin in spins],
+                allow_zero=play.concept_or_scheme in lib.SCREEN_CONCEPTS,
             )
         groups = {id(play): combo.currentData() for play, combo in self._groups.values()}
         try:
@@ -1172,7 +1589,7 @@ class FinalizePage(QWizardPage):
                 else:
                     assert current_formation is not None
                     obj.replace_index = target
-                    assignments = [[[op, list(vals)] for op, vals in chain] for chain in obj.chains]
+                    assignments = [codec.chain_json(chain) for chain in obj.chains]
                     link_index = None
                     link_selector = None
                     if target is None or not any(l.play_index == target for l in book.formations[current_formation.replace_index].play_links) if current_formation.replace_index is not None else True:
@@ -1191,6 +1608,93 @@ class FinalizePage(QWizardPage):
         self.status.setText(f"✔ Staged {staged} item(s). Now Build the disc (about two minutes), then Launch.")
         self.build.setEnabled(True)
         self.apply.setEnabled(False)
+
+    def _option_pack(self):
+        from mod_editor.core import nfl2k5_playbook_pack as pk
+        book, body = self.wiz.book, self.wiz.body
+        plays = []
+        for obj, combo in self._choices:
+            choice = combo.currentData()
+            if choice is None or choice[1] is None:
+                raise ValueError("Option designs replace existing plays and keep native formations")
+            target = choice[1]
+            if isinstance(obj, DesignedFormation):
+                if target != obj.donor_formation_index or not obj.plays or any(not p.option_intent for p in obj.plays):
+                    raise ValueError("Option presets need a separate design batch with native formations")
+                continue
+            donor_flags, donor = lib.play_chains(body, obj.donor_play_index)
+            plays.append(pk.PackPlay(f"custom-option-{len(plays)}", obj.name, obj.play_type,
+                tuple(tuple((n[0], tuple(n[1]), *n[2:]) for n in c) for c in obj.chains),
+                pk.PackDonor(obj.donor_play_index, book.plays[obj.donor_play_index].name,
+                             donor_flags, lib.qb_signature(donor[0][1])),
+                obj.play_flags, target, book.plays[target].name, obj.concept_or_scheme,
+                option_intent=obj.option_intent))
+        return pk.PlaybookPack(pk.PackBook(book.book_name, "Custom option reads", "unknown", "1.0.0", "CC0-1.0", notes=lib.OPTION_NOTICE),
+            pk.PackBase(pk.book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
+            (), tuple(plays), pk.OPTION_SCHEMA)
+
+    def _apply_options(self):
+        from mod_editor.core import nfl2k5_playbook_pack as pk
+        try:
+            pack = self._option_pack()
+            check = pk.check_pack(pack, self.wiz.book, self.wiz.body)
+            if not check.ok:
+                raise ValueError("; ".join(check.errors))
+            self.wiz.host.install_playbook_pack(pack, (self.wiz.book.book_name,), _quiet)
+        except Exception as exc:
+            QMessageBox.warning(self, "Option reads", str(exc))
+            return
+        self.status.setText("Option reads staged with branch flags and expected opponent fixture. " + lib.OPTION_NOTICE)
+        self.apply.setEnabled(False); self.build.setEnabled(True)
+
+    def _defense_pack(self):
+        from mod_editor.core import nfl2k5_playbook_pack as pk
+        book, body = self.wiz.book, self.wiz.body
+        formations, plays = [], []
+        current = None
+        for obj, combo in self._choices:
+            _, target, _ = combo.currentData()
+            if isinstance(obj, DesignedFormation):
+                current = f"defense-f{len(formations)}"
+                formations.append(pk.PackFormation(current, obj.name, tuple(obj.positions), tuple(obj.codes),
+                    pk.PackDonor(obj.donor_formation_index, book.formations[obj.donor_formation_index].name),
+                    target, book.formations[target].name if target is not None else "", obj.category_index))
+            else:
+                donor = book.plays[obj.donor_play_index]
+                formation = formations[-1]
+                plays.append(pk.PackPlay(f"defense-p{len(plays)}", obj.name, "defense", pk._freeze_chains(obj.chains),
+                    pk.PackDonor(donor.index, donor.name, donor.flags_or_id, lib.defense_signature(body, donor.index)),
+                    donor.flags_or_id, target, book.plays[target].name if target is not None else "", obj.concept_or_scheme,
+                    current, 3, formation.donor.name, obj.front_index, lib.defense_component(obj.chains), obj.spy_slots))
+        return pk.PlaybookPack(pk.PackBook(book.book_name, "Custom defense", "unknown", "1.0.0", "CC0-1.0",
+                               notes=lib.DEFENSE_EVIDENCE + ". " + lib.SPY_NOTICE),
+                              pk.PackBase(pk.book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
+                              tuple(formations), tuple(plays), pk.DEFENSE_SCHEMA)
+
+    def _defense_preview(self):
+        from mod_editor.core import nfl2k5_playbook_pack as pk
+        try:
+            pack = self._defense_pack()
+            report = pk.check_pack(pack, self.wiz.book, self.wiz.body)
+            self.apply.setEnabled(report.ok)
+            totals = report.totals
+            self.status.setText(f"{lib.DEFENSE_EVIDENCE}. Cloned nodes {totals['cloned_nodes']}; "
+                f"node pool {totals['node_pool_bytes']} bytes, names {totals['name_pool_bytes']} bytes. "
+                f"Total nodes {totals['nodes']}/3500. " + ("; ".join(report.errors) if not report.ok else "All affected menus checked."))
+        except Exception as exc:
+            self.apply.setEnabled(False)
+            self.status.setText(str(exc))
+
+    def _apply_defense(self):
+        try:
+            pack = self._defense_pack()
+            self.wiz.host.install_playbook_pack(pack, (self.wiz.book.book_name,), _quiet)
+        except Exception as exc:
+            QMessageBox.warning(self, "Defense", str(exc))
+            return
+        self.status.setText("Defense staged with versioned Spy intent. " + lib.DEFENSE_EVIDENCE)
+        self.apply.setEnabled(False)
+        self.build.setEnabled(True)
 
     def _build(self) -> None:
         preferred = Path.home() / "2K5 Mod Studio Builds"

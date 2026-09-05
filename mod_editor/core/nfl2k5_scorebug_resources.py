@@ -1,0 +1,726 @@
+"""Retail scorebug and team-logo identities. Metadata only, no disc payloads.
+
+Names are the UTF-16 TXTR keys used by FUN_000449e0 (type TXTR).
+Asset codes are distinct from roster ids: LV=20, HOU=37.
+Palettes are copied from docs/scorebug_svg/teams.json; logos retain their retail era.
+"""
+
+RESOURCES = {'score_buga': {'outer': 346,
+                'outer_id': 11965036,
+                'chunk': 53,
+                'pack_offset': 110351440,
+                'span_size': 2432,
+                'span_sha256': 'b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21',
+                'decoded_sha256': '3504993fc814f33afc3f37e32707a6e270c53c2b86dea6abe6def2e7219fae1b',
+                'name': 'score_buga',
+                'width': 64,
+                'height': 64,
+                'format_name': 'P8'},
+ 'espn1': {'outer': 346,
+           'outer_id': 11965036,
+           'chunk': 31,
+           'pack_offset': 110140624,
+           'span_size': 2352,
+           'span_sha256': 'b071be81adbfa652e5b5ed0629aae18d7be33cb37bb105e278dfe5e7af3fcd99',
+           'decoded_sha256': '7dc4e67203a846bf9bace8f0b034ad6d9591136304e4ec7c8c0ba4cffcd7e4e8',
+           'name': 'espn1',
+           'width': 128,
+           'height': 128,
+           'format_name': 'DXT1'},
+ 'nflShield1': {'outer': 346,
+                'outer_id': 11965036,
+                'chunk': 32,
+                'pack_offset': 110142976,
+                'span_size': 8512,
+                'span_sha256': '1ada0a78f821457972a85c343b8b8c32bd295a1ddf1b3876d66a685f175eb069',
+                'decoded_sha256': 'c8f69b7058852b44768a11c8adc12107fb4b0e547bb306977a808575cb1914fd',
+                'name': 'nflShield1',
+                'width': 256,
+                'height': 256,
+                'format_name': 'DXT1'},
+ 'shield_espn': {'outer': 346,
+                 'outer_id': 11965036,
+                 'chunk': 26,
+                 'pack_offset': 110125136,
+                 'span_size': 5952,
+                 'span_sha256': '4517f5602ebab791e0d54e5f5bc8c3881e4f31addf5afe7f869c3b7c2f2cb1c7',
+                 'decoded_sha256': 'f8cc8bb93f024dce63a710b3040888d051e33e8378ec8e8694452a609357d952',
+                 'name': 'shield_espn',
+                 'width': 128,
+                 'height': 64,
+                 'format_name': 'P8'},
+ 'score_bug': {'outer': 346,
+               'outer_id': 11965036,
+               'chunk': 78,
+               'pack_offset': 110486272,
+               'span_size': 4832,
+               'span_sha256': 'afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476',
+               'decoded_sha256': 'fc22e6caab35bc0f0b61d3a1014de9dfa0acfa6b8228fccf014f5ce0a17d1735'}}
+
+TEAM_LOGOS = {'ARI': {'outer': 24,
+         'outer_id': 4145851365,
+         'chunk': 0,
+         'pack_offset': 15939584,
+         'span_size': 11968,
+         'span_sha256': 'ba9e20704d87babda9cb1b378e6b825a0b9d539aa829199ed866fef061cba217',
+         'decoded_sha256': 'dd07ea0d6d8d15bccba8455bb4d8d8fe2d04f1c14f38a8993314d12fa4cb99ab',
+         'name': '00_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '00',
+         'roster_id': 7,
+         'primary': '#97233F',
+         'secondary': '#000000'},
+ 'ATL': {'outer': 25,
+         'outer_id': 417251547,
+         'chunk': 0,
+         'pack_offset': 16039936,
+         'span_size': 10368,
+         'span_sha256': '060f65cbb773910f99d2f675f64f9fa825c13fc68577277986e78730d51822e4',
+         'decoded_sha256': '3b21bcf1ad05a7c543250957e6f169f994055a9b7c3d06c8075dd9477fbee18d',
+         'name': '01_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '01',
+         'roster_id': 14,
+         'primary': '#A71930',
+         'secondary': '#000000'},
+ 'BAL': {'outer': 26,
+         'outer_id': 4092165080,
+         'chunk': 0,
+         'pack_offset': 16136192,
+         'span_size': 12432,
+         'span_sha256': '712e682896dbb08438c287983969fa494f3834d38021501c79960400d1a3fde1',
+         'decoded_sha256': '6b6f38cc73b9b8adf46daf371eb19caccace189bd49a0b3721f31863edffc0e6',
+         'name': '02_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '02',
+         'roster_id': 24,
+         'primary': '#241773',
+         'secondary': '#000000'},
+ 'BUF': {'outer': 27,
+         'outer_id': 472584422,
+         'chunk': 0,
+         'pack_offset': 16236544,
+         'span_size': 12752,
+         'span_sha256': '5568f3dff35199fcc99ce4a85d3519dfa0eccb1e0bea85c126a3d8585124d917',
+         'decoded_sha256': '96d49259dcd3e5ba9f55b0503e734e7ed5b8db1dcebc2286fb1c629714c6d330',
+         'name': '03_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '03',
+         'roster_id': 3,
+         'primary': '#00338D',
+         'secondary': '#C60C30'},
+ 'CAR': {'outer': 28,
+         'outer_id': 4277603231,
+         'chunk': 0,
+         'pack_offset': 16334848,
+         'span_size': 11568,
+         'span_sha256': 'fd4ad097f8f0c88e3ca54f2a473deb126cea52641b599c8978d20740761b3432',
+         'decoded_sha256': '8b04936083b53a14d427c0591c6b05dcc16666c9dd1dbebd49c1d9f28a21c8f4',
+         'name': '04_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '04',
+         'roster_id': 20,
+         'primary': '#0085CA',
+         'secondary': '#101820'},
+ 'CHI': {'outer': 29,
+         'outer_id': 288710817,
+         'chunk': 0,
+         'pack_offset': 16433152,
+         'span_size': 9824,
+         'span_sha256': '4c4c41267db94a2d45edc77eaf9f45f2e038db1904dc3f83e41e903dfa5fb817',
+         'decoded_sha256': 'c0ba592e83411daa250252fcaccccc7e196f8479f54d8346bcacdc26ef296fce',
+         'name': '05_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '05',
+         'roster_id': 1,
+         'primary': '#0B162A',
+         'secondary': '#C83803'},
+ 'CIN': {'outer': 30,
+         'outer_id': 4194491298,
+         'chunk': 0,
+         'pack_offset': 16531456,
+         'span_size': 18352,
+         'span_sha256': '9897a5ffd296a2e81a44f781f55d28a946ac4f4d56e23a32e0f85b885e589e86',
+         'decoded_sha256': 'bbd62a2e8e613669d3eff1b8b1ea6d432eafdfcd09b14253dd43119fbb8cee49',
+         'name': '06_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '06',
+         'roster_id': 2,
+         'primary': '#FB4F14',
+         'secondary': '#000000'},
+ 'DAL': {'outer': 31,
+         'outer_id': 364949660,
+         'chunk': 0,
+         'pack_offset': 16640000,
+         'span_size': 13152,
+         'span_sha256': 'a6d6a390e2bb7586b69b2704d2c7751849eed446f4e23682253b47079181aa8a',
+         'decoded_sha256': '0cb696fc7f6b53c8be75e24d98b7e5d40ac50ce1f8d501702b9f1e2591a1f1ba',
+         'name': '07_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '07',
+         'roster_id': 11,
+         'primary': '#003594',
+         'secondary': '#869397'},
+ 'DEN': {'outer': 32,
+         'outer_id': 3838569233,
+         'chunk': 0,
+         'pack_offset': 16740352,
+         'span_size': 11760,
+         'span_sha256': 'aa69d667a8f46d7431776dd5dd1b9888d95330ed8b03df7b47e13395bac03168',
+         'decoded_sha256': '2a6d23a42966276352a8532061156c1401eb832561ab08e020a7dfa54d68e9af',
+         'name': '08_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '08',
+         'roster_id': 4,
+         'primary': '#FB4F14',
+         'secondary': '#002244'},
+ 'DET': {'outer': 33,
+         'outer_id': 185172015,
+         'chunk': 0,
+         'pack_offset': 16838656,
+         'span_size': 13264,
+         'span_sha256': 'e98e6964ef870ae9afd651e36f7bd1fc3f7616d47ba3cfd411e84a5c6bbd9267',
+         'decoded_sha256': 'c60eea8456efff817bb57e080cbcbf7d95582145e1e164bd7d3e22fda9cc7d8a',
+         'name': '09_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '09',
+         'roster_id': 18,
+         'primary': '#0076B6',
+         'secondary': '#B0B7BC'},
+ 'GB': {'outer': 34,
+        'outer_id': 1824122762,
+        'chunk': 0,
+        'pack_offset': 16936960,
+        'span_size': 10576,
+        'span_sha256': '61835665a75c0cffd427451e994b95a1aa3c008b7169304f70142529f851e976',
+        'decoded_sha256': '9e32ba6710eccedf3a0a9b3451ad1485947bf6dfa37cd52dd8af698277e96fa7',
+        'name': '10_teamlogo_00_h0',
+        'width': 256,
+        'height': 256,
+        'format_name': 'P8',
+        'asset_code': '10',
+        'roster_id': 19,
+        'primary': '#203731',
+        'secondary': '#FFB612'},
+ 'IND': {'outer': 35,
+         'outer_id': 2205912244,
+         'chunk': 0,
+         'pack_offset': 17031168,
+         'span_size': 10880,
+         'span_sha256': '887e2a591c097fcf4eaea510b7ea2bbd088f323b3c256eb55ddc08eb248c3fc0',
+         'decoded_sha256': 'ee58a36e9f36b8837a87085444ca2c26d779a818fb01548cdfd4fc654ac9b4b4',
+         'name': '11_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '11',
+         'roster_id': 10,
+         'primary': '#002C5F',
+         'secondary': '#A2AAAD'},
+ 'JAX': {'outer': 36,
+         'outer_id': 1749825463,
+         'chunk': 0,
+         'pack_offset': 17127424,
+         'span_size': 18448,
+         'span_sha256': 'afd470079920c75e3a238e364adeb4c3af2c8534b70aa574b75a45ad478cfd7c',
+         'decoded_sha256': '5505cd05f276b9c9a08b7aecc6a909d985680d35c04844b237dd339202e6d8aa',
+         'name': '12_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '12',
+         'roster_id': 16,
+         'primary': '#006778',
+         'secondary': '#D7A22A'},
+ 'KC': {'outer': 37,
+        'outer_id': 2274253961,
+        'chunk': 0,
+        'pack_offset': 17233920,
+        'span_size': 13664,
+        'span_sha256': '4b4a78740219937ab10f024e782cdc35dc73f4a7951c2182f008bf8442727923',
+        'decoded_sha256': '556be81af5ec8b8b78c827edab3f6971e2a16e8b5294bb1f11873d4790426f06',
+        'name': '13_teamlogo_00_h0',
+        'width': 256,
+        'height': 256,
+        'format_name': 'P8',
+        'asset_code': '13',
+        'roster_id': 9,
+        'primary': '#E31837',
+        'secondary': '#FFB81C'},
+ 'MIA': {'outer': 38,
+         'outer_id': 1699891184,
+         'chunk': 0,
+         'pack_offset': 17334272,
+         'span_size': 18784,
+         'span_sha256': '0e59120ec9a965d3ce23593dadb4bc9f1f169f120018d3bacfef69a64086b3cd',
+         'decoded_sha256': '0079e1c7c460985618e1f7f45ccb1a12ff7924a1ed3c7207f98a2e45789eacb4',
+         'name': '14_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '14',
+         'roster_id': 12,
+         'primary': '#008E97',
+         'secondary': '#FC4C02'},
+ 'MIN': {'outer': 39,
+         'outer_id': 2324704462,
+         'chunk': 0,
+         'pack_offset': 17440768,
+         'span_size': 19632,
+         'span_sha256': 'da5c5e9cffc4ac263c75f023f5e93fd45522246631a669936eeb491d6cdb8c45',
+         'decoded_sha256': '3c94f12898183b9afeb2b17006b49aa7c3df62c9bcf524180bd7e6fcff43e787',
+         'name': '15_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '15',
+         'roster_id': 31,
+         'primary': '#4F2683',
+         'secondary': '#FFC62F'},
+ 'NE': {'outer': 40,
+        'outer_id': 1638373325,
+        'chunk': 0,
+        'pack_offset': 17547264,
+        'span_size': 8688,
+        'span_sha256': '09d139314bb508002a56c77b5b991a4208080eacddae5233f83112742398bdd0',
+        'decoded_sha256': '17d1f3ba48727c88695c22aa45a76526a2afcfdfb65e1540ef579ca0583650cb',
+        'name': '16_teamlogo_00_h0',
+        'width': 256,
+        'height': 256,
+        'format_name': 'P8',
+        'asset_code': '16',
+        'roster_id': 21,
+        'primary': '#002244',
+        'secondary': '#C60C30'},
+ 'NO': {'outer': 41,
+        'outer_id': 2389048563,
+        'chunk': 0,
+        'pack_offset': 17641472,
+        'span_size': 14240,
+        'span_sha256': 'c4867c1f8dd800dd95dc33fc9dd1c24b23dae83ece78729328fdffb1e517ac84',
+        'decoded_sha256': '0018c432c0591c061c183ccb26a8d289b180845e0647ea0908e9978f70a3b72e',
+        'name': '17_teamlogo_00_h0',
+        'width': 256,
+        'height': 256,
+        'format_name': 'P8',
+        'asset_code': '17',
+        'roster_id': 26,
+        'primary': '#D3BC8D',
+        'secondary': '#101820'},
+ 'NYG': {'outer': 42,
+         'outer_id': 2137958270,
+         'chunk': 0,
+         'pack_offset': 17743872,
+         'span_size': 7344,
+         'span_sha256': '63f48587fb336136c2606e17420b9afca6a380c75ff071bde3eef0db3f8af93a',
+         'decoded_sha256': 'c35235f7c479172d4d09c5080e77e132558916b6b603484409dcd8f30d7809ae',
+         'name': '18_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '18',
+         'roster_id': 15,
+         'primary': '#0B2265',
+         'secondary': '#A71930'},
+ 'NYJ': {'outer': 43,
+         'outer_id': 2427243584,
+         'chunk': 0,
+         'pack_offset': 17836032,
+         'span_size': 12096,
+         'span_sha256': '4679c986e82f264bfec961364ba51231facdff3d6711d87b6d7f0e204cbc8d19',
+         'decoded_sha256': '53926954054c5fc695b8c317dd35fd6171ed4114af946eedc281920443ecdcbf',
+         'name': '19_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '19',
+         'roster_id': 17,
+         'primary': '#125740',
+         'secondary': '#000000'},
+ 'LV': {'outer': 44,
+        'outer_id': 455554426,
+        'chunk': 0,
+        'pack_offset': 17934336,
+        'span_size': 14736,
+        'span_sha256': 'bb7e2ca4d69ef7c3e71d8633a5b25eef5b7f74be642865381a49cfb89afbc63f',
+        'decoded_sha256': '7d182239adffdbf37728c77b845ce217f60ec3462d07210bade7952b37a22107',
+        'name': '20_teamlogo_00_h0',
+        'width': 256,
+        'height': 256,
+        'format_name': 'P8',
+        'asset_code': '20',
+        'roster_id': 22,
+        'primary': '#000000',
+        'secondary': '#A5ACAF'},
+ 'PHI': {'outer': 45,
+         'outer_id': 4108672580,
+         'chunk': 0,
+         'pack_offset': 18040832,
+         'span_size': 17760,
+         'span_sha256': '84ab53015ab7c0197996530ae6778221019c5007b4c118baa5a6a063633c71bd',
+         'decoded_sha256': '191c7f29ba89149dcd47b7105c0b7d537da9db2972b509e95d684dde4e7160cf',
+         'name': '21_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '21',
+         'roster_id': 13,
+         'primary': '#004C54',
+         'secondary': '#A5ACAF'},
+ 'PIT': {'outer': 46,
+         'outer_id': 533914951,
+         'chunk': 0,
+         'pack_offset': 18145280,
+         'span_size': 10480,
+         'span_sha256': '7f27d62838d04b6221b48c7fd8206e602871c6ad842ee0bdc67d42389b6ddeea',
+         'decoded_sha256': 'a2b57c08ad117eec4544519991e72e1277866a3151673bef7284724009c0f99e',
+         'name': '22_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '22',
+         'roster_id': 28,
+         'primary': '#101820',
+         'secondary': '#FFB612'},
+ 'LAR': {'outer': 47,
+         'outer_id': 4027616889,
+         'chunk': 0,
+         'pack_offset': 18241536,
+         'span_size': 14432,
+         'span_sha256': 'f34ba90269552e64b0d4325e7b9461b30c72beade7c5a7a879dc6fd95511074b',
+         'decoded_sha256': 'ec54365642bf7f009800e2350935460b0107fa922f1a046361ee231355cea51e',
+         'name': '23_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '23',
+         'roster_id': 23,
+         'primary': '#003594',
+         'secondary': '#FFD100'},
+ 'LAC': {'outer': 48,
+         'outer_id': 315397376,
+         'chunk': 0,
+         'pack_offset': 18343936,
+         'span_size': 16592,
+         'span_sha256': '85080521b4d47bca908dc6e07ddb7d79a7892065a9591bd9803bec3e65ad1bb6',
+         'decoded_sha256': '2eaa74957b253e7bda3e0bb665bd168f4888bbacf93f2cd008b05d9b2e9ecc7f',
+         'name': '24_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '24',
+         'roster_id': 8,
+         'primary': '#0080C6',
+         'secondary': '#FFC20E'},
+ 'SF': {'outer': 49,
+        'outer_id': 4245618238,
+        'chunk': 0,
+        'pack_offset': 18450432,
+        'span_size': 14768,
+        'span_sha256': '9c411080c1001f0f6cc003bbcc433156453b60c6df2c7a4e53ff70d9f77cee85',
+        'decoded_sha256': '8061b40a314ead7fb4d86782afd574491a094f830d5f78f559f078f8a44fa694',
+        'name': '25_teamlogo_00_h0',
+        'width': 256,
+        'height': 256,
+        'format_name': 'P8',
+        'asset_code': '25',
+        'roster_id': 0,
+        'primary': '#AA0000',
+        'secondary': '#B3995D'},
+ 'SEA': {'outer': 50,
+         'outer_id': 372852029,
+         'chunk': 0,
+         'pack_offset': 18552832,
+         'span_size': 8016,
+         'span_sha256': '2b801336d6088139a27e902a3f8548af037d66883f4c67bf7c61ce0de48ded98',
+         'decoded_sha256': 'c54626a8e5cfe680cc96f5e8cfdfc77af95c0bebb256ac1829d19e733a3aa539',
+         'name': '26_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '26',
+         'roster_id': 27,
+         'primary': '#002244',
+         'secondary': '#69BE28'},
+ 'TB': {'outer': 51,
+        'outer_id': 4193988099,
+        'chunk': 0,
+        'pack_offset': 18649088,
+        'span_size': 20608,
+        'span_sha256': 'e6d7a486baf2dca48c37a254807a15d24374e7d5b4a3c3f974b47a76141739b9',
+        'decoded_sha256': 'aa2ec1f9fad10cd70f53e267408278e6d3fc47688e3f46f823af985c08c1ee46',
+        'name': '27_teamlogo_00_h0',
+        'width': 256,
+        'height': 256,
+        'format_name': 'P8',
+        'asset_code': '27',
+        'roster_id': 6,
+        'primary': '#D50A0A',
+        'secondary': '#34302B'},
+ 'TEN': {'outer': 52,
+         'outer_id': 149976462,
+         'chunk': 0,
+         'pack_offset': 18759680,
+         'span_size': 14624,
+         'span_sha256': '5ec3d1babde8cb5f9f2f73a8158354fe7558908da45ed979dcf3256ff32c5199',
+         'decoded_sha256': 'e44ab9d1612281868ce3adf60396bc3805c6a35ffee69bf5a202533f13cb2e7a',
+         'name': '28_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '28',
+         'roster_id': 30,
+         'primary': '#0C2340',
+         'secondary': '#4B92DB'},
+ 'WAS': {'outer': 53,
+         'outer_id': 3878821552,
+         'chunk': 0,
+         'pack_offset': 18860032,
+         'span_size': 21040,
+         'span_sha256': '00a7f07682f5046165b9050d26f080effe34ec9f9642bb622ee3443e0b2c8c58',
+         'decoded_sha256': 'ca989b4be598f9da3bbb9ac2278ae9bdb1aa7dfa54247b688f9da748f6c022c4',
+         'name': '29_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '29',
+         'roster_id': 25,
+         'primary': '#5A1414',
+         'secondary': '#FFB612'},
+ 'CLE': {'outer': 54,
+         'outer_id': 2156034325,
+         'chunk': 0,
+         'pack_offset': 18968576,
+         'span_size': 14800,
+         'span_sha256': '86ca90f3c4c7cfff362af7a9801ef7bc25b5494894ff3840d87b9f8b12a51418',
+         'decoded_sha256': '366b999c0b8cace06fffc5b43e0093f9bf65f30b48e72f0fe2b786e9a43fe108',
+         'name': '30_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '30',
+         'roster_id': 5,
+         'primary': '#311D00',
+         'secondary': '#FF3C00'},
+ 'HOU': {'outer': 60,
+         'outer_id': 1650352748,
+         'chunk': 0,
+         'pack_offset': 19605504,
+         'span_size': 14736,
+         'span_sha256': 'a7dfcb5709ce1453254ace8610cac688358006de16cf18f590f9ce2582328ea9',
+         'decoded_sha256': 'd4b5eb05d6844295a081e20f11c55f654b44f7886ab072b48db54ba64ed76f85',
+         'name': '37_teamlogo_00_h0',
+         'width': 256,
+         'height': 256,
+         'format_name': 'P8',
+         'asset_code': '37',
+         'roster_id': 29,
+         'primary': '#03202F',
+         'secondary': '#A71930'}}
+
+PATCHED_SHA256 = {'score_bug': '475efc3d7aa03535f8f807dbdca0baaa32928faf2ade9116551c7bb57039c732', 'score_buga': '72aee2c09b471c6f07e3658c00ef6f204021f3f6065cd96344c7c72d30df9947'}
+
+XBE_GUARDS = [(1032608, 89, '087132e1b01db50d2ab03c33faa583c44217fd8de4e2813c85640985f535719e', 'material binding'), (1037040, 294, '7c7e00839242a825fa4d3c361dec3d4da4bec327735f107599872ddf59e3444e', 'score rotation'), (1031728, 33, 'da040c2ad99c4a69867d6256db6ddf1c2c72be543a13cd430f10d4e743216935', 'play clock formatter'), (1030928, 128, '769ae0697334bb1cb70488d0168b78cc7534a0b18c341038d7366d5f3586703f', 'play clock getter')]
+
+LEGACY_DIGITAL_FONT = {'chunk': 46,
+ 'decoded_sha256': '93734b3fc608965e9ad2b10b7762c5cb97b7cc18d7a36bad5a80e9ebcdd97293',
+ 'format_name': 'P8',
+ 'height': 128,
+ 'name': 'digital_font',
+ 'outer': 3,
+ 'outer_id': 2397695725,
+ 'pack_offset': 1092464,
+ 'span_sha256': 'fdfac95dae8920078b4ac3a9f02e00864868c285b1cdde8a18fbcaa71b2139b3',
+ 'span_size': 2752,
+ 'width': 128}
+
+# Runtime resource collection. Pixel data is derived from the user's retail disc.
+# These are ordinary native TXTR resources in the same HUD outer as score_bug.
+RUNTIME_VERSION = "scorebug-runtime-v1"
+HUD_OUTER_INDEX, HUD_START, HUD_SIZE = 346, 109895680, 2977184
+RUNTIME_TEXTURE_COUNT, RUNTIME_TEXTURE_SPAN = 264, 5280
+RUNTIME_APPEND_SIZE = RUNTIME_TEXTURE_COUNT * RUNTIME_TEXTURE_SPAN
+RUNTIME_GROWTH = ((HUD_SIZE + RUNTIME_APPEND_SIZE + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
+# Filled by the reproducible compiler; no game bytes are distributed.
+RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': 'a36b11dcf12e8b2f9948206e487cf074486fdaaa67bfc1a68d7044882e4b5b1c', 'appendix': '5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49'}
+
+
+def runtime_panel_name(asset_code, side, count):
+    if asset_code not in {r["asset_code"] for r in TEAM_LOGOS.values()} | {"--"}:
+        raise ValueError("unknown panel identity")
+    if side not in ("home", "away") or type(count) is not int or not 0 <= count <= 3:
+        raise ValueError("invalid panel side or timeout count")
+    return f"sb{asset_code}{side[0]}{count}"
+
+
+def runtime_panel(template, image, name):
+    """128x32 swizzled P8, native 128-byte system buffer and 5120-byte video.
+
+    The existing quantizer/swizzler produce the pixels. Uncompressed wrappers
+    avoid adding any VC-LZ overlap/scratch requirement to the grown collection.
+    """
+    import struct
+    from . import nfl2k5_scorebug_ingame as r
+    import nfl_tset_png_import as palettes
+    decoded = r.pinned(template, RESOURCES["score_buga"])
+    system = bytearray(decoded[:128])
+    encoded_name = (name + "\0").encode("utf-16le")
+    if len(encoded_name) > 24 or image.size != (128, 32):
+        raise ValueError("invalid runtime texture dimensions/name")
+    system[32:56] = encoded_name.ljust(24, b"\0")
+    struct.pack_into("<I", system, 56 + 12, 0x05710B29)  # 2D, P8, 1 mip, 128x32
+    palette, levels, _ = palettes.quantize_levels([palettes.MipLevel(0, 128, 32, image.tobytes())], 128)
+    video = r.tx.swizzle_2d(levels[0], 128, 32, 1) + palettes.palette_bytes(palette)
+    body = bytes(system) + video
+    header = struct.pack("<4s7I", b"TXTR", len(body), 128, len(video), 0, 0, 0, 0)
+    result = header + body
+    chunk, roundtrip, _ = r.decode(result)
+    tex = r.tx.parse_texture(roundtrip, chunk)
+    if len(result) != RUNTIME_TEXTURE_SPAN or roundtrip != body or (tex.width, tex.height, tex.name) != (128, 32, name):
+        raise ValueError("runtime native TXTR round trip failed")
+    return result
+
+
+def panel_states(span, team, side):
+    """Yield four source images, 0..3 actual remaining timeout dashes."""
+    from PIL import Image, ImageDraw
+    from . import nfl2k5_scorebug_ingame as r
+    if team is None:
+        im = Image.new("RGBA", (128, 32))
+        d = ImageDraw.Draw(im)
+        for x in range(128):
+            v = round(75 * (1 - (x if side == "away" else 127-x)/127) + 17 * (x if side == "away" else 127-x)/127)
+            d.line((x, 0, x, 31), fill=(v, v, v + 5, 255))
+    else:
+        data, _ = r.stage_team_panel(span, team, side=side)
+        im = Image.frombytes("RGBA", (128, 32), data)
+    for count in range(4):
+        state = im.copy()
+        d = ImageDraw.Draw(state)
+        for n, x in enumerate((103, 112, 121)):
+            dx = x if side == "away" else 127-x
+            d.line((dx, 30, dx + 4, 30), fill=(230, 230, 232, 255) if n < count else (55, 55, 60, 255))
+        yield state
+
+
+def compile_runtime_collection(pack):
+    """Pure bounded pack-0 compiler, retaining all unrelated bytes and entries.
+
+    Insert at the end of outer 346, expand its existing index entry and pack 0,
+    and move later virtual offsets by the same sector count. Other packs do not
+    move physically. The old outer's chunks keep their offsets and wrappers.
+    """
+    import struct
+    from . import nfl2k5_scorebug_ingame as r
+    import nfl_outer as outer
+    state = runtime_pack_status(pack)
+    if state == "applied":
+        return pack, {"status": "already_applied", "changed_bytes": 0, "growth": 0}
+    if state != "retail":
+        raise ValueError("foreign/mixed scorebug collection; rebuild from retail resources")
+    inputs = {n: pack[v["pack_offset"]:v["pack_offset"] + v["span_size"]] for n, v in RESOURCES.items()}
+    patches = {"score_bug": r.stage_binding_scene(inputs["score_bug"], runtime=True)[0],
+               "score_buga": r.apply(inputs["score_buga"], "score_buga", inputs=inputs)[0]}
+    panels, receipts = [], []
+    for team, record in [(None, {"asset_code": "--"})] + sorted(TEAM_LOGOS.items()):
+        span = b"" if team is None else pack[record["pack_offset"]:record["pack_offset"] + record["span_size"]]
+        for side in ("home", "away"):
+            for count, image in enumerate(panel_states(span, team, side)):
+                name = runtime_panel_name(record["asset_code"], side, count)
+                data = runtime_panel(inputs["score_buga"], image, name)
+                receipts.append(dict(name=name, team=team, side=side, timeouts=count, size=len(data), sha256=r.digest(data)))
+                panels.append(data)
+    appendix = b"".join(panels)
+    if len(appendix) != RUNTIME_APPEND_SIZE:
+        raise ValueError("runtime texture collection size changed")
+    end = HUD_START + HUD_SIZE
+    aligned_end = outer.align_up(end)
+    new_end = outer.align_up(end + len(appendix))
+    result = bytearray(pack[:end] + appendix + bytes(new_end - end - len(appendix)) + pack[aligned_end:])
+    for name, data in patches.items():
+        start = RESOURCES[name]["pack_offset"]
+        result[start:start + len(data)] = data
+    entries = struct.unpack_from("<I", pack)[0]
+    struct.pack_into("<I", result, 12, len(result) // 2048)
+    struct.pack_into("<I", result, outer.HEADER_SIZE + HUD_OUTER_INDEX * 12 + 4, HUD_SIZE + len(appendix))
+    for i in range(HUD_OUTER_INDEX + 1, entries):
+        at = outer.HEADER_SIZE + i * 12 + 8
+        old = struct.unpack_from("<I", pack, at)[0]
+        struct.pack_into("<I", result, at, old + RUNTIME_GROWTH // 2048)
+    result = bytes(result)
+    if runtime_pack_status(result) != "applied":
+        raise ValueError("runtime collection postcondition failed")
+    return result, dict(status="applied", version=RUNTIME_VERSION, experimental=True, runtime_witnessed=False,
+                        growth=len(result)-len(pack), sha256_before=r.digest(pack), sha256_after=r.digest(result),
+                        outer_index=HUD_OUTER_INDEX, outer_size_before=HUD_SIZE,
+                        outer_size_after=HUD_SIZE+RUNTIME_APPEND_SIZE, resources=receipts,
+                        scene_sha256=r.digest(patches["score_bug"]), atlas_sha256=r.digest(patches["score_buga"]),
+                        appendix_sha256=r.digest(appendix),
+                        transport="sector insertion in pack 0; all later index offsets move equally")
+
+
+def runtime_pack_status(pack):
+    import struct
+    from . import nfl2k5_scorebug_ingame as r
+    import nfl_outer as outer
+    try:
+        grown = len(pack) == r.PACK_SIZE + RUNTIME_GROWTH
+        if len(pack) != (r.PACK_SIZE + RUNTIME_GROWTH if grown else r.PACK_SIZE):
+            return "foreign"
+        count, reserved, packs = struct.unpack_from("<III", pack)
+        if count != 4323 or reserved != 0 or not 1 <= packs <= 36:
+            return "foreign"
+        table = bytearray(pack[:outer.HEADER_SIZE + count * 12])
+        if grown:
+            struct.pack_into("<I", table, 12, r.PACK_SIZE // 2048)
+            struct.pack_into("<I", table, outer.HEADER_SIZE + HUD_OUTER_INDEX * 12 + 4, HUD_SIZE)
+            for i in range(HUD_OUTER_INDEX + 1, count):
+                at = outer.HEADER_SIZE + i * 12 + 8
+                old = struct.unpack_from("<I", table, at)[0]
+                struct.pack_into("<I", table, at, old - RUNTIME_GROWTH // 2048)
+        if r.digest(table) != RUNTIME_PINS["index"]:
+            return "foreign"
+        # Check real grown header fields BEFORE normalization, not just its inverse.
+        if struct.unpack_from("<I", pack, 12)[0] * 2048 != len(pack):
+            return "foreign"
+        at = outer.HEADER_SIZE + HUD_OUTER_INDEX * 12
+        if struct.unpack_from("<III", pack, at) != (11965036, HUD_SIZE + (RUNTIME_APPEND_SIZE if grown else 0), HUD_START // 2048):
+            return "foreign"
+        hud = pack[HUD_START:HUD_START + HUD_SIZE]
+        expected = "hud_after" if grown else "hud_before"
+        if r.digest(hud) != RUNTIME_PINS[expected]:
+            return "foreign"
+        if grown:
+            end = HUD_START + HUD_SIZE
+            if r.digest(pack[end:end + RUNTIME_APPEND_SIZE]) != RUNTIME_PINS["appendix"]:
+                return "foreign"
+            if any(pack[end + RUNTIME_APPEND_SIZE:outer.align_up(end + RUNTIME_APPEND_SIZE)]):
+                return "foreign"
+        return "applied" if grown else "retail"
+    except (ValueError, KeyError, IndexError, struct.error):
+        return "foreign"
+
+# Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
+RUNTIME_ABI_GUARDS = [(1035472, 407, 'fae55450eb58f087e0e31b50636342c39d7b7df70361fae6b2ccda6e2fedfa60'), (1035888, 1466, 'fadbe0384fccb436be4f0fe52514aa9e38c543288a471ffc6b44e9ffde365b2f'), (1034688, 780, 'bdc0d7cda462c37ec5546944605fe12141a83c798965b78ebe5abe8467d379df'), (1031280, 73, '1fea8eb67ed1d7df96e85562ec8d79075736ed4d10e5cfbe18f1b7be05c01e60'), (281056, 104, '710fd5ba9fd2a147042dd4c5f133cc2a8d36dcdc10b47417d17ec65df9b46191'), (279504, 770, '1caaf5b258e1849435c7ed69dbc970f9ce5f265415c4dadecee3bef94dc8d6b3'), (199744, 37, 'dd3d52cc45c43dc86d8db7220d777346237b324dd9a00dce35c9de3362bbfdee'), (277792, 136, '03233a25e1afc3ef91892233872e5b9cf29404be7b250dbf17a62db248949d9f'), (282016, 20, '0ee1f6425e946ec6d8dd4aeae08c6ae211e9de4ba09f9648a75f052d1c6bed6e'), (216560, 108, 'f84f040777759d3417fb8bee34ab8e046cf40255e18c467530417ae504aad29c'), (216080, 267, '69266ee656258cc0c7c3f770b0a650452d18c4c84251088bb204fbecb3afa2fe'), (754112, 58, '13cd2011501c1d9567889a32898a944b6cd7dee7769062e7ad57a0994614c674'), (1032272, 29, '02136e09af5b89365ab949b6cdd50c82e2c705bf3e4a9a585f6561234e33de99'), (1032304, 29, '730201c327a46bc2ee757b942eef6efb387d47a9aa5d9cdde452e5539a296222'), (400464, 6, 'b47138018b9b2ec278b17d759b0d8e54f0c9c5c9181510e9d3716d37aa74d6a4'), (400480, 6, '7d1ab1e0e220598d0dfeec086c9327bcec8699bc836f0ee2d3930a8e3d500e9b'), (1031584, 9, '5e68b2fc2391d42f537a7a352387790a5c46114bbe4f2197a6293a5a9a6f1b63'), (1034192, 446, '61eb66a3851ced7740b600c9b2ec8dc32c1fcfdb6c980ae7995b78407b23390a'), (15124024, 24, '9385e4da55d331aa5b8649841a9206ccd44b267e2a05abb359cb178b7d862f67'), (15124276, 24, 'c9ce8e336a66c1f198ee4f2a11052c232675558077c0f6e328e689d5bd52aee2')]
+
+RUNTIME_SCENE_SHA256 = '8021de322c4c97b367eafff7ede305358648e20b7a9378925714ba77bf7f0624'

@@ -74,6 +74,23 @@ class PlaybookNode:
     raw_hex: str
 
     @property
+    def condition(self) -> dict | None:
+        """Decoded branch details, including the two distinct node indices."""
+        if self.opcode != 0x1A:
+            return None
+        from .nfl2k5_play_codec import Node
+        v = Node.from_bytes(bytes.fromhex(self.raw_hex)).operands
+        return dict(kind=int(v[0]), x_cm=v[1], y_cm=v[2], actor_slot=int(v[3]),
+                    alternate_index=int(v[4]), team="opponent" if v[5] else "friendly",
+                    argument=int(v[6]), human_input=bool(v[7]), flags=self.flags,
+                    alternate_path=bool(self.flags & 1), terminal=self.ends_chain)
+
+    @property
+    def description(self) -> str:
+        from .nfl2k5_play_codec import Node
+        return Node.from_bytes(bytes.fromhex(self.raw_hex)).describe()
+
+    @property
     def ends_chain(self) -> bool:
         """Corpus-proved candidate terminal marker (flags bit 1)."""
 
@@ -98,6 +115,11 @@ class PlaybookAssignment:
     slot_index: int
     descriptor_word: int
     chain_start_index: int
+
+    @property
+    def declared_length(self) -> int:
+        """Runtime reader 0x1A8C00 uses only the descriptor's low nibble."""
+        return self.descriptor_word & 0xF
 
 
 @dataclass(frozen=True)
@@ -161,6 +183,19 @@ class Nfl2k5Playbook:
         raise ValidationError(
             f"Playbook {self.book_name} has no chain beginning at node {start_index}."
         )
+
+    def assignment_chain(self, assignment: PlaybookAssignment) -> PlaybookChain:
+        """The runtime span, excluding orphan nodes in an inferred extent."""
+        start = assignment.chain_start_index
+        end = start + assignment.declared_length
+        if not assignment.declared_length or end > self.node_count:
+            raise ValidationError("PLAY assignment has an invalid declared length.")
+        nodes = tuple(node for chain in self.chains
+                      if chain.end_index > start and chain.start_index < end
+                      for node in chain.nodes if start <= node.index < end)
+        if len(nodes) != assignment.declared_length:
+            raise ValidationError("PLAY assignment has a truncated declared chain.")
+        return PlaybookChain(start, end, nodes)
 
     def plays_for_formation(
         self, formation: PlaybookFormation | int
@@ -286,6 +321,12 @@ def _parse_body(
                     f"play {play_index}, slot {slot_index}."
                 )
             start = (target - NODE_BASE) // NODE_SIZE
+            count = descriptor & 0xF
+            if not count or start + count > node_count:
+                raise ValidationError(
+                    f"PLAY assignment has an invalid declared length: "
+                    f"play {play_index}, slot {slot_index}."
+                )
             chain_starts.add(start)
             assignments.append(PlaybookAssignment(slot_index, descriptor, start))
         play_rows.append(PlaybookPlay(
@@ -513,3 +554,18 @@ __all__ = [
     "corpus_counts",
     "parse_playbook_resource",
 ]
+
+
+def inspect_defense(resource: bytes, *, asset_id: str = "defense-inspect") -> dict:
+    """Read back native personnel namespaces and effective front/coverage pairs.
+
+    An authored Spy is deliberately indistinguishable from a shallow zone in
+    PLAY bytes. Its versioned play/slot intent must be read from the project or
+    compiler receipt, never guessed from geometry or a play name.
+    """
+    from . import nfl2k5_play_library as lib
+    book = parse_playbook_resource(resource, asset_id=asset_id)
+    body = resource[RESOURCE_HEADER_SIZE:]
+    formations = [f for f in lib.defense_formations(book, body) if lib.defense_pairs(book, body, f)]
+    return dict(evidence=lib.DEFENSE_EVIDENCE, formations=lib.defense_menu_audit(book, body, formations),
+                spy_runtime_available=False)

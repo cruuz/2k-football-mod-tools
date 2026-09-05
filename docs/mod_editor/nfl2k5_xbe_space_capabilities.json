@@ -1,0 +1,128 @@
+[
+  {
+    "id": "nfl2k5.gameplay.xbe_space",
+    "game": "nfl2k5_xbox",
+    "surface": "scripts_config",
+    "title": "Extra patch space (experimental, unwitnessed)",
+    "summary": "Add two bounded preloaded sections with named allocations and preserve SPECIAL.",
+    "classification": "offline-writer-proved",
+    "backend": {
+      "command": null,
+      "module": "mod_editor/core/nfl2k5_xbe_space.py",
+      "operation": "write"
+    },
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL/UNWITNESSED. Enable only in the experimental preset after protected build integration."
+    },
+    "input_constraints": [
+      "User-owned pinned NFL 2K5 USA XBE geometry in a disposable disc copy.",
+      "Recognized existing owners, bounded named allocations and matching kickoff settings; rebuild from base to change allocations."
+    ],
+    "portme": [
+      "Complete WIRING.md and regenerate the reservation manifest.",
+      "Witness boot, logo availability and both-direction kickoff lineup, hold and contact release."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "tooling": "source-and-schemas-only",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc."
+    },
+    "runtime": {
+      "status": "not-tested",
+      "evidence": [
+        "ASTRA_XBE_SPACE_REPORT.md"
+      ],
+      "scope": "Only bounded Unicorn execution is proved. Actual kernel/xemu loading, new bitmap availability before boot drawing and played kickoffs remain unwitnessed."
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "xbe_space",
+          "required": true,
+          "allowed": "false by default; true only for an experimental disc build"
+        }
+      ],
+      "notes": "Relocated kickoff implies extra space, dynamic kickoff, kickoff alignment and kick rules."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc",
+      "resource": "section headers and owned executable/data regions",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ]
+    },
+    "evidence": [
+      "ASTRA_XBE_SPACE_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_xbe_space.py"
+    ],
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_xbe_space.py"
+  },
+  {
+    "id": "nfl2k5.gameplay.kickoff_relocated",
+    "game": "nfl2k5_xbox",
+    "surface": "gameplay_tuning_sliders",
+    "title": "Kickoff in extra space (experimental, unwitnessed)",
+    "summary": "Relocate the existing dynamic kickoff with equivalent instructions and separate writable state.",
+    "classification": "offline-writer-proved",
+    "backend": {
+      "command": null,
+      "module": "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py",
+      "operation": "write"
+    },
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL/UNWITNESSED. Enable only in the experimental preset after protected build integration."
+    },
+    "input_constraints": [
+      "User-owned pinned NFL 2K5 USA XBE geometry in a disposable disc copy.",
+      "Recognized existing owners, bounded named allocations and matching kickoff settings; rebuild from base to change allocations."
+    ],
+    "portme": [
+      "Complete WIRING.md and regenerate the reservation manifest.",
+      "Witness boot, logo availability and both-direction kickoff lineup, hold and contact release."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "tooling": "source-and-schemas-only",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc."
+    },
+    "runtime": {
+      "status": "not-tested",
+      "evidence": [
+        "ASTRA_XBE_SPACE_REPORT.md"
+      ],
+      "scope": "Only bounded Unicorn execution is proved. Actual kernel/xemu loading, new bitmap availability before boot drawing and played kickoffs remain unwitnessed."
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "kickoff_relocated",
+          "required": true,
+          "allowed": "false by default; true only for an experimental disc build"
+        }
+      ],
+      "notes": "Relocated kickoff implies extra space, dynamic kickoff, kickoff alignment and kick rules."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc",
+      "resource": "section headers and owned executable/data regions",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ]
+    },
+    "evidence": [
+      "ASTRA_XBE_SPACE_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_xbe_space.py"
+    ],
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_xbe_space.py"
+  }
+]

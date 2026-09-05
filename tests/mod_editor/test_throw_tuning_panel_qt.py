@@ -133,8 +133,7 @@ class ThrowTuningPanelTests(unittest.TestCase):
         self.assertFalse(self.panel.has_changes())
 
 
-if __name__ == "__main__":
-    unittest.main()
+
 
 
 class EdgeRenameCheckboxTests(unittest.TestCase):
@@ -184,3 +183,6 @@ class EdgeRenameCheckboxTests(unittest.TestCase):
         self.assertIn("EDGE rename applied", self.panel.source_status.text())
         self.assertFalse(self.panel.has_changes())
 
+
+if __name__ == "__main__":
+    unittest.main()

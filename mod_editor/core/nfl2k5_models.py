@@ -499,6 +499,40 @@ class ModelSource:
         )
 
 
+class ModelSpanSource:
+    """An in-memory SCNE source for export/compile, without an archive inventory.
+
+    Keys retain their real outer/chunk identities. Callers own source hash pins
+    and disc placement; this adapter cannot write an image or invent extents.
+    """
+
+    def __init__(self, spans: Mapping[str, bytes]) -> None:
+        self._probe = _tools_module("nfl_scene_probe")
+        self._spans = {key: bytes(span) for key, span in spans.items()}
+        self.resources = {}
+        for key, span in self._spans.items():
+            outer, chunk = parse_model_key(key)
+            _require(len(span) >= HEADER_SIZE, f"{key}: truncated SCNE wrapper")
+            kind, stored, system, video, magic, scratch, r0, r1 = struct.unpack_from("<4s7I", span)
+            _require(kind == b"SCNE" and stored == len(span) - HEADER_SIZE
+                     and magic == 0xFEEDBEEF and r0 == r1 == 0
+                     and 0 < system + video <= 64 * 1024 * 1024,
+                     f"{key}: invalid compressed SCNE span")
+            self.resources[(outer, chunk)] = self._probe.ResourceRecord(
+                outer, "resource-bytes", len(span), chunk, 0, "SCNE", stored,
+                system, video, magic, scratch, source="resource-bytes")
+        self._scene_positions = {identity: i for i, identity in enumerate(self.resources)}
+
+    resource = ModelSource.resource
+    scene_index = ModelSource.scene_index
+    decode = ModelSource.decode
+    decode_span = ModelSource.decode_span
+    parse = ModelSource.parse
+
+    def span(self, resource: Any) -> bytes:
+        return self._spans[model_key(resource.outer_index, resource.chunk_index)]
+
+
 # ------------------------------------------------------------------ shape decoding
 
 @dataclass

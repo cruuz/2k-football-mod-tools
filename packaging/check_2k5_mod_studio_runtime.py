@@ -97,9 +97,9 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "111cc430b65395a15c17147591f590058eac644806ffb92299f15dabf30d688e",
+        "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "e51f9c26fc708708650f19948787a62812fafe939eefe61c3cf2dacdb46789c5",
+        "6ace3c80c4a7ce310298aedc4fdba6f40890f9e92258561a99b644b753346b57",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -107,9 +107,9 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/facade.py":
         "9e53ff74c87926bdb54f5329abefb5090e0915a4bdf194db0d570dd4e638aa93",
     "mod_editor/studio/project_archive.py":
-        "613e98767acae90e949ca5d4a7dc28611cc8fee12e7c036b9d2c2583154077ee",
+        "cdda01f3ef5341d7a238cae0c0d98c15fbfed37d5011710e406c97cc963c3d36",
     "mod_editor/studio/session.py":
-        "bc0afff3d6e1f2d53de00dfba8d6015ff530fcf093a1ce00b09df0828d2d583e",
+        "8ad359de6df43093836b26d0d4301f4b108221fb2fde775ebd048da28bf4e679",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
@@ -1342,7 +1342,7 @@ def _exercise_playbook(playbook_module: object, panel_module: object) -> None:
 
     for slot in range(playbook_module.ASSIGNMENT_COUNT):
         assignment = playbook_module.PLAY_BASE + 8 + slot * 8
-        struct.pack_into("<I", body, assignment, 0x1000 + slot)
+        struct.pack_into("<I", body, assignment, 0x1002 + slot * 16)
         relative(assignment + 4, playbook_module.NODE_BASE)
     body[playbook_module.NODE_BASE:playbook_module.NODE_BASE + 16] = bytes(
         (0x01, 0x00, 1, 2, 3, 4, 5, 6,
@@ -1669,6 +1669,22 @@ def main() -> int:
                 f"private or retail-derived {forbidden} data was included in the release")
 
     product_modules = (
+        "mod_editor.core.nfl2k5_momentum",
+        "mod_editor.core.nfl2k5_momentum_code",
+        "mod_editor.core.nfl2k5_defensive_try",
+        "mod_editor.core.nfl2k5_zone_drop",
+
+        "mod_editor.core.nfl2k5_cave_oracle",
+        "mod_editor.gui.play_designer_qt",
+        "mod_editor.gui.create_play_wizard_qt",
+        "mod_editor.core.nfl2k5_play_codec",
+        "mod_editor.core.nfl2k5_play_library",
+        "mod_editor.gui.animations_panel_qt",
+        "mod_editor.core.nfl2k5_animation_math",
+        "mod_editor.core.nfl2k5_animation",
+        "mod_editor.core.nfl2k5_screen_timing",
+        "mod_editor.core.nfl2k5_p8_texture_writer",
+        "mod_editor.core.nfl2k5_guardian_cap",
         "mod_editor.__main__",
         "mod_editor.core.capabilities",
         "mod_editor.core.controller",
@@ -1780,6 +1796,11 @@ def main() -> int:
         "mod_editor.core.nfl2k5_special_roles",
         "mod_editor.core.nfl2k5_practice_squad",
         "mod_editor.core.nfl2k5_practice_squad_runtime",
+        "mod_editor.core.nfl2k5_practice_reserves",
+        "mod_editor.core.nfl2k5_depth_locks",
+        "mod_editor.core.nfl2k5_season_cap",
+        "mod_editor.core.nfl2k5_xbe_space",
+        "mod_editor.core.nfl2k5_dynamic_kickoff_relocated",
         "mod_editor.core.nfl2k5_playoff_picture",
         "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_career_stats",
@@ -1829,6 +1850,18 @@ def main() -> int:
         "mod_editor.games.madden09_ps2.code_patches",
         "mod_editor.games._formats.ea_tdb",
         "mod_editor.games.madden09_ps2.identity_lane",
+        'mod_editor.core.nfl2k5_scorebug_runtime',
+        'mod_editor.core.nfl2k5_scorebug_resources',
+        'mod_editor.core.nfl2k5_scorebug_ingame',
+        'mod_editor.core.nfl2k5_music_policy',
+        'mod_editor.core.nfl2k5_music_catalog',
+        'mod_editor.core.nfl2k5_music_build',
+        'mod_editor.core.nfl2k5_music_banks',
+        'mod_editor.core.nfl2k5_music_metadata',
+        'mod_editor.core.nfl2k5_music_storage',
+        'mod_editor.core.nfl2k5_music_archive',
+        'mod_editor.studio.music_service',
+        'mod_editor.gui.music_panel_qt',
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1842,8 +1875,65 @@ def main() -> int:
 
     modules = {name: importlib.import_module(name) for name in product_modules}
     _exercise_texture_master(modules["mod_editor.core.texture_master"])
+    packs = modules["mod_editor.core.nfl2k5_playbook_pack"]
+    require(packs.load_pack(ROOT / "data/playbooks/softdrink_modern_defense.2k5book").schema == packs.DEFENSE_SCHEMA,
+            "bundled modern defense pack must retain its v2 intent schema")
+    option = packs.load_pack(ROOT / "data/playbooks/softdrink_option.2k5book")
+    require(option.schema == packs.OPTION_SCHEMA and len(option.plays) == 8
+            and not option.formations and packs.check_pack(option).ok, "bundled option pack contract changed")
+    music = modules["mod_editor.core.nfl2k5_music_build"]
+    music._banks_module()
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PyQt5.QtWidgets import QApplication
+    qt_app = QApplication.instance() or QApplication([])
+    panel = modules["mod_editor.gui.music_panel_qt"].MusicPanel()
+    require(panel.service is None and not panel.operation_in_progress, "empty Music panel is not idle")
+    panel.close()
+    panel.deleteLater()
+    qt_app.processEvents()
+    runtime = modules["mod_editor.core.nfl2k5_scorebug_runtime"]
+    require(bool(runtime.REQUESTS) and runtime.status(b"bad") == "foreign", "runtime scorebug gate changed")
+    art = modules["mod_editor.core.nfl2k5_scorebug_resources"]
+    require(bool(art.runtime_panel_name(art.TEAM_LOGOS["MIN"]["asset_code"], "away", 3)), "runtime panel names unavailable")
+    import contextlib
+    with contextlib.redirect_stdout(io.StringIO()):
+        try:
+            importlib.import_module("nfl2k5_scorebug_reference").main(["--help"])
+        except SystemExit as exc:
+            require(exc.code == 0, "scorebug CLI help parser failed")
+    animation = modules["mod_editor.core.nfl2k5_animation"]
+    for name in ("nfl_outer", "nfl_motion_inventory", "nfl_scene_probe", "nfl_scne_inventory", "nfl_txtr", "xbe_info"):
+        animation._tool(name)
+    cap = modules["mod_editor.core.nfl2k5_guardian_cap"]
+    require(all(callable(getattr(cap, name, None)) for name in
+                ("apply_resources", "image_status", "apply_to_image")), "guardian cap API missing")
+    require(callable(modules["mod_editor.core.nfl2k5_models"].ModelSpanSource), "model span reader missing")
+    require(callable(modules["mod_editor.core.nfl2k5_p8_texture_writer"].compile_live_helmet_span),
+            "guardian helmet compiler missing")
+    require(len(cap.matte_cap_rgba()) == 256 * 256 * 4 and cap.status(b"") == "foreign",
+            "guardian artwork generation or foreign-byte gate changed")
+    require(modules["mod_editor.core.nfl2k5_xbe_space"].status(b"") == "foreign",
+            "extra patch space must refuse foreign bytes")
+    require(bool(modules["mod_editor.core.nfl2k5_dynamic_kickoff_relocated"].REQUESTS),
+            "relocated kickoff named allocations missing")
 
+    for name in ("nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop"):
+        owner = modules["mod_editor.core." + name]
+        require(bool(owner.REQUESTS) and owner.status(b"") == "foreign", name + " ownership/foreign gate missing")
+        require(all(callable(getattr(owner, method, None)) for method in ("apply", "code_for")), name + " API missing")
+    require(callable(modules["mod_editor.core.nfl2k5_momentum"].read_settings), "Momentum settings missing")
     tool_modules = (
+        "nfl2k5_music_banks",
+        "nfl2k5_scorebug_reference",
+        "nfl2k5_scorebug_layout",
+        "nfl2k5_playbook_position_recode",
+        "nfl_all_texture_xiso_workflow",
+        "nfl_tset_png_import",
+        "nfl_live_helmet_txtr_png_import",
+        "nfl_vc_lz_fill",
+        "nfl_txtr",
+        "nfl_scene_probe",
+        "nfl_outer",
         "apf_inner",
         "apf_outer",
         "nfl_resource_scan",
@@ -1877,11 +1967,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 86,
+    require(len(registry.capabilities) == 99,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 32,
+    require(len(product_catalog.capabilities) == 45,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2284,8 +2374,8 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=85 sections=12 nfl2k5_capabilities=32 "
-        "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
+        "registry=99 sections=12 nfl2k5_capabilities=45 "
+        "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
         "text_read_only=3272 roster_numbers=6522 "

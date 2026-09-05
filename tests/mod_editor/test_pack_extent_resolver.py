@@ -195,8 +195,8 @@ class PackExtentResolverTests(unittest.TestCase):
         with (
             mock.patch.object(mod_build, "_core_module", core),
             mock.patch.object(mod_build, "_tools_module", tools),
-            mock.patch.object(mod_build, "_xbe_bytes", lambda _p: b"XBEH"),
-            mock.patch.object(mod_build, "inspect", lambda _p: {"stubbed": True}),
+            mock.patch.object(mod_build, "_xbe_bytes", lambda _p, **_kw: b"XBEH"),
+            mock.patch.object(mod_build, "inspect", lambda _p, **_kw: {"stubbed": True}),
             mock.patch.object(mod_build, "PACK0_SIZE", PACK0_SIZE),
             mock.patch.object(mod_build.tt, "write_copy", write_copy),
         ):
