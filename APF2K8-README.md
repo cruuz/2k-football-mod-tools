@@ -591,9 +591,7 @@ Only the selected base mip is regenerated; its packed mip tail, siblings,
 and every unrelated archive entry remain exact. In-game look is not claimed.
 
 The application enforces capability-to-action parity. Its registry contains 37
-APF capabilities (85 across all three registered game/platform targets),
-APF capabilities (86 across all three registered game/platform targets),
-APF capabilities (89 across all three registered game/platform targets),
+APF capabilities (106 across all three registered game/platform targets),
 including dedicated editable `draft_logo` and 206-slot wordmark capabilities. A capability is shown
 as Editable or Export-only only when the matching desktop handler actually
 implements those actions. Semantic findings without a product handler are
