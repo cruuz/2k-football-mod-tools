@@ -1,6 +1,6 @@
 {
   "capability": "nfl2k5ps2.uniforms.replacement_pack_export",
-  "claim": "An exported PCSX2 replacement pack renders in PenguinScreen2: during a GS-dump replay the emulator loaded the exporter's PNGs by their hash names and drew them in place of the disc's textures. Three of the thirteen exported identities are visibly confirmed in the frame; the ten uniform-part identities (sleeves, masks, taped shoes) are not attributable at this frame's scale and are NOT claimed.",
+  "claim": "An exported PCSX2 replacement pack renders in PenguinScreen2: during a GS-dump replay the emulator loaded the exporter's PNGs by their hash names and drew them in place of the disc's textures. Three of the thirteen exported identities are visibly confirmed in the frame against a reference frame from the same dump (see frames.reference_20260904_community_pack_pack_off for what that reference is and is not); the ten uniform-part identities (sleeves, masks, taped shoes) are not attributable at this frame's scale and are NOT claimed.",
   "date": "2026-09-05",
   "dump": {
     "bytes": 13779541,
@@ -33,14 +33,15 @@
       "frame": "frame00002",
       "sha256": "7fa7f763f907e0aa10670050caac54671082b9d44c4a35646d8988dd2f63160c"
     },
-    "stock_reference_20260904_pack_off": {
+    "reference_20260904_community_pack_pack_off": {
       "bytes": 636610,
       "frame": "frame00002",
-      "sha256": "5c7c1c63afa250e37968e0aaa1b8caf64299a6a64bfde8ad840fa78f3977d628"
+      "sha256": "5c7c1c63afa250e37968e0aaa1b8caf64299a6a64bfde8ad840fa78f3977d628",
+      "what_it_is": "The 2026-09-04 route-proof run's pack_off leg: the SAME dump replayed with the 18,476-file community pack linked and ClassicTextureNames=false. It is NOT a pure stock render: 43,529 pixels differ from this run's own pack_off leg (grass and other community-pack art). For the three identities compared (ESPN shield, scorebug, kick-meter dial) it shows the retail-looking art, which is what the before/after rests on."
     }
   },
   "harness": {
-    "caveat": "V4 was designed around the community pack. With this 13-file pack linked, the pack_off leg (ClassicTextureNames=false) ALSO rendered the exported art: a bit-14 name matches under modern naming through the known TCC alias. The visible witness therefore rests on the frame contents against the stock reference, not on V4.",
+    "caveat": "V4 was designed around the community pack. With this 13-file pack linked, the pack_off leg (ClassicTextureNames=false) ALSO rendered the exported art: a bit-14 name matches under modern naming through the known TCC alias. The visible witness therefore rests on the frame contents against the stock reference, not on V4. Second caveat: this run has no pure stock frame of its own, because both of its legs applied the exported pack; the reference frame comes from the 2026-09-04 run with the community pack linked.",
     "duration_s": 10,
     "evidence_dir": "~/classicdump-validate-20260905-023106 (rig; frames are retail imagery and are not committed)",
     "exit": 0,

@@ -5,7 +5,7 @@
 > `nfl2k5ps2.uniforms.replacement_pack_export`, classified `extract-only` because the validator
 > binds `offline-writer-proved` to writers with an edit surface and the registry's own definition of
 > an exporter fits). WP7 witnessed: a 13-file pack exported by the shipped service rendered in
-> PenguinScreen2 `8226182a` by GS-dump replay (ESPN shield, scorebug, kick-meter dial replaced;
+> PenguinScreen2 `8226182a` by GS-dump replay (ESPN shield, scorebug, kick-meter dial replaced against a reference frame from the same dump rendered with the community pack under modern names, not a pure stock frame;
 > the pack's uniform-part textures were not attributable at 640×480 and are not claimed). Report:
 > `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`. Open: a witness of a
 > uniform part on a near-camera player; `runtime-proved` needs a rule extension for exporters.

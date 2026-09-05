@@ -19,7 +19,7 @@
   PCSX2 with `LoadTextureReplacements=true` and `ClassicTextureNames=true`; the receipt carries
   the warning. **Witnessed 2026-09-05** on PenguinScreen2 build `8226182a` by GS-dump replay of a
   gameplay dump: a 13-file pack exported by this service rendered in place of the disc's art (ESPN
-  shield, scorebug and kick-meter dial visibly replaced; the pack's uniform-part textures are not
+  shield, scorebug and kick-meter dial visibly replaced against a reference frame from the same dump; the pack's uniform-part textures are not
   attributable at the frame's scale and are not claimed). Evidence: hashes-only report at
   `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`; frames stay on the rig.
 - Six new `nfl2k5_ps2` capability rows, all `offline-writer-proved` and CLI-only for now
