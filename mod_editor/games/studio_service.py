@@ -612,13 +612,19 @@ class GameStudioService:
         if not requested.is_absolute():
             requested = Path.cwd() / requested
         requested = Path(os.path.abspath(os.fspath(requested)))
+        # The source is checked first: it exists, so the general "already
+        # there" sentence would be true and unhelpful.  Naming what the file
+        # actually is says what to do.
+        if requested.resolve(strict=False) == source.resolve():
+            raise StudioError(
+                "The destination must not be the source you opened; a build writes a NEW file "
+                "and never the one you chose."
+            )
         if os.path.lexists(requested):
             raise StudioError(
                 f"A file already exists there: {requested}. Choose a name that does not exist "
                 "yet; what you opened is never overwritten."
             )
-        if requested.resolve(strict=False) == source.resolve():
-            raise StudioError("The destination must not be the source you opened.")
         parent = requested.parent
         if not parent.is_dir() or parent.is_symlink():
             raise StudioError(f"The destination's folder is missing or is a link: {parent}")

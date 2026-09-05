@@ -1325,6 +1325,9 @@ class GameStudioDialog(QDialog):
         self.setMinimumSize(940, 620)
         self._build_ui()
         self._apply_style()
+        # The build page says what is staged, and "nothing yet" is a state it
+        # has to say out loud before anyone has touched a page.
+        self.refresh_queue()
         self.refresh_controls()
         if self.initial_source is not None:
             QTimer.singleShot(0, lambda: self.open_source(self.initial_source))
