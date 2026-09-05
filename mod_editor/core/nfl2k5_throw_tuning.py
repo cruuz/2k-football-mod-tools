@@ -65,6 +65,9 @@ from . import nfl2k5_depth_chart_storage as depth_chart_storage
 from . import nfl2k5_practice_squad as practice_squad_patch
 from . import nfl2k5_practice_reserves as practice_reserves_patch
 from . import nfl2k5_depth_locks as depth_locks_patch
+from . import nfl2k5_season_cap as season_cap_patch
+from . import nfl2k5_xbe_space as xbe_space_patch
+from . import nfl2k5_dynamic_kickoff_relocated as kickoff_relocated_patch
 from . import nfl2k5_playoff_picture as playoff_picture_patch
 
 
@@ -580,6 +583,15 @@ def apply_arc_table(payload: bytes) -> tuple[bytes, dict[str, object]]:
                      "points": list(ARC_BY_DISTANCE_LOBSPEED)}
 
 
+def _guardian_image_status(path: Path) -> str:
+    # Resource compiler stays lazy for standalone executable readers.
+    try:
+        from . import nfl2k5_guardian_cap as cap
+        return cap.image_status(path)
+    except Exception:  # noqa: BLE001 - an unreadable resource is never an applied patch
+        return "foreign"
+
+
 def read_xbe(xbe_path: Path | str) -> dict[str, object]:
     path = _resolve_source(xbe_path)
     payload = path.read_bytes()
@@ -604,6 +616,12 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "practice_squad": practice_squad_patch.status(payload),
         "practice_reserves": practice_reserves_patch.status(payload),
         "depth_locks": depth_locks_patch.status(payload),
+        "screen_timing": "n/a",
+        "guardian_cap": "n/a",
+        "season_cap": season_cap_patch.status(payload),
+        "xbe_space": xbe_space_patch.status(payload),
+        "kickoff_relocated": kickoff_relocated_patch.status(payload),
+        "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(payload),
         "playoff_picture": playoff_picture_patch.status(payload),
         "kick_power": _kick_power_status(payload),
         "widescreen": widescreen_patch.status(payload),
@@ -665,14 +683,12 @@ def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
     except xc.PatchError as exc:
         raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
     if length != EXPECTED_XBE_SIZE:
-        # the SPECIAL depth-chart rework appends a read-only table page, growing default.xbe to a
-        # single recognised larger size; every other size is refused
-        _require(length == depth_chart_storage.FILE_SIZE,
-                 f"default.xbe inside the image is {length} bytes, not the retail "
-                 f"{EXPECTED_XBE_SIZE} or the SPECIAL layout {depth_chart_storage.FILE_SIZE}")
+        _require(length in (depth_chart_storage.FILE_SIZE, xbe_space_patch.FILE_SIZE),
+                 f"unknown default.xbe grown size: {length}")
         candidate = platform_compat.pread(descriptor, length, offset)
-        _require(len(candidate) == length and depth_chart_rows_patch.status(candidate) == "applied",
-                 "the larger default.xbe is not the recognised SPECIAL depth-chart layout")
+        _require(len(candidate) == length
+                 and depth_chart_storage.recognized_grown_xbe(candidate),
+                 "larger default.xbe has a foreign or incomplete grown layout")
     return int(offset), int(length)
 
 
@@ -719,6 +735,12 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "practice_squad": practice_squad_patch.status(payload),
         "practice_reserves": practice_reserves_patch.status(payload),
         "depth_locks": depth_locks_patch.status(payload),
+        "screen_timing": "unchecked",
+        "guardian_cap": _guardian_image_status(path),
+        "season_cap": season_cap_patch.status(payload),
+        "xbe_space": xbe_space_patch.status(payload),
+        "kickoff_relocated": kickoff_relocated_patch.status(payload),
+        "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(payload),
         "playoff_picture": playoff_picture_patch.status(payload),
         "kick_power": _kick_power_status(payload),
         "widescreen": widescreen_patch.status(payload),
@@ -948,6 +970,20 @@ class _dynamic_kickoff_adapter:
         return dynamic_kickoff_patch.apply(payload, **self.settings)
 
 
+class _xbe_space_adapter:
+    def __init__(self, with_kickoff: bool):
+        self.requests = kickoff_relocated_patch.REQUESTS if with_kickoff else ()
+
+    def status(self, payload):
+        state = xbe_space_patch.status(payload)
+        if state == "applied":
+            xbe_space_patch.apply(payload, self.requests)
+        return state
+
+    def apply(self, payload):
+        return xbe_space_patch.apply(payload, self.requests)
+
+
 def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]]] | None,
                catch_slider: bool, accel_ramp: bool = False, draft_ai: bool = False,
                edge_rename: bool = False, returner_fix: bool = False,
@@ -963,10 +999,13 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                dynamic_kickoff: bool = False,
                dynamic_kickoff_settings: Mapping[str, object] | None = None,
                depth_chart_rows: bool = False, practice_squad: bool = False,
-               depth_locks: bool = False) -> tuple[bytes, dict[str, object]]:
+               depth_locks: bool = False, season_cap: bool = False,
+               xbe_space: bool = False, kickoff_relocated: bool = False) -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
 
+    if kickoff_relocated:
+        dynamic_kickoff, xbe_space = True, True
     if dynamic_kickoff:
         # the hold / landing-zone patch sits on the modern kick spots and never on the power-only variant
         kick_rules, kick_power = True, False
@@ -1056,7 +1095,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (dynamic_kickoff, _dynamic_kickoff_adapter(dynamic_kickoff_settings), "dynamic_kickoff_patch", "dynamic-kickoff"),
                                      (depth_chart_rows, depth_chart_rows_patch, "depth_chart_rows_patch", "SPECIAL tab"),
                                      (practice_squad, practice_squad_patch, "practice_squad_patch", "practice squad"),
-                                     (depth_locks, depth_locks_patch, "depth_locks_patch", "depth locks")):
+                                     (depth_locks, depth_locks_patch, "depth_locks_patch", "depth locks"),
+                                     (season_cap, season_cap_patch, "season_cap_patch", "season cap")):
         if not flag:
             continue
         state = module.status(patched)
@@ -1099,6 +1139,20 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         receipt["boot_logo"] = logo_receipt
     else:
         receipt["boot_logo"] = {"status": boot_logo.status(patched)}
+    # Final owners: choose the complete allocation set before the first growth.
+    for flag, module, key, label in (
+        (xbe_space or kickoff_relocated, _xbe_space_adapter(kickoff_relocated),
+         "xbe_space_patch", "experimental executable space"),
+        (kickoff_relocated, kickoff_relocated_patch,
+         "kickoff_relocated_patch", "experimental relocated kickoff"),
+    ):
+        if not flag:
+            continue
+        state = module.status(patched)
+        _require(state in ("retail", "applied"), f"{label} is {state}; refusing")
+        patched, sub_receipt = module.apply(patched)
+        receipt[key] = sub_receipt
+        receipt["changed_byte_count"] = int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])
     return patched, receipt
 
 
@@ -1136,18 +1190,21 @@ def write_xbe_copy(
     depth_chart_rows: bool = False,
     practice_squad: bool = False,
     depth_locks: bool = False,
+    season_cap: bool = False,
+    xbe_space: bool = False,
+    kickoff_relocated: bool = False,
 ) -> dict[str, object]:
     """Write a patched COPY of ``source_xbe`` to ``target_xbe``."""
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
     _prepare_target(source, target, overwrite)
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
     try:
@@ -1186,6 +1243,12 @@ def write_xbe_copy(
         "practice_squad": practice_squad_patch.status(result),
         "practice_reserves": practice_reserves_patch.status(result),
         "depth_locks": depth_locks_patch.status(result),
+        "screen_timing": "n/a",
+        "guardian_cap": "n/a",
+        "season_cap": season_cap_patch.status(result),
+        "xbe_space": xbe_space_patch.status(result),
+        "kickoff_relocated": kickoff_relocated_patch.status(result),
+        "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(result),
         "playoff_picture": playoff_picture_patch.status(result),
         "kick_power": _kick_power_status(result),
         "widescreen": widescreen_patch.status(result),
@@ -1254,6 +1317,9 @@ def write_image_copy(
     depth_chart_rows: bool = False,
     practice_squad: bool = False,
     depth_locks: bool = False,
+    season_cap: bool = False,
+    xbe_space: bool = False,
+    kickoff_relocated: bool = False,
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
 
@@ -1263,7 +1329,7 @@ def write_image_copy(
     """
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
@@ -1277,7 +1343,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks)
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated)
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
@@ -1309,8 +1375,8 @@ def write_image_copy(
                 else:
                     i += 1
             xbe_relocation: dict[str, object] | None = None
-            if len(patched) != len(original):
-                # the SPECIAL rework grows default.xbe: append it and repoint its directory entry
+            if len(patched) != EXPECTED_XBE_SIZE:
+                # Validate recognized growth and transactional same-size replays.
                 xbe_relocation = depth_chart_storage.write_image_xbe(dst, patched)
             else:
                 for a, b in ranges:
@@ -1374,6 +1440,12 @@ def write_image_copy(
         "practice_squad": practice_squad_patch.status(after),
         "practice_reserves": practice_reserves_patch.status(after),
         "depth_locks": depth_locks_patch.status(after),
+        "screen_timing": "unchecked",
+        "guardian_cap": _guardian_image_status(target),
+        "season_cap": season_cap_patch.status(after),
+        "xbe_space": xbe_space_patch.status(after),
+        "kickoff_relocated": kickoff_relocated_patch.status(after),
+        "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(after),
         "playoff_picture": playoff_picture_patch.status(after),
         "kick_power": _kick_power_status(after),
         "widescreen": widescreen_patch.status(after),

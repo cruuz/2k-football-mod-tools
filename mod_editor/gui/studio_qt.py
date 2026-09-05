@@ -121,6 +121,7 @@ from mod_editor.gui.task_delivery import bound
 from mod_editor.gui.sounds_panel_qt import SoundsPanel
 from mod_editor.gui.build_panel_qt import BuildPanel
 from mod_editor.gui.models_panel_qt import ModelsPanel
+from mod_editor.gui.animations_panel_qt import AnimationsPanel
 from mod_editor.gui.roster_editor_panel_qt import RosterEditorPanel
 from mod_editor.gui.gameplay_patches_panel_qt import TEXT_PATCHES, GameplayPatchesPanel
 from mod_editor.gui.menus_panel_qt import MenusPanel
@@ -1466,6 +1467,69 @@ class _StatusPill(QLabel):
         )
 
 
+class _BuildContextRosterPanel(RosterEditorPanel):
+    """Bridge the shared Build year into the landed roster/save views."""
+
+    def __init__(self, facade):
+        self.configured_base_year = lambda: 2004
+        super().__init__(facade)
+        self.franchise_panel.base_year_spin.valueChanged.connect(self._refresh_year_context)
+        self.franchise_panel.year_spin.valueChanged.connect(self._refresh_year_context)
+
+    def load_document(self, document, **kwargs):
+        from mod_editor.core import nfl2k5_roster_records as rr
+        if kwargs.get("kind") == "save":
+            document.base_year = self.configured_base_year()
+            document.set_reference_year(rr.franchise_reference_year(
+                document.body, document.base, document.base_year))
+        super().load_document(document, **kwargs)
+
+    def _franchise_summary(self, savegame):
+        summary = super()._franchise_summary(savegame)
+        if summary is not None:
+            from mod_editor.core import nfl2k5_franchise_save as fs
+            summary.update(fs.FranchiseSave(
+                savegame, base_year=self.configured_base_year()).summary())
+        return summary
+
+    def _baseline_record(self, player):
+        if self.document is None:
+            return None
+        from mod_editor.core import nfl2k5_roster_records as rr
+        raw = self.document.original[player.offset:player.offset + rr.PLAYER_SIZE]
+        return rr.PlayerRecord.decode(raw, self.document.scheme,
+                                      reference_year=self.document.reference_year)
+
+    def _show_player(self, player):
+        card = self.cards.get("birth_year")
+        year = self.document.reference_year if self.document is not None else None
+        if card is not None and card.spin is not None:
+            low, high = (year - 99, year) if year is not None else (1955, 2054)
+            blocked = card.spin.blockSignals(True)
+            card.spin.setRange(low, high)
+            card.bar.setRange(low, high)
+            card.spin.blockSignals(blocked)
+        super()._show_player(player)
+        if player is not None and year is not None and player.record.birth_date is not None:
+            birth = player.record.birth_date
+            old_age = 2004 - birth.year - ((9, 1) < (birth.month, birth.day))
+            age = year - birth.year - ((9, 1) < (birth.month, birth.day))
+            self.header_stats.setText(self.header_stats.text().replace(
+                f"age in Sep 2004: {old_age}", f"age in Sep {year}: {age}"))
+
+    def _refresh_year_context(self, *_args):
+        if self.document is not None:
+            self._show_player(self.selected_player())
+            if self.franchise_panel.save is not None:
+                summary = dict(self.franchise_summary or {})
+                summary.update(self.franchise_panel.save.summary())
+                self._show_franchise(summary)
+
+    def use_build_year(self, *_args):
+        if self.franchise_panel.active:
+            self.franchise_panel.base_year_spin.setValue(self.configured_base_year())
+
+
 class StudioMainWindow(QMainWindow):
     """Flagship 2K5 Mod Studio product window."""
 
@@ -2242,6 +2306,11 @@ class StudioMainWindow(QMainWindow):
         models_item.setSizeHint(QSize(210, 44))
         models_item.setToolTip("Export a 3D model for Blender, check an edited one, and write it into a disc copy.")
         self.navigation.addItem(models_item)
+        animations_item = QListWidgetItem("  Animations")
+        animations_item.setData(Qt.UserRole, "animations")
+        animations_item.setSizeHint(QSize(210, 44))
+        animations_item.setToolTip("Experimental, unwitnessed animation inspection and export. Import is disabled.")
+        self.navigation.addItem(animations_item)
         create_item = QListWidgetItem("  ★ Create a Play")
         create_item.setData(Qt.UserRole, "create_play")
         create_item.setSizeHint(QSize(210, 44))
@@ -2497,10 +2566,12 @@ class StudioMainWindow(QMainWindow):
                 page = self._build_capability_page(section)
             self._category_pages[category] = page
             self.pages.addWidget(self._page_scroll_host(page))
-        self._roster_editor_panel = RosterEditorPanel(self.facade)
+        self._roster_editor_panel = _BuildContextRosterPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._roster_editor_panel))
         self._models_panel = ModelsPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._models_panel))
+        self._animations_panel = AnimationsPanel(self.facade)
+        self.pages.addWidget(self._page_scroll_host(self._animations_panel))
         self._create_play_page = self._build_create_play_page()
         self.pages.addWidget(self._page_scroll_host(self._create_play_page))
         self._build_share_page = self._build_build_share_page()
@@ -7455,6 +7526,10 @@ class StudioMainWindow(QMainWindow):
             self._bump_panel.load_source(source)
         if self._models_panel is not None:
             self._models_panel.reload()
+        paths = getattr(self.facade, "models_source_paths", None)
+        if paths:
+            self._animations_panel.set_source_paths(*paths)
+            self._animations_panel.reload()
         # 3. Share: the export "Starting disc" only while no build owns the pair; the
         #    install "Your disc" whenever it is empty or still following the last disc
         if self._share_panel is not None:
@@ -8064,6 +8139,10 @@ class StudioMainWindow(QMainWindow):
         # ★ Rosters writes a roster-edits document; the Build tab carries it as the roster_edits step
         roster_editor = getattr(self, "_roster_editor_panel", None)
         if roster_editor is not None:
+            roster_editor.configured_base_year = lambda: (
+                2026 if self._build_panel.season_check.isChecked()
+                or (self._build_panel._state or {}).get("season_2026") == "applied" else 2004)
+            self._build_panel.season_check.toggled.connect(roster_editor.use_build_year)
             roster_editor.roster_edits_changed.connect(self._build_panel.set_roster_edits)
             roster_editor.roster_edits_stale.connect(self._build_panel.mark_roster_edits_stale)
         tabs.addTab(self._build_panel, "Build")
@@ -8112,6 +8191,10 @@ class StudioMainWindow(QMainWindow):
     ) -> None:
         if self._navigation_key(row) == "rosters":
             self._prefill_roster_if_pending()
+            return
+        if self._navigation_key(row) == "animations":
+            if getattr(self.facade, "models_source_paths", None):
+                self._animations_panel.reload()
             return
         if row <= 0 or row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             return
@@ -8181,7 +8264,7 @@ class StudioMainWindow(QMainWindow):
             return
         if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
-            titles = ("Rosters", "Models", "Create a Play", "Build & Share")
+            titles = ("Rosters", "Models", "Animations", "Create a Play", "Build & Share")
             self.page_title.setText(titles[special] if special < len(titles) else "")
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]

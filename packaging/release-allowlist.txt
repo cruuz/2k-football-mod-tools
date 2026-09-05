@@ -335,3 +335,16 @@ mod_editor/gui/playbook_pack_dialog_qt.py
 mod_editor/gui/task_delivery.py
 mod_editor/gui/ux_text.py
 tools/nfl2k5_playbook_pack.py
+
+mod_editor/core/nfl2k5_season_cap.py
+mod_editor/core/nfl2k5_xbe_space.py
+mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py
+mod_editor/core/nfl2k5_guardian_cap.py
+reports/guardian_cap_receipt.v1.json
+mod_editor/core/nfl2k5_screen_timing.py
+mod_editor/core/nfl2k5_animation.py
+mod_editor/core/nfl2k5_animation_math.py
+mod_editor/gui/animations_panel_qt.py
+tools/nfl_motion_inventory.py
+data/playbooks/softdrink_modern_defense.2k5book
+mod_editor/core/nfl2k5_cave_oracle.py

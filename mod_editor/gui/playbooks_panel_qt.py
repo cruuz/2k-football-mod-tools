@@ -772,7 +772,7 @@ class PlaybooksPanel(QWidget):
             "pull request."
         )
         create_row.addWidget(self.install_pack_button)
-        self.modern_defense_button = QPushButton("SOFTDRINK modern defense")
+        self.modern_defense_button = QPushButton("SOFTDRINK modern defense (experimental)")
         self.modern_defense_button.setToolTip("Export the EXPERIMENTAL / UNWITNESSED defense pack for this book, then review it in Install Playbook Pack.")
         self.modern_defense_button.clicked.connect(self._modern_defense_pack)
         create_row.addWidget(self.modern_defense_button)

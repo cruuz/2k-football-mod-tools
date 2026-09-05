@@ -90,6 +90,19 @@ class EveryCapabilityIsReachableTests(unittest.TestCase):
             "an capability nobody can turn on is the same as one that is absent",
         )
 
+    def test_integrated_experiments_are_visible_without_runtime_claims(self) -> None:
+        for capability_id in (
+            "nfl2k5.schedules_franchise.season_cap", "nfl2k5.gameplay.xbe_space",
+            "nfl2k5.gameplay.kickoff_relocated", "nfl2k5.models.guardian_cap_c_trial",
+            "nfl2k5.screens.timing", "nfl2k5.animations.inspect_export",
+        ):
+            row = self.catalog.binding(capability_id).capability.raw
+            self.assertTrue(row["gui"]["expose"], capability_id)
+            self.assertEqual(row["runtime"]["status"], "not-tested", capability_id)
+            self.assertIn("experimental", row["title"].lower(), capability_id)
+        animation = self.catalog.binding("nfl2k5.animations.inspect_export").capability.raw
+        self.assertEqual((animation["backend"]["operation"], animation["gui"]["mode"]), ("export", "export"))
+
     def test_every_section_reaches_all_of_its_capabilities(self) -> None:
         """No category may hold a capability its page never renders."""
         assigned = {

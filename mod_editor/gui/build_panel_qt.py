@@ -49,7 +49,7 @@ PRESET_CAPTIONS = {
     "softdrink_basic": ("2004 season and rules. Throw/catching fixes, Franchise draft and free agency, CPU returners, "
                         "kicking power, Player Card team column, Edit Player position and Pro Bowl tab order."),
     "softdrink_advanced": ("Basic plus acceleration, progression, position changes, modern rules, 2026 season, "
-                           "presentation and other selected changes. Includes changes not yet tested in-game."),
+                           "presentation, screen timing and other selected changes. Includes changes not yet tested in-game."),
     "softdrink_experimental": ("Modern plus widescreen, dynamic kickoff alignment and kick laces. "
                                "Includes changes not yet tested in-game."),
 }
@@ -315,6 +315,24 @@ class BuildPanel(QWidget):
                                                           "straight into the end zone is a touchback to the 35, short or out is the 40; the CPU kicker aims "
                                                           "for the landing zone 90 % of the time and the CPU returner takes the touchback 90 % of the time. "
                                                           "Your own kicks and returns stay in your hands; onside and safety kicks are untouched.")
+        self.xbe_space_check = self._option(
+            g, "xbe_space", "Extra patch space (experimental)",
+            "Adds room for experimental features. Needs a disc boot check before regular use.",
+            badge=NOT_TESTED, needs_image=True)
+        self.kickoff_relocated_check = self._option(
+            g, "kickoff_relocated", "Kickoff in extra space (experimental)",
+            "Moves dynamic kickoff with the same settings. Check lineup, hold until contact and returns.",
+            badge=NOT_TESTED, needs_image=True)
+        self.screen_timing_check = self._option(
+            g, "screen_timing", "Screen pass timing (experimental)",
+            "UNWITNESSED. A: longer holds; B: shorter QB drops; C: explicit pass delay; D: all three.",
+            badge=NOT_TESTED, needs_image=True)
+        self.screen_timing_combo = QComboBox()
+        self.screen_timing_combo.setAccessibleName("Screen timing experiment")
+        self.screen_timing_combo.addItems(("A", "B", "C", "D"))
+        self.screen_timing_combo.setCurrentText("D")
+        self.screen_timing_combo.currentTextChanged.connect(self._screen_level_changed)
+        g.addWidget(self.screen_timing_combo)
         self.overtime_check = self._option(g, "overtime", "Modern overtime rules",
                                            "Both teams get a possession; regular-season ties remain.",
                                            details="Each team is guaranteed a possession unless the kicking team scores a safety; after both have "
@@ -399,6 +417,10 @@ class BuildPanel(QWidget):
                                          needs_image=True,
                                          details="Real 2026 schedule with the 3-game preseason, 17 games over 18 weeks with one bye, 2026 dates and rookie "
                                                  "birth years.")
+        self.season_cap_check = self._option(
+            f, "season_cap", "128-season franchise gate (experimental)",
+            "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet. "
+            "Game birth dates can already be wrong in 2053. Not tested in game.", badge=NOT_TESTED)
         self.position_row_check = self._option(f, "position_row", "Change position in Edit Player",
                                                "In-game: use Depth Chart → Auto afterward.", badge=NOT_TESTED,
                                                details="The Position row (the game's own picker, 17 positions, ratings kept, overall recomputed) sits "
@@ -438,18 +460,16 @@ class BuildPanel(QWidget):
         self.position_pools_check = self._option(r, "position_pools", "Merge EDGE, LB & interior position groups",
                                                  "Changes roster positions and playbook assignments; includes scheme-specific names.",
                                                  needs_image=True)
-        self.depth_roles_check = self._option(r, "depth_roles", "X / Z / SLOT receivers and nickel / dime corners",
+        self.depth_roles_check = self._option(r, "depth_roles", "X / Z / SLWR receivers and nickel / dime corners",
                                               "Changes who lines up in every playbook, not how they play.",
                                               badge=NOT_TESTED, needs_image=True,
-                                              details="The innermost receiver of a three-wide set becomes your third receiver (SLOT, with X and Z outside) "
+                                              details="The innermost receiver of a three-wide set becomes your third receiver (SLWR, with X and Z outside) "
                                                       "and nickel / dime sets use your third and fourth corners inside. Groups whose formations disagree, "
                                                       "bunch sets and special teams keep their original assignments; the build report lists them.")
-        self.depth_chart_rows_check = self._option(r, "depth_chart_rows", "SPECIAL tab: role depth charts",
-                                                   "Offence and defence keep eleven rows; the role views live on a renamed SPECIAL tab. Switches on the pools and roles when the disc lacks them.",
-                                                   badge=NOT_TESTED, needs_image=True,
-                                                   details="Thirteen depth-chart rows per unit instead of eleven: a SLOT row on offence, NICKEL CORNER and "
-                                                           "DIME CORNER rows on both defences, LWR / RWR shown as X / Z. The new rows are views onto your "
-                                                           "receiver and corner lists.")
+        self.depth_chart_rows_check = self._option(
+            r, "depth_chart_rows", "SPECIAL: 13 rows and complete player names (experimental)",
+            "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", badge=NOT_TESTED, needs_image=True,
+            details="Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.")
         self.roster_edits_check = self._option(r, "roster_edits", "Include exported ★ Rosters edits",
                                                "Export roster edits on ★ Rosters, then choose that JSON file here.", needs_image=True,
                                                details="Applies a roster-edits snapshot written by ★ Rosters. It runs last of the roster passes and writes only "
@@ -487,6 +507,11 @@ class BuildPanel(QWidget):
         # ---- Presentation
         pres = QGroupBox("Presentation")
         pl = QVBoxLayout(pres)
+        from mod_editor.core import nfl2k5_guardian_cap as cap
+        self.guardian_cap_check = self._option(
+            pl, "guardian_cap", "Guardian caps on helmet C (experimental)",
+            cap.UI_TEXT + " Neutral gray artwork is for Detroit current away only. "
+            "EXPERIMENTAL / UNWITNESSED.", badge=NOT_TESTED, needs_image=True)
         self.scorebug_check = self._option(pl, "scorebug", "Modern ESPN scorebar",
                                            "One bar at the bottom centre that never swaps sides and stays up during plays.",
                                            needs_image=True,
@@ -565,9 +590,15 @@ class BuildPanel(QWidget):
         self.packs_add_button = QPushButton("Add pack…")
         self.packs_add_button.clicked.connect(self._add_playbook_pack)
         prow.addWidget(self.packs_add_button)
+        self.modern_defense_button = QPushButton("Add modern defense (experimental)")
+        self.modern_defense_button.setToolTip(
+            "EXPERIMENTAL / UNWITNESSED. Spy is a shallow middle zone; "
+            "a true spy needs the runtime patch (not yet shipped).")
+        self.modern_defense_button.clicked.connect(self._add_modern_defense_pack)
         self.packs_remove_button = QPushButton("Remove selected")
         self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
         prow.addWidget(self.packs_remove_button)
+        prow.addWidget(self.modern_defense_button)
         prow.addStretch(1)
         pb.addLayout(prow)
         packs_note = QLabel("Installed in order into the copy's team books; full disc required. "
@@ -688,6 +719,11 @@ class BuildPanel(QWidget):
     def apply_state(self, state: dict[str, object]) -> None:
         """Populate from mod_build.inspect output (also used by tests)."""
 
+        combo = self.screen_timing_combo
+        if combo is not None and state.get("container") == "xiso" and (
+                state.get("screen_timing_details", {}).get("level", "D") != combo.currentText()):
+            details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
+            state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
         self._state = state
         self._reading = False
         self.source_field.setText(str(state.get("path", "")))
@@ -701,7 +737,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season gate"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -720,7 +756,7 @@ class BuildPanel(QWidget):
             ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"),
             ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
             ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"),
-            ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"),
+            ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season gate"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"),
             ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
@@ -783,6 +819,9 @@ class BuildPanel(QWidget):
         gate(self.kickoff_alignment_check, "kickoff_alignment", needs_image=True)
         gate(self.dynamic_kickoff_check, "dynamic_kickoff", needs_image=True)
         gate(self.season_check, "season_2026", needs_image=True)
+        gate(self.season_cap_check, "season_cap")
+        gate(self.xbe_space_check, "xbe_space", needs_image=True)
+        gate(self.kickoff_relocated_check, "kickoff_relocated", needs_image=True)
         gate(self.overtime_check, "overtime")
         gate(self.position_row_check, "position_row")
         gate(self.probowl_order_check, "probowl_order")
@@ -807,6 +846,9 @@ class BuildPanel(QWidget):
         self.packs_add_button.setEnabled(is_image and self._available.get("playbook_packs", True))
         self.packs_add_button.setToolTip("" if is_image else "Full disc required.")
         gate(self.scorebug_check, "scorebug", needs_image=True)
+        gate(self.guardian_cap_check, "guardian_cap", needs_image=True)
+        gate(self.screen_timing_check, "screen_timing", needs_image=True)
+        self.screen_timing_combo.setEnabled(is_image and self._available.get("screen_timing", False))
         gate(self.camera_check, "camera")
         gate(self.widescreen_check, "widescreen")
         self.throw_check.setEnabled(True)
@@ -830,6 +872,17 @@ class BuildPanel(QWidget):
                                  + self.preset_note.text())
         return True
 
+    def _screen_level_changed(self, level: str) -> None:
+        if self._state is not None and self._state.get("container") == "xiso":
+            choices = {key: box.isChecked() for key, box in self._boxes().items()}
+            details = mod_build.inspect_screen_timing(self._state["path"], level)
+            self.apply_state({**self._state, "screen_timing": details["status"],
+                              "screen_timing_details": details})
+            for key, box in self._boxes().items():
+                if box.isEnabled():
+                    box.setChecked(choices.get(key, False))
+        self._refresh()
+
     def _toggle_boxes(self) -> tuple[QCheckBox, ...]:
         return tuple(box for box in self.findChildren(QCheckBox)
                      if box not in (self.realistic_check, self.arc_by_distance_check))
@@ -838,6 +891,7 @@ class BuildPanel(QWidget):
         """Tick the preset's toggles (only those the source can still take); returns what was skipped."""
 
         values = mod_build.PRESETS[name]
+        self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
         applied, skipped = [], []
         if "max_deep_yards" in values:
@@ -883,11 +937,12 @@ class BuildPanel(QWidget):
         return {
             "throw": self.throw_check, "catch_slider": self.catch_check, "accel_ramp": self.accel_check,
             "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check,
-            "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "scheme_labels": self.scheme_labels_check,
+            "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "guardian_cap": self.guardian_cap_check, "screen_timing": self.screen_timing_check, "scheme_labels": self.scheme_labels_check,
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
             "position_pools": self.position_pools_check, "depth_roles": self.depth_roles_check,
             "depth_chart_rows": self.depth_chart_rows_check, "kickoff_alignment": self.kickoff_alignment_check,
-            "dynamic_kickoff": self.dynamic_kickoff_check, "season_2026": self.season_check,
+            "dynamic_kickoff": self.dynamic_kickoff_check, "season_2026": self.season_check, "season_cap": self.season_cap_check,
+            "xbe_space": self.xbe_space_check, "kickoff_relocated": self.kickoff_relocated_check,
             "widescreen": self.widescreen_check, "overtime": self.overtime_check, "team_column": self.team_column_check,
             "team_history": self.team_history_check, "career_stats": self.career_stats_check,
             "prospect_names": self.prospect_names_check, "seven_on_seven": self.seven_on_seven_check,
@@ -940,6 +995,8 @@ class BuildPanel(QWidget):
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
             dynamic_kickoff=self.dynamic_kickoff_check.isChecked(),
+            season_cap=self.season_cap_check.isChecked(),
+            xbe_space=self.xbe_space_check.isChecked(), kickoff_relocated=self.kickoff_relocated_check.isChecked(),
             season_2026=self.season_check.isChecked(), widescreen=self.widescreen_check.isChecked(),
             overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=self.seven_on_seven_check.isChecked(),
             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
@@ -948,11 +1005,14 @@ class BuildPanel(QWidget):
             kick_laces=self.kick_laces_check.isChecked(),
             franchise_practice=self.franchise_practice_check.isChecked(),
             practice_squad=self.practice_squad_check.isChecked(),
+            depth_locks=self.depth_locks_check.isChecked(),
             player_star=self.player_star_check.isChecked(), player_tags=list(self.star_players),
             team_history=((self.team_history_field.text().strip() or "retail") if self.team_history_check.isChecked() else ""),
             career_stats=(self.career_stats_field.text().strip() if self.career_stats_check.isChecked() else ""),
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
+            screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
+            guardian_cap=self.guardian_cap_check.isChecked(),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
             playbook_packs=tuple(self.playbook_packs),
             name=self.name_field.text().strip(), author=self.author_field.text().strip(),
@@ -968,8 +1028,8 @@ class BuildPanel(QWidget):
     def has_work(self) -> bool:
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
-                    or p.kickoff_alignment or p.dynamic_kickoff or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.prospect_names or p.player_star or p.player_tags or p.roster_edits
+                    or p.edge_rename or p.screen_timing is not None or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits
                     or p.commentary or p.playbook_packs)
 
     def selected_labels(self) -> list[str]:
@@ -981,6 +1041,8 @@ class BuildPanel(QWidget):
                 continue
             if box.isChecked():
                 text = box.text().replace("&&", "&")
+                if key == "screen_timing":
+                    text += f" ({self.screen_timing_combo.currentText()})"
                 if key == "throw":
                     text += f" ({self.ceiling_spin.value()} yd)"
                 labels.append(text)
@@ -1110,6 +1172,13 @@ class BuildPanel(QWidget):
             self.commentary_list.addItem(f"{swap.stream}  ←  {Path(swap.wav).name}")
         self.commentary_box.setTitle(f"Commentary replacements ({len(self.commentary)})")
         self._refresh()
+
+    def _add_modern_defense_pack(self) -> None:
+        seed = str(mod_build.ROOT / "data/playbooks/softdrink_modern_defense.2k5book")
+        paths = list(self.playbook_packs)
+        if Path(seed).resolve() not in {Path(path).resolve() for path in paths}:
+            paths.append(seed)
+        self.set_playbook_packs(paths)
 
     def _add_playbook_pack(self) -> None:
         chosen, _f = QFileDialog.getOpenFileNames(self, "Choose playbook packs", str(Path.home()),
