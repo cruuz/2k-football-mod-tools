@@ -51,7 +51,14 @@
   ],
   "tool_modules": [],
   "allowlist_patterns": [
-    "*ps2*",
+    "mod_editor/games/nfl2k5_ps2/*",
+    "*nfl2k5_ps2*",
+    "mod_editor/core/ps2_*",
+    "mod_editor/gui/ps2_*",
+    "mod_editor/games/_formats/ps2_*",
+    "tools/ps2_*",
+    "tools/validate_ps2_*",
+    "docs/product/PS2_*",
     "*xxh3*",
     "*spu_adpcm*"
   ],

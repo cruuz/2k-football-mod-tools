@@ -584,7 +584,8 @@ def check_target_fields(lane: Lane, catalogue: Catalogue) -> list[Check]:
 
 def check_lane_behaviour(game: GameModule, lane: Lane, work_dir: Path) -> list[Check]:
     out = _Collector(f"lane.{lane.lane_id}")
-    room = Path(work_dir) / lane.lane_id.replace("/", "_")
+    # One room per game AND lane: two games may both call a lane "gameplay.executable_patches".
+    room = Path(work_dir) / game.game_id / lane.lane_id.replace("/", "_")
     room.mkdir(parents=True, exist_ok=True)
 
     ok, source = out.attempt("synthetic_source", lambda: lane.synthetic_source(room))

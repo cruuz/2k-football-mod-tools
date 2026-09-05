@@ -449,9 +449,13 @@ class GameOwnedPinsTests(unittest.TestCase):
         upstream = [line.strip() for line in ALLOWLIST_PATH.read_text(encoding="utf-8").splitlines()
                     if line.strip() and not line.startswith("#")]
         self.assertTrue(set(fragment) <= set(upstream), sorted(set(fragment) - set(upstream)))
-        ps2_lines = [line for line in upstream
-                     if any(token in line.casefold() for token in ("ps2", "xxh3", "spu_adpcm"))]
-        self.assertEqual(list(fragment), ps2_lines, "the fragment is exactly today's PS2 lines, in order")
+        # The manifest's own patterns select this game's lines; a substring rule
+        # would sweep up every other PlayStation 2 module's files too.
+        import fnmatch
+        patterns = [pattern.casefold() for pattern in self.game.manifest.allowlist_patterns]
+        own_lines = [line for line in upstream
+                     if any(fnmatch.fnmatchcase(line.casefold(), pattern) for pattern in patterns)]
+        self.assertEqual(list(fragment), own_lines, "the fragment is exactly this game's lines, in order")
         for line in fragment:
             self.assertTrue((ROOT / line).is_file(), line)
 
@@ -460,7 +464,9 @@ class GameOwnedPinsTests(unittest.TestCase):
         for name in self.game.manifest.product_modules:
             self.assertIn(f'"{name}",', gate, f"{name} is not in the runtime gate's product_modules")
         product, tools = games.runtime_modules()
-        self.assertEqual(len(product), len(self.game.manifest.product_modules))
+        # runtime_modules() is the union over every hosted game; this game's list is one part of it.
+        self.assertLessEqual(set(self.game.manifest.product_modules), set(product))
+        self.assertEqual(len(product), sum(len(m.product_modules) for m in games.manifests()))
         self.assertEqual(tools, ())
 
 
