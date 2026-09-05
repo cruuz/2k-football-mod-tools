@@ -165,6 +165,7 @@ class _DiscAudio:
             entry.name: entry for entry in containers.data_files(self.image)
         }
         self._caches: Optional[Tuple["QklCache", ...]] = None
+        self._copies: Optional[Dict[str, Dict[str, Any]]] = None
         self._handle = open(self.path, "rb")
         try:
             self.view = mmap.mmap(self._handle.fileno(), 0, access=mmap.ACCESS_READ)
@@ -247,6 +248,24 @@ class _DiscAudio:
             self._caches = tuple(found)
         return self._caches
 
+    def copies(self) -> Dict[str, Dict[str, Any]]:
+        """What the preload caches carry, in the shape the integrator swaps.
+
+        Answered once per open image.  This is the only door the lane's
+        cache-coherence code goes through; see :data:`_preload_copies`.
+        """
+
+        if self._copies is None:
+            self._copies = _preload_copies(self.image)
+        return self._copies
+
+    def cache_bytes(self, cache_path: str) -> Tuple[int, bytes]:
+        """``(absolute offset, bytes)`` of a cache named by its ISO path."""
+
+        name = cache_path.rsplit("/", 1)[-1]
+        base, _length = self.span(name)
+        return base, self.container_bytes(name)
+
     def header_block_bytes(self, name: str) -> int:
         """How many bytes a cache's kind-0 copy of *name* covers.
 
@@ -328,6 +347,70 @@ class QklCache:
         wanted = container.upper()
         return tuple(copy for copy in self.copies
                      if copy.kind == QKL_KIND_HEADER and copy.container.upper() == wanted)
+
+
+def preload_copies(image: Any) -> Dict[str, Dict[str, Any]]:
+    """Every byte copy the disc's ``QL01`` preload caches carry, by container.
+
+    ``image`` is an opened disc (:func:`containers.open_disc`'s result).  The
+    answer is::
+
+        {"BGM.DAT": {"directory": ((cache, offset), ...),
+                     "members": {0: ((cache, offset), ...), ...}}, ...}
+
+    where *cache* is the cache's ISO path and *offset* the absolute byte offset
+    of the copy inside the image.  Every container either cache names is
+    present, not only the audio ones: a caller that rewrites a copy has to know
+    whether some **other** container's entry points at the same offset, because
+    the copies are deduplicated [M].
+
+    Reads only.  The caches are 5.7 MB and 10.7 MB on the retail disc and are
+    walked through a memory map rather than read into memory.
+    """
+
+    out: Dict[str, Dict[str, Any]] = {}
+    entries = {entry.name: entry for entry in containers.data_files(image)}
+    wanted = sorted(name for name in entries if name.upper().endswith(".QKL"))
+    if not wanted:
+        return out
+    require(image.sector_size == iso_lib.SECTOR_USER_BYTES and not image.data_offset,
+            f"{Path(image.path).name} is a raw-CD image; the preload caches are read "
+            f"through a memory map, which needs the 2048-byte layout every PlayStation 2 "
+            f"DVD uses.")
+    with open(image.path, "rb") as handle:
+        view = mmap.mmap(handle.fileno(), 0, access=mmap.ACCESS_READ)
+        try:
+            for name in wanted:
+                entry = entries[name]
+                base = iso_lib.extent_byte_offset(image, entry.lba, 0)
+                length = int(entry.recorded_length)
+                if base + length > len(view) or bytes(view[base:base + 4]) != QKL_MAGIC:
+                    continue
+                cache = parse_qkl(view, base, length,
+                                  f"{containers.DATA_DIRECTORY}/{name}")
+                for copy in cache.copies:
+                    container = copy.container.upper()
+                    row = out.setdefault(container, {"directory": [], "members": {}})
+                    if copy.kind == QKL_KIND_HEADER:
+                        row["directory"].append((copy.cache, copy.offset))
+                    else:
+                        row["members"].setdefault(copy.member, []).append(
+                            (copy.cache, copy.offset))
+        finally:
+            view.close()
+    return {container: {"directory": tuple(row["directory"]),
+                        "members": {member: tuple(items)
+                                    for member, items in sorted(row["members"].items())}}
+            for container, row in sorted(out.items())}
+
+
+#: The one name in this file that reads the preload caches.  The art branch has
+#: landed a shared ``containers.preload_copies(image)`` with the same shape --
+#: take the opened image, return, per container, the directory copies and the
+#: member copies as ``(cache, offset)``.  When the two are merged this line
+#: becomes ``_preload_copies = containers.preload_copies`` and nothing else in
+#: this file changes: every call site goes through it.
+_preload_copies = preload_copies
 
 
 def parse_qkl(view: Any, base: int, length: int, path: str) -> QklCache:
@@ -766,15 +849,15 @@ class AudioStreamsLane:
             for container, length in sorted(by_container.items()):
                 self._declare(disc, ranges, container,
                               f"the container the replaced sound lives in")
-            for path in sorted({copy.cache for copy in cache_work}):
+            for path in sorted({cache for cache, _c, _m, _o in cache_work}):
                 self._declare(disc, ranges, path.rsplit("/", 1)[-1],
                               "a preload cache carrying a byte copy of a replaced member")
         return Plan(self.lane_id, tuple(entry["sound"] for entry in entries),
                     tuple(ranges),
                     {"schema": STREAM_RECIPE_SCHEMA, "sounds": rows,
-                     "preload_copies": [{"cache": copy.cache, "container": copy.container,
-                                         "member": copy.member, "offset": copy.offset}
-                                        for copy in cache_work],
+                     "preload_copies": [{"cache": cache, "container": container,
+                                         "member": member, "offset": offset}
+                                        for cache, container, member, offset in cache_work],
                      "note": "The image keeps its exact length; a member is replaced inside "
                              "the container's own extent, and every byte copy of that "
                              "member in GAME.QKL or FE.QKL is rewritten with it."})
@@ -799,42 +882,51 @@ class AudioStreamsLane:
                 8, f"dirrec_length:{path}"))
 
     @staticmethod
-    def _cache_work(disc: "_DiscAudio", touched: Mapping[str, Any]) -> Tuple[QklCopy, ...]:
+    def _cache_work(disc: "_DiscAudio",
+                    touched: Mapping[str, Any]) -> Tuple[Tuple[str, str, int, int], ...]:
         """Every preload-cache copy that has to change with these members.
 
         The disc's two ``QL01`` caches carry byte copies of some container
         members and of some container header blocks [M], and the game loads the
         copy: an edit to a carried member that leaves the copy alone is an edit
-        the game never sees.  ``BGM.DAT`` has a header copy and no member copies,
-        so replacing a music stream needs nothing here; ``SOUNDDAT.DAT`` has 45
-        member copies across the two caches, and a sound inside one of those
-        members needs the copy rewritten with it.
+        the game never sees.
+
+        On the retail disc this fires on nothing, and that was measured rather
+        than hoped for: ``BGM.DAT`` has a header copy and no member copies at
+        all, and of ``SOUNDDAT.DAT``'s 43 carried members **not one** is among
+        its 119 stream members -- 17 are ``BNKl`` banks, which this lane does
+        not write, and 26 are neither [M].  The path is here because the
+        measurement could have gone the other way and because a Deluxe rebuild
+        may lay the caches out differently; CI proves it on a synthetic cache
+        that does carry a replaced member.
 
         Copies are **deduplicated** -- two entries can share one offset [M] -- so
         an offset that another, untouched member also points at is refused
         rather than written: rewriting it would corrupt the sound that shares it.
         """
 
-        wanted: List[QklCopy] = []
-        for cache in disc.caches():
-            claims: Dict[int, List[QklCopy]] = {}
-            for copy in cache.copies:
-                claims.setdefault(copy.offset, []).append(copy)
-            for container, members in sorted(touched.items()):
-                carried = cache.members_of(container)
-                for member in sorted(members):
-                    for copy in carried.get(int(member), ()):  # noqa: B038
-                        others = [item for item in claims.get(copy.offset, ())
-                                  if (item.container.upper(), item.member)
-                                  != (copy.container.upper(), copy.member)]
-                        if others:
-                            raise Refusal(
-                                f"{cache.path} stores its copy of {container} member "
-                                f"{member} at the same offset as {others[0].container} "
-                                f"member {others[0].member}, which this build does not "
-                                f"change; rewriting it would corrupt that one. Nothing "
-                                f"was written.")
-                        wanted.append(copy)
+        everything = disc.copies()
+        claims: Dict[int, List[Tuple[str, int]]] = {}
+        for container, row in everything.items():
+            for _cache, offset in row["directory"]:
+                claims.setdefault(offset, []).append((container, -1))
+            for member, items in row["members"].items():
+                for _cache, offset in items:
+                    claims.setdefault(offset, []).append((container, member))
+        wanted: List[Tuple[str, str, int, int]] = []
+        for container, members in sorted(touched.items()):
+            carried = everything.get(container.upper(), {}).get("members", {})
+            for member in sorted(members):
+                for cache, offset in carried.get(int(member), ()):
+                    others = [item for item in claims.get(offset, ())
+                              if item != (container.upper(), int(member))]
+                    if others:
+                        raise Refusal(
+                            f"{cache} stores its copy of {container} member {member} at "
+                            f"the same offset as {others[0][0]} member {others[0][1]}, "
+                            f"which this build does not change; rewriting it would "
+                            f"corrupt that one. Nothing was written.")
+                    wanted.append((cache, container.upper(), int(member), int(offset)))
         return tuple(wanted)
 
     # -- build ---------------------------------------------------------
@@ -934,24 +1026,24 @@ class AudioStreamsLane:
             cache_work = self._cache_work(disc, {name: set(members)
                                                  for name, members in changed.items()})
             caches: Dict[str, bytearray] = {}
-            for copy in cache_work:
-                cache = caches.get(copy.cache)
+            cache_bases: Dict[str, int] = {}
+            for cache_path, container, member, offset in cache_work:
+                cache = caches.get(cache_path)
                 if cache is None:
-                    name = copy.cache.rsplit("/", 1)[-1]
-                    cache = bytearray(disc.container_bytes(name))
-                    caches[copy.cache] = cache
-                cache_base, _cache_length = disc.span(copy.cache.rsplit("/", 1)[-1])
-                offset_in_container, size = changed[copy.container.upper()][copy.member]
-                fresh = rebuilt[copy.container.upper()][
-                    offset_in_container:offset_in_container + size]
-                at = copy.offset - cache_base
+                    base_at, blob = disc.cache_bytes(cache_path)
+                    cache = bytearray(blob)
+                    caches[cache_path] = cache
+                    cache_bases[cache_path] = base_at
+                cache_base = cache_bases[cache_path]
+                offset_in_container, size = changed[container][member]
+                fresh = rebuilt[container][offset_in_container:offset_in_container + size]
+                at = offset - cache_base
                 require(0 <= at and at + size <= len(cache),
-                        f"{copy.cache}'s copy of {copy.container} member {copy.member} "
-                        f"runs past the end of the cache; nothing was written.")
+                        f"{cache_path}'s copy of {container} member {member} runs past "
+                        f"the end of the cache; nothing was written.")
                 cache[at:at + size] = fresh
-                cache_rows.append({"cache": copy.cache, "container": copy.container,
-                                   "member": copy.member, "offset": copy.offset,
-                                   "bytes": size})
+                cache_rows.append({"cache": cache_path, "container": container,
+                                   "member": member, "offset": offset, "bytes": size})
             for container, blob in sorted(rebuilt.items()):
                 path = room / f"{container}.rebuilt"
                 require(not os.path.lexists(path),
@@ -1105,28 +1197,25 @@ class AudioStreamsLane:
                 blocks[name] = bytes(disc.view[base:base + disc.header_block_bytes(name)])
                 members[name] = {index: (start, size)
                                  for index, start, size in disc.members(name)}
-            for cache in disc.caches():
-                for copy in cache.copies:
-                    container = copy.container.upper()
-                    if container not in touched:
-                        continue
-                    if copy.kind == QKL_KIND_HEADER:
-                        want = blocks[container]
-                        got = bytes(disc.view[copy.offset:copy.offset + len(want)])
-                        if got != want:
-                            return (f"{cache.path} carries a stale copy of {container}'s "
-                                    f"header block"), checked
-                        checked += 1
-                        continue
-                    if copy.member not in touched[container]:
-                        continue
-                    start, size = members[container][copy.member]
-                    want = bytes(disc.view[start:start + size])
-                    got = bytes(disc.view[copy.offset:copy.offset + size])
-                    if got != want:
-                        return (f"{cache.path} carries a stale copy of {container} member "
-                                f"{copy.member}"), checked
+            for container, row in disc.copies().items():
+                if container not in touched:
+                    continue
+                want = blocks[container]
+                for cache_path, offset in row["directory"]:
+                    if bytes(disc.view[offset:offset + len(want)]) != want:
+                        return (f"{cache_path} carries a stale copy of {container}'s "
+                                f"header block"), checked
                     checked += 1
+                for member, items in row["members"].items():
+                    if member not in touched[container]:
+                        continue
+                    start, size = members[container][member]
+                    body = bytes(disc.view[start:start + size])
+                    for cache_path, offset in items:
+                        if bytes(disc.view[offset:offset + size]) != body:
+                            return (f"{cache_path} carries a stale copy of {container} "
+                                    f"member {member}"), checked
+                        checked += 1
         return None, checked
 
     @staticmethod
@@ -1733,6 +1822,7 @@ __all__ = [
     "QklCopy",
     "build_synthetic_audio_disc",
     "build_synthetic_qkl",
+    "preload_copies",
     "parse_qkl",
     "parse_key",
 ]

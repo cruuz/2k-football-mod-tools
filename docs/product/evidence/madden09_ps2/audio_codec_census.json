@@ -770,8 +770,24 @@
     ],
     "copies_checked_against_the_container_they_copy": 5805,
     "copies_that_differ": 0,
+    "reader": "audio_lane.preload_copies(image): takes an opened image, returns per container the directory copies and the member copies as (cache, offset). One call site, bound to the module-level _preload_copies, so a shared reader replaces it in one line.",
+    "stream_members_that_are_carried": {
+      "BGM.DAT": {
+        "carried": 0,
+        "carried_stream_members": 0,
+        "stream_members": 47
+      },
+      "SOUNDDAT.DAT": {
+        "bank_members": 301,
+        "carried": 43,
+        "carried_bank_members": 17,
+        "carried_neither": 26,
+        "carried_stream_members": 0,
+        "stream_members": 119
+      }
+    },
     "what": "GAME.QKL and FE.QKL (QL01) carry byte copies of some container members and of some container header blocks; the game loads the copy, so an edit to a carried member that leaves the copy alone is an edit the game never sees",
-    "writer_position": "BGM.DAT has a header copy and no member copies, so replacing a music stream needs no cache rewrite; SOUNDDAT.DAT has 45 member copies across the two caches and the lane rewrites the copy with the member. A copy offset another untouched member also points at is refused rather than written."
+    "writer_position": "BGM.DAT has a header copy and no member copies. SOUNDDAT.DAT has 43 carried members across the two caches and NOT ONE of them is among its 119 SCHl stream members: 17 are BNKl banks, which this lane does not write, and 26 are members of neither kind. So on the retail disc the cache rewrite fires on no sound this lane can replace; the path is implemented anyway, refuses a deduplicated offset another untouched member points at, and is proved in CI on a synthetic cache that does carry a replaced member."
   },
   "real_disc_write": {
     "build_seconds": 122.54,

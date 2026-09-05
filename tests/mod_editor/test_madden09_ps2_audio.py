@@ -388,6 +388,31 @@ class BankLaneTests(_Room):
 class QklTests(_Room):
     """The preload cache reader, on the synthetic cache the disc carries."""
 
+    def test_preload_copies_answers_in_the_shape_the_integrator_swaps(self) -> None:
+        # One function, taking the opened image, returning per container the
+        # directory copies and the member copies as (cache, offset).  The lane
+        # goes through this and nothing else, so the shared reader the art
+        # branch landed can replace it in one line.
+        from mod_editor.games.madden09_ps2 import containers
+
+        copies = audio_lane.preload_copies(containers.open_disc(self.source))
+        self.assertEqual(sorted(copies), ["BGM.DAT"])
+        row = copies["BGM.DAT"]
+        self.assertEqual(len(row["directory"]), 1)
+        self.assertEqual(sorted(row["members"]), [0])
+        for cache, offset in row["directory"] + row["members"][0]:
+            self.assertTrue(cache.endswith("GAME.QKL"))
+            self.assertIsInstance(offset, int)
+        self.assertIs(audio_lane._preload_copies, audio_lane.preload_copies)
+
+    def test_an_image_with_no_cache_answers_empty(self) -> None:
+        from mod_editor.games.madden09_ps2 import containers
+
+        plain = self.room / "no-cache.iso"
+        if not plain.exists():
+            plain.write_bytes(containers.build_synthetic_disc())
+        self.assertEqual(audio_lane.preload_copies(containers.open_disc(plain)), {})
+
     def test_the_cache_names_its_files_and_its_copies(self) -> None:
         with audio_lane._DiscAudio(self.source) as disc:
             caches = disc.caches()

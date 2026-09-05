@@ -85,6 +85,21 @@ deduplicated — two entries can share one offset [M] — so an offset another,
 untouched member also points at is **refused**, because rewriting it would
 corrupt that one.
 
+**On the retail disc that rewrite fires on nothing, and that is measured, not
+hoped for.**  `BGM.DAT` has no member copies at all, and of `SOUNDDAT.DAT`'s 43
+carried members not one is among its 119 stream members: 17 are `BNKl` banks,
+which this lane does not write, and 26 are members of neither kind [M].  The
+path is here because the measurement could have gone the other way, because a
+Deluxe rebuild may lay its caches out differently, and because the alternative —
+writing and hoping — is how a mod silently does nothing.  CI proves the path on
+a synthetic cache that *does* carry a replaced member.
+
+One function reads the caches: `audio_lane.preload_copies(image)`, which takes
+an opened image and returns, per container, the directory copies and the member
+copies as `(cache, offset)`.  Every call site in the lane goes through the
+module-level `_preload_copies` bound to it, so the shared reader the art branch
+landed replaces it in one line.
+
 A build also proves it did not have to touch the header copies: a same-size
 replacement leaves the container's header block identical, and the build
 compares it before and after rather than trusting that.
