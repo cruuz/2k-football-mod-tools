@@ -3565,3 +3565,202 @@ owner union in both orders. The recorder has a focused new test. The on-disk
 manifest remains intentionally unchanged and its source fingerprints will
 remain stale until Claude regenerates it; this is not a passed fresh-manifest
 or staged-release claim.
+# r62 hires pack handoff, 2026-09-05
+
+This is an archive build pass, EXPERIMENTAL / UNWITNESSED. The two new core
+modules and headless API are implemented. Protected Build, Studio, release
+and runtime files remain untouched. The research memo explicitly says the
+resource-only pilot needs no XBE dispatcher entry or cave reservation.
+The existing music archive writer grows/shrinks and remaps the collection;
+its publication transaction is now shared with music. Both existing provider
+hash pins were refreshed in the unprotected `providers.py`.
+
+## BuildPlan and execution
+
+Add these fields to protected `mod_editor/core/mod_build.py`:
+
+```python
+hires_pack: bool = False
+hires_folder: str = ""
+hires_scale: int = 2
+hires_target: str = "xemu-64"
+```
+
+**Basic / advanced (the existing `modern` key) / experimental: all explicitly
+set `hires_pack=False`. Never enable it in a preset.** Preserve the folder
+choice but do not scan/import/apply anything while disabled. The ordinary
+default build therefore retains native texture sizes. Do not add it to
+`wants_xbe_patch`, imply `xbe_space`, select an allocator owner, or modify
+the cave manifest. `hires_scale` accepts exact integers 1 or 2. The only
+enabled target is `xemu-64`; `xemu-128` must remain unavailable with the
+explanation "128 MiB support has not been proved".
+
+Add `availability()["hires_pack"]` for importability of
+`nfl2k5_hires_pack`, `nfl2k5_hires_texture`, `nfl2k5_music_archive` and
+`nfl2k5_music_banks`. When selected, preflight the folder and selected
+resources before the ordinary build writes. Use
+`hires.inspect_image(source, plan.hires_folder, scale=plan.hires_scale,
+target=plan.hires_target)` for exact art-relative preflight. Retain exceptions
+as actionable failures, not implicit resize or omission. Native texture edits
+on the same target conflict. In particular, if the folder selects `scorebug`,
+reject simultaneous `scorebug` / `scorebug_runtime` / reference-frame imports
+before the first write. Other pilot targets can accompany those options.
+
+Run the hires pass **last**, after all ordinary fixed-span resource writers,
+paired scorebug resources, XBE patches and music-library compilation. Resolve
+against that current private image by identity. In `_build_into`, after the
+music-library block and before returning the receipt:
+
+```python
+if plan.hires_pack:
+    hires = _core_module("nfl2k5_hires_pack")
+    with tempfile.TemporaryDirectory(prefix=".hires-", dir=target.parent) as folder:
+        destination = Path(folder).resolve() / "image.iso"
+        rec = hires.build_image(
+            target, destination, plan.hires_folder,
+            scale=plan.hires_scale, target=plan.hires_target, progress=progress)
+        os.replace(destination, target)
+    receipt["steps"].append({"step": "hires_pack", **rec})
+```
+
+The outer Build transaction still publishes only after all passes succeed.
+Do not call a fixed retail-offset writer after this pass. The existing final
+`inspect(target, ...)` includes legacy fixed-offset resource inspectors: take
+their result before the final remap and carry it as pre-remap inspection,
+then set the final hires state from `rec["verification"]` and report the
+actual final image hash/size. Alternatively migrate each such inspector to
+identity-based traversal before calling it on the grown archive. Never label
+a stale-offset failure as a proved retail/applied final state. The hires
+verification already independently hashes all 4,323 outers and the XBE.
+Add `hires_pack` to Build inspection/results without hiding an
+`authored-unverified`, mixed or foreign status behind a boolean. For a plain
+XBE source report "requires image".
+
+## Dispatcher and the four status dictionaries
+
+| Protected surface | Exact change for this resource-only pilot |
+| --- | --- |
+| `nfl2k5_throw_tuning._apply_all` tuple | **None.** It accepts XBE bytes; hires accepts TXTRs or a disc copy. |
+| `_apply_all` keyword argument | **None.** Do not forward `hires_pack` into this dispatcher. |
+| `read_xbe` status dict | **None.** No executable hires state exists. |
+| `read_image` status dict | **None.** Put the archive result in `mod_build.inspect`, outside XBE status. |
+| `write_xbe_copy` status dict | **None.** A standalone executable cannot contain the pack. |
+| `write_image_copy` status dict | **None.** The Build archive transaction owns the resource result. |
+
+The unchanged XBE memory/cave gates were run with their existing complete
+owner set in both orders. There is no new executable owner to compose into
+their `setUpClass` chains. Do not create a fake XBE patch just to populate
+these surfaces.
+
+## Build controls, Gameplay Patches and All Textures
+
+In protected `build_panel_qt.py` add the opt-in checkbox through `_option`:
+
+```python
+self.hires_pack_check = self._option(
+    layout, "hires_pack", "Hi-res pack (experimental)",
+    "Retail: textures keep their original sizes. Patch: selected artwork in your "
+    "Hi-res folder can use 2x detail. Experimental and unwitnessed in game. "
+    "xemu rendering scale is set separately.", badge="EXPERIMENTAL")
+```
+
+Caption is 25 characters, below 60. Add a folder chooser, `2x detail` / `Original
+size` output selection and a disabled 128 MiB target with the explanation
+above. The second choice maps to scale 1 and keeps the option explicitly on;
+turning it off does not undo an already-authored source disc. Include all
+four fields in option/state maps, plan creation, dirty detection, reset,
+summary, source/image availability and preset reset. Show the selected
+asset names and exact dimensions, P8 color loss, selected memory delta,
+logical archive growth and physical image growth in the build receipt.
+
+`Gameplay Patches.PATCHES`: **no active tuple**. `NEEDS_IMAGE`: **no added key**,
+because that panel routes executable patches and has no hires row. The
+Retail/Patch text above is the exact information text if integration adds a
+read-only link from that panel to Build. Such a link must use the Build
+controller, never the XBE writer. The Build checkbox itself requires a disc.
+
+**All Textures decision:** no new control belongs in its native replacement
+flow for this pilot. Its existing master export supplies full-resolution
+authoring sources, while the requested folder/scale/memory selection belongs
+in Build. Its fixed-span import promises remain intact. Therefore no GUI
+panel was edited. Protected `studio_qt.py` should route the four Build fields
+through the existing plan/controller operation lock. No automatic emulator
+launch or master-file conversion is implied.
+
+## Getting Started insertion
+
+Paste the following into protected-integration owner
+`docs/mod_editor/2k5_mod_studio_getting_started.md` near the Build artwork
+instructions, and link `nfl2k5_hires_pack.md` for the complete API/limits:
+
+> **Hi-res pack (experimental, unwitnessed).** This optional Build choice is
+> off in every preset. Put a `Hi-res` folder beside your project, then choose
+> that folder in Build. Use `scorebug.png` at 128 x 128, `field_logo.png` at
+> 512 x 512, and `helmet.png` at 512 x 512. Missing files leave their targets
+> unselected. The field logo is created-team logo 33 in dry weather; the
+> helmet is uniform `00H0.IFF`'s Standard/A `helmet00`. These are specific
+> pilot assets, not all teams. An NFL 2K5 `.2ktexmaster` with the same basename
+> can replace each PNG; choose one extension per target. Keep the atlas
+> arrangement and seams. `2x detail` installs larger textures. `Original
+> size` builds your retained artwork at the native dimensions. Keep the same
+> folder for replay or downscaling, and use your original disc to change art
+> or restore retail bytes. 128 MiB support is unavailable. Set xemu's
+> rendering resolution separately; this choice has no played witness yet.
+
+The exact getting-started page was left for integration as the task requests
+"(WIRING)"; the complete standalone guide is delivered now.
+
+## Release allowance, runtime closure and capability
+
+Add these exact lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_hires_pack.py
+mod_editor/core/nfl2k5_hires_texture.py
+docs/mod_editor/nfl2k5_hires_pack.md
+```
+
+No new third-party dependency: Pillow is already shipped. In protected
+`packaging/check_2k5_mod_studio_runtime.py`, explicitly import both new dotted
+modules, inspect all three `ASSETS`, assert their scale-2 video total is
+718336, and assert `status({}, missing_folder) == "foreign"`. Keep imports
+closed over these existing modules/tools (including legacy bare tool imports):
+
+```text
+mod_editor.core.texture_master
+mod_editor.core.json_stream
+mod_editor.core.errors
+mod_editor.core.nfl2k5_bump_strength
+mod_editor.core.nfl2k5_music_archive
+mod_editor.core.nfl2k5_music_banks
+mod_editor.core.nfl2k5_music_metadata
+mod_editor.core.nfl2k5_music_storage
+mod_editor.core.nfl2k5_depth_chart_storage
+mod_editor.core.nfl2k5_ausb_fixed_slots
+mod_editor.core.platform_compat
+tools.nfl_txtr / nfl_txtr
+tools.nfl_tset_png_import / nfl_tset_png_import
+tools.nfl_uniform_inventory / nfl_uniform_inventory
+tools.nfl_outer / nfl_outer
+tools.nfl2k5_commentary_swap
+tools.nfl_uniform_color_xiso_direct_patch
+tools.xbox_ima_encoder
+PIL.Image
+```
+
+The normal transitive closure of those existing helpers remains required;
+Capstone, Unicorn, the Ghidra corpus and private texture inventories are not
+new runtime dependencies. `tools/nfl2k5_hires_consumer_audit.py` and
+`reports/hires_pack_consumers.v1.json` are developer evidence, not runtime
+inputs; do not add game spans, scratch PNGs, ISO copies or the brief to the
+release. The two existing music provider pins were updated, with no pin
+widened. Run `packaging/repin.py` again after protected integration.
+
+Merge the sole object in
+`docs/mod_editor/nfl2k5_hires_pack_capability.json` into the canonical registry:
+ID `nfl2k5.textures.hires_pack`, existing `uniforms` surface, classification
+`offline-writer-proved`, runtime `not-tested`, GUI default false. This is a
+new archive-size capability, not a relaxation of `all_p8`. No schema surface
+or patch-address reservation is added. Update count/findings expectations.
+Run the two new standalone suites, music banks, texture masters, both XBE
+gates, the staged import check and the protected full Build transaction tests.

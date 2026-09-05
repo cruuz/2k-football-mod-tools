@@ -1,0 +1,86 @@
+[
+  {
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_hires_pack.py",
+      "operation": "write",
+      "command": "python3 -m mod_editor.core.nfl2k5_hires_pack apply <source.iso> --folder <Hi-res> --output <new-copy.iso>"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_HIRES_PACK_REPORT.md",
+      "reports/hires_pack_consumers.v1.json",
+      "reports/hires_pack_build.v1.json",
+      "tests/mod_editor/test_nfl2k5_hires_pack.py",
+      "tests/mod_editor/test_nfl2k5_hires_pack_retail.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in witness disc only; off in every preset."
+    },
+    "id": "nfl2k5.textures.hires_pack",
+    "input_constraints": [
+      "Pinned USA pilot TXTR wrappers and audited executable consumer ranges; one to three explicit artwork filenames.",
+      "scorebug.png 128x128, field_logo.png 512x512, helmet.png 512x512, or same-basename NFL 2K5 .2ktexmaster. Files up to 32 MiB, expanded masters up to 64 MiB, source images up to 16 megapixels.",
+      "Shared P8 palette, native mip count, exact retail or matching authored recipe; mixed or foreign selections refuse.",
+      "Only xemu-64 is selectable and remains unwitnessed. xemu-128 and 4x texture output refuse."
+    ],
+    "portme": [
+      "Run Noah's native versus 2x artwork comparisons at xemu rendering scales 1x, 2x and 4x, including full-game memory and lifecycle checks."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute generated game spans or discs.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "status": "not-tested",
+      "evidence": [
+        "ASTRA_HIRES_PACK_REPORT.md"
+      ],
+      "scope": "Static normalized UV evidence, bounded compiler and transaction tests, and real disc builds. Exhaustive runtime consumers, guest heap headroom, rendered sampling and 128 MiB support are unproved."
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "hires_pack",
+          "required": true,
+          "allowed": "false in every preset; explicit experimental opt-in only"
+        },
+        {
+          "name": "hires_folder",
+          "required": true,
+          "allowed": "existing folder with one to three exact pilot basenames"
+        },
+        {
+          "name": "hires_scale",
+          "required": true,
+          "allowed": "1 or 2; default 2"
+        },
+        {
+          "name": "hires_target",
+          "required": true,
+          "allowed": "xemu-64 only"
+        }
+      ],
+      "notes": "Build integration is specified in WIRING.md. Run after other archive writers; reject same-asset scorebug or texture edits. No executable patch or allocator owner."
+    },
+    "source_container": {
+      "format": "TXTR in segmented IFF archive in XDVDFS",
+      "hash_pins": [
+        "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+        "ea7da5c66e03f8bdf1724a73f021ccaf6b8bb4726179d449a65e783b0192a010",
+        "c6f56638ebf3c77993d87f810cd31b6d7abc2b754da8172ed5184e4bc7508725"
+      ],
+      "resource": "o346c53 score_buga; o384c0 CT33D.IFF center_logo; o3613c11 uniform 00H0.IFF helmet00",
+      "retail_file": "user-owned NFL 2K5 USA disc"
+    },
+    "summary": "Compile up to three selected pilot textures at 2x or native size and transactionally rebuild the archive in a new disc copy.",
+    "surface": "uniforms",
+    "title": "Hi-res pack (experimental, unwitnessed)",
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_hires_pack.py"
+  }
+]

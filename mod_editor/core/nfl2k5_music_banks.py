@@ -420,7 +420,6 @@ def rebuild(source, output, recipe, *, expected_plan=None, overwrite=False, prog
     source, output = Path(source).resolve(), Path(output).resolve()
     require(source != output and (not output.exists() or not os.path.samefile(source,output)), 'output must be a separate copy')
     require(not output.exists() or overwrite, 'output exists; overwrite was not selected')
-    target_before = _identity(output) if output.exists() else None
     planned = plan(source,recipe)
     inputs = [Path(t['wav']) for t in planned['tracks'] if 'wav' in t]
     if isinstance(recipe,(str,Path)):
@@ -435,19 +434,12 @@ def rebuild(source, output, recipe, *, expected_plan=None, overwrite=False, prog
         require(wanted == fresh, 'stale music plan; source or recipe changed')
     require(output.parent.is_dir(), 'output parent does not exist')
     require(shutil.disk_usage(output.parent).free >= planned['scratch_bytes'], 'insufficient scratch space')
-    source_before = _identity(source)
-    with tempfile.TemporaryDirectory(prefix='.music-',dir=output.parent) as temp:
-        directory = Path(temp).resolve()
-        staged = directory/'image.iso'
+
+    def build(directory, staged):
         with archive.Disc(source) as disc:
             geometry, _, containers, new_xbe, _, _ = _project(planned['recipe'],disc,planned['tracks'])
             require(geometry == planned['layout'], 'source layout changed after planning')
             banks, hashes = _stage(disc,planned,directory,progress)
-            progress('copy',0,disc.image_size)
-            # Copy from the same open reader used by the plan projection.
-            with staged.open('wb') as stream:
-                for at in range(0,disc.image_size,archive.BLOCK):
-                    stream.write(disc.read(min(archive.BLOCK,disc.image_size-at),at))
             fd = os.open(staged,os.O_RDWR | getattr(os,'O_BINARY',0))
             try:
                 _write_archive(fd,disc,geometry,containers,banks,progress)
@@ -457,12 +449,12 @@ def rebuild(source, output, recipe, *, expected_plan=None, overwrite=False, prog
                 os.fsync(fd)
             finally:
                 os.close(fd)
-        checked = verify(source,staged,planned,track_hashes=hashes,progress=progress)
-        require(_identity(source) == source_before and archive.file_hash(source) == planned['source_sha256'],
-                'source changed during build; output discarded')
-        require((_identity(output) if output.exists() else None) == target_before, 'destination changed during build')
-        # Every reader/writer is closed, including failed-constructor readers.
-        os.replace(staged,output)
+        return hashes
+
+    hashes, checked = archive.transactional_copy(source, output,
+        source_sha256=planned['source_sha256'], scratch_bytes=planned['scratch_bytes'],
+        build=build, verify=lambda staged, hashes: verify(source, staged, planned,
+            track_hashes=hashes, progress=progress), overwrite=overwrite, inputs=inputs, progress=progress)
     return dict(schema='nfl2k5_music_receipt/v1',experimental=True,runtime_witnessed=False,
                 output=str(output),plan=planned,track_sha256=hashes,verification=checked,
                 elapsed_seconds=time.monotonic()-start)
