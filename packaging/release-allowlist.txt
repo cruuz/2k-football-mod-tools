@@ -424,3 +424,32 @@ mod_editor/core/ps2_disc_studio_service.py
 mod_editor/core/ps2_disc_studio_worker.py
 mod_editor/gui/ps2_disc_studio_qt.py
 mod_editor/gui/ps2_disc_studio_tabs_qt.py
+# Game modules (mod_editor/games/): the versioned game-module contract and its pins,
+# discovery, the registry merge, the conformance harness, the "Select other games…"
+# chooser, the pins/fragments/scaffold tooling and the shared format packages.
+# See docs/product/GAME_MODULE_CONTRACT.md.
+mod_editor/games/CONTRACT_CHANGELOG.md
+mod_editor/games/CONTRACT_PINS.json
+mod_editor/games/__init__.py
+mod_editor/games/__main__.py
+mod_editor/games/_formats/__init__.py
+mod_editor/games/_formats/ps2_disc/__init__.py
+mod_editor/games/_formats/ps2_elf/__init__.py
+mod_editor/games/chooser.py
+mod_editor/games/chooser_qt.py
+mod_editor/games/conformance.py
+mod_editor/games/contract.py
+mod_editor/games/fragments.py
+mod_editor/games/pins.py
+mod_editor/games/registry_merge.py
+mod_editor/games/scaffold.py
+# nfl2k5_ps2: shipped by the game module (mod_editor/games/nfl2k5_ps2/allowlist.fragment.txt).
+mod_editor/games/nfl2k5_ps2/__init__.py
+mod_editor/games/nfl2k5_ps2/__main__.py
+mod_editor/games/nfl2k5_ps2/allowlist.fragment.txt
+mod_editor/games/nfl2k5_ps2/code_patches.py
+mod_editor/games/nfl2k5_ps2/game.json
+mod_editor/games/nfl2k5_ps2/pins.json
+mod_editor/games/nfl2k5_ps2/registry.fragment.json
+mod_editor/games/nfl2k5_ps2/validate_code_patches.bat
+mod_editor/games/nfl2k5_ps2/validate_code_patches.sh
