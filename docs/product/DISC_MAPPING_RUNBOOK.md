@@ -30,12 +30,15 @@ without judgement calls. Where a step needs judgement, the runbook says so and s
     PYTHONPATH=. python3 tools/ea_disc_map.py --render <dir>/<SERIAL>.map.json    # Markdown again from the JSON
     PYTHONPATH=. python3 tools/ea_disc_map.py --selftest
 
-It writes `<SERIAL>.map.json` (everything) and `<SERIAL>.map.md` (the summary). It maps: identity
+It writes `<SERIAL>.<label-slug>.map.json` (everything) and `<SERIAL>.<label-slug>.map.md` (the summary); the label is in the
+name because a Deluxe disc shares its serial with the retail one. It maps: identity
 (boot file, serial, boot-ELF sha256 and PCSX2 CRC, whole-image sha256), every file's kind from its
 magic, every `TERF` container's chunk chain, alignment, codec and decompressed-format histograms,
 MMAP texture dimensions, TEXT totals, nested containers, and the EA TDB schema of every database
-member (each distinct table/field shape once), plus bare databases. A refusal is a sentence in
-the table, never a traceback. Madden 09 maps in about 30 s; a 4.3 GB disc in under 3 minutes.
+member (each distinct table/field shape once), EA `BIGF` archives (entries, member kinds, `SHPS` texture
+members), plus bare databases. Containers are read through a memory map, so a 1.7 GB movie container
+costs no memory. A refusal is a sentence in the table, never a traceback. Madden 09 maps in about 30 s;
+Madden 2004 with its 1.7 GB movie container in about 40 s.
 
 ## Steps
 
@@ -44,8 +47,10 @@ the table, never a traceback. Madden 09 maps in about 30 s; a 4.3 GB disc in und
 2. Run the mapper on the rig (the clone lives at `~/2k-football-mod-tools-ps2`, kept at the lane's head):
    `ssh pacarey@192.168.68.85 'cd ~/2k-football-mod-tools-ps2 && PYTHONPATH=. python3 tools/ea_disc_map.py --iso ~/Games/ps2/"<image>.iso" --out ~/ps2-maps/out --label "<Title> (USA)" --hash-image --quiet'`
    Expected: one line `EA_DISC_MAP_DONE serial=<SERIAL> files=… containers=… databases=… schemas=… seconds=…`.
+   A disc with `containers=0` is not an EA TERF disc: read its *File kinds* and *Archives* tables instead (VC packs for
+   ESPN titles; `BIGF` archives + `SHPS` textures for MVP Baseball).
    Anything else: stop and report the line verbatim.
-3. Fetch the two files: `scp pacarey@192.168.68.85:~/ps2-maps/out/<SERIAL>.map.* <your scratch dir>/`
+3. Fetch the two files: `scp pacarey@192.168.68.85:~/ps2-maps/out/<SERIAL>.<label-slug>.map.* <your scratch dir>/`
 4. Open `<SERIAL>.map.md`. Fill `docs/product/disc_maps/TEMPLATE.md` into `<your scratch dir>/<SERIAL>.md`:
    every table cell from the map, the page-by-page rung table from the rules below, nothing else.
 5. Self-check before reporting: no game strings quoted; every number traceable to the map; the

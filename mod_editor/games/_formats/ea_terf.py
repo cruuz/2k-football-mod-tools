@@ -51,6 +51,7 @@ Standard library only; importable without Qt.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import mmap
 import struct
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
@@ -797,7 +798,7 @@ class TerfContainer:
             if size < CHUNK_HEADER_SIZE:
                 break
             try:
-                name = tag.decode("ascii")
+                name = bytes(tag).decode("ascii")  # tag may be a memoryview slice
             except UnicodeDecodeError:
                 break
             yield Chunk(name, position, size)
@@ -936,7 +937,7 @@ class TerfContainer:
         return problems
 
 
-def parse_terf(data: bytes, allow_size_mismatch: bool = False) -> TerfContainer:
+def parse_terf(data: "bytes | memoryview | mmap.mmap", allow_size_mismatch: bool = False) -> TerfContainer:
     """Parse *data* as an EA ``TERF`` container."""
     return TerfContainer(data, allow_size_mismatch=allow_size_mismatch)
 

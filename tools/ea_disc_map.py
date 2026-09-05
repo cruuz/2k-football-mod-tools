@@ -34,7 +34,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import mmap
 import os
+import re
 import struct
 import sys
 import time
@@ -54,7 +56,8 @@ from mod_editor.games._formats import ps2_elf  # noqa: E402
 
 SCHEMA = "ea_disc_map/v1"
 MAGIC_KINDS = {b"TERF": "TERF", b"DB\x00\x08": "TDB", b"\x7fELF": "ELF", b"QL01": "QL01",
-               b"BIGF": "BIGF", b"RIFF": "RIFF", b"MMAP": "MMAP", b"SCHl": "SCHl", b"SMF\x00": "SMF"}
+               b"BIGF": "BIGF", b"BIG4": "BIGF", b"RIFF": "RIFF", b"MMAP": "MMAP", b"SCHl": "SCHl", b"SMF\x00": "SMF",
+               b"SHPS": "SHPS"}
 TDB_FIELD_TYPES = {0: "string", 1: "binary", 2: "sint", 3: "uint", 4: "float"}
 
 
@@ -120,7 +123,7 @@ def schema_signature(schema: Dict[str, Any]) -> str:
 # --------------------------------------------------------------------------
 # containers
 # --------------------------------------------------------------------------
-def map_terf(data: bytes, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_000) -> Dict[str, Any]:
+def map_terf(data, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_000) -> Dict[str, Any]:
     """One TERF container, as counts: chain, codecs, formats, MMAP sizes, TDB schemas, TEXT totals."""
     container = ea_terf.parse_terf(data, allow_size_mismatch=True)
     result: Dict[str, Any] = {
@@ -173,6 +176,62 @@ def map_terf(data: bytes, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int =
     return result
 
 
+class _Extent:
+    """One file on the disc, readable in ranges or as a memory-mapped view (never fully loaded)."""
+
+    def __init__(self, handle, offset: int, size: int) -> None:
+        self.handle = handle; self.offset = offset; self.size = size
+
+    def read(self, start: int, length: int) -> bytes:
+        if start < 0 or start + length > self.size:
+            raise MapError("range %d+%d outside a %d-byte file" % (start, length, self.size))
+        self.handle.seek(self.offset + start)
+        return self.handle.read(length)
+
+    def view(self):
+        """(mmap, memoryview slice) covering exactly this file; the caller releases both."""
+        gran = mmap.ALLOCATIONGRANULARITY
+        base = self.offset - self.offset % gran
+        mapped = mmap.mmap(self.handle.fileno(), (self.offset - base) + self.size, access=mmap.ACCESS_READ, offset=base)
+        whole = memoryview(mapped)
+        return mapped, whole, whole[self.offset - base: self.offset - base + self.size]
+
+
+def map_bigf(extent: "_Extent") -> Dict[str, Any]:
+    """An EA BIG archive (``BIGF`` / ``BIG4``): entry count, member kinds and extensions, sizes."""
+    head = extent.read(0, 16)
+    if head[:4] not in (b"BIGF", b"BIG4"):
+        raise MapError("not a BIG archive: %r" % head[:4])
+    archive_size = struct.unpack_from("<I", head, 4)[0]
+    count, index_size = struct.unpack_from(">II", head, 8)
+    if count > 200_000 or index_size > extent.size:
+        raise MapError("BIG index declares %d entries / %d index bytes; refusing" % (count, index_size))
+    index = extent.read(16, max(0, min(index_size, extent.size) - 16))
+    entries = []; pos = 0
+    for _ in range(count):
+        if pos + 8 > len(index):
+            break
+        off, size = struct.unpack_from(">II", index, pos); pos += 8
+        end = index.find(b"\x00", pos)
+        if end < 0:
+            break
+        name = index[pos:end].decode("latin-1"); pos = end + 1
+        entries.append((name, off, size))
+    kinds: Counter = Counter(); exts: Counter = Counter(); total = 0; nested_shps = 0
+    for name, off, size in entries:
+        total += size
+        exts[(name.rsplit(".", 1)[-1].lower() if "." in name else "-")] += 1
+        if size >= 4 and off + 4 <= extent.size:
+            kind = magic_kind(extent.read(off, min(16, size)))
+            kinds[kind] += 1
+            if kind == "SHPS":
+                nested_shps += 1
+    return {"format": head[:4].decode("ascii"), "declared_size": archive_size, "entries": count, "entries_read": len(entries),
+            "index_bytes": index_size, "member_bytes": total, "member_kinds": dict(kinds.most_common(12)),
+            "extensions": dict(exts.most_common(12)), "shps_members": nested_shps,
+            "names_sample": [n for n, _, _ in entries[:12]]}
+
+
 def magic_kind(head: bytes) -> str:
     for magic, kind in MAGIC_KINDS.items():
         if head.startswith(magic):
@@ -200,6 +259,7 @@ def map_disc(iso_path: Path, *, label: str = "", hash_image: bool = False,
         identity["image_sha256"] = digest.hexdigest()
     files: List[Dict[str, Any]] = []
     containers: Dict[str, Any] = {}
+    archives: Dict[str, Any] = {}
     databases: Dict[str, Any] = {}
     schemas: Dict[str, Dict[str, Any]] = {}
     kinds: Counter = Counter()
@@ -212,13 +272,22 @@ def map_disc(iso_path: Path, *, label: str = "", hash_image: bool = False,
             kind = magic_kind(head)
             kinds[kind] += 1
             files.append({"path": entry.path, "size": entry.length, "lba": entry.lba, "kind": kind})
+            extent = _Extent(handle, iso.extent_byte_offset(image, entry.lba), entry.length)
             if kind == "TERF":
                 progress(f"container {entry.path} ({entry.length:,} bytes)")
-                data = iso.read_file(image, entry)
+                mapped, whole, view = extent.view()
                 try:
-                    containers[entry.path] = map_terf(data, schemas)
+                    containers[entry.path] = map_terf(view, schemas)
                 except (ea_terf.TerfError, ValueError) as error:
                     containers[entry.path] = {"error": str(error)[:160]}
+                finally:
+                    view.release(); whole.release(); mapped.close()
+            elif kind == "BIGF":
+                progress(f"archive {entry.path} ({entry.length:,} bytes)")
+                try:
+                    archives[entry.path] = map_bigf(extent)
+                except (MapError, struct.error, ValueError) as error:
+                    archives[entry.path] = {"error": str(error)[:160]}
             elif kind == "TDB":
                 data = iso.read_file(image, entry)
                 try:
@@ -233,7 +302,7 @@ def map_disc(iso_path: Path, *, label: str = "", hash_image: bool = False,
         "schema": SCHEMA, "label": label, "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "image": {"name": iso_path.name, "size": iso_path.stat().st_size, **{k: summary[k] for k in ("sector_size", "volume_id", "volume_blocks", "files", "directories", "declared_file_bytes") if k in summary}},
         "identity": {k: identity.get(k) for k in ("serial", "boot_file", "boot_sha256", "boot_size", "pcsx2_crc", "image_sha256")},
-        "kinds": dict(kinds.most_common()), "files": files, "containers": containers, "databases": databases,
+        "kinds": dict(kinds.most_common()), "files": files, "containers": containers, "archives": archives, "databases": databases,
         "schemas": schemas, "seconds": round(time.time() - started, 1),
     }
 
@@ -268,6 +337,13 @@ def render_markdown(m: Dict[str, Any]) -> str:
         if c["layout_violations"]: notes.append(f"{len(c['layout_violations'])} layout violations")
         if c["size_mismatch"]: notes.append(f"size mismatch {c['size_mismatch']:+,}")
         out.append(f"| `{path}` | {sizes.get(path, 0):,} | {c['chain']} | {c['alignment']} | {c['members']} | {codecs} | {formats} | {mm} | {c['text_members']} | {len(c['tdb_members'])} | {'; '.join(notes)} |")
+    if m.get("archives"):
+        out += ["", "## Archives (EA BIG)", "", "| path | bytes | entries | member kinds | extensions | SHPS |", "|---|---:|---:|---|---|---:|"]
+        for path, a in sorted(m["archives"].items()):
+            if "error" in a:
+                out.append(f"| `{path}` | {sizes.get(path, 0):,} | — | refused: {a['error']} | | |"); continue
+            mk = ", ".join(f"{k} {v}" for k, v in a["member_kinds"].items()); ex = ", ".join(f"{k} {v}" for k, v in a["extensions"].items())
+            out.append(f"| `{path}` | {sizes.get(path, 0):,} | {a['entries']} | {mk} | {ex} | {a['shps_members']} |")
     if m["databases"]:
         out += ["", "## Bare databases (TDB files)", "", "| path | schema | tables (records) |", "|---|---|---|"]
         for path, d in sorted(m["databases"].items()):
@@ -342,15 +418,36 @@ def selftest() -> int:
     mapped2 = map_terf(comp, schemas)
     check(mapped2["chain"].find("COMP") >= 0 and len(schemas) == 1, "COMP container, same schema deduped")
     check(magic_kind(b"TERF\x40\x00") == "TERF" and magic_kind(b"DB\x00\x08\x00") == "TDB" and magic_kind(b"zzzz").startswith("other:"), "magic kinds")
+    import tempfile
+    big = bytearray(b"BIGF"); names = [(b"art/one.ssh", b"SHPS" + bytes(28)), (b"snd/two.abk", b"ABKC" + bytes(12))]
+    index = b"".join(struct.pack(">II", 0, len(payload)) + name + b"\x00" for name, payload in names)
+    index_size = 16 + len(index); offsets = []; cursor = index_size
+    rebuilt = b""
+    for name, payload in names:
+        offsets.append(cursor); rebuilt += payload; cursor += len(payload)
+    index = b"".join(struct.pack(">II", off, len(payload)) + name + b"\x00" for off, (name, payload) in zip(offsets, names))
+    big += struct.pack("<I", index_size + len(rebuilt)) + struct.pack(">II", len(names), index_size) + index + rebuilt
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "disc.bin"; path.write_bytes(bytes(6144) + bytes(big) + bytes(2048) + container)
+        with open(path, "rb") as handle:
+            b = map_bigf(_Extent(handle, 6144, len(big)))
+            check(b["entries"] == 2 and b["member_kinds"].get("SHPS") == 1 and b["extensions"].get("ssh") == 1, "BIG archive %s" % b)
+            ext = _Extent(handle, 6144 + len(big) + 2048, len(container))
+            mapped_file, whole, view = ext.view()
+            try:
+                via_view = map_terf(view, {})
+            finally:
+                view.release(); whole.release(); mapped_file.close()
+            check(via_view["formats"] == mapped["formats"] and via_view["members"] == mapped["members"], "mmap view maps like bytes")
     fake_map = {"schema": SCHEMA, "label": "Synthetic", "generated_utc": "1970-01-01T00:00:00Z", "seconds": 0.0,
                 "image": {"name": "synthetic.iso", "size": 2048, "files": 1, "directories": 1, "sector_size": 2048},
                 "identity": {"serial": "SLUS-00000", "boot_file": "SLUS_000.00", "boot_sha256": "0" * 64, "boot_size": 16, "pcsx2_crc": "00000000", "image_sha256": None},
                 "kinds": {"TERF": 1}, "files": [{"path": "/DATA/X.DAT", "size": len(container), "lba": 100, "kind": "TERF"}],
-                "containers": {"/DATA/X.DAT": mapped}, "databases": {}, "schemas": schemas}
+                "containers": {"/DATA/X.DAT": mapped}, "archives": {"/DATA/Y.BIG": b}, "databases": {}, "schemas": schemas}
     md = render_markdown(fake_map)
     check("SLUS-00000" in md and "/DATA/X.DAT" in md and "TEAM" in md and "TGID:uint8" in md, "markdown renders")
     check("payload" not in md.lower() or True, "no payload words")
-    print(f"EA_DISC_MAP_SELFTEST_PASS checks={checks} tdb=schema-only terf=DATA+COMP mmap=header markdown=ok")
+    print(f"EA_DISC_MAP_SELFTEST_PASS checks={checks} tdb=schema-only terf=DATA+COMP+mmap-view bigf=index mmap=header markdown=ok")
     return 0
 
 
@@ -368,7 +465,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return selftest()
     if args.render:
         data = json.loads(args.render.read_text(encoding="utf-8"))
-        target = args.render.with_suffix("").with_suffix(".map.md") if args.render.name.endswith(".map.json") else args.render.with_suffix(".md")
+        target = args.render.with_name(args.render.name[:-len(".json")] + ".md") if args.render.name.endswith(".map.json") else args.render.with_suffix(".md")
         target.write_text(render_markdown(data), encoding="utf-8", newline="\n")
         print(f"EA_DISC_MAP_RENDERED {target}")
         return 0
@@ -385,9 +482,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 1
     args.out.mkdir(parents=True, exist_ok=True)
     serial = (mapped["identity"].get("serial") or args.iso.stem).replace("/", "_")
-    json_path = args.out / f"{serial}.map.json"
+    slug = re.sub(r"[^A-Za-z0-9]+", "-", mapped["label"]).strip("-") or "disc"
+    json_path = args.out / f"{serial}.{slug}.map.json"
     json_path.write_text(json.dumps(mapped, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
-    md_path = args.out / f"{serial}.map.md"
+    md_path = args.out / f"{serial}.{slug}.map.md"
     md_path.write_text(render_markdown(mapped), encoding="utf-8", newline="\n")
     print(f"EA_DISC_MAP_DONE serial={serial} files={len(mapped['files'])} containers={len(mapped['containers'])} "
           f"databases={len(mapped['databases'])} schemas={len(mapped['schemas'])} seconds={mapped['seconds']} json={json_path} md={md_path}")

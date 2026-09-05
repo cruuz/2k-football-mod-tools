@@ -607,5 +607,34 @@ class CommandLineTests(unittest.TestCase):
         self.assertEqual(report["layout_violations"], [])
 
 
+class BufferViewTests(unittest.TestCase):
+    """The parser reads a memoryview or an mmap exactly as it reads bytes, so a disc mapper
+    can walk a 1.7 GB movie container through the page cache instead of loading it."""
+
+    def test_memoryview_and_mmap_match_bytes(self) -> None:
+        import mmap, tempfile, os
+        payload = ea_terf.build_terf([b"DB\x00\x08" + bytes(60), b"MMAP" + bytes(300), b"TEXT" + bytes(40), b""], chunk="COMP")
+        expect = ea_terf.parse_terf(payload)
+        view = ea_terf.parse_terf(memoryview(payload))
+        self.assertEqual(view.format_histogram(), expect.format_histogram())
+        self.assertEqual(view.codec_histogram(), expect.codec_histogram())
+        self.assertEqual(view.chunk_chain, expect.chunk_chain)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "c.dat")
+            with open(path, "wb") as handle:
+                handle.write(bytes(8192) + payload)   # a container that does not start at offset 0
+            with open(path, "rb") as handle:
+                mapped = mmap.mmap(handle.fileno(), 0, access=mmap.ACCESS_READ)
+                view = memoryview(mapped)
+                try:
+                    container = ea_terf.parse_terf(view[8192:8192 + len(payload)])
+                    self.assertEqual(container.format_histogram(), expect.format_histogram())
+                    self.assertEqual(container.member(0), expect.member(0))
+                finally:
+                    del container          # the container holds a slice of the view
+                    view.release()         # every exported pointer must go before the map closes
+                    mapped.close()
+
+
 if __name__ == "__main__":
     unittest.main()
