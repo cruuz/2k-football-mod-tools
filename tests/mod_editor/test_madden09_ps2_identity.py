@@ -336,6 +336,29 @@ class IdentityLaneTests(unittest.TestCase):
                            self.catalogue)
         self.assertIn("historical squads", str(caught.exception))
 
+    def test_a_hand_written_recipe_with_a_bad_colour_is_refused_not_written(self) -> None:
+        """A recipe is a file; it can reach plan() without passing check_edit."""
+
+        recipe = {"schema": identity_lane.RECIPE_SCHEMA,
+                  "edits": [{"target": self.team.key, "values": {"primary": "not-a-colour"}}]}
+        with self.assertRaises(Refusal) as caught:
+            self.lane.plan(self.source, recipe, self.catalogue)
+        self.assertIn("#RRGGBB", str(caught.exception))
+
+    def test_a_hand_written_recipe_with_an_over_long_name_is_refused(self) -> None:
+        recipe = {"schema": identity_lane.RECIPE_SCHEMA,
+                  "edits": [{"target": self.team.key,
+                             "values": {"TSNA": "FAR TOO LONG FOR SEVEN BYTES"}}]}
+        with self.assertRaises(Refusal):
+            self.lane.plan(self.source, recipe, self.catalogue)
+
+    def test_a_hand_written_recipe_naming_a_field_the_table_lacks_is_refused(self) -> None:
+        recipe = {"schema": identity_lane.RECIPE_SCHEMA,
+                  "edits": [{"target": self.team.key, "values": {"ZZZZ": 1}}]}
+        with self.assertRaises(Refusal) as caught:
+            self.lane.plan(self.source, recipe, self.catalogue)
+        self.assertIn("ZZZZ", str(caught.exception))
+
     def test_a_build_writes_a_new_image_of_the_same_size_and_verifies(self) -> None:
         _recipe, destination, receipt = self._built()
         self.assertEqual(destination.stat().st_size, self.source.stat().st_size)
