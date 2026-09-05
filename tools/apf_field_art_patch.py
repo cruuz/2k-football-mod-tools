@@ -483,8 +483,13 @@ def compress_h7a_best(data: bytes, shift: int) -> bytes:
     improve on the greedy result or match it.
     """
     greedy = compress_h7a(data, shift)
-    binary = _optimal_binary()
+    try:
+        binary = _optimal_binary()
+    except OSError:
+        binary = None
     if binary is None:
+        import logging
+        logging.getLogger(__name__).warning("%s; using greedy H7A compression", optimal_encoder_diagnostic()["detail"])
         return greedy
     import subprocess
 
@@ -507,6 +512,49 @@ def compress_h7a_best(data: bytes, shift: int) -> bytes:
     except Exception:  # noqa: BLE001 - any decode failure means fall back
         return greedy
     return candidate
+
+
+def optimal_encoder_diagnostic() -> dict[str, object]:
+    """Explain the unchanged security predicate's result without repairing it.
+
+    No helper execution or chmod occurs. The reason is also usable by a GUI
+    or setup preflight before an expensive texture recompression starts.
+    """
+    import platform
+
+    path = _OPTIMAL_BINARY
+    try:
+        accepted = _optimal_binary() is not None
+    except OSError as exc:
+        return {'available': False, 'code': 'unreadable', 'path': str(path),
+                'detail': f'optimal H7A encoder cannot be read: {exc}'}
+    if accepted:
+        code, detail = 'available', 'reviewed optimal H7A encoder is available'
+    elif not sys.platform.startswith('linux') or platform.machine() not in {'x86_64', 'amd64'}:
+        code, detail = 'unsupported_platform', 'optimal H7A encoder requires Linux x86_64'
+    else:
+        try:
+            info = path.lstat()
+        except OSError as exc:
+            code, detail = 'unreadable', f'optimal H7A encoder cannot be inspected: {exc}'
+        else:
+            if stat.S_ISLNK(info.st_mode):
+                code, detail = 'symlink', 'optimal H7A encoder refused: symbolic link'
+            elif not stat.S_ISREG(info.st_mode):
+                code, detail = 'not_regular', 'optimal H7A encoder refused: not a regular file'
+            elif info.st_nlink != 1:
+                code, detail = 'hardlinks', f'optimal H7A encoder refused: link count is {info.st_nlink}, expected 1'
+            elif info.st_size != _OPTIMAL_BINARY_SIZE:
+                code, detail = 'wrong_size', 'optimal H7A encoder refused: reviewed file size does not match'
+            elif info.st_mode & 0o022:
+                code = 'unsafe_permissions'
+                detail = (f'optimal H7A encoder refused: mode {stat.S_IMODE(info.st_mode):04o} is group/other writable; '
+                          'run tools/setup_reviewed_helpers.py in a source checkout, or restage/reinstall the release')
+            elif not info.st_mode & stat.S_IXUSR:
+                code, detail = 'not_executable', 'optimal H7A encoder refused: owner execute permission is missing'
+            else:
+                code, detail = 'hash_or_race', 'optimal H7A encoder refused: reviewed SHA-256 mismatch or file changed during inspection'
+    return {'available': code == 'available', 'code': code, 'detail': detail, 'path': str(path)}
 
 
 def _inverse_swizzle_pixels(
@@ -1250,9 +1298,11 @@ def build_field_art_patch_many(
         raise PatchError(f"PORTME: {contract.name} outer allocation tail is nonzero")
     active = bytes(header) + bytes(body) + footer_bytes
     if len(active) > entry.size:
+        diagnostic = optimal_encoder_diagnostic()
+        detail = '' if diagnostic['available'] else '; ' + str(diagnostic['detail'])
         raise PatchError(
             f"rebuilt {contract.name} IFF exceeds its fixed outer allocation by "
-            f"{len(active) - entry.size} bytes; refusing output"
+            f"{len(active) - entry.size} bytes; refusing output{detail}"
         )
     rebuilt_entry = active + b"\0" * (entry.size - len(active))
 

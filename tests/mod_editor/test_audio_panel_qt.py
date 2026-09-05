@@ -1202,7 +1202,7 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                 },
             )
             self.assertTrue(panel.subtitle_label.wordWrap())
-            self.assertIn("play cues and ranges", panel.subtitle_label.text())
+            self.assertIn("replace a sound marked Editable", panel.subtitle_label.text())
             self.assertEqual(panel.layout().itemAt(0).layout().stretch(0), 1)
             self.assertIn(
                 "QPushButton#audioPrimaryButton:disabled", panel.styleSheet()
@@ -1305,7 +1305,7 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                 "one family-reviewed",
                 panel.meaning_filter.accessibleDescription(),
             )
-            self.assertEqual(panel.meaning_filter.itemText(0), "All meaning confidence (850)")
+            self.assertEqual(panel.meaning_filter.itemText(0), "All label confidence (850)")
             self.assertEqual(
                 panel.meaning_filter.itemText(3), "Family-reviewed labels (1)"
             )

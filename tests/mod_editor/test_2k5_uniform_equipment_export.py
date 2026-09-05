@@ -186,25 +186,24 @@ class StudioTruthfulEquipmentBoundaryTests(unittest.TestCase):
 
     def test_team_kit_name_and_equipment_scope_note_are_exact_and_honest(self) -> None:
         self.assertIn(
-            "Supported Team Kit (39 editable parts)", self.string_literals
+            "Whole kit (39 parts per uniform)", self.string_literals
         )
         self.assertIn(
-            "All 45 package-local socks, elbow pads, gloves, long sleeves, "
-            "shoes, and wristbands for the selected set use the same project "
-            "and Build path. Open the linked searchable list below.",
+            "All 45 socks, elbow pads, gloves, long sleeves, shoes and wristbands of the "
+            "selected uniform use the same project and Make disc from project path.",
             self.string_literals,
         )
         self.assertIn(
-            "39 Team Kit parts • 45 directly linked equipment palettes",
+            "39 editable parts · 45 equipment textures",
             self.string_literals,
         )
-        self.assertIn("Browse 45 Equipment Textures", self.string_literals)
+        self.assertIn("Equipment (socks, gloves, shoes…)", self.string_literals)
 
     def test_unsupported_formats_still_have_an_explicit_export_only_state(self) -> None:
         self.assertIn(
             "if asset.writer_route is VisualWriterRoute.EXPORT_ONLY", self.source
         )
-        self.assertIn("\"Preview / Export only\"", self.source)
+        self.assertIn("\"view only (export)\"", self.source)
         # Never silent-gray: export/edit/replace stay clickable with disableReason.
         self.assertIn("state.export_button.setEnabled(True)", self.source)
         self.assertIn('setProperty("disableReason"', self.source)

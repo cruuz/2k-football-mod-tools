@@ -97,9 +97,9 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
+        "111cc430b65395a15c17147591f590058eac644806ffb92299f15dabf30d688e",
     "mod_editor/gui/studio_qt.py":
-        "86bba04358cd3c6602b6461e6e71286e72619afc485d7b107ac7b0822aaf7f61",
+        "37b6774cbdeda2684f4ec009f828b205c55fdbb12aaeeaac9102304ba6032246",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1735,7 +1735,17 @@ def main() -> int:
         "mod_editor.core.nfl2k5_uniform_choice",
         "mod_editor.core.nfl2k5_franchise_practice",
         "mod_editor.core.nfl2k5_kick_laces",
+        "mod_editor.core.nfl2k5_dynamic_kickoff",
+        "mod_editor.core.nfl2k5_depth_chart_rows",
+        "mod_editor.core.nfl2k5_depth_chart_storage",
+        "mod_editor.core.nfl2k5_special_roles",
+        "mod_editor.core.nfl2k5_practice_squad",
+        "mod_editor.core.nfl2k5_practice_squad_runtime",
+        "mod_editor.core.nfl2k5_playoff_picture",
         "mod_editor.core.nfl2k5_team_history",
+        "mod_editor.core.nfl2k5_career_stats",
+        "mod_editor.core.nfl2k5_save_rost",
+        "mod_editor.core.nfl2k5_franchise_save",
         "mod_editor.core.nfl2k5_prospect_names",
         "mod_editor.core.nfl2k5_seven_on_seven",
         "mod_editor.core.nfl2k5_boot_logo",
@@ -1745,6 +1755,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_roster_records",
         "mod_editor.gui.models_panel_qt",
         "mod_editor.gui.roster_editor_panel_qt",
+        "mod_editor.gui.franchise_panel_qt",
+        "mod_editor.gui.task_delivery",
+        "mod_editor.gui.ux_text",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
     )

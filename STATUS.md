@@ -1,4 +1,51 @@
-# 2K5 Mod Studio — v1.0 RC83 Release Status
+# 2K5 Mod Studio — v1.0 RC84 Release Status
+
+## Beta 60 (unreleased) — ★ Rosters reads the disc's own position scheme
+
+Source/UI versions are **2K5 RC84** and **APF alpha.84**.
+
+- **Simpler words everywhere (UX pass).** Every page renamed for a first-timer, the open-disc hook fills every
+  source field, Build & Share fits 1366 px and reaches all BuildPlan fields; nothing removed, no writer touched.
+  Unwitnessed changes keep their "Not yet tested in-game" badge. See `UX_EXECUTION_REPORT.md`.
+- **Practice squads, 53 + 12 (Experimental).** Team-owned reserves kept by the season cut, surviving saves and the
+  rollover; no reserve screen yet. Astra-built, gate-proved, unwitnessed.
+- **SLOT / NICKEL / DIME depth-chart rows, X / Z labels (Experimental).** Thirteen-row depth chart on top of
+  the one-pool positions and the playbook roles. Astra Tier 2, gate-proved, unwitnessed.
+- **Franchise saves decoded** (season block + front office: cap, IR, schedule grid, coaches, seeds, user control);
+  read-only franchise card in ★ Rosters; xemu HDD save extractor. Finn's IR move reproduced byte for byte.
+- **Franchise tab on ★ Rosters.** Overview (year with the `2004 + field` rule, stage / week, user-controlled
+  teams, salary cap in $M + raw, team salaries vs the cap), Schedule (22 × 17 grid, Edit Game, Swap Home/Away,
+  played cells refused unless allowed), Coaches (record numbers, 23 ratings, 10 tendencies on the player-card
+  bars), Injured Reserve (Finn's place move byte for byte; activate labelled unwitnessed), Checks (PROVED /
+  HYPOTHESIS / OPAQUE map + the edits in words). Roster and franchise edits land in one re-signed copy, roster
+  first. Unwitnessed in game except the year rule and the IR move; cap edit is the first in-game check.
+- **Dynamic kickoff behaviour (Experimental).** Hold until first contact, landing zone, CPU aim and CPU touchbacks
+  as an executable patch on top of the beta-58 spots and line-up. Astra-built, gate-proved, unwitnessed.
+- **X / Z / SLOT and nickel / dime roles in every playbook (Advanced).** The third receiver and the third /
+  fourth corners on the depth chart now line up inside; refused groups are reported. Astra Tier 1; rows are Tier 2.
+- **Career stats CSV import (opt-in).** Build tab pass after the team history: real per-season counters for
+  ≤2003 seasons from a user CSV, 31 verified fields, export-then-import with identity pins, pool-bounded.
+  Built by GPT-6 Astra; release staging now normalises file modes and the H7A encoder explains refusals.
+- **★ Rosters opens real Xbox saves.** Real saves keep the roster as a version-0 runtime arena (object at
+  file 0x320), which RC83 refused; the document now reads that layout as well as the disc's, so genuine saves
+  get the full editor and re-sign as before. Verified on the two signed saves on hand; franchise saves untested.
+- **★ Rosters is scheme-aware.** The page no longer shows the retail 17 positions on every roster.
+  It detects whether the loaded source is on the retail table, the **EDGE rename** or the
+  **one-pool** model (EDGE / LB / interior, OLB retired) — from the disc's own patch states for an
+  image, from the records for a save or a loose body — and every label, chip, picker, CSV column,
+  jersey check and depth note follows it. Ratings stay keyed by the position **code**, the way the
+  game keys them, so a one-pool LB is still read on the linebacker card set and an EDGE on the
+  defensive-end one. Codes are never written outside the scheme: the picker greys the retired OLB
+  out, and a CSV that brings OLB rows onto a reclassified roster maps them to LB and says so.
+  A selector overrides the detection. Unwitnessed in game.
+- **★ Rosters, phase 2 (Finn parity):** team membership — release / sign / move / swap as pointer-list
+  edits with Finn's 42 / 54 limits and the game's own 2,500-slot free-agent ceiling (append helper
+  `0x242560`), the draft class refused because the game regenerates it into a fixed record window at
+  load; **Check & repair** offered on load with a receipt (never silent); **`.PlayerData`** export and
+  restore under the studio's identity rules; the 36 **create-a-player templates** with all 28 slots
+  proved from `FUN_00343460` (`-1` writes 75); searchable **play-by-play and portrait pickers** built
+  from the disc's own data (4,303 portraits); and `docs/nfl2k5_ratings_and_styles.md`. Moves travel
+  in the roster-edits document and the CSV; Build replays them. Unwitnessed in game.
 
 ## Beta 59 (unreleased) — ★ Rosters: the whole roster editable, on the disc and in a save
 

@@ -36,6 +36,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.core import nfl2k5_roster_records as _rr
 from mod_editor.core.nfl2k5_text_catalog import (
     FACE_SHIELD_CHOICES,
     Nfl2k5TextCatalog,
@@ -201,8 +202,8 @@ def text_usage(asset: TextAsset, value: str) -> TextUsage:
         asset.allocation_bytes,
         True,
         (
-            f"{used} of {asset.character_limit} UTF-16 units · "
-            f"{asset.allocation_bytes}-byte allocation"
+            f"{used}/{asset.character_limit} name-space units "
+            "(most letters use one unit; some characters use two)"
         ),
     )
 
@@ -211,10 +212,28 @@ def text_catalog_summary(catalog: Nfl2k5TextCatalog) -> str:
     """Compact product-capability count shown above the complete text table."""
 
     return (
-        f"{len(catalog.assets):,} strings total · "
+        f"{len(catalog.assets):,} entries · "
         f"{catalog.editable_count:,} Editable · "
-        f"{catalog.read_only_count:,} Preview/Export-only"
+        f"{catalog.read_only_count:,} View only"
     )
+
+
+def position_display(code: int) -> str:
+    """The position name for a roster code (retail table), or an explicit unknown."""
+
+    try:
+        if 0 <= int(code) < len(_rr.POSITIONS):
+            return _rr.position_name(int(code), "retail")
+    except Exception:  # noqa: BLE001 - a display helper never breaks the table
+        pass
+    return f"Unknown position ({code})"
+
+
+def pool_display(pool: str) -> str:
+    """The two structural player lists, without inventing a football meaning for them."""
+
+    return {"primary_players": "Player list 1", "secondary_players": "Player list 2"}.get(
+        str(pool), str(pool).replace("_", " ").title())
 
 
 def _safe_text(asset: TextAsset, lookup: TextLookup | None) -> str:
@@ -638,7 +657,7 @@ class TextAssetTableModel(QAbstractTableModel):
                 {
                     STATUS_MODIFIED: "Modified",
                     STATUS_EDITABLE: "Editable",
-                    STATUS_READ_ONLY: "Read-only",
+                    STATUS_READ_ONLY: "View only",
                 }[status],
                 f"{asset.character_limit} units / {asset.allocation_bytes} B",
             )[index.column()]
@@ -748,8 +767,8 @@ class HistoricalPlayerTableModel(QAbstractTableModel):
                 (shield.display_value(_safe_number(
                     shield.value, shield.asset_id, self.host.number_value
                 )) if shield is not None else "—"),
-                f"Code {player.position_code}",
-                "Modified" if modified else ("Editable" if editable else "Read-only"),
+                position_display(player.position_code),
+                "Modified" if modified else ("Editable" if editable else "View only"),
             )[index.column()]
         if role == Qt.ForegroundRole and index.column() == 6:
             return QColor("#f5c451" if modified else (
@@ -865,17 +884,17 @@ class CurrentPlayerTableModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             return (
                 str(player.outer_index),
-                player.pool.replace("_", " ").title(),
+                pool_display(player.pool),
                 _single_line(f"{current_first} {current_last}"),
                 str(current_number),
                 (shield.display_value(_safe_number(
                     shield.value, shield.asset_id, self.host.number_value
                 )) if shield is not None else "—"),
-                f"Code {player.position_code}",
+                position_display(player.position_code),
                 {
                     STATUS_MODIFIED: "Modified",
                     STATUS_EDITABLE: "Editable",
-                    STATUS_READ_ONLY: "Read-only",
+                    STATUS_READ_ONLY: "View only",
                 }[status],
                 "" if star_tag_for(player) is not None else "—",
             )[index.column()]
@@ -982,13 +1001,13 @@ class TextRosterPanel(QWidget):
                 "allocation; mapped-but-unsafe banks remain export-only with an explanation."
             ),
             "text": (
-                "Search every decoded string and edit safe fixed-allocation text. "
-                "Shared strings show their affected owners before Apply."
+                "Search the indexed game text. Edit entries marked Editable; shared text shows "
+                "where else it changes before you apply."
             ),
             "rosters": (
-                "Edit proved current and historical player names, jersey numbers, "
-                "and per-player face-shield type. Secondary-pool packed fields are "
-                "editable; their zero-capacity names remain Preview/Export-only."
+                "Edit current and historical player names, jersey numbers and face shields "
+                "in the disc project. Some names are view only. For ratings, contracts, "
+                "equipment and roster saves, use ★ Rosters."
             ),
         }
         heading = QLabel(heading_copy[self.view])
@@ -1008,7 +1027,7 @@ class TextRosterPanel(QWidget):
             self._historical_tab = self._build_historical_tab()
             self.tabs.addTab(self._current_tab, "Current Roster Players")
             self.tabs.addTab(
-                self._historical_tab, "Historical Teams & Players"
+                self._historical_tab, "Historical Teams && Players"
             )
         layout.addWidget(self.tabs, 1)
 
@@ -1033,7 +1052,7 @@ class TextRosterPanel(QWidget):
         for label, value in (
             ("All statuses", STATUS_ALL),
             ("Editable", STATUS_EDITABLE),
-            ("Read-only", STATUS_READ_ONLY),
+            ("View only", STATUS_READ_ONLY),
             ("Modified", STATUS_MODIFIED),
         ):
             self.status_filter.addItem(label, value)
@@ -1047,7 +1066,8 @@ class TextRosterPanel(QWidget):
 
         self.text_summary = QLabel("0 strings indexed")
         self.text_summary.setObjectName("textPanelSummary")
-        self.anniversary_note = QLabel(ESPN_25TH_COMING_SOON_NOTE)
+        self.anniversary_note = QLabel("Some entries are view only (marked ‘View only’); each selected entry says why.")
+        self.anniversary_note.setToolTip(ESPN_25TH_COMING_SOON_NOTE)
         self.anniversary_note.setObjectName("textPanelCallout")
         self.anniversary_note.setWordWrap(True)
         layout.addWidget(self.text_summary)
@@ -1144,7 +1164,7 @@ class TextRosterPanel(QWidget):
         for label, value in (
             ("All statuses", STATUS_ALL),
             ("Editable", STATUS_EDITABLE),
-            ("Read-only", STATUS_READ_ONLY),
+            ("View only", STATUS_READ_ONLY),
             ("Modified", STATUS_MODIFIED),
         ):
             self.current_status_filter.addItem(label, value)
@@ -1156,11 +1176,13 @@ class TextRosterPanel(QWidget):
         layout.addLayout(filters)
 
         self.current_note = QLabel(
-            "Primary current-roster names and numbers are Editable. Secondary-pool "
-            "jersey numbers and per-player face-shield types are also Editable; "
-            "secondary names remain Preview/Export-only. Face shield selects "
-            "None, Clear, or Dark for this player. It is not a HOME/AWAY tint. "
-            "A loaded roster or franchise save may override this disc seed."
+            "Face shield: None, Clear or Dark (not a home/away tint). An in-game roster or "
+            "franchise save can override these disc-roster changes. Each selected player "
+            "says which of his fields can be edited."
+        )
+        self.current_note.setToolTip(
+            "Player list 1 names and numbers are Editable. Player list 2 jersey numbers and face "
+            "shields are Editable; its names are view only (they have no room of their own)."
         )
         self.current_note.setObjectName("textPanelCallout")
         self.current_note.setWordWrap(True)
@@ -1241,9 +1263,9 @@ class TextRosterPanel(QWidget):
                 layout.addWidget(self.current_first_limit, row * 2 - 1, 2)
             elif row == 3:
                 layout.addWidget(self.current_last_limit, row * 2 - 1, 2)
-        self.apply_current_button = QPushButton("Apply Player")
-        self.revert_current_button = QPushButton("Revert Player")
-        self.export_current_number_button = QPushButton("Export Number…")
+        self.apply_current_button = QPushButton("Apply player")
+        self.revert_current_button = QPushButton("Revert player")
+        self.export_current_number_button = QPushButton("Export jersey number (.txt)…")
         layout.addWidget(self.apply_current_button, 10, 0)
         layout.addWidget(self.revert_current_button, 10, 1)
         layout.addWidget(self.export_current_number_button, 10, 2)
@@ -1415,9 +1437,9 @@ class TextRosterPanel(QWidget):
                 layout.addWidget(self.player_first_limit, row * 2 - 1, 2)
             elif row == 3:
                 layout.addWidget(self.player_last_limit, row * 2 - 1, 2)
-        self.apply_player_button = QPushButton("Apply Player")
-        self.revert_player_button = QPushButton("Revert Player")
-        self.export_historical_number_button = QPushButton("Export Number…")
+        self.apply_player_button = QPushButton("Apply player")
+        self.revert_player_button = QPushButton("Revert player")
+        self.export_historical_number_button = QPushButton("Export jersey number (.txt)…")
         layout.addWidget(self.apply_player_button, 10, 0)
         layout.addWidget(self.revert_player_button, 10, 1)
         layout.addWidget(self.export_historical_number_button, 10, 2)
@@ -1518,7 +1540,7 @@ class TextRosterPanel(QWidget):
 
         if self.view == "text":
             self._status(
-                f"Text ready • {len(catalog.assets):,} strings",
+                f"Text loaded ({len(catalog.assets):,} items)",
                 detail=(
                     f"Indexed {len(catalog.assets):,} strings "
                     f"({catalog.editable_count:,} Editable) across "
@@ -1529,7 +1551,7 @@ class TextRosterPanel(QWidget):
         assert coverage is not None
         if self.view == "rosters":
             self._status(
-                f"Rosters ready • {coverage.total:,} jersey numbers",
+                "Player names and numbers loaded.",
                 detail=(
                     f"Indexed all {coverage.total:,} jersey numbers: "
                     f"{coverage.current:,} current and "
@@ -1821,11 +1843,11 @@ class TextRosterPanel(QWidget):
         ]
         access = (
             "Editable: " + ", ".join(editable_fields)
-            if editable_fields else "Preview/Export-only"
+            if editable_fields else "View only"
         )
-        self.current_player_title.setText(
-            f"{player.display_name} · {player.pool.replace('_', ' ')} · "
-            f"resource {player.outer_index} · {access}"
+        self.current_player_title.setText(f"{player.display_name} · {access}")
+        self.current_player_title.setToolTip(
+            f"{pool_display(player.pool)} · resource {player.outer_index}"
         )
         self.current_first_original.setText(first.value)
         self.current_last_original.setText(last.value)

@@ -350,10 +350,10 @@ class ControlSurfaceTests(unittest.TestCase):
 
     def test_gui_is_searchable_and_truthful_about_shared_word_zero(self) -> None:
         for text in (
-            "Per-Uniform Facemask / Faceshield & Turtleneck Colours",
+            "Facemask, faceshield and turtleneck colours",
             "Filter by team, set, or selector",
             "Facemask / faceshield colour",
-            "HI_turtleneck colour",
+            "Turtleneck colour",
         ):
             self.assertIn(text, _STUDIO)
         # Honesty: visor tint is not a separate Unif word; type is per-player.

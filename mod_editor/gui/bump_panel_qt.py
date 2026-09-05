@@ -39,6 +39,9 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui.ux_text import XEMU_LINE
+from mod_editor.gui.task_delivery import bound
+
 from mod_editor.core.nfl2k5_bump_strength import (
     read_strengths,
     write_strengths,
@@ -171,15 +174,12 @@ class BumpPanel(QWidget):
         root.setSpacing(14)
 
         header = QVBoxLayout()
-        title = QLabel("Jersey Bump Maps")
+        title = QLabel("Jersey bump maps (advanced)")
         title.setObjectName("bumpTitle")
         subtitle = QLabel(
-            "Per-uniform tangent-space bump maps (bump_jersey, bump_pants, "
-            "bump_sleeve, bump_sock). Export the retail art, author a PNG at "
-            "the slot's exact size (or start from the marked authoring "
-            "template), and write it into a copy of the disc image at the "
-            "same footprint. Bump strength (the per-material detail scale in "
-            "default.xbe) is edited in the section below."
+            "Export a bump map, edit its PNG, then update an existing working disc copy. "
+            "Bump maps give jerseys, pants, sleeves and socks their fabric texture; this page "
+            "never creates a disc, it writes into a copy you choose."
         )
         subtitle.setObjectName("bumpMuted")
         subtitle.setWordWrap(True)
@@ -197,11 +197,11 @@ class BumpPanel(QWidget):
         root.addWidget(self.retail_warning)
 
         source_row = QHBoxLayout()
-        source_row.addWidget(QLabel("Source image"))
+        source_row.addWidget(QLabel("Game disc (.iso)"))
         self.source_field = QLineEdit()
         self.source_field.setReadOnly(True)
         self.source_field.setPlaceholderText(
-            "Choose the NFL 2K5 XISO to browse (read-only)"
+            "Filled in when you open a disc (top right), or choose one here (read-only)"
         )
         source_row.addWidget(self.source_field, 1)
         self.source_button = QPushButton("Choose…")
@@ -209,11 +209,11 @@ class BumpPanel(QWidget):
         root.addLayout(source_row)
 
         target_row = QHBoxLayout()
-        target_row.addWidget(QLabel("Write target"))
+        target_row.addWidget(QLabel("Working disc copy to update"))
         self.target_field = QLineEdit()
         self.target_field.setReadOnly(True)
         self.target_field.setPlaceholderText(
-            "Choose your COPY of the image to write into"
+            "Choose an existing working disc copy. This updates that copy in place."
         )
         target_row.addWidget(self.target_field, 1)
         self.target_button = QPushButton("Choose…")
@@ -273,7 +273,7 @@ class BumpPanel(QWidget):
         self.template_button = QPushButton("Save authoring template")
         self.export_button = QPushButton("Export PNG")
         self.import_button = QPushButton("Import PNG")
-        self.write_button = QPushButton("Write to copy")
+        self.write_button = QPushButton("Update working copy")
         actions.addWidget(self.template_button)
         actions.addStretch(1)
         actions.addWidget(self.export_button)
@@ -293,42 +293,41 @@ class BumpPanel(QWidget):
         progress_row.addWidget(self.progress_bar)
         root.addLayout(progress_row)
 
-        self.status_label = QLabel("Choose a source disc image to begin.")
+        self.status_label = QLabel("Open your game disc (top right), or choose one above, to begin.")
         self.status_label.setObjectName("bumpMuted")
         self.status_label.setWordWrap(True)
         root.addWidget(self.status_label)
 
     def _build_strength_section(self) -> QGroupBox:
-        box = QGroupBox("Bump strength (default.xbe detail scale)")
+        box = QGroupBox("Bump strength (default.xbe)")
         layout = QVBoxLayout(box)
 
         note = QLabel(
             "The game multiplies each material's bump scale into a 0..255 "
             "byte. Jersey and sleeve share one float in the retail XBE, so "
             "they change together. Sock is stored as a fixed 0 and cannot be "
-            "raised. The patched XBE is xemu-only (its signature cannot be "
-            "regenerated), so this stays a local/experimental control."
+            "raised. " + XEMU_LINE + " This stays an experimental control."
         )
         note.setObjectName("bumpMuted")
         note.setWordWrap(True)
         layout.addWidget(note)
 
         xbe_row = QHBoxLayout()
-        xbe_row.addWidget(QLabel("Source default.xbe"))
+        xbe_row.addWidget(QLabel("Game executable (default.xbe)"))
         self.xbe_field = QLineEdit()
         self.xbe_field.setReadOnly(True)
-        self.xbe_field.setPlaceholderText("Choose the default.xbe to read")
+        self.xbe_field.setPlaceholderText("Choose the default.xbe to read (advanced)")
         xbe_row.addWidget(self.xbe_field, 1)
         self.xbe_button = QPushButton("Choose…")
         xbe_row.addWidget(self.xbe_button)
         layout.addLayout(xbe_row)
 
         out_row = QHBoxLayout()
-        out_row.addWidget(QLabel("Patched copy"))
+        out_row.addWidget(QLabel("Save executable copy as"))
         self.xbe_out_field = QLineEdit()
         self.xbe_out_field.setReadOnly(True)
         self.xbe_out_field.setPlaceholderText(
-            "Choose where to save the patched COPY (must not exist yet)"
+            "Where the patched default.xbe copy goes (a new file)"
         )
         out_row.addWidget(self.xbe_out_field, 1)
         self.xbe_out_button = QPushButton("Choose…")
@@ -350,7 +349,7 @@ class BumpPanel(QWidget):
         layout.addLayout(values_row)
 
         apply_row = QHBoxLayout()
-        self.xbe_apply_button = QPushButton("Write patched copy")
+        self.xbe_apply_button = QPushButton("Save patched executable…")
         apply_row.addStretch(1)
         apply_row.addWidget(self.xbe_apply_button)
         layout.addLayout(apply_row)
@@ -413,7 +412,7 @@ class BumpPanel(QWidget):
         task = _Task(operation)
         self._tasks.add(task)
         task.signals.progress.connect(self._progress)
-        task.signals.result.connect(on_success)
+        task.signals.result.connect(bound(self, on_success))
         task.signals.error.connect(self._failed)
 
         def finished() -> None:
@@ -424,7 +423,7 @@ class BumpPanel(QWidget):
             self.progress_bar.hide()
             self._refresh_controls()
 
-        task.signals.finished.connect(finished)
+        task.signals.finished.connect(bound(self, finished))
         try:
             self._pool.start(task)
         except BaseException:
@@ -447,6 +446,9 @@ class BumpPanel(QWidget):
     def _failed(self, message: str) -> None:
         self._set_status(f"Failed: {message}")
         self.error_raised.emit(message)
+        if getattr(self, "_quiet_failure", False):
+            self._quiet_failure = False
+            return
         QMessageBox.warning(self, "Bump map editor", message)
 
     def _refresh_controls(self) -> None:
@@ -487,11 +489,21 @@ class BumpPanel(QWidget):
 
     def _choose_source(self) -> None:
         chosen, _filter = QFileDialog.getOpenFileName(
-            self, "Choose the NFL 2K5 disc image", str(Path.home()),
+            self, "Choose your game disc (.iso)", str(Path.home()),
             IMAGE_FILTER,
         )
         if chosen:
             self._load_source(Path(chosen))
+
+    def load_source(self, path: Path | str) -> None:
+        """Browse ``path`` (the open-disc hook); the working copy to update is never guessed.
+
+        A disc this page cannot read is reported on its status line, never as a dialog: the
+        hook runs for every page at once and nobody asked this page a question."""
+
+        if not self._busy:
+            self._quiet_failure = True
+            self._load_source(Path(path))
 
     def _load_source(self, path: Path) -> None:
         def load(progress: ProgressSink) -> dict[str, object]:
@@ -501,6 +513,7 @@ class BumpPanel(QWidget):
 
         def done(result: object) -> None:
             assert isinstance(result, dict)
+            self._quiet_failure = False
             self.retail_warning.setVisible(bool(result["retail"]))
             self.source_field.setText(str(result["path"]))
             self._packages = list(result["rows"])  # type: ignore[arg-type]
@@ -531,7 +544,7 @@ class BumpPanel(QWidget):
 
     def _choose_target(self) -> None:
         chosen, _filter = QFileDialog.getOpenFileName(
-            self, "Choose your copy of the disc image", str(Path.home()),
+            self, "Choose an existing working disc copy to update", str(Path.home()),
             IMAGE_FILTER,
         )
         if not chosen:
@@ -543,11 +556,11 @@ class BumpPanel(QWidget):
             self.target_field.setText(str(target))
             if self._target_is_retail:
                 self._set_status(
-                    "The write target IS the retail image. Choose a copy "
-                    "instead — writes to the retail image are refused."
+                    "That is the original (retail) disc. Choose a working copy "
+                    "instead — the original is never written."
                 )
             else:
-                self._set_status("Write target set.")
+                self._set_status("Working copy set.")
 
         self._run(lambda progress: _retail_probe(target, progress), done)
 
@@ -691,7 +704,7 @@ class BumpPanel(QWidget):
         if self._target_is_retail:
             QMessageBox.warning(
                 self, "Bump map editor",
-                "The write target is the retail image. Choose a copy first.",
+                "That is the original (retail) disc. Choose a working copy first.",
             )
             return
         source = Path(self.source_field.text())
@@ -702,9 +715,9 @@ class BumpPanel(QWidget):
         png_path = self._preview_png_path
         confirmation = QMessageBox.question(
             self,
-            "Write the bump map into your copy?",
+            "Update the working copy?",
             f"Replace {name} in uniform {label} inside:\n{target}\n\n"
-            "The source image is not touched.",
+            "This updates that copy in place. The source disc is not touched.",
             QMessageBox.Ok | QMessageBox.Cancel,
             QMessageBox.Cancel,
         )
@@ -818,7 +831,7 @@ class BumpPanel(QWidget):
 
     def _choose_xbe_out(self) -> None:
         chosen, _filter = QFileDialog.getSaveFileName(
-            self, "Choose where to save the patched copy",
+            self, "Save the patched executable as",
             "default_patched.xbe", XBE_FILTER,
         )
         if chosen:
@@ -854,17 +867,16 @@ class BumpPanel(QWidget):
         sleeve = self.sleeve_spin.value()
         overwrite = target.exists()
         target_line = (
-            f"New copy: {target}"
+            f"New executable: {target}"
             if not overwrite
-            else f"REPLACING existing copy: {target}"
+            else f"Replace existing copy: {target}"
         )
         confirmation = QMessageBox.question(
             self,
-            "Write a patched default.xbe copy?",
+            "Save a patched executable?",
             f"jersey/sleeve {jersey:.2f}, pants {pants:.2f}\n\n"
-            f"Source (untouched): {source}\n"
-            f"{target_line}\n\n"
-            "The copy is xemu-only: its RSA signature stays stale.",
+            f"Source (unchanged): {source}\n"
+            f"{target_line}\n\n" + XEMU_LINE,
             QMessageBox.Ok | QMessageBox.Cancel,
             QMessageBox.Cancel,
         )
@@ -897,10 +909,8 @@ class BumpPanel(QWidget):
             )
             QMessageBox.information(
                 self,
-                "Patched default.xbe copy written",
-                f"{target}\n\n{summary}\n\n"
-                "Keep this xemu-only: the RSA signature cannot be "
-                "regenerated, so real hardware will reject it.",
+                "Patched executable saved",
+                f"{target}\n\n{summary}\n\n" + XEMU_LINE,
             )
 
         self._run(write, done)

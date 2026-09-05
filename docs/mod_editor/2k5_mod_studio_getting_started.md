@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC83 — Getting Started
+# 2K5 Mod Studio v1.0 RC84 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -559,7 +559,7 @@ logical cue ID, even though replacing either alias changes their shared sound.
 Labels are user-authored project metadata, not game edits. They save inside
 the `.2k5mod`, survive Open Project and private recovery, and support individual
 Clear, Undo, and Revert All. An annotation-only project can be saved and shared
-without any retail audio. Labels never enable **Build Modded XISO**, never
+without any retail audio. Labels never enable **Make disc from project**, never
 change the source or output XISO, and never count as a Modified WAV. The header
 reports cue-label and build-edit counts separately so this boundary stays
 visible.
@@ -684,7 +684,7 @@ Undo, recovery, or Build, and retail-derived entries must not be redistributed.
    project save/load, and Build all treat that shared slot as one edit. Two
    aliases cannot supply different WAVs in one project/import.
 5. Play or Export WAV again to hear/check the staged authored bytes, save the
-   `.2k5mod`, then choose **Build Modded XISO**. The raw bank remains fixed-size;
+   `.2k5mod`, then choose **Make disc from project**. The raw bank remains fixed-size;
    no bank repack, loop/mixer edit, or runtime cue-name claim is implied.
 
 The private safety indexes cover every standalone cue and all **53,570 physical
@@ -1036,9 +1036,10 @@ three-pane shape people know, over the disc as well as over a save, with undo, d
 and a validation pass on top. The format knowledge behind it comes from **Flying Finn (Glen
 Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the retail disc.
 
-1. Open the page and press **Use the loaded XISO** (or **Open a disc…**). An Xbox save works too:
-   **Open an Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
-   `SAVEGAME.DAT` with its `EXTRA` beside it. The stored signature is checked on load, and a save
+1. Open the page and press **Use the open disc** (or **Open disc roster…**). An Xbox save works too:
+   **Open Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
+   `SAVEGAME.DAT` with its `EXTRA` beside it (real saves keep the roster as the game's in-memory arena;
+   the page reads that layout and the disc's). The stored signature is checked on load, and a save
    whose `EXTRA` does not verify is refused rather than quietly re-signed.
 2. **Left** — the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
    Free Agents, the Draft Class and the leftover pools.
@@ -1050,6 +1051,27 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
    out of Finn's binary, so no value order is guessed.
+
+**Position scheme.** A patched disc does not necessarily have the retail seventeen positions, so the
+page asks the source which table it is on before it labels anything. Two Build patches change what a
+position *means*: the **EDGE rename** prints EDGE / Edge Rusher everywhere the game said Defensive
+End (the codes do not move), and the **one-pool** pass — `position_pools` in Advanced, plus the ROST
+reclassify — makes 16 EDGE, 15 the interior (the 3-4 nose is simply DT #1), 11 LB and **retires 10**:
+no player on a reclassified roster carries OLB any more. For a disc image the page reads the disc's
+own `edge_rename` / `scheme_labels` / `position_pools` states; for an Xbox save or a loose roster body
+it infers the scheme from the records, where an **empty OLB code in the main player pool** is the
+reclassify signature (retail ships 191 OLBs; the 68 class-generator templates are not counted,
+because the pass leaves those keyed one per position on purpose). A save carries no executable, so it
+**cannot** show the EDGE rename — that patch only rewrites text — and the page says so instead of
+guessing. The **Position scheme** selector next to the source row tells you what was detected and
+why, and lets you set it yourself. Everything that names a position follows it: the grid, the header,
+the chips (one pool gains its own **EDGE** chip, and DL becomes the interior), the Position picker,
+the Global Attribute Editor and the CSV. Everything that *means* a position stays keyed by the
+position code the way the game keys its own rating labels, so a one-pool LB is still rated on the
+linebacker card set and an EDGE on the defensive-end one, jersey ranges follow the pool, and the
+depth chart is grouped per code. The picker greys out a code the scheme retired and refuses to write
+it, and a CSV that brings OLB rows onto a one-pool roster maps them to LB and lists every row it
+moved. Nothing in your roster is renamed by any of this — only what the editor shows you.
 
 **What you can edit.** First and last name, college, position, jersey number, years pro, hand,
 height, weight, date of birth, the play-by-play name id and the portrait id; skin, face, face mask,
@@ -1094,22 +1116,66 @@ league or the list, and restore height, weight and date of birth to what the ros
 **CSV ▾** exports the list or the whole league and reads it back — it also reads Finn's
 semicolon-delimited export, and a spreadsheet with three columns is a legal edit.
 
-**Check & diff.** **Check this roster** flags jerseys outside the NFL range for a position, ratings
-above 99, impossible heights and dates, and the "headless" bit Finn's editor silently clears on load.
-**Show my changes** lists every field you changed against the roster you loaded.
+**Teams (RC84).** Under the grid: **Release to free agency**, **Sign to ▾** / **Move to ▾** a team,
+**Swap with…** another rostered player. These are Finn's operations done his way — the team's pointer
+list and its count byte, the free-agent list and its count — with his limits: a club must keep 42,
+may hold 54, and the free-agent list is full at 2,500 (the game's own ceiling). The draft class is
+off limits, because the game regenerates it into a fixed window of records every time it loads a
+roster; edit prospects in place. A player who joins a team lands at the bottom of his position's
+depth chain. Every move undoes, shows up in **Show my changes** as text, travels in the roster-edits
+document (Build replays it) and can be done from a spreadsheet through the CSV's `team` column.
+
+**Check & repair (RC84).** When a roster loads, the Checks tab lists every mechanical repair the page
+can prove — the "headless" bit (Finn cleared it silently; the retail disc itself has one), a player
+on a position the loaded scheme retired, a team count byte that overstates its list, a duplicate
+list entry — and changes nothing until you press **Repair (N)**. You get an itemised receipt and an
+undo. **Check this roster** flags jerseys outside the NFL range for a position, ratings above 99,
+impossible heights and dates, clubs under 42 or over 54, and the headless bit. **Show my changes**
+lists every field you changed against the roster you loaded.
+
+**Templates, pickers, backups (RC84).** **Template ▾** applies one of the game's own 36
+create-a-player templates (Pocket QB, Speed WR, Power HB, …; the player's three first; C, G, T, DT
+and DE have none in the game's table) exactly as the game does. The play-by-play and portrait cards
+have a **…** button that opens a searchable list: the play-by-play ids this roster uses, the
+jersey-number call-outs and the recorded surname bank; the 4,303 portraits on the disc with the
+players that wear them. **CSV ▾** also exports and restores Finn's **`.PlayerData`** backups, matched
+back by name and play-by-play index, so a community backup restores here.
 
 **Writing.** Your source is never touched.
 
-* **Save roster edits…** writes a small JSON document. The Build tab picks it up as the
+* **Export roster edits (.json)…** writes a small JSON document. The Build tab picks it up as the
   **roster edits** step, and Share packs it into a `.2k5patch` as an asset, so an edit travels
   without the disc.
-* **Write a copy…** copies the disc image and edits the copy, or — for a save — writes a
+* **Save disc copy…** copies the disc image and edits the copy; for a save, **Save Xbox save copy…** writes a
   **re-signed** container beside the original with every other member (`SaveMeta.xbx`, `TYPE`, the
   images) copied byte for byte. Renaming or dropping those is what makes the game call a save
   corrupt, so they are never rebuilt.
 
 In a build, the roster-edits step runs **last** of the roster passes, so the star tags, the real team
 history, the modern prospect names and the one-pool positions all survive it. Unwitnessed in game.
+
+**Franchise saves (Beta 60).** Open a franchise save and the page grows a second tab, **Franchise**,
+beside **Roster** — the half of Finn's editor the studio lacked, in our words. **Overview** has the
+season year (the game stores `year − 2004`; the rule is printed next to the box), the stage and week
+read-only, a checkable list of the user-controlled teams, the salary cap in millions with the raw
+$1000-unit value the game keeps, and every team's salary against the cap. **Schedule** shows the
+22 × 17 grid week by week (away, home, date, kick-off, played, score); pick a game, change the teams,
+date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
+refused with the reason unless you tick **Allow editing played games**; its score stays read-only
+because which side the quarter bytes belong to is still a hypothesis. **Coaches** lists every coach
+record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls, playoff and Super
+Bowl records, the photo and body ids, the run % playcalling split, then the 23 ratings and the ten
+Back Field tendencies on the same bars as the player cards; names and the three info lines are pooled
+strings and stay read-only. **Injured Reserve** shows each team's five slots; **Place on IR…** picks
+one of the team's rostered players and does exactly Finn's move (his own save is reproduced byte for
+byte), and **Activate** is the inverse, labelled unwitnessed because nobody has watched the game accept
+it; a free agent or a draft prospect is refused in Finn's words. **Checks** prints the file map by
+PROVED / HYPOTHESIS / OPAQUE, what the page may edit, and every franchise edit since load in plain words
+with the byte ranges it touched. Each tab undoes per action and the header counts the unwritten edits.
+**Save Xbox save copy…** writes one re-signed copy carrying the roster edits first and the franchise edits on
+top, so the two never fight over the arena. In game, check the salary cap edit first (the cap projection
+is the game's own arithmetic), then a moved user team, then a schedule change; everything but the year
+rule and the IR move is unwitnessed.
 
 ## ★ Models — every model out to Blender and back
 

@@ -342,7 +342,7 @@ class BlockerTests(unittest.TestCase):
     def test_every_disabled_state_names_a_reason(self) -> None:
         source = _STUDIO.read_text(encoding="utf-8")
         self.assertIn('self.check_images_button.setProperty("disableReason"', source)
-        self.assertIn("Load your NFL 2K5 XISO first.", source)
+        self.assertIn("Open your game disc first.", source)
         self.assertIn("Replace at least one image first", source)
 
     def test_the_advice_names_shade_count_and_denies_resolution(self) -> None:

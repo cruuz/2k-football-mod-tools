@@ -257,7 +257,7 @@ class FormationDesignerDialog(QDialog):
         form = QFormLayout()
         self.name_edit = QLineEdit()
         self.name_edit.setMaxLength(40)
-        self.name_edit.setPlaceholderText("Custom name (printable ASCII, ≤40) — blank reuses the donor name")
+        self.name_edit.setPlaceholderText("Name (up to 40 ASCII characters; blank keeps the source name)")
         form.addRow("Name", self.name_edit)
         self.category_combo = QComboBox()
         for c in self.book.categories:
@@ -306,7 +306,7 @@ class FormationDesignerDialog(QDialog):
         note.setWordWrap(True)
         side.addWidget(note)
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttons.button(QDialogButtonBox.Ok).setText("Stage formation")
+        buttons.button(QDialogButtonBox.Ok).setText("Add formation to project")
         buttons.accepted.connect(self._accept)
         buttons.rejected.connect(self.reject)
         side.addWidget(buttons)
@@ -557,11 +557,11 @@ class PlayDesignerDialog(QDialog):
         self.status = QLabel("")
         self.status.setWordWrap(True)
         right.addWidget(self.status)
-        self.link_check = QCheckBox("List this play in the formation's play menu after staging")
+        self.link_check = QCheckBox("Show this play in the formation's menu")
         self.link_check.setChecked(True)
         right.addWidget(self.link_check)
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttons.button(QDialogButtonBox.Ok).setText("Stage play")
+        buttons.button(QDialogButtonBox.Ok).setText("Add play to project")
         buttons.accepted.connect(self._accept)
         buttons.rejected.connect(self.reject)
         right.addWidget(buttons)
@@ -658,7 +658,9 @@ class PlayDesignerDialog(QDialog):
                 w.setRange(0, max(top, int(value)))
                 w.setValue(int(value))
                 w.valueChanged.connect(lambda v, kk=k: self._operand_changed(kk, v))
-            self.editor_form.addRow(spec.label, w)
+            # the spin box shows yards (the codec stores feet); the caption must say the same unit
+            caption = spec.label.replace("(ft", "(yd") if spec.kind in ("x_ft", "y_ft") else spec.label
+            self.editor_form.addRow(caption, w)
             self.operand_widgets.append((spec, w))
 
     def _operand_changed(self, k: int, value: float) -> None:
@@ -802,7 +804,7 @@ class PlayDesignerDialog(QDialog):
             self.status.setText(f"✖ The game would refuse this play: {error}")
             self.status.setStyleSheet("color:#c62828")
         else:
-            self.status.setText("✔ Passes the retail play validator (chain grammar, ball handling, features).")
+            self.status.setText("✔ Structure check passed; test in-game.")
             self.status.setStyleSheet("color:#2e7d32")
         self._error = error
         return error

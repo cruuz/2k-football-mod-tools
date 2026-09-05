@@ -493,7 +493,7 @@ class ActiveProjectWindowTests(unittest.TestCase):
             self.facade.modified_count = 0
             self.window._mark_workspace_changed()
             self.assertTrue(self.window._workspace_dirty)
-            self.assertEqual(self.window.edit_count.text(), "No edits • unsaved")
+            self.assertEqual(self.window.edit_count.text(), "No project edits • unsaved")
             self.assertEqual(
                 self.window.windowTitle(), "Saved Mod.2k5mod* — 2K5 Mod Studio"
             )

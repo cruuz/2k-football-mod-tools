@@ -50,7 +50,14 @@ class CaveReferenceTests(unittest.TestCase):
         cls.sec = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
                                           "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
-        cls.patched, _receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True)
+        cls.patched, _receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True)
+        from mod_editor.core import nfl2k5_position_pools as pools
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        cls.patched, _ = pools.apply(cls.patched)
+        cls.patched, _ = rows.apply(cls.patched)
+        cls.stack = cls.patched
+        from mod_editor.core import nfl2k5_practice_squad as ps
+        cls.patched, _ps_receipt = ps.apply(cls.stack)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -131,6 +138,84 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual(seven.CAVE_VA + seven.CAVE_SIZE, 0x1AC260)
         self.assertIn(0x1AC260, self.targets)
         self.assertEqual(self.patched[0x1AC260 - BASE: 0x1AC270 - BASE], self.retail[0x1AC260 - BASE: 0x1AC270 - BASE])
+
+    def test_playoff_presentation_rewrites_only_owned_callbacks(self) -> None:
+        from mod_editor.core import nfl2k5_playoff_picture as picture, nfl2k5_season_length as season
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        dependency, _ = season.apply(self.patched, groups=("playoffs_14",))
+        patched, _ = picture.apply(dependency)
+        self.assertEqual(picture.status(patched), "applied")
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        # the regenerated manifest now observes the playoff presentation itself (it rides the season step);
+        # nothing ELSE may own its sites
+        for site in picture.sites():
+            self.assertEqual(manifest.overlaps(site.va, site.va + site.size, exclude_owner="nfl2k5_playoff_picture"), [], site.label)
+        for start, size in ((picture.TREE_UPDATE_VA, picture.TREE_UPDATE_SIZE),
+                            (picture.TREE_SCORES_VA, picture.TREE_SCORES_SIZE)):
+            for target, refs in self.targets.items():
+                if start < target < start + size:
+                    self.assertEqual([r for r in refs if not (
+                        isinstance(r, int) and start <= r < start + size) and not (
+                        isinstance(r, tuple) and r[1] == ".text" and start <= r[2] + BASE < start + size)], [], hex(target))
+        # Existing entry 0x372C60 remains callable from its retail callback table.
+        self.assertIn(picture.TREE_SCORES_VA, self.targets)
+
+    def test_oracle_projection_preserves_the_existing_gate(self) -> None:
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, legacy_external_references, legacy_references
+        targets = legacy_references(XbeImage(self.retail))
+        self.assertEqual(set(targets), set(self.targets))
+        for start, end in self._caves():
+            self.assertEqual(legacy_external_references(targets, start, end), [], hex(start))
+
+    def test_current_owners_are_reserved_for_new_allocations(self) -> None:
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        # The supplied manifest predates this rebase. The relocation brief permits
+        # inspecting its reservations without source_root; current stack bytes
+        # are checked separately below. Keep the oracle's drift guard unchanged.
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        for start in (0x1AFDF0, 0x28B410, 0x1D82D0, 0x325E70, 0x2979F0, 0xB4A60, 0x2BA840):
+            self.assertTrue(manifest.overlaps(start, start + 1), hex(start))
+
+    def test_practice_squad_spans_preserve_stack_owners(self) -> None:
+        from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
+        from mod_editor.core import nfl2k5_practice_squad as ps
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        retail = XbeImage(self.retail)
+        stack = XbeImage(self.stack)
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, retail)
+        for start, size, _ in ps.CAVES:
+            # the manifest now observes the practice squad itself; nothing ELSE may own its caves
+            self.assertEqual(manifest.overlaps(start, start + size, exclude_owner='nfl2k5_practice_squad'), [], hex(start))
+            self.assertEqual(stack.read(start, size), retail.read(start, size), hex(start))
+            self.assertEqual({va: refs for va, refs in self.targets.items()
+                              if start <= va < start + size and any(
+                                  not start <= (r if isinstance(r, int) else r[2] + BASE) < start + size
+                                  for r in refs)}, {}, hex(start))
+        self.assertEqual(ps.status(self.stack), 'retail')
+        self.assertEqual(ps.status(self.patched), 'applied')
+        self.assertEqual(kickoff.status(self.patched), 'applied')
+        self.assertEqual(XbeImage(self.patched).read(kickoff.CAVE_VA, kickoff.CAVE_SIZE),
+                         stack.read(kickoff.CAVE_VA, kickoff.CAVE_SIZE))
+    def test_depth_rows_share_the_unreferenced_pools_cave_including_its_entry(self) -> None:
+        from mod_editor.core import nfl2k5_position_pools as pools
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        self.assertEqual(rows.status(self.patched), "applied")
+        self.assertEqual(self.patched[pools.CAVE_VA - BASE:pools.CAVE_VA - BASE + pools.CAVE_SIZE], pools.cave_bytes())
+        # Unlike an in-place routine rewrite, this is a cave: even the entry
+        # must have no retail callers or pointers.
+        self.assertEqual({va: refs for va, refs in self.targets.items()
+                          if pools.CAVE_VA <= va < pools.CAVE_VA + pools.CAVE_SIZE}, {})
+
+    def test_special_storage_is_a_fresh_loader_allocation_with_no_retail_reference_encoding(self) -> None:
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        image = XbeImage(self.retail)
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, image)
+        evidence = storage.allocation_evidence(self.retail, manifest)
+        self.assertEqual(evidence["encoded_references"], [])
+        self.assertEqual(evidence["manifest_overlaps"], [])
+        self.assertEqual(XbeImage(self.patched).read(storage.SECTION_VA, storage.RETAIL_SIZE),
+                         image.read(storage.SECTION_VA, storage.RETAIL_SIZE))
 
 
 if __name__ == "__main__":

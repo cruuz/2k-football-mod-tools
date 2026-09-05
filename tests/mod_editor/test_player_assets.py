@@ -162,7 +162,7 @@ class WiringTests(unittest.TestCase):
         source = (
             _REPO_ROOT / "mod_editor" / "gui" / "studio_qt.py"
         ).read_text(encoding="utf-8")
-        self.assertIn('roster_tabs.addTab(self._build_player_assets_page(), "Player Assets")',
+        self.assertIn('roster_tabs.addTab(self._build_player_assets_page(), "Find player images")',
                       source)
         self.assertIn("def _build_player_assets_page", source)
 

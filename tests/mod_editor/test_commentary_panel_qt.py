@@ -39,7 +39,10 @@ class CommentaryPanelTests(unittest.TestCase):
             panel.stream_list.setCurrentRow(0)
             self.assertEqual(panel.stream_field.text(), "cutsceneaudio:3")
             panel.audio_field.setText("/nowhere/me.wav")
-            self.assertFalse(panel.write_button.isEnabled())            # no target yet
+            # a copy name is suggested beside the disc; clear it to check the no-target gate
+            self.assertTrue(panel.target_field.text().endswith(" (commentary).xiso.iso"), panel.target_field.text())
+            panel.target_field.setText("")
+            self.assertFalse(panel.write_button.isEnabled())            # no target
             panel.target_field.setText("/nowhere/game.xiso.iso")        # same as source
             self.assertFalse(panel.write_button.isEnabled())
             panel.target_field.setText("/nowhere/copy.xiso.iso")

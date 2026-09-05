@@ -32,9 +32,9 @@ STATUS_UNCHANGED = "unchanged"
 SAVE_STATUSES = (STATUS_ALL, STATUS_EDITED, STATUS_UNCHANGED)
 
 BOUNDARY_NOTE = (
-    "FIXED-ALLOCATION EDITING  •  A replacement name must fit the characters "
-    "the original used. Your source save is never changed: edits go to a new "
-    "file, then an independent verifier checks them."
+    "Names must be the same length or shorter than the original (each name shows "
+    "its own limit). Your save is never changed: edits go to a new file, then an "
+    "independent verifier checks them."
 )
 
 _INVALID_COLOUR = "#ff7b84"

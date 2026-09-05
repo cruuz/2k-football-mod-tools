@@ -22,7 +22,7 @@ from mod_editor.core import platform_compat
 import shutil
 import sys
 from collections.abc import Callable
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -106,9 +106,20 @@ class BuildPlan:
     # setup zone 35-30 with two returners deep, 5-yd kicker run-up; rewrites the Kickoff / Kick Return
     # formations of the 36 kicking playbooks; needs a disc image; opt-in until witnessed
     kickoff_alignment: bool = False
+    # the full 2024/2025 dynamic kickoff (executable, EXPERIMENTAL, unwitnessed): coverage and setup blockers hold until the
+    # ball touches the ground or a player, first contact is latched, landing zone then end zone = the 20, direct touchback =
+    # touchback_yard (35, or 30 for 2024), short / out = the 40, the CPU kicker aims for the landing zone and the CPU returner
+    # takes the touchback with the given probabilities; implies kick_rules + kickoff_alignment (and never kick_power)
+    dynamic_kickoff: bool = False
+    dynamic_kickoff_settings: dict[str, object] = field(default_factory=lambda: {
+        "touchback_yard": 35, "cpu_landing_probability": 90, "cpu_target_yards": (5, 15), "cpu_touchback_probability": 90})
     # one EDGE / one LB / one interior pool across 4-3 and 3-4 (XBE pools + playbook recode + ROST
     # reclassification; needs a disc image; implies scheme_labels)
     position_pools: bool = False
+    # SLOT / NICKEL CORNER / DIME CORNER rows and X / Z labels on the depth-chart screen (executable, stride 13;
+    # EXPERIMENTAL, unwitnessed): needs the one-pool positions (their third-starter cave) and the X / Z / SLOT playbook
+    # roles; the rows edit the existing receiver / corner lists, they are not independent assignments
+    depth_chart_rows: bool = False
     # 2026 season: real 2026 schedule template in pack 0 (17 games, 18 weeks, one bye; the real 3-game
     # preseason after it) + year/calendar/season-length/14-team-playoffs/preseason executable patches
     # (rookie birth years and the DOB line follow the year); needs a disc image
@@ -130,6 +141,11 @@ class BuildPlan:
     # Seasons the CSV does not cover are filled with the player's own 2004 club (receipt: "seasons_inferred"), so
     # 5,746 of the 5,838 rows the card can show name a team; only the 2004 free agents still read "--".
     team_history: str = ""
+    # real per-season career counters for the roster's past seasons (passing / rushing / receiving / defence /
+    # kicking) from a user CSV (schema in docs/mod_editor/career_stats.md; export the roster's own counters first
+    # with tools/nfl2k5_career_stats.py to get the identity pins); "" = off; disc images only; runs right after
+    # the team history because both rebuild the stat pool; refuses to overrun the pool or invent counters
+    career_stats: str = ""
     # Position row on the first page of Edit Player (roster mode and Franchise); the descriptor exists for
     # Create Player, the Edit Player lists just never listed it. Depth Chart -> Auto after a change.
     position_row: bool = False
@@ -152,6 +168,9 @@ class BuildPlan:
     # BOTH sides at Practice Type = Full Scrimmage, and whose START pops once so a rep returns to the
     # Coach's Desk. UI addition, no gameplay effect; ~350-byte cave, no retail instruction changed.
     franchise_practice: bool = False
+    # practice squads: 53 active + up to 12 team-owned reserves (the CPU's 65 -> 53 season cut keeps them; zero cap cost;
+    # they survive saves, imports and the rollover; no in-game reserve screen yet); EXPERIMENTAL, unwitnessed
+    practice_squad: bool = False
     # modern draft-prospect names: "" = off, "modern" = the shipped nflverse list (data/nfl2k5_modern_names.csv),
     # a path = a user CSV (first,last; 485 rows). Rewrites the generated-player name pool in pack 0's roster
     # template (433 recorded surnames keep their index and call-out, 52 + every first name go modern) and
@@ -177,6 +196,11 @@ class BuildPlan:
     # Build compiles them against the user's own disc.  Never in a preset -- a community book
     # is a user choice like commentary, and a curated official one belongs in EXPERIMENTAL first.
     playbook_packs: tuple[str, ...] = ()
+    # X / Z / SLOT receivers and nickel / dime corners: the personnel-group ordinals of every PLAY book normalised so
+    # the innermost receiver is WR ordinal 2 (the 3rd receiver on the depth chart) and the inside corners are CB
+    # ordinals 2 / 3; twelve shared groups that disagree by > 2 yd are refused and reported; disc images only;
+    # ADVANCED (it changes who lines up, not physics); no depth-chart rows (those are the Tier 2 executable patch)
+    depth_roles: bool = False
     # text
     edge_rename: bool = False
     # presentation
@@ -189,7 +213,7 @@ class BuildPlan:
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
-                or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools
+                or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad
                 or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice)
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star)
@@ -212,24 +236,24 @@ PRESETS: dict[str, dict[str, Any]] = {
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
-        "kick_rules": False, "kick_power": True, "kickoff_alignment": False,
-        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "prospect_names": "", "player_star": False,
+        "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False,
+        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "prospect_names": "", "player_star": False,
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
-        "kick_rules": True, "kick_power": False, "kickoff_alignment": False,
-        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
+        "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False,
+        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "prospect_names": "modern", "player_star": True,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
-        "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
-        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
+        "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True,
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "prospect_names": "modern", "player_star": True,
     },
 }
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
@@ -261,10 +285,13 @@ def availability() -> dict[str, bool]:
         "camera": _core_module("nfl2k5_camera") is not None,
         "kick_rules": _core_module("nfl2k5_kick_rules") is not None,
         "kickoff_alignment": _tools_module("nfl2k5_kickoff_alignment") is not None,
+        "dynamic_kickoff": (_core_module("nfl2k5_dynamic_kickoff") is not None and _core_module("nfl2k5_kick_rules") is not None
+                            and _tools_module("nfl2k5_kickoff_alignment") is not None),
         "widescreen": _core_module("nfl2k5_widescreen") is not None,
         "overtime": _core_module("nfl2k5_overtime") is not None,
         "team_history": (_core_module("nfl2k5_team_history") is not None
                          and (ROOT / "data" / "nfl2k5_retail_team_history.csv").exists()),
+        "career_stats": _core_module("nfl2k5_career_stats") is not None,
         "team_column": _core_module("nfl2k5_team_column") is not None,
         "position_row": _core_module("nfl2k5_position_row") is not None,
         "probowl_order": _core_module("nfl2k5_probowl_order") is not None,
@@ -272,6 +299,7 @@ def availability() -> dict[str, bool]:
         "uniform_choice": _core_module("nfl2k5_uniform_choice") is not None,
         "kick_laces": _core_module("nfl2k5_kick_laces") is not None,
         "franchise_practice": _core_module("nfl2k5_franchise_practice") is not None,
+        "practice_squad": _core_module("nfl2k5_practice_squad") is not None,
         "prospect_names": (_core_module("nfl2k5_prospect_names") is not None
                            and (ROOT / "data" / "nfl2k5_modern_names.csv").exists()),
         "player_star": _core_module("nfl2k5_player_star") is not None,
@@ -300,6 +328,11 @@ def availability() -> dict[str, bool]:
         "commentary": _tools_module("nfl2k5_commentary_swap") is not None,
         "playbook_packs": (_core_module("nfl2k5_playbook_pack") is not None
                            and _tools_module("nfl2k5_playbook_position_recode") is not None),
+        "depth_roles": (_core_module("nfl2k5_depth_roles") is not None
+                        and _tools_module("nfl2k5_playbook_position_recode") is not None),
+        "depth_chart_rows": (_core_module("nfl2k5_depth_chart_rows") is not None and _core_module("nfl2k5_position_pools") is not None
+                             and _core_module("nfl2k5_modern_positions") is not None and _core_module("nfl2k5_depth_roles") is not None
+                             and _tools_module("nfl2k5_playbook_position_recode") is not None and _tools_module("nfl2k5_roster_reclassify") is not None),
     }
 
 
@@ -314,13 +347,14 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "accel_ramp": report.get("accel_ramp"), "draft_ai": report.get("draft_ai"),
         "returner_fix": report.get("returner_fix", "unknown"), "progression": report.get("progression", "unknown"),
         "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
-        "kick_rules": report.get("kick_rules", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
+        "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "playoff_picture": report.get("playoff_picture", "unknown"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "penalties": report.get("penalties", "unknown"),
         "uniform_choice": report.get("uniform_choice", "unknown"),
         "kick_laces": report.get("kick_laces", "unknown"),
         "franchise_practice": report.get("franchise_practice", "unknown"),
+        "practice_squad": report.get("practice_squad", "unknown"),
         # the executable half alone is never "applied": the name pool lives in pack 0 (both halves below for images)
         "prospect_names": ("partial" if report.get("prospect_names") == "applied" else report.get("prospect_names", "unknown")),
         "player_star": report.get("player_star", "unknown"), "player_tags": "n/a", "roster_edits": "n/a",
@@ -330,8 +364,17 @@ def inspect(source: Path | str) -> dict[str, Any]:
         # a pack is a recipe compiled into the books; there is no single site to read back,
         # so the receipt (not inspect) is the record of which packs went in
         "playbook_packs": "n/a",
+        "depth_roles": "n/a",
     }
     if report.get("container") == "xiso":
+        roles = _core_module("nfl2k5_depth_roles")
+        if roles is not None:
+            try:
+                role_state = roles.status(source)
+                out["depth_roles"] = role_state["status"]
+                out["depth_roles_books"] = role_state["books"]
+            except Exception:  # noqa: BLE001
+                out["depth_roles"] = "foreign"
         align = _tools_module("nfl2k5_kickoff_alignment")
         if align is not None:
             try:
@@ -435,8 +478,12 @@ def _write_xbe_bytes(target: Path, payload: bytes) -> None:
             size = os.fstat(fd).st_size
             off, length = tt.image_xbe_extent(fd, size)
             if length != len(payload):
-                raise ValueError("default.xbe size changed")
-            platform_compat.pwrite(fd, payload, off)
+                # the only supported size change is the SPECIAL depth-chart layout; the helper
+                # validates the layout, appends it and repoints the directory (unknown growth is refused)
+                from . import nfl2k5_depth_chart_storage as storage
+                storage.write_image_xbe(fd, payload)
+            else:
+                platform_compat.pwrite(fd, payload, off)
             os.fsync(fd)
         finally:
             os.close(fd)
@@ -517,6 +564,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
 
 def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
+    if plan.dynamic_kickoff:
+        # record the effective dependencies in the recipe: the modern spots, never the power-only variant, the line-up
+        plan = replace(plan, kick_rules=True, kick_power=False, kickoff_alignment=True)
     source, target = Path(plan.source), Path(plan.target)
     if target.exists() and target.resolve() == source.resolve():
         raise ValueError("target must not be the source")
@@ -536,6 +586,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         raise ValueError("7-on-7 practice needs a disc image (the 7-on-7 sets live in the practice playbook)")
     if plan.team_history and not is_image:
         raise ValueError("the team history needs a disc image (the roster template lives in pack 0)")
+    if plan.career_stats and not is_image:
+        raise ValueError("career stats need a disc image (the roster template lives in pack 0)")
     if plan.prospect_names and not is_image:
         raise ValueError("modern prospect names need a disc image (the name pool lives in the roster template in pack 0)")
     if plan.player_tags and not is_image:
@@ -544,10 +596,39 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         raise ValueError("roster edits need a disc image (the roster records live in pack 0)")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
+    if plan.depth_chart_rows:
+        if not is_image:
+            raise ValueError("depth-chart rows need a disc image (they build on the one-pool positions and the playbook roles)")
+        rows = _core_module("nfl2k5_depth_chart_rows")
+        pools = _core_module("nfl2k5_position_pools")
+        roles = _core_module("nfl2k5_depth_roles")
+        if rows is None or pools is None or roles is None:
+            raise RuntimeError("the depth-chart row dependencies are not available in this build")
+        source_xbe = _xbe_bytes(source)
+        if rows.status(source_xbe) == "foreign":
+            raise ValueError("the depth-chart row sites are neither retail nor this patch; refusing")
+        pool_state = pools.status(source_xbe)
+        if pool_state not in ("retail", "applied"):
+            raise ValueError("the position-pool sites are neither retail nor this patch; refusing")
+        if pool_state != "applied" and not plan.position_pools:
+            raise ValueError("depth-chart rows need the one-pool positions (tick them, or build on a disc that has them)")
+        if not plan.depth_roles and roles.status(source)["status"] != "applied":
+            raise ValueError("depth-chart rows need the X / Z / SLOT playbook roles (tick them, or build on a disc that has them)")
+    if plan.depth_roles and not is_image:
+        raise ValueError("depth roles need a disc image (the personnel groups live in the PLAY books)")
+    if plan.depth_roles:
+        roles = _core_module("nfl2k5_depth_roles")
+        if roles is None:
+            raise RuntimeError("the depth-role module is not available in this build")
+        role_states = roles.status(source)["books"]
+        if not role_states or any(state == "foreign" for state in role_states.values()):
+            raise ValueError("the source disc's playbooks carry foreign personnel data; depth roles refuse to guess")
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
-    if plan.wants_xbe_patch() or plan.edge_rename:
+    # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
+    # the 2026 season step patches the executable itself, so a season-only plan is copy-first too
+    if replace(plan, depth_chart_rows=False, season_2026=False).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -559,13 +640,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
                                   "overtime": plan.overtime, "team_column": plan.team_column, "seven_on_seven": plan.seven_on_seven,
                                   "position_row": plan.position_row, "probowl_order": plan.probowl_order,
                                   "penalties": plan.penalties, "uniform_choice": uniform_choice_mode(plan.uniform_choice),
-                                  "kick_laces": plan.kick_laces, "franchise_practice": plan.franchise_practice,
+                                  "kick_laces": plan.kick_laces, "franchise_practice": plan.franchise_practice, "practice_squad": plan.practice_squad,
                                   "prospect_names": plan.prospect_names,
-                                  "player_star": plan.player_star}
+                                  "player_star": plan.player_star,
+                                  "dynamic_kickoff": plan.dynamic_kickoff, "dynamic_kickoff_settings": plan.dynamic_kickoff_settings}
         if settings is not None:
             kwargs["settings"] = settings
         step = tt.write_copy(source, target, **kwargs)
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -610,6 +692,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         receipt["steps"].append({"step": "position_pools", "xbe": pools_receipt,
                                  "playbooks": {k: v for k, v in book_receipt.items() if k not in ("books", "rows")},
                                  "rosters": {k: v for k, v in roster_receipt.items() if k not in ("moves", "teams")}})
+    if plan.depth_chart_rows:
+        # after the pools (the rows reuse their third-starter cave and their stride-aware table) and before the book
+        # writers; the executable rows never touch a book
+        progress("Adding the SLOT, nickel and dime depth-chart rows", 0, 0)
+        xbe, row_step = tt._apply_all(_xbe_bytes(target), None, catch_slider=False, arc_table=False, depth_chart_rows=True)
+        _write_xbe_bytes(target, xbe)
+        rows = _core_module("nfl2k5_depth_chart_rows")
+        if rows is None or rows.status(_xbe_bytes(target)) != "applied":
+            raise ValueError("the depth-chart rows failed their read-back")
+        receipt["steps"].append({"step": "depth_chart_rows", "status": "applied", "xbe": row_step.get("depth_chart_rows_patch"),
+                                 "changed_byte_count": row_step.get("changed_byte_count")})
     if plan.kickoff_alignment:
         align = _tools_module("nfl2k5_kickoff_alignment")
         if align is None:
@@ -638,6 +731,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
             progress=lambda msg: progress(msg, 0, 0),
         )
         receipt["steps"].append({"step": "playbook_packs", **pack_receipt})
+    if plan.depth_roles:
+        # last of the playbook writers: a pack or the 7-on-7 / kickoff writers change formations and shared-group
+        # usage, and the role pass must see the final books (it validates every play before and after)
+        roles = _core_module("nfl2k5_depth_roles")
+        if roles is None:
+            raise RuntimeError("the depth-role module is not available in this build")
+        progress("Assigning X / Z / SLOT receivers and nickel / dime corners in the playbooks", 0, 0)
+        role_receipt = roles.apply(target, allow_custom=bool(plan.playbook_packs or plan.seven_on_seven or plan.kickoff_alignment),
+                                   progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "depth_roles", **role_receipt})
     if plan.season_2026:
         season = _core_module("nfl2k5_season_length")
         fs = _tools_module("nfl2k5_franchise_schedule")
@@ -653,6 +756,26 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
             season_receipt = {"already_applied": True}
         else:
             raise ValueError(f"season-length sites are {state}; refusing")
+        # the seven-seed presentation (Playoff Picture, Playoff Tree, SportsCenter previews) rides with the bracket:
+        # a disc with the fourteen-team playoffs must never show the old six-seed picture
+        picture = _core_module("nfl2k5_playoff_picture")
+        if picture is None:
+            raise RuntimeError("the playoff presentation module is not available in this build")
+        pstate_xbe = picture.status(xbe)
+        if pstate_xbe == "retail":
+            progress("Showing the seven-seed playoff picture and previews", 0, 0)
+            xbe, picture_receipt = picture.apply(xbe)
+            _write_xbe_bytes(target, xbe)
+            if picture.status(_xbe_bytes(target)) != "applied":
+                raise ValueError("the seven-seed playoff presentation failed its read-back")
+        elif pstate_xbe == "applied":
+            picture_receipt = {"already_applied": True}
+        else:
+            # the executable has no recognisable presentation sites (e.g. a non-retail base); the
+            # fourteen-team bracket the season patch just applied is the gate for these same bytes,
+            # so record the skip rather than refuse the whole season build
+            picture_receipt = {"skipped": pstate_xbe}
+        season_receipt = {**season_receipt, "playoff_picture": {k: v for k, v in picture_receipt.items() if k != "edits"}}
         progress("Writing the real 2026 schedule into the franchise template", 0, 0)
         doc = json.loads((ROOT / "data" / "nfl_2026_schedule.json").read_text(encoding="utf-8"))
         template, info = fs.encode_schedule(doc)
@@ -708,6 +831,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         history_receipt = history.apply(target, plan.team_history, progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "team_history", **{k: v for k, v in history_receipt.items() if k != "log"},
                                  "log_lines": len(history_receipt.get("log", []))})
+    if plan.career_stats:
+        # right after the team history: both rebuild the stat pool and the +0x2C pointers. This pass only
+        # changes the counters a user CSV names (and inserts the season words it needs), decodes every
+        # written value back, and refuses to grow past the pool; the later passes leave the pool alone.
+        career = _core_module("nfl2k5_career_stats")
+        if career is None:
+            raise RuntimeError("the career stats module is not available in this build")
+        progress("Importing the career stats CSV into the roster template", 0, 0)
+        career_receipt = career.apply(target, plan.career_stats, progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "career_stats", **career_receipt})
     if plan.prospect_names:
         # after every other roster pass: the name pool (entry array + string span) is outside what the
         # reclassify, schedule and team-history gates hash, and none of them writes it. The executable half
@@ -744,8 +877,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         if records is None:
             raise RuntimeError("the roster records module is not available in this build")
         progress("Applying the roster edits", 0, 0)
-        edits_receipt = records.apply(target, Path(plan.roster_edits), progress=lambda msg: progress(msg, 0, 0))
+        # the reclassify pass above retires the OLB code, so an edit authored on a retail roster
+        # must not write it back: tell the writer which scheme the disc it is landing on is on
+        edits_receipt = records.apply(target, Path(plan.roster_edits),
+                                      progress=lambda msg: progress(msg, 0, 0),
+                                      scheme="one_pool" if plan.position_pools else None)
         receipt["steps"].append({"step": "roster_edits", "source": plan.roster_edits,
+                                 "scheme": "one_pool" if plan.position_pools else "auto",
                                  **{k: v for k, v in edits_receipt.items() if k != "log"},
                                  "log_lines": len(edits_receipt.get("log", []))})
     for swap in plan.commentary:

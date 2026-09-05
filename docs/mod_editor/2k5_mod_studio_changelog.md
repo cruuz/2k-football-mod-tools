@@ -1,5 +1,238 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC84 — ★ Rosters does what Finn's did (real saves, Franchise tab, membership, templates), dynamic kickoff, slot / nickel / dime, practice squads, career stats, simpler words everywhere (2026-09-04)
+
+- **Mod files are modular now (format 2): a `.2k5patch` can carry anything, including a change that resizes the disc.**
+  The old patch format could only carry same-size, in-place byte edits, so the SPECIAL depth-chart tab (which grows the
+  executable) could not travel in a shareable patch. The format is now an ordered list of typed, self-verifying operations
+  (in-place byte runs, an executable-grow that replays the appended page and the one directory repoint, and named
+  file-replace / file-grow), each with its own before-and-after hash, a reader-version stamp so an older Mod Studio refuses
+  a newer pack with a clear message instead of misapplying it, and a copy-then-rename apply so a failed patch never leaves a
+  half-written disc. Old packs keep working unchanged, and a new-format pack that only edits bytes produces exactly the same
+  disc the old format would. The upshot: the SOFTDRINK Experimental patch now includes SPECIAL, and no future feature will
+  hit "the patch can't carry this" again, it just adds an operation type. Built by GPT-6 Astra; verified applying to a retail
+  disc byte-for-byte.- **The Playoff Picture, the Playoff Tree and SportsCenter's playoff previews now show the seven-seed format.** Noah's
+  first look at the pre-release disc found the franchise's seeding preview and the recap segments still describing the
+  retail six-seed picture while the bracket itself played the 2020+ format. Built by GPT-6 Astra and now part of the 2026
+  season step: the Playoff Picture always lists the seven projected qualifiers with a visible 7, the Playoff Tree binds
+  all thirteen postseason games (three wild-card boxes per conference, headed "AFC: 7 Seeds / Superbowl / NFC: 7 Seeds",
+  no fixed connectors because the wild-card winners reseed), SportsCenter admits the seventh seed's status and compares
+  the seventh team with the eighth on the bubble, only the #1 seed is ever labelled "#1 Seed / Bye" (an older save's
+  stale second-bye flag is ignored), and the durable seventh seeds ride in the wild-card slots of the grid so save and
+  reload keep them. 605 bytes, no new cave; proved by bounded execution of the presentation callbacks through complete
+  wild-card rounds with upsets. The recorded narration was not touched. Unwitnessed on screen.
+- **Fixed before release: the star under tagged players never drew.** Beta 58's star patch widened the controller-
+  indicator gate so a tagged player was queued, but the game's indicator pass marks every CPU body and skips the whole
+  drawing branch for them, so nothing appeared under anyone. The patch now runs its own pass after the game's: for every
+  player on the field whose roster record carries the tag it draws a closed white five-point outline at his feet, hollow in
+  the middle, whoever is controlling him, in games, practice and franchise, following the same HUD and coach-camera
+  visibility as the ordinary circle. Proved by bounded execution of the real queue, decoder and model-selection routines
+  and of the live-game roster copy (the tag byte survives the load). The tag bit is the same one the future ability gates
+  will read. Noah's first look confirmed it draws; a second pass made it bold enough to read on a far receiver:
+  radius 108 with a thick white band and a near-black border drawn underneath for contrast on turf and yard lines.
+- **Fixed before release: the dynamic kickoff's coverage men lined up beside the kicker.** Noah's first play of the
+  pre-release disc showed the ten coverage players standing at the kicking 35 with the kicker instead of on the receiving
+  40. The playbook data was right; a retail pre-snap clamp (0x183F60, called from the selected-play target routine)
+  replaced every coverage man's downfield target with the tee minus his stance clearance. A six-byte hook now bypasses
+  that clamp for the ten on-field coverage slots of a normal kickoff only, and the hold starts at the engine's ready
+  state rather than at the ball launch, so nobody drifts between line-up and the kick. Proved by bounded execution of
+  the real coordinate readers against all 36 books in both directions; still unwitnessed in game until Noah's next play.
+- **Simpler words everywhere.** A usability pass over every page for someone who has played 2K5 and maybe used
+  Flying Finn's editor but never a mod studio: one set of names (Open game disc…, Open project… / Save project,
+  Game disc (.iso) / Save disc copy as, Make my disc, Make disc from project, Make disc with these changes, Save disc
+  copy… / Save Xbox save copy… on ★ Rosters, Set up xemu… / Play latest disc in xemu), short labels with the story
+  under Details and a badge that says when a change needs the full disc, is already on the disc, or is not yet tested
+  in-game, and the RSA sentence replaced by "For xemu; original Xbox support is not provided." Opening a disc now
+  fills every page that has its own source field (Build, Game Fixes, Position names, Throw, ESPN bar, Commentary,
+  Replace a Sound, Bump Maps, ★ Models, Share) through that page's own reader, suggests a distinct copy name beside
+  the disc, and loads ★ Rosters on first entry without ever resetting an edited roster; Getting Started's Start
+  SOFTDRINK Basic ticks the preset once the disc has been read. The Build tab puts the presets, the output name, a
+  selection summary and Make my disc with a visible blocker ahead of the option list, fits a 1366-px window, and
+  reaches every BuildPlan field (manual arc, commentary rows, playbook packs, mod name / author / notes were never
+  on it; 7-on-7 stays reachable but disabled). Gameplay lands on Game Fixes with the research tables under
+  Reference (read-only); Saves & Sliders moves there from Uniforms. Share reads Export mod file / Install a friend's
+  mod with plain states. Tab titles no longer clip and lone ampersands no longer vanish. ★ Rosters keeps Finn's
+  layout; it says Est. OVR, units, Position names, a readable contract line, and treats an exported roster-edits
+  file as a snapshot that goes stale after the next edit. Nothing was removed and no writer changed; the record of
+  the pass is `UX_EXECUTION_REPORT.md`.
+- **Practice squads in franchise: 53 active plus up to 12 reserves (Experimental).** Built by GPT-6 Astra: when the
+  CPU's season gate cuts a 65-man roster to 53, each team now keeps up to twelve of the players it cut as team-owned
+  reserves, in the same 65-slot roster table the game already carries through the off-season (three spare bytes mark
+  the list; every pointer keeps the game's own relative encoding, so saves, team exports and the season rollover carry
+  them). Reserves stay off the active roster, the depth chart and the team rating, cost no cap space and keep their
+  contract terms; a full 53 + 12 roster has to release players to draft. Promote and demote run as transactions in the
+  executable (eight small caves, none on a live function; the first draft shared a cave with the dynamic kickoff and was
+  moved). The requested sixteen-player tail was disproved: those bytes hold live cap and statistics data. No in-game
+  reserve screen yet and no automatic promotion; only use reserve-bearing saves on a disc that carries the patch.
+  Unwitnessed in game.
+- **Franchise tab on ★ Rosters (Beta 60).** A franchise save now gets a second page beside the roster — the
+  part of Flying Finn's editor the studio did not have — and both pages write ONE re-signed copy, roster edits
+  first. **Overview**: the season year (the game's `2004 + field` rule shown beside it), stage and week
+  read-only, the user-controlled teams as a checkable list, the salary cap in $M with the raw $1000-unit value,
+  and every team's salary against the cap. **Schedule**: the 22 × 17 grid week by week — away, home, date,
+  kick-off, played, score — with Finn's Edit Game (team pickers, date, time) and Swap Home/Away; a played cell
+  is refused with the reason unless you tick *Allow editing played games*; scores stay read-only because the
+  quarter-score side order is a hypothesis. **Coaches**: one record per team — names and the three info lines
+  (pooled strings, read-only), seasons, W / L / T, winning seasons, Super Bowls, playoff and Super Bowl W / L,
+  photo and body ids, the run % playcalling split, the 23 ratings and the ten Back Field tendencies on the
+  player cards' bars. **Injured Reserve**: the five slots per team, *Place on IR…* from the team's rostered
+  players (Finn's move byte for byte: pointer list compacted, count byte down one, player marked, slot filled)
+  and *Activate*, labelled unwitnessed; a free agent or a prospect is refused in Finn's words. **Checks**: the
+  layout map by PROVED / HYPOTHESIS / OPAQUE, what the page may edit, every franchise edit since load in plain
+  words and the byte ranges it touched. Undo / Redo per action, a dirty marker, and every write goes through
+  the core module's writers — no offset lives in the page. Reproduces Finn's IR save byte for byte through the
+  UI path; the year rule and the IR move are the witnessed parts, everything else is unwitnessed in game.
+- **The SPECIAL tab: role depth charts, X / Z labels (Experimental).** Offence and both defences keep their eleven
+  depth-chart rows, with LWR / RWR shown as X and Z, so nothing scrolls off the screen. The Special Teams tab is renamed
+  SPECIAL and now carries thirteen rows: KR, PR, K, P, then SLOT, NICKEL CORNER, DIME CORNER, GADGET, left and right
+  GUNNER, LONG SNAPPER, 3RD DOWN BACK and POWER BACK. These are views onto your existing receiver, corner, back and
+  centre lists (so moving a player into a role can change another row; right gunner and dime corner share a list), and
+  the same build's playbook pass lines those players up on the field: the slot man and the nickel / dime corners inside,
+  the two punt gunners and the long snapper, the third-down back in shotgun and three-receiver sets and the power back in
+  goal-line and short-yardage sets. It replaces the earlier thirteen-row layout that ran off the screen. Because it adds
+  the extra rows without disturbing the retail table, the executable grows by 72 KB (a new read-only data page appended
+  to it, the disc's directory repointed to the larger file); a real build writes and reads it back correctly, but whether
+  the enlarged executable boots is the one thing still unwitnessed. Built by GPT-6 Astra.
+- **Franchise saves, decoded.** The two signed saves on hand turned out to be franchise saves, and so is the one
+  pulled out of the emulator's disk image, so the Rosters tab has been opening franchise saves all along; now the
+  studio also reads the rest of the file. Beyond the roster arena a franchise save carries a season block (mode,
+  stage, week, year, the 12 + 12 playoff seeds, divisions, which teams are user-controlled, the 22 × 17 schedule
+  grid with quarter scores) and a front-office block (salary cap, the injured-reserve table, trades, free-agent
+  bids, the transaction log and ledger), tiled with no gap and proved off the game's own save and restore
+  routines. A read-only card under the Rosters source row now says what a franchise save is ("2011 season ·
+  offseason stage 1, week 0/1 · user team(s) DET · coach Steve Mariucci (153-85-0) · salary cap $88.1M · 268/268
+  grid games played · injured reserve: none"), and Flying Finn's injured-reserve move is reproduced byte for byte.
+  The writers (year, cap, user control, schedule cell, coach fields, IR place / activate, re-signed write) live in
+  the new core module for a Franchise tab. `tools/nfl2k5_xemu_saves.py` lists and extracts saves from a copy of
+  xemu's `xbox_hdd.qcow2` (pure-Python qcow2 + FATX, read-only) and writes a catalogue. Unwitnessed edits: the
+  in-game checklist is in the report.
+- **Dynamic kickoff, the whole 2024/2025 rule (Build tab and Gameplay Patches, Experimental).** Beta 58 moved the
+  kick spots and the line-up; this executable patch, built by GPT-6 Astra, adds the behaviour: the ten coverage men
+  and nine setup blockers do not move until the ball touches the ground or a player (the kicker and the two returners
+  are free), the first contact is remembered, a ball that lands in the landing zone and is then downed in the end zone
+  comes out to the 20, a kick straight into the end zone is a touchback to the 35 (30 for the 2024 spot), a kick short
+  of the landing zone or out of bounds goes to the 40, the CPU kicker aims for the landing zone 90 % of the time and the
+  CPU returner takes the touchback 90 % of the time. Your own kicks and returns are untouched; onside and safety kicks
+  and every scrimmage play bypass it. Ten hooks into a 1,939-byte hash-pinned cave at 0x2890F0 with ten runtime bytes in
+  the unowned section gap; both executable gates, bounded execution of every hook in both field directions, idempotent.
+  Ticking it switches on the modern kick spots and the line-up with it. Unwitnessed in game: the in-game checklist is
+  in the build report.
+- **X / Z / SLOT receivers and nickel / dime corners (Build tab, Advanced).** Retail 2K5 has no slot receiver:
+  the inside man of a three-wide set is whichever ordinal the formation happens to name (the #1 receiver in 196 of
+  the 466 three-wide formations, the #2 in 115, the #3 in 100), so the third receiver on your depth chart is inside
+  only a fifth of the time. The new pass, built by GPT-6 Astra from the depth-chart research, rewrites the
+  personnel groups of every playbook so the innermost receiver is the third receiver (SLOT) with X and Z outside,
+  and nickel / dime sets use your third and fourth corners inside in all 71 and 38 of them. Twelve shared groups
+  whose formations disagree about the inside spot by more than two yards, bunch sets and special teams keep their
+  retail assignments and are listed in the build report; 456 bytes change on the disc and every play still passes
+  the validator. Depth-chart rows named SLOT / NICKEL / DIME are the executable follow-up. Unwitnessed in game.
+  The same delivery fixed the Create-a-Play writer's authored menu links, which were missing the populated-link bit.
+- **★ Rosters: team membership — release, sign, move, swap.** Finn's core operations, as
+  pointer-list edits plus the team's `+0x11C` count byte and the free-agent list's count, under the
+  grid: **Release to free agency**, **Sign to ▾** a team (a free agent) or **Move to ▾** (a rostered
+  player), and **Swap with…** another rostered player. Finn's own limits apply and refuse with his
+  own words — a club must keep **42** players, may hold **54**, and the free-agent list is full at
+  the game's own ceiling: its append helper at `0x242560` refuses at `cmp eax,0x9C4` (**2,500**) and
+  never reallocates, so the list is a fixed 2,500-slot buffer whose tail past the count is junk
+  (real saves carry stale absolute pointers there, which is why "the zero run after the list" is
+  not the capacity). The **draft class cannot be moved** ("Invalid operation on a draft class"): two
+  real saves show the game regenerates 380 prospects into a fixed record window (1937..2316 in
+  retail, celebrity records included) at load and marks them itself with `+0x08` bit 4
+  (`FUN_002BE6F0`), so a team pointer at a prospect would not take him out of the class. A player
+  who joins a team is ranked at the bottom of his position's chain (the auto depth chart's own
+  rank / side rule); a released player's record is not touched (retail free agents keep their old
+  bits). Depth order is preserved, every operation undoes, the team list counts follow, **Show my
+  changes** names moves as text (`IND (12 of 53) -> Free Agents`), the roster-edits document
+  carries them with the destination slot and the depth bits pinned, Build's roster-edits step
+  replays them as one checked transaction (a document that would break the rules on the target
+  roster is skipped with the reason, the fields still land), and the CSV's `team` column now signs,
+  moves and releases. Verified on the retail body (2,500-slot list, 53-man clubs, the AFC squad
+  at 43, BRP at 54, alumni sides that share records with the clubs) and on the real franchise
+  saves. Unwitnessed in game.
+- **★ Rosters: Check & repair on load.** Finn's editor silently cleared the "headless" bit on load
+  and told you afterwards. The page now plans every mechanical repair it can prove when a roster
+  loads — the headless bit (`+0x0C` bit 7; the retail disc itself ships one, Carlos Joseph), a
+  player on a position code the loaded scheme retired, a team count byte that overstates its
+  pointer list, a duplicate entry in a team or free-agent list — lists them on the Checks tab,
+  touches nothing until **Repair (N)** is pressed, then applies them with an itemised receipt and
+  an undo.
+- **★ Rosters: `.PlayerData` export and restore.** Finn's backup container (150-byte entries: the
+  raw record, 16-byte first and last name, 32-byte college, `u16 7`) is read and written from the
+  CSV menu, so community backups load. Restore matches by **name + play-by-play index** (a unique
+  name still matches when the index differs, and says so; an ambiguous name is skipped, not
+  guessed), never overwrites a name, brings the college back by name from the roster's own table,
+  never moves a pointer and leaves the studio's star tag alone; whole record or attributes only.
+- **★ Rosters: the game's own create-a-player templates, all 28 slots proved.** The 36-record
+  table at `.rdata 0x5561B8` (three per position, QB..ILB; C, G, T, DT and DE have none) is read
+  through its only apply routine, `FUN_00343460`, which fixes every slot to a rating byte. A `-1`
+  slot is **not** "leave alone": the routine writes 75 (`mov bl,0x4B`) and clamps everything to
+  0..100. **Template ▾** on the toolbar offers the player's three first — read from the loaded
+  disc's executable when there is one, else the pinned retail table — and applies with undo.
+- **★ Rosters: play-by-play and portrait pickers.** The two ids get a searchable list beside the
+  spin box. Play-by-play: the ids the loaded roster itself uses (`Last, First`), the jersey-number
+  call-outs 9000–9099, the 9100 "announce the number" fallback and the 485-name recorded surname
+  bank at 9300+ — all proved in the executable; any other id can still be typed, and the wider
+  audio-bank index Finn shipped from his install is not decoded. Portraits: the **4,303** portraits
+  the disc carries, by id, with the roster records that select them, from the shipped portrait
+  catalogue; when the catalogue is absent the spin box stays and the picker says why.
+- **`docs/nfl2k5_ratings_and_styles.md`.** The ratings → animation study as a shareable document:
+  the 28 rating bytes with their getters and retail distributions, the three style channels (Power
+  Run Style's 33 / 66 thresholds, the Scramble parity bit at `0x002D92B1` and the mobile-QB test,
+  Kicking Style as an unproved channel), Best Hand, the template slot map, and what the studio
+  exposes — with every hypothesis labelled as one.
+
+- **Career stats from your own CSV (Build tab, opt-in).** A new pass, built by GPT-6 Astra and wired here,
+  imports real per-season counters for the roster's past seasons — passing, rushing, receiving, defence and
+  kicking, 31 fields whose IDs were read off the game's own display-selector table (`0xA8A51C + 28·selector`);
+  sacks keep their half units and field goals go by distance bucket, the way the game stores them. Export the
+  roster's counters first with `tools/nfl2k5_career_stats.py` (the export carries the identity and raw-word
+  pins the import demands: retail already holds 5,867 real player-seasons back to 1982, and a few keys are
+  duplicated), edit values, import: nothing is invented, a season the CSV does not name is untouched, every
+  written value is decoded back, and the pass refuses to grow past the stat pool. Runs right after the team
+  history. The same delivery adds a lossless version-0 / version-17 ROST codec module used as the framing
+  oracle for the save work above, stages release files as 0755 / 0644 (a group-writable checkout made the
+  reviewed H7A encoder refuse itself silently), and says why when that encoder is refused.
+- **★ Rosters opens real Xbox saves.** Every real `SAVEGAME.DAT` stores the roster the way the game keeps
+  it in memory (a version-0 ROST arena with the object 0x20 bytes after its preamble, at file offset 0x320),
+  not the way the disc resource is laid out (version 17, object at +0x40). RC83 only knew the disc layout and
+  refused every genuine save with "no ROST block found" — the save editing it advertised had been proven on a
+  synthetic save built like the disc. The document now reads both layouts through the same field-relative
+  pointers, so a real save gets the whole editor (ratings, names, depth chart, CSV, global edits), round-trips
+  byte-identically when nothing is changed, and re-signs to a copy exactly as before. Found by GPT-6 Astra's
+  review of the two HMAC-verified saves on hand; both load with 2,547 players and 52 teams. Franchise-mode
+  saves are expected to carry the same arena but none has been examined yet.
+- **★ Rosters now reads a patched disc's own position scheme instead of the retail 17.** Two of
+  the Build tab's patches change what a position *means*: the **EDGE rename** prints EDGE / Edge
+  Rusher wherever the game said Defensive End, and the **one-pool** pass (`position_pools` plus the
+  ROST reclassify) makes 16 = EDGE, 15 = the interior, 11 = LB and **retires 10** — no player on a
+  reclassified roster carries OLB, and writing one back parks him in a filter row no team fills.
+  The editor was showing `QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE` on all of them. It now
+  detects the scheme — from the disc's own `edge_rename` / `scheme_labels` / `position_pools`
+  states for an image, and from the records themselves for a save or a loose ROST body (an empty
+  OLB code in the primary pool is the reclassify signature; retail ships 191 of them, and the 68
+  class-generator templates are excluded because the pass deliberately leaves them keyed per enum)
+  — and a **Position scheme** selector on the source row says what was found, why, and lets you
+  override it. A save cannot show the EDGE rename at all, because that patch only rewrites text;
+  the page says so rather than guessing.
+- Everything that names a position follows the scheme: the grid, the header card, the position
+  chips (one pool gains its own **EDGE** chip and "DL" becomes the interior), the Position picker,
+  the Global Attribute Editor's position boxes, the validation checks and the CSV. Everything that
+  *means* a position stays keyed by the **code**, the way the game keys its own per-position rating
+  labels and getters: a one-pool LB is read on the linebacker card set and an EDGE on the
+  defensive-end one, the jersey ranges follow the pool, and the depth chart is grouped per code so
+  the edge rushers and the interior are separate chains. The header card names the card set a
+  player is rated on.
+- **A retired code is never written.** Under one pool the Position picker shows OLB greyed out and
+  disabled, so the row cannot be picked and the picker cycles the live codes, and the card refuses
+  the write anyway with a message naming the code that replaces it; a global edit aimed at a retired
+  position is refused; a CSV that brings **OLB** rows onto a one-pool roster maps them to **LB (11)**
+  and logs one line per row it moved; and a saved roster-edits document authored on a retail disc
+  does the same when Build applies it to a disc built with the pools, so the edit lands on a
+  position the game actually fills. CSV import accepts every scheme's names whichever roster it is
+  reading into, so a sheet exported from a retail disc loads onto a one-pool disc and back. A player
+  already parked on the retired code is still shown, and the Checks tab now says he is on a position
+  no screen fills.
+
 ## v1.0 RC83 — ★ Rosters (the Flying Finn-parity roster editor), playbook packs, scorebug on every machine, disc identity, body sets, one LB group, TEAM column filled (2026-09-04)
 
 - **Fixed: a refusal now says which disc image you handed it.** One report carried two failures

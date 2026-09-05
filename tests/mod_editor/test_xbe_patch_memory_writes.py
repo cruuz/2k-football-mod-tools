@@ -75,6 +75,15 @@ class SectionTableTests(unittest.TestCase):
         # the cave itself is code and constants in .text: nothing may write there
         self.assertFalse(writable(table, seven.CAVE_VA))
 
+    def test_oracle_agrees_on_writable_flags_and_rejects_text_data(self) -> None:
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(XBE.read_bytes())
+        for section in image.sections:
+            self.assertEqual(image.runtime_writable(section.start), writable(sections(image.data), section.start))
+        for address, size in ((0xA69970, 1), (0xA69974, 4), (0xA69978, 4), (0xA6997C, 4)):
+            self.assertTrue(image.runtime_writable(address, size), hex(address))
+        self.assertFalse(image.section(0x1AC260).writable)
+
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class PatchWriteTests(unittest.TestCase):
@@ -87,7 +96,12 @@ class PatchWriteTests(unittest.TestCase):
         cls.table = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
                                           "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
-        cls.patched, cls.receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True)
+        cls.patched, cls.receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True, practice_squad=True)
+        # Pools and Tier 2 run after the shared XBE pass in mod_build.
+        from mod_editor.core import nfl2k5_position_pools as pools
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        cls.patched, _ = pools.apply(cls.patched)
+        cls.patched, _ = rows.apply(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 
@@ -131,6 +145,53 @@ class PatchWriteTests(unittest.TestCase):
                     offenders.append(f"{insn.address:#x}: {insn.mnemonic} {insn.op_str}")
         self.assertGreater(checked, 0, "no absolute writes found; the scan is broken")
         self.assertEqual(offenders, [], "writes into read-only sections:\n" + "\n".join(offenders))
+
+    def test_oracle_checks_full_width_of_existing_absolute_writes(self) -> None:
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        checked = 0
+        for start, end in self._changed_ranges():
+            for insn in self.md.disasm(self.patched[start:end], start + BASE):
+                if insn.mnemonic not in WRITING or not insn.operands:
+                    continue
+                dest = insn.operands[0]
+                if dest.type != X86_OP_MEM or dest.mem.base or dest.mem.index:
+                    continue
+                target = dest.mem.disp & 0xFFFFFFFF
+                if BASE <= target < 0x1000000:
+                    checked += 1
+                    self.assertTrue(image.runtime_writable(target, max(dest.size, 1)),
+                                    f"{insn.address:#x}: {insn.mnemonic} {insn.op_str}")
+        self.assertGreater(checked, 0)
+
+    def test_playoff_presentation_storage_and_complete_callback_spans(self) -> None:
+        from mod_editor.core import nfl2k5_playoff_picture as picture, nfl2k5_season_length as season
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        dependency, _ = season.apply(self.patched, groups=("playoffs_14",))
+        patched, _ = picture.apply(dependency)
+        image = XbeImage(patched)
+        self.assertTrue(image.runtime_writable(picture.WIDGET_REGION, len(picture.widget_bytes())))
+        self.assertTrue(image.runtime_writable(picture.HEADINGS_VA, len(picture.heading_bytes())))
+        self.assertTrue(image.runtime_writable(picture.STATE_VA, 13 * picture.STATE_SIZE))
+        for start, size in ((picture.TREE_UPDATE_VA, picture.TREE_UPDATE_SIZE),
+                            (picture.TREE_SCORES_VA, picture.TREE_SCORES_SIZE)):
+            self.assertFalse(image.runtime_writable(start, size))
+            for write in absolute_writes(patched, [(start, start + size)]):
+                if write["target"] is not None:
+                    self.assertTrue(write["writable"], write)
+        # Indexed writes are exercised with memory hooks and protected .text in
+        # tests.nfl2k5_playoff_picture_test.InstructionTests.
+    def test_special_table_is_preloaded_read_only_data_outside_text(self) -> None:
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        section = image.section(rows.TABLE_VA, rows.TABLE_SIZE)
+        self.assertIsNotNone(section)
+        self.assertNotEqual(section.name, ".text")
+        self.assertFalse(section.writable)
+        self.assertFalse(section.executable)
+        self.assertTrue(section.flags & 2)
+        self.assertFalse(image.runtime_writable(rows.TABLE_VA, rows.TABLE_SIZE))
 
 
 if __name__ == "__main__":

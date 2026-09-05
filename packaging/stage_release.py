@@ -144,10 +144,11 @@ def stage(allowlist: Path, dest: Path, root: Path) -> int:
         output = dest.joinpath(*PurePosixPath(relative).parts)
         output.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, output, follow_symlinks=False)
-        # Be explicit about executable entry points even on unusual filesystems.
+        # copy2 preserves a worktree's umask-derived group-write bits (0775
+        # under umask 002). Reviewed native helpers intentionally reject those.
+        # Match build_archive / the installer, not the source's write mask.
         source_mode = source.stat().st_mode
-        if source_mode & 0o111:
-            os.chmod(output, output.stat().st_mode | 0o111)
+        os.chmod(output, 0o755 if source_mode & 0o111 else 0o644)
     print(f"staged {len(declared)} files; 0 declared inputs absent")
     return len(declared)
 

@@ -241,6 +241,9 @@ class SoundsPanelTests(unittest.TestCase):
         self.assertTrue(panel.export_button.isEnabled())
         self.assertFalse(panel.write_button.isEnabled())            # no clip
         panel.set_replacement(self.fx.clip("clip.wav", 64, 1, 8000))
+        # a copy name is suggested beside the disc; clear it to check the no-target gate
+        self.assertTrue(panel.target_field.text().endswith(" (sounds).xiso.iso"), panel.target_field.text())
+        panel.target_field.setText("")
         self.assertFalse(panel.write_button.isEnabled())            # no target
         panel.target_field.setText(str(self.fx.disc.path))          # same as source
         self.assertFalse(panel.write_button.isEnabled())

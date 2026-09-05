@@ -37,6 +37,9 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui.ux_text import XEMU_LINE, Details, plain_failure, show_operation_error, suggest_copy_name
+from mod_editor.gui.task_delivery import bound
+
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 AUDIO_FILTER = "Audio (*.wav *.mp3 *.flac *.ogg *.m4a *.aac);;All files (*)"
 SPEECH_BANKS = ("cutsceneaudio", "lines", "teams", "players", "coacha", "halftimeaudio",
@@ -120,25 +123,30 @@ class CommentaryPanel(QWidget):
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
         self._source_loaded = False
+        self._target_generated = False
         self._build()
 
     # ------------------------------------------------------------------ layout
     def _build(self) -> None:
         layout = QVBoxLayout(self)
         intro = QLabel(
-            "Replace one commentary / studio line with your own voice. The speech banks are read from "
-            "the disc, one sub-stream is chosen, your clip is cut to that slot's length (shorter clips "
-            "are padded with silence), encoded to the game's Xbox IMA ADPCM and written into a COPY of "
-            "the disc. Nothing else on the disc changes; the source image is never touched."
+            "Replace a commentary line with your recording and make a disc copy. Longer recordings are "
+            "trimmed; shorter recordings are padded with silence. " + XEMU_LINE
         )
         intro.setWordWrap(True)
         layout.addWidget(intro)
+        intro_details = Details("Details")
+        intro_details.add_text(
+            "The speech banks are read from the disc, one line is chosen, your clip is cut to that slot's "
+            "length, encoded to the game's Xbox IMA ADPCM and written into a COPY of the disc. Nothing else "
+            "on the disc changes; the source disc is never touched.")
+        layout.addWidget(intro_details)
 
-        source_box = QGroupBox("1. Disc image to read")
+        source_box = QGroupBox("1. Game disc (.iso)")
         source_layout = QHBoxLayout(source_box)
         self.source_field = QLineEdit()
         self.source_field.setReadOnly(True)
-        self.source_field.setPlaceholderText("Choose an NFL 2K5 disc image (.iso)")
+        self.source_field.setPlaceholderText("Filled in when you open a disc (top right), or choose one here")
         source_button = QPushButton("Choose…")
         source_button.clicked.connect(self._choose_source)
         source_layout.addWidget(self.source_field, 1)
@@ -148,9 +156,9 @@ class CommentaryPanel(QWidget):
         pick_box = QGroupBox("2. Line to replace")
         pick_layout = QVBoxLayout(pick_box)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Bank"))
+        row.addWidget(QLabel("Audio bank"))
         self.bank_combo = QComboBox()
-        self.bank_combo.addItems(list(SPEECH_BANKS))
+        self._fill_banks(list(SPEECH_BANKS))
         row.addWidget(self.bank_combo)
         row.addWidget(QLabel("From #"))
         self.start_spin = QSpinBox()
@@ -161,7 +169,7 @@ class CommentaryPanel(QWidget):
         self.count_spin.setRange(1, 500)
         self.count_spin.setValue(25)
         row.addWidget(self.count_spin)
-        self.list_button = QPushButton("List streams")
+        self.list_button = QPushButton("Show lines")
         self.list_button.clicked.connect(self._list_streams)
         row.addWidget(self.list_button)
         row.addStretch(1)
@@ -171,9 +179,9 @@ class CommentaryPanel(QWidget):
         self.stream_list.itemSelectionChanged.connect(self._stream_picked)
         pick_layout.addWidget(self.stream_list)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Stream id"))
+        row.addWidget(QLabel("Line ID (advanced)"))
         self.stream_field = QLineEdit()
-        self.stream_field.setPlaceholderText("bank:index, e.g. cutsceneaudio:12")
+        self.stream_field.setPlaceholderText("bank:index, e.g. cutsceneaudio:12 — filled in when you pick a line above")
         self.stream_field.textChanged.connect(self._refresh)
         row.addWidget(self.stream_field, 1)
         pick_layout.addLayout(row)
@@ -198,40 +206,52 @@ class CommentaryPanel(QWidget):
         clip_layout.addWidget(self.gain_field)
         self.loudnorm_check = QCheckBox("Match game loudness")
         self.loudnorm_check.setChecked(True)
-        self.loudnorm_check.setToolTip("Retail speech is hard-normalised to -14.3 dBFS RMS with peaks at "
-                                       "0 dBFS; home recordings are usually 10-20 dB quieter. This applies "
-                                       "gain plus a look-ahead limiter so your line sits at the game's level.")
+        self.loudnorm_check.setToolTip("Makes your clip as loud as the game's own lines (the game's speech sits at "
+                                       "-14.3 dBFS RMS; home recordings are usually 10-20 dB quieter).")
         clip_layout.addWidget(self.loudnorm_check)
         layout.addWidget(clip_box)
 
-        target_box = QGroupBox("4. Copy to write")
+        target_box = QGroupBox("4. Save disc copy as")
         target_layout = QVBoxLayout(target_box)
         row = QHBoxLayout()
         self.target_field = QLineEdit()
-        self.target_field.setPlaceholderText("Where the modified copy will be written")
+        self.target_field.setPlaceholderText("Where the new disc goes (never the source)")
         self.target_field.textChanged.connect(self._refresh)
+        self.target_field.textEdited.connect(lambda _t: setattr(self, "_target_generated", False))
         target_button = QPushButton("Choose…")
         target_button.clicked.connect(self._choose_target)
         row.addWidget(self.target_field, 1)
         row.addWidget(target_button)
         target_layout.addLayout(row)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Retail packs (optional, verifies the slot before writing)"))
+        row.addWidget(QLabel("Original game files folder (optional; checks the slot before writing)"))
         self.retail_field = QLineEdit(str(DEFAULT_RETAIL_PACKS) if DEFAULT_RETAIL_PACKS is not None and DEFAULT_RETAIL_PACKS.is_dir() else "")
         row.addWidget(self.retail_field, 1)
         target_layout.addLayout(row)
         layout.addWidget(target_box)
 
         row = QHBoxLayout()
-        self.write_button = QPushButton("Write the copy")
+        self.write_button = QPushButton("Make disc with this line")
         self.write_button.clicked.connect(self._write)
         row.addWidget(self.write_button)
-        self.status_label = QLabel("Choose a disc image to begin.")
+        self.status_label = QLabel("Open your game disc (top right), or choose one above, to begin.")
         self.status_label.setWordWrap(True)
         row.addWidget(self.status_label, 1)
         layout.addLayout(row)
         layout.addStretch(1)
         self._refresh()
+
+    BANK_NAMES = {"cutsceneaudio": "Cutscene audio (cutsceneaudio)", "halftimeaudio": "Halftime audio (halftimeaudio)"}
+
+    def _fill_banks(self, banks: list[str]) -> None:
+        """Bank ids stay the data; the two verified banks get a plain name beside the id."""
+
+        self.bank_combo.clear()
+        for bank in banks:
+            self.bank_combo.addItem(self.BANK_NAMES.get(bank, bank), bank)
+
+    def current_bank(self) -> str:
+        return str(self.bank_combo.currentData() or self.bank_combo.currentText())
 
     # ------------------------------------------------------------------ state
     def apply_source(self, path: Path, banks: list[str] | None, loaded: bool) -> None:
@@ -239,9 +259,11 @@ class CommentaryPanel(QWidget):
 
         self._source_loaded = loaded
         self.source_field.setText(str(path))
+        if loaded and (not self.target_field.text().strip() or self._target_generated):
+            self.target_field.setText(suggest_copy_name(path, suffix="commentary"))
+            self._target_generated = True
         if banks:
-            self.bank_combo.clear()
-            self.bank_combo.addItems(banks)
+            self._fill_banks(banks)
         self.status_label.setText(
             f"{len(banks or [])} speech/music banks found; list a bank and pick a line." if loaded
             else "Not an NFL 2K5 disc image (no speech banks found)."
@@ -267,10 +289,15 @@ class CommentaryPanel(QWidget):
 
     # ------------------------------------------------------------------ actions
     def _choose_source(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Choose a disc image", str(Path.home()), IMAGE_FILTER)
-        if not chosen:
-            return
-        path = Path(chosen)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso)", str(Path.home()), IMAGE_FILTER)
+        if chosen:
+            self.load_source(Path(chosen))
+
+    def load_source(self, path: Path | str) -> None:
+        """List the speech banks of ``path`` in the background (also the open-disc hook)."""
+
+        path = Path(path)
+        self.source_field.setText(str(path))
         self.status_label.setText("Reading the speech banks…")
 
         def operation() -> object:
@@ -288,7 +315,7 @@ class CommentaryPanel(QWidget):
 
     def _list_streams(self) -> None:
         source = Path(self.source_field.text())
-        bank = self.bank_combo.currentText()
+        bank = self.current_bank()
         start, count = self.start_spin.value(), self.count_spin.value()
         self.status_label.setText(f"Listing {bank} {start}…{start + count - 1}")
 
@@ -313,16 +340,17 @@ class CommentaryPanel(QWidget):
             self.audio_field.setText(chosen)
 
     def _choose_target(self) -> None:
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the copy",
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?",
                                                  "ESPN NFL 2K5 (commentary).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
 
     def _write(self) -> None:
         source = Path(self.source_field.text())
         target = Path(self.target_field.text())
         if target.exists() and target.resolve() == source.resolve():
-            QMessageBox.warning(self, "Same file", "The copy must not be the source.")
+            QMessageBox.warning(self, "Same file", "Source and output are the same file. Fix: choose a different output file.")
             return
         try:
             start_seconds = float(self.start_field.text() or 0)
@@ -334,11 +362,11 @@ class CommentaryPanel(QWidget):
         audio = Path(self.audio_field.text())
         retail = Path(self.retail_field.text()) if self.retail_field.text().strip() else None
         answer = QMessageBox.question(
-            self, "Write the commentary copy?",
-            f"Source (untouched): {source}\n"
-            + (f"REPLACING existing copy: {target}" if target.exists() else f"New copy: {target}")
-            + f"\n\nStream {stream_id} will be replaced with {audio.name} (cut from {start_seconds:g}s "
-              "to the slot length, padded with silence if shorter).\n\nxemu-only: the RSA signature stays stale.",
+            self, "Make disc with this line?",
+            f"Source (unchanged): {source}\n"
+            + (f"Replace existing disc copy: {target}" if target.exists() else f"New disc: {target}")
+            + f"\n\nLine {stream_id} will be replaced with {audio.name} (cut from {start_seconds:g}s "
+              "to the slot length; a shorter recording is padded with silence).\n\n" + XEMU_LINE,
             QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
@@ -356,8 +384,8 @@ class CommentaryPanel(QWidget):
     def _run(self, operation: Callable[[], object], done: Callable[[object], None],
              failed: Callable[[str], None]) -> None:
         task = _Task(operation)
-        task.signals.finished.connect(done)
-        task.signals.failed.connect(failed)
+        task.signals.finished.connect(bound(self, done))
+        task.signals.failed.connect(bound(self, failed))
         self._task = task
         self._pool.start(task)
 
@@ -369,13 +397,13 @@ class CommentaryPanel(QWidget):
             f"(+{receipt.get('padded_silence_frames')} silent frames), gate={receipt.get('retail_gate')}, "
             f"SNR {receipt.get('encode_snr_db')} dB. Read-back verified."
         )
-        QMessageBox.information(self, "Commentary copy written",
-                                f"{target}\n\nKeep it xemu-only: the RSA signature cannot be regenerated.")
+        QMessageBox.information(self, "Disc ready",
+                                f"{target}\n\nOpen it in xemu. " + XEMU_LINE)
         self._refresh()
 
     def _failed(self, message: str) -> None:
-        self.status_label.setText(f"Failed: {message}")
-        QMessageBox.critical(self, "Could not write the copy", message)
+        self.status_label.setText(plain_failure("make the disc", message))
+        show_operation_error(self, "make the disc", message)
         self._refresh()
 
 

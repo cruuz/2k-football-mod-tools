@@ -1,0 +1,2 @@
+# Decoder tested by the synthetic and retail oracle gates.
+capstone>=5.0.7,<6

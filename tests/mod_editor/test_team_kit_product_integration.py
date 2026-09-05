@@ -239,8 +239,8 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
     def test_controls_explain_private_scope_format_and_source_gating(self) -> None:
         self.assertFalse(self.window.export_team_kit_button.isEnabled())
         self.assertFalse(self.window.import_team_kit_button.isEnabled())
-        self.assertIn("retail artwork", self.window.team_kit_warning.text())
-        self.assertIn("do not share", self.window.team_kit_warning.text())
+        self.assertIn("game artwork", self.window.team_kit_warning.text())
+        self.assertIn("Share your project", self.window.team_kit_warning.text())
         self.assertEqual(self.window.team_kit_scope.count(), 4)
         self.assertEqual(self.window.team_kit_scope.currentData(), "BOTH")
         self.assertIn("18H0 + 18A0", self.window.team_kit_scope.currentText())
@@ -467,7 +467,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         self.assertTrue(self.window.undo_button.isEnabled())
         self.assertIn("one Undo action", receipts[-1])
         self.assertIn("source XISO was not changed", receipts[-1])
-        self.assertIn("2 pending edits", self.window.edit_count.text())
+        self.assertIn("2 project edits", self.window.edit_count.text())
 
     def test_unchanged_or_invalid_import_does_not_dirty_the_project(self) -> None:
         self._ready()
