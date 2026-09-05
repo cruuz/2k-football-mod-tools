@@ -1,19 +1,14 @@
 #!/usr/bin/env bash
-# Deterministic validator for the Madden 09 (PS2) team-database lane.
+# Validator for Madden NFL 09 (PS2), the team-database lane.
 #
-# Runs the EA TDB reader's unit tests and the lane's own, which between them
-# prove: a synthetic TDB round-trips every field type through the bit-packer,
-# including fields that straddle byte boundaries and negative signed values; the
-# 4-byte franchise preamble is detected; a truncated or implausible database is
-# refused with a sentence; the lane catalogues tables, record counts and field
-# names and never a record's contents; and it refuses to plan, build or verify.
-# No game data is required.
+# Runs in a shipped tree as well as a checkout: it compiles the lane module and
+# runs the game-module conformance harness for madden09_ps2, which proves every
+# lane of the module on a synthetic disc (no game data) and renders the studio's
+# pages offscreen. Prints MADDEN09_PS2_TEAM_DATA_VALIDATION_PASS on success.
 set -euo pipefail
-
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
-
-python3 -m py_compile mod_editor/games/_formats/ea_tdb.py mod_editor/games/madden09_ps2/team_data.py
-python3 -m unittest tests.mod_editor.test_ea_tdb tests.mod_editor.test_madden09_ps2_team_data
-
+export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-offscreen}"
+python3 -m py_compile mod_editor/games/madden09_ps2/team_data.py
+PYTHONPATH="$root" python3 -m mod_editor.games conformance --game madden09_ps2
 echo "MADDEN09_PS2_TEAM_DATA_VALIDATION_PASS"

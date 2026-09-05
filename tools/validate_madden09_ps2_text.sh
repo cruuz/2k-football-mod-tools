@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
-# Deterministic validator for the Madden 09 (PS2) text lane.
+# Validator for Madden NFL 09 (PS2), the text lane.
 #
-# Runs the text lane's unit tests, which prove on a synthetic disc that: a TEXT
-# member splits to the strings it holds; the catalogue carries counts, lengths and
-# digests and no string at all; a preview reads the strings from the source it is
-# given and elides an over-long one; and the lane refuses to plan, build or
-# verify. No game data is required.
+# Runs in a shipped tree as well as a checkout: it compiles the lane module and
+# runs the game-module conformance harness for madden09_ps2, which proves every
+# lane of the module on a synthetic disc (no game data) and renders the studio's
+# pages offscreen. Prints MADDEN09_PS2_TEXT_VALIDATION_PASS on success.
 set -euo pipefail
-
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
-
+export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-offscreen}"
 python3 -m py_compile mod_editor/games/madden09_ps2/text_lane.py
-python3 -m unittest tests.mod_editor.test_madden09_ps2_text
-
+PYTHONPATH="$root" python3 -m mod_editor.games conformance --game madden09_ps2
 echo "MADDEN09_PS2_TEXT_VALIDATION_PASS"
