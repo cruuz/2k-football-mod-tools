@@ -52,6 +52,22 @@ class SharePanelTests(unittest.TestCase):
         self.panel.deleteLater()
         self.app.processEvents()
 
+    def test_format_two_pack_loads_checks_and_applies_through_share(self) -> None:
+        pack_path = self.tmp / "operations.2k5patch"
+        modpack.export(self.base, self.patched, pack_path, {"name": "Operations"}, format_version=2, recipe=False)
+        self.panel.load_pack(pack_path)
+        self.assertIn("Byte changes", self.panel.pack_summary.text())
+        self.panel.source_field.setText(str(self.base))
+        out = self.tmp / "operations-out.iso"
+        self.panel.target_field.setText(str(out))
+        self.panel.apply_check_report(modpack.check(pack_path, self.base))
+        self.assertTrue(self.panel.apply_button.isEnabled())
+        self.panel.start_apply()
+        wait_for(self.panel, self.app)
+        self.assertEqual(out.read_bytes(), self.patched_bytes)
+        self.panel.apply_check_report(modpack.check(pack_path, self.patched))
+        self.assertFalse(self.panel.apply_button.isEnabled())
+
     def test_buttons_are_gated_on_the_fields(self) -> None:
         panel = self.panel
         self.assertFalse(panel.export_button.isEnabled())

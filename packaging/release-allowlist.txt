@@ -264,6 +264,7 @@ data/nfl2k5_modern_names.csv
 data/nfl_2026_schedule.json
 mod_editor/core/mod_build.py
 mod_editor/core/modpack.py
+mod_editor/core/modpack_ops.py
 mod_editor/core/nfl2k5_accel_ramp.py
 mod_editor/core/nfl2k5_camera.py
 mod_editor/core/nfl2k5_catch_slider.py

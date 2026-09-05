@@ -337,6 +337,12 @@ class SharePanel(QWidget):
             lines.append(info["description"])
         lines.append(f"{info['runs']} run(s), {_human(info['bytes'])} changed; patch file {_human(info['pack_bytes'])}; "
                      f"created {info['created'] or '?'} with {info['tool'].get('name') or '?'} {info['tool'].get('version') or ''}")
+        if info.get("patch_operations"):
+            labels = {"byte_runs": "Byte changes", "xbe_grow": "SPECIAL executable growth",
+                      "file_replace": "Named file replacement", "file_grow": "Named file growth"}
+            lines.append("Disc operations: " + ", ".join(labels.get(op["name"], op["name"]) for op in info["patch_operations"]))
+        if info.get("result", {}).get("size", base["size"]) != base["size"]:
+            lines.append(f"Disc size: {_human(base['size'])} → {_human(info['result']['size'])}.")
         if base["is_retail"]:
             lines.append("Base: the retail disc image.")
         elif base.get("is_retail_equivalent"):
@@ -560,7 +566,7 @@ class SharePanel(QWidget):
             "Make disc with this mod?",
             f"Mod: {pack.manifest.name}\nSource (unchanged): {source}\n"
             + (f"Replace existing disc copy: {target}" if overwrite else f"New disc: {target}")
-            + f"\n\nThis copies the whole disc and writes {len(pack.manifest.runs)} verified change(s) "
+            + f"\n\nThis copies the whole disc and writes {len(pack.manifest.patch_operations) or len(pack.manifest.runs)} verified change(s) "
               f"({_human(pack.manifest.total_bytes)}) into the copy.\n\n" + XEMU_LINE,
         ):
             return

@@ -76,6 +76,50 @@ def extend(payload: bytes) -> tuple[bytearray, list[dict]]:
     return buf, edits
 
 
+def image_file_node(read, partition: int, image_size: int, path: str) -> tuple[int, int, int]:
+    """Resolve a named file to (sector/length field offset, sector, length).
+
+    ``read(length, offset)`` also accepts the modpack's projected image reader,
+    so checking composed operations uses the very same directory traversal as
+    the actual SPECIAL writer. Paths are disc paths, never host paths.
+    """
+    parts = path.split("/")
+    if not parts or any(p in ("", ".", "..") or "\\" in p or "\0" in p for p in parts):
+        raise ValueError("invalid disc file path")
+    header = read(2048, partition + 0x10000)
+    if header[:20] != b"MICROSOFT*XBOX*MEDIA" or header[-20:] != header[:20]:
+        raise ValueError("invalid XDVDFS volume header")
+    sector, length = struct.unpack_from("<II", header, 20)
+    for index, component in enumerate(parts):
+        start = partition + sector * 2048
+        if length < 14 or start + length > image_size:
+            raise ValueError("invalid directory extent")
+        pending, seen, found = [0], set(), None
+        while pending:
+            off = pending.pop()
+            if off in seen or off + 14 > length or len(seen) >= 4096:
+                raise ValueError("invalid directory tree")
+            seen.add(off)
+            node = read(14, start + off)
+            left, right, file_sector, file_length = struct.unpack_from("<HHII", node)
+            if not node[13] or off + 14 + node[13] > length:
+                raise ValueError("invalid directory name")
+            name = read(node[13], start + off + 14).decode("latin-1")
+            if name.casefold() == component.casefold():
+                if found is not None:
+                    raise ValueError("ambiguous disc file node")
+                found = (start + off + 4, file_sector, file_length, node[12])
+            pending.extend(child * 4 for child in (left, right) if child)
+        if found is None:
+            raise ValueError(f"missing disc file: {path}")
+        node, sector, length, attributes = found
+        if partition + sector * 2048 + length > image_size:
+            raise ValueError("disc file extent exceeds image")
+        if bool(attributes & 0x10) != (index < len(parts) - 1):
+            raise ValueError("disc path has the wrong file/directory type")
+    return node, sector, length
+
+
 def write_image_xbe(descriptor: int, payload: bytes) -> dict:
     """Write an already patched XBE to a disposable XISO, with rollback.
 
@@ -97,23 +141,11 @@ def write_image_xbe(descriptor: int, payload: bytes) -> dict:
     original = io.pread(descriptor, entry.size, entry.byte_offset)
     if len(original) != entry.size or state(original) not in ("retail", "applied"):
         raise ValueError("unknown default.xbe storage before write")
-    root_off = entry.base_offset + directory["root_sector"] * 2048
-    root = io.pread(descriptor, directory["root_size"], root_off)
-    pending, seen, node = [0], set(), None
-    while pending:
-        off = pending.pop()
-        if off in seen or off + 14 > len(root):
-            raise ValueError("invalid root-directory tree")
-        seen.add(off)
-        left, right, sector, length = struct.unpack_from("<HHII", root, off)
-        name = root[off + 14:off + 14 + root[off + 13]]
-        if name.lower() == b"default.xbe":
-            if node is not None or (sector, length) != (entry.sector, entry.size):
-                raise ValueError("ambiguous default.xbe root node")
-            node = root_off + off + 4
-        pending.extend(child * 4 for child in (left, right) if child)
-    if node is None:
-        raise ValueError("missing default.xbe root node")
+    node, sector, length = image_file_node(
+        lambda count, offset: io.pread(descriptor, count, offset),
+        entry.base_offset, image_size, "default.xbe")
+    if (sector, length) != (entry.sector, entry.size):
+        raise ValueError("ambiguous default.xbe root node")
     old_node = io.pread(descriptor, 8, node)
     growth = entry.size != len(payload)
     offset = ((image_size + 2047) // 2048) * 2048 if growth else entry.byte_offset

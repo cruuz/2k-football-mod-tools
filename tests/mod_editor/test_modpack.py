@@ -514,5 +514,242 @@ class CommandLineTests(unittest.TestCase):
         self.assertEqual((tmp / "unpacked" / "assets" / "texture" / "atlas.png").read_bytes(), b"\x89PNG" + bytes(range(256)))
 
 
+class ModularPackTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp(prefix="modpack-ops-"))
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.base, self.patched, self.base_bytes, self.patched_bytes = make_pair(self.tmp)
+        self.pack = self.tmp / "modular.2k5patch"
+
+    def mutate_manifest(self, edit):
+        with zipfile.ZipFile(self.pack) as archive:
+            members = {i.filename: archive.read(i.filename) for i in archive.infolist()}
+        document = json.loads(members["manifest.json"])
+        edit(document)
+        members["manifest.json"] = json.dumps(document).encode()
+        with zipfile.ZipFile(self.pack, "w", zipfile.ZIP_DEFLATED) as archive:
+            for member, data in members.items():
+                archive.writestr(member, data)
+
+    def test_v2_byte_runs_have_identical_effect_to_legacy(self):
+        legacy = self.tmp / "legacy.2k5patch"
+        modpack.export(self.base, self.patched, legacy, {"name": "old"}, recipe=False)
+        modpack.export(self.base, self.patched, self.pack, {"name": "new"}, format_version=2, recipe=False)
+        self.assertEqual(modpack.inspect(legacy)["format"], 1)
+        info = modpack.inspect(self.pack)
+        self.assertEqual(info["format"], 2)
+        self.assertEqual(info["min_reader_version"], 2)
+        self.assertEqual([op["type"] for op in info["patch_operations"]], [0])
+        for pack in (legacy, self.pack):
+            self.assertEqual(modpack.check(pack, self.base)["state"], "ready")
+            self.assertEqual(modpack.check(pack, self.patched)["state"], "applied")
+            out = self.tmp / (pack.stem + ".iso")
+            modpack.apply(pack, self.base, out, block=SMALL_BLOCK)
+            self.assertEqual(out.read_bytes(), self.patched_bytes)
+
+    def test_registering_a_handler_requires_no_format_or_dispatcher_change(self):
+        from mod_editor.core import modpack_ops as ops
+        class FutureRuns(ops.ByteRuns):
+            name = "future_runs"
+            min_reader_version = 3
+        ops.register(99, FutureRuns)
+        self.addCleanup(ops.REGISTRY.pop, 99, None)
+        data = b"future"
+        self.base.write_bytes(bytes(100))
+        self.patched.write_bytes(data + bytes(100 - len(data)))
+        member = "operations/future.bin"
+        operation = {"type": 99, "name": "future_runs", "version": 1,
+            "before_size": 100, "after_size": 100,
+            "payload": {"member": member, "length": len(data), "sha256": modpack._sha256(data)},
+            "runs": [{"op": "replace", "offset": 0, "length": len(data), "payload_offset": 0,
+                "expected_sha256": modpack._sha256(bytes(len(data))), "new_sha256": modpack._sha256(data)}]}
+        info = modpack.export(self.base, self.patched, self.pack, {"name": "future"}, recipe=False,
+            patch_operations=[operation], operation_payloads={member: data})
+        self.assertEqual(info["format"], 2)
+        self.assertEqual(info["min_reader_version"], 3)
+        out = self.tmp / "future.iso"
+        modpack.apply(self.pack, self.base, out)
+        self.assertEqual(out.read_bytes(), self.patched.read_bytes())
+        ops.REGISTRY.pop(99)
+        with self.assertRaisesRegex(modpack.ModpackError, "this mod needs a newer Mod Studio"):
+            modpack.load(self.pack)
+
+    def test_unknown_op_and_reader_fail_before_output(self):
+        for field in ("type", "version", "reader", "registry"):
+            modpack.export(self.base, self.patched, self.pack, {"name": "new"}, format_version=2, recipe=False, overwrite=True)
+            def edit(d):
+                if field == "reader":
+                    d["min_reader_version"] = 999
+                elif field == "registry":
+                    d["op_registry_version"] = 999
+                else:
+                    d["ops"][0][field] = 999
+            self.mutate_manifest(edit)
+            out = self.tmp / "never.iso"
+            with self.assertRaisesRegex(modpack.ModpackError, "this mod needs a newer Mod Studio"):
+                modpack.apply(self.pack, self.base, out)
+            self.assertFalse(out.exists())
+            self.assertEqual(self.base.read_bytes(), self.base_bytes)
+
+    def test_payload_and_per_run_hashes_fail_closed(self):
+        for key in ("payload", "new_sha256", "expected_sha256"):
+            modpack.export(self.base, self.patched, self.pack, {"name": "new"}, format_version=2, recipe=False, overwrite=True)
+            def edit(d):
+                if key == "payload":
+                    d["ops"][0]["payload"]["sha256"] = "0" * 64
+                else:
+                    d["ops"][0]["runs"][0][key] = "0" * 64
+            self.mutate_manifest(edit)
+            with self.assertRaises(modpack.ModpackError):
+                modpack.apply_in_place(self.pack, self.base)
+            self.assertEqual(self.base.read_bytes(), self.base_bytes)
+            self.assertFalse(self.base.with_name(self.base.name + ".part").exists())
+
+    def test_named_file_replace_and_grow_round_trip(self):
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        original = {"default.xbe": b"XBEH" + bytes(100), "field.pak": b"old texture", "next.bin": b"adjacent file"}
+        self.base.write_bytes(build_xdvdfs(original, tail_pad=13))
+        for grow in (False, True):
+            self.patched.write_bytes(self.base.read_bytes())
+            replacement = b"new texture" if not grow else b"a much larger texture" * 301
+            fd = modpack._open(self.patched, os.O_RDWR)
+            try:
+                size = os.fstat(fd).st_size
+                node, sector, length = storage.image_file_node(lambda n, at: modpack._pread_exact(fd, n, at, "test"), 0, size, "field.pak")
+                at = (size + SECTOR - 1) // SECTOR * SECTOR if grow else sector * SECTOR
+                modpack._pwrite_all(fd, replacement, at, "test")
+                if grow:
+                    modpack._pwrite_all(fd, struct.pack("<II", at // SECTOR, len(replacement)), node, "test")
+            finally:
+                os.close(fd)
+            receipt = modpack.export(self.base, self.patched, self.pack, {"name": "file"},
+                file_operations=["field.pak"], recipe=False, overwrite=True)
+            self.assertEqual([op["type"] for op in receipt["ops"]], [3 if grow else 2])
+            self.assertEqual(modpack.check(self.pack, self.base)["state"], "ready")
+            self.assertEqual(modpack.check(self.pack, self.patched)["state"], "applied")
+            out = self.tmp / "file-out.iso"
+            modpack.apply(self.pack, self.base, out, overwrite=True)
+            self.assertEqual(out.read_bytes(), self.patched.read_bytes())
+            fd = modpack._open(out, os.O_RDONLY)
+            try:
+                entries, _ = modpack._xdvdfs_module().parse_xdvdfs(fd, out.stat().st_size)
+                for name, data in original.items():
+                    e = entries[name]
+                    self.assertEqual(modpack._pread_exact(fd, e.size, e.byte_offset, name), replacement if name == "field.pak" else data)
+            finally:
+                os.close(fd)
+
+    def test_ordered_overlapping_operations_and_failure_are_transactional(self):
+        from unittest.mock import patch
+        from mod_editor.core import modpack_ops as ops
+        self.base.write_bytes(bytes(128))
+        self.patched.write_bytes(b"C" * 16 + bytes(112))
+        operations, payloads = [], {}
+        for i, (before, after) in enumerate(((bytes(16), b"B" * 16), (b"B" * 16, b"C" * 16))):
+            member = f"operations/{i}.bin"
+            payloads[member] = after
+            operations.append({"type": 0, "name": "byte_runs", "version": 1,
+                "before_size": 128, "after_size": 128,
+                "payload": {"member": member, "length": 16, "sha256": modpack._sha256(after)},
+                "runs": [{"op": "replace", "offset": 0, "length": 16, "payload_offset": 0,
+                    "expected_sha256": modpack._sha256(before), "new_sha256": modpack._sha256(after)}]})
+        modpack.export(self.base, self.patched, self.pack, {"name": "composed"}, recipe=False,
+                       patch_operations=operations, operation_payloads=payloads)
+        self.assertEqual(modpack.check(self.pack, self.base)["state"], "ready")
+        self.assertEqual(modpack.check(self.pack, self.patched)["state"], "applied")
+        original_write = modpack._pwrite_all
+        def fail_second(fd, data, at, what):
+            if what == "byte_runs" and data == b"C" * 16:
+                raise OSError("injected write failure")
+            return original_write(fd, data, at, what)
+        with patch.object(modpack, "_pwrite_all", side_effect=fail_second):
+            with self.assertRaisesRegex(OSError, "injected"):
+                modpack.apply_in_place(self.pack, self.base)
+        self.assertEqual(self.base.read_bytes(), bytes(128))
+        self.assertFalse(self.base.with_name(self.base.name + ".part").exists())
+        modpack.apply_in_place(self.pack, self.base)
+        self.assertEqual(self.base.read_bytes(), self.patched.read_bytes())
+
+
+class GrowingSpecialPackTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from unittest.mock import patch
+        sys.path.insert(0, str(_REPO_ROOT / "tests"))
+        from nfl2k5_depth_chart_rows_test import fixture, prepare
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        cls.pin = patch.object(storage, "RETAIL_CONTENT_SHA256", modpack._sha256(bytes(storage.RETAIL_SIZE)))
+        cls.pin.start()
+        cls.addClassCleanup(cls.pin.stop)
+        cls.retail = fixture()
+        cls.special = bytes(rows.apply(prepare(cls.retail))[0])
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp(prefix="modpack-special-"))
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.base, self.patched, self.pack = [self.tmp / name for name in ("base.iso", "patched.iso", "special.2k5patch")]
+        self.base.write_bytes(build_xdvdfs({"default.xbe": self.retail, "next.bin": b"neighbour"}, tail_pad=19))
+        self.patched.write_bytes(self.base.read_bytes())
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        fd = modpack._open(self.patched, os.O_RDWR)
+        try:
+            storage.write_image_xbe(fd, self.special)
+            modpack._pwrite_all(fd, b"HELLO", 123, "unrelated byte run")
+        finally:
+            os.close(fd)
+
+    def test_special_round_trip_and_raw_partition(self):
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        receipt = modpack.export(self.base, self.patched, self.pack, {"name": "SPECIAL"}, recipe=True)
+        self.assertEqual([op["type"] for op in receipt["ops"]], [0, 1])
+        self.assertTrue(any(op["op"] == "depth_chart_rows" and op["enabled"] for op in receipt["operations"]))
+        for prefix in (0, 3 * SECTOR):
+            source, out = self.tmp / f"source-{prefix}.iso", self.tmp / f"out-{prefix}.iso"
+            source.write_bytes(bytes(prefix) + self.base.read_bytes())
+            self.assertEqual(modpack.check(self.pack, source)["state"], "ready")
+            result = modpack.apply(self.pack, source, out)
+            self.assertEqual(out.read_bytes(), bytes(prefix) + self.patched.read_bytes())
+            self.assertEqual(modpack.check(self.pack, out)["state"], "applied")
+            self.assertEqual(result["target"]["size"], self.patched.stat().st_size + prefix)
+            fd = modpack._open(out, os.O_RDONLY)
+            try:
+                entries, _ = modpack._xdvdfs_module().parse_xdvdfs(fd, out.stat().st_size)
+                e = entries["default.xbe"]
+                xbe = modpack._pread_exact(fd, e.size, e.byte_offset, "default.xbe")
+                self.assertEqual(xbe, self.special)
+                self.assertEqual(rows.status(xbe), "applied")
+                e = entries["next.bin"]
+                self.assertEqual(modpack._pread_exact(fd, e.size, e.byte_offset, "next.bin"), b"neighbour")
+            finally:
+                os.close(fd)
+        modpack.apply_in_place(self.pack, self.base)
+        self.assertEqual(self.base.read_bytes(), self.patched.read_bytes())
+
+    def test_unrecognised_size_change_and_extra_tail_refused(self):
+        for tail in (b"extra bytes", b"\0"):
+            with self.patched.open("ab") as stream:
+                stream.write(tail)
+            with self.assertRaisesRegex(modpack.ModpackError, "unrecognised image size change"):
+                modpack.export(self.base, self.patched, self.pack, {"name": "bad"}, recipe=False)
+            self.assertFalse(self.pack.exists())
+
+    def test_wrong_old_xbe_and_corrupt_append_refused(self):
+        modpack.export(self.base, self.patched, self.pack, {"name": "SPECIAL"}, recipe=False)
+        for source in (self.base, self.patched):
+            fd = modpack._open(source, os.O_RDWR)
+            try:
+                entries, _ = modpack._xdvdfs_module().parse_xdvdfs(fd, source.stat().st_size)
+                e = entries["default.xbe"]
+                modpack._pwrite_all(fd, b"BAD!", e.byte_offset + 500, "corrupt XBE")
+            finally:
+                os.close(fd)
+            self.assertEqual(modpack.check(self.pack, source)["state"], "mismatch")
+            before = modpack.hash_file(source)
+            with self.assertRaises(modpack.ModpackError):
+                modpack.apply_in_place(self.pack, source)
+            self.assertEqual(modpack.hash_file(source), before)
+
+
 if __name__ == "__main__":
     unittest.main()
