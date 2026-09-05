@@ -416,3 +416,11 @@ tools/validate_nfl2k5_ps2_stadium_position.bat
 mod_editor/data/nfl2k5-xbox-map.v1.json
 tools/nfl2k5_ps2_texture_map.py
 tools/xxh3.py
+# PS2 Disc Studio: one window over the six on-disc writers (File > PS2 Disc
+# Studio..., or --ps2-disc-studio). Qt-free service, lane adapters and the
+# build-step worker, then the window shell and its lane tabs.
+mod_editor/core/ps2_disc_studio_lanes.py
+mod_editor/core/ps2_disc_studio_service.py
+mod_editor/core/ps2_disc_studio_worker.py
+mod_editor/gui/ps2_disc_studio_qt.py
+mod_editor/gui/ps2_disc_studio_tabs_qt.py
