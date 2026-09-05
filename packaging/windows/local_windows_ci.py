@@ -336,7 +336,8 @@ def hydrate_from(repo: Path, source: Path) -> list[str]:
             print(f"HYDRATE {tree}/: source absent", flush=True)
             continue
         for parent, dirs, files in os.walk(origin, followlinks=False):
-            dirs[:] = sorted(d for d in dirs if not (Path(parent) / d).is_symlink())
+            # never descend into version-control metadata (the main checkout vendors a git repo)
+            dirs[:] = sorted(d for d in dirs if d not in (".git", ".hg", ".svn") and not (Path(parent) / d).is_symlink())
             for name in sorted(files):
                 path = Path(parent) / name
                 if path.is_symlink() or not path.is_file():
