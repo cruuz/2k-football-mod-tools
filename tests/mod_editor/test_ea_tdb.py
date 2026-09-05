@@ -584,5 +584,123 @@ class MultipleTableTests(unittest.TestCase):
                 self.assertEqual(parsed.value("T%03d" % n, 0, "PGID"), n)
 
 
+class NameTests(unittest.TestCase):
+    """A four-character name is four bytes, and not always four characters.
+
+    Madden NFL 09's shipped playbooks declare a table named ``SGF`` followed by
+    a NUL byte.  A reader that decoded names as strict printable ASCII refused
+    all 103 databases that carry one; these pin the decode, the escape, and the
+    round trip a writer needs.
+    """
+
+    def test_a_plain_name_reads_as_itself(self) -> None:
+        self.assertEqual(ea_tdb.decode_name(b"PLAY"), "PLAY")
+        self.assertEqual(ea_tdb.encode_name("PLAY"), b"PLAY")
+
+    def test_a_nul_byte_is_escaped_and_comes_back(self) -> None:
+        self.assertEqual(ea_tdb.decode_name(b"SGF\x00"), "SGF\\x00")
+        self.assertEqual(ea_tdb.encode_name("SGF\\x00"), b"SGF\x00")
+
+    def test_a_backslash_is_doubled_so_the_mapping_is_one_to_one(self) -> None:
+        """A name really carrying a backslash must not render as an escape."""
+
+        raw = bytes((0x41, 0x5C, 0x42, 0x43))          # A, backslash, B, C
+        rendered = ea_tdb.decode_name(raw)
+        self.assertEqual(len(rendered), 5)
+        self.assertEqual(ea_tdb.encode_name(rendered), raw)
+        # The four bytes A \ x 0 would otherwise render the same as a NUL escape.
+        confusable = bytes((0x41, 0x5C, 0x78, 0x30))
+        self.assertNotEqual(ea_tdb.decode_name(confusable),
+                            ea_tdb.decode_name(bytes((0x41, 0x5C, 0x00, 0x30))))
+        self.assertEqual(ea_tdb.encode_name(ea_tdb.decode_name(confusable)), confusable)
+
+    def test_every_byte_round_trips(self) -> None:
+        for byte in range(256):
+            with self.subTest(byte=byte):
+                raw = bytes((byte, 0x41, 0x42, 0x43))
+                self.assertEqual(ea_tdb.encode_name(ea_tdb.decode_name(raw)), raw)
+
+    def test_a_high_byte_renders_as_printable_ascii(self) -> None:
+        rendered = ea_tdb.decode_name(b"\xe9AAA")
+        self.assertTrue(all(32 <= ord(char) < 127 for char in rendered))
+        self.assertEqual(ea_tdb.encode_name(rendered), b"\xe9AAA")
+
+    def test_a_name_that_is_not_four_bytes_is_refused(self) -> None:
+        for spelling in ("TOOLONG", "AB", "", "SGF\\x0"):
+            with self.subTest(name=spelling):
+                with self.assertRaises(ea_tdb.TdbError):
+                    ea_tdb.encode_name(spelling)
+
+    def test_a_broken_escape_is_refused_rather_than_guessed(self) -> None:
+        for spelling in ("AA\\", "AA\\q1", "AA\\xZZ"):
+            with self.subTest(name=spelling):
+                with self.assertRaises(ea_tdb.TdbError):
+                    ea_tdb.encode_name(spelling)
+
+
+class NulNamedTableTests(unittest.TestCase):
+    """The shape the disc actually has: a table whose name carries a NUL."""
+
+    FIELDS = [("SETL", ea_tdb.FIELD_UINT, 9),
+              ("SGF_", ea_tdb.FIELD_UINT, 12),
+              ("name", ea_tdb.FIELD_STRING, 32),
+              ("dflt", ea_tdb.FIELD_UINT, 1)]
+    ROWS = [{"SETL": 1, "SGF_": 2, "name": "G0", "dflt": 0},
+            {"SETL": 3, "SGF_": 4, "name": "G1", "dflt": 1}]
+
+    def setUp(self) -> None:
+        self.built = ea_tdb.build_tdb([("SGF\\x00", self.FIELDS, self.ROWS),
+                                       ("PLAY", [("PGID", ea_tdb.FIELD_UINT, 15)],
+                                        [{"PGID": 7}])])
+        self.parsed = ea_tdb.parse_tdb(self.built)
+
+    def test_the_name_reaches_the_file_as_the_four_bytes_it_spells(self) -> None:
+        self.assertIn(b"SGF\x00", self.built)
+        self.assertEqual(self.parsed.table("SGF\\x00").raw_name, b"SGF\x00")
+
+    def test_it_is_addressable_and_its_rows_read_back(self) -> None:
+        for index, row in enumerate(self.ROWS):
+            for key, value in row.items():
+                with self.subTest(record=index, field=key):
+                    self.assertEqual(self.parsed.value("SGF\\x00", index, key), value)
+
+    def test_parse_write_parse_is_identical(self) -> None:
+        written = ea_tdb.write_records(self.parsed, "SGF\\x00", {0: {"name": "ZZ"}},
+                                       recompute=False)
+        self.assertEqual(len(written), len(self.built))
+        again = ea_tdb.parse_tdb(written)
+        self.assertEqual(again.table_names, self.parsed.table_names)
+        self.assertEqual(again.value("SGF\\x00", 0, "name"), "ZZ")
+        # Everything but the one field is byte-for-byte what it was.
+        back = ea_tdb.write_records(again, "SGF\\x00", {0: {"name": "G0"}},
+                                    recompute=False)
+        self.assertEqual(back, self.built)
+
+    def test_a_field_named_with_a_nul_survives_too(self) -> None:
+        built = ea_tdb.build_tdb([("PLAY", [("PG\\x00D", ea_tdb.FIELD_UINT, 15)],
+                                   [{"PG\\x00D": 9}])])
+        parsed = ea_tdb.parse_tdb(built)
+        field = parsed.table("PLAY").field("PG\\x00D")
+        self.assertEqual(field.raw_name, b"PG\x00D")
+        self.assertEqual(field.name_bytes, b"PG\x00D")
+        self.assertEqual(parsed.value("PLAY", 0, "PG\\x00D"), 9)
+
+    def test_a_described_field_derives_its_bytes_from_its_name(self) -> None:
+        described = ea_tdb.TdbField("SGF\\x00", ea_tdb.FIELD_UINT, 0, 4)
+        self.assertEqual(described.raw_name, b"")
+        self.assertEqual(described.name_bytes, b"SGF\x00")
+
+    def test_a_name_with_no_printable_byte_at_all_is_still_refused(self) -> None:
+        broken = bytearray(self.built)
+        broken[ea_tdb.TDB_HEADER_SIZE:ea_tdb.TDB_HEADER_SIZE + 4] = b"\x00\x01\x02\x03"
+        with self.assertRaises(ea_tdb.TdbError) as caught:
+            ea_tdb.parse_tdb(bytes(broken))
+        self.assertIn("wrong offset", str(caught.exception))
+
+    def test_the_checksums_still_close_over_a_nul_named_table(self) -> None:
+        signed = ea_tdb.recompute_crcs(self.built)
+        self.assertEqual(ea_tdb.verify_crcs(signed), [])
+
+
 if __name__ == "__main__":
     unittest.main()

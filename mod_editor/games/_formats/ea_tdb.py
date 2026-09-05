@@ -59,6 +59,12 @@ What is measured, and what is not
   and the reason two readers of this format report "version 8" and "version
   2048" of the same file.  It is read here as the big-endian pair, so the
   answer is 8 [S].
+* A four-character name is four **bytes** and not necessarily four characters.
+  Madden NFL 09's shipped playbooks declare a table named ``SGF`` followed by a
+  NUL, in 102 of the 104 databases of the disc's ``GAMEDATA.DAT`` [M].  Names
+  are therefore decoded leniently and rendered with ``\\xNN`` for any byte
+  outside ``0x20..0x7E`` -- that table is addressed as ``"SGF\\x00"`` -- and the
+  bytes themselves are kept for a writer to put back.  See :func:`decode_name`.
 * Not established: what ``unknown1`` at ``+0x04`` or the second word of a table
   header carry (both are constant across the corpus but nothing here knows
   their meaning) [A]; what a declared index block contains [A]; whether any
@@ -194,6 +200,16 @@ FLOAT_WIDTH = 32
 #: turned a legible row into an error.
 TEXT_ENCODING = "latin-1"
 
+#: How many bytes a table or field name occupies.  Always four; the format
+#: stores them as a fixed word rather than as a terminated string, which is why
+#: a name may carry a byte that is not a character at all.
+NAME_BYTES = 4
+
+#: The bytes a name shows literally.  Everything else -- a NUL, a high byte --
+#: is escaped ``\xNN``, so a name is always printable ASCII text and is always
+#: exactly reversible.  See :func:`decode_name`.
+NAME_PRINTABLE = range(0x20, 0x7F)
+
 TdbValue = Union[int, float, str]
 
 
@@ -204,6 +220,112 @@ class TdbError(Refusal):
 def _require(condition: object, message: str) -> None:
     if not condition:
         raise TdbError(message)
+
+
+# --------------------------------------------------------------------------
+# Names
+# --------------------------------------------------------------------------
+#
+# A four-character name is four *bytes*, and EA did not restrict them to
+# characters.  Madden NFL 09's shipped playbooks carry a table whose name is
+# ``SGF`` followed by a NUL [M] -- 102 of the 104 databases in the disc's
+# ``GAMEDATA.DAT`` declare it -- and a reader that decodes names as strict
+# printable ASCII refuses every one of those databases before it reads a row.
+#
+# So a name is decoded leniently and rendered unambiguously: every byte outside
+# ``NAME_PRINTABLE`` becomes ``\xNN`` and a literal backslash becomes ``\\``,
+# which makes :func:`decode_name` injective and :func:`encode_name` its exact
+# inverse.  A caller addresses the table as ``"SGF\\x00"`` -- the four
+# characters the file spells, with the one that is not a character written out.
+#
+# The bytes themselves are also kept, on :attr:`TdbTable.raw_name` and
+# :attr:`TdbField.raw_name`, so a writer puts back what it read rather than
+# what a round trip through text produced.
+#
+# **[M]** Measured across the 355 databases of the owner's retail Madden NFL 09
+# (PS2) disc: of 4,108 table names and 85,400 field names, the only byte outside
+# ``NAME_PRINTABLE`` anywhere is that trailing NUL -- 103 of the 89,508 names --
+# and no name carries a backslash, so the escape is a safety property rather
+# than something the corpus exercises.
+
+
+def decode_name(raw: bytes) -> str:
+    """The four bytes of a name as printable, reversible text.
+
+    ``b"PLAY"`` reads ``"PLAY"``; ``b"SGF\\x00"`` reads ``"SGF\\\\x00"`` -- the
+    three characters and one escape.  A backslash in the bytes is doubled, so
+    no two different names ever render the same and :func:`encode_name` returns
+    exactly the bytes handed in.
+    """
+
+    out: List[str] = []
+    for byte in raw:
+        if byte == 0x5C:
+            out.append("\\\\")
+        elif byte in NAME_PRINTABLE:
+            out.append(chr(byte))
+        else:
+            out.append("\\x%02x" % byte)
+    return "".join(out)
+
+
+def encode_name(name: str) -> bytes:
+    """The bytes a name spells: the exact inverse of :func:`decode_name`.
+
+    Refuses a name that does not come back to :data:`NAME_BYTES` bytes, naming
+    the length it did produce, because a short or long name written into a
+    fixed word would silently overwrite the field beside it.
+    """
+
+    out = bytearray()
+    position = 0
+    while position < len(name):
+        character = name[position]
+        if character != "\\":
+            code = ord(character)
+            _require(
+                code <= 0xFF,
+                "name %r carries %r, which is not a byte this format can "
+                "store; names are four bytes, and a byte outside %d..%d is "
+                "written \\xNN."
+                % (name, character, NAME_PRINTABLE[0], NAME_PRINTABLE[-1]),
+            )
+            out.append(code)
+            position += 1
+            continue
+        _require(
+            position + 1 < len(name),
+            "name %r ends in a lone backslash; write a literal backslash as "
+            "\\\\ and any other byte as \\xNN." % (name,),
+        )
+        marker = name[position + 1]
+        if marker == "\\":
+            out.append(0x5C)
+            position += 2
+            continue
+        _require(
+            marker in ("x", "X") and position + 3 < len(name),
+            "name %r carries the escape %r, and this format's names take only "
+            "\\\\ for a backslash and \\xNN for any other byte."
+            % (name, name[position:position + 2]),
+        )
+        digits = name[position + 2:position + 4]
+        try:
+            out.append(int(digits, 16))
+        except ValueError as error:
+            raise TdbError(
+                "name %r carries the escape \\x%s, and \\xNN takes two "
+                "hexadecimal digits." % (name, digits)
+            ) from error
+        position += 4
+    _require(
+        len(out) == NAME_BYTES,
+        "name %r spells %d byte(s); this format's names are exactly four "
+        "characters wide -- %d bytes, with \\xNN standing in for a byte that "
+        "is not a character -- and a shorter or longer one would overwrite the "
+        "word beside it." % (name, len(out), NAME_BYTES),
+    )
+    return bytes(out)
 
 
 def _read_bits(record: bytes, bit_offset: int, bit_width: int) -> int:
@@ -228,6 +350,15 @@ class TdbField:
     type_id: int
     bit_offset: int
     bit_width: int
+    #: The four bytes the file spells this name with, when it was read from one.
+    #: Empty for a field a caller described, whose bytes :attr:`name_bytes`
+    #: derives from :attr:`name` instead.
+    raw_name: bytes = b""
+
+    @property
+    def name_bytes(self) -> bytes:
+        """The four bytes a writer puts back: the ones read, or the ones spelled."""
+        return self.raw_name if self.raw_name else encode_name(self.name)
 
     @property
     def type_name(self) -> str:
@@ -264,6 +395,14 @@ class TdbTable:
     #: not the header declares indexes [M].
     records_offset: int
     fields: Tuple[TdbField, ...]
+    #: The four bytes the file spells this name with; empty when described
+    #: rather than read.  See :attr:`name_bytes`.
+    raw_name: bytes = b""
+
+    @property
+    def name_bytes(self) -> bytes:
+        """The four bytes a writer puts back: the ones read, or the ones spelled."""
+        return self.raw_name if self.raw_name else encode_name(self.name)
 
     @property
     def field_names(self) -> Tuple[str, ...]:
@@ -357,18 +496,26 @@ class TdbDatabase:
 
     @staticmethod
     def _name(raw: bytes, what: str, where: int) -> str:
+        """One four-byte name, escaped where it is not a character.
+
+        A name with **no** printable byte at all is refused, because that is
+        what a directory read at the wrong offset produces and no measured
+        name is; a name with some -- ``SGF\\x00``, which 102 of Madden 09's
+        databases declare -- is decoded and escaped rather than refused.
+        """
         _require(
-            all(32 <= byte < 127 for byte in raw),
-            "the %s at offset %d is named %r, which is not four printable "
-            "characters; the directory is being read at the wrong offset or "
-            "the file is damaged." % (what, where, raw),
+            any(byte in NAME_PRINTABLE for byte in raw),
+            "the %s at offset %d is named %r, which carries no printable "
+            "character at all; the directory is being read at the wrong "
+            "offset or the file is damaged." % (what, where, raw),
         )
-        return raw.decode("ascii")
+        return decode_name(raw)
 
     def _read_table(self, index: int) -> TdbTable:
         body = self._body
         entry = TDB_HEADER_SIZE + index * TDB_TABLE_ENTRY_SIZE
-        name = self._name(body[entry:entry + 4], "table", entry)
+        raw_name = bytes(body[entry:entry + NAME_BYTES])
+        name = self._name(raw_name, "table", entry)
         relative, = struct.unpack_from("<I", body, entry + 4)
         start = self.directory_end + relative
         _require(
@@ -403,7 +550,8 @@ class TdbDatabase:
         for slot in range(field_count):
             base = fields_at + slot * TDB_FIELD_SIZE
             type_id, bit_offset = struct.unpack_from("<II", body, base)
-            field_name = self._name(body[base + 8:base + 12], "field", base + 8)
+            raw_field_name = bytes(body[base + 8:base + 8 + NAME_BYTES])
+            field_name = self._name(raw_field_name, "field", base + 8)
             bit_width, = struct.unpack_from("<I", body, base + 12)
             _require(
                 bit_offset + bit_width <= record_bytes * 8,
@@ -413,9 +561,11 @@ class TdbDatabase:
                 % (field_name, name, bit_offset, bit_offset + bit_width,
                    record_bytes),
             )
-            fields.append(TdbField(field_name, type_id, bit_offset, bit_width))
+            fields.append(TdbField(field_name, type_id, bit_offset, bit_width,
+                                   raw_name=raw_field_name))
         return TdbTable(
             name=name,
+            raw_name=raw_name,
             offset=start,
             record_bytes=record_bytes,
             record_bits=record_bits,
@@ -656,16 +806,18 @@ def _layout(fields: Sequence[Tuple[str, int, int]]) -> Tuple[List[TdbField], int
         )
         name, type_id, bit_width = spec
         _require(
+            isinstance(name, str),
+            "field name %r is not text; this format's names are four bytes, "
+            "spelled as characters with \\xNN for any byte that is not one."
+            % (name,),
+        )
+        _require(
             type_id in FIELD_TYPE_NAMES,
             "field %s asks for type %r, and the format defines %s."
             % (name, type_id,
                ", ".join("%d=%s" % item for item in FIELD_TYPE_NAMES.items())),
         )
-        _require(
-            len(name) == 4,
-            "field name %r is %d character(s); this format's names are exactly "
-            "four." % (name, len(name)),
-        )
+        raw_name = encode_name(name)
         if type_id in BYTE_ALIGNED_TYPES:
             _require(
                 bit_width % 8 == 0,
@@ -675,7 +827,7 @@ def _layout(fields: Sequence[Tuple[str, int, int]]) -> Tuple[List[TdbField], int
                    FIELD_TYPE_NAMES[type_id]),
             )
             cursor += -cursor % 8
-        placed.append(TdbField(name, type_id, cursor, bit_width))
+        placed.append(TdbField(name, type_id, cursor, bit_width, raw_name=raw_name))
         cursor += bit_width
     return placed, cursor
 
@@ -790,9 +942,12 @@ def build_tdb(tables: Sequence[Sequence[object]], *,
         )
         name = spec[0]
         _require(
-            isinstance(name, str) and len(name) == 4,
-            "table name %r is not the four characters this format uses." % (name,),
+            isinstance(name, str),
+            "table name %r is not text; this format's names are four bytes, "
+            "spelled as characters with \\xNN for any byte that is not one."
+            % (name,),
         )
+        encode_name(name)                                  # refuses if not four
         fields, cursor = _layout(spec[1])  # type: ignore[arg-type]
         rows = spec[2]
         record_bytes = cursor // 8 + 1
@@ -831,7 +986,7 @@ def build_tdb(tables: Sequence[Sequence[object]], *,
         block += struct.pack("<I", 0)                      # headerCRC: zero
         for field in fields:
             block += struct.pack("<II", field.type_id, field.bit_offset)
-            block += field.name.encode("ascii")
+            block += field.name_bytes
             block += struct.pack("<I", field.bit_width)
         for row in rows:
             accumulator = 0
@@ -855,7 +1010,7 @@ def build_tdb(tables: Sequence[Sequence[object]], *,
     out += struct.pack("<I", len(specs))
     out += struct.pack("<I", 0)                            # file-header CRC
     for (name, _fields, _rows, _stride, _max), offset in zip(specs, offsets):
-        out += name.encode("ascii")
+        out += encode_name(name)
         out += struct.pack("<I", offset)
     for block in blocks:
         out += block
@@ -895,10 +1050,13 @@ def build_tdb(tables: Sequence[Sequence[object]], *,
 # **[M]** Measured on the owner's retail Madden NFL 09 (PS2) disc: 4,806 CRC
 # sites across 252 databases -- every TDB member of ``/DATA/DB_TEAMS.DAT``
 # (235) and ``/DATA/TEMPLATE.DAT`` (14 of its 15 open), the two of
-# ``/DATA/GAMEDATA.DAT``'s 104 that open, and the bare ``/DATA/STRMDATA.DB``
-# -- and the stored value equalled the recomputed value at every one.  The
-# other 103 members are refused by this reader before a CRC is reached,
-# because they declare a table whose name carries a NUL byte.
+# ``/DATA/GAMEDATA.DAT``'s 104 that opened at the time, and the bare
+# ``/DATA/STRMDATA.DB`` -- and the stored value equalled the recomputed value
+# at every one.  The other 103 databases were refused before a CRC was reached,
+# because they declare a table whose name carries a NUL byte.  Since
+# :func:`decode_name` they open too, and the whole disc now measures **8,926
+# checksum sites across 355 databases, 0 mismatches** [M];
+# ``docs/product/MADDEN09_PS2_PLAYBOOKS.md`` carries that pass.
 
 #: CRC-32/MPEG-2's polynomial and starting value [S].
 CRC_POLYNOMIAL = 0x04C11DB7
@@ -1216,6 +1374,8 @@ __all__ = [
     "FIELD_TYPE_NAMES",
     "FIELD_UINT",
     "FLOAT_WIDTH",
+    "NAME_BYTES",
+    "NAME_PRINTABLE",
     "PREAMBLE",
     "TDB_FIELD_SIZE",
     "TDB_HEADER_SIZE",
@@ -1234,7 +1394,9 @@ __all__ = [
     "build_tdb",
     "crc32_mpeg2",
     "crc_sites",
+    "decode_name",
     "encode_field",
+    "encode_name",
     "looks_like_tdb",
     "parse_tdb",
     "recompute_crcs",
