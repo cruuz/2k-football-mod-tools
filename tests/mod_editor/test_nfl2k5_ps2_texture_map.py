@@ -376,6 +376,116 @@ class ManifestShapeTests(unittest.TestCase):
             self.assertTrue(reason["reason"])
 
 
+def _names_by_asset(entries):
+    """``{xbox_asset_id: [pcsx2_png, ...]}`` the way the builder indexes it."""
+    out: dict = {}
+    for entry in entries:
+        out.setdefault(entry["xbox_asset_id"], []).append(entry["pcsx2_png"])
+    return out
+
+
+class ResolveClaimsTests(unittest.TestCase):
+    """One Xbox asset per filename, because the export service demands it.
+
+    ``ps2_export_service.plan_export`` marks a target ambiguous when the
+    manifest lets a second asset claim any of its filenames, so a row that
+    shares a name with another row does not add a way in -- it takes both
+    away. These tests pin the tie-break and prove nothing is dropped silently.
+    """
+
+    def test_an_uncontested_name_ships_unchanged(self) -> None:
+        rows = [{"pcsx2_png": "a-b-00004013.png", "xbox_asset_id": "p8:1:x"}]
+        kept, dropped = mapper.resolve_claims(rows)
+        self.assertEqual(kept, rows)
+        self.assertEqual(dropped, [])
+
+    def test_a_logical_uniform_id_supersedes_the_physical_one(self) -> None:
+        # The same texture named twice. The logical id is the one a Studio
+        # uniform edit carries, so it is the one that survives.
+        kept, dropped = mapper.resolve_claims([
+            {"pcsx2_png": "a-b-00004013.png", "xbox_asset_id": "tset:3851:1:1:j"},
+            {"pcsx2_png": "a-b-00004013.png",
+             "xbox_asset_id": "nfl2k5.uniform.28h1.torso"},
+        ])
+        self.assertEqual(kept, [{"pcsx2_png": "a-b-00004013.png",
+                                 "xbox_asset_id": "nfl2k5.uniform.28h1.torso"}])
+        self.assertEqual(dropped, [{"pcsx2_png": "a-b-00004013.png",
+                                    "xbox_asset_id": "tset:3851:1:1:j",
+                                    "reason": mapper.DROP_SUPERSEDED}])
+
+    def test_art_several_kits_share_belongs_to_no_kit(self) -> None:
+        # Three Bills away kits carry one sleeve texture on the PS2 disc.
+        # Editing one would repaint the others, so none may claim it.
+        rows = [{"pcsx2_png": "a-b-00005dd3.png",
+                 "xbox_asset_id": "nfl2k5.uniform.03a%d.sleeve" % n}
+                for n in (3, 4, 5)]
+        kept, dropped = mapper.resolve_claims(rows)
+        self.assertEqual(kept, [])
+        self.assertEqual([row["reason"] for row in dropped],
+                         [mapper.DROP_SHARED] * 3)
+
+    def test_shared_art_falls_back_to_its_unambiguous_texture_id(self) -> None:
+        # A texture id still names the thing itself without ambiguity, so it
+        # ships even when no logical target can own it.
+        kept, dropped = mapper.resolve_claims([
+            {"pcsx2_png": "a-b-00005dd3.png", "xbox_asset_id": "tset:9:0:0:s"},
+            {"pcsx2_png": "a-b-00005dd3.png",
+             "xbox_asset_id": "nfl2k5.uniform.03a3.sleeve"},
+            {"pcsx2_png": "a-b-00005dd3.png",
+             "xbox_asset_id": "nfl2k5.uniform.03a4.sleeve"},
+        ])
+        self.assertEqual(kept, [{"pcsx2_png": "a-b-00005dd3.png",
+                                 "xbox_asset_id": "tset:9:0:0:s"}])
+        self.assertEqual(sorted(row["xbox_asset_id"] for row in dropped),
+                         ["nfl2k5.uniform.03a3.sleeve",
+                          "nfl2k5.uniform.03a4.sleeve"])
+
+    def test_two_physical_assets_on_one_name_leave_it_unshipped(self) -> None:
+        # Defensive: the unique-join filter upstream should make this
+        # unreachable, and the retail run confirms it never fires. If a future
+        # canonicalisation ever collapses two proved names onto one filename,
+        # the answer is still to ship neither rather than pick one.
+        kept, dropped = mapper.resolve_claims([
+            {"pcsx2_png": "a-b-00004013.png", "xbox_asset_id": "p8:1:x"},
+            {"pcsx2_png": "a-b-00004013.png", "xbox_asset_id": "p8:2:y"},
+        ])
+        self.assertEqual(kept, [])
+        self.assertEqual([row["reason"] for row in dropped],
+                         [mapper.DROP_CONTESTED] * 2)
+
+    def test_a_duplicate_row_is_not_a_contest(self) -> None:
+        rows = [{"pcsx2_png": "a-b-00004013.png", "xbox_asset_id": "p8:1:x"}] * 2
+        kept, dropped = mapper.resolve_claims(rows)
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(dropped, [])
+
+    def test_every_input_row_is_either_kept_or_reported(self) -> None:
+        rows = [
+            {"pcsx2_png": "a-b-00004013.png", "xbox_asset_id": "p8:1:x"},
+            {"pcsx2_png": "c-d-00004013.png", "xbox_asset_id": "tset:2:0:0:y"},
+            {"pcsx2_png": "c-d-00004013.png",
+             "xbox_asset_id": "nfl2k5.uniform.00a0.torso"},
+            {"pcsx2_png": "e-f-00004013.png",
+             "xbox_asset_id": "nfl2k5.uniform.01a0.pants"},
+            {"pcsx2_png": "e-f-00004013.png",
+             "xbox_asset_id": "nfl2k5.uniform.02a0.pants"},
+        ]
+        kept, dropped = mapper.resolve_claims(rows)
+        accounted = {(row["pcsx2_png"], row["xbox_asset_id"]) for row in kept}
+        accounted |= {(row["pcsx2_png"], row["xbox_asset_id"]) for row in dropped}
+        self.assertEqual(accounted,
+                         {(row["pcsx2_png"], row["xbox_asset_id"])
+                          for row in rows})
+        self.assertEqual(len(kept) + len(dropped), len(rows))
+
+    def test_the_result_is_sorted_so_the_manifest_is_reproducible(self) -> None:
+        rows = [{"pcsx2_png": "z-z-00004013.png", "xbox_asset_id": "p8:2:z"},
+                {"pcsx2_png": "a-a-00004013.png", "xbox_asset_id": "p8:1:a"}]
+        kept, _dropped = mapper.resolve_claims(rows)
+        self.assertEqual([row["pcsx2_png"] for row in kept],
+                         ["a-a-00004013.png", "z-z-00004013.png"])
+
+
 class UniformCoverageTests(unittest.TestCase):
     """The demo-team question, answered from the Xbox side a user edits."""
 
@@ -409,7 +519,13 @@ class UniformCoverageTests(unittest.TestCase):
         self.assertEqual(per_team["TEN"]["unmapped_selectors"][0]["mapped"], 1)
 
     def test_the_chosen_team_must_be_mappable_and_in_a_dump(self) -> None:
+        # Two kits, both fully mapped at the logical level; only DET is on
+        # screen in a dump the rig already holds, so only DET can be witnessed.
         side = self._side({100: [(0, 0, "jersey")], 200: [(0, 0, "jersey")]})
+        side.containers[(100, 0)] = ("jersey", "TSET", "0xaaa")
+        side.containers[(200, 0)] = ("jersey", "TSET", "0xbbb")
+        side.tset_children[(100, 0)] = [(0, "jersey")]
+        side.tset_children[(200, 0)] = [(0, "jersey")]
         selectors = {
             100: {"abbreviation": "DET", "team": "Detroit Lions", "side": "A",
                   "style": "Current Uniform", "selector": "00A0"},
@@ -417,18 +533,86 @@ class UniformCoverageTests(unittest.TestCase):
             200: {"abbreviation": "ARZ", "team": "Arizona Cardinals",
                   "side": "H", "style": "Current Uniform", "selector": "01H0"},
         }
-        shipped = {"tset:100:0:0:jersey", "tset:200:0:0:jersey"}
-        result = {"proved": {}, "tex0_only": {}, "no_xbox": {},
-                  "identity": {}, "textures_scanned": 0,
-                  "corpus": mapper.PackCorpus({}),
-                  "side": side, "selectors": selectors}
+        result = {
+            "proved": {
+                "aa-bb-00004013.png": {"ids": {"tset:100:0:0:jersey"},
+                                       "capped": False, "namespaces": {"tset"},
+                                       "layouts": {"lin"}, "sources": 1,
+                                       "canonical": "aa-bb-00004013.png"},
+                "cc-dd-00004013.png": {"ids": {"tset:200:0:0:jersey"},
+                                       "capped": False, "namespaces": {"tset"},
+                                       "layouts": {"lin"}, "sources": 1,
+                                       "canonical": "cc-dd-00004013.png"},
+            },
+            "tex0_only": {}, "no_xbox": {}, "identity": {},
+            "textures_scanned": 2, "corpus": mapper.PackCorpus({}),
+            "side": side, "selectors": selectors,
+            "logical_targets": {
+                "nfl2k5.uniform.00a0.torso": [(100, 0)],
+                "nfl2k5.uniform.01h0.torso": [(200, 0)],
+            },
+            "ps2_by_id_chunk": {},
+        }
+        document, counts = mapper.manifest_document(
+            result, "2026-01-01T00:00:00Z")
+        shipped = {row["xbox_asset_id"] for row in document["entries"]}
+        self.assertIn("nfl2k5.uniform.00a0.torso", shipped)
         sidecar = mapper.sidecar_document(
-            result, "2026-01-01T00:00:00Z", {"entries": 0}, shipped)
+            result, "2026-01-01T00:00:00Z", counts, shipped)
         demo = sidecar["demo_team"]
         self.assertEqual(sorted(demo["fully_mappable_teams"]), ["ARZ", "DET"])
         self.assertEqual(demo["fully_mappable_and_witnessable"], ["DET"])
         self.assertEqual(demo["chosen"], "DET")
-        self.assertEqual(demo["chosen_selector"], "DET/A/Current Uniform")
+        self.assertEqual(demo["chosen_kit"], "DET/A/Current Uniform")
+
+    def test_a_logical_target_maps_through_the_shared_id_and_chunk_key(self) -> None:
+        # A PS2 texture called HELMET00 exists in all 634 kits, so the name
+        # join alone fans out to nothing; the (outer id, chunk) key names one.
+        side = mapper.XboxSide()
+        side.containers[(7, 11)] = ("helmet00", "HITX", "0x341ecd96")
+        targets = {"nfl2k5.uniform.00h0.helmet.helmet00": [(7, 11)]}
+        ps2 = {("0x341ecd96", 11): [(0, "HELMET00", ("aa-bb-00004013.png",))]}
+        entries, detail = mapper.logical_uniform_rows(side, targets, {}, ps2)
+        self.assertEqual(entries, [{
+            "pcsx2_png": "aa-bb-00004013.png",
+            "xbox_asset_id": "nfl2k5.uniform.00h0.helmet.helmet00"}])
+        kept, dropped = mapper.resolve_claims(entries)
+        self.assertEqual(dropped, [])
+        coverage, _per_selector = mapper.logical_coverage(
+            detail, _names_by_asset(kept))
+        self.assertEqual(coverage["logical_targets_mapped"], 1)
+
+    def test_a_name_mismatch_on_that_key_maps_nothing(self) -> None:
+        # Xbox stores ten 64x64 digits per kit where PS2 has one atlas, so the
+        # chunk matches but no piece does. Reporting unmapped is the answer;
+        # pointing a digit at an atlas would be a lie an exporter acts on.
+        side = mapper.XboxSide()
+        side.containers[(7, 13)] = ("48", "HITX", "0x341ecd96")
+        targets = {"nfl2k5.uniform.00h0.digit.jersey.0": [(7, 13)]}
+        ps2 = {("0x341ecd96", 13): [(0, "JERSEY_NUMBERS", ("aa-bb-00004013.png",))]}
+        entries, detail = mapper.logical_uniform_rows(side, targets, {}, ps2)
+        self.assertEqual(entries, [])
+        coverage, _per_selector = mapper.logical_coverage(detail, {})
+        self.assertEqual(coverage["logical_targets_mapped"], 0)
+        self.assertEqual(
+            coverage["by_component"]["digit.jersey.0"]["no_matching_texture"], 1)
+
+    def test_the_structural_components_are_the_digits_and_the_nameplate(self) -> None:
+        self.assertEqual(len(mapper.STRUCTURAL_COMPONENTS), 31)
+        self.assertIn("nameplate", mapper.STRUCTURAL_COMPONENTS)
+        self.assertIn("digit.jersey.0", mapper.STRUCTURAL_COMPONENTS)
+        self.assertNotIn("torso", mapper.STRUCTURAL_COMPONENTS)
+        self.assertEqual(mapper.MAPPABLE_COMPONENTS_PER_SET, 8)
+
+    def test_a_report_row_names_its_selector_however_it_spells_it(self) -> None:
+        # The team-select inventory's own `selector` field is a different
+        # string entirely, and variants run past nine.
+        self.assertEqual(mapper._selector_of(
+            {"selector": {"asset_code": "00", "side": "A", "variant": 0}}), "00A0")
+        self.assertEqual(mapper._selector_of(
+            {"selector": "unif:01:away:10:256", "uniform_package": "01A10.IFF"}),
+            "01A10")
+        self.assertEqual(mapper._selector_of({"selector": "unif:00:away:0:256"}), "")
 
     def test_a_selector_with_no_pieces_is_not_counted_as_mappable(self) -> None:
         side = self._side({})
@@ -507,6 +691,35 @@ class ShippedManifestTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.document = json.loads(_MANIFEST.read_text(encoding="utf-8"))
 
+    def test_no_filename_is_claimed_by_two_xbox_assets(self) -> None:
+        # The invariant the export service turns into "ambiguous". A manifest
+        # that breaks it does not merely lose the contested row -- it makes
+        # every target that touches the row unexportable.
+        owners: dict = {}
+        for entry in self.document["entries"]:
+            owners.setdefault(entry["pcsx2_png"], set()).add(
+                entry["xbox_asset_id"])
+        contested = {name: sorted(ids) for name, ids in owners.items()
+                     if len(ids) > 1}
+        self.assertEqual(contested, {})
+        self.assertEqual(len(owners), len(self.document["entries"]))
+
+    def test_the_logical_uniform_ids_are_the_studio_catalog_shape(self) -> None:
+        # `nfl2k5.uniform.{selector}.{component}`, lowercased selector, as
+        # `nfl2k5_uniform_catalog._assets_for_seed` builds it. A row the studio
+        # cannot name is a row no edit ever reaches.
+        logical = sorted({entry["xbox_asset_id"]
+                          for entry in self.document["entries"]
+                          if entry["xbox_asset_id"].startswith(
+                              mapper.LOGICAL_PREFIX)})
+        self.assertTrue(logical, "the manifest carries no logical uniform rows")
+        for asset_id in logical:
+            selector, _, component = asset_id[
+                len(mapper.LOGICAL_PREFIX):].partition(".")
+            self.assertRegex(selector, r"^[0-9a-z]{2}[ah][0-9]{1,2}$", asset_id)
+            self.assertTrue(component, asset_id)
+            self.assertNotIn(component, mapper.STRUCTURAL_COMPONENTS, asset_id)
+
     def test_it_passes_the_audit_tools_schema_check(self) -> None:
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -532,10 +745,36 @@ class ShippedManifestTests(unittest.TestCase):
             self.assertTrue(entry["xbox_asset_id"].startswith(
                 ("p8:", "tset:", "nfl2k5.")), entry["xbox_asset_id"])
 
-    def test_no_png_is_claimed_by_two_different_assets(self) -> None:
-        names = [entry["pcsx2_png"] for entry in self.document["entries"]]
-        self.assertEqual(len(names), len(set(names)),
-                         "a fanned-out row reached the manifest")
+    def test_no_png_is_claimed_by_two_different_physical_assets(self) -> None:
+        # A PNG legitimately appears twice: once under its physical texture id
+        # and once under the logical uniform target that composes it. What must
+        # never happen is one PNG claimed by two different *textures*, which
+        # would mean a fanned-out row reached the manifest.
+        physical = [entry["pcsx2_png"] for entry in self.document["entries"]
+                    if not entry["xbox_asset_id"].startswith("nfl2k5.uniform.")]
+        self.assertEqual(len(physical), len(set(physical)))
+
+    def test_no_entry_is_duplicated(self) -> None:
+        pairs = [(entry["pcsx2_png"], entry["xbox_asset_id"])
+                 for entry in self.document["entries"]]
+        self.assertEqual(len(pairs), len(set(pairs)))
+
+    def test_logical_uniform_rows_are_present_and_counted(self) -> None:
+        logical = [entry for entry in self.document["entries"]
+                   if entry["xbox_asset_id"].startswith("nfl2k5.uniform.")]
+        self.assertTrue(logical, "a uniform edit carries a logical target id, "
+                                 "so the manifest must key on them too")
+        self.assertEqual(self.document["counts"]["logical_uniform_entries"],
+                         len(logical))
+        self.assertEqual(self.document["counts"]["physical_entries"],
+                         len(self.document["entries"]) - len(logical))
+        coverage = self.document["counts"]["logical_uniform_coverage"]
+        self.assertEqual(coverage["logical_targets"],
+                         mapper.UNIFORM_SET_COUNT
+                         * mapper.UNIFORM_COMPONENTS_PER_SET)
+        self.assertEqual(sorted(coverage["structurally_unmappable_components"]),
+                         sorted(mapper.STRUCTURAL_COMPONENTS))
+        self.assertTrue(coverage["structurally_unmappable_reason"])
 
     def test_every_shipped_name_carries_the_classic_tcc_bit(self) -> None:
         for entry in self.document["entries"]:
@@ -573,15 +812,43 @@ class ShippedSidecarTests(unittest.TestCase):
     def test_the_fanout_is_reported_per_namespace(self) -> None:
         namespaces = {name.split(":", 1)[1]
                       for name in self.document["reasons"] if name.startswith("fanout:")}
-        self.assertTrue(namespaces <= {"p8", "tset", "scene", "unknown"})
+        self.assertTrue(namespaces <= {"p8", "tset", "scene", "mixed", "unknown"},
+                        namespaces)
         self.assertTrue(namespaces)
 
-    def test_a_demo_team_was_chosen_and_the_evidence_is_recorded(self) -> None:
+    def test_the_demo_team_question_is_answered_either_way(self) -> None:
+        # The plan expected a fully-mappable kit to exist. Once one Xbox asset
+        # per filename is enforced -- which the export service requires -- none
+        # does, because a team's era variants share their torso, sleeve, pants
+        # and helmet art on the PS2 disc. The sidecar has to say so plainly
+        # and still hand WP7 the best kit it has, rather than assert a demo
+        # that would plan as ambiguous.
         demo = self.document["demo_team"]
-        self.assertTrue(demo["chosen"], "no fully-mappable team is in a GS dump")
-        self.assertIn(demo["chosen"], demo["fully_mappable_teams"])
-        self.assertIn(demo["chosen"], demo["dump_teams"])
-        self.assertTrue(demo["per_team"][demo["chosen"]]["fully_mappable"])
+        if demo["chosen"]:
+            self.assertIn(demo["chosen"], demo["fully_mappable_teams"])
+            self.assertIn(demo["chosen"], demo["dump_teams"])
+            self.assertIn(demo["chosen"], demo["fully_mappable_and_witnessable"])
+            kit = demo["chosen_kit"]
+            self.assertTrue(kit.startswith(demo["chosen"] + "/"), kit)
+            row = demo["logical"]["kits"][kit]
+            self.assertTrue(row["fully_mappable"])
+            self.assertEqual(row["mapped"], row["components"])
+            return
+        self.assertEqual(demo["chosen_kit"], "")
+        self.assertEqual(demo["fully_mappable_and_witnessable"], [])
+        self.assertIn("shares", demo["chosen_reason"])
+        best = demo["logical"]["best_covered_kit"]
+        self.assertTrue(best["kit"], "no kit is named for WP7 to witness")
+        self.assertGreater(best["mapped"], 0)
+        self.assertLess(best["mapped"], best["components"])
+        self.assertEqual(demo["logical"]["kits"][best["kit"]]["mapped"],
+                         best["mapped"])
+
+    def test_the_physical_view_is_kept_as_supporting_evidence(self) -> None:
+        physical = self.document["demo_team"]["physical"]
+        self.assertTrue(physical["note"])
+        self.assertIn("per_selector", physical)
+        self.assertIn("per_team", physical)
 
 
 @unittest.skipUnless(_NFL2K5_PS2_ISO and _PACK_HASHES and _XBOX_INVENTORY,
