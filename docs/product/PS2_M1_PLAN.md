@@ -242,7 +242,7 @@ Row `nfl2k5ps2.uniforms.replacement_pack_export`:
   `backend.command` containing that module token,
   `validation_command: "bash tools/validate_nfl2k5_ps2_replacement_pack.sh"`
   (+ `.bat`), `runtime.status: "not-tested"` until WP7.
-- `SURFACE_GAMES["uniforms"] = ("nfl2k5_ps2", "nfl2k5_xbox")`.
+- `SURFACE_GAMES["uniforms"] = GAMES` — **all three games, not a 2-tuple**: APF already has `uniforms` rows, so `("nfl2k5_ps2", "nfl2k5_xbox")` would drop it and fail the coverage-equality check (the triage's rule: every widening becomes `GAMES` except `crib_assets`).
 - Pins, located by **content**: `71→72` at all 13 sites,
   `EXPECTED_COVERED_CAPABILITIES 66→67`, `EXPECTED_UNIQUE_VALIDATORS 53→54`, the
   two prose strings ("2 NFL 2K5 PS2 rows" becomes three), plus the
