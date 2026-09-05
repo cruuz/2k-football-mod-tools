@@ -1,9 +1,10 @@
 """The "Select other games…" chooser: model without Qt, dialog offscreen.
 
-A refused module degrades to an explanatory row, a window that needs the Xbox
-session is withheld when there is none, a factory that raises becomes a
-sentence in the detail pane, and the real PS2 adapter's read-only window opens
-through the chooser.  The dialog tests are skipped where PyQt5 is absent.
+One row per game -- the studio it opens -- sorted by console, game and year.
+A refused module degrades to an explanatory row that cannot be opened, a
+factory that raises becomes a sentence in the detail pane, and the real PS2
+adapter is listed as "PS2 NFL 2K5 Studio" and opens its studio window.  The
+dialog tests are skipped where PyQt5 is absent.
 """
 
 from __future__ import annotations
@@ -48,27 +49,55 @@ class ChooserModelTests(unittest.TestCase):
         self.report = games.discover(self.root)
         self.rows = chooser.chooser_rows(self.report)
 
-    def test_rows_show_loadable_first_and_refusals_with_reasons(self) -> None:
-        self.assertEqual([row.game_id for row in self.rows], ["okgame", "crashgame", "oldgame"],
+    def _row(self, game_id: str):
+        return {row.game_id: row for row in self.rows}[game_id]
+
+    def test_rows_are_one_studio_per_module_sorted_by_console_game_year(self) -> None:
+        self.assertEqual([row.game_id for row in self.rows], ["crashgame", "okgame", "oldgame"],
                          [row.detail for row in self.rows])
-        ok, crash, old = self.rows
+        self.assertEqual([row.studio_label for row in self.rows],
+                         ["TC Crash 1 Studio", "TC OK 1 Studio", "TC Old 1 Studio"])
+        ok, old, crash = self._row("okgame"), self._row("oldgame"), self._row("crashgame")
         self.assertTrue(ok.loadable)
-        self.assertEqual((ok.title, ok.platform, ok.version, ok.contract), ("OK Game", "Test Console", "2.3.4", "vc_game_module/v1"))
-        self.assertEqual([w.window_id for w in ok.windows], ["main", "broken", "session"])
+        self.assertEqual((ok.title, ok.platform, ok.version, ok.contract),
+                         ("OK Game", "Test Console", "2.3.4", "vc_game_module/v1"))
+        self.assertEqual(ok.studio_window, "main", "Open opens the module's own studio window")
+        self.assertEqual(ok.detail, "OK Game — Test Console · module 2.3.4 · vc_game_module/v1 · 0 lane(s)")
         self.assertFalse(old.loadable)
         self.assertEqual(old.status_text, "Cannot load")
+        self.assertEqual(old.studio_window, "", "a refused module opens nothing")
         self.assertIn("vc_game_module/v9", old.detail)
         self.assertEqual(old.version, "2.3.4", "a refused module still shows its declared version")
+        self.assertEqual(old.studio_label, "TC Old 1 Studio",
+                         "a refused module is still recognisable by the label it would have had")
         self.assertIn("a_dependency_nobody_has", crash.detail)
         self.assertEqual(chooser.chooser_headline(self.rows), "1 game module ready · 2 cannot be loaded (select one to see why)")
         self.assertEqual(chooser.chooser_headline(()), "No game modules are installed.")
 
+    def test_a_module_whose_manifest_cannot_be_read_falls_back_to_its_title(self) -> None:
+        root = Path(tempfile.mkdtemp(prefix="chooser-unreadable-")).resolve()
+        self.addCleanup(shutil.rmtree, root, True)
+        (root / "brokenmanifest").mkdir(parents=True)
+        (root / "brokenmanifest" / "__init__.py").write_text("GAME = None\n", encoding="utf-8", newline="\n")
+        (root / "brokenmanifest" / "game.json").write_text("{not json", encoding="utf-8", newline="\n")
+        [row] = chooser.chooser_rows(games.discover(root))
+        self.assertFalse(row.loadable)
+        self.assertEqual(row.studio_label, "brokenmanifest")
+
     def test_windows_needing_the_studio_are_withheld_without_a_session(self) -> None:
-        ok = self.rows[0]
+        """The Windows menu still asks this, even though the chooser no longer lists windows."""
+
+        ok = self._row("okgame")
         self.assertTrue(ok.loadable, [row.detail for row in self.rows])
         self.assertEqual([w.window_id for w in chooser.openable_windows(ok, has_studio_session=False)], ["main", "broken"])
         self.assertEqual([w.window_id for w in chooser.openable_windows(ok, has_studio_session=True)], ["main", "broken", "session"])
-        self.assertEqual(chooser.openable_windows(self.rows[2], has_studio_session=True), ())
+        self.assertEqual(chooser.openable_windows(self._row("oldgame"), has_studio_session=True), ())
+
+    def test_open_studio_opens_the_window_the_module_named(self) -> None:
+        opened = chooser.open_studio(self.report, "okgame")
+        self.assertTrue(opened)
+        with self.assertRaisesRegex(contract.Refusal, "No hosted game"):
+            chooser.open_studio(self.report, "oldgame")
 
     def test_open_window_turns_every_failure_into_a_refusal(self) -> None:
         opened = chooser.open_window(self.report, "okgame", "main", context={"extra": 1})
@@ -92,10 +121,13 @@ class ChooserModelTests(unittest.TestCase):
         self.assertEqual(listing.returncode, 0, listing.stderr)
         self.assertIn("1 game module ready", listing.stdout, listing.stdout + listing.stderr)
         self.assertIn("oldgame", listing.stdout)
+        self.assertIn("TC OK 1 Studio", listing.stdout, "the listing shows studio labels")
         self.assertEqual(run("list").stdout, listing.stdout)
         described = run("show", "okgame")
         self.assertEqual(described.returncode, 0, described.stderr)
+        self.assertIn("TC OK 1 Studio", described.stdout)
         self.assertIn("--window main", described.stdout)
+        self.assertIn("[studio]", described.stdout, "show marks which window is the studio")
         refused = run("show", "oldgame")
         self.assertEqual(refused.returncode, 1)
         self.assertIn("cannot be loaded", refused.stderr)
@@ -114,13 +146,16 @@ class ChooserDialogTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.root, True)
         self.report = games.discover(self.root)
 
-    def test_dialog_lists_rows_and_gates_open_on_load_status(self) -> None:
+    def test_dialog_lists_studios_and_gates_open_on_load_status(self) -> None:
         dialog = GameChooserDialog(self.report, modal_windows=False)
         self.addCleanup(dialog.deleteLater)
+        self.assertEqual(COLUMNS, ("Studio", "Status", "Detail"))
         self.assertEqual(dialog.table.columnCount(), len(COLUMNS))
         self.assertEqual(dialog.table.rowCount(), 3)
-        self.assertEqual(dialog.table.item(0, 4).text(), "Ready")
-        self.assertEqual(dialog.table.item(2, 4).text(), "Cannot load")
+        self.assertEqual([dialog.table.item(row, 0).text() for row in range(3)],
+                         ["TC Crash 1 Studio", "TC OK 1 Studio", "TC Old 1 Studio"])
+        self.assertEqual(dialog.table.item(1, 1).text(), "Ready")
+        self.assertEqual(dialog.table.item(2, 1).text(), "Cannot load")
         self.assertIn("1 game module ready", dialog.headline.text())
         self.assertTrue(dialog.select_game("oldgame"))
         self.assertFalse(dialog.open_button.isEnabled())
@@ -128,17 +163,14 @@ class ChooserDialogTests(unittest.TestCase):
         self.assertFalse(dialog.open_selected(), "a refused row cannot open anything")
         self.assertTrue(dialog.select_game("okgame"))
         self.assertTrue(dialog.open_button.isEnabled())
-        labels = [dialog.windows.item(i).text() for i in range(dialog.windows.count())]
-        self.assertEqual(labels, ["OK Game window…", "Broken window…", "Needs session… (needs the studio's open project)"])
-        self.assertFalse(dialog.windows.item(2).flags() & 0x20, "withheld window is disabled")  # Qt.ItemIsEnabled
-        for control in (dialog.table, dialog.windows, dialog.open_button, dialog.detail, dialog.headline):
+        for control in (dialog.table, dialog.open_button, dialog.detail, dialog.headline):
             self.assertTrue(control.accessibleName())
 
     def test_opening_goes_through_the_module_and_failures_are_sentences(self) -> None:
         dialog = GameChooserDialog(self.report, modal_windows=False)
         self.addCleanup(dialog.deleteLater)
         dialog.select_game("okgame")
-        self.assertTrue(dialog.open_selected("main"))
+        self.assertTrue(dialog.open_selected(), "Open opens the studio, with no window to pick")
         self.assertIsInstance(dialog.last_opened, QDialog)
         self.assertEqual(dialog.last_opened.windowTitle(), "Fake window")
         self.assertIn("opened main", dialog.detail.text())
@@ -147,23 +179,23 @@ class ChooserDialogTests(unittest.TestCase):
         self.assertFalse(dialog.open_selected("session"), "no facade in this context")
         self.assertIn("needs the studio's session", dialog.detail.text())
 
-    def test_a_session_context_offers_the_session_window(self) -> None:
+    def test_a_session_context_still_reaches_a_window_that_needs_it(self) -> None:
         dialog = GameChooserDialog(self.report, context={"facade": object()}, modal_windows=False)
         self.addCleanup(dialog.deleteLater)
         dialog.select_game("okgame")
-        labels = [dialog.windows.item(i).text() for i in range(dialog.windows.count())]
-        self.assertEqual(labels, ["OK Game window…", "Broken window…", "Needs session…"])
         self.assertTrue(dialog.open_selected("session"))
 
-    def test_the_real_ps2_adapter_opens_its_read_only_window_through_the_chooser(self) -> None:
+    def test_the_real_ps2_adapter_is_a_studio_row_and_opens_its_studio(self) -> None:
         dialog = GameChooserDialog(games.discover(), modal_windows=False)
         self.addCleanup(dialog.deleteLater)
         self.assertTrue(dialog.select_game("nfl2k5_ps2"))
-        labels = [dialog.windows.item(i).text() for i in range(dialog.windows.count())]
-        self.assertEqual(labels, ["PS2 NFL 2K5 Studio…", "PS2 Save Editor…", "PS2 Disc Inventory…",
-                                  "Export PS2 replacement pack… (needs the studio's open project)"])
-        self.assertTrue(dialog.open_selected("disc-inventory"))
-        self.assertEqual(dialog.last_opened.windowTitle(), "PS2 Disc Inventory")
+        row = dialog.selected_row()
+        self.assertEqual(row.studio_label, "PS2 NFL 2K5 Studio")
+        self.assertEqual(row.studio_window, "disc-studio")
+        self.assertEqual([dialog.table.item(index, 0).text() for index in range(dialog.table.rowCount())],
+                         ["PS2 NFL 2K5 Studio"])
+        self.assertTrue(dialog.open_selected())
+        self.assertIn("PS2 NFL 2K5 Studio: opened disc-studio", dialog.detail.text())
         dialog.last_opened.close()
         dialog.last_opened.deleteLater()
 

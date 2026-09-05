@@ -39,7 +39,9 @@ ADAPTER_DIR = ROOT / "mod_editor" / "games" / "nfl2k5_ps2"
 #: a minor bump may add entries; removing or renaming one is a major bump.
 EXPECTED_SURFACE = {
     "ALLOWED_CORE_IMPORTS": ("constant",),
+    "ArtLane": ("decode_png", "encode", "replacement_identity"),
     "Artifact": ("path", "sha256", "kind"),
+    "AudioLane": ("decode_wav",),
     "CONTRACT_MAJOR": ("constant",),
     "CONTRACT_MINOR": ("constant",),
     "CONTRACT_SCHEMA": ("constant",),
@@ -50,14 +52,20 @@ EXPECTED_SURFACE = {
     "ContractError": ("exception",),
     "DeclaredRange": ("start", "length", "reason"),
     "Edit": ("target_key", "values", "note"),
+    "EncodedArt": ("png", "width", "height", "note"),
+    "Field": ("key", "kind", "label", "help", "choices", "minimum", "maximum", "read_only"),
     "GAME_ATTRIBUTE": ("constant",),
     "GameIdentity": ("game_id", "title", "platform", "serials", "executable_sha256", "content_sha256"),
     "GameManifest": (
-        "schema", "game_id", "package", "title", "platform", "version", "contract",
+        "schema", "game_id", "package", "title", "platform", "console", "game", "year",
+        "version", "contract",
         "registry_fragment", "allowlist_fragment", "pins", "product_modules", "tool_modules", "root",
-        "allowlist_patterns",
+        "allowlist_patterns", "page_notes",
     ),
-    "GameModule": ("contract", "identity", "identifier", "lanes", "windows", "manifest", "package"),
+    "GameModule": (
+        "contract", "identity", "identifier", "lanes", "windows", "manifest", "package",
+        "studio_window",
+    ),
     "Lane": (
         "build", "build_catalogue", "capability_id", "check_edit", "classification",
         "compose_recipe", "conformance_edits", "fixed_allocation", "lane_id", "plan",
@@ -65,24 +73,28 @@ EXPECTED_SURFACE = {
     ),
     "MANIFEST_NAME": ("constant",),
     "MANIFEST_SCHEMA": ("constant",),
+    "PAGE_ORDER": ("constant",),
     "MipsPatch": ("patch_id", "words", "elf_identity", "parameters", "note"),
     "MipsWord": ("address", "original", "replacement"),
     "PINS_SCHEMA": ("constant",),
     "Plan": ("lane_id", "target_keys", "declared_ranges", "document"),
     "REGISTRY_FRAGMENT_SCHEMA": ("constant",),
+    "ReadOnlyLane": ("read_only",),
     "Receipt": ("schema", "lane_id", "source", "destination", "declared_ranges", "document", "artifacts"),
     "Refusal": ("exception",),
     "SHARED_FORMATS_PACKAGE": ("constant",),
+    "SURFACE_PAGES": ("constant",),
     "SourceIdentifier": ("accepted_suffixes", "identify"),
     "SourceIdentity": (
         "kind", "path", "size_bytes", "serial", "executable_sha256",
         "serial_matches", "retail_executable", "headline", "details",
     ),
-    "Target": ("key", "label", "detail", "budget", "searchable", "raw"),
+    "Target": ("key", "label", "detail", "budget", "searchable", "raw", "fields"),
     "Verdict": ("passed", "summary", "document"),
     "WindowSpec": ("window_id", "menu_label", "tooltip", "flag", "factory", "needs_studio_session"),
     "accepts_contract": ("function",),
     "contract_surface": ("function",),
+    "lane_page": ("function",),
     "load_manifest": ("function",),
     "parse_contract": ("function",),
     "require": ("function",),
@@ -116,6 +128,60 @@ class FrozenSurfaceTests(unittest.TestCase):
 
         self.assertTrue(issubclass(contract.Refusal, ValidationError))
         self.assertTrue(issubclass(contract.Refusal, contract.ContractError))
+
+
+class StudioVocabularyTests(unittest.TestCase):
+    """The studio label, the pages, and where a lane lands on them."""
+
+    def test_every_page_is_named_once_in_the_studio_order(self) -> None:
+        ids = [page_id for page_id, _title in contract.PAGE_ORDER]
+        titles = [title for _page_id, title in contract.PAGE_ORDER]
+        self.assertEqual(len(ids), 14)
+        self.assertEqual(len(set(ids)), 14)
+        self.assertTrue(all(title.strip() for title in titles))
+        self.assertEqual(ids[0], "uniforms", "the Xbox studio's first page is first here")
+        self.assertEqual(ids[-1], "build", "Build & Share is last")
+
+    def test_every_registry_surface_has_a_page(self) -> None:
+        pages = {page_id for page_id, _title in contract.PAGE_ORDER}
+        self.assertEqual(set(contract.SURFACE_PAGES) , set(validate_registry.SURFACES),
+                         "a surface without a page would leave its lanes nowhere")
+        self.assertTrue(set(contract.SURFACE_PAGES.values()) <= pages)
+
+    def test_lane_page_reads_the_lane_first_then_its_surface(self) -> None:
+        colours = type("L", (), {"surface": "colors"})()
+        self.assertEqual(contract.lane_page(colours), "identity")
+        named = type("L", (), {"surface": "colors", "page": "field_art"})()
+        self.assertEqual(contract.lane_page(named), "field_art")
+        unmapped = type("L", (), {"surface": "no_such_surface"})()
+        self.assertEqual(contract.lane_page(unmapped), "textures", "always somewhere reachable")
+
+    def test_a_field_names_a_shape_and_refuses_an_unknown_kind(self) -> None:
+        item = contract.Field("text", "text", "Display text", help="9 characters")
+        self.assertFalse(item.read_only)
+        target = contract.Target("t", "T", fields=(item,))
+        self.assertEqual(target.fields[0].label, "Display text")
+        with self.assertRaisesRegex(contract.ContractError, "is not one of"):
+            contract.Field("k", "spreadsheet", "K")
+        with self.assertRaisesRegex(contract.ContractError, "two fields claim one key"):
+            contract.Target("t", "T", fields=(item, contract.Field("text", "int", "Again")))
+
+    def test_encoded_art_carries_bytes_and_a_size(self) -> None:
+        art = contract.EncodedArt(b"\x89PNG...", 64, 32, note="scaled 2x")
+        self.assertEqual((art.width, art.height), (64, 32))
+        with self.assertRaisesRegex(contract.ContractError, "non-empty PNG"):
+            contract.EncodedArt(b"", 64, 32)
+        with self.assertRaisesRegex(contract.ContractError, "positive width"):
+            contract.EncodedArt(b"png", 0, 32)
+
+    def test_the_lane_sub_protocols_are_runtime_checkable_and_distinct(self) -> None:
+        game = games.load("nfl2k5_ps2")
+        writer = game.lane("colors.unif_words")
+        self.assertIsInstance(writer, contract.Lane)
+        self.assertNotIsInstance(writer, contract.ArtLane)
+        self.assertNotIsInstance(writer, contract.AudioLane)
+        self.assertNotIsInstance(writer, contract.ReadOnlyLane,
+                                 "a writer must not answer the read-only protocol")
 
 
 class DataclassValidationTests(unittest.TestCase):
@@ -155,6 +221,35 @@ class ManifestTests(unittest.TestCase):
         self.root = Path(tempfile.mkdtemp(prefix="games-manifest-"))
         self.addCleanup(shutil.rmtree, self.root, True)
 
+    def test_the_studio_label_is_composed_from_the_three_fields(self) -> None:
+        directory = write_fake_game(self.root, "labelled", GOOD_GAME_SOURCE,
+                                    _manifest("labelled", console="PS2", game="Madden", year="09"))
+        manifest = contract.load_manifest(directory)
+        self.assertEqual(manifest.studio_label, "PS2 Madden 09 Studio")
+        self.assertEqual((manifest.console, manifest.game, manifest.year), ("PS2", "Madden", "09"))
+
+    def test_a_manifest_without_the_display_fields_is_refused_by_name(self) -> None:
+        for absent in ("console", "game", "year"):
+            with self.subTest(absent=absent):
+                document = _manifest(f"no{absent}")
+                document.pop(absent)
+                directory = write_fake_game(self.root, f"no{absent}", GOOD_GAME_SOURCE, document)
+                with self.assertRaises(contract.ContractError) as caught:
+                    contract.load_manifest(directory)
+                self.assertIn(absent, str(caught.exception))
+                self.assertIn("<console> <game> <year> Studio", str(caught.exception))
+
+    def test_page_notes_must_name_real_pages(self) -> None:
+        good = write_fake_game(self.root, "noted", GOOD_GAME_SOURCE,
+                               _manifest("noted", page_notes={"uniforms": "EA FSH inside BIG; no console write yet."}))
+        self.assertEqual(contract.load_manifest(good).page_note("uniforms"),
+                         "EA FSH inside BIG; no console write yet.")
+        self.assertEqual(contract.load_manifest(good).page_note("audio"), "")
+        bad = write_fake_game(self.root, "misnoted", GOOD_GAME_SOURCE,
+                              _manifest("misnoted", page_notes={"no_such_page": "…"}))
+        with self.assertRaisesRegex(contract.ContractError, "not studio"):
+            contract.load_manifest(bad)
+
     def test_manifest_loads_and_rejects_drift(self) -> None:
         directory = write_fake_game(self.root, "okgame", GOOD_GAME_SOURCE, _manifest("okgame"))
         manifest = contract.load_manifest(directory)
@@ -166,6 +261,9 @@ class ManifestTests(unittest.TestCase):
             {"package": "mod_editor.games.other"},
             {"registry_fragment": "../escape.json"},
             {"schema": "wrong"},
+            {"console": "PS 2"},
+            {"year": " 2K5"},
+            {"game": "a" * 25},
         ):
             with self.subTest(bad=bad):
                 other = write_fake_game(self.root, f"bad{len(bad)}{list(bad)[0]}", GOOD_GAME_SOURCE,
@@ -245,6 +343,9 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(game.identity.serials, ("SLUS-20919",))
         self.assertEqual(game.version, "0.1.0")
         self.assertEqual([window.flag for window in game.windows], ["ps2-disc-studio", "ps2-save", "ps2-disc", "ps2-export"])
+        self.assertEqual(game.manifest.studio_label, "PS2 NFL 2K5 Studio")
+        self.assertEqual(game.studio_window, "disc-studio")
+        self.assertIs(game.studio, game.windows[0])
         # The executable-patch lane joins once its registry row exists (it did on 2026-09-05).
         self.assertEqual([lane.lane_id for lane in game.lanes],
                          ["colors.unif_words", "gameplay.executable_patches"])

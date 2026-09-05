@@ -66,7 +66,7 @@ class CommandLineOnACp1252ConsoleTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.repo = Path(tempfile.mkdtemp(prefix="cli-console-repo-"))
         scaffold.scaffold("demo_ps2", f"Demo Game {STAR} (PlayStation 2)", "PlayStation 2", "SLUS-00000",
-                          repo_root=cls.repo)
+                          console="PS2", game=f"Demo{STAR}", year="1", repo_root=cls.repo)
         cls.games_root = cls.repo / "mod_editor" / "games"
 
     @classmethod

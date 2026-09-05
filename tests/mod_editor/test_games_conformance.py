@@ -2,11 +2,12 @@
 
 This is the file the maintainer's CI runs for a game he has never seen.  It
 discovers every game package, runs the generic harness on each -- manifest,
-boundary, registry agreement, and the behavioural half on the game's own
-synthetic source: identify, catalogue (retail-free), plan, refuse, build,
-verify, tamper -- and fails on any check.  It also proves the harness can
-fail, with a deliberately broken lane, because a harness that cannot fail
-proves nothing.
+boundary, registry agreement, the studio (its label is composed, its window is
+named, the shell draws its fourteen pages offscreen), and the behavioural half
+on the game's own synthetic source: identify, catalogue (retail-free), plan,
+refuse, build, verify, tamper -- and fails on any check.  It also proves the
+harness can fail, with a deliberately broken lane and a module that types its
+own studio label, because a harness that cannot fail proves nothing.
 """
 
 from __future__ import annotations
@@ -82,7 +83,47 @@ class FakeModulesTests(unittest.TestCase):
         names = {check.name for check in result.checks}
         self.assertIn("module.has_a_lane_or_a_window", names)
         self.assertIn("boundary.module_level_imports_stay_inside_the_contract", names)
+        self.assertIn("manifest.display_fields", names)
+        self.assertIn("module.studio_window", names)
+        self.assertIn("module.studio_label_is_composed_not_typed", names)
+        self.assertIn("shell.studio_opens", names)
         self.assertFalse(any(name.startswith("lane.") for name in names), "no lanes, no behavioural checks")
+
+    def test_the_shell_check_draws_every_page_or_says_it_could_not_run(self) -> None:
+        checks = {check.name: check for check in conformance.check_shell(self.report.game("okgame"))}
+        opens = checks["shell.studio_opens"]
+        if opens.skipped:
+            self.assertIn("PyQt5", opens.detail)
+            self.assertEqual(opens.line()[:4], "SKIP")
+            return
+        self.assertTrue(opens.passed, opens.detail)
+        self.assertIn("TC OK 1 Studio", opens.detail)
+        self.assertTrue(checks["shell.studio_shows_every_page"].passed)
+        self.assertIn("14 pages", checks["shell.studio_shows_every_page"].detail)
+
+    def test_a_module_that_types_its_own_studio_label_is_caught(self) -> None:
+        game = self.report.game("okgame")
+        typed = Path(game.manifest.root) / "typed_label.py"
+        typed.write_text(f'''TITLE = "{game.manifest.studio_label}"\n''', encoding="utf-8", newline="\n")
+        self.addCleanup(typed.unlink, True)
+        [check] = conformance.check_studio_label(game)
+        self.assertFalse(check.passed)
+        self.assertIn("typed_label.py", check.detail)
+        self.assertIn("composes it from game.json", check.detail)
+
+    def test_the_generated_mirrors_may_quote_the_label(self) -> None:
+        """registry.fragment.json carries the canonical registry's prose, not the module's words."""
+
+        game = self.report.game("okgame")
+        fragment = game.manifest.registry_fragment_path
+        original = fragment.read_bytes()
+        self.addCleanup(fragment.write_bytes, original)
+        fragment.write_text(
+            original.decode("utf-8").replace('"surfaces"', f'"note": "{game.manifest.studio_label}", "surfaces"', 1),
+            encoding="utf-8", newline="\n",
+        )
+        [check] = conformance.check_studio_label(game)
+        self.assertTrue(check.passed, check.detail)
 
     def test_the_incompatible_fake_is_a_refusal_row_with_the_exact_sentence(self) -> None:
         self.assertEqual(self.report.game_ids, ("okgame",))

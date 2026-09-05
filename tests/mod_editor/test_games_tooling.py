@@ -35,7 +35,7 @@ class ScaffoldTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.repo = Path(tempfile.mkdtemp(prefix="scaffold-repo-"))
         cls.written = scaffold.scaffold(GAME_ID, "Demo Game (PlayStation 2)", "PlayStation 2", "SLUS-00000",
-                                        repo_root=cls.repo)
+                                        console="PS2", game="Demo", year="1", repo_root=cls.repo)
         cls.package = cls.repo / "mod_editor" / "games" / GAME_ID
         cls.games_root = cls.repo / "mod_editor" / "games"
         cls.report = games.discover(cls.games_root)
@@ -69,6 +69,27 @@ class ScaffoldTests(unittest.TestCase):
         self.assertTrue(result.passed, "\n".join(check.line() for check in result.failures))
         self.assertGreaterEqual(len(result.checks), 40, "the example lane exercises the behavioural half")
 
+    def test_the_scaffolded_studio_is_the_core_shell(self) -> None:
+        game = self.report.game(GAME_ID)
+        self.assertEqual(game.manifest.studio_label, "PS2 Demo 1 Studio")
+        self.assertEqual(game.studio_window, "studio")
+        self.assertEqual([window.window_id for window in game.windows], ["studio"])
+        self.assertEqual(game.studio.flag, "demo-ps2-studio")
+        self.assertNotIn(game.manifest.studio_label,
+                         (self.package / "__init__.py").read_text(encoding="utf-8"),
+                         "the scaffold never types the label it is given")
+        dialog = None
+        try:
+            dialog = game.studio.factory()
+        except ImportError:  # PyQt5 is not installed here
+            self.skipTest("PyQt5 is not installed")
+        try:
+            self.assertEqual(dialog.windowTitle(), "PS2 Demo 1 Studio")
+            self.assertEqual(len(dialog.page_ids()), 14)
+        finally:
+            dialog.close()
+            dialog.deleteLater()
+
     def test_the_example_lane_selftest_and_boundary(self) -> None:
         probe = sys.modules[f"_mod_editor_games_probe.{GAME_ID}.example_lane"]
         self.assertEqual(probe.selftest(), 0)
@@ -86,23 +107,29 @@ class ScaffoldTests(unittest.TestCase):
         self.assertIn("PLACEHOLDER", row["summary"])
 
     def test_refusals(self) -> None:
+        fields = dict(console="PS2", game="Demo", year="1")
         with self.assertRaisesRegex(contract.ContractError, "already exists"):
-            scaffold.scaffold(GAME_ID, "Again", "PlayStation 2", repo_root=self.repo)
+            scaffold.scaffold(GAME_ID, "Again", "PlayStation 2", repo_root=self.repo, **fields)
         with self.assertRaisesRegex(contract.ContractError, "must be lowercase"):
-            scaffold.scaffold("Bad-Id", "Bad", "PlayStation 2", repo_root=self.repo)
+            scaffold.scaffold("Bad-Id", "Bad", "PlayStation 2", repo_root=self.repo, **fields)
         with self.assertRaisesRegex(contract.ContractError, "non-empty"):
-            scaffold.scaffold("other_game", "", "PlayStation 2", repo_root=self.repo)
+            scaffold.scaffold("other_game", "", "PlayStation 2", repo_root=self.repo, **fields)
+        with self.assertRaisesRegex(contract.ContractError, "1 to 8 characters"):
+            scaffold.scaffold("other_game", "Other", "PlayStation 2", repo_root=self.repo,
+                              console="PlayStation 2", game="Demo", year="1")
         self.assertFalse((self.repo / "mod_editor" / "games" / "other_game").exists())
 
     def test_the_command_line_scaffolds_too(self) -> None:
         with tempfile.TemporaryDirectory(prefix="scaffold-cli-") as other:
             completed = subprocess.run(
                 cli_command("new", "madden08_ps2", "--title", "Madden NFL 08 (USA, PlayStation 2)",
-                            "--platform", "PlayStation 2", "--serial", "SLUS-21638", "--repo-root", other),
+                            "--platform", "PlayStation 2", "--console", "PS2", "--game", "Madden",
+                            "--year", "08", "--serial", "SLUS-21638", "--repo-root", other),
                 cwd=str(ROOT), capture_output=True, text=True, timeout=300,
             )
             self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
             self.assertIn("SCAFFOLDED game=madden08_ps2 files=10", completed.stdout)
+            self.assertIn("studio='PS2 Madden 08 Studio'", completed.stdout)
             self.assertTrue((Path(other) / "mod_editor" / "games" / "madden08_ps2" / "game.json").is_file())
 
 
@@ -112,7 +139,8 @@ class FragmentsTests(unittest.TestCase):
     def setUp(self) -> None:
         self.repo = Path(tempfile.mkdtemp(prefix="fragments-repo-"))
         self.addCleanup(shutil.rmtree, self.repo, True)
-        scaffold.scaffold(GAME_ID, "Demo Game (PlayStation 2)", "PlayStation 2", repo_root=self.repo)
+        scaffold.scaffold(GAME_ID, "Demo Game (PlayStation 2)", "PlayStation 2",
+                          console="PS2", game="Demo", year="1", repo_root=self.repo)
         self.games_root = self.repo / "mod_editor" / "games"
         self.package = self.games_root / GAME_ID
 
