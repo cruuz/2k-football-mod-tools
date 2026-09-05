@@ -22,6 +22,11 @@ What is on the contract today, and what each rung rests on:
   Two rows, because they earn two different rungs: an ``extract-only``
   exporter, and an ``offline-writer-proved`` writer that puts an edited PNG
   back into a **new** disc image.
+* **the other four art pages** (:mod:`.art_pages`) -- the same two classes
+  pointed at the rest of the disc's ``MMAP`` containers: the stadium art, the
+  field art, every menu and loading texture, and the player and coach faces
+  and menu portraits.  Four rows, all ``offline-writer-proved``, each carrying
+  preview, export, a checked import and the disc write-back in one lane.
 * **team data** (:mod:`.team_data`, ``read-only-mapped``) -- the EA TDB
   databases inside ``DB_TEAMS.DAT``, ``TEMPLATE.DAT`` and ``GAMEDATA.DAT``,
   and the bare ``STRMDATA.DB``, catalogued table by table.  **Readers only.**
@@ -67,6 +72,14 @@ back down -- no encoder for that codec exists anywhere public -- and the audio
 containers are the ones that store their members uncompressed.  Both facts are
 in ``docs/product/MADDEN09_PS2_MODULE.md`` and
 ``docs/product/MADDEN09_PS2_AUDIO.md``, and neither is worked around here.
+**Five art writers, and what none of them claims.**  The uniform-art writer
+and the four art-page writers produce a new disc image and are filed
+``offline-writer-proved``: the member decodes back to the pixels it was given,
+member is byte-identical, every preload-cache copy still equals what it copies,
+and an independent verifier re-derives every changed byte of the image from the
+two files.  **No rebuilt Madden 09 container has ever been booted**, so nothing
+here says the game loads the result.  ``docs/product/MADDEN09_PS2_MODULE.md``
+and ``docs/product/MADDEN09_PS2_ART_PAGES.md`` carry both halves.
 
 Retail-free: this package carries names, offsets, lengths, counts and digests.
 No member payload, no decoded pixel and no string from the game is in it.
@@ -95,6 +108,7 @@ from .inventory_lane import InventoryLane
 from .playbooks_lane import PlaybooksLane
 from .team_data import TeamDataLane
 from .text_lane import TextLane
+from .art_pages import FaceArtLane, FieldArtLane, PresentationArtLane, StadiumArtLane
 from .uniform_art import UniformArtLane, UniformDiscArtWriteLane
 
 HERE = Path(__file__).resolve().parent
@@ -165,6 +179,10 @@ _CANDIDATES = (
     InventoryLane(),
     UniformArtLane(),
     UniformDiscArtWriteLane(),
+    StadiumArtLane(),
+    FieldArtLane(),
+    PresentationArtLane(),
+    FaceArtLane(),
     TeamDataLane(),
     TextLane(),
     IdentityLane(),

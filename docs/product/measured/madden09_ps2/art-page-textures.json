@@ -1,0 +1,439 @@
+{
+  "generated_by": "python3 -m mod_editor.games.madden09_ps2.art_pages --page <page> --source <iso> --out <json>",
+  "note": "What the four art-page lanes find on the retail SLUS-21770 disc: containers walked, members counted by format, images decodable and refused with the reason, and how many textures a PCSX2 dump has named. Counts and digests only -- no member byte, no palette entry and no decoded pixel is in this file. 'catalogue_sha256' is the digest of the catalogue document the command above writes, so a re-run on the same disc is checkable. The times are wall-clock on one desktop, pure Python, from a warm page cache; they are reported because the presentation page walks 8,041 members across 50 containers and a user is entitled to know what that costs.",
+  "pages": {
+    "field_art": {
+      "catalogue_seconds": 4.69,
+      "catalogue_sha256": "3ad719e8a3c072aa755e44e522453d2577133631243a0c2b29511e6f537fdf89",
+      "containers_absent": [],
+      "containers_listed": 1,
+      "identities_named": 32,
+      "identity_coverage": {
+        "FIELDART.DAT": {
+          "listed": 73,
+          "named": 32
+        }
+      },
+      "images": 73,
+      "images_decodable": 73,
+      "images_refused": {},
+      "lane": "field_art",
+      "members_by_format": {
+        "FIELDART.DAT": {
+          "MMAP": 73,
+          "SMF": 642
+        }
+      },
+      "members_walked": 715,
+      "schema": "madden09_ps2_field_art_catalog/v1",
+      "texture_members": 73
+    },
+    "presentation": {
+      "catalogue_seconds": 19.25,
+      "catalogue_sha256": "6976488ac381319a0861048c4c76270608e0cf5d18e76a474b96d876e1b35c46",
+      "containers_absent": [],
+      "containers_listed": 50,
+      "identities_named": 74,
+      "identity_coverage": {
+        "LOADDATA.DAT": {
+          "listed": 30,
+          "named": 0
+        },
+        "UIS_ADAI.DAT": {
+          "listed": 21,
+          "named": 0
+        },
+        "UIS_BGIM.DAT": {
+          "listed": 101,
+          "named": 0
+        },
+        "UIS_BGLO.DAT": {
+          "listed": 7,
+          "named": 0
+        },
+        "UIS_COAC.DAT": {
+          "listed": 239,
+          "named": 0
+        },
+        "UIS_COMN.DAT": {
+          "listed": 98,
+          "named": 10
+        },
+        "UIS_CTLO.DAT": {
+          "listed": 239,
+          "named": 0
+        },
+        "UIS_FE.DAT": {
+          "listed": 147,
+          "named": 0
+        },
+        "UIS_IG.DAT": {
+          "listed": 66,
+          "named": 6
+        },
+        "UIS_IGMC.DAT": {
+          "listed": 3,
+          "named": 0
+        },
+        "UIS_IGTU.DAT": {
+          "listed": 5,
+          "named": 0
+        },
+        "UIS_LFLL.DAT": {
+          "listed": 10,
+          "named": 0
+        },
+        "UIS_LOAD.DAT": {
+          "listed": 104,
+          "named": 0
+        },
+        "UIS_MCIC.DAT": {
+          "listed": 14,
+          "named": 0
+        },
+        "UIS_NWPR.DAT": {
+          "listed": 122,
+          "named": 0
+        },
+        "UIS_OMG.DAT": {
+          "listed": 77,
+          "named": 0
+        },
+        "UIS_PDAI.DAT": {
+          "listed": 63,
+          "named": 0
+        },
+        "UIS_PDBI.DAT": {
+          "listed": 369,
+          "named": 0
+        },
+        "UIS_PERS.DAT": {
+          "listed": 52,
+          "named": 0
+        },
+        "UIS_PLYR.DAT": {
+          "listed": 3286,
+          "named": 0
+        },
+        "UIS_PMIL.DAT": {
+          "listed": 1,
+          "named": 0
+        },
+        "UIS_PRGM.DAT": {
+          "listed": 2,
+          "named": 0
+        },
+        "UIS_PROL.DAT": {
+          "listed": 78,
+          "named": 0
+        },
+        "UIS_SBLD.DAT": {
+          "listed": 86,
+          "named": 0
+        },
+        "UIS_SLIV.DAT": {
+          "listed": 285,
+          "named": 0
+        },
+        "UIS_SMOD.DAT": {
+          "listed": 33,
+          "named": 0
+        },
+        "UIS_SOLO.DAT": {
+          "listed": 161,
+          "named": 0
+        },
+        "UIS_STAD.DAT": {
+          "listed": 49,
+          "named": 0
+        },
+        "UIS_TIRL.DAT": {
+          "listed": 52,
+          "named": 0
+        },
+        "UIS_TIRN.DAT": {
+          "listed": 52,
+          "named": 0
+        },
+        "UIS_TMFN.DAT": {
+          "listed": 60,
+          "named": 0
+        },
+        "UIS_TMLL.DAT": {
+          "listed": 285,
+          "named": 0
+        },
+        "UIS_TMLO.DAT": {
+          "listed": 285,
+          "named": 58
+        }
+      },
+      "images": 7832,
+      "images_decodable": 6482,
+      "images_refused": {
+        "not an indexed texture -- it declares no palette and pixel layout 1; only indexed textures are decoded here": 140,
+        "not an indexed texture -- it declares no palette and pixel layout 4; only indexed textures are decoded here": 22,
+        "stored under EA codec 4 (IPU1), the PlayStation 2 IPU's own format; nothing here decodes it": 1188
+      },
+      "lane": "presentation",
+      "members_by_format": {
+        "ICONS.DAT": {
+          "unclassified": 21
+        },
+        "LOADDATA.DAT": {
+          "MMAP": 16,
+          "TEXT": 1
+        },
+        "UIS_ADAI.DAT": {
+          "MMAP": 21
+        },
+        "UIS_ALL.DAT": {
+          "TERF": 34
+        },
+        "UIS_BANR.DAT": {
+          "unclassified": 30
+        },
+        "UIS_BGIM.DAT": {
+          "MMAP": 101
+        },
+        "UIS_BGLO.DAT": {
+          "MMAP": 7
+        },
+        "UIS_CCST.DAT": {
+          "unclassified": 4
+        },
+        "UIS_COAC.DAT": {
+          "MMAP": 239
+        },
+        "UIS_COMN.DAT": {
+          "MMAP": 98
+        },
+        "UIS_CSTY.DAT": {
+          "unclassified": 3
+        },
+        "UIS_CTLO.DAT": {
+          "MMAP": 239
+        },
+        "UIS_FE.DAT": {
+          "MMAP": 147
+        },
+        "UIS_FONT.DAT": {
+          "FNTS": 10
+        },
+        "UIS_FSTY.DAT": {
+          "unclassified": 1
+        },
+        "UIS_IG.DAT": {
+          "MMAP": 67
+        },
+        "UIS_IGBN.DAT": {
+          "unclassified": 6
+        },
+        "UIS_IGMC.DAT": {
+          "MMAP": 3
+        },
+        "UIS_IGTU.DAT": {
+          "MMAP": 5
+        },
+        "UIS_LFLL.DAT": {
+          "MMAP": 10
+        },
+        "UIS_LOAD.DAT": {
+          "MMAP": 104
+        },
+        "UIS_MCFL.DAT": {
+          "MMAP": 1188
+        },
+        "UIS_MCIC.DAT": {
+          "MMAP": 14
+        },
+        "UIS_MDRC.DAT": {
+          "unclassified": 11
+        },
+        "UIS_MEMC.DAT": {
+          "unclassified": 6
+        },
+        "UIS_NWPR.DAT": {
+          "MMAP": 122,
+          "empty": 36
+        },
+        "UIS_OMG.DAT": {
+          "MMAP": 77
+        },
+        "UIS_PAUC.DAT": {
+          "unclassified": 24
+        },
+        "UIS_PAUS.DAT": {
+          "unclassified": 28
+        },
+        "UIS_PDAI.DAT": {
+          "MMAP": 63
+        },
+        "UIS_PDBI.DAT": {
+          "MMAP": 390
+        },
+        "UIS_PERS.DAT": {
+          "MMAP": 52
+        },
+        "UIS_PLYR.DAT": {
+          "MMAP": 3286
+        },
+        "UIS_PMIL.DAT": {
+          "MMAP": 1
+        },
+        "UIS_POPS.DAT": {
+          "unclassified": 60
+        },
+        "UIS_PRGM.DAT": {
+          "MMAP": 2
+        },
+        "UIS_PROL.DAT": {
+          "MMAP": 78
+        },
+        "UIS_PRPS.DAT": {
+          "unclassified": 16
+        },
+        "UIS_SBLD.DAT": {
+          "MMAP": 86
+        },
+        "UIS_SETT.DAT": {
+          "unclassified": 4
+        },
+        "UIS_SFPC.DAT": {
+          "unclassified": 3
+        },
+        "UIS_SLIV.DAT": {
+          "MMAP": 285
+        },
+        "UIS_SMOD.DAT": {
+          "DMF": 1,
+          "MMAP": 33
+        },
+        "UIS_SOLO.DAT": {
+          "MMAP": 161
+        },
+        "UIS_STAD.DAT": {
+          "MMAP": 49
+        },
+        "UIS_TIRL.DAT": {
+          "MMAP": 52,
+          "empty": 32
+        },
+        "UIS_TIRN.DAT": {
+          "MMAP": 52,
+          "empty": 32
+        },
+        "UIS_TMFN.DAT": {
+          "MMAP": 60
+        },
+        "UIS_TMLL.DAT": {
+          "MMAP": 285
+        },
+        "UIS_TMLO.DAT": {
+          "MMAP": 285
+        }
+      },
+      "members_walked": 8041,
+      "schema": "madden09_ps2_ui_art_catalog/v1",
+      "texture_members": 7678
+    },
+    "rosters": {
+      "catalogue_seconds": 41.82,
+      "catalogue_sha256": "8b062999776b1d56a2325fa38adc896bd90608a3d9c8c6cdfcaed497857549c0",
+      "containers_absent": [],
+      "containers_listed": 4,
+      "identities_named": 45,
+      "identity_coverage": {
+        "COACFACE.DAT": {
+          "listed": 711,
+          "named": 0
+        },
+        "PLYRFACE.DAT": {
+          "listed": 520,
+          "named": 45
+        },
+        "TATTOOS.DAT": {
+          "listed": 82,
+          "named": 0
+        },
+        "UIS_PLYR.DAT": {
+          "listed": 3286,
+          "named": 0
+        }
+      },
+      "images": 4611,
+      "images_decodable": 4599,
+      "images_refused": {
+        "not an indexed texture -- it declares no palette and pixel layout 1; only indexed textures are decoded here": 12
+      },
+      "lane": "rosters",
+      "members_by_format": {
+        "COACFACE.DAT": {
+          "MMAP": 711
+        },
+        "PLYRFACE.DAT": {
+          "MMAP": 532
+        },
+        "TATTOOS.DAT": {
+          "MMAP": 82
+        },
+        "UIS_PLYR.DAT": {
+          "MMAP": 3286
+        }
+      },
+      "members_walked": 4611,
+      "schema": "madden09_ps2_face_art_catalog/v1",
+      "texture_members": 4611
+    },
+    "stadiums": {
+      "catalogue_seconds": 7.47,
+      "catalogue_sha256": "ec1b3799278f00dab1052d3d06a7c9371a684d925fc1c33815d76c5c866c4c88",
+      "containers_absent": [],
+      "containers_listed": 2,
+      "identities_named": 83,
+      "identity_coverage": {
+        "STADATA.DAT": {
+          "listed": 91,
+          "named": 7
+        },
+        "STADIUMS.DAT": {
+          "listed": 490,
+          "named": 76
+        }
+      },
+      "images": 624,
+      "images_decodable": 581,
+      "images_refused": {
+        "a palette-only entry: it carries 45 alternate CLUT(s) for another image in this member and has no pixels of its own": 5,
+        "not an indexed texture -- it declares no palette and pixel layout 1; only indexed textures are decoded here": 38
+      },
+      "lane": "stadiums",
+      "members_by_format": {
+        "STADATA.DAT": {
+          "DMF": 2,
+          "MMAP": 80,
+          "SMF": 154,
+          "unclassified": 32
+        },
+        "STADIUMS.DAT": {
+          "MMAP": 434,
+          "SMF": 651,
+          "empty": 270
+        }
+      },
+      "members_walked": 1623,
+      "schema": "madden09_ps2_stadium_art_catalog/v1",
+      "texture_members": 514
+    }
+  },
+  "schema": "madden09_ps2_art_page_textures/v1",
+  "source": "Madden NFL 09 (USA).iso",
+  "source_sha256": "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+  "totals": {
+    "identities_named": 234,
+    "images": 13140,
+    "images_decodable": 11735,
+    "note": "UIS_PLYR.DAT is counted on two pages; 8,449 of the images are distinct.",
+    "texture_members": 12876
+  }
+}
