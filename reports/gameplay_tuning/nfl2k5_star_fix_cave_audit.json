@@ -1,0 +1,485 @@
+{
+  "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "decoded_instructions": 1627635,
+  "manifest_sha256": "146fc65bcffbeaffaeadb2b94fdfc02128126bcf8aec53573215592ab3e15545",
+  "manifest_source_drift": [
+    "mod_editor/core/nfl2k5_player_star.py",
+    "mod_editor/core/nfl2k5_player_tags.py"
+  ],
+  "source_root_checked": false,
+  "spans": [
+    {
+      "va": "0x372d40",
+      "end": "0x372db6",
+      "overlaps": [],
+      "retail_sha256": "09f95f5f7227f5cc7ba846861bbd763a001b858ad10411298f5ed517758a4ad8"
+    },
+    {
+      "va": "0x3ddd50",
+      "end": "0x3ddda3",
+      "overlaps": [],
+      "retail_sha256": "f6984ec8423041706c60868d6a059d2544c5e318b59af52a36d93080ebc71642"
+    },
+    {
+      "va": "0x38b0d0",
+      "end": "0x38b123",
+      "overlaps": [],
+      "retail_sha256": "00967d119728b8827fe63a07f631bffb62f14881b7b5c7be4beffa1c7962f168"
+    },
+    {
+      "va": "0x2c9110",
+      "end": "0x2c917a",
+      "overlaps": [],
+      "retail_sha256": "7931044340b34b9b5424a04e511ced65e483e36a690061be7625c960c73801b8"
+    },
+    {
+      "va": "0x31e650",
+      "end": "0x31e6a4",
+      "overlaps": [],
+      "retail_sha256": "27ee7af3ecd76e1ceace682009c4fb62fef554159bbb90f52d5fdc1353c641c4"
+    }
+  ],
+  "external_references": [],
+  "limit": "Negative explicit-reference scan; unresolved indirect/computed accesses are not a proof of freedom.",
+  "oracle": {
+    "queries": [
+      {
+        "start": "0x372d40",
+        "end": "0x372db6",
+        "size": 118,
+        "kind": "code",
+        "section": ".text",
+        "verdict": "unknown",
+        "eligible": true,
+        "permission_reason": "executable section",
+        "allocatable": false,
+        "witnesses": [
+          {
+            "start": "0x372d53",
+            "end": "0x372d54",
+            "source": "0x372d88",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x372d53",
+            "end": "0x372d54",
+            "source": "0x372d88",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x372d53",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x372d5b",
+            "end": "0x372d5f",
+            "source": "0x372d5b",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0xebd5f4",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x372d5f",
+            "end": "0x372d60",
+            "source": "0x372d5d",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x372d5f",
+            "end": "0x372d60",
+            "source": "0x372d5d",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x372d5f",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x372d85",
+            "end": "0x372d86",
+            "source": "0x372d68",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x372d85",
+            "end": "0x372d86",
+            "source": "0x372d68",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x372d85",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x372d8a",
+            "end": "0x372d8b",
+            "source": "0x372d83",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          }
+        ],
+        "witness_count": 176314,
+        "unresolved_count": 176300,
+        "external_witnesses": []
+      },
+      {
+        "start": "0x3ddd50",
+        "end": "0x3ddda3",
+        "size": 83,
+        "kind": "code",
+        "section": ".text",
+        "verdict": "unknown",
+        "eligible": true,
+        "permission_reason": "executable section",
+        "allocatable": false,
+        "witnesses": [
+          {
+            "start": "0x3ddd59",
+            "end": "0x3ddd5d",
+            "source": "0x3ddd59",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x10b9c0",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x3ddd7c",
+            "end": "0x3ddd80",
+            "source": "0x3ddd7c",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x498d54",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x3ddd80",
+            "end": "0x3ddd81",
+            "source": "0x3ddd87",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x3ddd80",
+            "end": "0x3ddd81",
+            "source": "0x3ddd87",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x3ddd80",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x3ddd86",
+            "end": "0x3ddd87",
+            "source": "0x3ddd60",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x3ddd86",
+            "end": "0x3ddd87",
+            "source": "0x3ddd60",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x3ddd86",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x3ddd89",
+            "end": "0x3ddd8a",
+            "source": "0x3ddd77",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x3ddd89",
+            "end": "0x3ddd8a",
+            "source": "0x3ddd77",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x3ddd89",
+            "certainty": "unknown"
+          }
+        ],
+        "witness_count": 176308,
+        "unresolved_count": 176300,
+        "external_witnesses": []
+      },
+      {
+        "start": "0x38b0d0",
+        "end": "0x38b123",
+        "size": 83,
+        "kind": "code",
+        "section": ".text",
+        "verdict": "unknown",
+        "eligible": true,
+        "permission_reason": "executable section",
+        "allocatable": false,
+        "witnesses": [
+          {
+            "start": "0x38b0e0",
+            "end": "0x38b0e4",
+            "source": "0x38b0e0",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x19fbb8",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x38b0e8",
+            "end": "0x38b0ec",
+            "source": "0x38b0e8",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x8c254",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x38b0ec",
+            "end": "0x38b0ed",
+            "source": "0x38b0dd",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x38b0ec",
+            "end": "0x38b0ed",
+            "source": "0x38b0dd",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x38b0ec",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x38b0fc",
+            "end": "0x38b0fd",
+            "source": "0x38b0d6",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x38b0fc",
+            "end": "0x38b0fd",
+            "source": "0x38b0d6",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x38b0fc",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x38b0fe",
+            "end": "0x38b102",
+            "source": "0x38b0fe",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x182444",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x38b101",
+            "end": "0x38b105",
+            "source": "0x38b101",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x30100",
+            "certainty": "unknown"
+          }
+        ],
+        "witness_count": 176311,
+        "unresolved_count": 176300,
+        "external_witnesses": []
+      },
+      {
+        "start": "0x2c9110",
+        "end": "0x2c917a",
+        "size": 106,
+        "kind": "code",
+        "section": ".text",
+        "verdict": "unknown",
+        "eligible": true,
+        "permission_reason": "executable section",
+        "allocatable": false,
+        "witnesses": [
+          {
+            "start": "0x2c9127",
+            "end": "0x2c9128",
+            "source": "0x2c9115",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x2c9127",
+            "end": "0x2c9128",
+            "source": "0x2c9115",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x2c9127",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x2c9127",
+            "end": "0x2c912b",
+            "source": "0x2c9127",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x68016a",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x2c912c",
+            "end": "0x2c9130",
+            "source": "0x2c912c",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x6a3f80",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x2c9130",
+            "end": "0x2c9134",
+            "source": "0x2c9130",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0xdb9be8",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x2c9135",
+            "end": "0x2c9139",
+            "source": "0x2c9135",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0x6a14eb",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x2c9137",
+            "end": "0x2c9138",
+            "source": "0x2c9125",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x2c9137",
+            "end": "0x2c9138",
+            "source": "0x2c9125",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x2c9137",
+            "certainty": "unknown"
+          }
+        ],
+        "witness_count": 176322,
+        "unresolved_count": 176300,
+        "external_witnesses": [
+          {
+            "start": "0x2c9173",
+            "end": "0x2c9174",
+            "source": "0x2c9195",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x2c9173",
+            "end": "0x2c9174",
+            "source": "0x2c9195",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x2c9173",
+            "certainty": "unknown"
+          }
+        ]
+      },
+      {
+        "start": "0x31e650",
+        "end": "0x31e6a4",
+        "size": 84,
+        "kind": "code",
+        "section": ".text",
+        "verdict": "unknown",
+        "eligible": true,
+        "permission_reason": "executable section",
+        "allocatable": false,
+        "witnesses": [
+          {
+            "start": "0x31e655",
+            "end": "0x31e659",
+            "source": "0x31e655",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0xa4868b",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x31e666",
+            "end": "0x31e667",
+            "source": "0x31e67d",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x31e666",
+            "end": "0x31e667",
+            "source": "0x31e67d",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x31e666",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x31e674",
+            "end": "0x31e675",
+            "source": "0x31e671",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x31e674",
+            "end": "0x31e675",
+            "source": "0x31e671",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x31e674",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x31e674",
+            "end": "0x31e678",
+            "source": "0x31e674",
+            "kind": "possible-pointer-storage",
+            "detail": "unaligned dword may contain pointer to 0xa4868b",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x31e67f",
+            "end": "0x31e680",
+            "source": "0x31e664",
+            "kind": "rel8",
+            "detail": "bytewise transfer encoding; instruction boundary not established",
+            "certainty": "unknown"
+          },
+          {
+            "start": "0x31e67f",
+            "end": "0x31e680",
+            "source": "0x31e664",
+            "kind": "rel8",
+            "detail": "rel8 root at 0x31e67f",
+            "certainty": "unknown"
+          }
+        ],
+        "witness_count": 176315,
+        "unresolved_count": 176300,
+        "external_witnesses": []
+      }
+    ],
+    "instruction_count": 250000,
+    "reference_count": 2782776,
+    "unresolved_count": 176300,
+    "unresolved_kinds": [
+      "decode-failure",
+      "external-control",
+      "external-import",
+      "external-read",
+      "implicit-memory",
+      "indirect-transfer",
+      "instruction-budget",
+      "unbacked-code",
+      "unbacked-read",
+      "unmapped-root",
+      "unresolved-memory"
+    ],
+    "budget_exhausted": {
+      "instructions": true,
+      "references": false
+    }
+  }
+}
