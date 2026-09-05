@@ -14,7 +14,7 @@ read-only; **[S]** sourced; **[A]** assumed and said so.
 | module | `mod_editor/games/madden09_ps2/audio_lane.py` |
 | format | `mod_editor/games/_formats/ea_schl.py` |
 | validator | `tools/validate_madden09_ps2_audio.sh` / `.bat` |
-| evidence | `docs/product/evidence/madden09_ps2/audio_codec_census.json` |
+| evidence | `docs/product/measured/madden09_ps2/audio_codec_census.json` |
 
 ---
 

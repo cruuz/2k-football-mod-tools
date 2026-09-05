@@ -8,7 +8,7 @@ repository; **[A]** assumed, and said so rather than dressed up.
 The reader is `mod_editor/games/_formats/ea_schl.py` (standard library only).
 The numbers below come from `mod_editor/games/madden09_ps2/audio_lane.py`
 walking the disc; the census they were taken from is
-`docs/product/evidence/madden09_ps2/audio_codec_census.json`.
+`docs/product/measured/madden09_ps2/audio_codec_census.json`.
 
 ---
 
@@ -299,7 +299,7 @@ means:
   checked on its own.
 
 Results are in §9 of `docs/product/MADDEN09_PS2_AUDIO.md` and in
-`docs/product/evidence/madden09_ps2/audio_codec_census.json`.
+`docs/product/measured/madden09_ps2/audio_codec_census.json`.
 
 ---
 

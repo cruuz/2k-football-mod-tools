@@ -10,7 +10,7 @@
       "evidence": [
         "docs/product/EA_SCHL_FORMAT.md",
         "docs/product/MADDEN09_PS2_AUDIO.md",
-        "docs/product/evidence/madden09_ps2/audio_codec_census.json"
+        "docs/product/measured/madden09_ps2/audio_codec_census.json"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -84,7 +84,7 @@
       "evidence": [
         "docs/product/EA_SCHL_FORMAT.md",
         "docs/product/MADDEN09_PS2_AUDIO.md",
-        "docs/product/evidence/madden09_ps2/audio_codec_census.json"
+        "docs/product/measured/madden09_ps2/audio_codec_census.json"
       ],
       "game": "madden09_ps2",
       "gui": {
