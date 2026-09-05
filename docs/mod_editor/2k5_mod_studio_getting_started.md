@@ -559,7 +559,7 @@ logical cue ID, even though replacing either alias changes their shared sound.
 Labels are user-authored project metadata, not game edits. They save inside
 the `.2k5mod`, survive Open Project and private recovery, and support individual
 Clear, Undo, and Revert All. An annotation-only project can be saved and shared
-without any retail audio. Labels never enable **Build Modded XISO**, never
+without any retail audio. Labels never enable **Make disc from project**, never
 change the source or output XISO, and never count as a Modified WAV. The header
 reports cue-label and build-edit counts separately so this boundary stays
 visible.
@@ -684,7 +684,7 @@ Undo, recovery, or Build, and retail-derived entries must not be redistributed.
    project save/load, and Build all treat that shared slot as one edit. Two
    aliases cannot supply different WAVs in one project/import.
 5. Play or Export WAV again to hear/check the staged authored bytes, save the
-   `.2k5mod`, then choose **Build Modded XISO**. The raw bank remains fixed-size;
+   `.2k5mod`, then choose **Make disc from project**. The raw bank remains fixed-size;
    no bank repack, loop/mixer edit, or runtime cue-name claim is implied.
 
 The private safety indexes cover every standalone cue and all **53,570 physical
@@ -1036,8 +1036,8 @@ three-pane shape people know, over the disc as well as over a save, with undo, d
 and a validation pass on top. The format knowledge behind it comes from **Flying Finn (Glen
 Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the retail disc.
 
-1. Open the page and press **Use the loaded XISO** (or **Open a disc…**). An Xbox save works too:
-   **Open an Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
+1. Open the page and press **Use the open disc** (or **Open disc roster…**). An Xbox save works too:
+   **Open Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
    `SAVEGAME.DAT` with its `EXTRA` beside it (real saves keep the roster as the game's in-memory arena;
    the page reads that layout and the disc's). The stored signature is checked on load, and a save
    whose `EXTRA` does not verify is refused rather than quietly re-signed.
@@ -1143,10 +1143,10 @@ back by name and play-by-play index, so a community backup restores here.
 
 **Writing.** Your source is never touched.
 
-* **Save roster edits…** writes a small JSON document. The Build tab picks it up as the
+* **Export roster edits (.json)…** writes a small JSON document. The Build tab picks it up as the
   **roster edits** step, and Share packs it into a `.2k5patch` as an asset, so an edit travels
   without the disc.
-* **Write a copy…** copies the disc image and edits the copy, or — for a save — writes a
+* **Save disc copy…** copies the disc image and edits the copy; for a save, **Save Xbox save copy…** writes a
   **re-signed** container beside the original with every other member (`SaveMeta.xbx`, `TYPE`, the
   images) copied byte for byte. Renaming or dropping those is what makes the game call a save
   corrupt, so they are never rebuilt.
@@ -1172,7 +1172,7 @@ byte), and **Activate** is the inverse, labelled unwitnessed because nobody has 
 it; a free agent or a draft prospect is refused in Finn's words. **Checks** prints the file map by
 PROVED / HYPOTHESIS / OPAQUE, what the page may edit, and every franchise edit since load in plain words
 with the byte ranges it touched. Each tab undoes per action and the header counts the unwritten edits.
-**Write a copy…** writes one re-signed copy carrying the roster edits first and the franchise edits on
+**Save Xbox save copy…** writes one re-signed copy carrying the roster edits first and the franchise edits on
 top, so the two never fight over the arena. In game, check the salary cap edit first (the cap projection
 is the game's own arithmetic), then a moved user team, then a schedule change; everything but the year
 rule and the IR move is unwitnessed.
