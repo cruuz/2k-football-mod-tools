@@ -6,7 +6,8 @@
 > binds `offline-writer-proved` to writers with an edit surface and the registry's own definition of
 > an exporter fits). WP7 witnessed: a 13-file pack exported by the shipped service rendered in
 > PenguinScreen2 `8226182a` by GS-dump replay (ESPN shield, scorebug, kick-meter dial replaced against a reference frame from the same dump rendered with the community pack under modern names, not a pure stock frame;
-> the pack's uniform-part textures were not attributable at 640×480 and are not claimed). Report:
+> uniform parts — torso, sleeves, pants, gloves, head/hair — then witnessed on two player-filling dumps against an
+> empty-pack control; the M1 user story, a uniform edited on Xbox seen on PS2, is met). Report:
 > `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`. Open: a witness of a
 > uniform part on a near-camera player; `runtime-proved` needs a rule extension for exporters.
 > **Stock PCSX2 (measured 2026-09-05):** three stock upstream builds (merge-base v2.7.469, v2.6.0, v2.9.30) loaded the

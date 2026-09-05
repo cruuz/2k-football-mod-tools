@@ -695,5 +695,3633 @@
         "r3_twins_do_not_break_fork": "CONFIRMED"
       }
     }
+  },
+  "uniform_parts": {
+    "answer": "Yes. On two gameplay dumps where players fill the frame (coin toss 20260904125355; QB close-up 20260904125428), packs exported by the shipped service with a distinct hue per part rendered on the players with correct UV mapping; a referee not in the pack was unchanged as the internal control. Against an EMPTY-pack control leg (which removes the mipmapping-suppression confound that loading any pack introduces), the coin-toss frame changed 46,618 px (15.2%): torso 19,643, head/hair 10,278, sleeve 5,689, pants 5,146, glove 2,306. The QB frame changed 34,785 px (11.3%): pants 7,144, torso 5,004, sleeve 2,107. The 2026-09-05 witness's eight uniform-part files had been applied too: isolated, they cover 78 px (0.025%) of that kickoff camera, which is why they were unattributable, not a fan-out or CLUT mismatch.",
+    "classic_vs_modern_names": {
+      "meaning": "classic-only names split into 6,309 bit-14 variants and 1,017 hash-differing (region-clamped) names; the 584 distinct region-clamped identities are all palettized 1024x1024 PSMT8H / PSMT8 and NONE is in the shipped manifest, so stock PCSX2 1.7.4034+ looks up every manifest identity these dumps draw",
+      "totals": {
+        "b": 6309,
+        "c": 1017,
+        "c_in_manifest": 0,
+        "classic": 15495,
+        "classic_only": 7326,
+        "modern": 8169
+      }
+    },
+    "controls": "determinism: identical legs byte-identical on 3 dumps (noise floor zero); H-2 checked as the first statement of every script; private DataRoot via XDG_CONFIG_HOME so no rig profile, symlink or gamesettings was touched",
+    "corpus": "all 60 SLUS-20919 GS dumps on the rig, classic dump leg each: 101 distinct manifest identities drawn corpus-wide, 13 distinct logical nfl2k5.uniform.* ids across 7 uniform sets; no team-select or helmet identity is drawn by any dump",
+    "detail": {
+      "classic_vs_modern": {
+        "per_dump": [
+          {
+            "b_bit14_variant": 147,
+            "c_hash_differs": 30,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 378,
+            "classic_only": 177,
+            "dump": "20260716112353",
+            "modern": 201
+          },
+          {
+            "b_bit14_variant": 57,
+            "c_hash_differs": 30,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 183,
+            "classic_only": 87,
+            "dump": "20260808142526",
+            "modern": 96
+          },
+          {
+            "b_bit14_variant": 88,
+            "c_hash_differs": 30,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 249,
+            "classic_only": 118,
+            "dump": "20260808142533",
+            "modern": 131
+          },
+          {
+            "b_bit14_variant": 175,
+            "c_hash_differs": 29,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 445,
+            "classic_only": 204,
+            "dump": "20260716112350",
+            "modern": 241
+          },
+          {
+            "b_bit14_variant": 195,
+            "c_hash_differs": 29,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 472,
+            "classic_only": 224,
+            "dump": "20260718110352",
+            "modern": 248
+          },
+          {
+            "b_bit14_variant": 168,
+            "c_hash_differs": 28,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 416,
+            "classic_only": 196,
+            "dump": "20260716122627",
+            "modern": 220
+          },
+          {
+            "b_bit14_variant": 168,
+            "c_hash_differs": 28,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 414,
+            "classic_only": 196,
+            "dump": "20260716123659",
+            "modern": 218
+          },
+          {
+            "b_bit14_variant": 168,
+            "c_hash_differs": 28,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 414,
+            "classic_only": 196,
+            "dump": "20260716123702",
+            "modern": 218
+          },
+          {
+            "b_bit14_variant": 169,
+            "c_hash_differs": 28,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 417,
+            "classic_only": 197,
+            "dump": "20260716123704",
+            "modern": 220
+          },
+          {
+            "b_bit14_variant": 98,
+            "c_hash_differs": 28,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 282,
+            "classic_only": 126,
+            "dump": "20260808142524",
+            "modern": 156
+          },
+          {
+            "b_bit14_variant": 186,
+            "c_hash_differs": 28,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 448,
+            "classic_only": 214,
+            "dump": "20260904141150",
+            "modern": 234
+          },
+          {
+            "b_bit14_variant": 153,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 383,
+            "classic_only": 180,
+            "dump": "20260716122633",
+            "modern": 203
+          },
+          {
+            "b_bit14_variant": 170,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 416,
+            "classic_only": 197,
+            "dump": "20260716123707",
+            "modern": 219
+          },
+          {
+            "b_bit14_variant": 170,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 417,
+            "classic_only": 197,
+            "dump": "20260716123712",
+            "modern": 220
+          },
+          {
+            "b_bit14_variant": 118,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 313,
+            "classic_only": 145,
+            "dump": "20260716141332",
+            "modern": 168
+          },
+          {
+            "b_bit14_variant": 223,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 523,
+            "classic_only": 250,
+            "dump": "20260718010348",
+            "modern": 273
+          },
+          {
+            "b_bit14_variant": 171,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 430,
+            "classic_only": 198,
+            "dump": "20260808151255",
+            "modern": 232
+          },
+          {
+            "b_bit14_variant": 82,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 240,
+            "classic_only": 109,
+            "dump": "20260808151317",
+            "modern": 131
+          },
+          {
+            "b_bit14_variant": 165,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 406,
+            "classic_only": 192,
+            "dump": "20260904125410",
+            "modern": 214
+          },
+          {
+            "b_bit14_variant": 44,
+            "c_hash_differs": 27,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 146,
+            "classic_only": 71,
+            "dump": "20260904125428",
+            "modern": 75
+          },
+          {
+            "b_bit14_variant": 95,
+            "c_hash_differs": 26,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 268,
+            "classic_only": 121,
+            "dump": "20260815142119",
+            "modern": 147
+          },
+          {
+            "b_bit14_variant": 222,
+            "c_hash_differs": 26,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 524,
+            "classic_only": 248,
+            "dump": "20260904125403",
+            "modern": 276
+          },
+          {
+            "b_bit14_variant": 135,
+            "c_hash_differs": 26,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 346,
+            "classic_only": 161,
+            "dump": "20260904130020",
+            "modern": 185
+          },
+          {
+            "b_bit14_variant": 209,
+            "c_hash_differs": 26,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 503,
+            "classic_only": 235,
+            "dump": "20260904130738",
+            "modern": 268
+          },
+          {
+            "b_bit14_variant": 207,
+            "c_hash_differs": 26,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 499,
+            "classic_only": 233,
+            "dump": "20260904130740",
+            "modern": 266
+          },
+          {
+            "b_bit14_variant": 172,
+            "c_hash_differs": 26,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 414,
+            "classic_only": 198,
+            "dump": "20260904141133",
+            "modern": 216
+          },
+          {
+            "b_bit14_variant": 217,
+            "c_hash_differs": 26,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 514,
+            "classic_only": 243,
+            "dump": "20260904141147",
+            "modern": 271
+          },
+          {
+            "b_bit14_variant": 144,
+            "c_hash_differs": 25,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 343,
+            "classic_only": 169,
+            "dump": "20260718010407",
+            "modern": 174
+          },
+          {
+            "b_bit14_variant": 173,
+            "c_hash_differs": 25,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 430,
+            "classic_only": 198,
+            "dump": "20260718111155",
+            "modern": 232
+          },
+          {
+            "b_bit14_variant": 190,
+            "c_hash_differs": 25,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 464,
+            "classic_only": 215,
+            "dump": "20260718111202",
+            "modern": 249
+          },
+          {
+            "b_bit14_variant": 185,
+            "c_hash_differs": 25,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 452,
+            "classic_only": 210,
+            "dump": "20260718111235",
+            "modern": 242
+          },
+          {
+            "b_bit14_variant": 171,
+            "c_hash_differs": 25,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 406,
+            "classic_only": 196,
+            "dump": "20260815165524",
+            "modern": 210
+          },
+          {
+            "b_bit14_variant": 95,
+            "c_hash_differs": 25,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 248,
+            "classic_only": 120,
+            "dump": "20260904125355",
+            "modern": 128
+          },
+          {
+            "b_bit14_variant": 157,
+            "c_hash_differs": 25,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 394,
+            "classic_only": 182,
+            "dump": "20260904125444",
+            "modern": 212
+          },
+          {
+            "b_bit14_variant": 145,
+            "c_hash_differs": 24,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 365,
+            "classic_only": 169,
+            "dump": "20260718111143",
+            "modern": 196
+          },
+          {
+            "b_bit14_variant": 180,
+            "c_hash_differs": 24,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 425,
+            "classic_only": 204,
+            "dump": "20260904125439",
+            "modern": 221
+          },
+          {
+            "b_bit14_variant": 54,
+            "c_hash_differs": 24,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 164,
+            "classic_only": 78,
+            "dump": "20260904125918",
+            "modern": 86
+          },
+          {
+            "b_bit14_variant": 10,
+            "c_hash_differs": 23,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 64,
+            "classic_only": 33,
+            "dump": "20260718010400",
+            "modern": 31
+          },
+          {
+            "b_bit14_variant": 42,
+            "c_hash_differs": 2,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 90,
+            "classic_only": 44,
+            "dump": "20260904131040",
+            "modern": 46
+          },
+          {
+            "b_bit14_variant": 24,
+            "c_hash_differs": 1,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 50,
+            "classic_only": 25,
+            "dump": "20260904131134",
+            "modern": 25
+          },
+          {
+            "b_bit14_variant": 21,
+            "c_hash_differs": 1,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 44,
+            "classic_only": 22,
+            "dump": "20260904131139",
+            "modern": 22
+          },
+          {
+            "b_bit14_variant": 27,
+            "c_hash_differs": 1,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 56,
+            "classic_only": 28,
+            "dump": "20260904131140",
+            "modern": 28
+          },
+          {
+            "b_bit14_variant": 27,
+            "c_hash_differs": 1,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 56,
+            "classic_only": 28,
+            "dump": "20260904131142",
+            "modern": 28
+          },
+          {
+            "b_bit14_variant": 20,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 40,
+            "classic_only": 20,
+            "dump": "20260808142104",
+            "modern": 20
+          },
+          {
+            "b_bit14_variant": 17,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 34,
+            "classic_only": 17,
+            "dump": "20260904125143",
+            "modern": 17
+          },
+          {
+            "b_bit14_variant": 19,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 38,
+            "classic_only": 19,
+            "dump": "20260904125330",
+            "modern": 19
+          },
+          {
+            "b_bit14_variant": 34,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 68,
+            "classic_only": 34,
+            "dump": "20260904130757",
+            "modern": 34
+          },
+          {
+            "b_bit14_variant": 87,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 174,
+            "classic_only": 87,
+            "dump": "20260904130807",
+            "modern": 87
+          },
+          {
+            "b_bit14_variant": 64,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 128,
+            "classic_only": 64,
+            "dump": "20260904130810",
+            "modern": 64
+          },
+          {
+            "b_bit14_variant": 60,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 120,
+            "classic_only": 60,
+            "dump": "20260904130853",
+            "modern": 60
+          },
+          {
+            "b_bit14_variant": 24,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 48,
+            "classic_only": 24,
+            "dump": "20260904130900",
+            "modern": 24
+          },
+          {
+            "b_bit14_variant": 63,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 126,
+            "classic_only": 63,
+            "dump": "20260904130910",
+            "modern": 63
+          },
+          {
+            "b_bit14_variant": 10,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 20,
+            "classic_only": 10,
+            "dump": "20260904131037",
+            "modern": 10
+          },
+          {
+            "b_bit14_variant": 11,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 22,
+            "classic_only": 11,
+            "dump": "20260904131047",
+            "modern": 11
+          },
+          {
+            "b_bit14_variant": 12,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 24,
+            "classic_only": 12,
+            "dump": "20260904131050",
+            "modern": 12
+          },
+          {
+            "b_bit14_variant": 10,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 20,
+            "classic_only": 10,
+            "dump": "20260904131132",
+            "modern": 10
+          },
+          {
+            "b_bit14_variant": 13,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 26,
+            "classic_only": 13,
+            "dump": "20260904131140_(2)",
+            "modern": 13
+          },
+          {
+            "b_bit14_variant": 19,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 38,
+            "classic_only": 19,
+            "dump": "20260904131158",
+            "modern": 19
+          },
+          {
+            "b_bit14_variant": 18,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 36,
+            "classic_only": 18,
+            "dump": "20260904131208",
+            "modern": 18
+          },
+          {
+            "b_bit14_variant": 11,
+            "c_hash_differs": 0,
+            "c_in_manifest": [],
+            "c_in_manifest_n": 0,
+            "classic": 22,
+            "classic_only": 11,
+            "dump": "20260904141122",
+            "modern": 11
+          }
+        ],
+        "totals": {
+          "b": 6309,
+          "c": 1017,
+          "c_in_manifest": 0,
+          "classic": 15495,
+          "classic_only": 7326,
+          "modern": 8169
+        },
+        "union_c_in_manifest": {},
+        "union_c_names": [
+          "10145bb7164af118-b6f39e631d635347-00006a9b.png",
+          "1073becfad69d847-df4ee6e9026b84b5-00006a9b.png",
+          "10929cb30abd73bb-8c87cb9a686ef6ad-00006a9b.png",
+          "112a320396eb200a-203a265c57197d50-00006a9b.png",
+          "112a320396eb200a-7815acdeb1c9835-00006a9b.png",
+          "11b8264822ac3d2f-7696be71c039c699-00006a9b.png",
+          "11c34d8b1d939354-8b54485aa15ba5cb-00006a9b.png",
+          "11c34d8b1d939354-db3aa212c473a805-00006a9b.png",
+          "124aefce719803e6-f654f6112ff0653b-00006a9b.png",
+          "12aabbc72bb28631-2a1f5ad23be1573b-00006a9b.png",
+          "13487ecfc9344bce-b6f39e631d635347-00006a9b.png",
+          "144d9dcc914c2b6a-38e147eb98010593-00006a9b.png",
+          "14ed5134d8abad5a-4afdc65c8c7237ea-00006a9b.png",
+          "15749899fabf1c2f-3d5da9850a3257f2-00006a9b.png",
+          "15fe7ee3d9245dc4-4afdc65c8c7237ea-00006a9b.png",
+          "161fd99a18bb831d-dfdc596d6b90787c-00006a9b.png",
+          "16407658a83d54c0-70516ce5fb76cf8b-00006a9b.png",
+          "16407658a83d54c0-afa107f5902abc97-00006a9b.png",
+          "16b4cc8f8a091c39-d01484afa07e523c-00006a9b.png",
+          "17481e3d8c6a70-4b6f9aa6554de434-00006a9b.png",
+          "18892f5b9bc0b7ff-4e38404c7ddd628a-00006a9b.png",
+          "1893807a03afc0c9-dad09a784a625e09-00006a9b.png",
+          "1a2a1f52b0b0baaa-9610e76f619faa37-00006a9b.png",
+          "1a9d07fb442fb041-102b4130dc2b2976-00006a9b.png",
+          "1aba874a2fd3e908-7739ca4a28e53f10-00006a9b.png",
+          "1aba874a2fd3e908-8f69ccbc3f2126b7-00006a9b.png",
+          "1be0fa34ddad72a5-cc1a94b8b774679e-00006a9b.png",
+          "1c1fee76d2d54413-88becce3f47254ab-000059d3.png",
+          "1cd73499472b4ff4-4e38404c7ddd628a-00006a9b.png",
+          "1ce2c8dc513ae1f2-4e38404c7ddd628a-00006a9b.png",
+          "1cf4f79eddb0574a-4b6f9aa6554de434-00006a9b.png",
+          "1d07b7b426422894-3d5da9850a3257f2-00006a9b.png",
+          "1d0dd191a6e8b280-ee2b464ae3e78255-00006a9b.png",
+          "1db91ac1356d004d-4e38404c7ddd628a-00006a9b.png",
+          "1ff615d4f8adcfee-67d03168e17dcc99-00006a9b.png",
+          "1ff615d4f8adcfee-c6d5c6e12ff30a1b-00006a9b.png",
+          "2092004ea449a54d-720bc1c295f8dad0-00006a9b.png",
+          "2093179372a72d33-ee2b464ae3e78255-00006a9b.png",
+          "20ce707bf7dc9efc-16993afa75a2a270-00006a9b.png",
+          "20ce707bf7dc9efc-24c936698f7096a-00006a9b.png",
+          "20fc985f2a62609a-24c936698f7096a-00006a9b.png",
+          "215d0d80ab227f54-df4ee6e9026b84b5-00006a9b.png",
+          "21a323e4a041018a-4e38404c7ddd628a-00006a9b.png",
+          "21a323e4a041018a-720bc1c295f8dad0-00006a9b.png",
+          "21c9718841700535-db3aa212c473a805-00006a9b.png",
+          "221f4cca35a9b29b-24c936698f7096a-00006a9b.png",
+          "22795fef61598b15-a0acbf346b6fd320-00006a9b.png",
+          "236b140d79cf973b-203a265c57197d50-00006a9b.png",
+          "24b3c99aa2339f3e-4afdc65c8c7237ea-00006a9b.png",
+          "24b3c99aa2339f3e-dad09a784a625e09-00006a9b.png",
+          "24bfd883d9ef6475-5eeebf2c4be5aaa-00006a9b.png",
+          "2706ab275866cef8-d103fbc7998e9fb3-00006a9b.png",
+          "27e424a46f4cbd85-764867a5e1aed63c-00006a9b.png",
+          "2832b2e130b4e7d1-7815acdeb1c9835-00006a9b.png",
+          "292610e9099418da-b7792ce58d96dd91-00006a9b.png",
+          "298d331049437b00-4e38404c7ddd628a-00006a9b.png",
+          "298d331049437b00-720bc1c295f8dad0-00006a9b.png",
+          "2a11624fb37937d0-22ac4b1623de6dc2-000059d3.png",
+          "2a2e670572d7d46d-6d35c5ef7e2c81a5-00006a9b.png",
+          "2a30ba001cce60b8-ee2b464ae3e78255-00006a9b.png",
+          "2ae8a4f40a77aa40-dad09a784a625e09-00006a9b.png",
+          "2afd7fc0bdef9c68-dad09a784a625e09-00006a9b.png",
+          "2b1c837dcafcda01-2a1f5ad23be1573b-00006a9b.png",
+          "2b1c837dcafcda01-41bdf58549ac437-00006a9b.png",
+          "2c2108db3a68a988-cf375a1cced5cd11-00006a9b.png",
+          "2ea1a4c512cacf-8b54485aa15ba5cb-00006a9b.png",
+          "2ea8508045d9ab7b-7696be71c039c699-00006a9b.png",
+          "2ea8508045d9ab7b-93b466dd9c8f65db-00006a9b.png",
+          "2f07d4bd2fbc2f4e-67d03168e17dcc99-00006a9b.png",
+          "2f25c5684e5aed7b-1bb18d3231ae9214-00006a9b.png",
+          "2fe4ae9f76012089-7696be71c039c699-00006a9b.png",
+          "2fe4ae9f76012089-93b466dd9c8f65db-00006a9b.png",
+          "2ffe6f65f46b4b29-5eeebf2c4be5aaa-00006a9b.png",
+          "303e023d7286a8e4-720bc1c295f8dad0-00006a9b.png",
+          "3056de0410f94af7-4ee27ad323aff54b-00006a9b.png",
+          "3056de0410f94af7-d01484afa07e523c-00006a9b.png",
+          "31419c5c69ebbb3c-a0acbf346b6fd320-00006a9b.png",
+          "31419c5c69ebbb3c-e061216a5b16c406-00006a9b.png",
+          "315be3ebd633566c-720bc1c295f8dad0-00006a9b.png",
+          "31d3503a544d25a2-24c936698f7096a-00006a9b.png",
+          "320217a60bed0257-e858c29c7e7bbd0b-00006a9b.png",
+          "3338061e01e3e2b4-8c87cb9a686ef6ad-00006a9b.png",
+          "336711992e5cae5e-dad09a784a625e09-00006a9b.png",
+          "3379b49ce4163079-4ee27ad323aff54b-00006a9b.png",
+          "3379b49ce4163079-d01484afa07e523c-00006a9b.png",
+          "33b51571230cf1b1-48fcd4fb5b0bbf71-00006a9b.png",
+          "33b51571230cf1b1-8c87cb9a686ef6ad-00006a9b.png",
+          "34424e874e38726e-38e147eb98010593-00006a9b.png",
+          "345a4af576f42232-4afdc65c8c7237ea-00006a9b.png",
+          "34c54d428cfca730-f654f6112ff0653b-00006a9b.png",
+          "34cd2a080584a8a3-ee2b464ae3e78255-00006a9b.png",
+          "34e37019c00ec0f5-4e38404c7ddd628a-00006a9b.png",
+          "35b077fbe7ee1c17-a1c6bd1264bdb2ef-00006a9b.png",
+          "374c52541975a1ad-afa107f5902abc97-00006a9b.png",
+          "377f2c6d3f798f05-203a265c57197d50-00006a9b.png",
+          "37a0d5a7d54f1e5b-1ce482768f26c35e-00006a9b.png",
+          "37eba052e083509a-4e38404c7ddd628a-00006a9b.png",
+          "383a38931d30a7aa-c4a590910c938573-00006a9b.png",
+          "387ead7ee3169cd1-ea4b78e70b91ae86-00005e13.png",
+          "3901a63f1a3e1814-f654f6112ff0653b-00006a9b.png",
+          "3960caccd9c75d42-38e147eb98010593-00006a9b.png",
+          "39e32db0152140c8-57048e594734d433-00006a9b.png",
+          "3a78baf5397d6b05-7739ca4a28e53f10-00006a9b.png",
+          "3a78baf5397d6b05-8f69ccbc3f2126b7-00006a9b.png",
+          "3a9eed7335515653-a5e9265e8113f4d8-000059d3.png",
+          "3aa7a88f01ed470b-5eeebf2c4be5aaa-00006a9b.png",
+          "3acc44493d7af986-690a7905123df243-00006a9b.png",
+          "3acc44493d7af986-6d35c5ef7e2c81a5-00006a9b.png",
+          "3b9a5f401bef2b0f-8f69ccbc3f2126b7-00006a9b.png",
+          "3c3a513ac3d4f0f4-a20340dcca9cb8ed-00006a9b.png",
+          "3c64a7bf2f1b41e8-d01484afa07e523c-00006a9b.png",
+          "3c7a3d54094db6c2-d103fbc7998e9fb3-00006a9b.png",
+          "3d301e63c196d098-e061216a5b16c406-00006a9b.png",
+          "3dc0a7d38df4346d-7739ca4a28e53f10-00006a9b.png",
+          "3dc0a7d38df4346d-8f69ccbc3f2126b7-00006a9b.png",
+          "3efd4ee45b69d-93b466dd9c8f65db-00006a9b.png",
+          "3fe95364dc98b154-cc1a94b8b774679e-00006a9b.png",
+          "3fe95364dc98b154-deec776f0c89eee1-00006a9b.png",
+          "402e69fc05964843-720bc1c295f8dad0-00006a9b.png",
+          "4040ef23874e1b29-a0acbf346b6fd320-00006a9b.png",
+          "4100abb00780c42a-7048545b48637085-00006a9b.png",
+          "425ad1559d7b757c-4e38404c7ddd628a-00006a9b.png",
+          "425ad1559d7b757c-720bc1c295f8dad0-00006a9b.png",
+          "446659c0a5bfec1b-cc1a94b8b774679e-00006a9b.png",
+          "446659c0a5bfec1b-deec776f0c89eee1-00006a9b.png",
+          "44db747fb2c2d17d-e061216a5b16c406-00006a9b.png",
+          "45fac548d5cd9c01-7696be71c039c699-00006a9b.png",
+          "45fac548d5cd9c01-93b466dd9c8f65db-00006a9b.png",
+          "4649058470cba9c1-67d03168e17dcc99-00006a9b.png",
+          "470593f1412f92db-85a7e5e2ad01c597-00006a9b.png",
+          "48be51771859b0e2-57048e594734d433-00006a9b.png",
+          "491a1db2c0c57f11-38e147eb98010593-00006a9b.png",
+          "491a1db2c0c57f11-85a7e5e2ad01c597-00006a9b.png",
+          "494d572b77a0fa89-2f53dcc5090e185-00005e13.png",
+          "498e3fc26c10b47-c60905f0c6fb6adb-000059d3.png",
+          "49d15daadcbbdddd-a20340dcca9cb8ed-00006a9b.png",
+          "4a1a35ac03ff8f4c-dfdc596d6b90787c-00006a9b.png",
+          "4aca29cdd72e8404-a66723d5db4c224f-00005e13.png",
+          "4aca8588ca4f8d3f-9610e76f619faa37-00006a9b.png",
+          "4aca8588ca4f8d3f-cf375a1cced5cd11-00006a9b.png",
+          "4addac188a3a3afe-7815acdeb1c9835-00006a9b.png",
+          "4af248f4fc5b0310-8f69ccbc3f2126b7-00006a9b.png",
+          "4b6717e876f77f01-2fc0936ec9aa6d9c-000059d3.png",
+          "4bad4f9c07e12ed9-4afdc65c8c7237ea-00006a9b.png",
+          "4bad4f9c07e12ed9-dad09a784a625e09-00006a9b.png",
+          "4c8e65f65db02d1-71c04830dd284a78-00006a9b.png",
+          "4ca171483a885990-4b6f9aa6554de434-00006a9b.png",
+          "4ca171483a885990-71c04830dd284a78-00006a9b.png",
+          "4d3a969cc9403dc1-b7792ce58d96dd91-00006a9b.png",
+          "4d91277603284673-8f69ccbc3f2126b7-00006a9b.png",
+          "4da1238abd41e1a-203a265c57197d50-00006a9b.png",
+          "4f6964b4698e4db5-b7792ce58d96dd91-00006a9b.png",
+          "510a594c994cb8b-4e38404c7ddd628a-00006a9b.png",
+          "510a594c994cb8b-720bc1c295f8dad0-00006a9b.png",
+          "51518a4ab6d1826a-4a5865f391193705-00006a9b.png",
+          "51787a371a13a867-102b4130dc2b2976-00006a9b.png",
+          "51874ccfa0df97a-102b4130dc2b2976-00006a9b.png",
+          "51ac5c7fd87e8c1f-4ee27ad323aff54b-00006a9b.png",
+          "51ac5c7fd87e8c1f-d01484afa07e523c-00006a9b.png",
+          "524fa62aacfe115b-720bc1c295f8dad0-00006a9b.png",
+          "5263ffbb7cc16f67-7739ca4a28e53f10-00006a9b.png",
+          "529af39f09ecb654-f4121f5f5c846caf-000059d3.png",
+          "5326b68ea31f22e2-d01484afa07e523c-00006a9b.png",
+          "53df44662b00489c-b6f39e631d635347-00006a9b.png",
+          "5424f335b0b570f0-e858c29c7e7bbd0b-00006a9b.png",
+          "5435091123490bfe-70516ce5fb76cf8b-00006a9b.png",
+          "55d7816967a246f4-16993afa75a2a270-00006a9b.png",
+          "56377957f3a60616-30d27af095b1a3a8-00005e13.png",
+          "569ea186deac282f-85a7e5e2ad01c597-00006a9b.png",
+          "56a12edb1546201e-a1c6bd1264bdb2ef-00006a9b.png",
+          "56bd1ba57ca3435-4b6f9aa6554de434-00006a9b.png",
+          "56bd1ba57ca3435-71c04830dd284a78-00006a9b.png",
+          "5875b52041613e32-1797d4469d43bc72-00006a9b.png",
+          "589d2b6ce929adcf-a0acbf346b6fd320-00006a9b.png",
+          "594b04722ea1e43f-4afdc65c8c7237ea-00006a9b.png",
+          "59952b974a971e63-7739ca4a28e53f10-00006a9b.png",
+          "599870a406d1cef7-ee2b464ae3e78255-00006a9b.png",
+          "59f74effcbb83076-5eeebf2c4be5aaa-00006a9b.png",
+          "5c739699094b0a27-b7792ce58d96dd91-00006a9b.png",
+          "5cf322219df8dee9-8b54485aa15ba5cb-00006a9b.png",
+          "5d8bca60d1ad136c-8c87cb9a686ef6ad-00006a9b.png",
+          "5e6e93855e6ccb15-5eeebf2c4be5aaa-00006a9b.png",
+          "5eb8d4ef05d31339-41bdf58549ac437-00006a9b.png",
+          "5f6463d8b88a0a61-7048545b48637085-00006a9b.png",
+          "5f9ed110e316dbce-4e38404c7ddd628a-00006a9b.png",
+          "5ff77df650da2ae8-93b466dd9c8f65db-00006a9b.png",
+          "60cb17ec8de7f488-7696be71c039c699-00006a9b.png",
+          "629d1a3b9bfd3806-6eaf4929cf8df76-000059d3.png",
+          "6309ba715b148dd1-720bc1c295f8dad0-00006a9b.png",
+          "636a9351895686ee-df4ee6e9026b84b5-00006a9b.png",
+          "644402bd5be78e2e-720bc1c295f8dad0-00006a9b.png",
+          "644997afa899e35a-7254c014285d490c-000059d3.png",
+          "6466560d2429e9c-a1c6bd1264bdb2ef-00006a9b.png",
+          "64bc915e894343ea-93b466dd9c8f65db-00006a9b.png",
+          "651b96e0a3f6a81f-8f69ccbc3f2126b7-00006a9b.png",
+          "658c87ee40453dfa-d103fbc7998e9fb3-00006a9b.png",
+          "663eb9be15087f3d-f654f6112ff0653b-00006a9b.png",
+          "66864e4b45b140d1-e858c29c7e7bbd0b-00006a9b.png",
+          "679f066830fec802-4e38404c7ddd628a-00006a9b.png",
+          "685afa6404381b3e-3d5da9850a3257f2-00006a9b.png",
+          "68c6ccbc47081987-a20340dcca9cb8ed-00006a9b.png",
+          "68e7cdd31dc09748-dfdc596d6b90787c-00006a9b.png",
+          "69c41147e5943e6a-d103fbc7998e9fb3-00006a9b.png",
+          "6a38b308c73a9c35-7739ca4a28e53f10-00006a9b.png",
+          "6b12bdf5a9b21635-8c87cb9a686ef6ad-00006a9b.png",
+          "6b1fef74589d7dd4-b7792ce58d96dd91-00006a9b.png",
+          "6bafb2fa123b840e-4afdc65c8c7237ea-00006a9b.png",
+          "6bafb2fa123b840e-dad09a784a625e09-00006a9b.png",
+          "6c838345004ac124-720bc1c295f8dad0-00006a9b.png",
+          "6d3d2b0778e6c8f-24c936698f7096a-00006a9b.png",
+          "6da41457803ac60f-e858c29c7e7bbd0b-00006a9b.png",
+          "6e61e3c57174f2d3-5cb3c401c41734ae-00005e13.png",
+          "6e70caa187169141-720bc1c295f8dad0-00006a9b.png",
+          "6f201d9c5c9ec461-70516ce5fb76cf8b-00006a9b.png",
+          "70292f8b17a4141b-5d47b09a94b298b2-00006a9b.png",
+          "70b42732f3e6962-a0acbf346b6fd320-00006a9b.png",
+          "70b42732f3e6962-e061216a5b16c406-00006a9b.png",
+          "7195da4dcd9a3b21-8f69ccbc3f2126b7-00006a9b.png",
+          "721e4f3903a99d70-67d03168e17dcc99-00006a9b.png",
+          "7267ff2c8ac05520-7696be71c039c699-00006a9b.png",
+          "72ea7fabf0fa54c3-368d7d1a764a0268-000059d3.png",
+          "738e9b62f78ad9d-d103fbc7998e9fb3-00006a9b.png",
+          "738e9b62f78ad9d-f654f6112ff0653b-00006a9b.png",
+          "73dc6c7efacf0af3-4e38404c7ddd628a-00006a9b.png",
+          "74c1e02a4cdca7ce-4ee27ad323aff54b-00006a9b.png",
+          "74c52c44c91b4835-8c87cb9a686ef6ad-00006a9b.png",
+          "75281ac1bd2d34c0-203a265c57197d50-00006a9b.png",
+          "75585657777b72eb-16993afa75a2a270-00006a9b.png",
+          "75585657777b72eb-24c936698f7096a-00006a9b.png",
+          "75acc912cf3eae2b-4e38404c7ddd628a-00006a9b.png",
+          "75acc912cf3eae2b-720bc1c295f8dad0-00006a9b.png",
+          "75c10cbb9e8a052c-38e147eb98010593-00006a9b.png",
+          "75c10cbb9e8a052c-85a7e5e2ad01c597-00006a9b.png",
+          "7632f9e8e0391c46-48fcd4fb5b0bbf71-00006a9b.png",
+          "768d8cd940997139-4e38404c7ddd628a-00006a9b.png",
+          "768d8cd940997139-720bc1c295f8dad0-00006a9b.png",
+          "77219c024fbe1d5c-38e147eb98010593-00006a9b.png",
+          "77219c024fbe1d5c-85a7e5e2ad01c597-00006a9b.png",
+          "78447c40d32d7495-7048545b48637085-00006a9b.png",
+          "78a101ae9edf9c18-afa107f5902abc97-00006a9b.png",
+          "78b91204b8d1642c-deec776f0c89eee1-00006a9b.png",
+          "78cf6ee21f115b81-8b9749ee643f9aef-00005e13.png",
+          "78d868ad408435de-8429fbbea4c9df94-00006a9b.png",
+          "7c57103032bb1d78-4e38404c7ddd628a-00006a9b.png",
+          "7c57103032bb1d78-720bc1c295f8dad0-00006a9b.png",
+          "7c6c462d225e6a8a-f64fedce0bee8d31-00005e13.png",
+          "7cdaca4060804e5-720bc1c295f8dad0-00006a9b.png",
+          "7ce1c379902a79d5-4ee27ad323aff54b-00006a9b.png",
+          "7d1ee6a596e15298-690a7905123df243-00006a9b.png",
+          "7d9d0261465c9876-deec776f0c89eee1-00006a9b.png",
+          "7dadb08714952e12-48fcd4fb5b0bbf71-00006a9b.png",
+          "7e067f726688559-16993afa75a2a270-00006a9b.png",
+          "7e067f726688559-24c936698f7096a-00006a9b.png",
+          "7f44a8f4adc0554a-a1c6bd1264bdb2ef-00006a9b.png",
+          "8087212957d50951-163c8a2d185d3932-00006a9b.png",
+          "8112f26304dfd0ed-cc1a94b8b774679e-00006a9b.png",
+          "8112f26304dfd0ed-deec776f0c89eee1-00006a9b.png",
+          "817d923e5e02a4b4-67d03168e17dcc99-00006a9b.png",
+          "81b6c526dd978930-4e38404c7ddd628a-00006a9b.png",
+          "81c80ca0a4fc8935-cc1a94b8b774679e-00006a9b.png",
+          "81c80ca0a4fc8935-deec776f0c89eee1-00006a9b.png",
+          "828d4cadb4fda4b2-7048545b48637085-00006a9b.png",
+          "82935bbd2ab41c79-48fcd4fb5b0bbf71-00006a9b.png",
+          "82935bbd2ab41c79-8c87cb9a686ef6ad-00006a9b.png",
+          "838ecd2d4b5580aa-deec776f0c89eee1-00006a9b.png",
+          "83c58dce89618c82-b7792ce58d96dd91-00006a9b.png",
+          "8440d08969c4bf56-ee2b464ae3e78255-00006a9b.png",
+          "84ce384064eccce6-2b8794b2867251bf-00005e13.png",
+          "84e19ccf562050ed-7048545b48637085-00006a9b.png",
+          "8527ac7e718814e0-2a1f5ad23be1573b-00006a9b.png",
+          "8654e395cd952d31-93b466dd9c8f65db-00006a9b.png",
+          "86ff497149c7f131-1bb18d3231ae9214-00006a9b.png",
+          "871235def28300f-342134686146c9d9-00006a9b.png",
+          "8742b0cf15c1f87b-85a7e5e2ad01c597-00006a9b.png",
+          "87526f3c43cae660-690a7905123df243-00006a9b.png",
+          "87bbb648fef3338f-720bc1c295f8dad0-00006a9b.png",
+          "87d79cd34190c80c-1bb18d3231ae9214-00006a9b.png",
+          "87d7b4a4cc29bdbd-cc1a94b8b774679e-00006a9b.png",
+          "893993369ff4b433-f654f6112ff0653b-00006a9b.png",
+          "8959039953f1cd2f-67d03168e17dcc99-00006a9b.png",
+          "89944b2bef4dd8ab-1bb18d3231ae9214-00006a9b.png",
+          "8a117fa603969c70-dad09a784a625e09-00006a9b.png",
+          "8a21063df1a6bdc0-7048545b48637085-00006a9b.png",
+          "8a5f990317b74ec-df4ee6e9026b84b5-00006a9b.png",
+          "8b4ee2a84dc56919-4ee27ad323aff54b-00006a9b.png",
+          "8b68ac036366c186-df4ee6e9026b84b5-00006a9b.png",
+          "8b6f4a3d0bbade79-4e38404c7ddd628a-00006a9b.png",
+          "8b6f4a3d0bbade79-720bc1c295f8dad0-00006a9b.png",
+          "8bafa937a4e512d7-a20340dcca9cb8ed-00006a9b.png",
+          "8d8c711c22e7ca7b-38e147eb98010593-00006a9b.png",
+          "8e7a224ea52718e4-71c04830dd284a78-00006a9b.png",
+          "8ed46f6a6a232bf2-dfdc596d6b90787c-00006a9b.png",
+          "8f25a63f49460d99-4a5865f391193705-00006a9b.png",
+          "8f25a63f49460d99-5d47b09a94b298b2-00006a9b.png",
+          "8f6b0eeac2c6632e-e930a08518bf4a0d-00006a9b.png",
+          "90c7b2fb34cc8840-7739ca4a28e53f10-00006a9b.png",
+          "90d7d052f1c557fc-d01484afa07e523c-00006a9b.png",
+          "90f7d6016f0becde-48fcd4fb5b0bbf71-00006a9b.png",
+          "90f7d6016f0becde-8c87cb9a686ef6ad-00006a9b.png",
+          "9105d40345af41c6-4e38404c7ddd628a-00006a9b.png",
+          "911a493bb2e98275-67d03168e17dcc99-00006a9b.png",
+          "92921662e98b7a5f-9e2a09cdea933bca-00006a9b.png",
+          "92921662e98b7a5f-ee2b464ae3e78255-00006a9b.png",
+          "92c4066753bb80e-db3aa212c473a805-00006a9b.png",
+          "930594defe01f579-a775be84212b26f5-00005e13.png",
+          "9454fc410db2edd9-2b2ebd9f36d5f3e3-000059d3.png",
+          "946cb3d4dc88b413-93b466dd9c8f65db-00006a9b.png",
+          "96547ad0253b9bad-cc1a94b8b774679e-00006a9b.png",
+          "96f6ff7f89cf0d4a-41bdf58549ac437-00006a9b.png",
+          "9715dba3717c8626-67d03168e17dcc99-00006a9b.png",
+          "97b963204e859d0b-4ee27ad323aff54b-00006a9b.png",
+          "981b22e9565ab6ec-4ee27ad323aff54b-00006a9b.png",
+          "982526b197a8ad1b-7739ca4a28e53f10-00006a9b.png",
+          "991f7aba718c23b2-dad09a784a625e09-00006a9b.png",
+          "997796de8365a98b-102b4130dc2b2976-00006a9b.png",
+          "997796de8365a98b-a20340dcca9cb8ed-00006a9b.png",
+          "9a10ab575052a964-a20340dcca9cb8ed-00006a9b.png",
+          "9aaf532cd961be6d-dfdc596d6b90787c-00006a9b.png",
+          "9b02d95cae6f7558-203a265c57197d50-00006a9b.png",
+          "9b8f511123d4823f-7cb790d520ea8a9e-00005e13.png",
+          "9ba0248db6f86583-b6f39e631d635347-00006a9b.png",
+          "9bb0c717aa00f23-73c1df963ab80196-000059d3.png",
+          "9dbe4dc5fc4f86c2-db3aa212c473a805-00006a9b.png",
+          "9e4cde18693d629f-690a7905123df243-00006a9b.png",
+          "9edd237e544ba48-afa107f5902abc97-00006a9b.png",
+          "9f6b5b2198c5dd6f-9e2a09cdea933bca-00006a9b.png",
+          "a1bdaf669cc0d29f-7696be71c039c699-00006a9b.png",
+          "a1dbe97ca2087ecc-203a265c57197d50-00006a9b.png",
+          "a1dbe97ca2087ecc-7815acdeb1c9835-00006a9b.png",
+          "a211aec0227b61b4-db3aa212c473a805-00006a9b.png",
+          "a2863bb14b0804ef-38e147eb98010593-00006a9b.png",
+          "a2863bb14b0804ef-85a7e5e2ad01c597-00006a9b.png",
+          "a2b71d54f4f8e312-7696be71c039c699-00006a9b.png",
+          "a349f924d04e96c8-8b54485aa15ba5cb-00006a9b.png",
+          "a349f924d04e96c8-db3aa212c473a805-00006a9b.png",
+          "a35f14fef6b03ad2-a0acbf346b6fd320-00006a9b.png",
+          "a40496873fb917ea-8f69ccbc3f2126b7-00006a9b.png",
+          "a47c298ffc70181e-7562b835f3855c8c-000059d3.png",
+          "a526cd2d2a2b85f4-d103fbc7998e9fb3-00006a9b.png",
+          "a54bf6e5bb6e4371-4e38404c7ddd628a-00006a9b.png",
+          "a54bf6e5bb6e4371-720bc1c295f8dad0-00006a9b.png",
+          "a63652f8e40ce11-71c04830dd284a78-00006a9b.png",
+          "a6aba848851fa36c-e061216a5b16c406-00006a9b.png",
+          "a79fb21c8661e70d-4afdc65c8c7237ea-00006a9b.png",
+          "a8b9aed8911975d1-48fcd4fb5b0bbf71-00006a9b.png",
+          "a8d8aee3707e9d66-41bdf58549ac437-00006a9b.png",
+          "a90dd6b9b05a43a1-d01484afa07e523c-00006a9b.png",
+          "a99ebc666017e65f-7739ca4a28e53f10-00006a9b.png",
+          "a9ac963eee6db767-2a1f5ad23be1573b-00006a9b.png",
+          "a9cb4af2ed20f50-3d5da9850a3257f2-00006a9b.png",
+          "aa21ee18be54f9df-690a7905123df243-00006a9b.png",
+          "aa21ee18be54f9df-6d35c5ef7e2c81a5-00006a9b.png",
+          "aa5bc0ffefae68ca-cc1a94b8b774679e-00006a9b.png",
+          "aabc7f391d41d70b-ad4dc341bd40bf0d-000059d3.png",
+          "ab2442fc35ef032e-67d03168e17dcc99-00006a9b.png",
+          "ab2442fc35ef032e-c6d5c6e12ff30a1b-00006a9b.png",
+          "ab431986a4558539-3d5da9850a3257f2-00006a9b.png",
+          "ab78728f885af532-85a7e5e2ad01c597-00006a9b.png",
+          "ab7b449c5e4058a0-102b4130dc2b2976-00006a9b.png",
+          "aba510375dbc2cad-e061216a5b16c406-00006a9b.png",
+          "abaa51e1f711242f-7739ca4a28e53f10-00006a9b.png",
+          "abaa51e1f711242f-8f69ccbc3f2126b7-00006a9b.png",
+          "abd0074ff3fdbfda-690a7905123df243-00006a9b.png",
+          "abd0074ff3fdbfda-6d35c5ef7e2c81a5-00006a9b.png",
+          "acb6051d2f1928da-d103fbc7998e9fb3-00006a9b.png",
+          "ad0ef1dc651d8507-db3aa212c473a805-00006a9b.png",
+          "ad519495a29eda2a-db3aa212c473a805-00006a9b.png",
+          "ad75f26b331ed9d0-dfdc596d6b90787c-00006a9b.png",
+          "ad8cc56fcc8a4163-c8cbdd0129f1279a-00005e13.png",
+          "ae48e49e4c05574d-a0acbf346b6fd320-00006a9b.png",
+          "ae48e49e4c05574d-e061216a5b16c406-00006a9b.png",
+          "aecbaaefd006fc7c-690a7905123df243-00006a9b.png",
+          "aecbaaefd006fc7c-6d35c5ef7e2c81a5-00006a9b.png",
+          "af017eee31fcbdec-e858c29c7e7bbd0b-00006a9b.png",
+          "afa6f78caf93f45a-4e38404c7ddd628a-00006a9b.png",
+          "afbf0463f52c5b4b-dad09a784a625e09-00006a9b.png",
+          "afc81f19e9d196c9-72304f2bdc7cc133-000059d3.png",
+          "b018c6f6a45ee484-1b68918a984cb567-000059d3.png",
+          "b055b179e7aac4da-4ee27ad323aff54b-00006a9b.png",
+          "b0c0e70e4127235-85a7e5e2ad01c597-00006a9b.png",
+          "b1bfccc72bc81799-c4a590910c938573-00006a9b.png",
+          "b2982f02c927b94f-342134686146c9d9-00006a9b.png",
+          "b29e854e641394a4-24c936698f7096a-00006a9b.png",
+          "b2c590f70fb9439c-163c8a2d185d3932-00006a9b.png",
+          "b2d4801620f524a-c6d5c6e12ff30a1b-00006a9b.png",
+          "b32de5296a4d8df0-93b466dd9c8f65db-00006a9b.png",
+          "b40bba2db3cb903e-8b54485aa15ba5cb-00006a9b.png",
+          "b40bba2db3cb903e-db3aa212c473a805-00006a9b.png",
+          "b435bbd63e4da107-deec776f0c89eee1-00006a9b.png",
+          "b494ade64686aab6-4e38404c7ddd628a-00006a9b.png",
+          "b4bbf09c68561d29-dfdc596d6b90787c-00006a9b.png",
+          "b5275a8a61c25538-203a265c57197d50-00006a9b.png",
+          "b5b3698af3866882-24c936698f7096a-00006a9b.png",
+          "b5ef5d1bb0a090b0-8f69ccbc3f2126b7-00006a9b.png",
+          "b5fe6aadfa8bc886-8b54485aa15ba5cb-00006a9b.png",
+          "b5fe6aadfa8bc886-db3aa212c473a805-00006a9b.png",
+          "b7195a046a372caf-4e38404c7ddd628a-00006a9b.png",
+          "b7330ab59da21b13-7aa443a438e15ada-00006a9b.png",
+          "b73606d7e8164c2a-4e38404c7ddd628a-00006a9b.png",
+          "b73606d7e8164c2a-720bc1c295f8dad0-00006a9b.png",
+          "b7dcdacd5e4d42db-16993afa75a2a270-00006a9b.png",
+          "b7dcdacd5e4d42db-24c936698f7096a-00006a9b.png",
+          "b854281243944f2b-4e38404c7ddd628a-00006a9b.png",
+          "b88bebb0aa8d856b-df4ee6e9026b84b5-00006a9b.png",
+          "b88bebb0aa8d856b-dfdc596d6b90787c-00006a9b.png",
+          "b8c1b03ba860ae0e-7b80a9794aa0b8b6-00006a9b.png",
+          "b9807f64c967cfe2-4b6f9aa6554de434-00006a9b.png",
+          "b9807f64c967cfe2-71c04830dd284a78-00006a9b.png",
+          "bad927a3c1c48f80-1797d4469d43bc72-00006a9b.png",
+          "bb35aae03e333d02-203a265c57197d50-00006a9b.png",
+          "bb5d82c3132e7c78-8b54485aa15ba5cb-00006a9b.png",
+          "bb8f0e81ddbd42a7-b7792ce58d96dd91-00006a9b.png",
+          "bc640c20a38abe90-db3aa212c473a805-00006a9b.png",
+          "bc74cf2fd8a7483d-1797d4469d43bc72-00006a9b.png",
+          "bca7c39046912774-71c04830dd284a78-00006a9b.png",
+          "bcd750825de7e544-5eeebf2c4be5aaa-00006a9b.png",
+          "bd7a0f49a44944ad-4afdc65c8c7237ea-00006a9b.png",
+          "bd7c1e78384cd4fd-6d35c5ef7e2c81a5-00006a9b.png",
+          "bf7bd991440fd56a-720bc1c295f8dad0-00006a9b.png",
+          "c045575e345383d5-cc1a94b8b774679e-00006a9b.png",
+          "c07a3073f5a41c8f-720bc1c295f8dad0-00006a9b.png",
+          "c0901df1722c8265-41bdf58549ac437-00006a9b.png",
+          "c127bdd71ac66b2b-38e147eb98010593-00006a9b.png",
+          "c127bdd71ac66b2b-85a7e5e2ad01c597-00006a9b.png",
+          "c1c288f9d88f24fd-203a265c57197d50-00006a9b.png",
+          "c1c288f9d88f24fd-7815acdeb1c9835-00006a9b.png",
+          "c26a6ab9d082e62d-5eeebf2c4be5aaa-00006a9b.png",
+          "c27d365dbe43ad8a-a1c6bd1264bdb2ef-00006a9b.png",
+          "c298db66b6e6b123-690a7905123df243-00006a9b.png",
+          "c2a5fa5800cdee8d-48fcd4fb5b0bbf71-00006a9b.png",
+          "c2a5fa5800cdee8d-8c87cb9a686ef6ad-00006a9b.png",
+          "c2bb62fdf9dd2447-203a265c57197d50-00006a9b.png",
+          "c3ca37afd02a56be-9e2a09cdea933bca-00006a9b.png",
+          "c3eb4360174ca6c5-720bc1c295f8dad0-00006a9b.png",
+          "c40b170cc8277d84-70516ce5fb76cf8b-00006a9b.png",
+          "c4a4a7167b0d16b2-7739ca4a28e53f10-00006a9b.png",
+          "c5796e9bb8e3c525-203a265c57197d50-00006a9b.png",
+          "c5796e9bb8e3c525-7815acdeb1c9835-00006a9b.png",
+          "c5ee0cf5fbe76eba-7696be71c039c699-00006a9b.png",
+          "c69347f8ba23cdc2-4ee27ad323aff54b-00006a9b.png",
+          "c69347f8ba23cdc2-d01484afa07e523c-00006a9b.png",
+          "c693aa029d3b6e72-df4ee6e9026b84b5-00006a9b.png",
+          "c7ebbabbebae4fe6-b7792ce58d96dd91-00006a9b.png",
+          "c8517aafe2eba00c-c34274277a247019-000059d3.png",
+          "c86fcb387b5254e3-3d5da9850a3257f2-00006a9b.png",
+          "cac0baec06d46896-690a7905123df243-00006a9b.png",
+          "cac0baec06d46896-6d35c5ef7e2c81a5-00006a9b.png",
+          "cb44a63f91c11056-2a1f5ad23be1573b-00006a9b.png",
+          "cb700b52daea337c-e41e82279bbb1b60-00005e13.png",
+          "ccb744ed41057228-67d03168e17dcc99-00006a9b.png",
+          "ccb744ed41057228-c6d5c6e12ff30a1b-00006a9b.png",
+          "cd332cedbfc72945-d103fbc7998e9fb3-00006a9b.png",
+          "cd332cedbfc72945-f654f6112ff0653b-00006a9b.png",
+          "cd813d41e6a74e01-8c87cb9a686ef6ad-00006a9b.png",
+          "cd92e6237f8dc127-e858c29c7e7bbd0b-00006a9b.png",
+          "cdef12a569e5bae4-f7a62f46e1676992-00006a9b.png",
+          "ce1830d70260a4dc-4e38404c7ddd628a-00006a9b.png",
+          "cfa7135938f0dbfc-1797d4469d43bc72-00006a9b.png",
+          "d010d18d6c9fd37f-dfdc596d6b90787c-00006a9b.png",
+          "d04c3857e088d817-16993afa75a2a270-00006a9b.png",
+          "d07f66177413c297-1bb18d3231ae9214-00006a9b.png",
+          "d13cab97fdf4e190-7815acdeb1c9835-00006a9b.png",
+          "d159552c01eddd87-7048545b48637085-00006a9b.png",
+          "d1a0659a8cb8497a-7048545b48637085-00006a9b.png",
+          "d29970104d2edd2-9e2a09cdea933bca-00006a9b.png",
+          "d2fa522a27edf91f-a1c6bd1264bdb2ef-00006a9b.png",
+          "d32948a6e2307f76-a0acbf346b6fd320-00006a9b.png",
+          "d32948a6e2307f76-e061216a5b16c406-00006a9b.png",
+          "d4093955933aa3f9-b6f39e631d635347-00006a9b.png",
+          "d44221f7a8cd1eac-48fcd4fb5b0bbf71-00006a9b.png",
+          "d44221f7a8cd1eac-8c87cb9a686ef6ad-00006a9b.png",
+          "d5a36b7bfbc81537-67d03168e17dcc99-00006a9b.png",
+          "d5a36b7bfbc81537-c6d5c6e12ff30a1b-00006a9b.png",
+          "d6804f54da03120-cc1a94b8b774679e-00006a9b.png",
+          "d69f83ae3ff72736-a0acbf346b6fd320-00006a9b.png",
+          "d790f199ca0ec2e-71c04830dd284a78-00006a9b.png",
+          "d8c670f5878f80e6-ee2b464ae3e78255-00006a9b.png",
+          "d999cba7adfbfe3b-4ee27ad323aff54b-00006a9b.png",
+          "d9d7b2b823e23c72-afa107f5902abc97-00006a9b.png",
+          "da3b0b1b1d41e602-93b466dd9c8f65db-00006a9b.png",
+          "da7ccee5d9999b92-2a1f5ad23be1573b-00006a9b.png",
+          "da888f3779a9514a-afa107f5902abc97-00006a9b.png",
+          "da8f1e875773f8fb-7696be71c039c699-00006a9b.png",
+          "dab4239bda303d7f-7048545b48637085-00006a9b.png",
+          "daf737363a70b2ce-4afdc65c8c7237ea-00006a9b.png",
+          "db125bbc13b5744c-7b80a9794aa0b8b6-00006a9b.png",
+          "dbeafdc86b98c37-1fd20c053c66dd7c-00005e13.png",
+          "dc6bcad4b53bc05f-71c04830dd284a78-00006a9b.png",
+          "dc8575aa2ecc273b-7739ca4a28e53f10-00006a9b.png",
+          "dd1f03f38f8704a0-cc1a94b8b774679e-00006a9b.png",
+          "dd44096e144b3f09-d01484afa07e523c-00006a9b.png",
+          "de33876f80431569-7696be71c039c699-00006a9b.png",
+          "de33876f80431569-93b466dd9c8f65db-00006a9b.png",
+          "df67a18d7b4cb0bd-720bc1c295f8dad0-00006a9b.png",
+          "df71848b0ab247d9-4afdc65c8c7237ea-00006a9b.png",
+          "df71848b0ab247d9-dad09a784a625e09-00006a9b.png",
+          "df7ca6d1854089bc-8b54485aa15ba5cb-00006a9b.png",
+          "df7ca6d1854089bc-db3aa212c473a805-00006a9b.png",
+          "dfe907b17855f2fe-4e38404c7ddd628a-00006a9b.png",
+          "e087da833e18e10a-db3aa212c473a805-00006a9b.png",
+          "e14c473259a72288-6d35c5ef7e2c81a5-00006a9b.png",
+          "e196052f30313334-9ef73818cc2fc128-000059d3.png",
+          "e24f447ece592bdc-24c936698f7096a-00006a9b.png",
+          "e31fcf08e16659ee-a1c6bd1264bdb2ef-00006a9b.png",
+          "e32af3f9c336ce2f-48fcd4fb5b0bbf71-00006a9b.png",
+          "e364c46309284110-9e2a09cdea933bca-00006a9b.png",
+          "e364c46309284110-ee2b464ae3e78255-00006a9b.png",
+          "e4472eb369593b0a-37a6faef0dc65dfa-000059d3.png",
+          "e49b3fb81c613f6c-e061216a5b16c406-00006a9b.png",
+          "e5b14cd3d1278b32-67d03168e17dcc99-00006a9b.png",
+          "e5b14cd3d1278b32-c6d5c6e12ff30a1b-00006a9b.png",
+          "e5d6576bab12ef1b-d103fbc7998e9fb3-00006a9b.png",
+          "e650bdef14768bd6-7815acdeb1c9835-00006a9b.png",
+          "e664b7d3c108b65c-4e38404c7ddd628a-00006a9b.png",
+          "e664b7d3c108b65c-720bc1c295f8dad0-00006a9b.png",
+          "e66df62a4b87aef3-67d03168e17dcc99-00006a9b.png",
+          "e718281fc51adaca-2a1f5ad23be1573b-00006a9b.png",
+          "e81fb7d476310b4a-4e38404c7ddd628a-00006a9b.png",
+          "e821c7e51481a29d-15a3d6e3f31de34-00005e13.png",
+          "e85647bfd61d4e82-b7792ce58d96dd91-00006a9b.png",
+          "e93992b45324f42-67d03168e17dcc99-00006a9b.png",
+          "e93da898069909e0-70516ce5fb76cf8b-00006a9b.png",
+          "e9441fec259f6c5f-9e2a09cdea933bca-00006a9b.png",
+          "e9480a89dd362dda-4e38404c7ddd628a-00006a9b.png",
+          "e9480a89dd362dda-720bc1c295f8dad0-00006a9b.png",
+          "e9603d0299b4934a-9e2a09cdea933bca-00006a9b.png",
+          "e98cec8b2c678d1a-24c936698f7096a-00006a9b.png",
+          "e99ba926e0b31b72-8c87cb9a686ef6ad-00006a9b.png",
+          "ea01752d7cd8fdfb-4e38404c7ddd628a-00006a9b.png",
+          "ea01752d7cd8fdfb-720bc1c295f8dad0-00006a9b.png",
+          "ea124059806664e2-41bdf58549ac437-00006a9b.png",
+          "ea18f6241b2e747d-7048545b48637085-00006a9b.png",
+          "eaef8fee19eaf8ed-203a265c57197d50-00006a9b.png",
+          "eb5091ecaac65e5e-4e38404c7ddd628a-00006a9b.png",
+          "eba4a317ccc62efc-c6d5c6e12ff30a1b-00006a9b.png",
+          "ec3359052e28e208-a1c6bd1264bdb2ef-00006a9b.png",
+          "ed049273d769e365-a1c6bd1264bdb2ef-00006a9b.png",
+          "ed1c44d787b138c7-2a1f5ad23be1573b-00006a9b.png",
+          "edb59879b4baec3a-d50a25c7904cf729-000059d3.png",
+          "eef26ca880aff791-7739ca4a28e53f10-00006a9b.png",
+          "f01e564d9451b0e2-4e38404c7ddd628a-00006a9b.png",
+          "f01e564d9451b0e2-720bc1c295f8dad0-00006a9b.png",
+          "f0a12b30bdac2e4f-7739ca4a28e53f10-00006a9b.png",
+          "f0bf26b29662c592-8f69ccbc3f2126b7-00006a9b.png",
+          "f1c13e1888b53cb5-4b6f9aa6554de434-00006a9b.png",
+          "f1da25a3269f1819-c4a590910c938573-00006a9b.png",
+          "f228c3ef6a7c2da1-dad09a784a625e09-00006a9b.png",
+          "f25ff383244b9779-b7792ce58d96dd91-00006a9b.png",
+          "f27f55f0e3eaa3ab-2a1f5ad23be1573b-00006a9b.png",
+          "f2818367de935b7a-e5fee85592c84c1b-00005e13.png",
+          "f3ba036282aa9994-dfdc596d6b90787c-00006a9b.png",
+          "f3be4474a040506c-5eeebf2c4be5aaa-00006a9b.png",
+          "f46e0740dfefc162-b7792ce58d96dd91-00006a9b.png",
+          "f482937c62617f0b-71c04830dd284a78-00006a9b.png",
+          "f4aabed39029727b-dad09a784a625e09-00006a9b.png",
+          "f4c79d203eb8e58b-764867a5e1aed63c-00006a9b.png",
+          "f51797be256e145d-4afdc65c8c7237ea-00006a9b.png",
+          "f5fac83865ddd0bb-8f69ccbc3f2126b7-00006a9b.png",
+          "f601d3b1cccf17da-8b54485aa15ba5cb-00006a9b.png",
+          "f6eeef91f555b630-c4a590910c938573-00006a9b.png",
+          "f6fe9fac1c81c084-8b54485aa15ba5cb-00006a9b.png",
+          "f7273632247aa97-4e38404c7ddd628a-00006a9b.png",
+          "f76640634985a265-1797d4469d43bc72-00006a9b.png",
+          "f7a89db0a7f7c74e-38e147eb98010593-00006a9b.png",
+          "f7df45551946b45c-41bdf58549ac437-00006a9b.png",
+          "f84b21c58f0bc3f2-d103fbc7998e9fb3-00006a9b.png",
+          "f8c551e8e6cc1fdf-720bc1c295f8dad0-00006a9b.png",
+          "f8e0c96bce1fe75c-5eeebf2c4be5aaa-00006a9b.png",
+          "f918ab2560725ae1-7048545b48637085-00006a9b.png",
+          "fa1b97ef4556c5d8-2a1f5ad23be1573b-00006a9b.png",
+          "fab0586f5c90ae05-deec776f0c89eee1-00006a9b.png",
+          "fb3c823cab7d4679-16993afa75a2a270-00006a9b.png",
+          "fb5a156211279a4-7aa443a438e15ada-00006a9b.png",
+          "fba608ef1ba6461f-7048545b48637085-00006a9b.png",
+          "fba9aa19c97c8b8c-7696be71c039c699-00006a9b.png",
+          "fba9aa19c97c8b8c-93b466dd9c8f65db-00006a9b.png",
+          "fc1b9ac172f6c3ac-d01484afa07e523c-00006a9b.png",
+          "fd4431c6c48263e5-48fcd4fb5b0bbf71-00006a9b.png",
+          "fd4431c6c48263e5-8c87cb9a686ef6ad-00006a9b.png",
+          "fdb42329033611be-41bdf58549ac437-00006a9b.png",
+          "fe679645d38d4fd0-38e147eb98010593-00006a9b.png",
+          "feb5de665c005609-6d35c5ef7e2c81a5-00006a9b.png",
+          "fed827da80e6a0e2-a1c6bd1264bdb2ef-00006a9b.png",
+          "ff37fc46301a06c1-48fcd4fb5b0bbf71-00006a9b.png"
+        ]
+      },
+      "commands": {
+        "classic_dump_leg": "pcsx2-gsrunner -renderer Vulkan -surfaceless -loop 1 -noshadercache -ini <classic.ini> -logfile <log> -- <dump>   # DumpReplaceableTextures=true ClassicTextureNames=true LoadTextureReplacements=false",
+        "empty_pack_control": "identical to pack_leg but replacements/ is EMPTY, isolating our files from the subsystem-on effect",
+        "export": "python wp7u/make_kit.py <hits.json> <outdir> [--per-identity]   (uses shipped mod_editor.core.ps2_export_service)",
+        "modern_dump_leg": "... -ini <modern.ini> ...   # DumpReplaceableTextures=true ClassicTextureNames=false LoadTextureReplacements=false",
+        "pack_leg": "... -ini <pack.ini> -dumpdir frames-on ...   # ClassicTextureNames=true LoadTextureReplacements=true PrecacheTextureReplacements=true LoadTextureReplacementsAsync=false",
+        "reference_leg": "... -ini <ref.ini> -dumpdir frames-off ...   # LoadTextureReplacements=false",
+        "verify": "python tools/nfl2k5_ps2_replacement_pack_verify.py --pack <outdir>"
+      },
+      "dump_inventory_file": "wp7u/dump_inventory.json",
+      "empty_pack_control": {
+        "kitA_125355": {
+          "frames": [
+            {
+              "by_part": {},
+              "changed_px": 0,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125355_frame00001.png",
+              "pct": 0.0,
+              "sha256_empty": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "sha256_pack": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3"
+            },
+            {
+              "by_part": {
+                "glove": {
+                  "assets": [
+                    "tset:3985:6:5:glove06"
+                  ],
+                  "bbox": [
+                    7,
+                    0,
+                    630,
+                    412
+                  ],
+                  "pixels": 2306,
+                  "rgb": [
+                    128,
+                    0,
+                    255
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:1407:h1207",
+                    "p8:1407:n1207",
+                    "p8:1619:h3036",
+                    "p8:1619:n3036",
+                    "p8:1680:h3593",
+                    "p8:1680:n3593",
+                    "p8:1821:h9507",
+                    "p8:1821:n9507",
+                    "p8:3:buttonicons",
+                    "p8:3:elbowpad_rubber",
+                    "p8:3:wristband_qb"
+                  ],
+                  "bbox": [
+                    27,
+                    3,
+                    639,
+                    412
+                  ],
+                  "pixels": 10278,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "pants": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.pants"
+                  ],
+                  "bbox": [
+                    11,
+                    0,
+                    221,
+                    361
+                  ],
+                  "pixels": 5146,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                },
+                "sleeve": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.sleeve",
+                    "nfl2k5.uniform.09h0.sleeve"
+                  ],
+                  "bbox": [
+                    8,
+                    0,
+                    632,
+                    184
+                  ],
+                  "pixels": 5689,
+                  "rgb": [
+                    0,
+                    255,
+                    255
+                  ]
+                },
+                "torso": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.torso",
+                    "nfl2k5.uniform.09h0.torso"
+                  ],
+                  "bbox": [
+                    7,
+                    0,
+                    634,
+                    412
+                  ],
+                  "pixels": 19643,
+                  "rgb": [
+                    255,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 46618,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125355_frame00002.png",
+              "pct": 15.175,
+              "sha256_empty": "b290a7b01eb885f4e848cae2939580504e666ef13c9a065cd97904dba89e7cd8",
+              "sha256_pack": "fe6737796c4b706c92c1548f3d87c3f78298b78506dcc4741c01d9a4c245a188"
+            },
+            {
+              "by_part": {
+                "glove": {
+                  "assets": [
+                    "tset:3985:6:5:glove06"
+                  ],
+                  "bbox": [
+                    8,
+                    0,
+                    630,
+                    412
+                  ],
+                  "pixels": 2354,
+                  "rgb": [
+                    128,
+                    0,
+                    255
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:1407:h1207",
+                    "p8:1407:n1207",
+                    "p8:1619:h3036",
+                    "p8:1619:n3036",
+                    "p8:1680:h3593",
+                    "p8:1680:n3593",
+                    "p8:1821:h9507",
+                    "p8:1821:n9507",
+                    "p8:3:buttonicons",
+                    "p8:3:elbowpad_rubber",
+                    "p8:3:wristband_qb"
+                  ],
+                  "bbox": [
+                    27,
+                    3,
+                    639,
+                    412
+                  ],
+                  "pixels": 10258,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "pants": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.pants"
+                  ],
+                  "bbox": [
+                    11,
+                    0,
+                    221,
+                    361
+                  ],
+                  "pixels": 5136,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                },
+                "sleeve": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.sleeve",
+                    "nfl2k5.uniform.09h0.sleeve"
+                  ],
+                  "bbox": [
+                    8,
+                    0,
+                    632,
+                    184
+                  ],
+                  "pixels": 5671,
+                  "rgb": [
+                    0,
+                    255,
+                    255
+                  ]
+                },
+                "torso": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.torso",
+                    "nfl2k5.uniform.09h0.torso"
+                  ],
+                  "bbox": [
+                    9,
+                    0,
+                    634,
+                    412
+                  ],
+                  "pixels": 19637,
+                  "rgb": [
+                    255,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 46510,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125355_frame00003.png",
+              "pct": 15.14,
+              "sha256_empty": "ad76e3f95380116c2c0bab43d3b54627ba55aab0bb709e6dec0579b6705d2787",
+              "sha256_pack": "774975b823de0d81387f9edf1ff38d2d8948a2f7c575b0fa67d5324202025899"
+            }
+          ]
+        },
+        "kitB_125428": {
+          "frames": [
+            {
+              "by_part": {},
+              "changed_px": 0,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125428_frame00001.png",
+              "pct": 0.0,
+              "sha256_empty": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "sha256_pack": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3"
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:4:arm_04_02"
+                  ],
+                  "bbox": [
+                    256,
+                    97,
+                    590,
+                    349
+                  ],
+                  "pixels": 124,
+                  "rgb": [
+                    0,
+                    255,
+                    128
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:346:score_buga",
+                    "p8:346:shield_espn"
+                  ],
+                  "bbox": [
+                    0,
+                    8,
+                    612,
+                    229
+                  ],
+                  "pixels": 12509,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "pants": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.pants"
+                  ],
+                  "bbox": [
+                    25,
+                    79,
+                    328,
+                    349
+                  ],
+                  "pixels": 7144,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                },
+                "sleeve": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.sleeve",
+                    "nfl2k5.uniform.09h0.sleeve"
+                  ],
+                  "bbox": [
+                    274,
+                    98,
+                    639,
+                    172
+                  ],
+                  "pixels": 2107,
+                  "rgb": [
+                    0,
+                    255,
+                    255
+                  ]
+                },
+                "torso": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.torso"
+                  ],
+                  "bbox": [
+                    267,
+                    97,
+                    387,
+                    215
+                  ],
+                  "pixels": 5004,
+                  "rgb": [
+                    255,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 34785,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125428_frame00002.png",
+              "pct": 11.323,
+              "sha256_empty": "d9170f4b7a20b4f99d0290df6cebc622dba217ecd4545ab11e1a2ae800d95df9",
+              "sha256_pack": "47c444a45ac788b00fd42ad188d89d49377ea4410a101d0dd01ba8ed7137fddd"
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:4:arm_04_02"
+                  ],
+                  "bbox": [
+                    269,
+                    101,
+                    639,
+                    175
+                  ],
+                  "pixels": 138,
+                  "rgb": [
+                    0,
+                    255,
+                    128
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:346:score_buga",
+                    "p8:346:shield_espn"
+                  ],
+                  "bbox": [
+                    0,
+                    8,
+                    313,
+                    242
+                  ],
+                  "pixels": 12495,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "pants": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.pants"
+                  ],
+                  "bbox": [
+                    25,
+                    79,
+                    328,
+                    355
+                  ],
+                  "pixels": 6899,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                },
+                "sleeve": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.sleeve",
+                    "nfl2k5.uniform.09h0.sleeve"
+                  ],
+                  "bbox": [
+                    273,
+                    101,
+                    639,
+                    174
+                  ],
+                  "pixels": 2157,
+                  "rgb": [
+                    0,
+                    255,
+                    255
+                  ]
+                },
+                "torso": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.torso"
+                  ],
+                  "bbox": [
+                    268,
+                    102,
+                    387,
+                    221
+                  ],
+                  "pixels": 5092,
+                  "rgb": [
+                    255,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 34574,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125428_frame00003.png",
+              "pct": 11.255,
+              "sha256_empty": "f90fd37ca9c088d7944f36d590f1627e2384d47596979c760c65ec1b796d33b3",
+              "sha256_pack": "b9d28366520048a6a537cdd388f6fd69e639e986d2bb09fd4c472a1325b8c481"
+            }
+          ]
+        },
+        "kitC_130738": {
+          "frames": [
+            {
+              "by_part": {},
+              "changed_px": 0,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904130738_frame00001.png",
+              "pct": 0.0,
+              "sha256_empty": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "sha256_pack": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3"
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:1:arm_01_02",
+                    "tset:3:119:2:arm_02_02",
+                    "tset:3:119:3:arm_03_02",
+                    "tset:3:119:4:arm_04_02",
+                    "tset:3:119:5:arm_05_02"
+                  ],
+                  "bbox": [
+                    72,
+                    88,
+                    360,
+                    302
+                  ],
+                  "pixels": 5,
+                  "rgb": [
+                    0,
+                    255,
+                    128
+                  ]
+                },
+                "glove": {
+                  "assets": [
+                    "tset:3985:6:5:glove06",
+                    "tset:3985:6:6:glove07"
+                  ],
+                  "bbox": [
+                    148,
+                    313,
+                    171,
+                    317
+                  ],
+                  "pixels": 6,
+                  "rgb": [
+                    128,
+                    0,
+                    255
+                  ]
+                },
+                "mask": {
+                  "assets": [
+                    "p8:3:mask01",
+                    "p8:3:mask04",
+                    "p8:3:mask06"
+                  ],
+                  "bbox": [
+                    315,
+                    286,
+                    357,
+                    331
+                  ],
+                  "pixels": 7,
+                  "rgb": [
+                    255,
+                    0,
+                    0
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:3:elbowpad_elastic",
+                    "p8:3:elbowpad_rubber",
+                    "p8:3:elbowpad_taped",
+                    "p8:3:neckroll_01",
+                    "p8:3:wristband_qb"
+                  ],
+                  "bbox": [
+                    306,
+                    145,
+                    357,
+                    332
+                  ],
+                  "pixels": 24,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "scene": {
+                  "assets": [
+                    "nfl2k5.scene.o0003.c0053.t000",
+                    "nfl2k5.scene.o0346.c0073.t000"
+                  ],
+                  "bbox": [
+                    0,
+                    10,
+                    539,
+                    415
+                  ],
+                  "pixels": 9574,
+                  "rgb": [
+                    255,
+                    255,
+                    255
+                  ]
+                },
+                "shoes": {
+                  "assets": [
+                    "p8:3:shoes_taped"
+                  ],
+                  "bbox": [
+                    179,
+                    322,
+                    200,
+                    338
+                  ],
+                  "pixels": 38,
+                  "rgb": [
+                    0,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 15542,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904130738_frame00002.png",
+              "pct": 5.059,
+              "sha256_empty": "7641cb7ab9ca52614a3f0c32b9814621d8ee722362ae6e23d1e76241a3efc1d7",
+              "sha256_pack": "3329dda2981971af3180c222b4235971deb92ba0dc8ce6479c37f16fec88ae95"
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:1:arm_01_02",
+                    "tset:3:119:2:arm_02_02",
+                    "tset:3:119:3:arm_03_02",
+                    "tset:3:119:4:arm_04_02",
+                    "tset:3:119:5:arm_05_02"
+                  ],
+                  "bbox": [
+                    72,
+                    88,
+                    356,
+                    284
+                  ],
+                  "pixels": 3,
+                  "rgb": [
+                    0,
+                    255,
+                    128
+                  ]
+                },
+                "glove": {
+                  "assets": [
+                    "tset:3985:6:5:glove06",
+                    "tset:3985:6:6:glove07"
+                  ],
+                  "bbox": [
+                    148,
+                    313,
+                    171,
+                    318
+                  ],
+                  "pixels": 6,
+                  "rgb": [
+                    128,
+                    0,
+                    255
+                  ]
+                },
+                "mask": {
+                  "assets": [
+                    "p8:3:mask01",
+                    "p8:3:mask04",
+                    "p8:3:mask06"
+                  ],
+                  "bbox": [
+                    315,
+                    286,
+                    358,
+                    331
+                  ],
+                  "pixels": 8,
+                  "rgb": [
+                    255,
+                    0,
+                    0
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:3:elbowpad_elastic",
+                    "p8:3:elbowpad_rubber",
+                    "p8:3:elbowpad_taped",
+                    "p8:3:neckroll_01",
+                    "p8:3:wristband_qb"
+                  ],
+                  "bbox": [
+                    306,
+                    145,
+                    358,
+                    332
+                  ],
+                  "pixels": 25,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "scene": {
+                  "assets": [
+                    "nfl2k5.scene.o0003.c0053.t000",
+                    "nfl2k5.scene.o0346.c0073.t000"
+                  ],
+                  "bbox": [
+                    0,
+                    10,
+                    539,
+                    415
+                  ],
+                  "pixels": 9579,
+                  "rgb": [
+                    255,
+                    255,
+                    255
+                  ]
+                },
+                "shoes": {
+                  "assets": [
+                    "p8:3:shoes_taped"
+                  ],
+                  "bbox": [
+                    8,
+                    88,
+                    360,
+                    338
+                  ],
+                  "pixels": 39,
+                  "rgb": [
+                    0,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 15514,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904130738_frame00003.png",
+              "pct": 5.05,
+              "sha256_empty": "9b6492f835fd83e1f4be4f3dc348d98f7953e08023b05a909039ae29191849b6",
+              "sha256_pack": "bfec0aa10ab0a1d083ef87e71cd143b39fb0833cd29c3e65a0e651a3af3cc7a3"
+            }
+          ]
+        },
+        "kitD_141150_uniformonly": {
+          "frames": [
+            {
+              "by_part": {},
+              "changed_px": 0,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904141150_frame00001.png",
+              "pct": 0.0,
+              "sha256_empty": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "sha256_pack": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3"
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:4:arm_04_02"
+                  ],
+                  "bbox": [
+                    72,
+                    175,
+                    411,
+                    241
+                  ],
+                  "pixels": 16,
+                  "rgb": [
+                    255,
+                    128,
+                    0
+                  ]
+                },
+                "mask": {
+                  "assets": [
+                    "p8:3:mask01"
+                  ],
+                  "bbox": [
+                    411,
+                    175,
+                    411,
+                    175
+                  ],
+                  "pixels": 1,
+                  "rgb": [
+                    255,
+                    0,
+                    0
+                  ]
+                },
+                "shoes": {
+                  "assets": [
+                    "p8:3:shoes_taped"
+                  ],
+                  "bbox": [
+                    59,
+                    202,
+                    318,
+                    242
+                  ],
+                  "pixels": 55,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                }
+              },
+              "changed_px": 78,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904141150_frame00002.png",
+              "pct": 0.025,
+              "sha256_empty": "4c500c4e937575e993f0fe53830ac9a37558d59c58a00aa16e27cc3a1a344245",
+              "sha256_pack": "28931189897a3560d80c6e228a8f781160c22cd724f2614c38b7dce794c742dc"
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:4:arm_04_02"
+                  ],
+                  "bbox": [
+                    72,
+                    202,
+                    318,
+                    241
+                  ],
+                  "pixels": 13,
+                  "rgb": [
+                    255,
+                    128,
+                    0
+                  ]
+                },
+                "mask": {
+                  "assets": [
+                    "p8:3:mask01"
+                  ],
+                  "bbox": [
+                    411,
+                    175,
+                    411,
+                    175
+                  ],
+                  "pixels": 1,
+                  "rgb": [
+                    255,
+                    0,
+                    0
+                  ]
+                },
+                "shoes": {
+                  "assets": [
+                    "p8:3:shoes_taped"
+                  ],
+                  "bbox": [
+                    59,
+                    202,
+                    463,
+                    380
+                  ],
+                  "pixels": 53,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                }
+              },
+              "changed_px": 73,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904141150_frame00003.png",
+              "pct": 0.024,
+              "sha256_empty": "bacbc93c0f0f8564529c8903935ebf2dc5af73029780cf664ece1bcd9e0bcf03",
+              "sha256_pack": "e9c0c51b1959432a6150edad6639193ccdff65cdb27cf62cc64fbb39e6491856"
+            }
+          ]
+        }
+      },
+      "generated": "2026-09-05",
+      "inventory_summary": {
+        "distinct_manifest_identities_drawn_anywhere": 101,
+        "dumps_run": 60,
+        "logical_uniform_ids_drawn_anywhere": [
+          "nfl2k5.uniform.07a0.pants",
+          "nfl2k5.uniform.07a0.sleeve",
+          "nfl2k5.uniform.07a0.torso",
+          "nfl2k5.uniform.09h0.sleeve",
+          "nfl2k5.uniform.09h0.torso",
+          "nfl2k5.uniform.11h0.sleeve",
+          "nfl2k5.uniform.11h0.torso",
+          "nfl2k5.uniform.13a0.pants",
+          "nfl2k5.uniform.13a0.torso",
+          "nfl2k5.uniform.21a0.pants",
+          "nfl2k5.uniform.21a0.sleeve",
+          "nfl2k5.uniform.36h0.sleeve",
+          "nfl2k5.uniform.36h0.torso"
+        ],
+        "top_dumps_by_uniform_identities": [
+          {
+            "dump": "20260904130738",
+            "manifest": 18,
+            "uniform_parts": 12
+          },
+          {
+            "dump": "20260904130740",
+            "manifest": 18,
+            "uniform_parts": 12
+          },
+          {
+            "dump": "20260904125410",
+            "manifest": 19,
+            "uniform_parts": 11
+          },
+          {
+            "dump": "20260904125403",
+            "manifest": 15,
+            "uniform_parts": 10
+          },
+          {
+            "dump": "20260904125444",
+            "manifest": 18,
+            "uniform_parts": 10
+          },
+          {
+            "dump": "20260718110352",
+            "manifest": 13,
+            "uniform_parts": 9
+          },
+          {
+            "dump": "20260718010348",
+            "manifest": 14,
+            "uniform_parts": 8
+          },
+          {
+            "dump": "20260815142119",
+            "manifest": 13,
+            "uniform_parts": 8
+          }
+        ]
+      },
+      "manifest": {
+        "distinct_assets": 5001,
+        "entries": 5379,
+        "file": "mod_editor/data/nfl2k5-xbox-map.v1.json",
+        "sha256": "a658ac738a73257ab7fbb058a2b12ac70aa1d7bf63fdc8515061cc5ea9d931a2"
+      },
+      "pixel_analysis": {
+        "kitA_125355": {
+          "frames": [
+            {
+              "by_part": {},
+              "changed_px": 0,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125355_frame00001.png",
+              "h": 480,
+              "pct_changed": 0.0,
+              "sha256_off": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "sha256_on": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "w": 640
+            },
+            {
+              "by_part": {
+                "glove": {
+                  "assets": [
+                    "tset:3985:6:5:glove06"
+                  ],
+                  "bbox": [
+                    7,
+                    0,
+                    630,
+                    412
+                  ],
+                  "pixels": 2340,
+                  "rgb": [
+                    128,
+                    0,
+                    255
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:1407:h1207",
+                    "p8:1407:n1207",
+                    "p8:1619:h3036",
+                    "p8:1619:n3036",
+                    "p8:1680:h3593",
+                    "p8:1680:n3593",
+                    "p8:1821:h9507",
+                    "p8:1821:n9507",
+                    "p8:3:buttonicons",
+                    "p8:3:elbowpad_rubber",
+                    "p8:3:wristband_qb"
+                  ],
+                  "bbox": [
+                    0,
+                    3,
+                    639,
+                    412
+                  ],
+                  "pixels": 11338,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "pants": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.pants"
+                  ],
+                  "bbox": [
+                    11,
+                    0,
+                    631,
+                    361
+                  ],
+                  "pixels": 5258,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                },
+                "sleeve": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.sleeve",
+                    "nfl2k5.uniform.09h0.sleeve"
+                  ],
+                  "bbox": [
+                    8,
+                    0,
+                    632,
+                    184
+                  ],
+                  "pixels": 5693,
+                  "rgb": [
+                    0,
+                    255,
+                    255
+                  ]
+                },
+                "torso": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.torso",
+                    "nfl2k5.uniform.09h0.torso"
+                  ],
+                  "bbox": [
+                    7,
+                    0,
+                    637,
+                    412
+                  ],
+                  "pixels": 19649,
+                  "rgb": [
+                    255,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 78202,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125355_frame00002.png",
+              "h": 480,
+              "pct_changed": 25.456,
+              "sha256_off": "5fa39a01ed2a2a23bd6e0089a4fff2dfa1017f47b6bedb65f496298f08470923",
+              "sha256_on": "fe6737796c4b706c92c1548f3d87c3f78298b78506dcc4741c01d9a4c245a188",
+              "w": 640
+            },
+            {
+              "by_part": {
+                "glove": {
+                  "assets": [
+                    "tset:3985:6:5:glove06"
+                  ],
+                  "bbox": [
+                    8,
+                    0,
+                    630,
+                    412
+                  ],
+                  "pixels": 2387,
+                  "rgb": [
+                    128,
+                    0,
+                    255
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:1407:h1207",
+                    "p8:1407:n1207",
+                    "p8:1619:h3036",
+                    "p8:1619:n3036",
+                    "p8:1680:h3593",
+                    "p8:1680:n3593",
+                    "p8:1821:h9507",
+                    "p8:1821:n9507",
+                    "p8:3:buttonicons",
+                    "p8:3:elbowpad_rubber",
+                    "p8:3:wristband_qb"
+                  ],
+                  "bbox": [
+                    0,
+                    3,
+                    639,
+                    412
+                  ],
+                  "pixels": 11308,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "pants": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.pants"
+                  ],
+                  "bbox": [
+                    11,
+                    0,
+                    631,
+                    361
+                  ],
+                  "pixels": 5250,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                },
+                "sleeve": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.sleeve",
+                    "nfl2k5.uniform.09h0.sleeve"
+                  ],
+                  "bbox": [
+                    2,
+                    0,
+                    632,
+                    280
+                  ],
+                  "pixels": 5674,
+                  "rgb": [
+                    0,
+                    255,
+                    255
+                  ]
+                },
+                "torso": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.torso",
+                    "nfl2k5.uniform.09h0.torso"
+                  ],
+                  "bbox": [
+                    9,
+                    0,
+                    637,
+                    412
+                  ],
+                  "pixels": 19643,
+                  "rgb": [
+                    255,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 78012,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125355_frame00003.png",
+              "h": 480,
+              "pct_changed": 25.395,
+              "sha256_off": "8fae163b426be15b3d942975acfad2375df5c508978343357de61beea4bd1640",
+              "sha256_on": "774975b823de0d81387f9edf1ff38d2d8948a2f7c575b0fa67d5324202025899",
+              "w": 640
+            }
+          ],
+          "legend": {
+            "nfl2k5.uniform.07a0.pants": {
+              "native": [
+                512,
+                256
+              ],
+              "part": "pants",
+              "pcsx2_png": "53fbccc4178ab3b6-266646340c1b013f-00006253.png",
+              "rgb": [
+                255,
+                255,
+                0
+              ]
+            },
+            "nfl2k5.uniform.07a0.sleeve": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "sleeve",
+              "pcsx2_png": "2920c554779509cf-be36db90a60dc0d6-00005dd3.png",
+              "rgb": [
+                0,
+                255,
+                255
+              ]
+            },
+            "nfl2k5.uniform.07a0.torso": {
+              "native": [
+                512,
+                256
+              ],
+              "part": "torso",
+              "pcsx2_png": "ccefa77a53ce5fe2-1b34d314931ed435-00006253.png",
+              "rgb": [
+                255,
+                0,
+                255
+              ]
+            },
+            "nfl2k5.uniform.09h0.sleeve": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "sleeve",
+              "pcsx2_png": "828eb01510fa0924-6f0888334067ce5a-00005dd3.png",
+              "rgb": [
+                0,
+                255,
+                255
+              ]
+            },
+            "nfl2k5.uniform.09h0.torso": {
+              "native": [
+                512,
+                256
+              ],
+              "part": "torso",
+              "pcsx2_png": "867d7621c3c592d5-7dd98e49ef1fd9f6-00006253.png",
+              "rgb": [
+                255,
+                0,
+                255
+              ]
+            },
+            "p8:1407:h1207": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "ebbcf5f76a2b987f-b3c793a63510da6a-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:1407:n1207": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "6e742091c729baae-b1075b8c2a636d1d-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:1619:h3036": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "99a0c2c215e62b2f-eb1b6ff45e67c98d-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:1619:n3036": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "c8d774edbef781fb-84f9eee20d79c6ad-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:1680:h3593": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "c60594738ce59468-652746c3acfa1d3b-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:1680:n3593": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "c91977183e4f8142-3e889e46f7df0a53-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:1821:h9507": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "a994d9ac59a0e6c-4de81c571c4db312-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:1821:n9507": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "ab5be49a8756994c-26905a875df0662d-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:3:buttonicons": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "other",
+              "pcsx2_png": "473e0d69cce24163-6991502a0f9562ff-00005dd3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:3:elbowpad_rubber": {
+              "native": [
+                128,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "f4705d0c4196d06b-50f96791a8226d53-000059d4.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:3:wristband_qb": {
+              "native": [
+                128,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "3b103bc1f2b6ac7a-52ef9a6a2310b51e-000059d4.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "tset:3985:6:5:glove06": {
+              "native": [
+                256,
+                128
+              ],
+              "part": "glove",
+              "pcsx2_png": "a374d0676db85f3a-4929a3ac90eaf77c-00005e13.png",
+              "rgb": [
+                128,
+                0,
+                255
+              ]
+            }
+          }
+        },
+        "kitB_125428": {
+          "frames": [
+            {
+              "by_part": {},
+              "changed_px": 0,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125428_frame00001.png",
+              "h": 480,
+              "pct_changed": 0.0,
+              "sha256_off": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "sha256_on": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "w": 640
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:4:arm_04_02"
+                  ],
+                  "bbox": [
+                    181,
+                    97,
+                    590,
+                    479
+                  ],
+                  "pixels": 134,
+                  "rgb": [
+                    0,
+                    255,
+                    128
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:346:score_buga",
+                    "p8:346:shield_espn"
+                  ],
+                  "bbox": [
+                    0,
+                    8,
+                    639,
+                    257
+                  ],
+                  "pixels": 12662,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "pants": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.pants"
+                  ],
+                  "bbox": [
+                    25,
+                    79,
+                    347,
+                    349
+                  ],
+                  "pixels": 7152,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                },
+                "sleeve": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.sleeve",
+                    "nfl2k5.uniform.09h0.sleeve"
+                  ],
+                  "bbox": [
+                    274,
+                    98,
+                    639,
+                    172
+                  ],
+                  "pixels": 2107,
+                  "rgb": [
+                    0,
+                    255,
+                    255
+                  ]
+                },
+                "torso": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.torso"
+                  ],
+                  "bbox": [
+                    267,
+                    97,
+                    387,
+                    215
+                  ],
+                  "pixels": 5004,
+                  "rgb": [
+                    255,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 36147,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125428_frame00002.png",
+              "h": 480,
+              "pct_changed": 11.767,
+              "sha256_off": "4cde196d465a8f3fc13aa70cfd847d7d133ca677a9d6bd34772543ed6a06a8d2",
+              "sha256_on": "47c444a45ac788b00fd42ad188d89d49377ea4410a101d0dd01ba8ed7137fddd",
+              "w": 640
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:4:arm_04_02"
+                  ],
+                  "bbox": [
+                    97,
+                    101,
+                    639,
+                    479
+                  ],
+                  "pixels": 169,
+                  "rgb": [
+                    0,
+                    255,
+                    128
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:346:score_buga",
+                    "p8:346:shield_espn"
+                  ],
+                  "bbox": [
+                    0,
+                    8,
+                    637,
+                    253
+                  ],
+                  "pixels": 12651,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "pants": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.pants"
+                  ],
+                  "bbox": [
+                    25,
+                    79,
+                    346,
+                    355
+                  ],
+                  "pixels": 6906,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                },
+                "sleeve": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.sleeve",
+                    "nfl2k5.uniform.09h0.sleeve"
+                  ],
+                  "bbox": [
+                    273,
+                    101,
+                    639,
+                    174
+                  ],
+                  "pixels": 2157,
+                  "rgb": [
+                    0,
+                    255,
+                    255
+                  ]
+                },
+                "torso": {
+                  "assets": [
+                    "nfl2k5.uniform.07a0.torso"
+                  ],
+                  "bbox": [
+                    268,
+                    102,
+                    387,
+                    221
+                  ],
+                  "pixels": 5092,
+                  "rgb": [
+                    255,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 35917,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904125428_frame00003.png",
+              "h": 480,
+              "pct_changed": 11.692,
+              "sha256_off": "2552505a5702819ed161e963cdd8b790466c31cea1eae36dbbb345a0ce1396f1",
+              "sha256_on": "b9d28366520048a6a537cdd388f6fd69e639e986d2bb09fd4c472a1325b8c481",
+              "w": 640
+            }
+          ],
+          "legend": {
+            "nfl2k5.uniform.07a0.pants": {
+              "native": [
+                512,
+                256
+              ],
+              "part": "pants",
+              "pcsx2_png": "53fbccc4178ab3b6-266646340c1b013f-00006253.png",
+              "rgb": [
+                255,
+                255,
+                0
+              ]
+            },
+            "nfl2k5.uniform.07a0.sleeve": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "sleeve",
+              "pcsx2_png": "2920c554779509cf-be36db90a60dc0d6-00005dd3.png",
+              "rgb": [
+                0,
+                255,
+                255
+              ]
+            },
+            "nfl2k5.uniform.07a0.torso": {
+              "native": [
+                512,
+                256
+              ],
+              "part": "torso",
+              "pcsx2_png": "ccefa77a53ce5fe2-1b34d314931ed435-00006253.png",
+              "rgb": [
+                255,
+                0,
+                255
+              ]
+            },
+            "nfl2k5.uniform.09h0.sleeve": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "sleeve",
+              "pcsx2_png": "828eb01510fa0924-6f0888334067ce5a-00005dd3.png",
+              "rgb": [
+                0,
+                255,
+                255
+              ]
+            },
+            "p8:346:score_buga": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "b377e428747a8adf-68bf638cdb5a9be9-00005993.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:346:shield_espn": {
+              "native": [
+                128,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "edea28d28c5018a7-61164d42f0333caf-000059d3.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "tset:3:119:4:arm_04_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-1a488f464904f82-00005993.png",
+              "rgb": [
+                0,
+                255,
+                128
+              ]
+            }
+          }
+        },
+        "kitC_130738": {
+          "frames": [
+            {
+              "by_part": {},
+              "changed_px": 0,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904130738_frame00001.png",
+              "h": 480,
+              "pct_changed": 0.0,
+              "sha256_off": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "sha256_on": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "w": 640
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:1:arm_01_02",
+                    "tset:3:119:2:arm_02_02",
+                    "tset:3:119:3:arm_03_02",
+                    "tset:3:119:4:arm_04_02",
+                    "tset:3:119:5:arm_05_02"
+                  ],
+                  "bbox": [
+                    69,
+                    78,
+                    639,
+                    478
+                  ],
+                  "pixels": 170,
+                  "rgb": [
+                    0,
+                    255,
+                    128
+                  ]
+                },
+                "glove": {
+                  "assets": [
+                    "tset:3985:6:5:glove06",
+                    "tset:3985:6:6:glove07"
+                  ],
+                  "bbox": [
+                    60,
+                    13,
+                    605,
+                    317
+                  ],
+                  "pixels": 22,
+                  "rgb": [
+                    128,
+                    0,
+                    255
+                  ]
+                },
+                "mask": {
+                  "assets": [
+                    "p8:3:mask01",
+                    "p8:3:mask04",
+                    "p8:3:mask06"
+                  ],
+                  "bbox": [
+                    1,
+                    14,
+                    638,
+                    478
+                  ],
+                  "pixels": 356,
+                  "rgb": [
+                    255,
+                    0,
+                    0
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:3:elbowpad_elastic",
+                    "p8:3:elbowpad_rubber",
+                    "p8:3:elbowpad_taped",
+                    "p8:3:neckroll_01",
+                    "p8:3:wristband_qb"
+                  ],
+                  "bbox": [
+                    0,
+                    13,
+                    638,
+                    478
+                  ],
+                  "pixels": 569,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "scene": {
+                  "assets": [
+                    "nfl2k5.scene.o0003.c0053.t000",
+                    "nfl2k5.scene.o0346.c0073.t000"
+                  ],
+                  "bbox": [
+                    0,
+                    0,
+                    639,
+                    464
+                  ],
+                  "pixels": 11036,
+                  "rgb": [
+                    255,
+                    255,
+                    255
+                  ]
+                },
+                "shoes": {
+                  "assets": [
+                    "p8:3:shoes_taped"
+                  ],
+                  "bbox": [
+                    1,
+                    2,
+                    639,
+                    464
+                  ],
+                  "pixels": 1253,
+                  "rgb": [
+                    0,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 56313,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904130738_frame00002.png",
+              "h": 480,
+              "pct_changed": 18.331,
+              "sha256_off": "9e83272d9e362977990d3dfcae2b4a7fd126eae45c64be929b3bd75ee114f7b3",
+              "sha256_on": "3329dda2981971af3180c222b4235971deb92ba0dc8ce6479c37f16fec88ae95",
+              "w": 640
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:1:arm_01_02",
+                    "tset:3:119:2:arm_02_02",
+                    "tset:3:119:3:arm_03_02",
+                    "tset:3:119:4:arm_04_02",
+                    "tset:3:119:5:arm_05_02"
+                  ],
+                  "bbox": [
+                    100,
+                    76,
+                    639,
+                    465
+                  ],
+                  "pixels": 157,
+                  "rgb": [
+                    0,
+                    255,
+                    128
+                  ]
+                },
+                "glove": {
+                  "assets": [
+                    "tset:3985:6:5:glove06",
+                    "tset:3985:6:6:glove07"
+                  ],
+                  "bbox": [
+                    61,
+                    41,
+                    627,
+                    318
+                  ],
+                  "pixels": 17,
+                  "rgb": [
+                    128,
+                    0,
+                    255
+                  ]
+                },
+                "mask": {
+                  "assets": [
+                    "p8:3:mask01",
+                    "p8:3:mask04",
+                    "p8:3:mask06"
+                  ],
+                  "bbox": [
+                    1,
+                    14,
+                    635,
+                    479
+                  ],
+                  "pixels": 372,
+                  "rgb": [
+                    255,
+                    0,
+                    0
+                  ]
+                },
+                "other": {
+                  "assets": [
+                    "p8:3:elbowpad_elastic",
+                    "p8:3:elbowpad_rubber",
+                    "p8:3:elbowpad_taped",
+                    "p8:3:neckroll_01",
+                    "p8:3:wristband_qb"
+                  ],
+                  "bbox": [
+                    0,
+                    11,
+                    635,
+                    479
+                  ],
+                  "pixels": 562,
+                  "rgb": [
+                    255,
+                    64,
+                    0
+                  ]
+                },
+                "scene": {
+                  "assets": [
+                    "nfl2k5.scene.o0003.c0053.t000",
+                    "nfl2k5.scene.o0346.c0073.t000"
+                  ],
+                  "bbox": [
+                    0,
+                    0,
+                    639,
+                    464
+                  ],
+                  "pixels": 11068,
+                  "rgb": [
+                    255,
+                    255,
+                    255
+                  ]
+                },
+                "shoes": {
+                  "assets": [
+                    "p8:3:shoes_taped"
+                  ],
+                  "bbox": [
+                    0,
+                    2,
+                    639,
+                    471
+                  ],
+                  "pixels": 1224,
+                  "rgb": [
+                    0,
+                    0,
+                    255
+                  ]
+                }
+              },
+              "changed_px": 56039,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904130738_frame00003.png",
+              "h": 480,
+              "pct_changed": 18.242,
+              "sha256_off": "c240a62619120e728e683498bb51bd347489b2806f2273b52983d07eb44d80af",
+              "sha256_on": "bfec0aa10ab0a1d083ef87e71cd143b39fb0833cd29c3e65a0e651a3af3cc7a3",
+              "w": 640
+            }
+          ],
+          "legend": {
+            "nfl2k5.scene.o0003.c0053.t000": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "scene",
+              "pcsx2_png": "be7ea949b1adc8e3-657786d6d041bb25-00005993.png",
+              "rgb": [
+                255,
+                255,
+                255
+              ]
+            },
+            "nfl2k5.scene.o0346.c0073.t000": {
+              "native": [
+                64,
+                32
+              ],
+              "part": "scene",
+              "pcsx2_png": "8563008da7bf3594-80885be1c57c4b45-00005594.png",
+              "rgb": [
+                255,
+                255,
+                255
+              ]
+            },
+            "p8:3:elbowpad_elastic": {
+              "native": [
+                128,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "810a1b26b644c25d-1ee73da6d3ca8bda-000059d4.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:3:elbowpad_rubber": {
+              "native": [
+                128,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "f4705d0c4196d06b-50f96791a8226d53-000059d4.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:3:elbowpad_taped": {
+              "native": [
+                128,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "ff31f7943ec932f-18af8ae82f78c47e-000059d4.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:3:mask01": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "mask",
+              "pcsx2_png": "75fb8f040213858c-6551a860536f4f71-00005993.png",
+              "rgb": [
+                255,
+                0,
+                0
+              ]
+            },
+            "p8:3:mask04": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "mask",
+              "pcsx2_png": "783024657ef5a9bf-12aa83f7b510f57c-00005993.png",
+              "rgb": [
+                255,
+                0,
+                0
+              ]
+            },
+            "p8:3:mask06": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "mask",
+              "pcsx2_png": "b4ca053aeed57eca-bdb247d06f7a052b-00005993.png",
+              "rgb": [
+                255,
+                0,
+                0
+              ]
+            },
+            "p8:3:neckroll_01": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "a9b57066930f802a-a067996ffbc8c237-00005994.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "p8:3:shoes_taped": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "shoes",
+              "pcsx2_png": "2fe99e4a31be4196-48a11c563ed23f72-00005dd3.png",
+              "rgb": [
+                0,
+                0,
+                255
+              ]
+            },
+            "p8:3:wristband_qb": {
+              "native": [
+                128,
+                64
+              ],
+              "part": "other",
+              "pcsx2_png": "3b103bc1f2b6ac7a-52ef9a6a2310b51e-000059d4.png",
+              "rgb": [
+                255,
+                64,
+                0
+              ]
+            },
+            "tset:3985:6:5:glove06": {
+              "native": [
+                256,
+                128
+              ],
+              "part": "glove",
+              "pcsx2_png": "a374d0676db85f3a-4929a3ac90eaf77c-00005e13.png",
+              "rgb": [
+                128,
+                0,
+                255
+              ]
+            },
+            "tset:3985:6:6:glove07": {
+              "native": [
+                256,
+                128
+              ],
+              "part": "glove",
+              "pcsx2_png": "a374d0676db85f3a-cd92ff7c8045c07b-00005e13.png",
+              "rgb": [
+                128,
+                0,
+                255
+              ]
+            },
+            "tset:3:119:1:arm_01_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-258e37fee34fa988-00005993.png",
+              "rgb": [
+                0,
+                255,
+                128
+              ]
+            },
+            "tset:3:119:2:arm_02_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-c29bfc75da36736c-00005993.png",
+              "rgb": [
+                0,
+                255,
+                128
+              ]
+            },
+            "tset:3:119:3:arm_03_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-d4327c7bab56dd8d-00005993.png",
+              "rgb": [
+                0,
+                255,
+                128
+              ]
+            },
+            "tset:3:119:4:arm_04_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-1a488f464904f82-00005993.png",
+              "rgb": [
+                0,
+                255,
+                128
+              ]
+            },
+            "tset:3:119:5:arm_05_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-3d7c0f3935e0a03f-00005993.png",
+              "rgb": [
+                0,
+                255,
+                128
+              ]
+            }
+          }
+        },
+        "kitD_141150_uniformonly": {
+          "frames": [
+            {
+              "by_part": {},
+              "changed_px": 0,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904141150_frame00001.png",
+              "h": 480,
+              "pct_changed": 0.0,
+              "sha256_off": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "sha256_on": "b311bcc103a31aacddb6334cc5b8cefb71fb4b985875f033d981bc40d2e3f6c3",
+              "w": 640
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:4:arm_04_02"
+                  ],
+                  "bbox": [
+                    4,
+                    1,
+                    639,
+                    453
+                  ],
+                  "pixels": 2188,
+                  "rgb": [
+                    255,
+                    128,
+                    0
+                  ]
+                },
+                "mask": {
+                  "assets": [
+                    "p8:3:mask06"
+                  ],
+                  "bbox": [
+                    1,
+                    15,
+                    501,
+                    381
+                  ],
+                  "pixels": 309,
+                  "rgb": [
+                    0,
+                    0,
+                    255
+                  ]
+                },
+                "shoes": {
+                  "assets": [
+                    "p8:3:shoes_taped"
+                  ],
+                  "bbox": [
+                    0,
+                    17,
+                    639,
+                    479
+                  ],
+                  "pixels": 45738,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                }
+              },
+              "changed_px": 108054,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904141150_frame00002.png",
+              "h": 480,
+              "pct_changed": 35.174,
+              "sha256_off": "c8ad32921eae81e87bef2c46964a0b2772aed126966048269ba301bc9a3947a2",
+              "sha256_on": "28931189897a3560d80c6e228a8f781160c22cd724f2614c38b7dce794c742dc",
+              "w": 640
+            },
+            {
+              "by_part": {
+                "arm": {
+                  "assets": [
+                    "tset:3:119:4:arm_04_02"
+                  ],
+                  "bbox": [
+                    4,
+                    1,
+                    639,
+                    453
+                  ],
+                  "pixels": 2195,
+                  "rgb": [
+                    255,
+                    128,
+                    0
+                  ]
+                },
+                "mask": {
+                  "assets": [
+                    "p8:3:mask06"
+                  ],
+                  "bbox": [
+                    1,
+                    15,
+                    501,
+                    375
+                  ],
+                  "pixels": 311,
+                  "rgb": [
+                    0,
+                    0,
+                    255
+                  ]
+                },
+                "shoes": {
+                  "assets": [
+                    "p8:3:shoes_taped"
+                  ],
+                  "bbox": [
+                    0,
+                    17,
+                    639,
+                    479
+                  ],
+                  "pixels": 45743,
+                  "rgb": [
+                    255,
+                    255,
+                    0
+                  ]
+                }
+              },
+              "changed_px": 108071,
+              "frame": "ESPN - NFL 2K5_SLUS-20919_20260904141150_frame00003.png",
+              "h": 480,
+              "pct_changed": 35.179,
+              "sha256_off": "42bc325c8cf4192c3b53f24dbf5332c927322b878ef2315ec0fdc47c1e01d2e4",
+              "sha256_on": "e9c0c51b1959432a6150edad6639193ccdff65cdb27cf62cc64fbb39e6491856",
+              "w": 640
+            }
+          ],
+          "legend": {
+            "p8:3:mask01": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "mask",
+              "pcsx2_png": "75fb8f040213858c-6551a860536f4f71-00005993.png",
+              "rgb": [
+                255,
+                0,
+                0
+              ]
+            },
+            "p8:3:mask04": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "mask",
+              "pcsx2_png": "783024657ef5a9bf-12aa83f7b510f57c-00005993.png",
+              "rgb": [
+                0,
+                255,
+                0
+              ]
+            },
+            "p8:3:mask06": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "mask",
+              "pcsx2_png": "b4ca053aeed57eca-bdb247d06f7a052b-00005993.png",
+              "rgb": [
+                0,
+                0,
+                255
+              ]
+            },
+            "p8:3:shoes_taped": {
+              "native": [
+                128,
+                128
+              ],
+              "part": "shoes",
+              "pcsx2_png": "2fe99e4a31be4196-48a11c563ed23f72-00005dd3.png",
+              "rgb": [
+                255,
+                255,
+                0
+              ]
+            },
+            "tset:3:119:2:arm_02_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-c29bfc75da36736c-00005993.png",
+              "rgb": [
+                255,
+                0,
+                255
+              ]
+            },
+            "tset:3:119:3:arm_03_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-d4327c7bab56dd8d-00005993.png",
+              "rgb": [
+                0,
+                255,
+                255
+              ]
+            },
+            "tset:3:119:4:arm_04_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-1a488f464904f82-00005993.png",
+              "rgb": [
+                255,
+                128,
+                0
+              ]
+            },
+            "tset:3:119:5:arm_05_02": {
+              "native": [
+                64,
+                64
+              ],
+              "part": "arm",
+              "pcsx2_png": "fd928bebbac38f4c-3d7c0f3935e0a03f-00005993.png",
+              "rgb": [
+                128,
+                0,
+                255
+              ]
+            }
+          }
+        }
+      },
+      "purpose": "Prove that uniform-part textures exported by the PS2 replacement-pack exporter render in PenguinScreen2.",
+      "retail_free": "names, hashes, pixel counts and bounding boxes only; no retail imagery",
+      "rig": {
+        "binary": "~/penguinscreen2-dev/build/bin/pcsx2-gsrunner",
+        "commit": "8226182aabe19640c6e676331678612f257356dd",
+        "h2": "every rig script's FIRST statement is the pcsx2-qt/mupen64plus/[q]emu check and aborts on any hit; no -vr passed, so gsrunner never creates an OpenXR instance",
+        "host": "pacarey@192.168.68.85",
+        "isolation": "XDG_CONFIG_HOME=~/wp7u-20260905/xdg => private DataRoot; private gamesettings (so NO per-game override existed to neutralise) and private textures root; the community pack and ~/.config/PenguinScreen2 were never written"
+      },
+      "schema": "wp7u_uniform_witness/v1"
+    },
+    "question": "Do uniform-part textures (torso, sleeves, pants, gloves, head/hair) exported by this service render on PS2?"
   }
 }

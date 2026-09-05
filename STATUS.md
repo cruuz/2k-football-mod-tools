@@ -8,8 +8,8 @@
   the stock disc (5,379 manifest rows, 4,732 unique names). Separate PS2 export window and
   `--ps2-export`; independent verifier; never emits an unedited texture; never writes the user's
   ISO. **Witnessed** 2026-09-05 in PenguinScreen2 `8226182a` by GS-dump replay: an exported pack
-  rendered in place of the disc's art (shield, scorebug, kick-meter dial); uniform parts not yet
-  attributable in a frame.
+  rendered in place of the disc's art (shield, scorebug, kick-meter dial), and uniform parts (torso,
+  sleeves, pants, gloves) on two player-filling dumps; stock upstream PCSX2 loads the same pack.
 - **Six PS2 on-disc writers**, all CLI-only and offline-writer-proved: display text, playbooks,
   uniform colours, the disc roster, stadium positions and one-shot AUDO sounds. Each writes a NEW
   image through the fixed-allocation ISO9660 writer and ships an independent verifier; each was
