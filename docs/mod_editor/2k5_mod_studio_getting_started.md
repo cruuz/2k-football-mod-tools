@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC87 — Getting Started
+# 2K5 Mod Studio v1.0 RC88 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -370,7 +370,7 @@ is classified unknown and offers no controls) and 14 PS2 Madden 09 Studio rows
 (see below). No current 2K5 capability is labeled Coming Soon, and an asset
 never becomes writable merely because it has a preview.
 
-## PS2 Madden 09 Studio (RC87)
+## PS2 Madden 09 Studio (RC88)
 
 **A second game is on the *Select other games…* list.** Pick **PS2 Madden 09 Studio** and it
 opens on your own **Madden NFL 09 (PlayStation 2)** disc image, `SLUS-21770`. From a terminal:
@@ -381,30 +381,57 @@ community's **Deluxe** rebuild. That matters — thirteen of the disc's data fil
 between them, so the uniforms and the databases you are looking at genuinely are not the same.
 Any other disc is refused with a sentence saying which one it wanted.
 
-**Your image is opened read-only. This studio writes nothing to it.** Four pages have
-something today, and each one lists rather than edits:
+**Your image is opened read-only, and every build writes a NEW image.** Eleven of the fourteen
+pages have something on them now, and most of them edit:
 
+- **Uniforms & Equipment** — the disc's uniform, face and tattoo textures: preview, **Export
+  PNG**, an **Import PNG** checked against that texture's own palette, and a Build that writes
+  the edited texture back into a new disc image. 7,082 of 7,616 images decode; the 534 that do
+  not fall into three groups the page names.
+- **Names, Numbers & Faces** — two things on one page. The rows of the disc's own databases:
+  **12,499 of them**, each a player's first and last name, jersey number, age and twenty
+  ratings, plus each team's nickname, city, abbreviation and short name. And the art: 532 player
+  faces, 711 coach faces, 82 tattoos and 3,286 menu portraits, edited the same way as the
+  uniforms.
+- **Text & Team Identity** — the **32 NFL teams**, one target each: the four names, the two
+  colours as colour pickers, and the city id. A rename is written into **both** of the disc's
+  databases that agree about it, so nothing is left half-renamed. (A third copy, in a file the
+  preload cache carries, is deliberately not written; the page says so.)
+- **Field Art & Create-Team Art** — the 73 field textures, all of which decode. The other 642
+  members of that file are 3D geometry, which nothing here reads.
+- **Stadiums** — 514 stadium textures. The stands, the crowd and the scoreboard mesh are
+  geometry and are listed but not touched.
+- **Presentation** — 7,678 menu, loading and overlay textures across 50 containers. The scorebug
+  itself is drawn by the game's executable, not from a file, and the page says that rather than
+  pretending.
+- **Menus & UI** — every text bank on the disc: **14,760 of them**. Pick a string slot, see its
+  budget, replace it. A shorter replacement is padded; a longer one is refused with the length it
+  has to fit. Nothing keeps a copy of your game's text: it is read off your image when you ask.
+- **Audio** — **34,046 sounds**. The music and the sound-effect streams play, export as WAV and
+  can be **replaced**; the 967 bank sounds play and export. The 33,751 speech and commentary
+  lines use a codec nobody has a decoder for, so they are listed with their length and rate and
+  refused by name rather than guessed at.
+- **Gameplay** — the in-game create-a-playbook editor's own caps: formations, sets, plays per
+  book and plays per set. Delivered as a PCSX2 patch file by default, or written into the disc's
+  executable on a new image.
+- **Playbooks & Plays** — the **102 shipped playbooks**: **78,875 editable rows** of formation,
+  set, play and special-teams names, plus the handful of numbers whose meaning is known. Plays
+  cannot be *added* — every table on the disc is packed exactly full — which is what the Gameplay
+  page's caps are for.
 - **All Textures** — every container under `/DATA`, member by member: how it is packed, how big
-  it is packed and unpacked, and what its bytes turn out to be. On a retail disc that is 101
-  containers and 36,195 members, in about ten seconds.
-- **Names, Numbers & Faces** — the 355 EA databases on the disc, table by table: 2,151 tables,
-  354,812 records and every field's name, type and width. The field *names* are the schema, so
-  they are what you see; the values in your records stay on your disc.
-- **Menus & UI** — every text bank on the disc, with how many strings it holds and how long they
-  are. Ask to see one and it is read off your image then and there; nothing keeps a copy.
-- **Uniforms & Equipment** — the disc's own texture members.
+  it is packed and unpacked, and what its bytes turn out to be. 101 containers and 36,195
+  members, in about ten seconds. Read-only.
 
-The other ten pages are there and say what is on the disc for them and why there is no editor
-yet — stadium and field geometry that nothing here decodes, EA audio with no public writer,
-playbooks nobody has located. **Gameplay** shows its pnach pipeline as unavailable on purpose:
-it is complete and tested, but no patch site in Madden 09's executable has been found, so there
-is nothing to turn on.
+**The Crib** is an ESPN NFL 2K5 feature Madden does not have, and **Saves** is another
+repository's tooling — both pages say so and stay empty on purpose. **Build & Share** chains
+your staged edits into one new image.
 
-**Why no editors yet.** Putting an edit back means rebuilding one of these containers, and two
-things stand in the way: no rebuilt Madden 09 disc has been booted in an emulator to prove the
-game still loads it, and the compression EA used has no public encoder, so an edited piece
-cannot be squeezed back to the size of the one it replaces.
-`docs/product/MADDEN09_PS2_MODULE.md` is the full account.
+**What has not happened yet.** No rebuilt Madden 09 disc has been booted in an emulator or on a
+console. Every writer here is proved *offline*: it builds a new image the same size as yours,
+declares exactly which bytes it changed, and an independent checker re-derives the whole claim
+from the two images and can fail. That a rebuilt disc still loads, and that your change shows up
+on a screen, is the one thing none of this proves — and every page, every receipt and every
+registry row says so. `docs/product/MADDEN09_PS2_MODULE.md` is the full account.
 
 ## PS2 NFL 2K5 Studio (RC86)
 

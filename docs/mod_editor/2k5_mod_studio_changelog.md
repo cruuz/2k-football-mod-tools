@@ -1,5 +1,89 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC88 — PS2 Madden 09 Studio: every page answered (unreleased)
+
+- **Every page of the second studio now has an answer.** *PS2 Madden 09 Studio* fills **eleven of the shell's
+  fourteen pages with fourteen capability rows** — eleven of them write, two export, one inspects — while **The Crib**
+  and **Saves** say in one sentence why they are empty on purpose and **Build & Share** stays the shell's own page.
+  RC87 shipped four pages with a lane and ten notes; this is the rest. `docs/product/MADDEN09_PS2_MODULE.md` is the
+  page-by-page account, and its new §10 answers the seven-point shipping standard line by line — including the line it
+  fails: **nothing has been booted**, so no row is `runtime-proved` and none can be from this box.
+- **Text & Team Identity — the thirty-two teams, in every copy the disc agrees on.** Nickname, city, abbreviation,
+  short name, primary and secondary colour and the city id, per team. The blast radius was measured before a byte was
+  written: three databases carry all 32 teams' identity fields, **two of them agree with the anchor on 32 of 32 teams
+  and are written together** (so a rename cannot leave them disagreeing), and the third is refused because
+  `TEMPLATE.DAT` is named in the `FE.QKL` preload cache. `STRMDATA.DB`'s rows are **not** in team-id order — team 1 is
+  record 106 — so the second copy is found by reading the field off every record, never by arithmetic. Real disc: one
+  abbreviation and one colour, 7,746,536 bytes declared in four ranges, **PASS** with 470 of 470 checksum slots correct
+  and 0 undeclared changed bytes; two adversarial byte flips both refused.
+- **Audio — the music and the sound effects can be replaced; the speech is refused by name.** Two rows over **11,389
+  members, 34,046 streams, 301 banks and 967 bank sounds**, catalogued in 13.4 seconds. **295 streams are EA-XA and
+  289 of them decode**; all 967 bank sounds are Sony PlayStation ADPCM and the 508 that declare a rate export as WAV.
+  The decoders were checked against ffmpeg rather than against themselves: **289 of 289 streams and 508 of 508 bank
+  sounds byte-identical**, 704 million PCM samples compared. Import mixes, resamples and re-encodes a WAV and refuses
+  anything that will not fit the bytes the sound already occupies. **33,751 streams are EA MicroTalk** — every line of
+  speech and commentary — and ffmpeg has no decoder for it either, so they are listed with their rate, channels and
+  length and their audio is refused rather than guessed at. The bank writer is **not** offered: 134 of the 967 sounds
+  carry loop points nobody here has decoded. Real disc: one music track replaced by a computed ten-second tone,
+  **PASS at 47.4 dB**, image the same 1,657,339,904 bytes in and out.
+- **Playbooks & Plays — 102 shipped books, and the names inside them.** The page did not exist because the reader
+  could not open the files: every playbook declares a table named `SGF` followed by a **NUL byte**, and a
+  four-character name was decoded as strict printable ASCII. A four-character name is four **bytes**, so
+  `ea_tdb.decode_name` / `encode_name` render a byte outside `0x20..0x7E` as `\xNN` and a literal backslash as `\\` —
+  a bijection, so no two names collide. The disc's own answer: **355 databases parse where 252 did, none refused,
+  4,108 tables, 85,400 field definitions, and 8,926 checksum sites with 0 wrong** where 4,806 were checkable before.
+  The page then edits the eight `name` fields and six numbers the research gives a meaning to — **102 books, 1,938
+  tables, 78,875 editable rows**. **No row can be added**: every table on the disc is packed exactly full, 1,938 of
+  1,938. Packing takes the **exact-size** path — the member re-encoded under a budget equal to the bytes it already
+  occupies, padded and spliced, so no directory word moves — and **all 102 books fit their own slot**, the tightest by
+  263 bytes. Real disc: one set renamed in the deepest book, container directory unchanged, 0 caches rewritten,
+  **PASS** with 114 untouched members byte-identical and 12 cache copies still equal to what they copy.
+- **Four more art pages, and one lane doing both halves.** **Stadiums** (514 texture members, 581 decodable images),
+  **Field Art & Create-Team Art** (73 textures, every one decodable), **Presentation** (7,678 members across 50
+  containers, 6,482 decodable) and the face half of **Names, Numbers & Faces** (532 player faces, 711 coach faces, 82
+  tattoos, 3,286 menu portraits) each get preview, **Export PNG**, a checked **Import PNG** and a **Build** that writes
+  a new disc image — one row per page, because the writer lane already is the reader. What they do *not* touch is
+  measured, not skipped: **805 `SMF` and 2 `DMF` geometry members** in the stadium containers and **642 `SMF`** in the
+  field-art one, which no decoder here reads; `UIS_MCFL.DAT`'s **1,188 `IPU1` members**, refused by name at both ends;
+  five members of `STADIUMS.DAT` that are **palette banks** with no pixels at all; and the scorebug, which the
+  executable draws. Real disc: three chained edits — a stadium texture, a field texture and a UI texture — all three
+  **PASS** with **maximum channel error 0**, the image never growing, and both cache-coherence paths exercised on real
+  bytes (three directory copies rewritten on two of them, a member's own cached copy rewritten on the third).
+- **Gameplay — the playbook editor's caps, translated.** RC87 shipped the pnach pipeline with every translation
+  refused. One is real now: **five `sltiu` immediates** behind four parameters — formations, sets, plays per book and
+  plays per set — each read out of the user's own executable at plan time and each changed only in its low 16 bits.
+  The retail and Deluxe executables differ in exactly **nine** 32-bit words and **none of the nine is at a translated
+  site**, so one recipe works on either disc. Delivery is a `.pnach` by default or the words written into the boot ELF
+  on a rebuilt disc; the verifier re-reads whichever artifact was written. What is **not** shipped, and why, is
+  written down: the runtime capacity layer behind the caps has no immediate to raise, and new code in a cave could
+  only be verified by a boot. PCSX2's own patch archive carries **no entry for this title** — 4,471 files, none naming
+  either CRC — so there was no community translation set to match.
+- **An `LZH1` encoder, and an `MMAP` member writer.** Codec 5 had no public encoder anywhere; there is one now, and
+  **1,836 of 1,836** compressed members of the uniform, stadium and field-art containers re-encode and decode back
+  byte for byte under two independent decoders, at about the size EA shipped them. **All 1,780 `MMAP` members** of the
+  four art containers rebuild byte for byte from their own decoded pixels. Together they are what turned every art
+  page from a viewer into an editor.
+- **PCSX2 replacement identities, learned from a real dump.** The filename PCSX2 looks for is built from hashes it
+  computes while drawing, so `tools/madden09_ps2_texture_identities.py` pairs a texture dump with the disc on **exact
+  pixel equality**. From **33 frames** — 32 coin tosses covering both kits of all 32 teams, plus one captains frame —
+  **3,024** disc textures on the uniform containers and **234 of 8,449** across the four art pages now have a name.
+  **Write PCSX2 pack is still not offered from any row**: what is proved is the pairing, and no pack has been loaded
+  in an emulator.
+- **The registry has 106 rows** across four game/platform targets: 45 Xbox NFL 2K5, 37 APF 2K8, 14 PS2 Madden 09 and
+  10 NFL 2K5 PS2. Every Madden 09 row carries a validation command that runs in a shipped tree and evidence paths that
+  exist.
+- **Upstream Beta 61 merged, and the two things it broke are fixed.** Its gameplay-patch catalogue names another
+  module's UI text inside one entry, which a strict literal reader refused — taking the **NFL 2K5 (PS2)
+  host-catalogue reader** and that game's whole conformance run with it; the reader now takes a literal as its value
+  and any other expression as its own source text, with four tests, one of them against the host's real catalogue.
+  And the release checker forbids a path component named **`evidence`**, which the new Madden 09 records had been
+  written into; every measured record now lives under `docs/product/measured/` and the staged release passes its own
+  check again.
+- **The count pins that were left behind are repaired.** Landing the fourteen rows moved the registry count in both
+  runtime checkers but not in the two assertions that mirror them, and the row-adding tool appended a line each time
+  instead of moving the one that was there — leaving pins on 86, 89 and 99 rows that no file carries any more, and a
+  truncated paragraph in the getting-started guide. The live numbers are pinned once each.
+
 ## v1.0 RC87 — PS2 Madden 09 Studio (unreleased)
 
 - **A second studio.** *Select other games…* now lists two rows. **PS2 Madden 09 Studio** works off your own Madden

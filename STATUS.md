@@ -1,4 +1,40 @@
-# 2K5 Mod Studio — v1.0 RC87 Release Status
+# 2K5 Mod Studio — v1.0 RC88 Release Status
+
+## Beta 64 (unreleased) — PS2 Madden 09 Studio: every page answered
+
+Source/UI version is **2K5 RC88**. Everything below is offline-proved or read-only; **nothing here has been booted**,
+and no Madden 09 row is `runtime-proved`.
+
+- **Fourteen pages, fourteen rows, eleven of them writing.** *PS2 Madden 09 Studio* now carries a lane on **eleven of
+  the shell's fourteen pages** — Uniforms & Equipment (export + disc writer), Names Numbers & Faces (team databases +
+  face art), Text & Team Identity, Field Art & Create-Team Art, Stadiums, Presentation, Menus & UI, Audio (streams +
+  banks), Gameplay, Playbooks & Plays and All Textures. **The Crib** and **Saves** state a reason instead;
+  **Build & Share** is the shell's own page. Eleven rows write, two export, one inspects.
+- **New this release**: the team-identity writer (32 teams, both agreeing copies, 470 of 470 checksum slots on the
+  real-disc trial); the audio lanes (34,046 streams and 967 bank sounds catalogued, 289 of 289 streams and 508 of 508
+  bank sounds byte-identical to ffmpeg's own decode, a bounded stream writer, the 33,751 MicroTalk streams refused by
+  name); the playbooks lane (102 books, 1,938 tables, 78,875 editable rows, the exact-size packing path proved on all
+  102); four more art pages (stadiums, field art, presentation, faces — 12,876 texture members, 11,735 decodable
+  images, three chained real-disc edits all passing at maximum channel error 0); and the first real executable patch
+  (five `sltiu` immediates behind the playbook editor's four caps).
+- **The two encoders everything else stands on**: `LZH1` had no public encoder anywhere and now round-trips **1,836
+  of 1,836** compressed art members byte for byte; the `MMAP` member writer rebuilds **all 1,780** texture members
+  byte for byte from their own decoded pixels.
+- **A four-character EA TDB name is four bytes, not four characters.** That one fix took the disc from **252
+  databases parsed with 103 refused** to **355 parsed with none refused**, and the checksum pass from 4,806 sites to
+  **8,926, all correct**.
+- **PCSX2 replacement identities** for **3,024** disc textures on the uniform containers and **234 of 8,449** across
+  the art pages, learned by pixel-matching a 33-frame texture dump. *Write PCSX2 pack* is still offered by **no** row.
+- **Capability registry: 106 rows** across four game/platform targets — 45 Xbox NFL 2K5, 37 APF 2K8, 14 PS2 Madden 09,
+  10 NFL 2K5 PS2. All ten Madden 09 validators pass in a shipped tree on Linux; the conformance harness passes 544 of
+  544 checks for the module. The `cmd.exe` validator run and the portable build's Windows smoke are **pending the
+  RC88 smoke**.
+- **Upstream Beta 61 is merged**, and the two regressions it caused are fixed: the NFL 2K5 (PS2) host-catalogue reader
+  (an entry quoting another module's constant is read as its own source text) and the evidence-directory name (the
+  release checker forbids a path component named `evidence`; the measured records live under
+  `docs/product/measured/`).
+- Full account: `docs/product/MADDEN09_PS2_MODULE.md`, whose §10 answers the seven-point shipping standard — including
+  the point it fails, which is that no writer has an in-game witness.
 
 ## Beta 63 (unreleased) — PS2 Madden 09 Studio: a second game on the shell
 
