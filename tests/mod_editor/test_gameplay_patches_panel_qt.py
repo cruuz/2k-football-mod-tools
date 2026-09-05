@@ -17,7 +17,7 @@ for entry in (ROOT, ROOT / "tests"):
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 from mod_editor.core import mod_build  # noqa: E402
-from mod_editor.gui.gameplay_patches_panel_qt import PATCHES, GameplayPatchesPanel  # noqa: E402, NEEDS_IMAGE
+from mod_editor.gui.gameplay_patches_panel_qt import NEEDS_IMAGE, PATCHES, GameplayPatchesPanel  # noqa: E402
 from nfl2k5_throw_tuning_test import _build_progression_xbe as _build_synthetic_xbe   # every gameplay patch reads retail on it  # noqa: E402
 
 
