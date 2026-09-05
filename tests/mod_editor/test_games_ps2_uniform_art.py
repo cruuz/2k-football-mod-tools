@@ -535,5 +535,40 @@ class RegistrationTests(unittest.TestCase):
             self.assertEqual(list(signature.parameters), parameters, name)
 
 
+class ArchiveReleaseTests(UniformArtFixture):
+    """Every read of the disc releases its handle afterwards.
+
+    Linux lets a caller delete an image that is still open; Windows does not,
+    which is how a passing conformance run ended in a PermissionError when the
+    harness removed its temporary directory (found on the RC86 portable build).
+    The texture map's module-level archive must therefore be closed after each
+    catalogue, decode and synthetic-map call, and the image must be movable.
+    """
+
+    def _assert_released(self) -> None:
+        self.assertIsNone(texture_map._state.get("archive"), "the disc image is still open")
+        moved = self.source.with_name(self.source.name + ".moved")
+        self.source.rename(moved)          # refused on Windows while a handle is open
+        moved.rename(self.source)
+
+    def test_the_catalogue_walk_releases_the_image(self) -> None:
+        self.lane.build_catalogue(self.source)
+        self._assert_released()
+
+    def test_decoding_a_texture_releases_the_image(self) -> None:
+        target = next(t for t in self.catalogue.targets if t.raw.get("level0_route"))
+        png = self.lane.decode_png(self.source, target)
+        self.assertTrue(png.startswith(b"\x89PNG"))
+        self._assert_released()
+
+    def test_the_synthetic_identity_map_releases_the_image(self) -> None:
+        uniform_art.synthetic_identity_map(self.source)
+        self._assert_released()
+
+    def test_release_is_idempotent(self) -> None:
+        texture_map.release(); texture_map.release()
+        self.assertIsNone(texture_map._state.get("archive"))
+
+
 if __name__ == "__main__":
     unittest.main()

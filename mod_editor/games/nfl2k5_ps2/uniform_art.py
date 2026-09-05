@@ -500,6 +500,16 @@ class _EntryReader:
         self._cache_index: Optional[int] = None
         self._cache_rows: List[dict] = []
 
+    def close(self) -> None:
+        """Release the archive so the image can be moved or deleted (Windows keeps it locked otherwise)."""
+        texture_map.release()
+
+    def __enter__(self) -> "_EntryReader":
+        return self
+
+    def __exit__(self, *_exc: Any) -> None:
+        self.close()
+
     def rows(self, entry_index: int) -> List[dict]:
         if self._cache_index != entry_index:
             self._cache_rows = texture_map.process_entry(entry_index, keep_payload=True)
@@ -634,8 +644,11 @@ class UniformArtLane:
         workers = jobs if jobs > 0 else min(8, (os.cpu_count() or 1))
         if workers <= 1 or len(order) < 8 or not hasattr(os, "fork"):
             texture_map.initialise(str(source), packs, entries)
-            for index in order:
-                yield index, texture_map.process_entry(index)
+            try:
+                for index in order:
+                    yield index, texture_map.process_entry(index)
+            finally:
+                texture_map.release()
             return
         import multiprocessing
 
@@ -770,9 +783,9 @@ class UniformArtLane:
         """Level 0 of one uniform texture as an 8-bit RGBA PNG."""
 
         row = dict(target.raw)
-        reader = _EntryReader(Path(source))
-        record = reader.find(int(row["entry"]), int(row["chunk"]), int(row["child"]),
-                             str(row["name"]))
+        with _EntryReader(Path(source)) as reader:
+            record = reader.find(int(row["entry"]), int(row["chunk"]), int(row["child"]),
+                                 str(row["name"]))
         level_route = row.get("level0_route") or ""
         clut_route = row.get("clut_route") or ""
         if not level_route or not clut_route:
@@ -1245,6 +1258,13 @@ def synthetic_identity_map(iso_path: Path) -> dict:
 
     packs, entries, _identity, uniform = uniform_entries(Path(iso_path))
     texture_map.initialise(str(iso_path), packs, entries)
+    try:
+        return _synthetic_identity_rows(uniform)
+    finally:
+        texture_map.release()
+
+
+def _synthetic_identity_rows(uniform) -> dict:
     rows = []
     for entry_index, _selector in uniform:
         for record in texture_map.process_entry(entry_index):

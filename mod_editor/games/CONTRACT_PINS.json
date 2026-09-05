@@ -4,7 +4,7 @@
     "mod_editor/games/__init__.py": "6d6cd09c31059d97834dc5cc7b44d1c4191b9eda10eed4d1982fd4ce7ba3c13f",
     "mod_editor/games/chooser.py": "6b3cd013ce0b3fc5d5b4740b77dd4e23dedb518ef098f49b5dd5e5eff6c456e0",
     "mod_editor/games/chooser_qt.py": "6164e13fcf34a3636b8e61af50d81057546cb8634886c6a3ddc5f962013e6d76",
-    "mod_editor/games/conformance.py": "b0c3e38235cf6668075af2906ac61cf110a07f4e2e82329b94a5facca46356d8",
+    "mod_editor/games/conformance.py": "f2147454c2a6914b29ecb12ea67cd74ce12db96fb5fda22fda6d1fefd3d3b2ac",
     "mod_editor/games/contract.py": "658de0654a960320c22dbd85706fba30a29fd1aeecd358cb601fbbe702a90d07",
     "mod_editor/games/pins.py": "b20a5b399932ecad13da6b0117db5344319b5d1100c6fda5b82417b7d5e3fab1",
     "mod_editor/games/registry_merge.py": "4407313c47a62f25ec2a651f2b0045fde47052b5abfac813135ebc5c6ef0facf",

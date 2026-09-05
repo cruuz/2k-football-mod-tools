@@ -777,7 +777,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.game and not games:
         print(f"no hosted game is called {args.game!r}", file=sys.stderr)
         return 2
-    with tempfile.TemporaryDirectory(prefix="game-conformance-") as fallback:
+    # ignore_cleanup_errors: a lane that leaves its source open would otherwise turn a
+    # passing run into a PermissionError on Windows at teardown; the verdict is the
+    # checks, and a leaked handle is reported by the lane tests, not by a traceback here.
+    with tempfile.TemporaryDirectory(prefix="game-conformance-", ignore_cleanup_errors=True) as fallback:
         work = args.work_dir or Path(fallback)
         for game in games:
             result = run(game, work, behavioural=not args.static_only)

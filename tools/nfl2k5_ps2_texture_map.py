@@ -744,6 +744,24 @@ def initialise(iso_path: str, packs, entries) -> None:
     _state["entries"] = list(entries)
 
 
+def release() -> None:
+    """Close the archive :func:`initialise` opened, if any.
+
+    Linux lets a caller delete a disc image while it is open; Windows does not,
+    so a long-lived process that keeps the last archive open blocks the user
+    from moving their ISO and turns a temporary directory's cleanup into a
+    PermissionError.  Callers pair every ``initialise`` with a ``release`` in a
+    ``finally``; calling it twice is harmless.
+    """
+    previous = _state.pop("archive", None)
+    _state.pop("entries", None)
+    if previous is not None:
+        try:
+            previous.close()
+        except OSError:
+            pass
+
+
 def _full_payload(archive, virtual_offset: int, stored: int, compressed: bool,
                   system_bytes: int, video_bytes: int) -> Tuple[bytes, bytes]:
     body = archive.read(virtual_offset, stored)
