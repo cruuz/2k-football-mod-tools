@@ -19,10 +19,11 @@ from .errors import ValidationError
 from . import nfl2k5_play_codec as codec
 from . import nfl2k5_play_library as lib
 from . import nfl2k5_playbook_inspector as insp
+from . import nfl2k5_special_roles as special
 from .nfl2k5_formation_play_writer import compile_personnel_categories
 from .nfl2k5_playbook_pack import _outer_image
 
-SCHEMA = "nfl2k5_depth_roles/v1"
+SCHEMA = "nfl2k5_depth_roles/v2"
 WR, CB = 9, 18
 DISAGREEMENT_YD = 2.0
 RESOURCE_SIZE = insp.RESOURCE_HEADER_SIZE + insp.BODY_SIZE
@@ -229,14 +230,16 @@ def role_digest(raw: bytes) -> str:
 
 def book_status(raw: bytes) -> str:
     try:
-        name = _parse(raw).book_name
+        book = _parse(raw)
+        name = book.book_name
         digest = role_digest(raw)
+        extra = special.digest(raw, book)
     except (ValidationError, ValueError, struct.error):
         return "foreign"
-    if RETAIL_SHA256.get(name) == digest:
-        return "retail"
-    if APPLIED_SHA256.get(name) == digest:
+    if APPLIED_SHA256.get(name) == digest and special.APPLIED_SHA256.get(name) == extra:
         return "applied"
+    if digest in (RETAIL_SHA256.get(name), APPLIED_SHA256.get(name)) and special.RETAIL_SHA256.get(name) == extra:
+        return "retail"  # also upgrade a known Tier-1-only book
     return "foreign"
 
 
@@ -265,7 +268,7 @@ def _audit_book(raw: bytes) -> dict[str, Any]:
             "counts": {"formations": len(book.formations), "plays": len(book.plays), "nodes": book.node_count,
                        "categories": len(book.categories)},
             "histograms": {k: dict(sorted(v.items())) for k, v in hist.items()},
-            "groups": groups, "gate": gate}
+            "groups": groups, "gate": gate, "special": special.plan(raw, book)}
 
 
 def _archive_resources(archive: Any) -> list[tuple[Any, bytes]]:
@@ -308,7 +311,10 @@ def audit(pack_or_image: Any) -> dict[str, Any]:
                        "refused_groups": sum(bool(g["refused_reason"]) for b in books.values() for g in b["groups"]),
                        "gate_checked": sum(b["gate"]["checked"] for b in books.values()),
                        "gate_excluded": sum(b["gate"]["excluded"] for b in books.values()),
-                       "gate_ok": all(b["gate"]["ok"] for b in books.values())}}
+                       "gate_ok": all(b["gate"]["ok"] and b["special"]["gate"]["ok"] for b in books.values()),
+                       "special_classified": dict(sum((Counter(b["special"]["classified"]) for b in books.values()), Counter())),
+                       "special_accepted": dict(sum((Counter(b["special"]["accepted"]) for b in books.values()), Counter())),
+                       "special_refused_groups": sum(len(b["special"]["refused"]) for b in books.values())}}
 
 
 def status(pack_or_image: Any) -> dict[str, Any]:
@@ -339,7 +345,10 @@ class NormalisedBook:
 
 
 def normalise(raw: bytes) -> NormalisedBook:
-    """Pure compiler, also for authored books. Refused groups stay byte-exact.
+    """Pure compiler, also for authored books. Apply only accepted assignments.
+
+    A refused SPECIAL assignment can share slots with an accepted core WR rule;
+    refusal does not freeze independently owned roles in that personnel group.
 
     This does not enforce retail pins: the disc-writing API does that unless
     the caller explicitly permits authored/custom role geometry.
@@ -349,18 +358,33 @@ def normalise(raw: bytes) -> NormalisedBook:
     _validate_plays(raw, book)
     before = _audit_book(raw)
     changes = {g["index"]: g["after"] for g in before["groups"] if g["before"] != g["after"]}
+    for entry in before["special"]["entries"]:
+        if entry["refused_reason"] or entry["before"] == entry["after"]:
+            continue
+        codes = changes.setdefault(entry["group"], lib.category_positions(raw[32:], entry["group"]))
+        for slot, code in entry["after"].items():
+            codes[slot] = code
     replacement = compile_personnel_categories(raw, changes)
     after_book = _parse(replacement)
     _validate_plays(replacement, after_book)
     after = _audit_book(replacement)
     _require(after["counts"] == before["counts"], "Depth roles changed book counts.")
     _require(after["gate"]["ok"], f"{book.book_name}: depth-role output gate failed: {after['gate']['failures']}")
-    # Stronger than the generic category writer: only high ordinal bits of
-    # accepted WR/CB slots may change. Everything else is proved byte-exact.
+    _require(after["special"]["gate"]["ok"], f"{book.book_name}: SPECIAL output gate failed: {after['special']['gate']}")
+    # High ordinal bits of accepted role slots; only the two punt gunner slots
+    # may also change position kind. Everything else stays byte-exact.
     allowed = {insp.RESOURCE_HEADER_SIZE + insp.CATEGORY_BASE + g["index"] * insp.CATEGORY_SIZE + 5 + s
                for g in before["groups"] if not g["refused_reason"] for s in g["slots"]}
+    kinds_allowed = set()
+    for entry in before["special"]["entries"]:
+        if entry["refused_reason"]:
+            continue
+        offsets = {32 + insp.CATEGORY_BASE + entry["group"] * insp.CATEGORY_SIZE + 5 + s for s in entry["after"]}
+        allowed.update(offsets)
+        if entry["role"] == "gunners":
+            kinds_allowed.update(offsets)
     differences = [i for i, (a, b) in enumerate(zip(raw, replacement)) if a != b]
-    _require(len(raw) == len(replacement) and all(i in allowed and raw[i] & 31 == replacement[i] & 31 for i in differences),
+    _require(len(raw) == len(replacement) and all(i in allowed and (i in kinds_allowed or raw[i] & 31 == replacement[i] & 31) for i in differences),
              "Depth roles changed an unowned byte or position kind.")
     return NormalisedBook(replacement, {
         "name": book.book_name, "before_status": before["status"], "after_status": after["status"],
@@ -370,7 +394,9 @@ def normalise(raw: bytes) -> NormalisedBook:
         "before_histograms": before["histograms"], "after_histograms": after["histograms"],
         "refused_groups": [g for g in before["groups"] if g["refused_reason"]],
         "ambiguous_groups": [g for g in before["groups"] if any(r["bunch_or_tied"] for r in g["formations"])],
-        "gate": after["gate"], "all_plays_validated": len(book.plays),
+        "gate": after["gate"], "special": after["special"],
+        "before_special": before["special"], "kind_change_offsets": sorted(kinds_allowed),
+        "all_plays_validated": len(book.plays),
     })
 
 
@@ -419,8 +445,8 @@ def apply_to_archive(archive: Any, *, allow_custom: bool = False,
     books = [{"outer_index": e.index, **r.report} for e, _raw, r in planned]
     return {"schema": SCHEMA, "status": "applied", "allow_custom": allow_custom, "books": books,
             "changed_bytes": sum(b["changed_bytes"] for b in books), "writes": writes,
-            "gate_ok": all(b["gate"]["ok"] for b in books),
-            "refused_groups": sum(len(b["refused_groups"]) for b in books)}
+            "gate_ok": all(b["gate"]["ok"] and b["special"]["gate"]["ok"] for b in books),
+            "refused_groups": sum(len(b["refused_groups"]) + len(b["special"]["refused"]) for b in books)}
 
 
 def apply(image: Path | str, *, allow_custom: bool = False,

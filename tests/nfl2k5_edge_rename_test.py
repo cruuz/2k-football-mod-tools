@@ -71,6 +71,8 @@ def build_edge_synthetic_xbe() -> bytes:
     # Both label writers identify the table layout through the real getter instruction.
     stride_off = edge._offset(bytes(buf), 0x243AE5)
     buf[stride_off:stride_off + 3] = bytes.fromhex("6bc00b")
+    base_off = edge._offset(bytes(buf), 0x243AED)
+    buf[base_off:base_off + 7] = bytes.fromhex("8d04c5d8405100")
     text_section = strength._section_for_offset(strength._sections(bytes(buf)), stride_off)
     digest_off = text_section.header_offset + 36
     buf[digest_off:digest_off + 20] = strength.section_digest(bytes(buf), text_section)

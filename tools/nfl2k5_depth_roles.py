@@ -62,8 +62,8 @@ def _normalise(args: argparse.Namespace) -> dict:
         return {"schema": roles.SCHEMA, "status": "applied", "output": str(output),
                 "books": [{"source_key": key, **r.report} for key, r in results],
                 "changed_bytes": sum(r.report["changed_bytes"] for _, r in results),
-                "refused_groups": sum(len(r.report["refused_groups"]) for _, r in results),
-                "gate_ok": all(r.report["gate"]["ok"] for _, r in results)}
+                "refused_groups": sum(len(r.report["refused_groups"]) + len(r.report["special"]["refused"]) for _, r in results),
+                "gate_ok": all(r.report["gate"]["ok"] and r.report["special"]["gate"]["ok"] for _, r in results)}
     with source.open("rb") as reader, output.open("xb") as writer:
         shutil.copyfileobj(reader, writer, length=8 << 20)
     return {**roles.apply(output, allow_custom=args.allow_custom), "output": str(output)}
@@ -78,6 +78,9 @@ def _summary(report: dict) -> None:
         print(f"Gate: {totals['gate_checked']} checked, {totals['gate_excluded']} excluded, ok={totals['gate_ok']}")
         for key, book in report["books"].items():
             print(f"{key} {book['name']}: {book['status']}")
+            print(f"  SPECIAL: classified={book['special']['classified']}; accepted={book['special']['accepted']}")
+            for entry in book["special"]["refused"]:
+                print(f"  {entry['role']} group {entry['group']}: {entry['refused_reason']}; formations={entry['formations']}")
             for group in book["groups"]:
                 if group["refused_reason"] or group["disagreeing"] or any(r["bunch_or_tied"] for r in group["formations"]):
                     why = group["refused_reason"] or "bunch/tied/disagreeing within tolerance"
@@ -89,9 +92,10 @@ def _summary(report: dict) -> None:
             print(f"  {key}: {state}")
     else:
         print(f"{report['status']}: {len(report['books'])} books, {report['changed_bytes']} changed bytes, "
-              f"{report['refused_groups']} groups preserved; gate ok={report['gate_ok']}")
+              f"{report['refused_groups']} role assignments refused; gate ok={report['gate_ok']}")
         for book in report["books"]:
-            print(f"  {book['name']}: {book['changed_bytes']} bytes; {len(book['refused_groups'])} preserved groups")
+            refused = len(book["refused_groups"]) + len(book["special"]["refused"])
+            print(f"  {book['name']}: {book['changed_bytes']} bytes; {refused} role assignments refused")
 
 
 def main(argv: list[str] | None = None) -> int:

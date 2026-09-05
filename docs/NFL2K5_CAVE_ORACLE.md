@@ -54,6 +54,14 @@ The manifest unions exact diffs with declared edit/cave extents and unchanged ru
 
 The generated JSON contains hashes/addresses/sizes and no retail byte strings. Source fingerprints cover the dispatcher, preset and current NFL2K5 writer/helper sources. Regenerate after Claude finishes beta-60 changes to those sources; stale reservations fail closed. Alternate settings that use the same sites do not create independent allocations. Arbitrary future plugins, user-authored patches and new site layouts require a new manifest.
 
+SPECIAL adds a fresh read-only table beyond the retail image by extending the
+final section. The recorder permits this verified rows-module append, accounts
+for every appended byte, and records `stack_image_size` so its ownership can
+cover the enlarged image. Unattributed growth still refuses. This does not
+certify any existing cave: unmapped/unknown verdicts stay unknown. The separate
+allocation evidence and the protected writer changes needed before regenerating
+are documented in [WIRING_SPECIAL.md](../WIRING_SPECIAL.md).
+
 ## Gate use
 
 ```python
