@@ -272,13 +272,24 @@ class BuildRefusalTests(unittest.TestCase):
             ea_terf.build_terf([b"x"], chunk="DATA", codecs=[ea_terf.CODEC_RLE1])
         self.assertIn("no codec table", str(caught.exception))
 
-    def test_writing_lzh1_is_refused_by_name(self) -> None:
-        with self.assertRaises(ea_terf.UnsupportedCodec) as caught:
-            ea_terf.build_terf([b"x"], chunk="COMP",
-                               codecs=[ea_terf.CODEC_LZH1])
-        message = str(caught.exception)
-        self.assertIn("LZH1", message)
-        self.assertIn("no lzh1 encoder exists", message.lower())
+    def test_writing_an_unregistered_codec_is_refused_by_name(self) -> None:
+        """``HUFF``, ``LZM1`` and ``IPU1`` are registered by the engine and
+        implemented by nobody; asking for one names what this writer does have."""
+        for codec in (ea_terf.CODEC_HUFF, ea_terf.CODEC_LZM1, ea_terf.CODEC_IPU1):
+            with self.subTest(codec):
+                with self.assertRaises(ea_terf.UnsupportedCodec) as caught:
+                    ea_terf.build_terf([b"x"], chunk="COMP", codecs=[codec])
+                message = str(caught.exception)
+                self.assertIn(ea_terf.CODEC_NAMES[codec], message)
+                self.assertIn("LZH1", message)
+
+    def test_writing_lzh1_now_works_and_reads_back(self) -> None:
+        container = ea_terf.build_terf([b"x" * 900], chunk="COMP",
+                                       codecs=[ea_terf.CODEC_LZH1])
+        parsed = ea_terf.parse_terf(container)
+        self.assertEqual(parsed.member(0), b"x" * 900)
+        self.assertEqual(parsed.members[0].codec, ea_terf.CODEC_LZH1)
+        self.assertLess(parsed.members[0].stored_size, 900)
 
     def test_an_unknown_chunk_kind_is_refused(self) -> None:
         with self.assertRaises(ea_terf.TerfError):
@@ -667,6 +678,175 @@ class TrailingEmptyMemberTests(unittest.TestCase):
         with self.assertRaises(ea_terf.TerfError) as caught:
             ea_terf.parse_terf(container[:start + 4], allow_size_mismatch=True)
         self.assertIn("past the end", str(caught.exception))
+
+
+class Lzh1EncoderTests(unittest.TestCase):
+    """``decompress(compress(x)) == x``, and the refusals that guard it.
+
+    The claim is one-directional on purpose: this encoder's parse and its code
+    lengths are not EA's, so ``compress(decompress(m)) == m`` is not merely
+    unclaimed for a shipped member -- it is known false, and a test that
+    asserted it would be "fixed" by weakening the wrong thing.
+    """
+
+    def round_trip(self, payload: bytes) -> bytes:
+        stream = ea_terf.lzh1_compress(payload)
+        # Both modes: the container's bounded read, and the read that
+        # terminates on the end-of-stream marker.  A bounded-only test never
+        # exercises the marker at all.
+        self.assertEqual(ea_terf.lzh1_decompress(stream, len(payload)), payload)
+        self.assertEqual(ea_terf.lzh1_decompress(stream), payload)
+        return stream
+
+    def test_the_grammars_edge_cases_all_round_trip(self) -> None:
+        unit = bytes(((index * 37) ^ (index >> 3)) & 0xFF for index in range(32768))
+        cases = {
+            "empty": b"",
+            "one byte": b"A",
+            "below the minimum match": b"AB",
+            "the 227-byte match ceiling": b"z" * 228,
+            "the 32767-byte distance ceiling": unit + unit[:1],
+            "every byte value once": bytes(range(256)),
+            "a one-byte self-overlap": b"q" * (1 << 18),
+            "incompressible": bytes((index * 251 + 17) % 256 for index in range(4096)),
+        }
+        for name, payload in cases.items():
+            with self.subTest(name):
+                self.round_trip(payload)
+
+    def test_an_empty_payload_still_carries_a_complete_code(self) -> None:
+        stream = self.round_trip(b"")
+        # flag bit 0, then 285 + 30 four-bit lengths, then one code and the
+        # marker: the block header alone is 1,261 bits.
+        self.assertGreaterEqual(len(stream), (1 + 1260) // 8)
+        lengths = self.code_lengths(stream)
+        self.assertEqual(sorted(index for index, value in enumerate(lengths[0])
+                                if value), [0, 256])
+        self.assertEqual(sorted(index for index, value in enumerate(lengths[1])
+                                if value), [0, 1])
+
+    @staticmethod
+    def code_lengths(stream: bytes) -> tuple:
+        """The two code-length tables a stream's first block declares."""
+        bits = iter(''.join(format(byte, "08b") for byte in stream))
+        assert next(bits) == "0"
+
+        def table(count: int) -> list:
+            return [int(''.join(next(bits) for _ in range(4)), 2) for _ in range(count)]
+
+        return table(ea_terf.LZH1_LITERAL_SYMBOLS), table(ea_terf.LZH1_DISTANCE_SYMBOLS)
+
+    def test_every_code_emitted_is_complete(self) -> None:
+        """Kraft sum exactly 1 for both alphabets, on every shape.
+
+        Whether this codec's decode tree tolerates an incomplete code is not
+        established from the binary, so the encoder never emits one -- and an
+        all-literal block must not leave the distance table empty either.
+        """
+        for payload in (b"", b"A", b"AB", b"abc" * 400, bytes(range(256)) * 4):
+            with self.subTest(len(payload)):
+                for lengths in self.code_lengths(ea_terf.lzh1_compress(payload)):
+                    kraft = sum(2.0 ** -length for length in lengths if length)
+                    self.assertAlmostEqual(kraft, 1.0, places=9)
+                    self.assertLessEqual(max(lengths), ea_terf.LZH1_MAX_CODE_LENGTH)
+
+    def test_a_match_longer_than_the_alphabet_is_split_not_truncated(self) -> None:
+        """227 is the ceiling; a 258-byte deflate match becomes 227 + 31."""
+        payload = b"y" * 4096
+        stream, report = ea_terf.lzh1_compress_report(payload)
+        self.assertEqual(ea_terf.lzh1_decompress(stream), payload)
+        self.assertGreaterEqual(report.matches, len(payload) // ea_terf.LZH1_MAX_MATCH)
+
+    def test_the_length_limiter_repairs_a_distribution_that_needs_16_bits(self) -> None:
+        """Plain Huffman on this alphabet wants a 17-bit code; four bits hold 15."""
+        payload = bytearray()
+        for index in range(18):
+            payload += bytes((index,)) * max(1, 1 << (17 - index))
+        stream, report = ea_terf.lzh1_compress_report(bytes(payload))
+        self.assertLessEqual(report.max_code_length, ea_terf.LZH1_MAX_CODE_LENGTH)
+        self.assertEqual(ea_terf.lzh1_decompress(stream), bytes(payload))
+
+    def test_a_budget_overrun_raises_and_returns_nothing(self) -> None:
+        with self.assertRaises(ea_terf.TerfError) as caught:
+            ea_terf.lzh1_compress(b"payload" * 64, budget=8)
+        self.assertIn("budget", str(caught.exception))
+
+    def test_a_distance_past_the_window_is_refused_by_name(self) -> None:
+        with self.assertRaises(ea_terf.TerfError):
+            ea_terf._distance_code(ea_terf.LZH1_WINDOW)
+
+    def test_the_length_alphabet_covers_3_to_227_and_no_more(self) -> None:
+        for length in range(ea_terf.LZH1_MIN_MATCH, ea_terf.LZH1_MAX_MATCH + 1):
+            index, extra = ea_terf._length_code(length)
+            self.assertEqual(ea_terf._LEN_BASE[index] + extra, length)
+            self.assertLess(extra, 1 << ea_terf._LEN_EXTRA[index])
+        with self.assertRaises(IndexError):
+            ea_terf._length_code(ea_terf.LZH1_MAX_MATCH + 1)
+
+    def test_the_parse_never_reaches_past_the_bytes_emitted_so_far(self) -> None:
+        payload = bytes(range(256)) * 200
+        tokens, _matches, literalised = ea_terf._lz_tokens(payload)
+        self.assertEqual(literalised, 0)
+        produced = 0
+        for token in tokens:
+            if isinstance(token, int):
+                produced += 1
+                continue
+            length, distance = token
+            self.assertLessEqual(distance, min(produced, ea_terf.LZH1_MAX_DISTANCE))
+            self.assertTrue(ea_terf.LZH1_MIN_MATCH <= length <= ea_terf.LZH1_MAX_MATCH)
+            produced += length
+        self.assertEqual(produced, len(payload))
+
+    def test_the_report_names_the_headroom_against_a_reference(self) -> None:
+        payload = b"the same sentence, over and over. " * 200
+        _stream, report = ea_terf.lzh1_compress_report(payload, reference_bytes=4096)
+        self.assertEqual(report.input_bytes, len(payload))
+        self.assertEqual(report.headroom, 4096 - report.output_bytes)
+        self.assertLess(report.ratio, 1.0)
+        self.assertTrue(report.verified)
+        self.assertIn("output_bytes", report.as_dict())
+
+    def test_a_compressed_member_survives_build_terf(self) -> None:
+        members = [b"first member, compressible " * 40, b"", bytes(range(256)) * 3]
+        container = ea_terf.build_terf(
+            members, chunk="COMP",
+            codecs=[ea_terf.CODEC_LZH1, ea_terf.CODEC_STORED, ea_terf.CODEC_LZH1])
+        parsed = ea_terf.parse_terf(container)
+        self.assertEqual([parsed.member(index) for index in range(3)], members)
+        self.assertEqual(parsed.members[0].codec, ea_terf.CODEC_LZH1)
+        self.assertEqual(parsed.layout_violations(), [])
+
+    def test_rewrite_member_can_choose_the_compressed_codec(self) -> None:
+        members = [b"a" * 4000, b"b" * 4000]
+        container = ea_terf.build_terf(members, chunk="COMP",
+                                       codecs=[ea_terf.CODEC_LZH1] * 2)
+        replacement = b"c" * 4000
+        plan = ea_terf.plan_member_rewrite(container, 0, replacement)
+        self.assertEqual(plan.codec, ea_terf.CODEC_LZH1)
+        self.assertFalse(plan.grows_container)
+        out = ea_terf.rewrite_member(container, 0, replacement,
+                                     codec=ea_terf.CODEC_LZH1)
+        parsed = ea_terf.parse_terf(out)
+        self.assertEqual(parsed.member(0), replacement)
+        self.assertEqual(parsed.member(1), members[1])
+        self.assertEqual(len(out), len(container))
+
+    def test_a_payload_too_big_to_compress_into_its_slot_plans_stored(self) -> None:
+        container = ea_terf.build_terf([b"tiny", b"other"], chunk="COMP",
+                                       codecs=[ea_terf.CODEC_STORED] * 2)
+        state = 0x2545F491
+        noise = bytearray()
+        while len(noise) < 9000:
+            state ^= (state << 13) & 0xFFFFFFFF
+            state ^= state >> 17
+            state ^= (state << 5) & 0xFFFFFFFF
+            noise += state.to_bytes(4, "little")
+        replacement = bytes(noise[:9000])
+        plan = ea_terf.plan_member_rewrite(container, 0, replacement)
+        self.assertEqual(plan.codec, ea_terf.CODEC_STORED)
+        self.assertTrue(plan.grows_container)
+        self.assertIn("grows", plan.note)
 
 
 if __name__ == "__main__":

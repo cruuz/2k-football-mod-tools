@@ -53,6 +53,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import mmap
 import struct
+import zlib
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from mod_editor.games.contract import Refusal
@@ -105,13 +106,16 @@ CODEC_NAMES: Mapping[int, str] = {
 #: different answers and must not render the same.
 CODECS_DECODED = (CODEC_STORED, CODEC_RLE1, CODEC_LZH1)
 
-#: The codecs this module can *write*.  ``LZH1`` is decode-only: no encoder for
-#: it exists in this project or in the owner's, so a COMP writer stores or
-#: run-length-encodes instead.  Retail precedent for storing: Madden 09 ships
-#: 270 of ``UNIFORMS.DAT``'s 725 members and 689 of ``STADIUMS.DAT``'s 1,355
-#: as codec 0 *inside a COMP container*, so a stored member there is a shape
-#: the shipped game already loads.
-CODECS_ENCODED = (CODEC_STORED, CODEC_RLE1)
+#: The codecs this module can *write*.  ``LZH1`` joined them when
+#: :func:`lzh1_compress` was written: every LZH1 member of the Madden 09 art
+#: containers re-encodes smaller than EA shipped it and decodes back byte for
+#: byte, under this module's decoder and under an independent one.
+#:
+#: Storing also remains a shape the shipped game already loads -- Madden 09
+#: ships 270 of ``UNIFORMS.DAT``'s 725 members and 689 of ``STADIUMS.DAT``'s
+#: 1,355 as codec 0 *inside a COMP container* -- so a writer that cannot make
+#: a compressed member fit still has somewhere to go.
+CODECS_ENCODED = (CODEC_STORED, CODEC_RLE1, CODEC_LZH1)
 
 
 class TerfError(Refusal):
@@ -338,6 +342,581 @@ def lzh1_decompress(
             % (len(out), expected_size)
         )
     return bytes(out)
+
+
+# --------------------------------------------------------------------------
+# LZH1 (codec 5) -- the encoder
+# --------------------------------------------------------------------------
+#
+# Written against the grammar above, not against EA's bytes: the claim is
+# ``lzh1_decompress(lzh1_compress(x)) == x``, never ``lzh1_compress(y) == y``
+# for a shipped member.  Our parse and our code lengths differ from EA's, and
+# on the Madden 09 art containers the result is *smaller* than EA shipped, so
+# bit-identity is not merely unclaimed -- it is known false.
+#
+# Three constraints separate this from a deflate encoder, and each one is a
+# way to produce a stream that decodes to plausible-but-wrong bytes rather
+# than to an error:
+#
+# * **The longest match is 227, not deflate's 258.**  Symbol 284 is the top of
+#   the 285-symbol alphabet and carries no extra bits, so ``_LEN_BASE[27] =
+#   227`` is the ceiling and index 28 is unreachable.  A deflate parse's
+#   258-byte matches are split here rather than truncated.
+# * **The longest distance is 32,767, not 32,768.**  The decoder's window is
+#   ``0x8000`` bytes indexed ``(write - distance) & 0x7FFF``, so the nominally
+#   representable 32,768 aliases to the write pointer itself.  Distance symbol
+#   29 with every extra bit set is therefore never emitted; such a match is
+#   expanded to literals instead.
+# * **No match may reach before the start of the stream.**  The window's
+#   initial contents are never written, so a distance past the bytes emitted
+#   so far decodes as zeros in this reader and as stale window bytes in a
+#   circular-buffer one.  The encoder never emits one.
+#
+# Two rules of the writer's own, both cheap insurance rather than discoveries:
+# every code emitted is **complete** (Kraft sum exactly 1), because whether
+# this codec's decode tree tolerates an incomplete one is not established; and
+# the distance table is never all-zero, because an all-literal block would
+# otherwise depend on that same unestablished behaviour.  A single-symbol
+# alphabet gets a second, never-emitted symbol at length 1.
+#
+# The **parse** is zlib's.  ``zlib.compressobj(9, DEFLATED, -15)`` is a
+# greedy-plus-lazy hash-chain match search -- the same family the design calls
+# for -- running in C, and its token stream is read back out of the raw
+# deflate bytes by :func:`_deflate_tokens` and re-expressed under LZH1's
+# constraints.  The entropy stage is this module's own: one block per member,
+# an optimal length-limited Huffman code over the resulting symbols, and the
+# flat 285+30 four-bit table the format demands.  A pure-Python match search
+# would be the same algorithm two orders of magnitude slower, on a corpus of
+# 1,836 members and 361 MB.
+
+#: The shortest and longest match the alphabet can express.
+LZH1_MIN_MATCH = 3
+LZH1_MAX_MATCH = 227
+
+#: The largest usable distance.  32,768 is representable and aliases to the
+#: write pointer, so it is never emitted.
+LZH1_MAX_DISTANCE = LZH1_WINDOW - 1
+
+#: Code lengths are stored in four bits, so 15 is the ceiling and 0 is unused.
+LZH1_MAX_CODE_LENGTH = 15
+
+#: The 32-bit word after the end-of-stream flag.  The decoder reads it and
+#: throws it away; this encoder writes zeros.
+LZH1_END_OF_STREAM_TAIL = 0
+
+
+def _build_length_codes() -> Tuple[Tuple[int, int], ...]:
+    """``length -> (alphabet index, extra value)`` for every length 3..227."""
+
+    table: Dict[int, Tuple[int, int]] = {}
+    for index, base in enumerate(_LEN_BASE):
+        span = 1 if index == len(_LEN_BASE) - 1 else 1 << _LEN_EXTRA[index]
+        for extra in range(span):
+            value = base + extra
+            if value > LZH1_MAX_MATCH:
+                continue
+            if value not in table:
+                table[value] = (index, extra)
+    missing = [n for n in range(LZH1_MIN_MATCH, LZH1_MAX_MATCH + 1) if n not in table]
+    if missing:  # pragma: no cover - a typo in the tables above, not input
+        raise TerfError(
+            "the LZH1 length alphabet does not cover length(s) %r; the encoder "
+            "and the decoder disagree about the format." % missing[:4]
+        )
+    return tuple(table[n] for n in range(LZH1_MIN_MATCH, LZH1_MAX_MATCH + 1))
+
+
+_LENGTH_CODES = _build_length_codes()
+
+
+def _length_code(length: int) -> Tuple[int, int]:
+    return _LENGTH_CODES[length - LZH1_MIN_MATCH]
+
+
+def _distance_code(distance: int) -> Tuple[int, int]:
+    """``distance -> (alphabet index, extra value)`` for 1..32767.
+
+    32,768 *is* representable -- symbol 29 with every extra bit set -- and is
+    refused anyway: the decoder's window is indexed ``(write - distance) &
+    0x7FFF``, so that distance aliases to the write pointer itself and decodes
+    to something plausible rather than to an error.
+    """
+
+    if not 1 <= distance <= LZH1_MAX_DISTANCE:
+        raise TerfError(
+            "LZH1 cannot express a match distance of %d: the usable range is "
+            "1..%d, because %d aliases to the codec's own write pointer inside "
+            "a %d-byte window."
+            % (distance, LZH1_MAX_DISTANCE, LZH1_WINDOW, LZH1_WINDOW)
+        )
+    index = 0
+    for candidate in range(len(_DIST_BASE) - 1, -1, -1):
+        if _DIST_BASE[candidate] <= distance:
+            index = candidate
+            break
+    extra = distance - _DIST_BASE[index]
+    return index, extra
+
+
+class _BitWriter:
+    """MSB-first bit writer, the mirror of :class:`_BitReader`."""
+
+    __slots__ = ("_out", "_bits", "_count")
+
+    def __init__(self) -> None:
+        self._out = bytearray()
+        self._bits = 0
+        self._count = 0
+
+    def write(self, value: int, width: int) -> None:
+        if width <= 0:
+            return
+        self._bits = (self._bits << width) | (value & ((1 << width) - 1))
+        self._count += width
+        while self._count >= 8:
+            self._count -= 8
+            self._out.append((self._bits >> self._count) & 0xFF)
+        self._bits &= (1 << self._count) - 1
+
+    def flush(self) -> bytes:
+        """Zero-pad to a byte boundary; shipped streams pad with zeros."""
+
+        if self._count:
+            self._out.append((self._bits << (8 - self._count)) & 0xFF)
+            self._bits = 0
+            self._count = 0
+        return bytes(self._out)
+
+
+def _package_merge(weights: Sequence[Tuple[int, int]], limit: int) -> Dict[int, int]:
+    """Length-limited Huffman code lengths (Larmore-Hirschberg package-merge).
+
+    *weights* is ``(symbol, count)`` for the symbols that occur, at least two
+    of them.  Plain Huffman never exceeds 15 bits on any member measured here,
+    so the limit is insurance rather than a hot path -- but a 16-bit code
+    cannot be written into a four-bit field at all, so the insurance has to
+    exist and has to be exercised by a test rather than discovered in use.
+    """
+
+    count = len(weights)
+    coins = sorted(((weight, (symbol,)) for symbol, weight in weights),
+                   key=lambda pair: pair[0])
+    keep = 2 * count - 2
+    current = list(coins)
+    for _ in range(limit - 1):
+        packaged = [
+            (current[index][0] + current[index + 1][0],
+             current[index][1] + current[index + 1][1])
+            for index in range(0, len(current) - 1, 2)
+        ]
+        current = sorted(coins + packaged, key=lambda pair: pair[0])[:keep]
+    lengths = {symbol: 0 for symbol, _weight in weights}
+    for _weight, symbols in current[:keep]:
+        for symbol in symbols:
+            lengths[symbol] += 1
+    for symbol, length in lengths.items():
+        if not 1 <= length <= limit:  # pragma: no cover - the algorithm's invariant
+            raise TerfError(
+                "the length-limited Huffman builder produced a %d-bit code for "
+                "symbol %d, which a four-bit length field cannot hold. Nothing "
+                "was written." % (length, symbol)
+            )
+    return lengths
+
+
+def _code_lengths(frequencies: Sequence[int], alphabet: int) -> List[int]:
+    """Code lengths over *alphabet* symbols, always forming a complete code.
+
+    An alphabet with one used symbol, or none, is given a second symbol at
+    length 1 that is never emitted: the code is then complete for the price of
+    a four-bit field, and whether this codec tolerates an incomplete one never
+    has to be answered.
+    """
+
+    used = [(symbol, count) for symbol, count in enumerate(frequencies) if count]
+    lengths = [0] * alphabet
+    if len(used) >= 2:
+        for symbol, length in _package_merge(used, LZH1_MAX_CODE_LENGTH).items():
+            lengths[symbol] = length
+        return lengths
+    if len(used) == 1:
+        first = used[0][0]
+        second = 1 if first == 0 else 0
+    else:
+        first, second = 0, 1
+    lengths[first] = 1
+    lengths[second] = 1
+    return lengths
+
+
+def _canonical_codes(lengths: Sequence[int]) -> List[int]:
+    """Canonical codes for *lengths*: shortest first, ascending symbol within.
+
+    Deflate's rule, and the one :class:`_Huffman` decodes with -- the two are
+    written from the same three lines so a change to either is visible.
+    """
+
+    counts = [0] * (_MAX_CODE_LENGTH + 1)
+    for length in lengths:
+        if length:
+            counts[length] += 1
+    next_code = [0] * (_MAX_CODE_LENGTH + 2)
+    code = 0
+    for length in range(1, _MAX_CODE_LENGTH + 1):
+        code = (code + counts[length - 1]) << 1
+        next_code[length] = code
+    codes = [0] * len(lengths)
+    for symbol, length in enumerate(lengths):
+        if length:
+            codes[symbol] = next_code[length]
+            next_code[length] += 1
+    return codes
+
+
+# -- the parse -------------------------------------------------------------
+#
+# zlib emits a raw deflate stream; this reads its tokens back.  Deflate packs
+# bits LSB-first, which is the opposite of LZH1, and its Huffman codes are
+# read most-significant-bit-of-the-code first out of least-significant-bit-of-
+# the-byte -- the "puff" arrangement below.
+
+_DEFLATE_LENGTH_BASE = (3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
+                        35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258)
+_DEFLATE_LENGTH_EXTRA = (0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3,
+                         4, 4, 4, 4, 5, 5, 5, 5, 0)
+_CODE_LENGTH_ORDER = (16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15)
+
+
+class _DeflateBits:
+    """LSB-first bit reader over a raw deflate stream."""
+
+    __slots__ = ("_data", "_pos", "_bits", "_count")
+
+    def __init__(self, data: bytes) -> None:
+        self._data = data
+        self._pos = 0
+        self._bits = 0
+        self._count = 0
+
+    def read(self, width: int) -> int:
+        while self._count < width:
+            if self._pos >= len(self._data):
+                raise TerfError(
+                    "the deflate stream this encoder's parse reads ended early; "
+                    "that is an internal defect, not a property of the input."
+                )
+            self._bits |= self._data[self._pos] << self._count
+            self._pos += 1
+            self._count += 8
+        value = self._bits & ((1 << width) - 1)
+        self._bits >>= width
+        self._count -= width
+        return value
+
+    def stored_block(self) -> bytes:
+        self._bits = 0
+        self._count = 0
+        head = self._data[self._pos:self._pos + 4]
+        if len(head) < 4:
+            raise TerfError("the deflate stream's stored block header is truncated.")
+        length = head[0] | (head[1] << 8)
+        self._pos += 4
+        block = self._data[self._pos:self._pos + length]
+        if len(block) != length:
+            raise TerfError("the deflate stream's stored block is truncated.")
+        self._pos += length
+        return block
+
+
+class _DeflateHuffman:
+    """Canonical Huffman decoder in deflate's bit order."""
+
+    __slots__ = ("counts", "symbols")
+
+    def __init__(self, lengths: Sequence[int]) -> None:
+        self.counts = [0] * 16
+        for length in lengths:
+            self.counts[length] += 1
+        self.counts[0] = 0
+        offsets = [0] * 16
+        for length in range(1, 15):
+            offsets[length + 1] = offsets[length] + self.counts[length]
+        self.symbols = [0] * sum(self.counts)
+        cursor = list(offsets)
+        for symbol, length in enumerate(lengths):
+            if length:
+                self.symbols[cursor[length]] = symbol
+                cursor[length] += 1
+
+    def decode(self, bits: "_DeflateBits") -> int:
+        code = first = index = 0
+        for length in range(1, 16):
+            code |= bits.read(1)
+            count = self.counts[length]
+            if code - first < count:
+                return self.symbols[index + (code - first)]
+            index += count
+            first = (first + count) << 1
+            code <<= 1
+        raise TerfError(  # pragma: no cover - zlib does not emit invalid codes
+            "the deflate stream this encoder's parse reads carries an invalid code."
+        )
+
+
+_FIXED_LITERALS = _DeflateHuffman([8] * 144 + [9] * 112 + [7] * 24 + [8] * 8)
+_FIXED_DISTANCES = _DeflateHuffman([5] * 30)
+
+
+def _deflate_tokens(raw: bytes) -> List[object]:
+    """The LZ77 tokens inside a raw deflate stream: ints and ``(length, distance)``."""
+
+    bits = _DeflateBits(raw)
+    tokens: List[object] = []
+    while True:
+        final = bits.read(1)
+        kind = bits.read(2)
+        if kind == 0:
+            tokens.extend(bits.stored_block())
+        elif kind in (1, 2):
+            if kind == 1:
+                literals, distances = _FIXED_LITERALS, _FIXED_DISTANCES
+            else:
+                literal_count = bits.read(5) + 257
+                distance_count = bits.read(5) + 1
+                code_count = bits.read(4) + 4
+                code_lengths = [0] * 19
+                for slot in range(code_count):
+                    code_lengths[_CODE_LENGTH_ORDER[slot]] = bits.read(3)
+                table = _DeflateHuffman(code_lengths)
+                lengths: List[int] = []
+                while len(lengths) < literal_count + distance_count:
+                    symbol = table.decode(bits)
+                    if symbol < 16:
+                        lengths.append(symbol)
+                    elif symbol == 16:
+                        lengths.extend([lengths[-1]] * (3 + bits.read(2)))
+                    elif symbol == 17:
+                        lengths.extend([0] * (3 + bits.read(3)))
+                    else:
+                        lengths.extend([0] * (11 + bits.read(7)))
+                literals = _DeflateHuffman(lengths[:literal_count])
+                distances = _DeflateHuffman(lengths[literal_count:])
+            while True:
+                symbol = literals.decode(bits)
+                if symbol < 256:
+                    tokens.append(symbol)
+                elif symbol == 256:
+                    break
+                else:
+                    slot = symbol - 257
+                    length = (_DEFLATE_LENGTH_BASE[slot]
+                              + bits.read(_DEFLATE_LENGTH_EXTRA[slot]))
+                    code = distances.decode(bits)
+                    distance = _DIST_BASE[code] + bits.read(_DIST_EXTRA[code])
+                    tokens.append((length, distance))
+        else:
+            raise TerfError(  # pragma: no cover - zlib does not emit block type 3
+                "the deflate stream this encoder's parse reads uses block type 3."
+            )
+        if final:
+            return tokens
+
+
+def _lz_tokens(payload: bytes) -> Tuple[List[object], int, int]:
+    """LZH1-legal tokens for *payload*: ``(tokens, matches, literalised)``.
+
+    ``literalised`` counts matches deflate found that LZH1 cannot express --
+    a distance of exactly 32,768, which aliases to the write pointer -- and
+    which are written out as literal bytes instead.
+    """
+
+    if not payload:
+        return [], 0, 0
+    packer = zlib.compressobj(9, zlib.DEFLATED, -15)
+    raw = packer.compress(payload) + packer.flush()
+    tokens: List[object] = []
+    produced = 0
+    matches = 0
+    literalised = 0
+    for token in _deflate_tokens(raw):
+        if isinstance(token, int):
+            tokens.append(token)
+            produced += 1
+            continue
+        length, distance = token
+        if distance > LZH1_MAX_DISTANCE or distance > produced:
+            tokens.extend(payload[produced:produced + length])
+            produced += length
+            literalised += 1
+            continue
+        while length > LZH1_MAX_MATCH:
+            # Never leave a remainder below the minimum match: 258 splits as
+            # 227 + 31, and 228 as 225 + 3, so both halves stay legal.
+            first = min(LZH1_MAX_MATCH, length - LZH1_MIN_MATCH)
+            tokens.append((first, distance))
+            matches += 1
+            produced += first
+            length -= first
+        tokens.append((length, distance))
+        matches += 1
+        produced += length
+    if produced != len(payload):  # pragma: no cover - an internal defect
+        raise TerfError(
+            "this encoder's parse accounts for %d of %d input byte(s); refusing "
+            "to write a stream from it." % (produced, len(payload))
+        )
+    return tokens, matches, literalised
+
+
+@dataclass(frozen=True)
+class Lzh1Report:
+    """What one :func:`lzh1_compress` call did, and how big the result is."""
+
+    input_bytes: int
+    output_bytes: int
+    tokens: int
+    matches: int
+    literals: int
+    literalised_matches: int
+    max_code_length: int
+    verified: bool
+    #: The size the caller said it was replacing, when it said one.
+    reference_bytes: Optional[int] = None
+
+    @property
+    def headroom(self) -> Optional[int]:
+        if self.reference_bytes is None:
+            return None
+        return self.reference_bytes - self.output_bytes
+
+    @property
+    def ratio(self) -> Optional[float]:
+        if not self.reference_bytes:
+            return None
+        return self.output_bytes / self.reference_bytes
+
+    def as_dict(self) -> Dict[str, object]:
+        return {
+            "input_bytes": self.input_bytes,
+            "output_bytes": self.output_bytes,
+            "tokens": self.tokens,
+            "matches": self.matches,
+            "literals": self.literals,
+            "literalised_matches": self.literalised_matches,
+            "max_code_length": self.max_code_length,
+            "verified": self.verified,
+            "reference_bytes": self.reference_bytes,
+            "headroom": self.headroom,
+            "ratio": self.ratio,
+        }
+
+
+def lzh1_compress_report(
+    payload: bytes,
+    *,
+    budget: Optional[int] = None,
+    reference_bytes: Optional[int] = None,
+    verify: bool = True,
+) -> Tuple[bytes, Lzh1Report]:
+    """Encode *payload* as an ``LZH1`` (codec 5) stream, with a size report.
+
+    *budget* is a hard ceiling: an overrun **raises** and returns nothing,
+    because a best-effort stream that overruns its slot is exactly the thing a
+    caller cannot check for itself once it is holding bytes.  *reference_bytes*
+    only decorates the report.
+
+    *verify* decompresses the result twice before returning it -- once bounded
+    by the input's length, the way a container reads a member, and once
+    terminating on the end-of-stream marker, which the bounded path never
+    reads.  It roughly doubles the cost and converts every class of encoder
+    defect into a refusal; a bulk caller may turn it off, and the default is on.
+    """
+
+    payload = bytes(payload)
+    tokens, matches, literalised = _lz_tokens(payload)
+    literal_frequencies = [0] * LZH1_LITERAL_SYMBOLS
+    distance_frequencies = [0] * LZH1_DISTANCE_SYMBOLS
+    literal_frequencies[256] = 1
+    for token in tokens:
+        if isinstance(token, int):
+            literal_frequencies[token] += 1
+        else:
+            length, distance = token
+            index, _extra = _length_code(length)
+            literal_frequencies[257 + index] += 1
+            code, _distance_extra = _distance_code(distance)
+            distance_frequencies[code] += 1
+
+    literal_lengths = _code_lengths(literal_frequencies, LZH1_LITERAL_SYMBOLS)
+    distance_lengths = _code_lengths(distance_frequencies, LZH1_DISTANCE_SYMBOLS)
+    literal_codes = _canonical_codes(literal_lengths)
+    distance_codes = _canonical_codes(distance_lengths)
+
+    writer = _BitWriter()
+    writer.write(0, 1)
+    for length in literal_lengths:
+        writer.write(length, 4)
+    for length in distance_lengths:
+        writer.write(length, 4)
+    for token in tokens:
+        if isinstance(token, int):
+            writer.write(literal_codes[token], literal_lengths[token])
+            continue
+        length, distance = token
+        index, extra = _length_code(length)
+        symbol = 257 + index
+        writer.write(literal_codes[symbol], literal_lengths[symbol])
+        writer.write(extra, _LEN_EXTRA[index])
+        code, distance_extra = _distance_code(distance)
+        writer.write(distance_codes[code], distance_lengths[code])
+        writer.write(distance_extra, _DIST_EXTRA[code])
+    writer.write(literal_codes[256], literal_lengths[256])
+    writer.write(1, 1)
+    writer.write(LZH1_END_OF_STREAM_TAIL, 32)
+    stream = writer.flush()
+
+    if budget is not None and len(stream) > budget:
+        raise TerfError(
+            "this LZH1 stream is %d byte(s) and the caller's budget is %d. "
+            "Nothing was written: a stream that overruns its slot is not a "
+            "result, and there is no smaller parse to fall back to."
+            % (len(stream), budget)
+        )
+    if verify:
+        if lzh1_decompress(stream, len(payload)) != payload:
+            raise TerfError(  # pragma: no cover - an encoder defect
+                "this LZH1 stream did not decode back to its own input under the "
+                "bounded read a container performs. Nothing was written."
+            )
+        if lzh1_decompress(stream) != payload:
+            raise TerfError(  # pragma: no cover - an encoder defect
+                "this LZH1 stream did not decode back to its own input when read "
+                "to its end-of-stream marker, so the marker is wrong even though "
+                "the bounded read passed. Nothing was written."
+            )
+    report = Lzh1Report(
+        input_bytes=len(payload),
+        output_bytes=len(stream),
+        tokens=len(tokens),
+        matches=matches,
+        literals=len(tokens) - matches,
+        literalised_matches=literalised,
+        max_code_length=max(literal_lengths + distance_lengths),
+        verified=verify,
+        reference_bytes=reference_bytes,
+    )
+    return stream, report
+
+
+def lzh1_compress(payload: bytes, *, budget: Optional[int] = None,
+                  verify: bool = True) -> bytes:
+    """Encode *payload* as an ``LZH1`` (codec 5) stream.
+
+    See :func:`lzh1_compress_report` for the report and the arguments.
+    """
+
+    stream, _report = lzh1_compress_report(payload, budget=budget, verify=verify)
+    return stream
 
 
 # --------------------------------------------------------------------------
@@ -1037,38 +1616,13 @@ def build_terf(
         )
     stored: List[bytes] = []
     for index, (payload, codec) in enumerate(zip(members, ids)):
-        if codec == CODEC_STORED:
-            packed = bytes(payload)
-        elif codec == CODEC_RLE1:
-            packed = rle1_compress(bytes(payload))
-        else:
-            raise UnsupportedCodec(
-                "member %d asks for codec %d (%s), which this writer cannot "
-                "produce: it writes %s. No LZH1 encoder exists in this project "
-                "or in the source it was ported from, so an LZH1 member can be "
-                "read and not written."
-                % (index, codec, CODEC_NAMES.get(codec, "unknown"),
-                   ", ".join("%d = %s" % (c, CODEC_NAMES[c])
-                             for c in CODECS_ENCODED))
-            )
-        _require(
-            decompress_member(packed, codec, len(payload)) == bytes(payload),
-            "member %d did not survive its own round trip through codec %d; "
-            "this writer will not ship a member it cannot read back."
-            % (index, codec),
-        )
+        packed = pack_member(bytes(payload), codec, what="member %d" % index)
         stored.append(packed)
 
     header_size = max(MIN_HEADER_SIZE, alignment)
     table_size = _round_up(CHUNK_HEADER_SIZE + 8 * len(members), alignment)
 
-    offsets: List[int] = []
-    cursor = CHUNK_HEADER_SIZE
-    for packed in stored:
-        offset = _round_up(cursor, alignment)
-        offsets.append(offset)
-        cursor = offset + max(len(packed), 1)
-    data_size = _round_up(cursor, alignment)
+    offsets, data_size = _member_offsets([len(packed) for packed in stored], alignment)
 
     out = bytearray()
     out += TERF_MAGIC
@@ -1098,7 +1652,163 @@ def build_terf(
     return bytes(out)
 
 
-def rewrite_member(container: bytes, index: int, payload: bytes) -> bytes:
+def pack_member(payload: bytes, codec: int, *, what: str = "this member") -> bytes:
+    """Encode *payload* under *codec*, and read it back before returning it.
+
+    The read-back is not decoration: a container that ships a member its own
+    reader cannot open is worse than one that refuses to be written.
+    """
+
+    if codec == CODEC_STORED:
+        packed = bytes(payload)
+    elif codec == CODEC_RLE1:
+        packed = rle1_compress(bytes(payload))
+    elif codec == CODEC_LZH1:
+        packed = lzh1_compress(bytes(payload))
+    else:
+        raise UnsupportedCodec(
+            "%s asks for codec %d (%s), which this writer cannot produce: it "
+            "writes %s."
+            % (what, codec, CODEC_NAMES.get(codec, "unknown"),
+               ", ".join("%d = %s" % (c, CODEC_NAMES[c]) for c in CODECS_ENCODED))
+        )
+    _require(
+        decompress_member(packed, codec, len(payload)) == bytes(payload),
+        "%s did not survive its own round trip through codec %d; this writer "
+        "will not ship a member it cannot read back." % (what, codec),
+    )
+    return packed
+
+
+def _member_offsets(sizes: Sequence[int], alignment: int) -> Tuple[List[int], int]:
+    """Where members land, and how long the ``DATA`` chunk is, for *sizes*.
+
+    The measured rule, restated in one place so the writer, the rewriter and
+    the planner cannot drift: an **empty member still consumes one alignment
+    unit**, so the next offset is ``roundup(off + max(size, 1), alignment)``.
+    """
+
+    offsets: List[int] = []
+    cursor = CHUNK_HEADER_SIZE
+    for size in sizes:
+        offset = _round_up(cursor, alignment)
+        offsets.append(offset)
+        cursor = offset + max(size, 1)
+    return offsets, _round_up(cursor, alignment)
+
+
+@dataclass(frozen=True)
+class MemberRewritePlan:
+    """Which codec a replacement should use, and what it costs the container."""
+
+    index: int
+    codec: int
+    packed: bytes
+    payload_bytes: int
+    previous_stored_size: int
+    #: How many bytes the member may grow to before anything after it moves.
+    slot_bytes: int
+    fits_slot: bool
+    grows_container: bool
+    previous_length: int
+    new_length: int
+    note: str
+
+    @property
+    def codec_name(self) -> str:
+        return CODEC_NAMES.get(self.codec, "unknown codec %d" % self.codec)
+
+    def as_dict(self) -> Dict[str, object]:
+        return {
+            "index": self.index,
+            "codec": self.codec,
+            "codec_name": self.codec_name,
+            "payload_bytes": self.payload_bytes,
+            "stored_bytes": len(self.packed),
+            "previous_stored_size": self.previous_stored_size,
+            "slot_bytes": self.slot_bytes,
+            "fits_slot": self.fits_slot,
+            "grows_container": self.grows_container,
+            "previous_length": self.previous_length,
+            "new_length": self.new_length,
+            "note": self.note,
+        }
+
+
+def plan_member_rewrite(container: bytes, index: int, payload: bytes, *,
+                        codecs: Sequence[int] = (CODEC_STORED, CODEC_LZH1),
+                        ) -> MemberRewritePlan:
+    """Choose a codec for *payload* in member *index*, and price the result.
+
+    **The smallest encoding wins, and a tie goes to stored.**  Both shapes are
+    ones the shipped game already loads -- Madden 09 stores 270 of
+    ``UNIFORMS.DAT``'s 725 members and compresses the other 455 -- so the
+    choice is about space, not about risk, and the simpler encoding is the
+    tie-breaker rather than the default.
+
+    Nothing is written.  The plan says whether the replacement stays inside
+    the aligned slot the member already owns (in which case no other member
+    moves) and whether the container grows at all, so a caller under a fixed
+    allocation can refuse before it builds anything.
+    """
+
+    parsed = parse_terf(container)
+    if not 0 <= index < parsed.member_count:
+        raise TerfError(
+            "member %d does not exist: this container has %d (0..%d)."
+            % (index, parsed.member_count, parsed.member_count - 1)
+        )
+    payload = bytes(payload)
+    candidates = []
+    for codec in codecs:
+        try:
+            candidates.append((codec, pack_member(payload, codec,
+                                                  what="member %d" % index)))
+        except UnsupportedCodec:
+            continue
+    _require(
+        bool(candidates),
+        "none of the codecs offered (%s) can encode this member."
+        % ", ".join(str(codec) for codec in codecs),
+    )
+    codec, packed = min(candidates, key=lambda pair: (len(pair[1]),
+                                                      pair[0] != CODEC_STORED))
+    member = parsed.members[index]
+    sizes = [other.stored_size for other in parsed.members]
+    previous_offsets, previous_data = _member_offsets(sizes, parsed.alignment)
+    sizes[index] = len(packed)
+    new_offsets, new_data = _member_offsets(sizes, parsed.alignment)
+    if index + 1 < len(previous_offsets):
+        slot_bytes = previous_offsets[index + 1] - previous_offsets[index]
+    else:
+        slot_bytes = previous_data - previous_offsets[index]
+    fits = new_offsets == previous_offsets
+    previous_length = parsed.data_offset + previous_data
+    new_length = parsed.data_offset + new_data
+    if fits and new_length <= previous_length:
+        note = ("%s in %d byte(s), inside the %d-byte slot member %d already owns: "
+                "no other member moves and the container keeps its length."
+                % (CODEC_NAMES.get(codec, "codec %d" % codec), len(packed),
+                   slot_bytes, index))
+    elif new_length <= previous_length:
+        note = ("%s in %d byte(s); members after %d move but the container does not "
+                "grow." % (CODEC_NAMES.get(codec, "codec %d" % codec), len(packed),
+                           index))
+    else:
+        note = ("%s in %d byte(s), past the %d-byte slot member %d owns: the container "
+                "grows from %d to %d bytes."
+                % (CODEC_NAMES.get(codec, "codec %d" % codec), len(packed), slot_bytes,
+                   index, previous_length, new_length))
+    return MemberRewritePlan(
+        index=index, codec=codec, packed=packed, payload_bytes=len(payload),
+        previous_stored_size=member.stored_size, slot_bytes=slot_bytes,
+        fits_slot=fits, grows_container=new_length > previous_length,
+        previous_length=previous_length, new_length=new_length, note=note,
+    )
+
+
+def rewrite_member(container: bytes, index: int, payload: bytes, *,
+                   codec: int = CODEC_STORED) -> bytes:
     """Return *container* with member *index* replaced by *payload*.
 
     Every other member's bytes come through unchanged; the directory, the codec
@@ -1107,13 +1817,14 @@ def rewrite_member(container: bytes, index: int, payload: bytes) -> bytes:
     new payload occupies the same aligned slot as the old one, nothing after it
     moves and the result differs from the input only inside that slot.
 
-    In a ``COMP`` container the replacement is written **stored** (codec 0),
-    because no ``LZH1`` encoder exists.  That is a shape the shipped game
-    already loads -- Madden 09 stores 270 of ``UNIFORMS.DAT``'s 725 members and
-    689 of ``STADIUMS.DAT``'s 1,355 as codec 0 inside a ``COMP`` container --
-    but it costs space, so a replacement bigger than the member it replaces
-    grows the file.  A caller under a fixed allocation must check the result's
-    length itself.
+    *codec* is how the replacement is stored.  The default is **stored**
+    (codec 0), a shape the shipped game already loads -- Madden 09 stores 270
+    of ``UNIFORMS.DAT``'s 725 members and 689 of ``STADIUMS.DAT``'s 1,355 as
+    codec 0 inside a ``COMP`` container -- but it costs space, so a caller
+    that wants the replacement to fit a compressed member's slot asks for
+    :data:`CODEC_LZH1` and :func:`plan_member_rewrite` says whether it does.
+    A plain ``DATA`` container has no codec table and takes ``CODEC_STORED``
+    only.
     """
     parsed = parse_terf(container)
     if not 0 <= index < parsed.member_count:
@@ -1138,24 +1849,27 @@ def rewrite_member(container: bytes, index: int, payload: bytes) -> bytes:
         )
 
     payload = bytes(payload)
+    if parsed.chunk("COMP") is None:
+        _require(
+            codec == CODEC_STORED,
+            "this is a plain DATA container: it has no codec table, so a member "
+            "written under codec %d would be handed back still packed. Pass "
+            "codec=CODEC_STORED, or rebuild the container as COMP."
+            % codec,
+        )
+    replacement = pack_member(payload, codec, what="the replacement for member %d" % index)
     stored: List[bytes] = []
     codecs: List[int] = []
     for other in parsed.members:
         if other.index == index:
-            stored.append(payload)
-            codecs.append(CODEC_STORED)
+            stored.append(replacement)
+            codecs.append(codec)
         else:
             stored.append(parsed.stored(other.index))
             codecs.append(other.codec)
 
-    alignment = parsed.alignment
-    offsets: List[int] = []
-    cursor = CHUNK_HEADER_SIZE
-    for packed in stored:
-        offset = _round_up(cursor, alignment)
-        offsets.append(offset)
-        cursor = offset + max(len(packed), 1)
-    data_size = _round_up(cursor, alignment)
+    offsets, data_size = _member_offsets([len(packed) for packed in stored],
+                                         parsed.alignment)
 
     out = bytearray(container[:parsed.data_offset])
     directory = parsed.chunk("DIR1")
@@ -1166,10 +1880,14 @@ def rewrite_member(container: bytes, index: int, payload: bytes) -> bytes:
     compression = parsed.chunk("COMP")
     if compression is not None:
         base = compression.offset + CHUNK_HEADER_SIZE
-        for slot, (codec, packed) in enumerate(zip(codecs, stored)):
-            size = (len(packed) if slot == index
+        for slot, (slot_codec, packed) in enumerate(zip(codecs, stored)):
+            # The COMP entry's second word is what the member *unpacks* to, not
+            # how many bytes it occupies.  Writing the stored size here was
+            # invisible while every replacement was stored and packed == payload,
+            # and wrong the moment one was compressed.
+            size = (len(payload) if slot == index
                     else parsed.members[slot].decompressed_size)
-            struct.pack_into("<II", out, base + 8 * slot, codec, size)
+            struct.pack_into("<II", out, base + 8 * slot, slot_codec, size)
 
     body = bytearray(DATA_MAGIC + struct.pack("<I", data_size))
     body += b"\x00" * (data_size - len(body))
@@ -1221,12 +1939,25 @@ __all__ = [
     "TruncatedStream",
     "UnsupportedCodec",
     "VERSION_WORD",
+    "LZH1_END_OF_STREAM_TAIL",
+    "LZH1_LITERAL_SYMBOLS",
+    "LZH1_DISTANCE_SYMBOLS",
+    "LZH1_MAX_CODE_LENGTH",
+    "LZH1_MAX_DISTANCE",
+    "LZH1_MAX_MATCH",
+    "LZH1_MIN_MATCH",
+    "Lzh1Report",
+    "MemberRewritePlan",
     "build_terf",
     "declared_length",
     "decompress_member",
     "identify_member",
+    "lzh1_compress",
+    "lzh1_compress_report",
     "lzh1_decompress",
+    "pack_member",
     "parse_mmap_header",
+    "plan_member_rewrite",
     "parse_terf",
     "rewrite_member",
     "rle1_compress",

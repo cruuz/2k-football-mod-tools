@@ -270,6 +270,27 @@ def selftest() -> int:
           "rewrite disturbed a member it was not given")
     check(not after.layout_violations(), "rewrite broke the layout rules")
 
+    grown = b"MMAP" + b"z" * 4000
+    plan = ea_terf.plan_member_rewrite(packed, 0, grown)
+    check(plan.codec == ea_terf.CODEC_LZH1,
+          "compressing 4 KB of one byte should beat storing it")
+    check(len(plan.packed) * 20 < len(grown),
+          "4 KB of one byte should compress by more than twenty to one")
+    check(plan.grows_container,
+          "a 4 KB replacement for a 68-byte member does grow this container")
+    compressed = ea_terf.rewrite_member(packed, 0, grown, codec=plan.codec)
+    after_lzh1 = ea_terf.parse_terf(compressed)
+    check(after_lzh1.member(0) == grown, "an LZH1 rewrite did not read back")
+    check(after_lzh1.members[0].codec == ea_terf.CODEC_LZH1,
+          "an LZH1 rewrite lost its codec")
+    check(after_lzh1.members[0].decompressed_size == len(grown),
+          "an LZH1 rewrite recorded the wrong unpacked size")
+    check(after_lzh1.members[0].stored_size < len(grown),
+          "an LZH1 rewrite did not compress")
+    check([after_lzh1.member(i) for i in range(1, len(payloads))] == payloads[1:],
+          "an LZH1 rewrite disturbed a member it was not given")
+    check(not after_lzh1.layout_violations(), "an LZH1 rewrite broke the layout rules")
+
     same_slot = ea_terf.rewrite_member(plain, 3, b"x" * len(payloads[3]))
     check(len(same_slot) == len(plain),
           "a same-size rewrite should not change the file length")
@@ -280,8 +301,10 @@ def selftest() -> int:
     for call, why in (
         (lambda: ea_terf.parse_terf(b"NOPE" + bytes(60)), "a non-TERF file"),
         (lambda: ea_terf.rewrite_member(plain, 99, b"x"), "a member index that does not exist"),
+        (lambda: ea_terf.rewrite_member(plain, 0, b"x", codec=ea_terf.CODEC_LZH1),
+         "a compressed rewrite of a DATA container"),
         (lambda: ea_terf.build_terf([b"x"], chunk="DATA", codecs=[0]), "codecs on a DATA container"),
-        (lambda: ea_terf.build_terf([b"x"], chunk="COMP", codecs=[ea_terf.CODEC_LZH1]), "an LZH1 write"),
+        (lambda: ea_terf.build_terf([b"x"], chunk="COMP", codecs=[ea_terf.CODEC_HUFF]), "a HUFF write"),
         (lambda: ea_terf.lzh1_decompress(b"\x00\x00"), "a truncated LZH1 stream"),
         (lambda: ea_terf.rle1_decompress(b"!\x41", 8), "a truncated RLE1 stream"),
         (lambda: ea_terf.parse_mmap_header(b"SMF\x00" + bytes(60)), "a non-MMAP member"),
@@ -292,11 +315,11 @@ def selftest() -> int:
             refused += 1
         else:
             raise AssertionError("%s was not refused" % why)
-    check(refused == 7, "a refusal went missing")
+    check(refused == 8, "a refusal went missing")
 
     digest = hashlib.sha256(plain).hexdigest()[:16]
     print("EA_TERF_SELFTEST_PASS checks=%d members=%d refusals=%d "
-          "chunks=DATA+COMP codecs=stored+RLE1 digest=%s"
+          "chunks=DATA+COMP codecs=stored+RLE1+LZH1 digest=%s"
           % (checks, len(payloads), refused, digest))
     return 0
 

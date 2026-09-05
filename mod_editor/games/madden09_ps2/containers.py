@@ -572,7 +572,8 @@ def synthetic_indices(width: int, height: int, *, seed: int = 0, bits: int = 8) 
 
 
 def synthetic_mmap(width: int, height: int, *, version: int = 2, seed: int = 0,
-                   bits: int = 8, mips: int = 1, palette_only_extra: bool = False) -> bytes:
+                   bits: int = 8, mips: int = 1, palette_only_extra: bool = False,
+                   retail_layout: bool = False) -> bytes:
     """An ``MMAP`` member built from the format's own rules, not from a disc.
 
     ``MMAP`` is a table-of-tables -- an image table, a surface table (one row
@@ -584,6 +585,14 @@ def synthetic_mmap(width: int, height: int, *, version: int = 2, seed: int = 0,
     appends the second image entry the real containers carry: a row with no
     surfaces whose job is to hold an alternate CLUT for the first image.  Both
     exist so a lane's handling of them is exercised without a game.
+
+    The default puts all four tables at the front, which is a **legal member
+    the disc does not contain**: only the surface table's position is fixed,
+    so a fixture in this shape proves the reader follows the header's offsets
+    instead of assuming the disc's arrangement.  *retail_layout* runs the
+    result through :func:`mmap_art.encode` with nothing replaced, which lays
+    the same member out the way every measured member is laid out -- tables
+    behind the pixels, 16-byte aligned -- and is what a writer's fixture wants.
     """
 
     import struct
@@ -648,6 +657,8 @@ def synthetic_mmap(width: int, height: int, *, version: int = 2, seed: int = 0,
     for _level_w, _level_h, pixels in levels:
         payload += pixels
     payload += clut * palette_count
+    if retail_layout:
+        return mmap_art.encode(bytes(payload))
     return bytes(payload)
 
 

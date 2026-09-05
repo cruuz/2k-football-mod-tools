@@ -105,7 +105,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import struct
-from typing import List, Optional, Sequence, Tuple
+from typing import List, Mapping, Optional, Sequence, Tuple
 
 from mod_editor.games._formats import ea_terf
 from mod_editor.games.contract import Refusal
@@ -559,13 +559,677 @@ def encode_indexed(rgba: bytes, width: int, height: int, surface: Surface,
     )
 
 
+# --------------------------------------------------------------------------
+# Writing an MMAP member
+# --------------------------------------------------------------------------
+#
+# ## The layout, measured [M]
+#
+# A member's regions sit in one order with one alignment, and nothing else:
+#
+# ```
+# 0                     the 40-byte header
+# 40                    surface table, 16 x surfaceCount
+#                       each surface's pixel run, in table order
+#                       palette table, 12 x paletteCount
+#                       each palette's entries, in table order
+#                       name table, 16 x imageCount   (when there is one)
+#                       image table, 12 x imageCount
+#                       the extra table, verbatim, to end of member
+# ```
+#
+# **Every region except the image table and the extra tail starts on a 16-byte
+# boundary; the member ends at the end of the image table, unpadded** [M].
+# Predicting every offset in a member from its counts and sizes alone
+# reproduces the file's own numbers on the members measured -- 30 of
+# ``UNIFORMS.DAT`` and 75 across ``PLYRFACE``/``COACFACE``/``TATTOOS``, zero
+# mismatches -- which is what makes a from-scratch rebuild byte-exact rather
+# than merely valid.
+#
+# The **extra table** is not decoded here.  Where one exists (every
+# ``PLYRFACE`` member measured) it begins exactly at the end of the image
+# table and runs to the end of the member, so it is carried through as an
+# opaque tail.  A member whose extra table sits anywhere else is refused
+# rather than relocated.
+#
+# ## What a rewrite preserves, and why
+#
+# Two members can decode to the same picture and not to the same bytes: 23 of
+# ``UNIFORMS.DAT`` member 0's 34 palettes carry a **duplicate colour** [M], so
+# two different index bytes draw the same pixel and indexing from pixels alone
+# cannot tell which one the file used.  So a rewrite keeps the original index
+# wherever the pixel is unchanged, and only re-indexes pixels that actually
+# moved.  That is the right behaviour for an edit -- the parts of a jersey the
+# artist did not touch keep their exact bytes -- and it is what makes
+# ``encode(decode(member)) == member`` hold rather than nearly hold.  Passing
+# ``prefer_original_indices=False`` turns that off and indexes purely by
+# colour, which is the honest measure of what pixels alone can reconstruct.
+
+#: Every region of a member except the image table and the extra tail starts
+#: on this boundary [M].
+REGION_ALIGNMENT = 16
+
+#: The four bytes at +0x08 of every member measured.  Copied from the
+#: template, never invented.
+MMAP_MARKER = b"\x00\x01\x02\x03"
+
+#: The one byte of ``LZM1`` stream header, which the decoder skips.  It is
+#: ``0x00`` in all 198 surfaces measured across ``UIS_COMN``, ``UIS_IG``,
+#: ``UIS_FE``, ``UIS_PLYR`` and ``UIS_LOAD`` [M], so it is written rather than
+#: guessed.
+LZM1_HEADER_BYTE = 0
+
+#: ``LZM1``'s limits: a control byte carries a literal run of 1..127 or a
+#: match length of 1..127, and a match's back-distance is a 16-bit word.
+LZM1_MAX_RUN = 0x7F
+LZM1_MAX_MATCH = 0x7F
+LZM1_MAX_DISTANCE = 0xFFFF
+#: A match costs three bytes, so it only pays from four.
+LZM1_MIN_MATCH = 4
+
+
+def _round_up(value: int, alignment: int = REGION_ALIGNMENT) -> int:
+    return (value + alignment - 1) // alignment * alignment
+
+
+def interleave_csm1(entries: Sequence[Tuple[int, int, int, int]]
+                    ) -> List[Tuple[int, int, int, int]]:
+    """Put a 256-entry CLUT back into the PS2 GS's CSM1 order.
+
+    The permutation swaps the second and third group of eight in every block
+    of 32, which is **its own inverse**, so this is
+    :func:`deinterleave_csm1`'s algorithm written out again rather than
+    delegated: the two names say which direction a caller means, and a test
+    asserts the involution rather than trusting the comment.
+    """
+
+    out = list(entries)
+    for index in range(len(entries)):
+        if (index & 0x18) == 0x08:
+            out[index] = entries[index + 8]
+        elif (index & 0x18) == 0x10:
+            out[index] = entries[index - 8]
+    return out
+
+
+def _unscale_alpha(value: int) -> int:
+    """0..255 back to the PS2's 0..128, exactly inverting :func:`_scale_alpha`.
+
+    ``_scale_alpha`` maps 0..127 to ``value * 255 // 128`` and everything from
+    128 up to 255, so the inverse rounds to nearest and clamps at 128.  Every
+    palette measured tops out at alpha 128 [M], so no entry is lost to the
+    clamp.
+    """
+
+    if value >= 255:
+        return PS2_ALPHA_OPAQUE
+    return min(PS2_ALPHA_OPAQUE, (value * PS2_ALPHA_OPAQUE + 127) // 255)
+
+
+def write_palette(entries: Sequence[Tuple[int, int, int, int]], *,
+                  interleave: bool = True) -> bytes:
+    """CLUT entries in drawing order, back to a member's palette bytes.
+
+    The exact inverse of :func:`read_palette`, and that is the whole contract:
+    a palette in this module is always **in the file's own scale**, alpha
+    0..128, the way the reader hands it back.  Only :func:`decode_rgba` and
+    the PNGs on either side of it speak 0..255, and :func:`quantise` converts
+    at that boundary.  Keeping one scale inside the module is the difference
+    between a re-written CLUT and one whose every alpha is halved.
+    """
+
+    ordered = list(entries)
+    if interleave and len(ordered) == CSM1_ENTRIES:
+        ordered = interleave_csm1(ordered)
+    out = bytearray(len(ordered) * PALETTE_ENTRY_BYTES)
+    for index, entry in enumerate(ordered):
+        _require(len(entry) == PALETTE_ENTRY_BYTES,
+                 f"palette entry {index} has {len(entry)} channel(s); a CLUT entry is "
+                 f"red, green, blue and alpha.")
+        for channel, value in enumerate(entry):
+            _require(0 <= value <= 255,
+                     f"palette entry {index} carries the channel value {value}, which is "
+                     f"not a byte; a CLUT holds 0..255 per channel.")
+            out[index * PALETTE_ENTRY_BYTES + channel] = value
+    return bytes(out)
+
+
+def lzm1_compress(data: bytes) -> bytes:
+    """Encode *data* as an EA ``LZM1`` (surface codec 3) stream.
+
+    Greedy matching over a 64 KiB window with a three-byte hash chain, in the
+    grammar :func:`lzm1_decompress` reads.  The claim is only that the result
+    decodes back to *data*; it is not what EA's encoder would emit, and a
+    re-encoded surface is therefore a different length from the one it
+    replaces -- which is why a member is laid out afresh rather than patched
+    in place.
+    """
+
+    out = bytearray((LZM1_HEADER_BYTE,))
+    size = len(data)
+    chains: dict = {}
+    pending = bytearray()
+    position = 0
+
+    def flush() -> None:
+        start = 0
+        while start < len(pending):
+            run = pending[start:start + LZM1_MAX_RUN]
+            out.append(0x80 | len(run))
+            out.extend(run)
+            start += len(run)
+        pending.clear()
+
+    while position < size:
+        best_length = 0
+        best_distance = 0
+        if position + LZM1_MIN_MATCH <= size:
+            key = bytes(data[position:position + 3])
+            for candidate in chains.get(key, ()):
+                distance = position - candidate
+                if distance > LZM1_MAX_DISTANCE:
+                    break
+                length = 0
+                limit = min(LZM1_MAX_MATCH, size - position)
+                while (length < limit
+                       and data[candidate + length] == data[position + length]):
+                    length += 1
+                if length > best_length:
+                    best_length, best_distance = length, distance
+                    if length == limit:
+                        break
+        if best_length >= LZM1_MIN_MATCH:
+            flush()
+            out.append(best_length)
+            out.append(best_distance & 0xFF)
+            out.append((best_distance >> 8) & 0xFF)
+            step = best_length
+        else:
+            pending.append(data[position])
+            step = 1
+        for offset in range(step):
+            index = position + offset
+            if index + 3 <= size:
+                key = bytes(data[index:index + 3])
+                chain = chains.get(key)
+                if chain is None:
+                    chains[key] = [index]
+                else:
+                    chain.insert(0, index)
+                    del chain[16:]
+        position += step
+    flush()
+    out.append(0x00)
+    return bytes(out)
+
+
+def unpack_indices(data: bytes, surface: Surface) -> bytes:
+    """A surface's pixel run as one palette index per byte."""
+
+    width, height = surface.width, surface.height
+    layout = surface.pixel_layout
+    if layout == PIXELS_INDEXED_8:
+        _require(len(data) == width * height,
+                 f"this member's {width}x{height} 8-bit surface unpacked to {len(data)} "
+                 f"byte(s) and needs {width * height}.")
+        return bytes(data)
+    if layout == PIXELS_INDEXED_4:
+        _require(len(data) * 2 == width * height,
+                 f"this member's {width}x{height} 4-bit surface unpacked to {len(data)} "
+                 f"byte(s) and needs {width * height // 2}.")
+        out = bytearray(width * height)
+        out[0::2] = bytes(byte & 0x0F for byte in data)
+        out[1::2] = bytes(byte >> 4 for byte in data)
+        return bytes(out)
+    raise MmapError(
+        f"pixel layout {layout} is neither 4-bit indexed ({PIXELS_INDEXED_4}) nor 8-bit "
+        f"indexed ({PIXELS_INDEXED_8}); this writer does not read it.")
+
+
+def pack_indices(indices: Sequence[int], surface: Surface) -> bytes:
+    """One index per byte, back to a surface's packed pixel run."""
+
+    layout = surface.pixel_layout
+    if layout == PIXELS_INDEXED_8:
+        _require(all(index < 256 for index in indices),
+                 "an 8-bit surface can only carry palette indices 0..255.")
+        return bytes(indices)
+    if layout == PIXELS_INDEXED_4:
+        _require(all(index < 16 for index in indices),
+                 "a 4-bit surface can only carry palette indices 0..15 and this image "
+                 "needed more; its palette has more entries than the surface can address.")
+        packed = bytearray(len(indices) // 2)
+        for position in range(0, len(indices) - 1, 2):
+            packed[position // 2] = indices[position] | (indices[position + 1] << 4)
+        return bytes(packed)
+    raise MmapError(
+        f"pixel layout {layout} cannot be written; only 4-bit and 8-bit indexed surfaces "
+        f"are understood here.")
+
+
+def index_rgba(rgba: bytes, width: int, height: int,
+               entries: Sequence[Tuple[int, int, int, int]], *,
+               original: Optional[Sequence[int]] = None) -> Tuple[bytes, int]:
+    """Index *rgba* against *entries*, returning ``(indices, exact matches)``.
+
+    Nearest entry by squared distance in RGBA, on the same 0..255 scale the
+    decoder produced.  When *original* is given -- the indices the surface
+    already holds -- a pixel whose colour still matches the entry it already
+    points at keeps **that** index, not merely an equal-looking one.  A CLUT
+    with duplicate colours has more than one right answer and only the file
+    knows which one it used.
+    """
+
+    _require(len(rgba) == width * height * 4,
+             f"this image is {len(rgba)} byte(s) of RGBA and {width}x{height} needs "
+             f"{width * height * 4}.")
+    _require(bool(entries), "this texture's palette is empty; nothing can be indexed "
+                            "against it.")
+    lookup = [(red, green, blue, _scale_alpha(alpha)) for red, green, blue, alpha in entries]
+    cache: dict = {}
+    indices = bytearray(width * height)
+    exact = 0
+    for position in range(width * height):
+        pixel = (rgba[position * 4], rgba[position * 4 + 1],
+                 rgba[position * 4 + 2], rgba[position * 4 + 3])
+        if original is not None:
+            keep = original[position]
+            if keep < len(lookup) and lookup[keep] == pixel:
+                indices[position] = keep
+                exact += 1
+                continue
+        found = cache.get(pixel)
+        if found is None:
+            red, green, blue, alpha = pixel
+            best, best_cost = 0, None
+            for index, (pr, pg, pb, pa) in enumerate(lookup):
+                cost = ((red - pr) ** 2 + (green - pg) ** 2 + (blue - pb) ** 2
+                        + (alpha - pa) ** 2)
+                if best_cost is None or cost < best_cost:
+                    best, best_cost = index, cost
+                    if cost == 0:
+                        break
+            found = cache[pixel] = best
+        indices[position] = found
+        if lookup[found] == pixel:
+            exact += 1
+    return bytes(indices), exact
+
+
+@dataclass(frozen=True)
+class Quantisation:
+    """A palette built for an image, and how much it cost to fit it."""
+
+    entries: Tuple[Tuple[int, int, int, int], ...]
+    indices: bytes
+    colours_wanted: int
+    colours_in_image: int
+    exact_pixels: int
+    total_pixels: int
+    max_channel_error: int
+    mean_squared_error: float
+
+    @property
+    def lossless(self) -> bool:
+        return self.exact_pixels == self.total_pixels
+
+    def note(self) -> str:
+        if self.lossless:
+            return (f"{self.colours_in_image:,} colour(s) fitted into a "
+                    f"{self.colours_wanted}-entry CLUT with no loss: every pixel keeps its "
+                    f"exact colour.")
+        return (f"{self.colours_in_image:,} colour(s) reduced to {self.colours_wanted}: "
+                f"{self.exact_pixels:,} of {self.total_pixels:,} pixel(s) keep their exact "
+                f"colour, the worst channel moves by {self.max_channel_error}, and the mean "
+                f"squared error is {self.mean_squared_error:.1f}.")
+
+
+def quantise(rgba: bytes, width: int, height: int, colours: int) -> Quantisation:
+    """Median-cut *rgba* down to *colours* entries, and say what it cost.
+
+    An image that already fits is not quantised at all -- its own colours
+    become the CLUT and the result is lossless, which is the common case for
+    an edit that recolours a jersey rather than repainting it.  Otherwise the
+    colour cube is split at the weighted median of its widest channel until
+    there are *colours* boxes, and each box's mean becomes an entry; a pixel
+    keeps the box it fell into, so no pixel is assigned to a colour further
+    away than the one median cut chose for it.
+    """
+
+    _require(len(rgba) == width * height * 4,
+             f"this image is {len(rgba)} byte(s) of RGBA and {width}x{height} needs "
+             f"{width * height * 4}.")
+    _require(colours >= 1, f"a CLUT of {colours} entries cannot hold an image.")
+    # Quantise in the file's own scale: a CLUT entry's alpha is 0..128, so
+    # two drawing-scale alphas can land on one storable value and an encoder
+    # that only found that out at write time would report a loss it had
+    # already taken.
+    pixels = [(rgba[i], rgba[i + 1], rgba[i + 2], _unscale_alpha(rgba[i + 3]))
+              for i in range(0, len(rgba), 4)]
+    counts: dict = {}
+    for pixel in pixels:
+        counts[pixel] = counts.get(pixel, 0) + 1
+    unique = sorted(counts)
+    if len(unique) <= colours:
+        entries = tuple(unique) + ((0, 0, 0, 0),) * (colours - len(unique))
+        table = {colour: index for index, colour in enumerate(unique)}
+        indices = bytes(table[pixel] for pixel in pixels)
+        exact, worst, squared = _quantisation_error(rgba, indices, entries)
+        return Quantisation(entries, indices, colours, len(unique), exact,
+                            len(pixels), worst, squared / max(1, len(pixels)))
+
+    boxes = [list(unique)]
+    while len(boxes) < colours:
+        target = -1
+        widest = -1
+        for position, box in enumerate(boxes):
+            if len(box) < 2:
+                continue
+            spread = max(max(colour[channel] for colour in box)
+                         - min(colour[channel] for colour in box) for channel in range(4))
+            if spread > widest:
+                widest, target = spread, position
+        if target < 0:
+            break
+        box = boxes.pop(target)
+        channel = max(range(4), key=lambda c: (max(colour[c] for colour in box)
+                                               - min(colour[c] for colour in box)))
+        box.sort(key=lambda colour: colour[channel])
+        weight = sum(counts[colour] for colour in box)
+        running = 0
+        split = 1
+        for position, colour in enumerate(box):
+            running += counts[colour]
+            if running * 2 >= weight:
+                split = max(1, min(position + 1, len(box) - 1))
+                break
+        boxes.append(box[:split])
+        boxes.append(box[split:])
+
+    entries_list: List[Tuple[int, int, int, int]] = []
+    table = {}
+    for index, box in enumerate(boxes):
+        weight = sum(counts[colour] for colour in box)
+        mean = tuple(sum(colour[channel] * counts[colour] for colour in box) // weight
+                     for channel in range(4))
+        entries_list.append(mean)  # type: ignore[arg-type]
+        for colour in box:
+            table[colour] = index
+    while len(entries_list) < colours:
+        entries_list.append((0, 0, 0, 0))
+    indices = bytes(table[pixel] for pixel in pixels)
+    exact, worst, squared = _quantisation_error(rgba, indices, entries_list)
+    return Quantisation(tuple(entries_list), indices, colours, len(unique), exact,
+                        len(pixels), worst, squared / max(1, len(pixels)))
+
+
+def _quantisation_error(rgba: bytes, indices: Sequence[int],
+                        entries: Sequence[Tuple[int, int, int, int]]
+                        ) -> Tuple[int, int, int]:
+    """``(exact pixels, worst channel, summed squared error)`` as drawn.
+
+    Measured after the CLUT is read back the way the decoder reads it, so the
+    number a receipt prints is what the user will see rather than what the
+    quantiser thought it was doing.
+    """
+
+    exact = 0
+    worst = 0
+    squared = 0
+    drawn = [(red, green, blue, _scale_alpha(alpha)) for red, green, blue, alpha in entries]
+    for position, index in enumerate(indices):
+        entry = drawn[index]
+        pixel = (rgba[position * 4], rgba[position * 4 + 1],
+                 rgba[position * 4 + 2], rgba[position * 4 + 3])
+        if entry == pixel:
+            exact += 1
+            continue
+        for channel in range(4):
+            delta = abs(entry[channel] - pixel[channel])
+            if delta > worst:
+                worst = delta
+            squared += delta * delta
+    return exact, worst, squared
+
+
+@dataclass(frozen=True)
+class MmapRegion:
+    """One laid-out region of a member: what it is, where it went, how long."""
+
+    what: str
+    offset: int
+    length: int
+
+
+def _surface_owner(texture: MmapTexture) -> dict:
+    """``surface index -> (image index, mip level)`` for every owned surface."""
+
+    owner = {}
+    for image in texture.images:
+        for level in range(image.mip_count):
+            owner[image.first_surface + level] = (image.index, level)
+    return owner
+
+
+def encode(payload: bytes, *,
+           levels: Optional[Mapping[Tuple[int, int], bytes]] = None,
+           palettes: Optional[Mapping[int, Sequence[Tuple[int, int, int, int]]]] = None,
+           texture: Optional[MmapTexture] = None,
+           prefer_original_indices: bool = True) -> bytes:
+    """Rebuild *payload* with some of its pixels and CLUTs replaced.
+
+    *levels* maps ``(image, mip level)`` to that surface's RGBA bytes;
+    *palettes* maps a palette's absolute index to its RGBA entries in drawing
+    order.  Everything not named is carried through byte for byte, and the
+    whole member -- header, four tables and every offset -- is laid out again
+    from the sizes that result.
+
+    The template is where the structure comes from and there is no way around
+    that: an ``MMAP`` member carries a mip chain, alternate CLUTs, image names
+    and an undecoded extra table that a picture does not imply.  This writes a
+    member's pixels, and refuses by name anything it cannot place.
+    """
+
+    info = texture if texture is not None else parse(payload)
+    levels = dict(levels or {})
+    palettes = dict(palettes or {})
+    image_count = len(info.images)
+    surface_count = len(info.surfaces)
+    palette_count = len(info.palettes)
+
+    version, = struct.unpack_from("<I", payload, 0x04)
+    marker = bytes(payload[0x08:0x0C])
+    name_offset, extra_offset = struct.unpack_from("<II", payload, 0x20)
+    named = bool(name_offset) and name_offset + NAME_STRIDE * image_count <= len(payload)
+    names = [bytes(payload[name_offset + NAME_STRIDE * index:
+                           name_offset + NAME_STRIDE * (index + 1)])
+             for index in range(image_count)] if named else []
+
+    for index in palettes:
+        _require(0 <= index < palette_count,
+                 f"this member has {palette_count} palette(s); palette {index} was given "
+                 f"a replacement.")
+    owner = _surface_owner(info)
+    reverse = {value: key for key, value in owner.items()}
+    for key in levels:
+        _require(key in reverse,
+                 f"this member has no image {key[0]} at mip level {key[1]}; the replacement "
+                 f"names a surface that does not exist.")
+
+    palette_bytes: List[bytes] = []
+    palette_entries: List[Optional[Sequence[Tuple[int, int, int, int]]]] = []
+    for palette in info.palettes:
+        if palette.index in palettes:
+            wanted = list(palettes[palette.index])
+            _require(len(wanted) == palette.entries,
+                     f"palette {palette.index} of this member holds {palette.entries} "
+                     f"entries and the replacement carries {len(wanted)}; a CLUT is "
+                     f"rewritten at its own size.")
+            _require(palette.format_id == PALETTE_RGBA8888,
+                     f"palette {palette.index} is format {palette.format_id}, not RGBA8888 "
+                     f"({PALETTE_RGBA8888}); this writer does not encode it.")
+            palette_bytes.append(write_palette(wanted))
+            palette_entries.append(wanted)
+        else:
+            _require(palette.offset + palette.byte_size <= len(payload),
+                     f"this member's palette {palette.index} runs past its end.")
+            palette_bytes.append(bytes(payload[palette.offset:
+                                               palette.offset + palette.byte_size]))
+            palette_entries.append(None)
+
+    def entries_for(image_index: int) -> Sequence[Tuple[int, int, int, int]]:
+        image = info.images[image_index]
+        _require(image.palette_count > 0,
+                 f"image {image_index} of this member declares no palette, so its pixels "
+                 f"cannot be indexed.")
+        given = palette_entries[image.first_palette]
+        if given is not None:
+            return given
+        return read_palette(payload, info.palettes[image.first_palette])
+
+    surface_runs: List[bytes] = []
+    for surface in info.surfaces:
+        key = owner.get(surface.index)
+        if key is None or key not in levels:
+            _require(surface.offset + surface.byte_size <= len(payload),
+                     f"this member's surface {surface.index} runs past its end.")
+            surface_runs.append(bytes(payload[surface.offset:
+                                              surface.offset + surface.byte_size]))
+            continue
+        image_index, _level = key
+        rgba = bytes(levels[key])
+        original = None
+        if prefer_original_indices:
+            try:
+                original = unpack_indices(surface_pixels(payload, surface), surface)
+            except MmapError:
+                original = None
+        indices, _exact = index_rgba(rgba, surface.width, surface.height,
+                                     entries_for(image_index), original=original)
+        packed = pack_indices(indices, surface)
+        if surface.codec == SURFACE_STORED:
+            surface_runs.append(packed)
+        elif surface.codec == SURFACE_LZM1:
+            surface_runs.append(lzm1_compress(packed))
+        else:
+            raise MmapError(
+                f"this member's surface {surface.index} is stored under EA codec "
+                f"{surface.codec}, which this writer cannot produce: it writes stored "
+                f"({SURFACE_STORED}) and LZM1 ({SURFACE_LZM1}). Nothing was written.")
+
+    regions: List[MmapRegion] = []
+    cursor = HEADER_SIZE
+    surface_table_offset = cursor if surface_count else 0
+    if surface_count:
+        regions.append(MmapRegion("surface-table", cursor, SURFACE_STRIDE * surface_count))
+        cursor = _round_up(cursor + SURFACE_STRIDE * surface_count)
+    surface_offsets: List[int] = []
+    for surface, run in zip(info.surfaces, surface_runs):
+        surface_offsets.append(cursor)
+        regions.append(MmapRegion(f"surface-{surface.index}", cursor, len(run)))
+        cursor = _round_up(cursor + len(run))
+    palette_table_offset = cursor if palette_count else 0
+    if palette_count:
+        regions.append(MmapRegion("palette-table", cursor, PALETTE_STRIDE * palette_count))
+        cursor = _round_up(cursor + PALETTE_STRIDE * palette_count)
+    palette_offsets: List[int] = []
+    for palette, run in zip(info.palettes, palette_bytes):
+        palette_offsets.append(cursor)
+        regions.append(MmapRegion(f"palette-{palette.index}", cursor, len(run)))
+        cursor = _round_up(cursor + len(run))
+    new_name_offset = 0
+    if named:
+        new_name_offset = cursor
+        regions.append(MmapRegion("name-table", cursor, NAME_STRIDE * image_count))
+        cursor = _round_up(cursor + NAME_STRIDE * image_count)
+    image_table_offset = cursor if image_count else 0
+    if image_count:
+        regions.append(MmapRegion("image-table", cursor, IMAGE_STRIDE * image_count))
+        cursor += IMAGE_STRIDE * image_count
+    tail = b""
+    new_extra_offset = 0
+    if extra_offset:
+        _require(extra_offset == image_table_offset + IMAGE_STRIDE * image_count
+                 and extra_offset <= len(payload),
+                 f"this member's extra table starts at +0x{extra_offset:X}, not at the end "
+                 f"of its image table where every member measured puts it. This writer "
+                 f"carries an extra table through as a tail and cannot relocate one.")
+        tail = bytes(payload[extra_offset:])
+        new_extra_offset = cursor
+        regions.append(MmapRegion("extra-table", cursor, len(tail)))
+        cursor += len(tail)
+
+    out = bytearray(cursor)
+    out[0:4] = MMAP_MAGIC
+    struct.pack_into("<I", out, 0x04, version)
+    out[0x08:0x0C] = marker
+    struct.pack_into("<HH", out, 0x0C, image_count, surface_count)
+    struct.pack_into("<IIIIII", out, 0x10, palette_count, image_table_offset,
+                     surface_table_offset, palette_table_offset, new_name_offset,
+                     new_extra_offset)
+    for surface, offset, run in zip(info.surfaces, surface_offsets, surface_runs):
+        struct.pack_into("<HHIII", out, surface_table_offset + SURFACE_STRIDE * surface.index,
+                         surface.width, surface.height, surface.format_word, len(run), offset)
+        out[offset:offset + len(run)] = run
+    for palette, offset, run in zip(info.palettes, palette_offsets, palette_bytes):
+        struct.pack_into("<HHII", out, palette_table_offset + PALETTE_STRIDE * palette.index,
+                         palette.kind, palette.format_id, len(run), offset)
+        out[offset:offset + len(run)] = run
+    if named:
+        for index, name in enumerate(names):
+            out[new_name_offset + NAME_STRIDE * index:
+                new_name_offset + NAME_STRIDE * (index + 1)] = name
+    for image in info.images:
+        struct.pack_into("<HHII", out, image_table_offset + IMAGE_STRIDE * image.index,
+                         image.palette_count, image.mip_count, image.first_surface,
+                         image.first_palette)
+    if tail:
+        out[new_extra_offset:new_extra_offset + len(tail)] = tail
+    return bytes(out)
+
+
+def encode_image(payload: bytes, image: int, rgba: bytes, *,
+                 palette: Optional[Sequence[Tuple[int, int, int, int]]] = None,
+                 texture: Optional[MmapTexture] = None) -> bytes:
+    """Replace one image's largest mip level, leaving its smaller ones alone.
+
+    The smaller levels are the same picture at lower resolution; nothing here
+    invents them from the new one, so an edit shows at close range and the
+    distant levels keep the art they had.  A caller that wants them rebuilt
+    passes them itself through :func:`encode`.
+    """
+
+    info = texture if texture is not None else parse(payload)
+    entry = info.image(image)
+    _require(entry.mip_count > 0,
+             f"image {image} of this member declares no surfaces -- it is a palette-only "
+             f"entry. Choose an image that has pixels.")
+    surface = info.surfaces[entry.first_surface]
+    _require(len(rgba) == surface.width * surface.height * 4,
+             f"that image is {len(rgba)} byte(s) of RGBA; image {image} of this member is "
+             f"{surface.width}x{surface.height} and needs "
+             f"{surface.width * surface.height * 4}.")
+    palettes = None
+    if palette is not None:
+        palettes = {entry.first_palette: palette}
+    return encode(payload, levels={(image, 0): rgba}, palettes=palettes,
+                  texture=info, prefer_original_indices=True)
+
+
 __all__ = [
     "CSM1_ENTRIES",
     "HEADER_SIZE",
     "IMAGE_STRIDE",
     "Image",
+    "LZM1_HEADER_BYTE",
+    "LZM1_MAX_DISTANCE",
+    "LZM1_MAX_MATCH",
+    "LZM1_MAX_RUN",
+    "LZM1_MIN_MATCH",
     "MMAP_MAGIC",
+    "MMAP_MARKER",
     "MmapError",
+    "MmapRegion",
     "MmapTexture",
     "NAME_STRIDE",
     "PALETTE_ENTRY_BYTES",
@@ -576,6 +1240,8 @@ __all__ = [
     "PIXEL_LAYOUT_NAMES",
     "PS2_ALPHA_OPAQUE",
     "Palette",
+    "Quantisation",
+    "REGION_ALIGNMENT",
     "SURFACE_IPU1",
     "SURFACE_LZM1",
     "SURFACE_STORED",
@@ -583,9 +1249,18 @@ __all__ = [
     "Surface",
     "decode_rgba",
     "deinterleave_csm1",
+    "encode",
+    "encode_image",
     "encode_indexed",
+    "index_rgba",
+    "interleave_csm1",
+    "lzm1_compress",
     "lzm1_decompress",
+    "pack_indices",
     "parse",
+    "quantise",
     "read_palette",
     "surface_pixels",
+    "unpack_indices",
+    "write_palette",
 ]

@@ -317,5 +317,203 @@ class UniformArtLaneTests(unittest.TestCase):
         self.assertIn("choose at least one texture", str(caught.exception))
 
 
+class MmapEncoderTests(unittest.TestCase):
+    """Writing a member back: the tables, the CLUT, the packing, the layout."""
+
+    SHAPES = (
+        {},
+        {"bits": 4},
+        {"mips": 4},
+        {"palette_only_extra": True},
+        {"mips": 3, "bits": 4, "palette_only_extra": True},
+    )
+
+    @staticmethod
+    def whole_member(payload: bytes) -> tuple:
+        """Every decodable level and every palette of *payload*."""
+        texture = mmap_art.parse(payload)
+        levels = {}
+        for image in texture.images:
+            if texture.undecodable_reason(image) is not None:
+                continue
+            for level in range(image.mip_count):
+                _width, _height, rgba = mmap_art.decode_rgba(
+                    payload, image=image.index, level=level, texture=texture)
+                levels[(image.index, level)] = rgba
+        palettes = {palette.index: mmap_art.read_palette(payload, palette)
+                    for palette in texture.palettes}
+        return texture, levels, palettes
+
+    def test_decode_then_encode_returns_the_same_bytes(self) -> None:
+        """Every table, every offset, every CLUT and every pixel, byte for byte."""
+        for shape in self.SHAPES:
+            with self.subTest(**shape):
+                member = containers.synthetic_mmap(32, 32, seed=2, retail_layout=True,
+                                                   **shape)
+                texture, levels, palettes = self.whole_member(member)
+                self.assertEqual(
+                    mmap_art.encode(member, levels=levels, palettes=palettes,
+                                    texture=texture),
+                    member)
+
+    def test_indexing_from_pixels_alone_also_returns_the_same_bytes(self) -> None:
+        """With ``prefer_original_indices=False`` nothing is carried over.
+
+        The synthetic palette has no duplicate colour, so pixels alone are
+        enough here.  On the disc they often are not -- 23 of one uniform
+        member's 34 CLUTs carry a duplicate -- which is why the writer keeps
+        the original index for an unchanged pixel rather than guessing.
+        """
+        for shape in self.SHAPES:
+            with self.subTest(**shape):
+                member = containers.synthetic_mmap(32, 32, seed=5, retail_layout=True,
+                                                   **shape)
+                texture, levels, palettes = self.whole_member(member)
+                self.assertEqual(
+                    mmap_art.encode(member, levels=levels, palettes=palettes,
+                                    texture=texture, prefer_original_indices=False),
+                    member)
+
+    def test_a_duplicate_colour_keeps_the_index_the_file_used(self) -> None:
+        member = containers.synthetic_mmap(16, 16, retail_layout=True)
+        texture = mmap_art.parse(member)
+        entries = mmap_art.read_palette(member, texture.palettes[0])
+        entries[7] = entries[3]            # two indices, one colour
+        member = mmap_art.encode(member, palettes={0: entries}, texture=texture)
+        texture, levels, palettes = self.whole_member(member)
+        self.assertEqual(
+            mmap_art.encode(member, levels=levels, palettes=palettes, texture=texture),
+            member)
+        loose = mmap_art.encode(member, levels=levels, palettes=palettes,
+                                texture=texture, prefer_original_indices=False)
+        self.assertEqual(len(loose), len(member))
+        self.assertNotEqual(loose, member,
+                            "indexing by colour cannot tell the two apart, which is "
+                            "the whole reason the original index is kept")
+
+    def test_encode_with_nothing_replaced_normalises_the_layout(self) -> None:
+        """The reader tolerates other arrangements; the disc uses exactly one."""
+        loose = containers.synthetic_mmap(32, 32)
+        retail = mmap_art.encode(loose)
+        self.assertNotEqual(loose, retail)
+        self.assertEqual(mmap_art.encode(retail), retail, "the layout is a fixed point")
+        before = mmap_art.decode_rgba(loose)
+        self.assertEqual(mmap_art.decode_rgba(retail), before)
+        texture = mmap_art.parse(retail)
+        self.assertEqual(texture.surfaces[0].offset % mmap_art.REGION_ALIGNMENT, 0)
+        self.assertGreater(texture.palettes[0].offset, texture.surfaces[0].offset)
+
+    def test_the_csm1_interleave_is_an_involution(self) -> None:
+        entries = [((index * 5) & 0xFF, (index * 9) & 0xFF, (index * 17) & 0xFF,
+                    index % 129) for index in range(mmap_art.CSM1_ENTRIES)]
+        self.assertEqual(mmap_art.interleave_csm1(mmap_art.deinterleave_csm1(entries)),
+                         entries)
+        self.assertEqual(mmap_art.deinterleave_csm1(mmap_art.interleave_csm1(entries)),
+                         entries)
+        self.assertNotEqual(mmap_art.interleave_csm1(entries), entries)
+
+    def test_write_palette_is_read_palettes_exact_inverse(self) -> None:
+        for size in (16, mmap_art.CSM1_ENTRIES):
+            with self.subTest(size):
+                member = containers.synthetic_mmap(16, 16, retail_layout=True,
+                                                   bits=8 if size == 256 else 4)
+                texture = mmap_art.parse(member)
+                palette = texture.palettes[0]
+                self.assertEqual(palette.entries, size)
+                raw = member[palette.offset:palette.offset + palette.byte_size]
+                self.assertEqual(
+                    mmap_art.write_palette(mmap_art.read_palette(member, palette)), raw)
+
+    def test_the_alpha_scale_round_trips_over_the_ps2_range(self) -> None:
+        for value in range(mmap_art.PS2_ALPHA_OPAQUE + 1):
+            self.assertEqual(mmap_art._unscale_alpha(mmap_art._scale_alpha(value)), value)
+
+    def test_index_packing_round_trips_at_both_depths(self) -> None:
+        for bits in (4, 8):
+            with self.subTest(bits):
+                member = containers.synthetic_mmap(32, 16, retail_layout=True, bits=bits)
+                texture = mmap_art.parse(member)
+                surface = texture.surfaces[0]
+                run = mmap_art.surface_pixels(member, surface)
+                indices = mmap_art.unpack_indices(run, surface)
+                self.assertEqual(len(indices), surface.width * surface.height)
+                self.assertEqual(mmap_art.pack_indices(indices, surface), run)
+
+    def test_lzm1_round_trips_including_its_edge_cases(self) -> None:
+        state = 0x9E3779B9
+        noise = bytearray()
+        while len(noise) < 6000:
+            state ^= (state << 13) & 0xFFFFFFFF
+            state ^= state >> 17
+            state ^= (state << 5) & 0xFFFFFFFF
+            noise += state.to_bytes(4, "little")
+        for name, data in (("empty", b""), ("one byte", b"A"),
+                           ("a long run", bytes(9000)),
+                           ("a two-byte cycle", b"ab" * 5000),
+                           ("incompressible", bytes(noise))):
+            with self.subTest(name):
+                stream = mmap_art.lzm1_compress(data)
+                self.assertEqual(stream[0], mmap_art.LZM1_HEADER_BYTE)
+                self.assertEqual(mmap_art.lzm1_decompress(stream), data)
+
+    def test_a_replacement_of_the_wrong_size_is_refused_naming_the_size(self) -> None:
+        member = containers.synthetic_mmap(32, 32, retail_layout=True)
+        with self.assertRaises(mmap_art.MmapError) as caught:
+            mmap_art.encode_image(member, 0, b"\x00" * (16 * 16 * 4))
+        self.assertIn("32x32", str(caught.exception))
+        self.assertIn("4096", str(caught.exception))
+
+    def test_a_clut_replacement_of_the_wrong_length_is_refused(self) -> None:
+        member = containers.synthetic_mmap(32, 32, retail_layout=True)
+        with self.assertRaises(mmap_art.MmapError) as caught:
+            mmap_art.encode(member, palettes={0: [(1, 2, 3, 4)] * 8})
+        self.assertIn("256 entries", str(caught.exception))
+
+    def test_an_edit_only_moves_the_pixels_that_changed(self) -> None:
+        member = containers.synthetic_mmap(32, 32, seed=9, retail_layout=True)
+        width, height, rgba = mmap_art.decode_rgba(member)
+        edited = bytearray(rgba)
+        texture = mmap_art.parse(member)
+        entries = mmap_art.read_palette(member, texture.palettes[0])
+        target = tuple(entries[200][:3]) + (mmap_art._scale_alpha(entries[200][3]),)
+        edited[0:4] = bytes(target)
+        out = mmap_art.encode_image(member, 0, bytes(edited))
+        self.assertEqual(len(out), len(member))
+        differing = [index for index, pair in enumerate(zip(member, out)) if pair[0] != pair[1]]
+        self.assertEqual(len(differing), 1, "one pixel changed, so one byte should")
+        self.assertEqual(mmap_art.decode_rgba(out)[2], bytes(edited))
+
+    def test_quantise_is_lossless_when_the_image_already_fits(self) -> None:
+        pixels = [(value * 16, 255 - value * 16, value * 8, 255) for value in range(16)]
+        rgba = b"".join(bytes(pixels[(x * 3 + y) % 16])
+                        for y in range(8) for x in range(8))
+        result = mmap_art.quantise(rgba, 8, 8, 16)
+        self.assertTrue(result.lossless)
+        self.assertEqual(result.colours_in_image, 16)
+        self.assertIn("no loss", result.note())
+
+    def test_quantise_states_the_loss_when_it_has_to_reduce(self) -> None:
+        rgba = b"".join(bytes(((value * 7) & 0xFF, (value * 13) & 0xFF,
+                               (value * 29) & 0xFF, 255)) for value in range(256))
+        result = mmap_art.quantise(rgba, 16, 16, 16)
+        self.assertFalse(result.lossless)
+        self.assertEqual(result.colours_wanted, 16)
+        self.assertLessEqual(max(result.indices), 15)
+        self.assertGreater(result.max_channel_error, 0)
+        self.assertIn("mean squared error", result.note())
+
+    def test_a_quantised_clut_can_be_written_and_read_back(self) -> None:
+        member = containers.synthetic_mmap(16, 16, retail_layout=True, bits=4)
+        rgba = b"".join(bytes((value * 3 % 256, value * 5 % 256, value * 11 % 256, 255))
+                        for value in range(256))
+        result = mmap_art.quantise(rgba, 16, 16, 16)
+        texture = mmap_art.parse(member)
+        out = mmap_art.encode(member, levels={(0, 0): rgba},
+                              palettes={0: list(result.entries)}, texture=texture)
+        width, height, drawn = mmap_art.decode_rgba(out)
+        self.assertEqual((width, height), (16, 16))
+        self.assertEqual(len(set(drawn[i:i + 4] for i in range(0, len(drawn), 4))), 16)
+
+
 if __name__ == "__main__":
     unittest.main()
