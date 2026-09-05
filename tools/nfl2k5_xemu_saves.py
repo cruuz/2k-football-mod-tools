@@ -533,7 +533,7 @@ def write_catalogue(folder: Path | str) -> Path:
     root = Path(folder).expanduser()
     rows = catalogue_rows(root)
     target = root / CATALOGUE_NAME
-    target.write_text(render_catalogue(rows, root), encoding="utf-8")
+    target.write_text(render_catalogue(rows, root), encoding="utf-8", newline="\n")
     return target
 
 
