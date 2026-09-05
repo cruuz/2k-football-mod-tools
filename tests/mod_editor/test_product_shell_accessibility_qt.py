@@ -107,7 +107,7 @@ class ProductShellAccessibilityTests(unittest.TestCase):
             # Player Assets joins a player to the face textures and
             # portrait that belong to them, which the app could not
             # answer before.
-            ["Players && Numbers", "Portraits && Faces", "Player Assets"],
+            ["Names && Numbers", "Portraits && Faces", "Find player images"],
         )
         self.assertIs(rosters_page.widget(0), self.two_k5._roster_panel)
         self.assertEqual(

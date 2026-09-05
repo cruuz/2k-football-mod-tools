@@ -314,7 +314,8 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.panel.set_field(player, "jersey", 88)
         findings = self.panel.run_validation()
         self.assertTrue(any(item["check"] == "jersey" for item in findings))
-        self.assertIn("outside the NFL range", self.panel.report.toPlainText())
+        self.assertIn("outside this check's", self.panel.report.toPlainText())
+        self.assertIn("Editor check —", self.panel.report.toPlainText())
         entries = self.panel.refresh_diff()
         self.assertEqual(len(entries), 1)
         self.assertIn("1 player differs", self.panel.report.toPlainText())
@@ -876,12 +877,15 @@ class PositionSchemePanelTests(unittest.TestCase):
         self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Suggs"))
         text = self.panel.header_profile.text()
         self.assertIn("Edge Rusher", text)
-        self.assertIn("DE card set", text)
+        self.assertIn("key ratings", text)
         self.assertIn("Pass Rush", text)
+        # the card set the game rates the code on stays one hover away (the visible line says
+        # "key ratings" so nobody reads it as the game's overall formula)
+        self.assertIn("DE card set", self.panel.header_profile.toolTip())
         self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
         text = self.panel.header_profile.text()
         self.assertIn("Linebacker", text)
-        self.assertIn("ILB card set", text)
+        self.assertIn("ILB card set", self.panel.header_profile.toolTip())
 
     def test_the_depth_cell_says_where_the_player_sits_in_his_own_pool(self) -> None:
         self._load(one_pool_body())

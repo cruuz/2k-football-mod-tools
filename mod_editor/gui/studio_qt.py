@@ -1119,6 +1119,10 @@ def category_display_title(
 
     if category == ProductCategory.TEAM_IDENTITY:
         return "Text & Team Identity"
+    if category == ProductCategory.ROSTERS_PLAYERS:
+        # display only: the catalog title stays "Rosters & Players"; the page edits names,
+        # numbers and images, and a second page called Rosters confused people (RP-01)
+        return "Names, Numbers & Faces"
     return catalog.section(category).title
 
 
@@ -2310,13 +2314,13 @@ class StudioMainWindow(QMainWindow):
                 roster_tabs = QTabWidget()
                 roster_tabs.setObjectName("rostersPlayersTabs")
                 roster_tabs.setAccessibleName("Rosters and players workspaces")
-                roster_tabs.addTab(self._roster_panel, tab_title("Players & Numbers"))
+                roster_tabs.addTab(self._roster_panel, tab_title("Names & Numbers"))
                 roster_tabs.addTab(portrait_page, tab_title("Portraits & Faces"))
                 # "Which face is this player?" had no answer in the app: faces
                 # are found by a face_id buried in the roster record and filed
                 # under a number, so the only method was scrolling 1,872
                 # textures hoping a label matched.
-                roster_tabs.addTab(self._build_player_assets_page(), "Player Assets")
+                roster_tabs.addTab(self._build_player_assets_page(), "Find player images")
                 page = roster_tabs
             elif category == ProductCategory.TEAM_IDENTITY:
                 self._text_roster_panel = TextRosterPanel(
@@ -7974,6 +7978,7 @@ class StudioMainWindow(QMainWindow):
         roster_editor = getattr(self, "_roster_editor_panel", None)
         if roster_editor is not None:
             roster_editor.roster_edits_changed.connect(self._build_panel.set_roster_edits)
+            roster_editor.roster_edits_stale.connect(self._build_panel.mark_roster_edits_stale)
         tabs.addTab(self._build_panel, "Build")
         # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
         # made from a patched copy, applied to somebody else's own disc copy.

@@ -257,7 +257,7 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
     def test_product_summary_and_25th_note_explain_access_plainly(self) -> None:
         self.assertEqual(
             text_catalog_summary(self.catalog),
-            "17 strings total · 14 Editable · 3 Preview/Export-only",
+            "17 entries · 14 Editable · 3 View only",
         )
         self.assertIn("ESPN 25th Anniversary", ESPN_25TH_COMING_SOON_NOTE)
         self.assertIn("Team selectors", ESPN_25TH_COMING_SOON_NOTE)
@@ -547,7 +547,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
         )
         self.assertTrue(panel.export_current_number_button.isEnabled())
         self.assertEqual(panel.current_face_shield.currentText(), "None")
-        self.assertIn("not a HOME/AWAY tint", panel.current_note.text())
+        self.assertIn("not a home/away tint", panel.current_note.text())
         panel.current_number.setText("88")
         panel.current_face_shield.setCurrentIndex(
             panel.current_face_shield.findData(1)
