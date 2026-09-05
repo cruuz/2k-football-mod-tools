@@ -267,6 +267,19 @@ This is the step that makes it M1.
 **Resolved by read-only rig inspection (2026-09-04) — the witness is fully
 automatable, no gameplay required.**
 
+**✅ Route PROVEN by dry-run (2026-09-04, H-2 read clear twice beforehand).**
+`~/classicdump-validate-fixed.sh ~/penguinscreen2-dev <2026-09-04 dump>` on
+build `8226182a` ran in 12.7 s with the *community* pack and returned all four
+harness verdicts PASS: V1 classic ⊇ modern (214 tcc-bit additions) · V2 no
+region-suffixed names · **V3 classic-mode dump names match 49 community-pack
+names against 1 in modern mode — `ClassicTextureNames=true` is mandatory,
+measured** · **V4 pack engages under classic: frame sets differ.** The harness
+neutralises both per-game inis (`SLUS-20919_42F9D5AF.ini`, `_C0272027.ini`)
+and restores them on exit. Evidence: rig `~/classicdump-validate-20260904-220239/`.
+The only input WP7 still lacks is our own pack. ⚠ Frame filenames contain
+spaces — compare via the harness's verdicts or `find -print0`, never
+`for f in $(ls …)`.
+
 1. **The emulator pin is `penguinscreen2-dev @ 8226182aabe19640c6e676331678612f257356dd`**
    (branch `pcsx2-vr-classic-dump`, clean; `~/pcsx2-VR` on the rig symlinks to
    it). It is **not** the dev-box `f5f473479d` (248 commits apart). A second,
