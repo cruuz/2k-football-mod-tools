@@ -172,6 +172,9 @@ for every channel count, byte order and version the disc uses.
 | ffmpeg agreement, streams | **289 of 289 byte-identical**, 670,692,008 PCM samples [M] |
 | ffmpeg agreement, bank sounds | **508 of 508 byte-identical**, 33,451,124 PCM samples; the 459 with no declared rate are not compared [M] |
 | bank plausibility, 508 sounds | none silent; peak 11,923-32,768 (median 31,175), RMS 2,207-11,170 (median 5,249); 88 sounds touch full scale and the longest saturated run anywhere is 21 samples [M] |
+| encoder round trip, computed tone | EA-XA 54.7-58.3 dB, PS ADPCM 57.7 dB [M] |
+| encoder round trip, 10 s of a real stream decoded and re-encoded | 106.3 dB (BGM, stereo), 97.2 dB (SOUNDDAT version 3), 57.8 dB (SOUNDDAT version 2), and **bit-exact** on a bank sound [M] |
+| how close the re-encoded bytes come to EA's own | 7.7%, 1.6%, 94.9% and 99.6% of bytes identical on those four [M] |
 | real-disc build (one BGM stream ← a 10 s computed tone) | 122.5 s, 1,657,339,904 bytes in and out [M] |
 | real-disc verify | **PASS**, 47.4 dB, 2 declared ranges, 1 preload copy checked [M] |
 

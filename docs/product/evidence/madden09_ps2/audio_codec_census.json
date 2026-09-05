@@ -314,6 +314,67 @@
       "version": 3
     }
   ],
+  "encoder_round_trip": {
+    "retail": {
+      "note": "the SNR is against the first decode, which is what a replacement has to preserve. The byte agreement is low on the two stereo streams and high on the version-2 stream and the bank sound: the encoder picks its own predictor and shift per frame and reaches nearly the same samples by a different route, which is what an independently written encoder should do.",
+      "rows": [
+        {
+          "byte_agreement_pct": 7.74,
+          "channels": 2,
+          "key": "BGM.DAT:0:0",
+          "rate": 22050,
+          "reencoded_bytes": 237252,
+          "samples": 441000,
+          "seconds": 10.0,
+          "snr_db": 106.28,
+          "stored_bytes": 237576,
+          "version": null
+        },
+        {
+          "byte_agreement_pct": 1.6,
+          "channels": 2,
+          "key": "SOUNDDAT.DAT:27:0",
+          "rate": 28000,
+          "reencoded_bytes": 303300,
+          "samples": 560000,
+          "seconds": 10.0,
+          "snr_db": 97.21,
+          "stored_bytes": 303476,
+          "version": 3
+        },
+        {
+          "byte_agreement_pct": 94.86,
+          "channels": 1,
+          "key": "SOUNDDAT.DAT:444:0",
+          "rate": 44100,
+          "reencoded_bytes": 239400,
+          "samples": 441000,
+          "seconds": 10.0,
+          "snr_db": 57.84,
+          "stored_bytes": 239400,
+          "version": 2
+        },
+        {
+          "byte_agreement_pct": 99.63,
+          "channels": 1,
+          "key": "bank SOUNDDAT.DAT:32:0",
+          "rate": 24000,
+          "reencoded_bytes": 21696,
+          "samples": 37968,
+          "snr_db": "bit-exact",
+          "stored_bytes": 21696
+        }
+      ],
+      "what": "ten seconds of a real stream decoded, re-encoded with this module's own encoder, and decoded again; byte agreement is against the bytes EA shipped"
+    },
+    "synthetic": {
+      "ea_xa_mono_28000_db": 58.25,
+      "ea_xa_stereo_22050_version_2_little_endian_db": 54.66,
+      "ea_xa_stereo_22050_version_3_big_endian_db": 54.66,
+      "ps_adpcm_mono_24000_db": 57.72,
+      "what": "a computed tone encoded and decoded back, for every shape the disc uses"
+    }
+  },
   "ffmpeg_agreement": {
     "bank_sounds": {
       "byte_identical": 508,
