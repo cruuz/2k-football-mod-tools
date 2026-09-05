@@ -554,7 +554,8 @@ def _cmd_list(args):
     if args.json:
         Path(args.json).parent.mkdir(parents=True, exist_ok=True)
         Path(args.json).write_text(
-            json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+            newline="\n")
     print("%d PLAY playbooks" % len(rows))
     for row in rows:
         print("  %s  %-24s formations %2d/%d  plays %3d/%d  nodes %4d  "
@@ -572,7 +573,7 @@ def _cmd_patch(args):
     if args.report:
         Path(args.report).parent.mkdir(parents=True, exist_ok=True)
         Path(args.report).write_text(
-            json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     for edit in report["play_edits"]:
         print("book %s: %s -> %s (%d bytes changed in the body)"
               % (edit["book_id"],

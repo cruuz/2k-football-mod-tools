@@ -94,7 +94,7 @@ def main(argv=None):
     destination = Path(args.output)
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(
-        json.dumps(catalog, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        json.dumps(catalog, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     totals = catalog["totals"]
     print("%d books -> %s" % (totals["books"], destination))
     print("  %d formations, %d plays, %d nodes"

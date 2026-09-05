@@ -397,7 +397,7 @@ def main(argv=None):
     if args.json:
         Path(args.json).parent.mkdir(parents=True, exist_ok=True)
         Path(args.json).write_text(
-            json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     for check in result["checks"]:
         print("ok  %s  %s" % (check["check"], check["detail"]))
     print("PASS: %d book(s) edited, %d bytes changed, %d books untouched"
