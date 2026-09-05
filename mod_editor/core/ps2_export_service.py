@@ -61,6 +61,42 @@ Pillow does the resample and is imported lazily, so this module stays
 importable -- and every test that does not resample stays runnable -- on an
 interpreter without it.
 
+Which emulator will load it
+---------------------------
+
+The pack's filenames are the same whatever the answer -- there is one spelling
+of a GS identity and this module writes it -- but which of them a given
+emulator will *use* is not the same everywhere, so the export records who it is
+for and says what to turn on.
+
+Two upstream changes matter, and only one of them bites:
+
+* **v1.7.4034** (PR #8015, 2023-02-09) changed ``HashTexture`` to hash only the
+  texels of the clamped draw region rather than the whole power-of-two texture.
+  Every texture the game draws clamped therefore has a *different* name from
+  that build on, including every 2.x release, and a pack named the original way
+  is simply not looked for there. No offline fix exists: the clamp region is a
+  runtime fact, not something a filename can be renamed into. PenguinScreen2's
+  ``ClassicTextureNames=true`` restores whole-texture hashing (plus the old TCC
+  flag in the name and a crop at injection).
+
+  **Measured, and the reason this is not a crisis for this pack:** across the
+  60 rig dumps, the classic-vs-modern dump-name diff found 1,017 classic-only
+  names covering 584 distinct identities, all palettized 1024x1024 PSMT8H /
+  PSMT8 -- and *none of them is in this studio's manifest*. Every manifest
+  identity observed in those dumps is unclamped, so a stock 1.7.4034+ build
+  looks up every name this exporter writes. Three stock builds (v2.7.469
+  merge-base, v2.6.0, v2.9.30) loaded the classic-named pack with identical
+  pixel counts.
+* **v1.7.5606** (2024-03-10) dropped the TCC flag from the names PCSX2 dumps --
+  and, in the same commit, taught every parse path to ignore bit 14. So the
+  flag in a name has never stopped a pack loading, on any build.
+
+:data:`EMULATOR_TARGETS` names the three answers, :data:`TARGET_SETTINGS` says
+what each one has to turn on, and :func:`emulator_instructions` writes the
+steps. ``run_export`` records both in the receipt, so a pack can be checked
+against the emulator it claims to be for.
+
 Publishing
 ----------
 
@@ -118,6 +154,35 @@ PROVENANCE_KEYS = ("disc", "emulator", "method", "generated", "counts")
 PHYSICAL_NAMESPACES = ("p8:", "tset:", "nfl2k5.crib.scene.")
 #: The logical uniform provider namespace, which is not one. Also see there.
 LOGICAL_UNIFORM_NAMESPACE = "nfl2k5.uniform."
+
+#: PenguinScreen2 with Classic Texture Names on: whole-texture hashing is
+#: restored, so every file in the pack is looked for.
+TARGET_PENGUINSCREEN2_CLASSIC = "penguinscreen2_classic"
+#: PCSX2 v1.7.4034 or newer, including every 2.x release: the textures the game
+#: draws unclamped load, and the rest are skipped. See the module docstring.
+TARGET_PCSX2_MODERN = "pcsx2_modern"
+#: PCSX2 before v1.7.4034: whole-texture hashing, so every file is looked for.
+TARGET_PCSX2_LEGACY = "pcsx2_legacy"
+#: Every answer an export may record. Anything else is refused.
+EMULATOR_TARGETS = (
+    TARGET_PENGUINSCREEN2_CLASSIC,
+    TARGET_PCSX2_MODERN,
+    TARGET_PCSX2_LEGACY,
+)
+#: The answer a caller that does not choose gets: the one that loads the whole
+#: pack. The export window has no default and makes the user answer.
+DEFAULT_EMULATOR_TARGET = TARGET_PENGUINSCREEN2_CLASSIC
+
+LOAD_REPLACEMENTS_SETTING = "LoadTextureReplacements=true"
+CLASSIC_NAMES_SETTING = "ClassicTextureNames=true"
+
+#: What each target has to turn on. A property of the emulator, not of one
+#: manifest, so it is stated here and restated by the verifier.
+TARGET_SETTINGS = {
+    TARGET_PENGUINSCREEN2_CLASSIC: (CLASSIC_NAMES_SETTING, LOAD_REPLACEMENTS_SETTING),
+    TARGET_PCSX2_MODERN: (LOAD_REPLACEMENTS_SETTING,),
+    TARGET_PCSX2_LEGACY: (LOAD_REPLACEMENTS_SETTING,),
+}
 
 STATUS_MAPPED = "mapped"
 STATUS_UNMAPPED = "unmapped"
@@ -285,6 +350,89 @@ def pillow_available() -> bool:
     except ImportError:
         return False
     return True
+
+
+# --------------------------------------------------------------------------
+# What to do with the folder, per emulator. Qt-free and written into the
+# receipt, so the window and the verifier read one text rather than two.
+# --------------------------------------------------------------------------
+
+def emulator_settings(emulator_target: str, settings: Any = None) -> Tuple[str, ...]:
+    """What ``emulator_target`` must turn on, refusing an unknown target.
+
+    ``settings`` lets a caller pass the manifest's own ``requires_setting``
+    list; it is used only for the PenguinScreen2 target, whose settings that
+    key describes. The PCSX2 targets get their own, because telling a stock
+    PCSX2 user to turn on a setting their build does not have is worse than
+    telling them nothing.
+    """
+
+    _require(emulator_target in EMULATOR_TARGETS,
+             "An export is for " + ", ".join(EMULATOR_TARGETS[:-1])
+             + " or " + EMULATOR_TARGETS[-1]
+             + "; %r is not one of those." % (emulator_target,))
+    if emulator_target == TARGET_PENGUINSCREEN2_CLASSIC and settings:
+        rows = tuple(str(row).strip() for row in settings if str(row).strip())
+        if rows:
+            return rows
+    return TARGET_SETTINGS[emulator_target]
+
+
+def emulator_instructions(
+    emulator_target: str, destination: Any, settings: Any = None
+) -> Tuple[str, ...]:
+    """The numbered steps for one emulator, as lines.
+
+    Written into the receipt by ``run_export`` and shown by the export window,
+    so there is one text. What it says is the difference that actually decides
+    whether the pack is drawn: v1.7.4034 hashes only the clamped draw region,
+    so a modern PCSX2 looks for a different name for every clamped texture and
+    quietly skips this pack's file for it.
+    """
+
+    rows = emulator_settings(emulator_target, settings)
+    lines = [
+        "1. Copy the textures folder from\n     {where}\n"
+        "   into your emulator's texture directory, keeping the {path} path "
+        "intact.".format(where=destination, path="/".join(REPLACEMENTS_DIR)),
+    ]
+    if emulator_target == TARGET_PENGUINSCREEN2_CLASSIC:
+        lines.append("2. In PenguinScreen2, turn on:")
+        lines.extend("     * " + row for row in rows)
+        lines.append(
+            "   Classic Texture Names restores the whole-texture hashing these "
+            "filenames were computed with, so every file in the pack is looked "
+            "for."
+        )
+    elif emulator_target == TARGET_PCSX2_MODERN:
+        lines.append("2. In PCSX2, turn on:")
+        lines.extend("     * " + row for row in rows)
+        lines.append(
+            "   Nothing else. From v1.7.4034 PCSX2 identifies a texture by "
+            "hashing only its clamped draw region, so a pack's file for a "
+            "texture the game draws clamped would be skipped. Across the 60 "
+            "rig dumps measured, 584 identities fell in that class and none "
+            "of this studio's texture names is among them, so every name in "
+            "this pack is looked up. PenguinScreen2 with Classic Texture "
+            "Names restores whole-texture hashing if you meet one that is not."
+        )
+    else:
+        lines.append("2. In PCSX2, turn on:")
+        lines.extend("     * " + row for row in rows)
+        lines.append(
+            "   Nothing else. Builds before v1.7.4034 hash the whole texture, "
+            "which is how these filenames were computed, so every file in the "
+            "pack is looked for."
+        )
+    lines.append(
+        "   With texture replacement off the game draws the retail art and the "
+        "pack looks like it did nothing."
+    )
+    lines.append(
+        "3. Boot your own {serial} disc and go to a moment where the art you "
+        "edited is on screen.".format(serial=SERIAL)
+    )
+    return tuple(lines)
 
 
 # --------------------------------------------------------------------------
@@ -760,6 +908,10 @@ class ExportReceipt:
     skipped: Tuple[Dict[str, str], ...]
     provenance: Mapping[str, Any]
     document: Mapping[str, Any] = field(default_factory=dict)
+    #: Which emulator this pack was exported for; one of
+    #: :data:`EMULATOR_TARGETS`. It changes no file, only the instructions.
+    emulator_target: str = DEFAULT_EMULATOR_TARGET
+    instructions: Tuple[str, ...] = ()
 
     @property
     def file_count(self) -> int:
@@ -770,12 +922,14 @@ class ExportReceipt:
         return (
             "Wrote {files} PCSX2 replacement file{plural} from {targets} edited "
             "target{tplural}; skipped {skipped}. Copy the textures/ folder into "
-            "PenguinScreen2's texture directory and enable Load Textures.".format(
+            "the texture directory of {target} and turn texture replacement "
+            "on.".format(
                 files=len(self.files),
                 plural="" if len(self.files) == 1 else "s",
                 targets=len({row.source_target for row in self.files}),
                 tplural="" if len({row.source_target for row in self.files}) == 1 else "s",
                 skipped=len(self.skipped),
+                target=self.emulator_target,
             )
         )
 
@@ -795,15 +949,27 @@ def _refuse_destination(out_dir: Path) -> Path:
     return requested
 
 
-def run_export(plan: ExportPlan, out_dir: Path) -> ExportReceipt:
+def run_export(
+    plan: ExportPlan,
+    out_dir: Path,
+    *,
+    emulator_target: str = DEFAULT_EMULATOR_TARGET,
+    settings: Any = None,
+) -> ExportReceipt:
     """Write ``plan``'s files to a new folder and return the receipt.
 
     The folder is built under a temporary sibling name and published with the
     platform layer's no-clobber primitive, so a destination that appears while
     the export runs is refused rather than overwritten.
+
+    ``emulator_target`` changes no file -- the pack is the same bytes under the
+    same names for all three -- but is recorded in the receipt along with the
+    instructions it implies, so a pack can be checked against the emulator it
+    claims to be for.
     """
 
     _require(isinstance(plan, ExportPlan), "run_export needs a plan from plan_export")
+    resolved_settings = emulator_settings(emulator_target, settings)
     requested = _refuse_destination(out_dir)
 
     stage = Path(tempfile.mkdtemp(
@@ -854,6 +1020,17 @@ def run_export(plan: ExportPlan, out_dir: Path) -> ExportReceipt:
                 "file": MAPPING_MANIFEST,
                 "sha256": plan.manifest_sha256,
             },
+            # Who this pack is for, and what that means to do. Recorded rather
+            # than assumed: the same filenames load completely on one emulator
+            # and partly on another, and the receipt is where that is said.
+            "emulator_target": emulator_target,
+            "instructions": {
+                "settings": list(resolved_settings),
+                "lines": list(
+                    emulator_instructions(emulator_target, requested,
+                                          resolved_settings)
+                ),
+            },
             "counts": {
                 "files": len(rows),
                 "resampled": sum(1 for row in rows if row.resampled_from),
@@ -899,22 +1076,31 @@ def run_export(plan: ExportPlan, out_dir: Path) -> ExportReceipt:
         skipped=skipped,
         provenance=dict(plan.provenance),
         document=receipt_document,
+        emulator_target=emulator_target,
+        instructions=tuple(receipt_document["instructions"]["lines"]),
     )
 
 
 def export_replacement_pack(
-    project: Any, out_dir: Path, manifest: Any = None
+    project: Any, out_dir: Path, manifest: Any = None, *,
+    emulator_target: str = DEFAULT_EMULATOR_TARGET,
+    settings: Any = None,
 ) -> ExportReceipt:
     """Plan and write in one call, for a caller with nothing to preview."""
 
-    return run_export(plan_export(project, manifest), out_dir)
+    return run_export(plan_export(project, manifest), out_dir,
+                      emulator_target=emulator_target, settings=settings)
 
 
 __all__ = [
+    "CLASSIC_NAMES_SETTING",
+    "DEFAULT_EMULATOR_TARGET",
+    "EMULATOR_TARGETS",
     "ExportPlan",
     "ExportProject",
     "ExportReceipt",
     "ExportTarget",
+    "LOAD_REPLACEMENTS_SETTING",
     "Manifest",
     "MAPPING_MANIFEST",
     "MAPPING_SCHEMA",
@@ -928,6 +1114,12 @@ __all__ = [
     "STATUS_AMBIGUOUS",
     "STATUS_MAPPED",
     "STATUS_UNMAPPED",
+    "TARGET_PCSX2_LEGACY",
+    "TARGET_PCSX2_MODERN",
+    "TARGET_PENGUINSCREEN2_CLASSIC",
+    "TARGET_SETTINGS",
+    "emulator_instructions",
+    "emulator_settings",
     "export_replacement_pack",
     "load_manifest",
     "load_project",

@@ -542,6 +542,123 @@ class ProjectSourceTests(_ExportTestCase):
         self.assertEqual(project.edited_target_ids, {ONE, FANOUT})
 
 
+class EmulatorTargetTests(_ExportTestCase):
+    """The pack is the same bytes for every emulator; the receipt is not.
+
+    PCSX2 v1.7.4034 began hashing only a texture's clamped draw region, and
+    PenguinScreen2's Classic Texture Names restores the original whole-texture
+    hashing. Nothing about that changes a filename this exporter writes -- it
+    changes which of them a build looks up -- so the export records who the
+    pack is for and what that means to turn on.
+    """
+
+    def test_the_three_targets_are_the_ones_that_exist(self) -> None:
+        self.assertEqual(
+            svc.EMULATOR_TARGETS,
+            (svc.TARGET_PENGUINSCREEN2_CLASSIC, svc.TARGET_PCSX2_MODERN,
+             svc.TARGET_PCSX2_LEGACY),
+        )
+        self.assertEqual(svc.DEFAULT_EMULATOR_TARGET,
+                         svc.TARGET_PENGUINSCREEN2_CLASSIC)
+
+    def test_every_target_writes_the_very_same_files(self) -> None:
+        """The choice must not be able to change a byte of the pack."""
+
+        digests = {}
+        for target in svc.EMULATOR_TARGETS:
+            receipt = svc.run_export(
+                self.plan(), self.work / ("pack-" + target),
+                emulator_target=target,
+            )
+            digests[target] = {
+                row.pcsx2_png: row.sha256 for row in receipt.files
+            }
+            self.assertEqual(receipt.emulator_target, target)
+        first = digests[svc.EMULATOR_TARGETS[0]]
+        self.assertEqual(sorted(first), sorted([NAME_ONE, NAME_FAN_A, NAME_FAN_B]))
+        for target, rows in digests.items():
+            self.assertEqual(rows, first, target)
+
+    def test_the_receipt_records_the_target_and_its_instructions(self) -> None:
+        receipt = svc.run_export(
+            self.plan(), self.work / "recorded",
+            emulator_target=svc.TARGET_PCSX2_MODERN,
+        )
+        document = json.loads(
+            (receipt.path / svc.RECEIPT_NAME).read_text(encoding="utf-8")
+        )
+        self.assertEqual(document["emulator_target"], svc.TARGET_PCSX2_MODERN)
+        self.assertEqual(document["instructions"]["settings"],
+                         [svc.LOAD_REPLACEMENTS_SETTING])
+        steps = "\n".join(document["instructions"]["lines"])
+        self.assertIn("1.7.4034", steps)
+        self.assertIn("clamped", steps)
+        self.assertIn(str(receipt.path), steps)
+
+    def test_a_stock_pcsx2_is_never_told_to_turn_on_a_setting_it_lacks(self) -> None:
+        """Stock PCSX2 has no Classic Texture Names; naming it wastes an evening."""
+
+        for target in (svc.TARGET_PCSX2_MODERN, svc.TARGET_PCSX2_LEGACY):
+            with self.subTest(target=target):
+                settings = svc.emulator_settings(target)
+                self.assertEqual(settings, (svc.LOAD_REPLACEMENTS_SETTING,))
+                steps = "\n".join(
+                    svc.emulator_instructions(target, self.work / "x"))
+                self.assertNotIn(svc.CLASSIC_NAMES_SETTING, steps)
+        classic = svc.emulator_settings(svc.TARGET_PENGUINSCREEN2_CLASSIC)
+        self.assertEqual(
+            classic,
+            (svc.CLASSIC_NAMES_SETTING, svc.LOAD_REPLACEMENTS_SETTING),
+        )
+
+    def test_the_manifests_own_settings_are_used_for_penguinscreen2(self) -> None:
+        """``requires_setting`` describes the fork; the PCSX2 rows do not."""
+
+        supplied = ("ClassicTextureNames=true", "LoadTextureReplacements=true")
+        self.assertEqual(
+            svc.emulator_settings(svc.TARGET_PENGUINSCREEN2_CLASSIC, supplied),
+            supplied,
+        )
+        self.assertEqual(
+            svc.emulator_settings(svc.TARGET_PCSX2_MODERN, supplied),
+            (svc.LOAD_REPLACEMENTS_SETTING,),
+        )
+
+    def test_the_instructions_say_what_each_emulator_will_actually_do(self) -> None:
+        classic = "\n".join(svc.emulator_instructions(
+            svc.TARGET_PENGUINSCREEN2_CLASSIC, "/tmp/pack"))
+        modern = "\n".join(svc.emulator_instructions(
+            svc.TARGET_PCSX2_MODERN, "/tmp/pack"))
+        legacy = "\n".join(svc.emulator_instructions(
+            svc.TARGET_PCSX2_LEGACY, "/tmp/pack"))
+        self.assertIn("Classic Texture Names", classic)
+        # Measured, and not overstated: the clamped class exists, and none of
+        # this studio's names was observed in it.
+        self.assertIn("584", modern)
+        self.assertIn("none of this studio's texture names", modern)
+        self.assertIn("1.7.4034", legacy)
+        for steps in (classic, modern, legacy):
+            self.assertIn("retail art", steps)
+            self.assertIn(svc.LOAD_REPLACEMENTS_SETTING, steps)
+
+    def test_an_unknown_target_is_refused(self) -> None:
+        with self.assertRaises(svc.Ps2ExportError):
+            svc.emulator_settings("dolphin")
+        with self.assertRaises(svc.Ps2ExportError):
+            svc.run_export(self.plan(), self.work / "nope",
+                           emulator_target="dolphin")
+        # And it is refused before anything is written.
+        self.assertFalse((self.work / "nope").exists())
+
+    def test_export_replacement_pack_carries_the_target_through(self) -> None:
+        receipt = svc.export_replacement_pack(
+            self.project(), self.work / "one-call", self.manifest_path,
+            emulator_target=svc.TARGET_PCSX2_LEGACY,
+        )
+        self.assertEqual(receipt.emulator_target, svc.TARGET_PCSX2_LEGACY)
+        self.assertIn("1.7.4034", "\n".join(receipt.instructions))
+
+
 class ManifestContractTests(unittest.TestCase):
     """The service and the audit tool must agree on the shipped contract."""
 
