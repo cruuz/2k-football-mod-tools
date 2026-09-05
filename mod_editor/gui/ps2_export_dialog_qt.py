@@ -40,6 +40,14 @@ text; :data:`TARGET_EXPLANATION_REQUIRED_FACTS` is what it must still say, and
 The manifest may be absent from a given build (it is produced by a separate
 work package).  That is reported as a plain sentence and leaves every control
 disabled, rather than raising on construction.
+
+*One caller-facing hook, and it changes nothing this window does.*  The PS2
+Disc Studio offers the same export from its own window and then offers to kit
+the pack, so it has to learn what was written; ``on_exported`` hands it the
+receipt this window already built, and :attr:`Ps2ExportDialog.project_path`
+publishes the ``.2k5mod`` that was chosen so the next open can start there.
+Neither is consulted by anything here: no plan, no file and no wording depends
+on whether a caller passed a callback.
 """
 
 from __future__ import annotations
@@ -568,12 +576,17 @@ class Ps2ExportDialog(QDialog):
         *,
         manifest: Any = None,
         parent: Optional[QWidget] = None,
+        on_exported: Optional[Callable[[Any], None]] = None,
     ) -> None:
         super().__init__(parent)
         self._project_source = project
         self._manifest_source = manifest
         self._plan = None
         self._receipt = None
+        #: Called with the receipt after a pack is written, for a caller that
+        #: has something to offer next -- the PS2 Disc Studio's kit step. It is
+        #: notified, never asked: it cannot refuse an export or change one.
+        self._on_exported = on_exported
         self._busy = False
         self._busy_verb = ""
         self._pool = QThreadPool(self)
@@ -982,6 +995,17 @@ class Ps2ExportDialog(QDialog):
             return
         self.set_project(Path(selected))
 
+    @property
+    def project_path(self) -> Optional[Path]:
+        """The ``.2k5mod`` this window is on, or ``None`` for a live session.
+
+        Public so a caller that opened this window without a project -- the PS2
+        Disc Studio, which has no Xbox session -- can start the next one where
+        the user left off, instead of making them find the file again.
+        """
+
+        return self._project_path
+
     def set_project(self, project: Any) -> None:
         """Adopt a new project and re-plan. Public so a caller can preload one."""
 
@@ -1036,6 +1060,10 @@ class Ps2ExportDialog(QDialog):
             f"Wrote {len(getattr(receipt, 'files', ()))} file(s) to "
             f"{getattr(receipt, 'path', '')}"
         )
+        if self._on_exported is not None:
+            # Before the verification offer, so a caller is told what was
+            # written whether or not the user accepts that prompt.
+            self._on_exported(receipt)
         self._offer_verification()
 
     # -- verifying -----------------------------------------------------
