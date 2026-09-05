@@ -11,7 +11,7 @@ it -- and on an image laid out differently it read 193 MB of something else and 
 template "foreign". Other writers carried the same assumption as ``PACK_SECTOR`` /
 ``XISO_PACK_BYTE_OFFSET`` / ``ABSOLUTE_XISO_SPAN`` constants.
 
-Everything here is synthetic: a minimal XDVDFS image built in memory with ``default.xbe``
+Everything here is synthetic: a sparse XDVDFS image written through a file with ``default.xbe``
 and ``vc_53450030/0`` at deliberately non-retail sectors, behind a redump-style game-partition
 base (0x0FD90000), on a file far too small for the retail constant to point anywhere at all.
 The test proves the shared resolver finds both files, that the studio recognises such a file
@@ -207,13 +207,21 @@ class PackExtentResolverTests(unittest.TestCase):
         self.assertEqual(step["schedule"]["pack0_byte_offset"], pack0_at)
         self.assertEqual(step["schedule"]["written_bytes"], 16)
         self.assertEqual(seen, [self.pack0], "the schedule step must read exactly the directory's pack 0")
-        built = target.read_bytes()
-        self.assertEqual(built[pack0_at + 100:pack0_at + 108], template)
-        self.assertEqual(built[pack0_at + 200:pack0_at + 208], preseason)
-        untouched = bytearray(self.image.read_bytes())
-        untouched[pack0_at + 100:pack0_at + 108] = template
-        untouched[pack0_at + 200:pack0_at + 208] = preseason
-        self.assertEqual(built, bytes(untouched), "nothing outside the two template writes may change")
+        self.assertEqual(target.stat().st_size,self.image.stat().st_size)
+        with target.open('rb') as built,self.image.open('rb') as original:
+            for offset,expected in ((pack0_at+100,template),(pack0_at+200,preseason)):
+                built.seek(offset)
+                self.assertEqual(built.read(len(expected)),expected)
+            built.seek(0)
+            at=0
+            while chunk:=original.read(1024*1024):
+                expected=bytearray(chunk)
+                for offset,data in ((pack0_at+100,template),(pack0_at+200,preseason)):
+                    lo,hi=max(at,offset),min(at+len(chunk),offset+len(data))
+                    if lo<hi:expected[lo-at:hi-at]=data[lo-offset:hi-offset]
+                self.assertTrue(built.read(len(chunk))==expected,
+                                f'nothing outside the two template writes may change: block {at:#x}')
+                at+=len(chunk)
 
     def test_mod_build_refuses_an_image_whose_pack0_is_not_retail_sized(self) -> None:
         fd = os.open(self.image, os.O_RDWR | getattr(os, "O_BINARY", 0))

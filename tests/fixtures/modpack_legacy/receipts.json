@@ -1,0 +1,42 @@
+[
+  {
+    "file": "beta-60-basic.2k5patch",
+    "source_commit": "b8d55f4f2b9a50c2433efa52c3565f61a99c2108",
+    "format": 1,
+    "base_size": 75795,
+    "result_size": 75795,
+    "base_sha256": "e83e2d97c6ebb66f0a95b22e0dbe057e4e10a7256034aec9c6903e28269f6cc5",
+    "result_sha256": "a34eccf207e100f96ffe9314d8b4b2f5214e2f31aad74e3dd8d45401eb39a793",
+    "pack_sha256": "9a0d9d9db10dbd56176d92406a9de927eb001f1970f14cca44cfbb5aa5b47a6e"
+  },
+  {
+    "file": "beta-60-advanced.2k5patch",
+    "source_commit": "b8d55f4f2b9a50c2433efa52c3565f61a99c2108",
+    "format": 2,
+    "base_size": 12021779,
+    "result_size": 24045568,
+    "base_sha256": "f42565e2fe3c17307423972ff14bb54f5edfc102be51d62605cb765bf224a36e",
+    "result_sha256": "fc9f93fee1b012eefe02c945f396187779f758a33ff981f820d9da94f030782e",
+    "pack_sha256": "1af56821a6bcd6f669ca489998be544970db00b94bbeaa142bcb4c5e7cb9f40d"
+  },
+  {
+    "file": "beta-61-basic.2k5patch",
+    "source_commit": "75b7b2ac51a88ecf9581a9f316a28fa9919e8b1c",
+    "format": 1,
+    "base_size": 75795,
+    "result_size": 75795,
+    "base_sha256": "e83e2d97c6ebb66f0a95b22e0dbe057e4e10a7256034aec9c6903e28269f6cc5",
+    "result_sha256": "89f1393d40410f3e1807d12b8c197220a71b38f795f233381264d929b44cffa0",
+    "pack_sha256": "08860a3ec7d8a13a59c6bf686f212e180bcd4136df477298cb11c3a3218d7278"
+  },
+  {
+    "file": "beta-61-advanced.2k5patch",
+    "source_commit": "75b7b2ac51a88ecf9581a9f316a28fa9919e8b1c",
+    "format": 2,
+    "base_size": 12021779,
+    "result_size": 24045568,
+    "base_sha256": "f42565e2fe3c17307423972ff14bb54f5edfc102be51d62605cb765bf224a36e",
+    "result_sha256": "0aff3171f27dcb28fde33895dd90912f166caac65a1fda9dc8e6d9cd8db47979",
+    "pack_sha256": "1419c9cfb95172a7e3d7424973d8be5259692884f52b22a3a5b672f2a4d8d938"
+  }
+]

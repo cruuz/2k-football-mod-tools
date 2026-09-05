@@ -1,6 +1,8 @@
 """Standalone runtime TXTR, complete archive index and disc transaction tests."""
 from __future__ import annotations
 import hashlib
+from contextlib import ExitStack
+import mmap
 import os
 from pathlib import Path
 import struct
@@ -37,8 +39,19 @@ class PublicTests(unittest.TestCase):
 class RetailTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.before=PACK.read_bytes();cls.xbe=XBE.read_bytes()
-        cls.after,cls.receipt=a.compile_runtime_collection(cls.before)
+        # The compiler's buffer API accepts file-backed buffers. Keep fixtures
+        # on disk rather than retaining both complete packs as Python bytes.
+        stack=ExitStack();cls.addClassCleanup(stack.close)
+        cls.before_file=stack.enter_context(PACK.open('rb'))
+        cls.before=stack.enter_context(mmap.mmap(cls.before_file.fileno(),0,access=mmap.ACCESS_READ))
+        cls.xbe=XBE.read_bytes()
+        after,cls.receipt=a.compile_runtime_collection(cls.before)
+        directory=Path(stack.enter_context(tempfile.TemporaryDirectory())).resolve()
+        cls.after_path=directory/'grown-pack'
+        cls.after_path.write_bytes(after)
+        del after
+        cls.after_file=stack.enter_context(cls.after_path.open('rb'))
+        cls.after=stack.enter_context(mmap.mmap(cls.after_file.fileno(),0,access=mmap.ACCESS_READ))
     def test_all_264_native_objects_identity_pixels_and_dimming(self):
         start=a.HUD_START+a.HUD_SIZE
         objects=r.tx.parse_chunks(self.after[start:start+a.RUNTIME_APPEND_SIZE])
@@ -91,7 +104,10 @@ class RetailTests(unittest.TestCase):
                 self.assertEqual((x.pack_name,x.size),(y.pack_name,y.size))
                 self.assertEqual(y.pack_offset,x.pack_offset+(a.RUNTIME_GROWTH if i>a.HUD_OUTER_INDEX and x.pack_ordinal==0 else 0))
         end=outer.align_up(a.HUD_START+a.HUD_SIZE)
-        self.assertEqual(self.after[end+a.RUNTIME_GROWTH:],self.before[end:])
+        for at in range(end,len(self.before),1024*1024):
+            count=min(1024*1024,len(self.before)-at)
+            self.assertTrue(self.after[at+a.RUNTIME_GROWTH:at+a.RUNTIME_GROWTH+count]==self.before[at:at+count],
+                            f'unchanged pack suffix differs at {at:#x}')
         # Wrapper and chunk order are unchanged for all 139 existing resources.
         old=r.tx.parse_chunks(self.before[a.HUD_START:a.HUD_START+a.HUD_SIZE])
         new=r.tx.parse_chunks(self.after[a.HUD_START:a.HUD_START+a.HUD_SIZE+a.RUNTIME_APPEND_SIZE])
@@ -108,10 +124,12 @@ class RetailTests(unittest.TestCase):
                     outer.HEADER_SIZE+(a.HUD_OUTER_INDEX+1)*12+8,
                     a.RESOURCES['score_bug']['pack_offset'],a.RESOURCES['score_buga']['pack_offset'],
                     a.HUD_START+a.HUD_SIZE,a.HUD_START+a.HUD_SIZE+a.RUNTIME_APPEND_SIZE):
-            bad=bytearray(self.after);bad[off]^=1
-            self.assertEqual(a.runtime_pack_status(bad),'foreign',hex(off))
-        wrong=bytearray(self.before);wrong[a.TEAM_LOGOS['LV']['pack_offset']]^=1
-        with self.assertRaises(r.ScorebugError):a.compile_runtime_collection(wrong)
+            with mmap.mmap(self.after_file.fileno(),0,access=mmap.ACCESS_COPY) as bad:
+                bad[off]^=1
+                self.assertEqual(a.runtime_pack_status(bad),'foreign',hex(off))
+        with mmap.mmap(self.before_file.fileno(),0,access=mmap.ACCESS_COPY) as wrong:
+            wrong[a.TEAM_LOGOS['LV']['pack_offset']]^=1
+            with self.assertRaises(r.ScorebugError):a.compile_runtime_collection(wrong)
     def image(self,path,xbe=None):
         xbe=self.xbe if xbe is None else xbe
         pack_sector=64;xs=pack_sector+len(self.before)//2048
@@ -131,8 +149,10 @@ class RetailTests(unittest.TestCase):
         def compile(pack):
             state=a.runtime_pack_status(pack)
             if state=='applied':return pack,{'status':'already_applied','changed_bytes':0}
-            self.assertEqual(state,'retail');return self.after,self.receipt
-        with tempfile.TemporaryDirectory() as tmp,patch.object(a,'compile_runtime_collection',side_effect=compile):
+            self.assertEqual(state,'retail');return replacement,self.receipt
+        # A Mock retains every argument in call_args_list, including each
+        # complete 194 MB pack. These replacements need no call history.
+        with memoryview(self.after) as replacement,tempfile.TemporaryDirectory() as tmp,patch.object(a,'compile_runtime_collection',new=compile):
             path=(Path(tmp)/'copy.iso').resolve()
             neighbor=self.image(path)
             self.assertEqual(r.runtime_image_status(path),'retail')
@@ -163,7 +183,7 @@ class RetailTests(unittest.TestCase):
                     if not failed and hit:
                         failed=True;real(fd,data[:3],off);return 3
                     return real(fd,data,off)
-                with patch.object(io,'pwrite',side_effect=fail),self.assertRaises(ValueError):r.runtime_apply_in_place(path)
+                with patch.object(io,'pwrite',new=fail),self.assertRaises(ValueError):r.runtime_apply_in_place(path)
                 self.assertTrue(failed,mode);self.assertEqual(path.stat().st_size,before_size)
                 with path.open('rb') as f:self.assertEqual(hashlib.file_digest(f,'sha256').hexdigest(),before_sha,mode)
             os.replace(path,path.with_suffix('.closed'))
