@@ -818,7 +818,7 @@ class BuildPanel(QWidget):
             self.preset_note.setText("Your current choices were kept; press a preset button to replace them.")
             return False
         self.apply_preset(name)
-        self.preset_note.setText(f"{mod_build.PRESET_TITLES.get(name, name)} selected; review changes below. "
+        self.preset_note.setText(f"{PRESET_LABELS.get(name, name)} selected; review changes below. "
                                  + self.preset_note.text())
         return True
 
@@ -842,7 +842,7 @@ class BuildPanel(QWidget):
                 skipped.append(key)
                 continue
             box.setChecked(want)
-            if want:
+            if want and key not in ("realistic_flight", "arc_by_distance"):
                 applied.append(key)
         self._refresh()
         title = PRESET_LABELS.get(name, name)
