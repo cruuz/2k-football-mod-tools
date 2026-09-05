@@ -43,6 +43,7 @@ from .contract import (
     Lane,
     Plan,
     Receipt,
+    ReadOnlyLane,
     Refusal,
     Verdict,
     lane_page,
@@ -59,6 +60,15 @@ PAYLOAD_KEYS = frozenset({
     "raw_bytes", "retail_bytes", "rgba_bytes",
 })
 _MAX_COMPARE_BYTES = 64 * 1024 * 1024
+#: Classifications whose lanes the shell draws controls for.  Mirrors
+#: ``studio_qt.OFFERED_CLASSIFICATIONS`` and is restated here so the static
+#: half of the harness needs no Qt to know which lanes owe an editor.
+_OFFERED_CLASSIFICATIONS = (
+    "runtime-proved",
+    "offline-writer-proved",
+    "extract-only",
+    "read-only-mapped",
+)
 #: The QApplication the shell check made, if it had to make one.  Qt requires
 #: exactly one and requires it to outlive every widget, so it is kept here for
 #: the life of the process rather than made and dropped per game.
@@ -430,6 +440,8 @@ def check_shell(game: GameModule) -> list[Check]:
         # application exists (an explicit QT_QPA_PLATFORM still wins).
         os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
         _APPLICATION = QApplication([])
+    from .studio_qt import BuildPage, LanePage, UnavailablePanel, is_offered
+
     dialog = None
     try:
         dialog = GameStudioDialog(game)
@@ -445,6 +457,43 @@ def check_shell(game: GameModule) -> list[Check]:
         out.record("studio_places_every_lane",
                    placed == {lane.lane_id for lane in game.lanes},
                    f"{len(placed)} of {len(game.lanes)} lanes on a page")
+
+        # A page with nothing to offer must still say something.  A silent
+        # empty panel is the one outcome the page rule exists to prevent.
+        silent = [page_id for page_id in expected
+                  if isinstance(dialog.page_widget(page_id), UnavailablePanel)
+                  and not dialog.page_widget(page_id).sentence.text().strip()]
+        unavailable = sum(1 for page_id in expected
+                          if isinstance(dialog.page_widget(page_id), UnavailablePanel))
+        out.record("studio_unavailable_pages_say_why", not silent,
+                   f"{unavailable} page(s) with no lane, each with a sentence" if not silent
+                   else f"silent pages: {silent}")
+
+        out.record("studio_has_a_build_page",
+                   isinstance(dialog.page_widget("build"), BuildPage),
+                   "Build & Share is a page, not a button on another one")
+
+        offered = [lane for lane in game.lanes if is_offered(lane)]
+        without = [lane.lane_id for lane in offered
+                   if not isinstance(dialog.lane_pages.get(lane.lane_id), LanePage)]
+        out.record("studio_draws_every_offered_lane", not without,
+                   f"{len(offered)} lane page(s)" if not without
+                   else f"lanes with no page: {without}")
+        editorless = [lane_id for lane_id, page in dialog.lane_pages.items()
+                      if getattr(page, "editor", None) is None]
+        out.record("studio_lane_pages_have_an_editor", not editorless,
+                   "each lane page builds its editor from the target's fields"
+                   if not editorless else f"lanes with no editor: {editorless}")
+
+        # Every window except the studio, listed where that game's windows are.
+        others = [window.window_id for window in game.windows
+                  if window.window_id != game.studio_window]
+        listed = [action.text() for action in dialog.windows_menu.actions()]
+        expected_labels = [window.menu_label for window in game.windows
+                           if window.window_id != game.studio_window]
+        out.record("studio_windows_menu_lists_the_side_windows",
+                   listed == (expected_labels or ["No other windows in this studio"]),
+                   f"{len(others)} side window(s): " + (", ".join(listed) or "none"))
     except Exception as exc:  # a shell that cannot draw this module is a failure, not a crash
         out.record("studio_opens", False, f"{exc.__class__.__name__}: {exc}")
     finally:
@@ -470,6 +519,67 @@ def _changed_offsets(source: Path, destination: Path) -> Optional[set[int]]:
     left = source.read_bytes()
     right = destination.read_bytes()
     return {index for index, pair in enumerate(zip(left, right)) if pair[0] != pair[1]}
+
+
+def check_target_fields(lane: Lane, catalogue: Catalogue) -> list[Check]:
+    """A lane's targets say what an editor should draw, and the shell draws it.
+
+    ``Target.fields`` is the shape a shell renders; ``check_edit`` stays the
+    rule.  A writer whose targets declare no fields would give the generic
+    lane page nothing to show, so it is a failure here rather than an empty
+    panel a user has to guess at.  The rendering half runs offscreen and
+    SKIPs, by name, where PyQt5 is absent.
+    """
+
+    out = _Collector(f"lane.{lane.lane_id}")
+    with_fields = [target for target in catalogue.targets if target.fields]
+    read_only = bool(getattr(lane, "read_only", False))
+    if lane.classification not in _OFFERED_CLASSIFICATIONS:
+        # The studio draws no editor for a lane whose evidence does not let it
+        # be offered -- its page states the classification and the registry's
+        # reason instead -- so there is nothing here to fill.  The check comes
+        # back the day the row earns a classification the shell offers.
+        out.skip("targets_declare_fields",
+                 f"classified {lane.classification}; the studio states the reason rather "
+                 "than drawing an editor")
+        return out.checks
+    out.record("targets_declare_fields", bool(with_fields) or not catalogue.targets,
+               f"{len(with_fields)} of {len(catalogue.targets)} targets carry fields"
+               if with_fields else
+               "no target names a Field, so the studio's editor would be empty; give each "
+               "target the values it takes")
+    if not with_fields:
+        return out.checks
+    sample = with_fields[0]
+    if read_only:
+        return out.checks
+    try:
+        from PyQt5.QtWidgets import QApplication
+
+        from .studio_qt import FieldEditor
+    except ImportError as exc:
+        out.skip("fields_render", f"PyQt5 is not installed here ({exc})")
+        return out.checks
+    import os
+
+    global _APPLICATION
+    if QApplication.instance() is None:
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        _APPLICATION = QApplication([])
+    editor = FieldEditor()
+    try:
+        editor.set_fields(sample.fields)
+        drawn = set(editor.field_keys())
+        missing = [item.key for item in sample.fields if item.key not in drawn]
+        out.record("fields_render", not missing,
+                   f"{len(drawn)} control(s) for {sample.key}: "
+                   + ", ".join(sorted(item.kind for item in sample.fields))
+                   if not missing else f"fields with no control: {missing}")
+    except Exception as exc:
+        out.record("fields_render", False, f"{exc.__class__.__name__}: {exc}")
+    finally:
+        editor.deleteLater()
+    return out.checks
 
 
 def check_lane_behaviour(game: GameModule, lane: Lane, work_dir: Path) -> list[Check]:
@@ -499,6 +609,27 @@ def check_lane_behaviour(game: GameModule, lane: Lane, work_dir: Path) -> list[C
                f"{len(catalogue.targets)} targets, schema {catalogue.schema}")
     out.record("catalogue_is_retail_free", not contains_payload(dict(catalogue.document)),
                "no payload keys, byte arrays or data URIs")
+    out.checks.extend(check_target_fields(lane, catalogue))
+
+    if isinstance(lane, ReadOnlyLane) and lane.read_only:
+        # A read-only lane's whole promise is the three things it will not do.
+        # Proving it never writes is proving those three refusals, not driving
+        # a build it is contracted to refuse.
+        recipe = lane.compose_recipe(())
+        out.expect_refusal("read_only_refuses_plan",
+                           lambda: lane.plan(source, recipe, catalogue))
+        out.expect_refusal("read_only_refuses_build",
+                           lambda: lane.build(source, room / "never.out", recipe, catalogue,
+                                              work_dir=room))
+        out.record("read_only_wrote_nothing",
+                   not (room / "never.out").exists() and _sha256(source) == source_before,
+                   "no destination created, source byte-identical")
+        editable = [target.key for target in catalogue.targets
+                    if any(not item.read_only for item in target.fields)]
+        out.record("read_only_targets_offer_no_edit", not editable,
+                   "every field on every target is read-only" if not editable
+                   else f"targets offering an edit: {editable[:5]}")
+        return out.checks
 
     ok, edits = out.attempt("conformance_edits", lambda: tuple(lane.conformance_edits(catalogue)))
     if not ok or not out.record("conformance_edits_nonempty", bool(edits), f"{len(edits)} edits"):
@@ -664,6 +795,7 @@ __all__ = [
     "PAYLOAD_KEYS",
     "REPO_ROOT",
     "check_boundary",
+    "check_target_fields",
     "check_lane_behaviour",
     "check_manifest",
     "check_module",
