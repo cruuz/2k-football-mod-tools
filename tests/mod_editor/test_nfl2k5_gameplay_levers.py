@@ -90,7 +90,9 @@ class RetailTests(unittest.TestCase):
 
     def test_new_allocations_append_after_the_beta61_reservations(self):
         from tests.nfl2k5_allocator_stack import REQUESTS
-        base_requests = tuple(r for r in REQUESTS if r[0] not in {m.OWNER for m in MODULES})
+        # Beta-61 owners keep their addresses; every beta-62 owner sorts after them.
+        self.assertTrue({m.OWNER for m in MODULES} <= space.R62_OWNERS)
+        base_requests = tuple(r for r in REQUESTS if r[0] not in space.R62_OWNERS)
         old = {a["owner"] + a["kind"]: a for a in space._allocations(base_requests)}
         new = {a["owner"] + a["kind"]: a for a in space._allocations(REQUESTS)}
         for key, allocation in old.items():

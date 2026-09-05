@@ -80,6 +80,11 @@ def _requests(requests):
     return out
 
 
+# Owners first allocated in beta 62 sort after the complete beta-61 union so
+# every shipped owner keeps its address; they may move relative to each other.
+R62_OWNERS = frozenset({"nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning"})
+
+
 def _allocations(requests):
     cursors = {"code": 0, "data": 0}
     out = []
@@ -88,8 +93,7 @@ def _allocations(requests):
     new_owners = {"nfl2k5_defensive_try", "nfl2k5_momentum", "nfl2k5_zone_drop"}
     # r62 owners append after the complete beta-61 union, keeping every
     # existing owner at its reserved address when the union is rebuilt.
-    r62_owners = {"nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning"}
-    ordered = sorted(_requests(requests), key=lambda r: (2 if r[0] in r62_owners else int(r[0] in new_owners), r))
+    ordered = sorted(_requests(requests), key=lambda r: (2 if r[0] in R62_OWNERS else int(r[0] in new_owners), r))
     for owner, kind, size, align in ordered:
         offset = (cursors[kind] + align - 1) & -align
         if offset // PAGE != (offset + size - 1) // PAGE:

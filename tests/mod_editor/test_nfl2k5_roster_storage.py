@@ -241,10 +241,13 @@ class PatchTests(unittest.TestCase):
 
     def test_complete_union_keeps_existing_allocations_and_both_orders(self):
         from tests.nfl2k5_allocator_stack import REQUESTS, compose
-        previous = tuple(r for r in REQUESTS if r[0] != storage.OWNER)
+        # Every beta-61 owner keeps its address; the beta-62 owners (this one included)
+        # are allocated together after them and may move relative to each other.
+        previous = tuple(r for r in REQUESTS if r[0] not in space.R62_OWNERS)
         old = space._allocations(previous)
         new = space._allocations(REQUESTS)
-        self.assertEqual([a for a in new if a['owner'] != storage.OWNER], old)
+        self.assertEqual([a for a in new if a['owner'] not in space.R62_OWNERS], old)
+        self.assertIn(storage.OWNER, space.R62_OWNERS)
         forward, _ = compose(self.retail)
         backward, _ = compose(self.retail, reverse=True)
         self.assertEqual(forward, backward)
