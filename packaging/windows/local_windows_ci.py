@@ -267,13 +267,35 @@ def kill_group(process: subprocess.Popen) -> None:
     process.wait()
 
 
+def _pump(stream, output, lock: threading.Lock) -> None:
+    # Wine's python.exe dies in init_sys_streams ("[WinError 6] Invalid handle")
+    # when its stdout is a regular file, and runs fine on a pipe (verified
+    # 2026-09-05 on wine-9.0 with the 3.12.10 embeddable build). So every child
+    # writes to a pipe and this thread copies it into the log file. Reading to
+    # EOF also cannot block forever: the timeout path kills the whole process
+    # group, which closes every write end a grandchild may still hold.
+    with stream:
+        for chunk in iter(lambda: stream.read(4096), b""):
+            with lock:
+                output.write(chunk.decode("utf-8", "replace"))
+                output.flush()
+
+
 def run_process(command: list[str], env: dict[str, str], cwd: Path, log: Path,
                 timeout: float, pidfile: Path | None = None) -> int:
     with log.open("w", encoding="utf-8") as output:
         if _cancelled.is_set():
             raise KeyboardInterrupt
         process = subprocess.Popen(command, cwd=cwd, env=env, stdin=subprocess.DEVNULL,
-                                   stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
+        lock = threading.Lock()
+        pump = threading.Thread(target=_pump, args=(process.stdout, output, lock), daemon=True)
+        pump.start()
+
+        def note(text: str) -> None:
+            with lock:
+                output.write(text)
+                output.flush()
         try:
             deadline = time.monotonic() + timeout
             while True:
@@ -283,9 +305,11 @@ def run_process(command: list[str], env: dict[str, str], cwd: Path, log: Path,
                 if remaining <= 0:
                     raise subprocess.TimeoutExpired(command, timeout)
                 try:
-                    return process.wait(timeout=min(remaining, 0.2))
+                    rc = process.wait(timeout=min(remaining, 0.2))
                 except subprocess.TimeoutExpired:
-                    pass
+                    continue
+                pump.join(timeout=30)
+                return rc
         except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
             # taskkill covers Win32 descendants; killpg covers the Unix Wine
             # launcher and same-group children. Never kill a shared wineserver.
@@ -300,17 +324,18 @@ def run_process(command: list[str], env: dict[str, str], cwd: Path, log: Path,
                         try:
                             kill_rc = killer.wait(timeout=30)
                             if kill_rc:
-                                output.write(f"taskkill failed (rc={kill_rc}); killing Unix process group\n")
+                                note(f"taskkill failed (rc={kill_rc}); killing Unix process group\n")
                         except subprocess.TimeoutExpired:
-                            output.write("taskkill timed out; killing Unix process group\n")
+                            note("taskkill timed out; killing Unix process group\n")
                         finally:
                             kill_group(killer)
                     except OSError as exc:
-                        output.write(f"taskkill could not start: {exc}\n")
+                        note(f"taskkill could not start: {exc}\n")
             kill_group(process)
+            pump.join(timeout=10)
             if isinstance(error, KeyboardInterrupt):
                 raise
-            output.write(f"\nTIMED OUT after {timeout:g}s (killed by local CI per-file timeout)\n")
+            note(f"\nTIMED OUT after {timeout:g}s (killed by local CI per-file timeout)\n")
             return 124
 
 
