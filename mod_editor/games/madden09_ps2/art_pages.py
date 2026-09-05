@@ -50,7 +50,7 @@ the plan and the page all say so.
 
 Run one without a window::
 
-    python3 -m mod_editor.games.madden09_ps2.art_pages --page stadiums \
+    python3 -m mod_editor.games.madden09_ps2.art_pages --page stadiums \\
         --source DISC.iso [--out catalogue.json] [--export DIR --limit 8]
 
 **Evidence tags.**  **[M]** measured on the retail SLUS-21770 disc;
