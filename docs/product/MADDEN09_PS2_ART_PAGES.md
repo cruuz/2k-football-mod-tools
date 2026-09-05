@@ -273,6 +273,11 @@ Wall clock on one desktop, pure Python, warm page cache:
 | Presentation | 50 | 8,041 | 7,678 | 19.3 |
 | Names, Numbers & Faces | 4 | 4,611 | 4,611 | 41.8 |
 
+The 48 `UIS_*.DAT` containers on their own — 113,737,488 bytes, 8,003 members,
+7,662 of them `MMAP`, 6,452 decodable images — catalogue in **9.8 to 11.1
+seconds** over two runs [M]. The rest of the presentation page's time is
+`LOADDATA.DAT`: sixteen `LZH1` members that unpack to 640x480 sheets.
+
 **How the presentation page walks 8,041 members in twenty seconds.** A member
 is classified from its **first 32 bytes** — `TerfContainer.member_format` asks
 the codec for exactly that many and the codec stops there — and only a member
