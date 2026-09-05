@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import struct
 import sys
 from typing import Any, Callable, Dict, Iterator, List, Optional, Sequence, Tuple
 
@@ -103,6 +104,91 @@ GAME_DATA_CONTAINER = "GAMEDATA.DAT"
 #: The one ``/DATA`` file that is a bare EA TDB rather than a ``TERF``
 #: container [M]: it carries no chunk chain and is parsed directly.
 STREAM_DATABASE_FILE = "STRMDATA.DB"
+
+# --------------------------------------------------------------------------
+# The preload caches
+# --------------------------------------------------------------------------
+#
+# ``/DATA/GAME.QKL`` and ``/DATA/FE.QKL`` are the game's and the front end's
+# **preload caches**: a ``QL01`` header, a ``FILS`` chunk naming 29 and 28
+# ``/DATA`` files respectively, and a body that carries at least some of those
+# files verbatim -- the first 256 bytes of ``UIS_BANR.DAT``, ``UNIFORMS.DAT``,
+# ``PLYRFACE.DAT``, ``GAMEDATA.DAT``, ``TEMPLATE.DAT`` and ``LOADDATA.DAT``
+# each appear inside the cache that names them [M].  Not every named file
+# does: ``STADATA.DAT`` is named in both and its head is in neither [M], so
+# what a cache carries of a file it names is **not established** [A].
+#
+# That is enough for the rule a writer needs.  A lane that rewrites a file the
+# cache names would leave a second copy of it behind that nobody updated, and
+# which of the two the game reads is exactly the thing not established -- so
+# **a file either cache names is not written**, and the refusal says so.  The
+# files this module's writing lanes touch -- ``DB_TEAMS.DAT`` and the six
+# story and online-string containers -- are named in neither [M].
+
+#: The preload caches, in the order a refusal names them.
+PRELOAD_FILES = ("GAME.QKL", "FE.QKL")
+
+#: The header and the chunk that lists what a cache holds.
+QKL_MAGIC = b"QL01"
+QKL_FILE_LIST = b"FILS"
+
+#: One name in that list: a NUL-padded file name in a fixed-width slot [M].
+QKL_NAME_STRIDE = 48
+
+#: A sanity ceiling on the count the chunk declares, so a misread header asks
+#: for a list rather than a gigabyte.
+QKL_MAX_NAMES = 4096
+
+
+def preload_names(image: Any) -> Dict[str, Tuple[str, ...]]:
+    """Which ``/DATA`` files each preload cache names, upper-cased.
+
+    ``{"UNIFORMS.DAT": ("GAME.QKL", "FE.QKL"), ...}``.  A cache that is not on
+    the image, or whose header this does not recognise, contributes nothing --
+    an image without them is a different image, not a broken read -- so a
+    caller that needs the rule to hold anyway keeps its own measured list as
+    well.
+
+    Only the first :data:`PROBE_BYTES` of a cache are read: the list sits in
+    the second chunk, a kilobyte and a half in, and the caches themselves run
+    to 11 MB.
+    """
+
+    found: Dict[str, List[str]] = {}
+    for cache in PRELOAD_FILES:
+        entry = iso_lib.find(image, f"{DATA_DIRECTORY}/{cache}")
+        if entry is None:
+            continue
+        head = _read_extent(image, int(entry.lba), PROBE_BYTES)
+        for name in _preload_names_in(head or b""):
+            found.setdefault(name, []).append(cache)
+    return {name: tuple(caches) for name, caches in sorted(found.items())}
+
+
+def _preload_names_in(head: bytes) -> Tuple[str, ...]:
+    """The file names a ``QL01`` cache's ``FILS`` chunk lists, or nothing."""
+
+    if not head.startswith(QKL_MAGIC) or len(head) < 24:
+        return ()
+    header_length, = struct.unpack_from("<I", head, 4)
+    if not 8 <= header_length <= len(head) - 12:
+        return ()
+    if head[header_length:header_length + 4] != QKL_FILE_LIST:
+        return ()
+    count, = struct.unpack_from("<I", head, header_length + 8)
+    if not 0 < count <= QKL_MAX_NAMES:
+        return ()
+    base = header_length + 12
+    if base + count * QKL_NAME_STRIDE > len(head):
+        return ()
+    out: List[str] = []
+    for index in range(count):
+        raw = head[base + index * QKL_NAME_STRIDE:
+                   base + (index + 1) * QKL_NAME_STRIDE]
+        name = raw.split(b"\x00", 1)[0].decode("latin-1", "replace").strip()
+        if name:
+            out.append(name.upper())
+    return tuple(out)
 
 
 class DiscError(Refusal):
@@ -644,6 +730,11 @@ __all__ = [
     "KIND_UNREAD",
     "PLAYER_FACE_CONTAINER",
     "PROBE_BYTES",
+    "PRELOAD_FILES",
+    "QKL_FILE_LIST",
+    "QKL_MAGIC",
+    "QKL_MAX_NAMES",
+    "QKL_NAME_STRIDE",
     "RETAIL_BOOT_ELF_SHA256",
     "RETAIL_EDITION",
     "RETAIL_ELF_CRC",
@@ -664,6 +755,7 @@ __all__ = [
     "member_uncached",
     "members_of_format",
     "open_disc",
+    "preload_names",
     "read_file",
     "synthetic_indices",
     "synthetic_mmap",
