@@ -722,7 +722,7 @@ the table entirely. Revised order and verdicts:
 | # | surface | parity evidence | verdict | in flight |
 |---|---|---|---|---|
 | 1 | **Text / menus** | `STRG`/`SITU`/`CRED`/`TRIV` byte-size-identical | **port** — unknown: UTF-16LE + pointer encoding on PS2 | `p2-text` |
-| 2 | **Playbooks / formations** | 37 `PLAY` + 5 `DRCT` identical | **port, gated** on `validate_play` over PS2 PLAY bodies (`nfl2k5_play_codec.py` ports Xbox-VA consumers) | `p2-playbooks` (research) |
+| 2 | **Playbooks / formations** | 37 `PLAY` identical (names, sizes, content-id hashes in order); Xbox parser reads 37/37 unchanged; encoders reproduce 101,761/101,761 descriptors byte-for-byte; codec tables present verbatim in `SLUS_209.19`; chunks **uncompressed** | **PORT — proven by execution**: real writer accepted 29/37 books, refused 8 on the 270-play cap exactly as Xbox. 4–6 d, driver is plumbing | `p2-playbooks` (implementing) |
 | 3 | **Colors** (facemask/turtleneck words) | 634 `Unif` identical | **port** — same-size in-place words, ideal fixed-allocation case | `p2-colors-rosters` |
 | 4 | **Disc rosters** | 76 `ROST` identical; `tools/nfl_roster.py` already parses PS2 ROST (save editor) | **port** — reuse the save writer's fixed-allocation field edits | `p2-colors-rosters` |
 | 5 | **Stadiums / geometry** | table strides known; **vertex payload layout unknown**; 312/4,139 same-size | **new research** first, port only if the lanes match | `p2-stadiums` (told) |
