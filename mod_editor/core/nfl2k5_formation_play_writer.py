@@ -463,6 +463,7 @@ def compile_formation_play_creations(
     formation_requests: Iterable[FormationCreateRequest | Mapping[str, object]] = (),
     play_requests: Iterable[PlayCreateRequest | Mapping[str, object]] = (),
     link_requests: Iterable[FormationLinkRequest | Mapping[str, object]] = (),
+    *, _seven_on_seven_source: bytes | None = None,
 ) -> CompiledFormationPlayResource:
     # Normalize requests
     norm_formations = tuple(
@@ -476,6 +477,20 @@ def compile_formation_play_creations(
         r if isinstance(r, FormationLinkRequest) else link_request_from_mapping(r)
         for r in link_requests
     )
+    pinned_seven = False
+    if _seven_on_seven_source is not None:
+        # The exception is a complete, pinned built-in transformation. Neither
+        # a request flag nor an arbitrary recoded donor authorizes personnel edits.
+        from . import nfl2k5_seven_on_seven_book as seven
+        if hashlib.sha256(_seven_on_seven_source).hexdigest() not in seven.KNOWN_SOURCE_STATES:
+            raise ValidationError("Seven-on-seven needs its pinned practice source")
+        expected_raw, categories = seven._add_categories(_seven_on_seven_source)
+        expected_book = parse_playbook_resource(expected_raw, asset_id=seven.ASSET_ID)
+        formations, plays = seven._requests(categories, {p.index: p.flags_or_id for p in expected_book.plays})
+        if (raw_resource != expected_raw or norm_formations != tuple(formations)
+                or norm_plays != tuple(plays) or norm_links):
+            raise ValidationError("Seven-on-seven requests differ from the pinned personnel transformation")
+        pinned_seven = True
     if not norm_formations and not norm_plays and not norm_links:
         raise ValidationError("Choose at least one formation or play to create.")
     # All requests must target same asset
@@ -700,7 +715,7 @@ def compile_formation_play_creations(
     from . import nfl2k5_play_library as lib
     for req in norm_formations:
         rec = lib.formation_record(body, req.donor_formation_index)
-        if 4 <= rec.type_code <= 7:
+        if 4 <= rec.type_code <= 7 and not pinned_seven:
             info = lib.defense_personnel(source, body, req.donor_formation_index)
             if req.category_index is not None and req.category_index != info['category_index']:
                 raise ValidationError("Defense personnel changes need a matching formation donor and package permutation")
@@ -996,7 +1011,9 @@ def compile_formation_play_creations(
     affected |= {i for i in new_formation_indices
                  if 4 <= lib.formation_record(rebuilt[RESOURCE_HEADER_SIZE:], i).type_code <= 7}
     try:
-        defense_audit = lib.defense_menu_audit(reparsed, rebuilt[RESOURCE_HEADER_SIZE:], sorted(affected))
+        defense_audit = ([{"transformation": "pinned_seven_on_seven", "formation_indices": sorted(affected)}]
+                         if pinned_seven else lib.defense_menu_audit(
+                             reparsed, rebuilt[RESOURCE_HEADER_SIZE:], sorted(affected)))
     except ValueError as exc:
         raise ValidationError(str(exc)) from exc
     spy_lookup = []

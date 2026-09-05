@@ -98,8 +98,7 @@ class DefenseQtTests(unittest.TestCase):
             compiled = writer.compile_formation_play_creations(self.resource, frows, requests, links)
             self.assertEqual(compiled.report['spy_intent']['records'][0]['slot'], 5)
 
-    @unittest.expectedFailure
-    def test_create_only_project_reload_pending_project_archive_wiring(self):
+    def test_create_only_project_reload_preserves_authored_content(self):
         # project_archive.py is outside this job's owned files. WIRING.md gives
         # the two missing predicates; leave a live regression for integration.
         from mod_editor.studio.project_archive import save_project_archive, load_project_archive

@@ -210,7 +210,7 @@ def _compile_model(payload: bytes, target: Target, folder: Path) -> tuple[bytes,
     all_positions = [edits.get(i, point) for i, point in enumerate(positions)]
     accessor["min"] = [min(p[a] for p in all_positions) for a in range(3)]
     accessor["max"] = [max(p[a] for p in all_positions) for a in range(3)]
-    exported.gltf_path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+    exported.gltf_path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8", newline="\n")
     compiled = models.compile_import(source, target.key, exported.gltf_path,
                                     write_normals=False, write_uvs=False, write_colours=False,
                                     allow_rescale=False)
@@ -379,7 +379,7 @@ def main() -> None:
         (folder / (key + ".span")).write_bytes(span)
     txtr = models._tools_module("nfl_txtr")
     (folder / "detroit-away-cap.png").write_bytes(txtr.encode_rgba_png(256, 256, matte_cap_rgba()))
-    (folder / "receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (folder / "receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(f"{EVIDENCE}: wrote three fixed spans and receipt to {folder}")
 
 

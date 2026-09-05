@@ -110,6 +110,9 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     for _label, va, retail, _patched in seven.sites():      # the 7-on-7 practice sites (all in .text)
         off = TEXT_RAW + (va - TEXT_VA)
         buf[off: off + len(retail)] = retail
+    from mod_editor.core import nfl2k5_season_cap as season_cap
+    off = TEXT_RAW + season_cap.CONTEXT_VA - TEXT_VA
+    buf[off:off + len(season_cap.RETAIL_CONTEXT)] = season_cap.RETAIL_CONTEXT
     for name, curve in tt.CURVES.items():
         pairs = (curves or {}).get(name, curve.retail)
         blob = curve.encode(pairs)

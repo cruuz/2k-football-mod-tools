@@ -352,7 +352,8 @@ def build_replacement(raw: bytes) -> tuple[bytes, dict[str, Any]]:
     source = parse_playbook_resource(with_categories, asset_id=ASSET_ID)
     donor_flags = {p.index: p.flags_or_id for p in source.plays}
     formation_requests, play_requests = _requests(category_indices, donor_flags)
-    compiled = compile_formation_play_creations(with_categories, formation_requests, play_requests)
+    compiled = compile_formation_play_creations(
+        with_categories, formation_requests, play_requests, _seven_on_seven_source=raw)
     body = bytearray(compiled.replacement[RESOURCE_HEADER_SIZE:])
     new_formations = list(compiled.new_formation_indices)
     new_plays = list(compiled.new_play_indices)

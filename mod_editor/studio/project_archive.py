@@ -995,6 +995,8 @@ def load_project_archive(
                 and not loaded_annotations
                 and not loaded_uniform_colors
                 and not loaded_play_routes
+                and not loaded_creates
+                and not loaded_links
             ):
                 if empty_marker is not True:
                     raise ValidationError(
