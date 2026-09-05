@@ -15,6 +15,7 @@ from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
     QCheckBox,
     QFileDialog,
+    QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
@@ -30,11 +31,26 @@ from PyQt5.QtWidgets import (
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions, suggest_copy_name
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
 XBE_FILTER = "Xbox executables (default.xbe *.xbe);;All files (*)"
+
+
+PRESET_LABELS = {"softdrink_basic": "Basic", "softdrink_advanced": "Modern", "softdrink_experimental": "Experimental"}
+PRESET_BUTTONS = {"softdrink_basic": "Basic — 2004 fixes",
+                  "softdrink_advanced": "Modern — updated gameplay & season",
+                  "softdrink_experimental": "Experimental — extra changes"}
+PRESET_CAPTIONS = {
+    "softdrink_basic": ("2004 season and rules. Throw/catching fixes, Franchise draft and free agency, CPU returners, "
+                        "kicking power, Player Card team column, Edit Player position and Pro Bowl tab order."),
+    "softdrink_advanced": ("Basic plus acceleration, progression, position changes, modern rules, 2026 season, "
+                           "presentation and other selected changes. Includes changes not yet tested in-game."),
+    "softdrink_experimental": ("Modern plus widescreen, dynamic kickoff alignment and kick laces. "
+                               "Includes changes not yet tested in-game."),
+}
+PRESET_NOTE = "Review the selected changes below. Unavailable or already-installed changes are listed here."
 
 
 class _Signals(QObject):
@@ -122,38 +138,82 @@ class BuildPanel(QWidget):
             "QCheckBox:checked { color: #d8ffe6; font-weight: 600; }"
             "QCheckBox:disabled { color: #6b7385; }"
             "QPushButton#presetButton { padding: 8px 14px; font-weight: 600; }")
-        presets = QGroupBox("Start with the SOFTDRINK patch")
+        presets = QGroupBox("Choose a SOFTDRINK preset")
         pr = QVBoxLayout(presets)
-        preset_row = QHBoxLayout()
-        self.preset_basic_button = QPushButton("Basic: the 2004 game, just the 2K5 fixes")
-        self.preset_basic_button.setToolTip("Keeps the game in 2004 and ticks only the fixes: throw ceiling 80 with realistic flight, "
-                                            "Catching/Interception sliders, franchise draft and free agency AI (Rookie Report never ranks "
-                                            "FB/K/P in the top 25), real returners, kicking power to ~70 yards for elite legs, the TEAM column on the Player Card. "
-                                            "Retail kick spots, names, rules and presentation.")
-        self.preset_basic_button.setObjectName("presetButton")
-        self.preset_basic_button.clicked.connect(lambda: self.apply_preset("softdrink_basic"))
-        preset_row.addWidget(self.preset_basic_button)
-        self.preset_advanced_button = QPushButton("Advanced: everything modern")
-        self.preset_advanced_button.setToolTip("Basic plus everything that modernises the game: DE to EDGE, modern kicking (35 / 35 / PAT 15), "
-                                               "modern overtime, acceleration ramp, NFL-shaped progression, arc by distance, the persistent "
-                                               "ESPN scorebug, scheme labels, one-pool positions, the Far-look camera and the 2026 franchise "
-                                               "(disc images take all of it; a bare default.xbe skips the disc-only parts).")
-        self.preset_advanced_button.setObjectName("presetButton")
-        self.preset_advanced_button.clicked.connect(lambda: self.apply_preset("softdrink_advanced"))
-        preset_row.addWidget(self.preset_advanced_button)
-        self.preset_experimental_button = QPushButton("Experimental: advanced + widescreen + rough edges")
-        self.preset_experimental_button.setToolTip("Advanced plus the toggles still being witnessed: widescreen hor+ 16:9 (set xemu Display "
-                                                   "aspect to 16x9) and the dynamic-kickoff line-up (disc images only).")
-        self.preset_experimental_button.setObjectName("presetButton")
-        self.preset_experimental_button.clicked.connect(lambda: self.apply_preset("softdrink_experimental"))
-        preset_row.addWidget(self.preset_experimental_button)
-        preset_row.addStretch(1)
-        pr.addLayout(preset_row)
-        self.preset_note = QLabel("Choose a source first; a preset only ticks what that source can still take, and you can untick anything after.")
+        preset_grid = QGridLayout()
+        preset_grid.setHorizontalSpacing(14)
+        self.preset_basic_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_basic"]))
+        self.preset_advanced_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_advanced"]))
+        self.preset_experimental_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_experimental"]))
+        self.preset_captions: dict[str, QLabel] = {}
+        for column, (name, button) in enumerate((("softdrink_basic", self.preset_basic_button),
+                                                 ("softdrink_advanced", self.preset_advanced_button),
+                                                 ("softdrink_experimental", self.preset_experimental_button))):
+            button.setObjectName("presetButton")
+            button.setToolTip(PRESET_CAPTIONS[name])
+            button.setAccessibleName(f"{PRESET_LABELS[name]} preset")
+            button.setAccessibleDescription(PRESET_CAPTIONS[name])
+            button.clicked.connect(lambda _c=False, key=name: self.apply_preset(key))
+            caption = QLabel(PRESET_CAPTIONS[name])
+            caption.setObjectName("throwMuted")
+            caption.setWordWrap(True)
+            caption.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+            self.preset_captions[name] = caption
+            preset_grid.addWidget(button, 0, column)
+            preset_grid.addWidget(caption, 1, column)
+            preset_grid.setColumnStretch(column, 1)
+        pr.addLayout(preset_grid)
+        self.preset_note = QLabel(PRESET_NOTE)
         self.preset_note.setObjectName("throwMuted")
         self.preset_note.setWordWrap(True)
         pr.addWidget(self.preset_note)
         root.addWidget(presets)
+
+        # The disc, the copy and the button come BEFORE the long option list, so the one
+        # thing the first-run path needs is never off-screen (BS-03 / BS-10).
+        make = QGroupBox("Make my disc")
+        mk = QVBoxLayout(make)
+        out = QHBoxLayout()
+        self.target_caption = QLabel("Save disc copy as")
+        out.addWidget(self.target_caption)
+        self.target_field = QLineEdit()
+        self.target_field.setPlaceholderText("Where the new disc goes (a new file; suggested beside your disc)")
+        out.addWidget(self.target_field, 1)
+        self.target_button = QPushButton("Choose…")
+        self.target_button.clicked.connect(self._choose_target)
+        out.addWidget(self.target_button)
+        self.target_field.textEdited.connect(lambda _t: self._user_target())
+        self.target_field.textChanged.connect(lambda _t: self._refresh())
+        mk.addLayout(out)
+        self.summary_label = QLabel("Selected: nothing yet.")
+        self.summary_label.setObjectName("throwMuted")
+        self.summary_label.setWordWrap(True)
+        mk.addWidget(self.summary_label)
+        actions = QHBoxLayout()
+        self.build_button = QPushButton("Make my disc")
+        self.build_button.setObjectName("primaryButton")
+        self.build_button.clicked.connect(self._build)
+        actions.addWidget(self.build_button)
+        self.blocker_label = QLabel("")
+        self.blocker_label.setObjectName("throwMuted")
+        self.blocker_label.setWordWrap(True)
+        self.blocker_label.setAccessibleName("Why Make my disc is unavailable")
+        actions.addWidget(self.blocker_label, 1)
+        mk.addLayout(actions)
+        prog = QHBoxLayout()
+        self.progress_label = QLabel("")
+        self.progress_label.setObjectName("throwMuted")
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 0)
+        self.progress_bar.hide()
+        prog.addWidget(self.progress_label, 1)
+        prog.addWidget(self.progress_bar)
+        mk.addLayout(prog)
+        self.status_label = QLabel("")
+        self.status_label.setWordWrap(True)
+        self.status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        mk.addWidget(self.status_label)
+        root.addWidget(make)
 
         gameplay = QGroupBox("Gameplay")
         g = QVBoxLayout(gameplay)
@@ -302,43 +362,18 @@ class BuildPanel(QWidget):
         pl.addWidget(self.commentary_label)
         root.addWidget(pres)
 
-        out = QHBoxLayout()
-        self.target_caption = QLabel("Save disc copy as")
-        out.addWidget(self.target_caption)
-        self.target_field = QLineEdit()
-        out.addWidget(self.target_field, 1)
-        self.target_button = QPushButton("Choose…")
-        self.target_button.clicked.connect(self._choose_target)
-        out.addWidget(self.target_button)
-        self.target_field.textEdited.connect(lambda _t: self._user_target())
-        root.addLayout(out)
-
-        actions = QHBoxLayout()
-        self.build_button = QPushButton("Make my disc")
-        self.build_button.setObjectName("primaryButton")
-        self.build_button.clicked.connect(self._build)
-        actions.addWidget(self.build_button)
-        actions.addStretch(1)
-        root.addLayout(actions)
-        prog = QHBoxLayout()
-        self.progress_label = QLabel("")
-        self.progress_label.setObjectName("throwMuted")
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setRange(0, 0)
-        self.progress_bar.hide()
-        prog.addWidget(self.progress_label, 1)
-        prog.addWidget(self.progress_bar)
-        root.addLayout(prog)
-        self.status_label = QLabel("")
-        self.status_label.setWordWrap(True)
-        root.addWidget(self.status_label)
         root.addStretch(1)
 
-        for box in (self.throw_check, self.catch_check, self.accel_check, self.draft_check,
-                    self.returner_check, self.progression_check, self.edge_check, self.scorebug_check):
+        # Every input feeds one refresh (M03): a lone camera tick enables the button, and a
+        # ticked option whose required file is missing names that file instead of vanishing.
+        for box in self.findChildren(QCheckBox):
             box.toggled.connect(lambda _c: self._refresh())
+        self.ceiling_spin.valueChanged.connect(lambda _v: self._refresh())
+        for field in (self.team_history_field, self.career_stats_field, self.prospect_names_field, self.roster_edits_field):
+            field.textChanged.connect(lambda _t: self._refresh())
         self.commentary: list[mod_build.CommentarySwap] = []
         self.star_players: list[str] = []
+        self._refresh()
 
     # ------------------------------------------------------------- state
     def begin_reading(self, source: Path | str) -> None:
@@ -519,13 +554,50 @@ class BuildPanel(QWidget):
             if want:
                 applied.append(key)
         self._refresh()
-        title = mod_build.PRESET_TITLES.get(name, name)
+        title = PRESET_LABELS.get(name, name)
+        tested = ("" if name == "softdrink_basic"
+                  else " Includes experimental changes not yet tested in-game.")
         if skipped:
-            self.preset_note.setText(f"{title}: ticked {len(applied)}; not available on this source: "
-                                     + ", ".join(skipped) + " (already applied, foreign bytes, or needs a disc image).")
+            reasons = "; ".join(f"{self._short_label(key)} ({self._skip_reason(key)})" for key in skipped)
+            self.preset_note.setText(f"{title} preset: ticked {len(applied)} changes; not available on this source: "
+                                     f"{reasons}.{tested} Untick anything you do not want, then Make my disc.")
         else:
-            self.preset_note.setText(f"{title}: ticked {len(applied)} patches. Untick anything you do not want, then build.")
+            self.preset_note.setText(f"{title} preset: ticked {len(applied)} changes.{tested} "
+                                     "Untick anything you do not want, then Make my disc.")
         return {"applied": applied, "skipped": skipped}
+
+    def _short_label(self, key: str) -> str:
+        box = self._boxes().get(key)
+        return box.text().replace("&&", "&") if box is not None else key
+
+    def _skip_reason(self, key: str) -> str:
+        state = str((self._state or {}).get(key))
+        if not self._available.get(key, True):
+            return "not available in this release"
+        if state == "applied":
+            return "already installed"
+        if state == "foreign":
+            return "unrecognized source data"
+        return "full disc required"
+
+    def _boxes(self) -> dict[str, QCheckBox]:
+        return {
+            "throw": self.throw_check, "catch_slider": self.catch_check, "accel_ramp": self.accel_check,
+            "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check,
+            "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "scheme_labels": self.scheme_labels_check,
+            "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
+            "position_pools": self.position_pools_check, "depth_roles": self.depth_roles_check,
+            "depth_chart_rows": self.depth_chart_rows_check, "kickoff_alignment": self.kickoff_alignment_check,
+            "dynamic_kickoff": self.dynamic_kickoff_check, "season_2026": self.season_check,
+            "widescreen": self.widescreen_check, "overtime": self.overtime_check, "team_column": self.team_column_check,
+            "team_history": self.team_history_check, "career_stats": self.career_stats_check,
+            "prospect_names": self.prospect_names_check, "seven_on_seven": self.seven_on_seven_check,
+            "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
+            "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check,
+            "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
+            "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
+            "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
+        }
 
     def set_star_players(self, tags: list[str], names: list[str] | None = None) -> None:
         """The ★ Star ticks from Text & Rosters: the players the star decal follows."""
@@ -587,12 +659,68 @@ class BuildPanel(QWidget):
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
 
+    def selected_labels(self) -> list[str]:
+        """The short names of every ticked change, in page order."""
+
+        labels = []
+        for key, box in self._boxes().items():
+            if key in ("realistic_flight", "arc_by_distance"):
+                continue
+            if box.isChecked():
+                text = box.text().replace("&&", "&")
+                if key == "throw":
+                    text += f" ({self.ceiling_spin.value()} yd)"
+                labels.append(text)
+        if self.star_players:
+            labels.append(f"star players ({len(self.star_players)})")
+        if self.commentary:
+            labels.append(f"commentary lines ({len(self.commentary)})")
+        return labels
+
+    def blocker(self) -> str:
+        """Why Make my disc is unavailable, or "" when it can run (most blocking first)."""
+
+        if self._task is not None:
+            return "Wait for the current build to finish."
+        if self._reading:
+            return "Reading disc…"
+        source = self.source_field.text().strip()
+        if not source:
+            return "Open your game disc (top right), or choose a disc / default.xbe above."
+        if self._state is None:
+            return "Waiting for the disc to be read."
+        if self.career_stats_check.isChecked() and not self.career_stats_field.text().strip():
+            return "Choose a career stats CSV file."
+        if self.roster_edits_check.isChecked() and not self.roster_edits_field.text().strip():
+            return "Export roster edits on ★ Rosters or choose a JSON file."
+        if not self.has_work():
+            return "Tick at least one change, or press a preset."
+        target = self.target_field.text().strip()
+        if not target:
+            return "Choose where to save the disc."
+        try:
+            same = Path(target).resolve() == Path(source).resolve()
+        except OSError:
+            same = target == source
+        if same:
+            return "Source and output are the same file. Fix: choose a different output file."
+        return ""
+
     def _refresh(self) -> None:
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
         self.realistic_check.setEnabled(self.throw_check.isChecked())
         self.arc_by_distance_check.setEnabled(self.throw_check.isChecked())
-        self.build_button.setEnabled(bool(self.source_field.text()) and bool(self.target_field.text())
-                                     and self.has_work() and self._task is None and not self._reading)
+        labels = self.selected_labels()
+        if labels:
+            shown = ", ".join(labels[:6]) + (f" … (+{len(labels) - 6} more)" if len(labels) > 6 else "")
+            self.summary_label.setText(f"Selected: {len(labels)} change{'s' if len(labels) != 1 else ''} — {shown}.")
+        else:
+            self.summary_label.setText("Selected: nothing yet.")
+        blocker = self.blocker()
+        self.build_button.setEnabled(not blocker)
+        self.blocker_label.setText(blocker)
+        self.build_button.setToolTip(blocker or "Copies the disc and writes the selected changes into the copy (a few minutes).")
+        self.build_button.setAccessibleDescription(self.build_button.toolTip())
 
     # ------------------------------------------------------------ actions
     def _choose_source(self) -> None:
@@ -648,17 +776,40 @@ class BuildPanel(QWidget):
             self._target_generated = False
             self._refresh()
 
+    def confirmation_text(self, plan: mod_build.BuildPlan) -> str:
+        """What the user is about to make: source, output, every selected change and file."""
+
+        is_image = tt.is_disc_image(plan.source)
+        lines = [f"Source (unchanged): {plan.source}",
+                 (f"Replace existing disc copy: {plan.target}" if plan.overwrite
+                  else f"New {'disc' if is_image else 'executable'}: {plan.target}"),
+                 "", "Changes: " + (", ".join(self.selected_labels()) or "none")]
+        files = []
+        if plan.team_history and plan.team_history != "retail":
+            files.append(f"team history CSV: {Path(plan.team_history).name}")
+        if plan.career_stats:
+            files.append(f"career stats CSV: {Path(plan.career_stats).name}")
+        if plan.prospect_names and plan.prospect_names != "modern":
+            files.append(f"prospect names CSV: {Path(plan.prospect_names).name}")
+        if plan.roster_edits:
+            files.append(f"roster edits: {Path(plan.roster_edits).name}")
+        if plan.playbook_packs:
+            files.append(f"playbook packs: {len(plan.playbook_packs)}")
+        if plan.commentary:
+            files.append(f"commentary lines: {len(plan.commentary)}")
+        if plan.player_tags:
+            files.append(f"star players: {len(plan.player_tags)}")
+        if files:
+            lines.append("Files: " + "; ".join(files))
+        lines += ["", "Takes a few minutes. " + XEMU_LINE]
+        return "\n".join(lines)
+
     def _build(self) -> None:
         plan = self.plan()
-        if not self.has_work():
+        if not self.has_work() or self.blocker():
             return
-        answer = QMessageBox.question(
-            self, "Build a patched copy?",
-            f"Source (untouched): {plan.source}\n"
-            + ("REPLACING existing copy: " if plan.overwrite else "New copy: ") + plan.target
-            + "\n\nPatches: " + ", ".join(k for k, v in plan.to_recipe().items() if v is True)
-            + "\n\nxemu-only: the RSA signature stays stale.",
-            QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+        answer = QMessageBox.question(self, "Make my disc?", self.confirmation_text(plan),
+                                      QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
         task = _Task(lambda progress: mod_build.build(plan, progress))
@@ -675,11 +826,13 @@ class BuildPanel(QWidget):
         self.progress_bar.hide()
         self.progress_label.setText("")
         assert isinstance(receipt, dict)
+        target = str(receipt.get("target"))
         steps = ", ".join(str(s.get("step")) for s in receipt.get("steps", []))
-        self.status_label.setText(f"Built {Path(str(receipt.get('target'))).name}: {steps}. Read-back state recorded in the receipt. "
-                                  "Share tab: press Export to turn it into a .2k5patch for others.")
+        self.status_label.setText(f"Disc ready: {target}. Play latest disc in xemu, or open Share → Export mod file.")
         self.built.emit(dict(receipt))
-        QMessageBox.information(self, "Patched copy written", f"{receipt.get('target')}\n\nSteps: {steps}.")
+        QMessageBox.information(self, "Disc ready",
+                                f"{target}\n\nPlay latest disc in xemu (bottom right), or open Share → Export mod file.\n\n"
+                                f"Steps written: {steps}.")
         try:
             self.apply_state(mod_build.inspect(Path(str(receipt.get("target")))))
         except Exception:  # noqa: BLE001

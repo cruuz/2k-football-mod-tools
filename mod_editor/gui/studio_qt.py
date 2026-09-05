@@ -2535,8 +2535,8 @@ class StudioMainWindow(QMainWindow):
         hero = QLabel("Make NFL 2K5 yours.")
         hero.setObjectName("heroTitle")
         sub = QLabel(
-            "Load your own game, replace artwork with familiar PNG files, and "
-            "build a fresh XISO ready for xemu — no hex editor required."
+            "Open your Xbox game disc file, choose patches or edit your roster, then "
+            "save a new copy. You can also replace uniforms and artwork."
         )
         sub.setObjectName("heroSubtitle")
         sub.setWordWrap(True)
@@ -2547,10 +2547,10 @@ class StudioMainWindow(QMainWindow):
         steps = QHBoxLayout()
         steps.setSpacing(12)
         for number, title, body in (
-            ("01", "Load your XISO", "Choose your legally dumped USA Xbox copy. It is indexed once and never changed."),
-            ("02", "Pick an asset", "Browse a team, uniform set, and exact component. Every part shows its required size."),
-            ("03", "Drop in a PNG", "Export a template, edit it in GIMP or Photoshop, then Replace or drag it onto the preview."),
-            ("04", "Save, build, play", "Share a retail-free .2k5mod project or create a separate XISO. Your original stays untouched."),
+            ("1", "Open your game", "Use your ESPN NFL 2K5 USA Xbox disc file (.iso), or open an Xbox save on ★ Rosters."),
+            ("2", "Choose your changes", "Start with SOFTDRINK patches, edit players, or replace artwork."),
+            ("3", "Save a copy", "Use the save or build button for that task. Your original is never changed."),
+            ("4", "Play or share", "Open the disc copy in xemu, or export a mod file from Share."),
         ):
             card = QFrame()
             card.setObjectName("stepCard")
@@ -2564,6 +2564,9 @@ class StudioMainWindow(QMainWindow):
             body_label = QLabel(body)
             body_label.setObjectName("cardBody")
             body_label.setWordWrap(True)
+            body_label.setMinimumWidth(120)
+            card.setMinimumWidth(150)
+            card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
             card_layout.addWidget(number_label)
             card_layout.addWidget(title_label)
             card_layout.addWidget(body_label, 1)
@@ -2572,46 +2575,97 @@ class StudioMainWindow(QMainWindow):
 
         start = QFrame()
         start.setObjectName("callout")
-        start_layout = QHBoxLayout(start)
+        # Text on top, the buttons on their own row: four buttons beside a sentence
+        # forced the page wider than a 1366-px window.
+        start_layout = QVBoxLayout(start)
         start_layout.setContentsMargins(20, 15, 20, 15)
         start_layout.setSpacing(10)
         start_text = QVBoxLayout()
         start_text.setSpacing(2)
-        ready = QLabel("Ready for your first uniform edit?")
+        ready = QLabel("Start here")
         ready.setObjectName("cardTitle")
         ready_sub = QLabel(
-            "Open the XISO now, or browse all 634 known uniform sets before loading it."
+            "Open a game disc file for disc edits. To edit a roster save, go to ★ Rosters."
         )
         ready_sub.setObjectName("cardBody")
+        self.welcome_ready = ready
+        self.welcome_ready_sub = ready_sub
         start_text.addWidget(ready)
         start_text.addWidget(ready_sub)
         start_layout.addLayout(start_text)
-        start_layout.addStretch(1)
-        open_button = QPushButton("Choose XISO")
+        start_buttons = QHBoxLayout()
+        start_buttons.setSpacing(10)
+        # One obvious first click, then the two tasks most people came for.  The roster
+        # route stays enabled without a disc: a Finn user opens an Xbox save there.
+        open_button = QPushButton("Open game disc…")
         open_button.setObjectName("primaryButton")
+        open_button.setToolTip("Open your ESPN NFL 2K5 USA Xbox disc file (.iso). The source file is kept unchanged.")
         open_button.clicked.connect(self._choose_source)
-        browse_button = QPushButton("Browse Uniforms")
+        softdrink_button = QPushButton("Start SOFTDRINK Basic  \u2192")
+        softdrink_button.setObjectName("secondaryButton")
+        softdrink_button.setToolTip("★ Build & Share with the Basic preset ticked: the 2004 game with the 2K5 fixes. "
+                                    "Needs an open disc; you can untick anything before Make my disc.")
+        softdrink_button.clicked.connect(lambda: self._go_to_build_share("softdrink_basic"))
+        rosters_button = QPushButton("Edit rosters  \u2192")
+        rosters_button.setObjectName("secondaryButton")
+        rosters_button.setToolTip("★ Rosters: players, ratings, equipment, contracts and depth order, from the open disc or an Xbox save.")
+        rosters_button.clicked.connect(self._go_to_rosters)
+        browse_button = QPushButton("Browse uniforms")
         browse_button.setObjectName("secondaryButton")
         browse_button.clicked.connect(lambda: self.navigation.setCurrentRow(1))
-        softdrink_button = QPushButton("Start with the SOFTDRINK patch  \u2192")
-        softdrink_button.setObjectName("primaryButton")
-        softdrink_button.setToolTip("Build & Share: one click ticks the SOFTDRINK patch (Basic = the 2004 game with the 2K5 fixes, "
-                                    "Advanced = everything modern, Experimental = widescreen and the rough edges), then Build writes a "
-                                    "patched COPY of your disc.")
-        softdrink_button.clicked.connect(self._go_to_build_share)
-        start_layout.addWidget(browse_button)
-        start_layout.addWidget(softdrink_button)
-        start_layout.addWidget(open_button)
+        self.welcome_open_button = open_button
+        self.welcome_task_buttons = (softdrink_button, rosters_button, browse_button)
+        start_buttons.addWidget(open_button)
+        start_buttons.addWidget(softdrink_button)
+        start_buttons.addWidget(rosters_button)
+        start_buttons.addWidget(browse_button)
+        start_buttons.addStretch(1)
+        start_layout.addLayout(start_buttons)
         outer.addWidget(start)
+        discord = QLabel(
+            f'Stuck? <a href="{update_check.COMMUNITY_DISCORD}">Ask on the Discord</a> '
+            "(also under Help ▸ Join the Discord…)."
+        )
+        discord.setObjectName("cardBody")
+        discord.setTextFormat(Qt.RichText)
+        discord.setOpenExternalLinks(True)
+        discord.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        discord.setAccessibleName("Community help link")
+        outer.addWidget(discord)
         outer.addStretch(1)
         return page
 
-    def _go_to_build_share(self) -> None:
-        """Select the ★ Build & Share navigation entry (Getting Started's SOFTDRINK button)."""
+    def _go_to_rosters(self) -> None:
+        """Select ★ Rosters (Getting Started's Edit rosters button); works without a disc."""
+
+        for row in range(self.navigation.count()):
+            if self.navigation.item(row).data(Qt.UserRole) == "rosters":
+                self.navigation.setCurrentRow(row)
+                return
+
+    def _go_to_build_share(self, preset: str | None = None) -> None:
+        """Select ★ Build & Share; ``preset`` ticks a SOFTDRINK preset for a fresh selection.
+
+        Only the Getting Started button asks for a preset.  It is applied after the disc has
+        been inspected, and only when nothing is ticked yet: ordinary navigation and a set of
+        choices the user already customised are left exactly as they are (BS-15).
+        """
+
         for row in range(self.navigation.count()):
             if self.navigation.item(row).data(Qt.UserRole) == "build_share":
                 self.navigation.setCurrentRow(row)
-                return
+                break
+        if not preset or self._build_panel is None:
+            return
+        if not bool(getattr(self.facade, "source_ready", False)):
+            self._build_panel.preset_note.setText(
+                "Open your game disc first (top right); the Basic preset is ticked once the disc has been read.")
+            self._build_panel.pending_preset = preset
+            return
+        if self._source_inspect_pending:
+            self._build_panel.pending_preset = preset
+            return
+        self._build_panel.apply_preset_if_fresh(preset)
 
     def _build_uniform_page(self, section: ProductCategorySection) -> QWidget:
         page = QWidget()
@@ -3277,7 +3331,7 @@ class StudioMainWindow(QMainWindow):
         layout.addWidget(self.player_asset_list, 1)
 
         self.player_asset_detail = QLabel(
-            "Load your NFL 2K5 XISO, then search for a player."
+            "Open your game disc (top right), then type a player's name."
         )
         self.player_asset_detail.setObjectName("mutedLabel")
         self.player_asset_detail.setWordWrap(True)
@@ -3351,7 +3405,8 @@ class StudioMainWindow(QMainWindow):
         self.player_asset_list.clear()
         if not rows:
             self.player_asset_detail.setText(
-                "Load your NFL 2K5 XISO, then search for a player."
+                "Type a name above." if bool(getattr(self.facade, "source_ready", False))
+                else "Open your game disc (top right), then type a player's name."
             )
             return
         needle = text.strip().casefold()
@@ -4361,7 +4416,7 @@ class StudioMainWindow(QMainWindow):
         else:
             state.preview.set_empty(
                 f"{asset.label}\n{asset.width} × {asset.height} RGBA PNG\n\n"
-                "Load your XISO to see the original."
+                "Open your game disc to see this image."
             )
 
     def _load_visual_preview(
@@ -6137,7 +6192,7 @@ class StudioMainWindow(QMainWindow):
         else:
             self.preview.set_empty(
                 f"{asset.label}\n{asset.width} × {asset.height} RGBA PNG\n\n"
-                "Load your XISO to see the original."
+                "Open your game disc to see this image."
             )
 
     def _load_preview(self, asset: UniformAsset) -> None:
