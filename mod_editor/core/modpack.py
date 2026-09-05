@@ -131,6 +131,24 @@ def _no_progress(stage: str, done: int, total: int) -> None:
 # Files
 
 
+def _atomic_replace(part, target) -> None:
+    """os.replace, tolerant of a transient Windows lock on a freshly written file.
+
+    On Windows a virus scanner / indexer can hold a brief lock on the just-created
+    .part file, so an otherwise-correct atomic replace momentarily raises
+    PermissionError (WinError 5). Retry a bounded number of times with a short
+    backoff; a real, persistent permission problem still surfaces after the last try.
+    """
+    for attempt in range(20):
+        try:
+            os.replace(part, target)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.05)
+
+
 def _regular_path(path: Path | str, what: str) -> Path:
     path = Path(path).expanduser()
     try:
@@ -1374,7 +1392,7 @@ def _export_modular(base_iso, patched_iso, out_path, meta, *, overwrite, recipe,
             # The existing-output alias probe is an input too. Windows cannot
             # replace it while that descriptor (or a payload stream) is open.
             stack.close()
-            os.replace(part, out)
+            _atomic_replace(part, out)
         except BaseException:
             try:
                 part.unlink()
@@ -1568,7 +1586,7 @@ def export(
                     archive.writestr(item.member, item.data)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(part, out)
+        _atomic_replace(part, out)
     except BaseException:
         try:
             os.unlink(part)
@@ -1835,7 +1853,7 @@ def _apply_modular(pack, source_iso, target_iso, *, overwrite, in_place, hash_st
         pack.close()
     if in_place:
         _verify_source_before_commit(source, size, source_sha)
-    os.replace(part, target)
+    _atomic_replace(part, target)
     return {"schema": APPLY_SCHEMA, "mode": "in_place" if in_place else "copy", "pack": str(pack.path),
             "name": pack.manifest.name, "partition_base": projected.partition,
             "runs": len(pack.manifest.runs), "bytes": pack.manifest.total_bytes,
@@ -1961,7 +1979,7 @@ def apply(
         os.close(dst)
     finally:
         os.close(src)
-    os.replace(part, target)
+    _atomic_replace(part, target)
 
     source_sha = source_hash.hexdigest() if source_hash else None
     result_sha = result_hash.hexdigest() if result_hash else None
