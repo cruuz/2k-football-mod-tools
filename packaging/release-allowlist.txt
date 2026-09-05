@@ -325,4 +325,5 @@ docs/mod_editor/playbook_packs.md
 docs/mod_editor/save_rost_codec.md
 mod_editor/core/nfl2k5_playbook_pack.py
 mod_editor/gui/playbook_pack_dialog_qt.py
+mod_editor/gui/ux_text.py
 tools/nfl2k5_playbook_pack.py

@@ -1753,6 +1753,7 @@ def main() -> int:
         "mod_editor.gui.models_panel_qt",
         "mod_editor.gui.roster_editor_panel_qt",
         "mod_editor.gui.franchise_panel_qt",
+        "mod_editor.gui.ux_text",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
     )
