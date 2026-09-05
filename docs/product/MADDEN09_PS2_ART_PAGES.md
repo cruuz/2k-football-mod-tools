@@ -398,19 +398,24 @@ Nothing above says the game loads any of it. The trial proves the bytes; only a
 console or an emulator can prove the game. **The owner does this, on the rig,
 with a disc rebuilt by these lanes:**
 
-1. **The stadium texture.** Start a game in the stadium whose art was edited
-   and look for the synthetic bands. It also settles the open question in
-   section 2: which member belongs to which venue is not established here, and
-   an edit that shows up in one stadium and not another answers it.
-2. **The field art.** Same disc, same game: the field is drawn from
-   `FIELDART.DAT`, and the edited member is one of the 32 a coin-toss frame
-   drew, so it should be visible at the coin toss without playing a down.
-3. **The UI texture.** `UIS_TMLO.DAT` member 1 is one of the 58 textures in
-   that container a dumped coin-toss frame was drawing [M], so the coin-toss
-   screen is where to look; what it depicts is not established here. It is
-   also carried in `GAME.QKL`, which makes it the one edit that proves the
-   **member-copy cache rewrite** — if the game preloads the stale copy, the
-   old texture appears and the edit is silently ignored.
+The three edited textures were each dumped from exactly one frame, and the
+capture recorded which [M]. `STADIUMS.DAT:697:0` and `FIELDART.DAT:647:0` both
+came from the Bears-versus-Vikings coin toss; `UIS_TMLO.DAT:1:0` came from the
+Vikings-versus-Bears one, where it shares its pixels with one other texture.
+**So the screen to look at is a Bears/Vikings coin toss**, and what each
+texture depicts is not established here — only that the game was drawing it.
+
+1. **The stadium texture.** Start that matchup and look for the synthetic
+   bands. It also settles an open question from section 2: which member
+   belongs to which venue is not established here, and an edit that shows up
+   in one stadium and not another answers it.
+2. **The field art.** Same screen, no down played: `FIELDART.DAT` member 647
+   was in that same frame.
+3. **The UI texture.** `UIS_TMLO.DAT` member 1 is also carried in `GAME.QKL`,
+   which makes it the one edit that proves the **member-copy cache rewrite** —
+   if the game preloads the stale copy, the old texture appears and the edit is
+   silently ignored. PCSX2 hashes pixels, so the one other texture it shares
+   them with is expected to change too; that is the format, not a bug.
 4. **The negative that matters.** The game must still *load*: a directory
    rewritten in three cached copies is the step most likely to hang a preload
    rather than draw the wrong picture. A disc that boots to the menu and starts
