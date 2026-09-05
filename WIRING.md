@@ -3788,6 +3788,15 @@ edited. `ASTRA_MUSIC_PLAYLIST_REPORT.md` and
 from unresolved individual screen routes. Do not advertise "all modes".
 
 ### BuildPlan, source validation, order and receipt
+# r62 abilities runtime handoff, 2026-09-05
+
+This section is the complete protected-file handoff for abilities rules v1.
+`ASTRA_ABILITIES_RUNTIME_REPORT.md` defines the precise experimental contract
+and Noah's pending witnesses. The backend, assembler/template, standalone
+proofs, complete gate union and manifest generator are implemented here.
+No protected product source or checked-in reservation manifest was edited.
+
+## BuildPlan, defaults, validation and deferred ownership
 
 In `mod_editor/core/mod_build.py`, add:
 
@@ -4118,3 +4127,215 @@ allocator children, never retail caves. Claude must regenerate protected
 with `NFL2K5_CAVE_MANIFEST`; production fingerprints must never be weakened.
 Run both new standalone suites, Franchise Practice, practice reserves and
 both complete XBE gates, then the protected Build/closure tests after wiring.
+abilities: bool = False
+abilities_off_week: int | None = None
+```
+
+Add `"abilities": False, "abilities_off_week": None` to **all three** presets:
+`softdrink_basic`, `softdrink_advanced`, `softdrink_experimental`. None is the
+only default; enabling the runtime does not choose a week or assign flags.
+The API week is the **zero-based existing regular-season row 0..17**. UI week
+labels are 1..18 and translate once using `label_number - 1`. No added week,
+schedule/save expansion, or simulated-game effect is implied.
+
+Validate `type(plan.abilities) is bool`, call
+`abilities_patch._week(plan.abilities_off_week)`, and reject a non-None week
+when `abilities` is False. Validate before copying output. Add `abilities` to
+`BuildPlan.wants_xbe_patch()`, image requirement/availability maps, inspector
+selection, summaries, serialization, receipt extraction and source/output
+status maps. An existing project missing either field gets the defaults.
+Do not coerce strings, floats or Boolean week values to integers.
+
+Abilities imply the allocator. Include their `REQUESTS` in the same complete
+union as every selected allocator owner **before the first allocation**.
+The actual request is `(nfl2k5_abilities_runtime, code, 1072, 16)`, within the
+1536-byte abilities budget, zero RW. Never hardcode the returned VA. Use the
+existing v3 scale-out path (`scaleout=True` when explicitly allocating).
+
+Follow the existing deferred-owner routing: in the early `replace(plan, ...)`
+used to decide the ordinary XBE pass, set `abilities=False` and
+`abilities_off_week=None`. Carry the selected requests into the paired
+scorebug `extra_requests` path. Add `or plan.abilities` to the final XBE pass
+condition and forward both fields in its final `_apply_all` invocation. Do
+not create an early smaller directory and try to add abilities afterward.
+The extent adapter must accept `space.SCALEOUT_SIZE` via the existing
+scale-out WIRING handoff, not a new arbitrary image length.
+
+## Dispatcher tuple, keyword arguments and all four dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_abilities_runtime as abilities_patch
+```
+
+Add `abilities: bool = False, abilities_off_week: int | None = None` to
+`_apply_all`, `write_xbe_copy`, and `write_image_copy`. Forward both through
+every caller and include `abilities` in both writers' nothing-requested
+conditions. Validate the Boolean/week relationship as above. Keep the
+backend's omitted replay argument semantics: passing an explicit None to an
+installed configured image intentionally refuses changing its week.
+
+Extend `_selected_space_requests`, `_xbe_space_adapter`, inherited
+`_defensive_try_adapter` constructors, and every union call with `abilities`.
+Append `(abilities_patch.REQUESTS if abilities else ())` to the union. Add
+`or abilities` to the allocator tuple's enabled condition. Reuse the existing
+adapter pattern:
+
+```python
+class _abilities_adapter:
+    def __init__(self, off_week):
+        self.off_week = off_week
+
+    @staticmethod
+    def status(payload):
+        return abilities_patch.status(payload)
+
+    def apply(self, payload):
+        return abilities_patch.apply(payload, abilities_off_week=self.off_week)
+```
+
+Add this tuple to the **final owners, after allocation**, beside Momentum and
+zone-drop (and after the batch-1 Coverage/scramble owners when integrated):
+
+```python
+(abilities, _abilities_adapter(abilities_off_week),
+ "abilities_patch", "experimental player abilities"),
+```
+
+The seven retail hook spans are disjoint from Momentum and the legacy ramp.
+Every permutation of those three owners is byte-identical in backend tests.
+Keep the existing Build/Momentum policy that normalizes the legacy ramp off;
+do not silently change that product policy. The instruction suite separately
+proves the speed-call/store path with the ramp both off and on.
+
+Add these keys to **all four returned status dictionaries**. Use `payload`
+in `read_xbe` and `read_image`, `result` in `write_xbe_copy`, and `after` in
+`write_image_copy`:
+
+```python
+"abilities": abilities_patch.status(payload),
+"abilities_settings": abilities_patch.read_settings(payload),
+```
+
+`abilities_settings` includes `abilities_off_week`, `model_version`,
+`experimental`, and `runtime_witnessed`. Use the same values in
+`mod_build.inspect`, `_allocator_feature_status`, availability, output report
+and write subreceipt forwarding. Never report only the requested checkbox
+when the executable is foreign or has a different installed week. Preserve
+`abilities_patch`'s exact edit, allocation, code-install and byte-count
+receipt; replay has an empty edits list and zero changed bytes.
+
+## Gameplay Patches, Build tab and existing Rosters card
+
+Add the following `PATCHES` row in
+`mod_editor/gui/gameplay_patches_panel_qt.py` and add `abilities` to
+`NEEDS_IMAGE`:
+
+```python
+("abilities", "Player abilities (experimental)",
+ "Retail ignores stored ability flags. Patch: Speedster permits movement "
+ "Speed above 99. Each special move requires its stored permission, and "
+ "right-stick moves also require Right-Stick Moves. The special-move charge "
+ "meter works only for live ball carriers with an allowed move, including "
+ "CPU players. Abilities must be assigned in Rosters or the save first. "
+ "An optional existing franchise week turns them off temporarily. "
+ "EXPERIMENTAL / UNWITNESSED. Simulated games are unchanged."),
+```
+
+The text contains both required words **Retail** and **Patch**. Do not label
+zero-flag retail rosters ready for normal play: under this opt-in contract
+those players cannot use the five special moves. Cosmetic stars never grant
+permissions. Turning the switch off in a project means rebuild from its
+supported base; it does not uninstall hooks from an already-patched source.
+
+Add the Build-tab `_option` caption:
+
+```python
+self.abilities_check = self._option(
+    g, "abilities", "Player abilities (experimental)",
+    tt.abilities_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED",
+    needs_image=True)
+```
+
+The caption is 31 characters, below 60. Add an adjacent off-week combo:
+`No abilities-off week` (data None), then `Week 1`..`Week 18` (data 0..17).
+Caption: `Week with abilities off`. Disable it while `abilities` is False and
+reset to None when disabling the runtime. Tooltip: `Use an existing regular-
+season week. Player ability flags stay saved and return the following week.`
+Implement plan creation, source inspection, dirty tracking, preset/reset and
+project load/save bindings for both fields in the protected Build/Studio
+panels. Loading an installed source displays its actual rules version and
+week. Refuse reconfiguration with the backend's rebuild message.
+
+The already-shipped `roster_editor_panel_qt.py` is another owner's GUI and was
+left unchanged. Its current data-only sentence must become conditional at
+integration: `Stored abilities. They affect play only with Player abilities
+rules v1 on the game disc. Existing franchise saves keep their own flags.`
+Retain the seven existing mask-preserving controls and the separate star
+control. Do not invent an assignment pass, automatic HOF tier, rating clamp,
+or save migration in this wiring. A movement cache clamp does not police
+unrelated raw-rating reads or franchise simulation.
+
+## Release allowlist, runtime closure and capability
+
+Add exactly these runtime allowlist lines to
+`packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_abilities_runtime.py
+mod_editor/core/nfl2k5_abilities_runtime_code.py
+```
+
+Add these explicit imports to the protected runtime checker's closure:
+
+```text
+mod_editor.core.nfl2k5_abilities_runtime
+mod_editor.core.nfl2k5_abilities_runtime_code
+```
+
+Retain their already-shipped dependencies `nfl2k5_xbe_space`,
+`nfl2k5_bump_strength`, and `nfl2k5_cave_oracle`. Application needs Python's
+standard library and the existing allocator, no assembler, Capstone or
+Unicorn. `tools/nfl2k5_abilities_runtime.S` and its assembler are development
+sources; the Python byte template is shipped. Add both modules to the
+existing gameplay provider closure and repin its fingerprints and the
+protected staged checker after integration. No new dependency is needed in
+CI and no release-tag test was changed here.
+
+Merge the complete schema-compatible object from
+`docs/mod_editor/nfl2k5_abilities_runtime_capability.json` into
+`mod_editor/capabilities/registry.v1.json` by ID
+`nfl2k5.gameplay.abilities_runtime`, on existing surface
+`gameplay_tuning_sliders`. Keep `offline-writer-proved`, runtime `not-tested`,
+and experimental/default-off GUI status. The handoff JSON itself is review
+evidence and is not a runtime asset to allowlist.
+
+## Manifest, gates and integration acceptance
+
+The manifest generator now imports, observes and installs this owner in the
+complete dormant-owner probe, appends its REQUESTS and lists it in all owner
+registries. Both XBE gate setUpClass methods assert its presence through
+`tests/nfl2k5_allocator_stack.py`; the gate union applies every owner in both
+orders. Its dedicated manifest test checks whole hooks plus the immutable
+allocation, including unchanged bytes.
+
+Claude must regenerate the protected
+`data/nfl2k5_cave_reservations.json` after all final source edits. This branch
+only writes the real-build manifest under `.scratch/abilities/manifest.json`.
+Do not relax source-drift checks or copy a partially patched fixture into the
+production manifest. Regenerate with the standard command and run:
+
+```text
+python3 tests/mod_editor/test_nfl2k5_abilities_runtime.py
+python3 tests/mod_editor/test_nfl2k5_abilities_unicorn.py
+python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+python3 tests/mod_editor/test_xbe_patch_cave_references.py
+python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+```
+
+For this isolated branch set `NFL2K5_CAVE_MANIFEST` to the fresh scratch
+manifest for the last three commands. After protected integration, validate
+staged runtime closure and capability registry and build a disposable disc
+with explicit abilities on/off plus a configured week. No user-facing
+checkbox is wired by this branch; that is the brief's protected-file boundary.

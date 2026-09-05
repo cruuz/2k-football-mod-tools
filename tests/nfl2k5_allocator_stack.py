@@ -12,11 +12,12 @@ from mod_editor.core import nfl2k5_coverage_slider as coverage
 from mod_editor.core import nfl2k5_scramble_tuning as scramble
 from mod_editor.core import nfl2k5_music_playlist as playlist
 from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
+from mod_editor.core import nfl2k5_abilities_runtime as abilities
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
                    + defensive_try.REQUESTS + zone_drop.REQUESTS)
 REQUESTS = (LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
-            + playlist.REQUESTS + practice_screen.REQUESTS)
+            + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -33,7 +34,7 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     owners = ((defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
-              (practice_screen, {}))
+              (practice_screen, {}), (abilities, dict(abilities_off_week=7)))
     order = tuple(reversed(owners)) if reverse else owners
     for module, kwargs in order:
         payload, _ = module.apply(payload, **kwargs)

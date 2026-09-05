@@ -84,6 +84,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
         if practice_screen.status(cls.patched) != "applied":
             raise AssertionError("Practice Squad screen missing from the composed XBE")
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        if abilities.status(cls.patched) != "applied":
+            raise AssertionError("abilities owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -331,7 +334,8 @@ class CaveReferenceTests(unittest.TestCase):
                 self.assertEqual(r["parent_owner"], space.OWNER)
             else:
                 self.assertEqual(manifest.overlaps(start, end, exclude_owner=momentum.OWNER), [], r)
-        self.assertEqual(XbeImage(self.patched).read(0x75CC8, 5), XbeImage(self.retail).read(0x75CC8, 5))
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        self.assertEqual(abilities.status(self.patched), "applied")  # the Speedster wrapper owns the 0x75CC8 call
     def test_zone_drop_owns_only_a_complete_call_and_reserved_grown_code(self) -> None:
         from mod_editor.core import nfl2k5_zone_drop as zone_drop
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
@@ -377,6 +381,24 @@ class ScorebugReferenceReservations(unittest.TestCase):
                 self.assertEqual(sum(i.size for i in insns),len(new),label)
                 self.assertTrue(all(i.mnemonic in ("nop","fadd") for i in insns),label)
         self.assertEqual(scorebug.xbe_status(patched),"applied")
+
+
+    def test_abilities_have_only_pinned_hooks_and_named_grown_code(self):
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
+        self.assertEqual(abilities.status(self.patched), "applied")
+        owner = abilities.allocation(self.patched)
+        self.assertGreaterEqual(owner["va"], space.CODE_VA)
+        for record in abilities.reservations(self.patched):
+            start, end = int(record["start"], 0), int(record["end"], 0)
+            if start < space.CODE_VA:
+                self.assertLess(end - start, CAVE_MIN)
+                self.assertEqual(manifest.overlaps(start, end, exclude_owner=abilities.OWNER), [])
+                self.assertTrue(any(r.detail.startswith(abilities.OWNER + ":") for r in manifest.overlaps(start, end)))
+            else:
+                self.assertEqual(record["parent_owner"], space.OWNER)
 
 
 class ReverseOwnerOrderTests(CaveReferenceTests):

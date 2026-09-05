@@ -120,6 +120,9 @@ class PatchWriteTests(unittest.TestCase):
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        if abilities.status(cls.patched) != "applied":
+            raise AssertionError("abilities owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
         if practice_screen.status(cls.patched) != "applied":
             raise AssertionError("Practice Squad screen missing from the composed XBE")
@@ -323,6 +326,20 @@ class PatchWriteTests(unittest.TestCase):
         self.assertTrue(any(e["label"] == "summary_row_spacing" and e["size"] == 48
                             for e in self.rows_receipt["edits"]))
         self.assertEqual(image.section(rows.SUMMARY_LABEL_WIDTH_VA, 4).name, ".rdata")
+
+    def test_abilities_code_and_tables_are_read_only_and_writes_are_indirect(self):
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        from mod_editor.core import nfl2k5_abilities_runtime_code as code
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        owner = abilities.allocation(self.patched)
+        self.assertNotEqual(image.section(owner["va"]).name, ".text")
+        self.assertFalse(image.runtime_writable(owner["va"], owner["size"]))
+        self.assertTrue(image.section(owner["va"]).executable)
+        writes = absolute_writes(self.patched, [(owner["va"], owner["va"] + code.LABELS["instructions_end"])])
+        self.assertTrue(writes)
+        self.assertTrue(all(write["target"] is None for write in writes), writes)
+        # Actual indirect destinations are bounded in the instruction suite.
 
     def test_momentum_complete_code_writes_only_named_data_or_caller_state(self) -> None:
         from mod_editor.core import nfl2k5_momentum as momentum
