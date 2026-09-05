@@ -407,3 +407,9 @@ tools/nfl2k5_ps2_stadium_position_patch.py
 tools/nfl2k5_ps2_stadium_position_verify.py
 tools/validate_nfl2k5_ps2_stadium_position.sh
 tools/validate_nfl2k5_ps2_stadium_position.bat
+# M1: the PS2 texture lane. The manifest is the data an Xbox edit needs to be
+# named as a PCSX2 replacement; the two tools that compute it ship with it so a
+# user can re-derive the map from their own SLUS-20919 image and check ours.
+mod_editor/data/nfl2k5-xbox-map.v1.json
+tools/nfl2k5_ps2_texture_map.py
+tools/xxh3.py
