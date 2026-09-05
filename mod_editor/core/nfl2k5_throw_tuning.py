@@ -684,7 +684,7 @@ def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
         raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
     if length != EXPECTED_XBE_SIZE:
         _require(length in (depth_chart_storage.FILE_SIZE, xbe_space_patch.FILE_SIZE),
-                 f"unknown default.xbe grown size: {length}")
+                 f"default.xbe inside the image is {length} bytes, not the retail size or a recognised grown size")
         candidate = platform_compat.pread(descriptor, length, offset)
         _require(len(candidate) == length
                  and depth_chart_storage.recognized_grown_xbe(candidate),
