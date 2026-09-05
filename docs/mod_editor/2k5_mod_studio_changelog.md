@@ -1,6 +1,6 @@
 # 2K5 Mod Studio — Product Changelog
 
-## v1.0 RC84 — (unreleased)
+## v1.0 RC84 — ★ Rosters does what Finn's did (real saves, Franchise tab, membership, templates), dynamic kickoff, slot / nickel / dime, practice squads, career stats, simpler words everywhere (2026-09-04)
 
 - **Simpler words everywhere.** A usability pass over every page for someone who has played 2K5 and maybe used
   Flying Finn's editor but never a mod studio: one set of names (Open game disc…, Open project… / Save project,
