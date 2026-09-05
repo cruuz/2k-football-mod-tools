@@ -1,4 +1,19 @@
-# 2K5 Mod Studio — v1.0 RC86 Release Status
+# 2K5 Mod Studio — v1.0 RC87 Release Status
+
+## Beta 63 (unreleased) — PS2 Madden 09 Studio: a second game on the shell
+
+Source/UI version is **2K5 RC87**. Everything below is offline-proved or read-only; nothing new has been seen in a game.
+
+- **Select other games… lists two studios**: PS2 Madden 09 Studio and PS2 NFL 2K5 Studio. Madden NFL 09 (USA, PS2), retail or
+  Deluxe, is recognised by its boot ELF; every one of the fourteen pages is present, five carry a lane, the rest say why not.
+- **Madden 09 lanes**: All Textures inventories every EA container on the disc (read-only); Uniforms decodes the disc's `MMAP`
+  textures to PNG (7,082 of 7,616 uniform images; the palette table layout was proved by looking at faces and jerseys) and stays
+  extract-only until a PCSX2 texture dump of the game exists; Rosters reads the 355 on-disc EA databases (2,151 tables) read-only;
+  Menus & UI previews the 14,748 text members read-only; Gameplay carries the executable-patch scaffold, every translation refused.
+- **Substrate**: the EA TERF container package (LZH1 / RLE1 decoders re-expressed from the owner's prior work) and a new EA TDB
+  reader (`mod_editor/games/_formats/ea_tdb.py`). No writer is offered for Madden yet: no rebuilt container has been booted.
+- **Two games taught the contract four one-game assumptions**: the chooser test, the runtime-gate mirror, NFL 2K5's allowlist
+  patterns and the conformance work dirs now allow any number of games. The 2K5 studio is unchanged.
 
 ## Beta 62 (unreleased) — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container
 
