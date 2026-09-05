@@ -1819,6 +1819,16 @@ def sidecar_document(result: dict, generated: str, counts: dict,
     corpus = result["corpus"]
     unexplained = sorted(corpus.names - set(result["proved"])
                          - set(result["tex0_only"])) if corpus else []
+    divergence = result.get("name_divergence") or {}
+    if divergence:
+        reasons["tcc_bit_divergence"] = {
+            "pngs": len(divergence),
+            "reason": "the reference pack spells these identities without the "
+                      "classic TCC bit (bit 14 of the property word); the "
+                      "manifest publishes the computed name, which always has "
+                      "it set, because a pack that mixed both conventions "
+                      "would load the wrong art under ClassicTextureNames=true",
+        }
     reasons["unexplained"] = {
         "pngs": len(unexplained),
         "reason": "a canonical identity in the reference pack that no disc "
@@ -1850,6 +1860,8 @@ def sidecar_document(result: dict, generated: str, counts: dict,
         "fanout_examples": fanout_rows,
         "claim_examples": {key: drop_rows[key] for key in sorted(drop_rows)},
         "unexplained_sample": unexplained[:50],
+        "tcc_bit_divergence": {key: divergence[key]
+                               for key in sorted(divergence)},
         "demo_team": {
             "criteria": [
                 "every mappable component of the kit has a shipped manifest "

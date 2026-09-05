@@ -10770,7 +10770,7 @@
       }
     ]
   },
-  "generated": "2026-09-05T06:56:18Z",
+  "generated": "2026-09-05T07:06:39Z",
   "method": "hop1/v5",
   "reasons": {
     "claim:superseded_by_logical_uniform_id": {
@@ -10807,6 +10807,10 @@
       "pngs": 288,
       "reason": "both hashes reproduce but the PS2 resource name has no counterpart on the Xbox disc"
     },
+    "tcc_bit_divergence": {
+      "pngs": 4,
+      "reason": "the reference pack spells these identities without the classic TCC bit (bit 14 of the property word); the manifest publishes the computed name, which always has it set, because a pack that mixed both conventions would load the wrong art under ClassicTextureNames=true"
+    },
     "tex0_only": {
       "pngs": 473,
       "reason": "the level-0 pixel hash reproduces but no CLUT candidate matches the palette hash in the filename; the identity is unproved and never ships"
@@ -10817,6 +10821,12 @@
     }
   },
   "schema": "nfl2k5_ps2_to_xbox_texture_map_unresolved/v1",
+  "tcc_bit_divergence": {
+    "8013eb25d5e69513-84a71011a07c9-00001dd3.png": "8013eb25d5e69513-84a71011a07c9-00005dd3.png",
+    "b4b5934ff655743c-67a16a84c06fe2a3-00001dd3.png": "b4b5934ff655743c-67a16a84c06fe2a3-00005dd3.png",
+    "b4b5934ff655743c-77400f676144da3a-00001dd3.png": "b4b5934ff655743c-77400f676144da3a-00005dd3.png",
+    "ee1f1e873233462b-70a058f80f2f8232-00001dd3.png": "ee1f1e873233462b-70a058f80f2f8232-00005dd3.png"
+  },
   "unexplained_sample": [
     "10ced261f74e9b44-214e429d429652d0-00005e13.png",
     "10ced261f74e9b44-6f265222413c8b32-00005e13.png",

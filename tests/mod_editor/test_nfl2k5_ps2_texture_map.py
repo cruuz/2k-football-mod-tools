@@ -844,6 +844,22 @@ class ShippedSidecarTests(unittest.TestCase):
         self.assertEqual(demo["logical"]["kits"][best["kit"]]["mapped"],
                          best["mapped"])
 
+    def test_the_tcc_bit_divergences_are_named_not_just_counted(self) -> None:
+        # The reference pack spells a few identities without bit 14. We always
+        # publish it set, so the difference has to be visible: if WP7 finds a
+        # texture that will not load, this list is the first place to look.
+        divergence = self.document["tcc_bit_divergence"]
+        self.assertTrue(divergence)
+        self.assertEqual(len(divergence),
+                         self.document["reasons"]["tcc_bit_divergence"]["pngs"])
+        for pack_name, computed in divergence.items():
+            pack_bits = int(pack_name.rsplit("-", 1)[1].split(".")[0], 16)
+            our_bits = int(computed.rsplit("-", 1)[1].split(".")[0], 16)
+            self.assertEqual(our_bits ^ pack_bits, 1 << 14,
+                             "%s -> %s differs by more than the TCC bit"
+                             % (pack_name, computed))
+            self.assertTrue(our_bits & (1 << 14))
+
     def test_the_physical_view_is_kept_as_supporting_evidence(self) -> None:
         physical = self.document["demo_team"]["physical"]
         self.assertTrue(physical["note"])
