@@ -351,6 +351,7 @@ tools/nfl2k5_ps2_replacement_pack_audit.py
 tools/nfl2k5_ps2_replacement_pack_kit.py
 tools/nfl2k5_ps2_uniform_art.py
 tools/ea_terf_inspect.py
+tools/ea_disc_map.py
 tools/nfl2k5_ps2_replacement_pack_verify.py
 tools/validate_nfl2k5_ps2_replacement_pack.bat
 tools/validate_nfl2k5_ps2_uniform_art.bat
