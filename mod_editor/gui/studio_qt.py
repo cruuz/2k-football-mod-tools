@@ -1519,6 +1519,7 @@ class StudioMainWindow(QMainWindow):
         self._ps2_save_action: QAction | None = None
         self._ps2_disc_action: QAction | None = None
         self._ps2_export_action: QAction | None = None
+        self._game_chooser_action: QAction | None = None
         self._ps2_disc_studio_action: QAction | None = None
 
         self.setWindowTitle("2K5 Mod Studio")
@@ -1608,6 +1609,13 @@ class StudioMainWindow(QMainWindow):
             "not changed."
         )
         self._ps2_disc_studio_action.triggered.connect(self._open_ps2_disc_studio)
+        self._game_chooser_action = file_menu.addAction("Select other games…")
+        self._game_chooser_action.setToolTip(
+            "List every installed game module -- name, platform, version and "
+            "whether it can be loaded -- and open one of its windows. Each "
+            "module works on your own files; your Xbox project is not changed."
+        )
+        self._game_chooser_action.triggered.connect(self._open_game_chooser)
         file_menu.addSeparator()
         quit_action = file_menu.addAction("Quit")
         quit_action.setShortcut("Ctrl+Q")
@@ -2140,6 +2148,35 @@ class StudioMainWindow(QMainWindow):
         self._set_status(
             "PS2 replacement-pack export closed • your Xbox project was not changed."
         )
+
+    def _open_game_chooser(self, _checked: bool = False) -> None:
+        """Open the game-module chooser: every installed module and its windows.
+
+        The chooser is core-owned and game-blind.  It lists what
+        ``mod_editor.games`` discovered -- name, platform, module version,
+        contract version and whether the module loads, with the reason when it
+        does not -- and asks the chosen module to open its own window.  It is
+        handed this window's facade so a module window that works on the open
+        project can receive it; nothing here imports a module beyond the
+        contract, and a module that fails to load is a row, not a crash.
+        """
+
+        if self._refuse_while_audio_busy("open the game chooser"):
+            return
+        try:
+            from mod_editor.games.chooser_qt import GameChooserDialog
+        except Exception as exc:  # pragma: no cover - defensive import guard
+            QMessageBox.warning(
+                self,
+                "Game chooser is unavailable",
+                f"The game chooser could not be loaded: {str(exc).strip()}\n\n"
+                "Nothing was changed.",
+            )
+            return
+        dialog = GameChooserDialog(parent=self, context={"facade": self.facade})
+        dialog.exec_()
+        dialog.deleteLater()
+        self._set_status("Game chooser closed • your Xbox project was not changed.")
 
     def _open_ps2_disc_studio(self, _checked: bool = False) -> None:
         """Open the PS2 Disc Studio: the six on-disc writers behind one window.
@@ -7697,6 +7734,8 @@ class StudioMainWindow(QMainWindow):
             self._ps2_disc_action.setEnabled(not global_busy)
         if self._ps2_disc_studio_action is not None:
             self._ps2_disc_studio_action.setEnabled(not global_busy)
+        if self._game_chooser_action is not None:
+            self._game_chooser_action.setEnabled(not global_busy)
         if self._recent_source_menu is not None:
             self._recent_source_menu.setEnabled(not global_busy)
         if self._recent_project_menu is not None:

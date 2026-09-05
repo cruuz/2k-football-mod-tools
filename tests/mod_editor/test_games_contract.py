@@ -371,14 +371,19 @@ class BoundaryTests(unittest.TestCase):
         self.assertNotIn("_formats", check.detail, "shared format packages are the sanctioned reuse path")
         self.assertNotIn("helper", check.detail, "function-level imports are lazy and allowed")
 
-    def test_upstream_imports_nothing_from_the_games_package_today(self) -> None:
-        """Passivity, measured: no upstream module imports mod_editor.games.
+    HOOKS = {
+        # The File menu's one action, "Select other games…", and its handler.
+        "mod_editor/gui/studio_qt.py": {"mod_editor.games.chooser_qt"},
+        # The one command-line seam: --game / --window / --games-chooser.
+        "mod_editor/__main__.py": {"mod_editor.games.__main__"},
+    }
 
-        This is what makes the package additive.  When the studio grows its one
-        discovery hook, exactly two files may join the exemption list below.
-        """
+    def test_upstream_reaches_the_games_package_only_through_the_two_hooks(self) -> None:
+        """Passivity, measured: exactly two upstream files import mod_editor.games,
+        each importing exactly one core-owned module, lazily.  Every game the
+        studio will ever host goes through these two lines; no game is named."""
 
-        offenders: list[str] = []
+        found: dict[str, set[str]] = {}
         for path in sorted((ROOT / "mod_editor").rglob("*.py")):
             relative = path.relative_to(ROOT).as_posix()
             if relative.startswith("mod_editor/games/"):
@@ -389,10 +394,16 @@ class BoundaryTests(unittest.TestCase):
                 if isinstance(node, ast.Import):
                     names = [alias.name for alias in node.names]
                 elif isinstance(node, ast.ImportFrom) and node.module:
-                    names = [node.module]
-                if any(name == "mod_editor.games" or name.startswith("mod_editor.games.") for name in names):
-                    offenders.append(f"{relative}:{node.lineno}")
-        self.assertEqual(offenders, [])
+                    names = [node.module if node.level == 0 else "mod_editor." + node.module]
+                for name in names:
+                    if name == "mod_editor.games" or name.startswith("mod_editor.games."):
+                        found.setdefault(relative, set()).add(name)
+                        self.assertNotIn(node, tree.body, f"{relative}:{node.lineno} imports the games package eagerly")
+        self.assertEqual(found, self.HOOKS)
+        for relative, modules in self.HOOKS.items():
+            for module in modules:
+                self.assertFalse(module.split(".")[-1].startswith(("nfl2k5", "apf", "madden", "ncaa", "mvp", "nba")),
+                                 f"{relative} names a game; the hooks are game-blind")
 
 
 if __name__ == "__main__":

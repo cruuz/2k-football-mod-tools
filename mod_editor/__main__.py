@@ -90,6 +90,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     action.add_argument(
+        "--game",
+        metavar="GAME_ID",
+        help=(
+            "open one installed game module on its own, without the studio: "
+            "describes the module, or with --window opens one of its windows; "
+            "'python -m mod_editor.games' lists the modules"
+        ),
+    )
+    action.add_argument(
+        "--games-chooser",
+        action="store_true",
+        help="open the game-module chooser window alone, without the studio",
+    )
+    action.add_argument(
         "--check-registry",
         action="store_true",
         help="validate the capability registry without opening a display",
@@ -236,6 +250,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="show named APF scorebug components and digital-font writer boundary",
     )
     parser.add_argument(
+        "--window",
+        metavar="WINDOW_ID",
+        help="with --game: the module window to open (see --game <id> for the ids)",
+    )
+    parser.add_argument(
         "--require-registry",
         action="store_true",
         help="refuse the temporary sample fallback",
@@ -277,6 +296,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--shield-espn-png", type=Path, help="128x64 RGBA ESPN strip")
     parser.add_argument("--digital-font-png", type=Path, help="128x128 RGBA digit atlas")
     args = parser.parse_args(argv)
+    if args.window and not args.game:
+        parser.error("--window needs --game GAME_ID")
+    if args.game or args.games_chooser:
+        # Every game module is reached through one seam: the games package's
+        # own command line.  It needs none of the studio's Xbox-derived
+        # startup inputs, so someone who owns only that game's release can
+        # use it, and the studio never imports a module beyond the contract.
+        from .games.__main__ import main as games_main
+
+        if args.games_chooser:
+            return games_main(["chooser"])
+        if args.window:
+            return games_main(["open", args.game, "--window", args.window])
+        return games_main(["show", args.game])
     if args.check_registry:
         registry = CapabilityRegistryLoader().load(
             allow_sample_fallback=not args.require_registry, check_files=False

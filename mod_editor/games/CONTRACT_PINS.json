@@ -11,7 +11,7 @@
     "tests/mod_editor/games_fakes.py": "597a42592730441734915066445b9eed5efe66effdc3e88c167425940c4ec9a9",
     "tests/mod_editor/test_games_chooser.py": "5606ba5eb4613bdc2b5797680c60a4858c5401d1acc0a91a1f8ed5459555c030",
     "tests/mod_editor/test_games_conformance.py": "98c2a706277d873a14e5f0be74746993577b267750f576fd3f70474a3caf380d",
-    "tests/mod_editor/test_games_contract.py": "443b8210a6ebfdcac29e0730d2072ce973cc2450389e49e8a2a0b463a01bb7c9",
+    "tests/mod_editor/test_games_contract.py": "52b91429e5eabe6f6d9b0bc235a8a89e8596b4a34ecb86db4c3ba5260771038b",
     "tests/mod_editor/test_games_contract_frozen.py": "c32deb7ed8faf546515dbbddfb11db8697791c86b43dad0779dbff4d69a4dc98"
   },
   "schema": "vc_game_module_contract_pins/v1"
