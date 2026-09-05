@@ -245,7 +245,9 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(game.identity.serials, ("SLUS-20919",))
         self.assertEqual(game.version, "0.1.0")
         self.assertEqual([window.flag for window in game.windows], ["ps2-save", "ps2-disc", "ps2-export"])
-        self.assertEqual([lane.lane_id for lane in game.lanes], ["colors.unif_words"])
+        # The executable-patch lane joins once its registry row exists (it did on 2026-09-05).
+        self.assertEqual([lane.lane_id for lane in game.lanes],
+                         ["colors.unif_words", "gameplay.executable_patches"])
 
 
 class RegistryFragmentTests(unittest.TestCase):

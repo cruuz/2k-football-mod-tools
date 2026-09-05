@@ -5238,6 +5238,81 @@
     },
     {
       "backend": {
+        "command": null,
+        "module": null,
+        "operation": "none"
+      },
+      "classification": "unknown",
+      "evidence": [
+        "docs/product/PS2_CODE_PATCH_PIPELINE.md"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "deferred",
+        "reason": "Nothing is translatable today: none of the host's 21 executable patches has a located site in SLUS_209.19, and no Xbox address transfers to the MIPS build. The lane's interface, pnach emitter and independent verifier exist and are proved on a synthetic ELF; the row moves off unknown one patch at a time as translations are proved, and no window lists a patch before then."
+      },
+      "id": "nfl2k5ps2.gameplay.executable_patches",
+      "input_constraints": [
+        "No host patch is translated to MIPS yet; every translation is refused with the reason, and nothing here changes a disc or an emulator until one is.",
+        "Delivery is pnach-first: a PCSX2 / PenguinScreen2 .pnach named by the ELF's game CRC, applied at load time; on-disc ELF patching through the fixed-allocation ISO writer is a later, optional second route, and a .bss address can never be delivered on disc.",
+        "A recipe may carry hand-authored MIPS words for maintainers; every word is checked against the user's own boot ELF (file-backed address, original word as expected) before a pnach is written, and the pnach is re-parsed and re-verified independently afterwards.",
+        "The boot ELF is read from the user's own ISO read-only; its serial, digest and PCSX2 CRC are reported; a synthetic or modified ELF is never called retail."
+      ],
+      "portme": [
+        "Locate each host patch's intent in SLUS_209.19 by data anchors and disassembly, never by Xbox address arithmetic; record the site map as evidence.",
+        "Classify each edit (nop-out, immediate, data table, pointer) and author the MIPS words through an assembler oracle; hand-prove them as a pnach, then witness them in PenguinScreen2.",
+        "Encode each proved translation as TRANSLATIONS[patch_id] in mod_editor/games/nfl2k5_ps2/code_patches.py with its test; move this row one rung per proof.",
+        "Add the on-disc delivery through tools/ps2_iso9660_writer.py once a translation is runtime-proved and a user asks for real hardware."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "none-until-safe",
+        "rule": "Ship the lane, the shared ELF/pnach package, the validators and this document; no address of retail code ships in code, and no pnach ships until a translation is proved. User-authored recipes and the pnach files built from them stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Not applicable: no translation exists, so nothing has been applied in an emulator or on hardware. The synthetic-ELF proof covers the pnach emitter and verifier only.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "one of the host's executable patch ids (python -m mod_editor.games.nfl2k5_ps2.code_patches --list)",
+            "name": "patch",
+            "required": true
+          },
+          {
+            "allowed": "the host's parameter names and ranges for that patch",
+            "name": "parameters",
+            "required": false
+          },
+          {
+            "allowed": "hand-authored words {address, original, replacement}, maintainers only, checked against the user's ELF",
+            "name": "mips",
+            "required": false
+          }
+        ],
+        "notes": "One recipe entry delivers one host patch; a translated patch takes parameters, an untranslated one is refused unless hand-authored words are supplied. Selectors name intent and words, never Xbox addresses."
+      },
+      "source_container": {
+        "format": "ELF32 little-endian MIPS boot executable SLUS_209.19 inside the ISO9660 image; delivered as a PCSX2 .pnach keyed by the ELF's game CRC",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "32-bit words at EE virtual addresses in the boot ELF; 0 of the host's 21 executable patches mapped",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Deliver the host's Xbox gameplay executable patches to the PlayStation 2 release as PCSX2 / PenguinScreen2 pnach files built from MIPS words checked against the user's own SLUS_209.19. The interface, the pnach emitter and the independent verifier exist and are proved on a synthetic ELF; no host patch is translated yet, so every translation is refused with the reason.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "NFL 2K5 (PS2) executable patches (pnach-first; nothing mapped yet)",
+      "validation_command": "bash mod_editor/games/nfl2k5_ps2/validate_code_patches.sh"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl2k5_ps2_text_patch.py --source-iso <SLUS-20919.iso> --destination-iso <new.iso> --recipe <text_recipe.json> [--report <report.json>] [--dry-run]",
         "module": "tools/nfl2k5_ps2_text_patch.py",
         "operation": "write"

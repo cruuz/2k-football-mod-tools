@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
     "mod_editor/gui/studio_qt.py":
-        "d6af0b74c9266df6ae551e7ea47c7961dc934eda61a5412edef45181e5602cc5",
+        "1d1e294130f1b38311b4d34a4b6c2bc78f34e2a77708eadcc800bb9a459daa8a",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1784,6 +1784,19 @@ def main() -> int:
         "mod_editor.gui.roster_editor_panel_qt",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
+        "mod_editor.games",
+        "mod_editor.games.contract",
+        "mod_editor.games.registry_merge",
+        "mod_editor.games.conformance",
+        "mod_editor.games.chooser",
+        "mod_editor.games.chooser_qt",
+        "mod_editor.games.pins",
+        "mod_editor.games.fragments",
+        "mod_editor.games.scaffold",
+        "mod_editor.games._formats.ps2_disc",
+        "mod_editor.games._formats.ps2_elf",
+        "mod_editor.games.nfl2k5_ps2",
+        "mod_editor.games.nfl2k5_ps2.code_patches",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1832,7 +1845,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 78,
+    require(len(registry.capabilities) == 79,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -2239,7 +2252,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=78 sections=12 nfl2k5_capabilities=32 "
+        "registry=79 sections=12 nfl2k5_capabilities=32 "
         "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

@@ -61,6 +61,8 @@ SURFACE_GAMES["menus"] = GAMES
 SURFACE_GAMES["players_rosters"] = GAMES
 SURFACE_GAMES["scripts_config"] = GAMES
 SURFACE_GAMES["stadiums_fields"] = GAMES
+# nfl2k5_ps2 rows join these surfaces' coverage rule:
+SURFACE_GAMES["gameplay_tuning_sliders"] = GAMES
 CLASSIFICATIONS = (
     "extract-only",
     "offline-writer-proved",

@@ -1,8 +1,8 @@
 {
-  "capability_rows": 9,
+  "capability_rows": 10,
   "game_id": "nfl2k5_ps2",
   "hidden_disc_writers": 6,
-  "lanes_on_contract": 1,
+  "lanes_on_contract": 2,
   "product_modules": 35,
   "retail_identity": {
     "content_sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
@@ -16,6 +16,7 @@
   "surfaces": [
     "audio",
     "colors",
+    "gameplay_tuning_sliders",
     "menus",
     "players_rosters",
     "saves",

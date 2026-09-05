@@ -2,6 +2,15 @@
 
 ## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
 
+- **Game modules.** A versioned game-module contract (`mod_editor/games/`, `vc_game_module/v1`) lets further
+  games ship as their own packages that the studio only discovers: per-game registry and allowlist fragments
+  mirrored byte-for-byte, a conformance harness with a named CI job, frozen contract files with a release
+  discipline (`CONTRACT_PINS.json`, `CONTRACT_CHANGELOG.md`), `python -m mod_editor.games new|fragments|pins`,
+  `tools/registry_add_rows.py`, and one File-menu seam, **Select other games…** (also `--game`). The PS2 lane is
+  the first module. Rules for anyone editing this repository with an assistant: `CLAUDE.md` / `AGENTS.md`.
+- **Executable patches (scaffold).** `nfl2k5ps2.gameplay.executable_patches` is registered `unknown`: the
+  interface for carrying the Xbox gameplay patches to the PS2 executable exists (pnach emitter and ELF verifier
+  are real), but every translation to MIPS is refused until it is mapped (`docs/product/PS2_CODE_PATCH_PIPELINE.md`).
 - New capability `nfl2k5ps2.uniforms.replacement_pack_export` (extract-only by the registry's
   definition: a validated exporter, nothing written back into the game): export the open Xbox
   project's **edited** uniform textures as a PCSX2 texture-replacement pack for the PlayStation 2
