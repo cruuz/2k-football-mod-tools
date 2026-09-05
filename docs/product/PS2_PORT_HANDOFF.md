@@ -229,6 +229,13 @@ Qt-free service). Do **not** retrofit `GameId` gating into
 `studio/facade.py` — 3,404 lines with zero `GameId` references today;
 4–7 days the additive way versus 2–4 weeks the invasive way.
 
+**Slice 1 status (2026-09-04): built, CI 8/8, and witnessed** — the owner
+opened their own `SLUS-20919` ISO in the studio and saw the inventory. That is
+the row's runtime evidence; writing it up moves the row off `not-tested`. **The
+next milestone is M1, planned in detail in
+[`PS2_M1_PLAN.md`](PS2_M1_PLAN.md)** — eight work packages, 8½–12 days,
+critical path manifest → ship → registry row → witnessed render.
+
 ## Effort
 
 Commits 1–4 ≈ **1–1.5 days** (plausible — the code is committed). Slice 1
