@@ -86,10 +86,26 @@ class FieldShapeTests(unittest.TestCase):
     def test_only_the_listed_fields_are_offered(self) -> None:
         shape = team_data.fields_for(self.database.table("PLAY"))
         self.assertEqual([item.key for item in shape],
-                         ["PFNA", "PLNA", "PJEN", "PAGE", "POVR", "PSPD", "PAWR"])
+                         ["PFNA", "PLNA", "PJEN", "PAGE", "PWGT", "POVR", "PSPD", "PAWR"])
         self.assertNotIn("PGID", [item.key for item in shape],
                          "PGID is not on the offered list and must not be drawn")
-        self.assertNotIn("PWGT", [item.key for item in shape])
+        # The synthetic schema has no PHGT, so it is not offered; a field the
+        # table does not declare is skipped rather than invented.
+        self.assertNotIn("PHGT", [item.key for item in shape])
+
+    def test_weight_is_labelled_with_the_encoding_it_is_stored_in(self) -> None:
+        """PWGT is pounds less 160 [M]: the label and help say so, the bound is the field's."""
+        shape = {item.key: item for item in team_data.fields_for(self.database.table("PLAY"))}
+        weight = shape["PWGT"]
+        self.assertIn("160", weight.label)
+        self.assertIn("MINUS 160", weight.help)
+        self.assertIn("0 means 160 lb", weight.help)
+        # The synthetic field is nine bits wide; the bound is the width's, not a scale's.
+        self.assertEqual(weight.maximum, 511)
+        self.assertEqual(weight.minimum, team_data.KEEP_NUMBER)
+        listed = {name: (label, help_text) for name, label, help_text, _max in team_data.PLAYER_FIELDS}
+        self.assertIn("inches", listed["PHGT"][0])
+        self.assertIn("60 to 84", listed["PHGT"][1])
 
     def test_the_offered_shape_is_shared_between_rows_of_one_table(self) -> None:
         """Twelve thousand rows must not carry twelve thousand copies."""

@@ -159,6 +159,15 @@ PLAYER_FIELDS: Tuple[Tuple[str, str, str, Optional[int]], ...] = (
     ("PLNA", "Last name", "The player's last name.", None),
     ("PJEN", "Jersey number", f"Squad number, 0 to {JERSEY_MAX}.", JERSEY_MAX),
     ("PAGE", "Age", "Age in years, as the six-bit field stores it.", None),
+    ("PHGT", "Height (inches)",
+     "Height in inches, as the seven-bit field stores it: every retail record holds "
+     "60 to 84, and the executable reads it into the runtime height it compares with "
+     "75.0 inches.", None),
+    ("PWGT", "Weight less 160 (lb)",
+     "Weight in pounds MINUS 160, the eight-bit field's own encoding: 0 means 160 lb "
+     "and 206, the largest retail value, means 366. The same encoding is what the "
+     "sibling Madden 08 roster compiler writes and has seen load in PCSX2, and the "
+     "executable's runtime weight thresholds are 180, 222 and 310 lb.", None),
     _rating("POVR", "Overall"),
     _rating("PSPD", "Speed"),
     _rating("PACC", "Acceleration"),
