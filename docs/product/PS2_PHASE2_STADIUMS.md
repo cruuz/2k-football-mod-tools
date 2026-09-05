@@ -142,7 +142,8 @@ fixed-allocation rule, and it is tested.
 Because greedy reproduces the retail stream byte for byte, `len(greedy(edited))
 - retail_consumed` **is** the edit's cost in bytes, exactly. Twelve stadium
 scenes were sampled, each moving every vertex of its largest eligible lane
-(51-56 vertices) by +400 on y:
+(51-56 vertices) by +400 on y (medians below are upper medians,
+`sorted[n // 2]`; the raw rows are published, so they can be recomputed):
 
 | | bytes |
 |---|---|
@@ -228,7 +229,54 @@ this work.
 Full receipts, including every digest and declared byte range, are in
 `reports/gameplay_tuning/nfl2k5_ps2_stadium_trial.v1.json`.
 
-<!-- TRIAL RESULT -->
+**What was edited.** Outer entry 1556, chunk 2 — the scene the catalogue was
+generated for. Shape 98, `sideline_home_south`, bounding radius 3,974.5: its
+five largest **distinct** position lanes, 250 vertices between them, every
+vertex translated `+400` on `y`. Five lanes and not one because anyone editing
+a shape would reach for its largest lanes together rather than one in
+isolation, and because collapsing the shape's targets down to distinct payload
+spans is exactly the alias check that refused the first attempt. What those
+lanes are *of* remains unestablished; see below.
+
+| | |
+|---|---|
+| source | 4,665,081,856 bytes, `f1300699ab445ad0…`, serial `SLUS-20919`, retail boot ELF |
+| source after the run | **unchanged**, re-hashed |
+| output | 4,665,081,856 bytes, `c3f61cd55f3f8a9c…` — same size, never committed |
+| chunk span | 1,306,576 bytes = `0x20` wrapper + 1,306,544 stored |
+| decoded scene | 1,917,856 bytes = 686,416 system + 1,231,440 video |
+| lanes edited | 5, of 52 / 51 / 49 / 49 / 49 vertices |
+| decoded bytes changed | **1,000**, in 250 one-vertex runs — 4 bytes each, because only `y` moved |
+| image bytes changed | 1,282,669, every one inside the single declared window |
+| `nfl2k5_ps2_stadium_position_verify` | **pass** — `w` preserved, vertex counts and DMA/VIF structure unchanged, decoded result matches the recipe exactly |
+| `ps2_iso9660_verify` | **PASS** — 79 entries compared, 3,591,340,024 unchanged bytes compared, 0 slack, extents unmoved |
+| wall clock | 17 minutes for the patch; both verifiers together in about a minute |
+
+**The fit was as tight as the sampling said it would be.** The retail stream
+consumes 1,306,541 of its 1,306,544 stored bytes — **3 spare**, the minimum of
+the twelve sampled scenes. A 250-vertex edit has no chance in three bytes, so
+greedy refused and the optimal parse carried it: 1,296,233 bytes, 10,311 spare.
+`fill_stream` then put 10,303 of those back as literals and left 8 bytes of
+padding, so the body still fills `stored_size`. The `+0x14` scratch word needed
+162 bytes against the retail value of 192, so it never had to move, and the
+`0x20` wrapper came out byte-identical. This is the load-bearing case, not a
+lucky one: had the writer only had the retail parse, it would have refused.
+
+**Where the image actually differs.** The first changed byte is 41 bytes into
+the span — the 32-byte wrapper and the 9-byte VC-LZ stream header are
+identical — and the last changed byte is the span's last. Everything between is
+a re-encoded token stream, which is why 1,000 changed *decoded* bytes cost
+1,282,669 changed *image* bytes. That ratio is the honest price of
+recompression, and it is why the ISO-level verifier cannot be the thing that
+proves the edit was bounded: it sees a megabyte of legitimately changed bytes
+inside a declared range. The geometry verifier's decoded-side comparison —
+1,000 bytes, 250 runs, every one inside a declared lane, every `w` intact — is
+what carries that proof.
+
+**One estimate in this document was pessimistic.** The fill step was projected
+at roughly 2,600 expansions recovering about four bytes each. It took **1,444**,
+recovering 7.14 bytes each. The shape of the estimate was right and its
+magnitude was too gloomy; `fill_stream` still dominates the 17 minutes.
 
 ## What is and is not proved
 
@@ -260,23 +308,47 @@ Full receipts, including every digest and declared byte range, are in
   for a single scene; the tool will scan all 477 stadium-named SCNEs but that
   has not been run to completion.
 
-## What remains before the row can claim `offline-writer-proved`
+## What the row may claim, and what remains
+
+**`offline-writer-proved` is the ceiling, and this branch does not claim even
+that** — no registry row is written or edited by this work. The trial above is
+the evidence such a claim would rest on, and it is evidence about *bytes and
+allocations only*: a scene decoded, five declared lanes moved, the result
+recompressed into a fixed span, spliced into a new image, and re-derived by two
+independent verifiers.
+
+**Nothing has been on a screen.** No emulator and no console has run this
+image. Every `runtime_visibility_proved` and `hardware_visibility_proved` flag
+in the catalogue, the patch report, the verifier report and the trial record is
+`false`, and no wording anywhere in the outputs says otherwise. A claim about
+what a player sees is not merely unproved here — it has not been attempted.
+
+Before the row could carry `offline-writer-proved` honestly:
 
 1. **Catalogue more than one scene.** Run the tool across all 477 stadium
-   scenes and check the refusal profile holds. Cheap; not yet done.
-2. **An in-game witness on the rig.** Boot the trial ISO in PCSX2 and look at
-   the stadium. Until then the classification cannot honestly exceed what the
-   Xbox equivalent claims, and the Xbox one has `runtime.status: not-tested`
-   after far more work.
-3. **Semantic ownership for at least a handful of targets**, so a user can be
+   scenes and check the refusal profile holds. Cheap; not yet done. One scene
+   catalogued and one scene trialled is a sample of one.
+2. **Semantic ownership for at least a handful of targets**, so a user can be
    offered "raise the upper deck" rather than "move lane
-   `nfl2k5ps2/stadium/e1556/c2/s98/b0/l0`".
-4. **A decision on the headroom reality.** With 0-16 spare bytes per scene, the
-   optimal-parse encoder is not a nicety, it is load-bearing, and its output is
-   not the retail parse. That is a *different* stream shape reaching the
-   console's decoder than any retail disc ever contained. It decodes correctly
-   offline; nobody has watched the console decode one.
+   `nfl2k5ps2/stadium/e1556/c2/s98/b0/l0`". `sideline_home_south` — the shape
+   the trial moved — is a name read out of the file, not a demonstrated
+   correspondence to a thing anybody has seen.
+3. **A decision on the headroom reality.** With 0-16 spare bytes per scene, the
+   optimal-parse encoder is not a nicety, it is load-bearing — the trial proved
+   that concretely, refusing under greedy at 3 spare bytes and fitting only
+   under the optimal parse. Its output is *not* the retail parse. That is a
+   different stream shape reaching the console's decoder than any retail disc
+   ever contained. It decodes correctly offline, twice, by two independent
+   decoders; nobody has watched the console decode one.
 
-Item 4 is the one worth arguing about before shipping, and it is a good reason
+Item 3 is the one worth arguing about before shipping, and it is a good reason
 to keep this behind text and playbooks in the Phase 2 order — both of which are
 byte-size-identical across the two discs and need no recompression at all.
+
+Beyond the offline ceiling, and not a prerequisite for it:
+
+4. **An in-game witness on the rig.** Boot the trial ISO in PCSX2 and look at
+   the stadium. That is a *runtime* claim and a different class of evidence
+   from anything here. Until it exists the classification cannot honestly
+   exceed what the Xbox equivalent claims, and the Xbox one still reads
+   `runtime.status: not-tested` after far more work.
