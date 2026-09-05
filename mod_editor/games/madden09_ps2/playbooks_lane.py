@@ -919,11 +919,15 @@ class PlaybooksLane:
         at the end of the block and before the trailing NULs [M -- proved on
         the disc's own members, and by the round trip below on every write].
 
-        **The growth path.**  When the stream does not fit,
+        **The growth path.**  When the stream does not fit -- or when the
+        member is not an ``LZH1`` one to begin with, because the splice leaves
+        the codec word alone and would then contradict it --
         :func:`ea_terf.plan_member_rewrite` chooses the codec and
         :func:`ea_terf.rewrite_member` lays the container out again.  Members
         after this one move, the directory changes, and the caller mirrors it
-        into the caches.
+        into the caches.  Every TDB member of the retail disc's
+        ``GAMEDATA.DAT`` is ``LZH1`` [M], so the splice is the ordinary case
+        and the codec test is a guard against an image that is not this one.
         """
 
         parsed = ea_terf.parse_terf(blob, allow_size_mismatch=True)
@@ -933,7 +937,7 @@ class PlaybooksLane:
         # refusal to swallow, and swallowing it would hide a real encoder
         # failure behind a silent fall-through to the growth path.
         stream, report = ea_terf.lzh1_compress_report(payload, reference_bytes=slot)
-        if len(stream) <= slot:
+        if parsed.members[member].codec == ea_terf.CODEC_LZH1 and len(stream) <= slot:
             padded = stream + b"\x00" * (slot - len(stream))
             if ea_terf.decompress_member(padded, ea_terf.CODEC_LZH1, len(payload)) != payload:
                 raise PlaybookError(                        # pragma: no cover - encoder defect

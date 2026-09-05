@@ -22,8 +22,8 @@ bytes, 64-byte alignment, **115 members** [M]. 104 of them are EA TDB v8
 databases; 102 of those carry the same nineteen tables and are the shipped
 playbooks; the two beside them (members 113 and 114) carry only
 `ARTL`/`OPTM`/`PSAL` and are the in-game route menus, not playbooks. The other
-eleven members are eight `MMAP` UI screens, one `TEXT` blob, one empty member,
-and one 64-byte unclassified member [M].
+eleven members are eight `MMAP` UI screens, one 64-byte `TEXT` blob, one empty
+member, and one 32,027-byte member this reader does not classify [M].
 
 The nineteen tables, as the file spells them [M]:
 

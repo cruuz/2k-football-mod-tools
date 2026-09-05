@@ -314,6 +314,52 @@ class GrowthPathTests(_LaneCase):
         self.assertFalse(verdict.passed)
 
 
+class StoredMemberTests(unittest.TestCase):
+    """A playbook the container stored uncompressed never takes the splice.
+
+    The exact-size path writes into the member's slot and leaves the codec word
+    alone, so it is only ever right for a member that already *is* ``LZH1``.
+    Every TDB member of the retail container is [M]; this builds one that is
+    not and proves the writer goes the long way round.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls._room = tempfile.TemporaryDirectory()
+        cls.room = Path(cls._room.name)
+        cls.lane = PlaybooksLane()
+        book = lane_module.synthetic_playbook()
+        gamedata = ea_terf.build_terf(
+            [book, containers.synthetic_text_member(containers.SYNTHETIC_TEXT_LINES)],
+            chunk="COMP",
+            codecs=[ea_terf.CODEC_STORED, ea_terf.CODEC_STORED])
+        boot = (b"BOOT2 = cdrom0:\\%s;1\r\nVER = 1.00\r\nVMODE = NTSC\r\n"
+                % containers.BOOT_FILE.encode("ascii"))
+        cls.source = cls.room / "stored.iso"
+        cls.source.write_bytes(containers.iso_lib.build_synthetic_iso(
+            files=[(b"SYSTEM.CNF;1", boot),
+                   (containers.BOOT_FILE.encode("ascii") + b";1", b"\x7fELF" + bytes(4092))],
+            sub_name=b"DATA",
+            sub_files=[(lane_module.CONTAINER.encode("ascii") + b";1", gamedata)]))
+        cls.catalogue = cls.lane.build_catalogue(cls.source)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls._room.cleanup()
+
+    def test_the_book_is_catalogued_even_though_it_is_stored(self) -> None:
+        self.assertEqual(self.catalogue.document["books"], 1)
+
+    def test_the_write_takes_the_rewrite_path_and_verifies(self) -> None:
+        key = lane_module.row_key(0, "SETL", 0)
+        recipe = self.lane.compose_recipe((Edit(key, {"name": "Stored Set"}),))
+        destination = self.room / "stored-out.iso"
+        receipt = self.lane.build(self.source, destination, recipe, self.catalogue)
+        self.assertEqual(receipt.document["members"][0]["path"], "rewrite")
+        verdict = self.lane.verify(self.source, destination, receipt)
+        self.assertTrue(verdict.passed, verdict.summary)
+
+
 class VerifierTests(_LaneCase):
     def test_a_value_changed_behind_the_receipt_is_caught(self) -> None:
         key = lane_module.row_key(0, "SETL", 0)
