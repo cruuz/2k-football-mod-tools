@@ -215,7 +215,7 @@ class BuildPanel(QWidget):
         self.build_button.setObjectName("primaryButton")
         self.build_button.clicked.connect(self._build)
         actions.addWidget(self.build_button)
-        self.cancel_button = QPushButton("Cancel build")
+        self.cancel_button = QPushButton("Cancel")
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
         actions.addWidget(self.cancel_button)
@@ -555,6 +555,12 @@ class BuildPanel(QWidget):
             button.clicked.connect(lambda _checked=False, k=key, f=file_filter: self._choose_music_input(k, f))
             row.addWidget(button)
             pl.addLayout(row)
+        self.music_preview_button = QPushButton("Preview music library size")
+        self.music_preview_button.clicked.connect(self._preview_music_library)
+        pl.addWidget(self.music_preview_button)
+        self.music_preview_label = QLabel("Choose a recipe to preview output and temporary space.")
+        self.music_preview_label.setWordWrap(True)
+        pl.addWidget(self.music_preview_label)
         self.camera_check = self._option(pl, "camera", "Make Standard camera look like Far",
                                          "The Standard preset takes Far's look-at, lens and offset; Far itself is untouched.")
         self.widescreen_check = self._option(pl, "widescreen", "Widescreen 16:9",
@@ -1166,6 +1172,11 @@ class BuildPanel(QWidget):
             self.summary_label.setText("Selected: nothing yet.")
         blocker = self.blocker()
         self.cancel_button.setEnabled(self._task is not None)
+        self.music_preview_button.setEnabled(bool(
+            self._task is None and not self._reading
+            and self.music_library_check.isEnabled()
+            and self.source_field.text().strip() and self.music_library_field.text().strip()
+            and not (self.operation_guard and self.operation_guard())))
         self.build_button.setEnabled(not blocker)
         self.blocker_label.setText(blocker)
         self.build_button.setToolTip(blocker or "Copies the disc and writes the selected changes into the copy (a few minutes).")
@@ -1352,6 +1363,56 @@ class BuildPanel(QWidget):
             lines.append("Files: " + "; ".join(files))
         lines += ["", "Takes a few minutes. " + XEMU_LINE]
         return "\n".join(lines)
+
+    def _preview_music_library(self):
+        if not self.music_preview_button.isEnabled():
+            return
+        source = self.source_field.text().strip()
+        recipe = self.music_library_field.text().strip()
+        self._music_preview_identity = (source, recipe)
+
+        def preview(progress):
+            from mod_editor.core import nfl2k5_music_banks
+            progress("Checking music library sizes...", 0, 0)
+            result = nfl2k5_music_banks.plan(source, recipe)
+            progress("Music library sizes checked", 1, 1)
+            return result
+
+        task = _Task(preview)
+        task.signals.progress.connect(self.progress_label.setText)
+        task.signals.finished.connect(self._music_preview_done)
+        task.signals.failed.connect(self._music_preview_failed)
+        self._task = task
+        self.operation_state_changed.emit(True)
+        self.progress_bar.show()
+        self._refresh()
+        self._pool.start(task)
+
+    def _finish_music_preview(self):
+        self._task = None
+        self.operation_state_changed.emit(False)
+        self.progress_bar.hide()
+        self.progress_label.setText("")
+        self._refresh()
+
+    def _music_preview_done(self, result):
+        self._finish_music_preview()
+        if self._music_preview_identity != (self.source_field.text().strip(), self.music_library_field.text().strip()):
+            self.music_preview_label.setText("The source or recipe changed. Preview again for current sizes.")
+            return
+        output = result["layout"]["image_size"]
+        scratch = result["scratch_bytes"] + result["source_size"]
+        if self._include_session_project() or self.music_project_check.isChecked():
+            scratch += result["source_size"]
+        self.music_preview_label.setText(
+            f"Projected library output: {output:,} bytes ({output / 1024**3:.2f} GiB). "
+            f"Temporary space for this build: about {scratch:,} bytes ({scratch / 1024**3:.2f} GiB). "
+            "Other selected changes may increase these estimates. Sizes are checked again during the build. "
+            "Create a fresh playlist after rebuilding.")
+
+    def _music_preview_failed(self, message):
+        self._finish_music_preview()
+        self.music_preview_label.setText(plain_failure("preview the music library", message))
 
     def _include_session_project(self):
         return bool(self.music_project_check.isChecked() and not self.music_project_field.text().strip()

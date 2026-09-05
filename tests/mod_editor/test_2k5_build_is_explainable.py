@@ -240,7 +240,7 @@ class DefenseBuildOrderingTests(unittest.TestCase):
         events = []
         packs = SimpleNamespace(
             DEFENSE_SCHEMA="v2",
-            load_pack=lambda p: SimpleNamespace(schema="v2" if p.name == "defense.2k5book" else "v1"),
+            load_pack=lambda p: SimpleNamespace(schema="v2" if p.name == "defense.2k5book" else "v1", plays=()),
             apply_packs_to_image=lambda target, paths, **kw: events.append(tuple(p.name for p in paths)) or {},
         )
         pools = SimpleNamespace(status=lambda payload: "retail", apply=lambda payload: (payload, {}))

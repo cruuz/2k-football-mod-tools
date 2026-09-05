@@ -112,6 +112,19 @@ class IntegrationBuildTests(unittest.TestCase):
         panel.apply_state(state)
         return panel
 
+    def test_music_size_preview_includes_staging_and_rejects_stale_selection(self):
+        panel = self.panel()
+        panel.music_library_field.setText("my-library.json")
+        panel._music_preview_identity = ("retail.iso", "my-library.json")
+        result = {"layout": {"image_size": 1200}, "scratch_bytes": 1600, "source_size": 1000}
+        panel._music_preview_done(result)
+        self.assertIn("1,200 bytes", panel.music_preview_label.text())
+        self.assertIn("2,600 bytes", panel.music_preview_label.text())
+        self.assertFalse(panel.cancel_button.isEnabled())
+        panel.music_library_field.setText("another-library.json")
+        panel._music_preview_done(result)
+        self.assertIn("Preview again", panel.music_preview_label.text())
+
     def test_experimental_flags_roundtrip_and_clear_on_preset_switch(self):
         plan = mod_build.BuildPlan("source.iso", "copy.iso", xbe_space=True, kickoff_relocated=True)
         for name, season, cap, screen in (("softdrink_experimental", True, True, "D"),
