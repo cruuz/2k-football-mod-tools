@@ -12,9 +12,12 @@ What is on the contract today:
 
 * identity -- ``SLUS-20919`` and the two retail digests the registry pins,
   through the shared :mod:`mod_editor.games._formats.ps2_disc` identifier;
-* one lane, ``colors.unif_words`` (registry row
-  ``nfl2k5ps2.colors.unif_words``): the on-disc facemask/turtleneck colour
-  writer, plan → build → verify on a copy of the user's own disc;
+* seven lanes -- ``colors.unif_words`` here (the facemask/turtleneck colour
+  writer), plus the six in :mod:`.disc_lanes`: menu text, the disc roster,
+  playbooks, stadium position lanes, AUDO sounds and the read-only disc
+  inventory.  Each is one registry row, each is plan → build → verify on a
+  copy of the user's own disc, and each ships a synthetic source CI proves it
+  on without game data;
 * one art lane, ``uniforms.art`` (registry row
   ``nfl2k5ps2.uniforms.replacement_pack_export``): the disc's own uniform
   textures decoded to PNG, edited, and written back out as a PCSX2 replacement
@@ -23,8 +26,13 @@ What is on the contract today:
   chooser opens under the label the core composes from the manifest), the PS2
   save editor, the PS2 disc inventory and the PS2 replacement-pack export.
 
-The other eight registry rows stay exactly where they are; the fragment beside
-this file carries all nine so the registry-merge proof covers the whole game.
+Two registry rows have no lane.  ``nfl2k5ps2.saves.roster_name_writer`` edits a
+memory-card save rather than a disc image, and
+``nfl2k5ps2.uniforms.replacement_pack_export`` exports a PCSX2 pack from an
+*Xbox* project -- neither reads the PS2 source a lane's ``synthetic_source``
+and identifier are built around, so both stay windows.  The fragment beside
+this file carries all nine rows either way, so the registry-merge proof covers
+the whole game.
 
 A lane joins ``GAME.lanes`` when its registry row is in the fragment: the
 executable-patch lane (``code_patches.py``) is complete as an interface and
@@ -48,6 +56,7 @@ from mod_editor.games.contract import (
     Catalogue,
     DeclaredRange,
     Edit,
+    Field,
     GameIdentity,
     GameModule,
     Plan,
@@ -70,6 +79,8 @@ import nfl2k5_ps2_disc_inventory as inventory_lib  # noqa: E402
 import nfl2k5_ps2_unif_color_patch as colour_patch  # noqa: E402
 import nfl2k5_ps2_unif_color_target_catalog as colour_catalog  # noqa: E402
 import nfl2k5_ps2_unif_color_verify as colour_verify  # noqa: E402
+
+from .disc_lanes import DISC_LANES  # noqa: E402
 
 GAME_ID = "nfl2k5_ps2"
 SERIAL = inventory_lib.SERIAL
@@ -131,6 +142,12 @@ class UnifColourLane:
                 budget=self.budget,
                 searchable=f"{key} {_describe_selector(key)} {row['iso_path']}",
                 raw=row,
+                fields=tuple(
+                    Field(name, "colour_argb", name.title(),
+                          "A packed ARGB word of exactly 4 bytes: #RRGGBB or AARRGGBB. "
+                          "Leave it blank to keep the colour that is there.")
+                    for name in self._WORDS
+                ),
             ))
         return Catalogue(
             schema=document["schema"],
@@ -374,6 +391,7 @@ CODE_PATCH_CAPABILITY_ID = "nfl2k5ps2.gameplay.executable_patches"
 UNIFORM_ART_CAPABILITY_ID = "nfl2k5ps2.uniforms.replacement_pack_export"
 LANES = (
     (UnifColourLane(),)
+    + DISC_LANES
     + ((UniformArtLane(),) if _registered(UNIFORM_ART_CAPABILITY_ID) else ())
     + ((_code_patch_lane()[0],) if _registered(CODE_PATCH_CAPABILITY_ID) else ())
 )
@@ -389,5 +407,5 @@ GAME = GameModule(
     studio_window="disc-studio",
 )
 
-__all__ = ["CODE_PATCH_CAPABILITY_ID", "CODE_PATCH_LANE", "GAME", "GAME_ID", "IDENTITY", "LANES", "SERIAL",
+__all__ = ["CODE_PATCH_CAPABILITY_ID", "CODE_PATCH_LANE", "DISC_LANES", "GAME", "GAME_ID", "IDENTITY", "LANES", "SERIAL",
            "UNIFORM_ART_CAPABILITY_ID", "UnifColourLane", "UniformArtLane", "WINDOWS"]
