@@ -1,7 +1,11 @@
 """The "Select other games…" dialog: core-owned, contract-driven, game-blind.
 
-Draws :mod:`mod_editor.games.chooser`.  The studio's File menu needs exactly
-one action and one handler to host every game module through this window::
+Draws :mod:`mod_editor.games.chooser`: **one row per game, the studio it
+opens**.  Open opens that module's ``studio_window``; the module's other
+windows are reachable by id, from the command line and from the studio's own
+Windows menu, but the chooser asks only which game.  The studio's File menu
+needs exactly one action and one handler to host every game module through
+this window::
 
     action = file_menu.addAction("Select other games…")
     action.triggered.connect(self._open_game_chooser)
@@ -27,10 +31,7 @@ from PyQt5.QtWidgets import (
     QAbstractItemView,
     QDialog,
     QDialogButtonBox,
-    QHBoxLayout,
     QLabel,
-    QListWidget,
-    QListWidgetItem,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -43,17 +44,17 @@ from .chooser import (
     ChooserRow,
     chooser_headline,
     chooser_rows,
+    open_studio,
     open_window,
-    openable_windows,
 )
 from .contract import Refusal
 
-COLUMNS = ("Game", "Platform", "Module", "Contract", "Status")
+COLUMNS = ("Studio", "Status", "Detail")
 _PROBLEM_COLOUR = "#ff7b84"
 
 
 class GameChooserDialog(QDialog):
-    """List every discovered game module and open the one the user picks."""
+    """List every discovered game's studio and open the one the user picks."""
 
     def __init__(
         self,
@@ -88,9 +89,9 @@ class GameChooserDialog(QDialog):
 
         self.table = QTableWidget(0, len(COLUMNS))
         self.table.setObjectName("gameChooserTable")
-        self.table.setAccessibleName("Game modules")
+        self.table.setAccessibleName("Game studios")
         self.table.setAccessibleDescription(
-            "Every installed game module with its platform, version, contract and whether it can be loaded."
+            "Every installed game's studio, with what it is and whether it can be opened."
         )
         self.table.setHorizontalHeaderLabels(list(COLUMNS))
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -98,6 +99,7 @@ class GameChooserDialog(QDialog):
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
         self.table.itemSelectionChanged.connect(self._selection_changed)
+        self.table.itemDoubleClicked.connect(lambda _item: self.open_selected())
         layout.addWidget(self.table, 2)
 
         self.detail = QLabel("")
@@ -107,26 +109,15 @@ class GameChooserDialog(QDialog):
         self.detail.setTextInteractionFlags(Qt.TextSelectableByMouse)
         layout.addWidget(self.detail)
 
-        windows_row = QHBoxLayout()
-        windows_label = QLabel("Windows this module offers:")
-        self.windows = QListWidget()
-        self.windows.setObjectName("gameChooserWindows")
-        self.windows.setAccessibleName("Windows offered by the selected module")
-        self.windows.itemDoubleClicked.connect(lambda _item: self.open_selected())
-        windows_label.setBuddy(self.windows)
-        windows_row.addWidget(windows_label)
-        windows_row.addWidget(self.windows, 1)
-        layout.addLayout(windows_row)
-
         note = QLabel(BOUNDARY_NOTE)
         note.setObjectName("gameChooserBoundaryNote")
         note.setWordWrap(True)
         layout.addWidget(note)
 
         self.buttons = QDialogButtonBox()
-        self.open_button = self.buttons.addButton("Open window", QDialogButtonBox.AcceptRole)
+        self.open_button = self.buttons.addButton("Open studio", QDialogButtonBox.AcceptRole)
         self.open_button.setObjectName("gameChooserOpen")
-        self.open_button.setAccessibleName("Open the selected window")
+        self.open_button.setAccessibleName("Open the selected studio")
         self.open_button.setEnabled(False)
         self.open_button.clicked.connect(lambda _checked=False: self.open_selected())
         close_button = self.buttons.addButton(QDialogButtonBox.Close)
@@ -136,7 +127,7 @@ class GameChooserDialog(QDialog):
     def _populate(self) -> None:
         self.table.setRowCount(len(self._rows))
         for index, row in enumerate(self._rows):
-            values = (row.title, row.platform, row.version, row.contract, row.status_text)
+            values = (row.studio_label, row.status_text, row.detail)
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
                 item.setData(Qt.UserRole, row.game_id)
@@ -166,53 +157,43 @@ class GameChooserDialog(QDialog):
                 return True
         return False
 
-    def selected_window_id(self) -> Optional[str]:
-        item = self.windows.currentItem()
-        return item.data(Qt.UserRole) if item is not None else None
-
     def _selection_changed(self) -> None:
         row = self.selected_row()
-        self.windows.clear()
         if row is None:
             self.detail.setText("")
             self.open_button.setEnabled(False)
             return
         self.detail.setStyleSheet("" if row.loadable else f"color: {_PROBLEM_COLOUR};")
         self.detail.setText(row.detail)
-        offered = openable_windows(row, has_studio_session=self._context.get("facade") is not None)
-        withheld = [window for window in row.windows if window not in offered]
-        for window in offered:
-            item = QListWidgetItem(window.menu_label)
-            item.setToolTip(window.tooltip)
-            item.setData(Qt.UserRole, window.window_id)
-            self.windows.addItem(item)
-        for window in withheld:
-            item = QListWidgetItem(f"{window.menu_label} (needs the studio's open project)")
-            item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
-            item.setData(Qt.UserRole, None)
-            self.windows.addItem(item)
-        if offered:
-            self.windows.setCurrentRow(0)
-        self.open_button.setEnabled(bool(offered))
+        self.open_button.setEnabled(row.loadable)
 
     # -- opening -------------------------------------------------------
 
     def open_selected(self, window_id: Optional[str] = None) -> bool:
-        """Open the chosen window through the module; report, never raise."""
+        """Open the selected studio -- or one named window -- through the module.
+
+        Every failure is reported in the detail pane; the dialog never raises
+        out of a click.  ``window_id`` is how the studio's own Windows menu and
+        the command line reach a module's other windows through this same path.
+        """
 
         row = self.selected_row()
-        chosen = window_id or self.selected_window_id()
-        if row is None or not row.loadable or not chosen:
+        if row is None or not row.loadable:
             return False
+        chosen = window_id or row.studio_window
         try:
-            window = open_window(self._report, row.game_id, chosen, parent=self, context=self._context)
+            if window_id:
+                window = open_window(self._report, row.game_id, window_id, parent=self,
+                                     context=self._context)
+            else:
+                window = open_studio(self._report, row.game_id, parent=self, context=self._context)
         except Refusal as exc:
             self.detail.setStyleSheet(f"color: {_PROBLEM_COLOUR};")
             self.detail.setText(str(exc))
             return False
         self.last_opened = window
         self.detail.setStyleSheet("")
-        self.detail.setText(f"{row.title}: opened {chosen}.")
+        self.detail.setText(f"{row.studio_label}: opened {chosen}.")
         if self._modal_windows and hasattr(window, "exec_"):
             window.exec_()
             if hasattr(window, "deleteLater"):

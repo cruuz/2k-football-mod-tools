@@ -1,10 +1,17 @@
 """Qt-free model for the studio's one game-module seam: "Select other games…".
 
 The Xbox studio hosts N games through a single File-menu action.  Its handler
-opens a small core-owned chooser that lists every discovered game module --
-name, platform, module version, contract version and load status -- and, for
-a loadable one, the windows it offers.  Choosing a window asks the module to
-open it; the core never imports a module's internals beyond the contract.
+opens a small core-owned chooser that lists every discovered game module as
+one row: **the studio it opens**.  One row per module, labelled the way the
+core composes every studio label -- ``<Console> <Game> <Year> Studio`` -- with
+its status and a detail line, sorted by console, game and year.  Choosing one
+opens that module's ``studio_window``; the core never imports a module's
+internals beyond the contract.
+
+The other windows a module offers are still reachable -- by id through
+:func:`open_window`, from the command line, and from the studio's own Windows
+menu -- but they are no longer a list the chooser draws: a user picks a game,
+not a window.
 
 This module is the chooser's whole behaviour.  The dialog in
 :mod:`mod_editor.games.chooser_qt` only draws it, so everything a test needs
@@ -25,9 +32,9 @@ STATUS_LOADABLE = "loadable"
 STATUS_REFUSED = "refused"
 
 BOUNDARY_NOTE = (
-    "Each game module hosts its own windows and works on your own files. "
-    "Choosing one here changes nothing until you act inside its window; a "
-    "module that cannot be loaded is listed with the reason and cannot be opened."
+    "Each game has one studio and works on your own files. Choosing one here "
+    "changes nothing until you act inside it; a module that cannot be loaded is "
+    "listed with the reason and cannot be opened."
 )
 
 
@@ -47,9 +54,19 @@ class WindowRow:
 
 @dataclass(frozen=True)
 class ChooserRow:
-    """One line of the chooser: a hosted game or a refused package."""
+    """One line of the chooser: one game's studio, hosted or refused.
+
+    ``studio_label`` is what the user reads -- composed by the core from the
+    manifest for a hosted module, and read leniently from ``game.json`` for a
+    refused one so a broken module is still recognisable.  ``studio_window``
+    is the window :func:`open_studio` opens, empty for a refused module.
+    """
 
     game_id: str
+    studio_label: str
+    console: str
+    game: str
+    year: str
     title: str
     platform: str
     version: str
@@ -58,6 +75,7 @@ class ChooserRow:
     reason: str
     windows: tuple[WindowRow, ...]
     lanes: int
+    studio_window: str = ""
 
     @property
     def loadable(self) -> bool:
@@ -68,19 +86,29 @@ class ChooserRow:
         return "Ready" if self.loadable else "Cannot load"
 
     @property
+    def sort_key(self) -> tuple[str, str, str, str]:
+        """Console, game, year, then the id: the order studios are listed in."""
+
+        return (self.console.casefold(), self.game.casefold(), self.year.casefold(), self.game_id)
+
+    @property
     def detail(self) -> str:
         if not self.loadable:
             return f"{self.title} cannot be loaded: {self.reason}"
-        windows = ", ".join(row.menu_label for row in self.windows) or "no windows"
         return (
             f"{self.title} — {self.platform} · module {self.version} · "
-            f"{self.contract} · {self.lanes} lane(s) · windows: {windows}"
+            f"{self.contract} · {self.lanes} lane(s)"
         )
 
 
 def _row_for_game(game: GameModule) -> ChooserRow:
+    manifest = game.manifest
     return ChooserRow(
         game_id=game.game_id,
+        studio_label=manifest.studio_label,
+        console=manifest.console,
+        game=manifest.game,
+        year=manifest.year,
         title=game.identity.title,
         platform=game.identity.platform,
         version=game.version,
@@ -89,12 +117,17 @@ def _row_for_game(game: GameModule) -> ChooserRow:
         reason="",
         windows=tuple(WindowRow.from_spec(spec) for spec in game.windows),
         lanes=len(game.lanes),
+        studio_window=game.studio_window,
     )
 
 
 def _row_for_refused(item: RefusedGame) -> ChooserRow:
     return ChooserRow(
         game_id=item.game_id,
+        studio_label=item.studio_label,
+        console=item.console,
+        game=item.game,
+        year=item.year,
         title=item.title if item.title != "?" else item.directory,
         platform=item.platform,
         version=item.version,
@@ -107,13 +140,11 @@ def _row_for_refused(item: RefusedGame) -> ChooserRow:
 
 
 def chooser_rows(report: DiscoveryReport) -> tuple[ChooserRow, ...]:
-    """Loadable games first, then refused packages; each group by title."""
+    """One row per module -- its studio -- sorted by console, game, year."""
 
-    loadable = sorted((_row_for_game(game) for game in report.games),
-                      key=lambda row: (row.title.casefold(), row.game_id))
-    refused = sorted((_row_for_refused(item) for item in report.refused),
-                     key=lambda row: (row.title.casefold(), row.game_id))
-    return tuple(loadable) + tuple(refused)
+    rows = [_row_for_game(game) for game in report.games]
+    rows += [_row_for_refused(item) for item in report.refused]
+    return tuple(sorted(rows, key=lambda row: row.sort_key))
 
 
 def chooser_headline(rows: tuple[ChooserRow, ...]) -> str:
@@ -136,6 +167,24 @@ def openable_windows(row: ChooserRow, *, has_studio_session: bool) -> tuple[Wind
         window for window in row.windows
         if has_studio_session or not window.needs_studio_session
     )
+
+
+def open_studio(
+    report: DiscoveryReport,
+    game_id: str,
+    *,
+    parent: Any = None,
+    context: Optional[Mapping[str, Any]] = None,
+) -> Any:
+    """Open one module's studio -- the window its ``studio_window`` names.
+
+    This is what the chooser's Open does and what ``python -m mod_editor.games
+    open <game>`` does without ``--window``.  Every failure is a
+    :class:`~mod_editor.games.contract.Refusal`, as with any other window.
+    """
+
+    game = report.game(game_id)
+    return open_window(report, game_id, game.studio_window, parent=parent, context=context)
 
 
 def open_window(
@@ -175,6 +224,7 @@ __all__ = [
     "WindowRow",
     "chooser_headline",
     "chooser_rows",
+    "open_studio",
     "open_window",
     "openable_windows",
 ]

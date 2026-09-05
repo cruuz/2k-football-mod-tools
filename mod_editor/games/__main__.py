@@ -5,13 +5,15 @@ delegate to, and it needs no studio state: a user who owns only one game's
 release can open its window with ``open <game-id> --window <id>``.
 
     list                                  hosted and refused modules (the default)
-    show <game-id>                        one module and its windows
-    open <game-id> --window <id>          open one window alone
+    show <game-id>                        one module, its studio and its windows
+    open <game-id> [--window <id>]        open the module's studio, or one window alone
     chooser                               the "Select other games…" window
+    lane <game-id> <lane-id> <step> …     run one lane step (catalogue/plan/build/verify)
     conformance [--game ID] [--static-only] [--work-dir DIR]
     pins --check | --write | --release    the frozen contract pins (see CONTRACT_CHANGELOG.md)
     fragments <game-id> --check | --write regenerate a module's fragments from the canonical files
-    new <game-id> --title T --platform P  scaffold a module that passes conformance
+    new <game-id> --console C --game G --year Y --title T --platform P
+                                          scaffold a module that passes conformance
 """
 
 from __future__ import annotations
@@ -22,7 +24,7 @@ import sys
 from typing import Optional, Sequence
 
 from . import discover
-from .chooser import chooser_headline, chooser_rows, open_window
+from .chooser import chooser_headline, chooser_rows, open_studio, open_window
 from .contract import ContractError, Refusal
 
 
@@ -30,15 +32,20 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m mod_editor.games", description=__doc__.splitlines()[0])
     parser.add_argument("--games-root", type=Path, help=argparse.SUPPRESS)
     commands = parser.add_subparsers(dest="command")
+    # ``lane`` is parsed by mod_editor.games.lane_cli: it has a verb of its own
+    # per step, and keeping it there means a child process can run exactly the
+    # arguments the studio built without this parser knowing any of them.
+    commands.add_parser("lane", add_help=False, help="run one lane step (catalogue/plan/build/verify)")
 
     commands.add_parser("list", help="hosted and refused modules")
 
     show = commands.add_parser("show", help="one module and its windows")
     show.add_argument("game")
 
-    opener = commands.add_parser("open", help="open one window of a module, alone")
+    opener = commands.add_parser("open", help="open a module's studio, or one of its windows alone")
     opener.add_argument("game")
-    opener.add_argument("--window", required=True, metavar="ID")
+    opener.add_argument("--window", metavar="ID",
+                        help="a window id; without it, the module's studio opens")
 
     commands.add_parser("chooser", help="open the game chooser window")
 
@@ -61,9 +68,12 @@ def _parser() -> argparse.ArgumentParser:
     fragments.add_argument("--repo-root", type=Path, help=argparse.SUPPRESS)
 
     new = commands.add_parser("new", help="scaffold a new game module")
-    new.add_argument("game")
+    new.add_argument("game_id", metavar="game")
     new.add_argument("--title", required=True)
     new.add_argument("--platform", required=True)
+    new.add_argument("--console", required=True, help="1-8 characters, no whitespace (PS2)")
+    new.add_argument("--game", required=True, help="1-24 characters (Madden)")
+    new.add_argument("--year", required=True, help="1-8 characters, no whitespace (08)")
     new.add_argument("--serial", default=None, help="the disc serial the module recognises, if any")
     new.add_argument("--repo-root", type=Path, help=argparse.SUPPRESS)
     return parser
@@ -72,7 +82,7 @@ def _parser() -> argparse.ArgumentParser:
 def _list(rows) -> int:
     print(chooser_headline(rows))
     for row in rows:
-        print(f"  {row.game_id:<16} {row.status_text:<12} {row.detail}")
+        print(f"  {row.game_id:<16} {row.studio_label:<26} {row.status_text:<12} {row.detail}")
     return 0
 
 
@@ -109,8 +119,18 @@ def _tolerant_console() -> None:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     _tolerant_console()
-    args = _parser().parse_args(argv)
+    # ``lane`` keeps its own arguments: the sub-parser declares none, so
+    # everything after it comes back as extras and is handed to lane_cli whole.
+    args, extra = _parser().parse_known_args(argv)
     command = args.command or "list"
+
+    if command == "lane":
+        from .lane_cli import main as lane_main
+
+        return lane_main(extra, games_root=args.games_root)
+    if extra:
+        print(f"error: unrecognised arguments: {' '.join(extra)}", file=sys.stderr)
+        return 2
 
     if command == "conformance":
         from .conformance import main as conformance_main
@@ -158,7 +178,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if command == "new":
         from .scaffold import main as scaffold_main
 
-        forwarded = [args.game, "--title", args.title, "--platform", args.platform]
+        forwarded = [args.game_id, "--title", args.title, "--platform", args.platform,
+                     "--console", args.console, "--game", args.game, "--year", args.year]
         if args.serial:
             forwarded += ["--serial", args.serial]
         if args.repo_root:
@@ -186,17 +207,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return code
 
     if command == "show":
-        print(row.detail)
+        print(f"{row.studio_label} — {row.detail}")
         for window in row.windows:
             needs = " (needs the studio's open project)" if window.needs_studio_session else ""
-            print(f"  --window {window.window_id:<18} {window.menu_label}{needs}")
+            studio = " [studio]" if window.window_id == row.studio_window else ""
+            print(f"  --window {window.window_id:<18} {window.menu_label}{studio}{needs}")
         return 0
 
     from PyQt5.QtWidgets import QApplication
 
     application = QApplication.instance() or QApplication(sys.argv[:1])
     try:
-        window = open_window(report, row.game_id, args.window)
+        if args.window:
+            window = open_window(report, row.game_id, args.window)
+        else:
+            window = open_studio(report, row.game_id)
     except Refusal as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
