@@ -1,5 +1,25 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC86 — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container (unreleased)
+
+- **Select other games… lists studios**, one row per game, labelled console, game, year: **PS2 NFL 2K5 Studio**. Open it
+  and the game's studio appears; the Xbox studio's File menu keeps that entry and the chooser, and the three PS2 side
+  windows live in the studio's Windows menu. `python -m mod_editor --game nfl2k5_ps2` opens it from a terminal.
+- **The Game Studio shell.** Every game gets the same fourteen pages as the Xbox studio. A page with a lane draws the
+  lane's own fields (colour words, names, sounds, PNGs); a page without one says, in the game's words, why it is not
+  available yet. Build & Share chains the staged edits into a new image with receipts and verifies each step. Writers wear
+  their registry classification and, unless seen in a game, "Not yet tested in-game".
+- **Uniform art from the PS2 disc.** On the Uniforms page the disc's own uniform textures are decoded to PNG, exported,
+  edited in any editor, imported back and written as a PCSX2 replacement pack under the names PCSX2 computes at draw
+  time, checked by the independent verifier (`tools/nfl2k5_ps2_uniform_art.py`, `validate_nfl2k5_ps2_uniform_art.sh`).
+  The Xbox-project route stays as a second origin. Extract-only by rule: PCSX2 swaps the art while the game runs.
+- **Contract 1.0 grew** (still unreleased): `console` / `game` / `year` and the composed label, `studio_window`,
+  `Field` and `Target.fields`, `ReadOnlyLane`, `ArtLane`, `AudioLane`, `Lane.page`, `python -m mod_editor.games lane`.
+  `docs/product/GAME_STUDIO_SHELL_PLAN.md` is the plan; `GAME_MODULE_CONTRACT.md` §14 the reference.
+- **EA TERF containers** (`mod_editor/games/_formats/ea_terf.py`, `tools/ea_terf_inspect.py`,
+  `docs/product/EA_TERF_FORMAT.md`): the PlayStation 2 Madden / NCAA disc container read and written, LZH1 and RLE1
+  members decoded. The substrate for **PS2 Madden 09 Studio** in the next release.
+
 ## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
 
 - **PS2 NFL 2K5 Studio.** The PS2 disc window is now named the way every game's studio will be, console, game, year:

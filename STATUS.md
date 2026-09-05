@@ -1,4 +1,27 @@
-# 2K5 Mod Studio — v1.0 RC85 Release Status
+# 2K5 Mod Studio — v1.0 RC86 Release Status
+
+## Beta 62 (unreleased) — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container
+
+Source/UI version is **2K5 RC86**. Everything below is offline-proved or read-only unless it says otherwise; nothing new
+has been seen in a game.
+
+- **Select other games… lists studios, one per game**, labelled *Console Game Year Studio*: **PS2 NFL 2K5 Studio** today.
+  The Xbox studio's File menu keeps two PS2 entries (the studio and the chooser); the save editor, disc inventory and
+  replacement-pack export moved into the studio's own Windows menu. `--game nfl2k5_ps2` opens the studio.
+- **The Game Studio shell** (`mod_editor/games/studio_qt.py`, core-owned): the Xbox studio's fourteen pages for every game,
+  each either a lane page drawn from the lane's declared fields or an honest empty page that says why, a Build & Share page
+  that chains every staged edit through child processes with receipts and per-step verification, honesty badges on every
+  writer. Games write lanes, never UI. The classic hand-written PS2 disc window stays reachable for its play designers.
+- **Contract 1.0 (still unreleased) grew** the three display fields and the composed label, the studio window, `Field` /
+  `Target.fields`, `ReadOnlyLane` / `ArtLane` / `AudioLane`, `Lane.page`, and a `lane` command-line verb; scaffold,
+  conformance (shell checks included) and the frozen tests moved with it.
+- **PS2 uniform art works off the PS2 disc**: the disc's own uniform textures decoded to PNG, edited, packed for PCSX2 under
+  the identities it computes at draw time, verified independently; 634 packages / 38,674 textures catalogued on the owner's
+  disc, 841 packable across 32 teams. Extract-only by registry rule; PCSX2 swaps at run time; nothing is written to the disc.
+- **EA's PlayStation 2 disc container is read and written** (`_formats/ea_terf`: TERF/DIR1, DATA and COMP chunks, LZH1 and
+  RLE1 decoders re-expressed from the owner's prior work, stored-member writes). Madden NFL 09 (PS2) is the second title and
+  builds on it in the next release.
+- Windows console fix for the games command line; macOS path fix in the conformance test; upstream Beta 60 merged.
 
 ## Beta 61 (unreleased) — NFL 2K5 (PS2): six on-disc writers, proven offline
 
