@@ -95,6 +95,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_roster_records as rr
+from mod_editor.gui.franchise_panel_qt import FranchisePanel
 
 DISC_FILTER = "Disc images (*.iso *.xiso *.xiso.iso);;All files (*)"
 SAVE_FILTER = "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)"
@@ -887,7 +888,12 @@ class RosterEditorPanel(QWidget):
         splitter.setStretchFactor(1, 2)
         splitter.setStretchFactor(2, 4)          # the cards are the widest thing on the page
         splitter.setSizes([220, 420, 720])
-        layout.addWidget(splitter, 1)
+        # a franchise save adds a second page beside the roster (hidden, tab bar and all, otherwise)
+        self.pages = QTabWidget()
+        self.pages.addTab(splitter, "Roster")
+        self.franchise_panel = FranchisePanel()
+        self.franchise_panel.install(self.pages)
+        layout.addWidget(self.pages, 1)
 
         self.status_label = QLabel("Load a disc or a save to begin.")
         self.status_label.setWordWrap(True)
@@ -1256,6 +1262,7 @@ class RosterEditorPanel(QWidget):
         self._source_path = source
         self._source_kind = kind
         self._show_franchise(None)
+        self.franchise_panel.clear()
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
@@ -1319,6 +1326,7 @@ class RosterEditorPanel(QWidget):
         self.load_document(document, label=f"{Path(path).name} (signature verified)",
                            source=Path(path), kind="save", detection=self.detect_scheme(document))
         self._show_franchise(self._franchise_summary(container.savegame))
+        self.franchise_panel.load(container, document)
         return True
 
     @staticmethod
@@ -2386,6 +2394,8 @@ class RosterEditorPanel(QWidget):
             raise rr.RosterRecordError("no roster is loaded")
         destination = Path(target)
         if self._source_kind == "save":
+            if self.franchise_panel.active:          # roster edits first, then the franchise edits, one copy
+                return self.franchise_panel.write_copy_to(destination, overwrite=overwrite)
             return rr.save_document(self.document, destination, overwrite=overwrite)
         if self._source_path is None:
             raise rr.RosterRecordError("this roster did not come from a disc or a save")
