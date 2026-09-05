@@ -854,6 +854,7 @@ def build_catalog(iso_path: str) -> dict:
             "packs": [{"name": n, "iso_byte_offset": b, "size": s} for n, b, s in packs],
         },
         "scope": {
+            "all_text_bearing_kinds": list(ALL_TEXT_BANK_KINDS),
             "in_scope_kinds": list(TEXT_KINDS),
             "excluded_kinds": {
                 "NAME": "160-byte player-name-atlas metric tables, not user text",

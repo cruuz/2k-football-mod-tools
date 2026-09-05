@@ -223,6 +223,14 @@
  },
  "schema": "nfl2k5_ps2_text_target_catalog/v1",
  "scope": {
+  "all_text_bearing_kinds": [
+   "CRED",
+   "NAME",
+   "ROST",
+   "SITU",
+   "STRG",
+   "TRIV"
+  ],
   "catalog_contains_decoded_text": false,
   "character_limit_formula": "allocation_bytes // 2 - 1",
   "encoding": "utf-16le",
