@@ -108,8 +108,60 @@ The shell's fourteen pages, in its order, and what Madden 09 has on each.
 
 ### 3.1 Uniforms & Equipment — the `MMAP` art lane
 
-See §6 for the pixel-layout verdict, which is what decides whether this page
-exports art or only describes it.
+`ArtLane`, `extract-only`. The disc's uniform, player-face, coach-face and
+tattoo textures, catalogued, previewed, exported as PNG, and checked on the
+way back in. The pixel layout is **proved** — §6 has the evidence — so this
+page exports art rather than only describing it.
+
+**Measured on the retail disc's four art containers** [M]:
+
+```
+1,780 texture members
+7,616 images
+7,082 decodable            (534 refused, in three named groups)
+```
+
+Across ten containers, 11,039 of 12,779 images decode. Every refusal falls in
+a group the catalogue names rather than a silent gap:
+
+| refused | why |
+|---:|---|
+| 1,188 | pixels stored under EA codec 4, `IPU1` — every `UIS_MCFL` member and nothing else. Not decoded here. |
+| 453 | a palette-only image entry: it carries alternate CLUTs for another image and has no pixels of its own. Not a failure. |
+| 99 | no palette — the `PLYRFACE` hairstyle entries, whose colour Madden picks at run time. |
+
+Whole-disc catalogue: **about four minutes** including an export and its verify
+[M]. That is the honest cost of decoding 1,780 `LZH1` members in pure Python,
+and the reason the studio runs a catalogue in a child process with progress.
+Only the *surface* table is at the front of an `MMAP` member — the image,
+palette and name tables are past the pixels — so there is no prefix shortcut.
+
+**What the page will not do, and says so.** `replacement_identity` returns
+`None`: a PCSX2 replacement filename is built from the GS `TEX0` and CLUT
+hashes the emulator computes while drawing, and reading those needs a **GS
+dump of Madden 09 running**, which nobody has captured. The *Write PCSX2 pack*
+step refuses with that sentence rather than writing a name that would silently
+never match. Nothing is written back to the disc either (§7).
+
+**Import is checked, not decorative.** A PNG must be exactly the texture's
+size or an exact whole-number multiple, 8-bit, non-interlaced, RGB or RGBA;
+anything else is refused naming the size that was wanted. A same-size PNG is
+then indexed against the texture's *own* palette and the result reported —
+a Madden 09 texture rides its own CLUT, so a colour that palette does not
+carry cannot be introduced, and the user is told how many pixels landed
+exactly instead of finding out later.
+
+**The export is verified independently.** `verify` re-decodes every exported
+texture straight from the user's disc **by key**, not through the catalogue
+that produced the receipt, and fails on a tampered file, a missing one or an
+undeclared one. A check that trusts the thing it is checking is not one.
+
+**How the textures are grouped, and what is not known.** `PLYRFACE` and
+`COACFACE` name their single image `FACE`, and `TATTOOS` names its own [M], so
+those groups come from the file. `UNIFORMS.DAT` names **nothing** — 455
+members, about fifteen unnamed images each — so the member index is the only
+structure it offers, and **which team a member belongs to is not established
+here** [A]. The page says that rather than guessing.
 
 ### 3.2 All Textures — the container inventory
 
@@ -303,6 +355,11 @@ produced it. All read-only; nothing was written to either image.
 | strings in them | 14,748 (one per member) | text lane [M] |
 | their decompressed bytes | 3,242,117 | text lane [M] |
 | text walk | ~9 s | wall clock [M] |
+| texture members (4 art containers) | 1,780 | uniform-art lane [M] |
+| images in them | 7,616 | uniform-art lane [M] |
+| images that decode | 7,082 | uniform-art lane [M] |
+| images refused (3 named groups) | 534 | uniform-art lane [M] |
+| uniform-art walk + export + verify | ~4 min | wall clock [M] |
 
 And the same three lanes on the **Deluxe** disc [M], which is the point of
 telling the two apart:
@@ -337,8 +394,80 @@ validators — because each lane builds its own synthetic source.
 
 ## 6. The `MMAP` verdict
 
-*(See §3.1. This section records what was proved about the pixel layout, the
-evidence for it, and what remains unknown.)*
+**PROVED for version 2. NOT PROVED for version 1.**
+
+### 6.1 Why it looked undecodable
+
+`MMAP` was read as a header followed by a bitmap, and it is not. It is a
+**table-of-tables**: a 40-byte section directory, then an image table, a
+surface table (one row per mip level), a palette table and a name table. An
+earlier census of these bytes recorded "three ascending `u32` sizes" at
+`+0x1C`/`+0x20`/`+0x24` and "`u16` width, `u16` height at `+0x28`". Both
+observations were correct about the bytes and wrong about what they are: those
+three are the palette, name and attachment tables' **offsets**, and the width
+and height are the **first surface row's** first four bytes.
+
+That correction is what unlocked it. The full layout is in the module
+docstring of `mod_editor/games/madden09_ps2/mmap_art.py`.
+
+### 6.2 The rules that had to be right
+
+Each of these silently corrupts every texture, so each has a test:
+
+1. **A surface's format word is two halves** — the low 16 bits are the pixel
+   layout (0 = 4-bit indexed, 1 = 8-bit indexed) and the high 16 bits are the
+   **EA codec its pixel run is packed under**, using the same ids `ea_terf`
+   already names. So a texture can be compressed *inside* a member the
+   container has already unpacked.
+2. **A 256-entry CLUT is CSM1-interleaved** and must be de-interleaved; a
+   16-entry one must not be touched.
+3. **Alpha is 0..128**, not 0..255, with `0x80` fully opaque.
+4. **Level 0 is the base**, always. One member of the retail disc stores its
+   remaining levels out of order, so "the last one" is not the same thing [M].
+5. **A prefix will not do.** Only the surface table is at the front.
+
+### 6.3 The evidence
+
+Not "the sizes add up". The exported PNGs were **looked at**:
+
+- `PLYRFACE` members decode to recognisable human face textures — eyes with
+  irises, nostrils, a mouth, a beard, correct skin tones, with the eyebrow
+  sprite strip and teeth strip an EA face atlas carries.
+- `COACFACE` — twelve distinct coach faces, several with moustaches, from
+  `LZH1`-compressed members. So the rule works straight through the container
+  codec.
+- `UNIFORMS` — a white jersey with red and blue trim (sleeves, collar,
+  shoulder pads, stitching); the jersey-number font sheet, digits legible; and
+  a 1491x32 name-plate strip carrying a fully legible alphabet, which is also
+  what proves the stride rule at a width that is not a power of two.
+- `TATTOOS` — kanji, tribal designs, a koi fish, gothic capitals.
+- `UIS_PLYR` / `UIS_LOAD` — player portraits including dreadlocks, and
+  photographic loading screens with readable jersey numbers.
+
+And the two failure modes are visible, which is what makes the positive result
+mean something: a wrong stride shears the image diagonally, and a 256-entry
+palette left interleaved gives a recognisable face **speckled with wrong
+colours**. The same member decoded both ways, side by side, is what settled
+the de-interleave.
+
+Two implementations agree: the one in this module and an independent one
+written from the same measurements, byte-identical on every member compared.
+
+### 6.4 What stays unknown
+
+- **`IPU1` is not decoded.** All 1,188 version-1 members of `UIS_MCFL.DAT`
+  pack their pixels under EA codec 4; all that is known of it is the run's own
+  header. They are refused by name, never exported wrong. "IPU1 is the PS2
+  MPEG intra unit" is a guess from the codec's name, not a measurement [A].
+- **Which alternate CLUT the game picks for a team is not established** [A].
+  A uniform member carries up to 18 of them; the decoder takes the image's
+  first and says so.
+- **Pixel layouts 3 and 4 exist and are not proved** — four `GAMEDATA`
+  surfaces and every `UIS_MCFL` one. Only 0 and 1 are decoded.
+- **The `00 01 02 03` marker at `+0x08` means nothing yet** [A].
+- **Nothing was checked in PCSX2.** The evidence is "the PNG is recognisable
+  art", not "the game renders it identically". That is the same gap that
+  stops the pack writer, and §7 keeps it.
 
 ---
 
@@ -378,7 +507,65 @@ one with fewer pages.
 
 ---
 
-## 8. Where the code is
+## 8. Three things a second game broke, and who has to fix them
+
+Adding a second game module is the first time any of this ran with more than
+one, and three places assume there is exactly one. **None of them is a defect
+in this module**, and none can be fixed from inside it: two live in files the
+contract freezes, and the third in the other game's manifest.
+
+### 8.1 The chooser test asserts the studio list has one row
+
+`tests/mod_editor/test_games_chooser.py::test_the_real_ps2_adapter_is_a_studio_row_and_opens_its_studio`
+asserts the chooser table equals exactly `["PS2 NFL 2K5 Studio"]`. That was
+RC86's acceptance criterion ("`Select other games…` lists `PS2 NFL 2K5 Studio`
+alone"); RC87 is the release that changes it. **Fix:** assert the PS2 row is
+*present* rather than sole. The file is frozen, so it moves through the
+procedure in `GAME_MODULE_CONTRACT.md` §12.
+
+### 8.2 A runtime-module count is compared against one game's manifest
+
+`tests/mod_editor/test_games_contract.py::test_runtime_modules_mirror_the_runtime_gate`
+asserts `len(games.runtime_modules()[0]) == len(nfl2k5.manifest.product_modules)`.
+`runtime_modules()` is the **union across every hosted game**: 47 now, against
+NFL 2K5's own 35. **Fix:** compare the union with the union, or assert each
+game's modules are a subset. Also frozen.
+
+### 8.3 NFL 2K5's allowlist patterns claim every path containing "ps2"
+
+Its manifest sets `allowlist_patterns = ["*ps2*", "*xxh3*", "*spu_adpcm*"]`,
+which was unambiguous while it was the only PlayStation 2 game. It now matches
+**24 of this module's 25 files** — `mod_editor/games/madden09_ps2/*` and
+`tools/validate_madden09_ps2_*` both contain "ps2" — so regenerating that
+game's `allowlist.fragment.txt` would have it claim files it does not ship.
+Two tests see it: the frozen
+`test_games_contract::test_allowlist_fragment_mirrors_the_upstream_allowlist`,
+whose rule is literally "the fragment is exactly today's ps2 lines", and
+`test_games_tooling::test_the_ps2_module_is_in_step_with_the_canonical_files`.
+
+**Fix:** narrow that game's patterns to the paths it owns (its own directory
+plus its own `tools/` and `mod_editor/core/` files), and change the frozen
+test's rule from "every ps2 line" to "the lines this game's patterns select".
+Better still, have `fragments` exclude any path inside another game's package
+directory, so the next game does not hit this at all.
+
+This module's own fragment is correct and `fragments madden09_ps2 --check`
+passes; the drift is entirely on the other side of the collision.
+
+### 8.4 One that *was* fixable from here
+
+The conformance harness gives each lane a working directory named after its
+`lane_id` and shares one root across every hosted game, so two games whose
+lanes use the same short id collide on it — a real bug, in frozen
+`conformance.py`, that only appears with a second game. This module sidesteps
+it by calling its executable-patch lane `gameplay.boot_elf_patches` rather
+than `gameplay.executable_patches`; a third game picking a name either module
+already uses will hit it again. **Fix:** give each game its own subdirectory
+under the conformance work root.
+
+---
+
+## 9. Where the code is
 
 ```
 mod_editor/games/madden09_ps2/
@@ -402,5 +589,6 @@ tests/mod_editor/test_madden09_ps2_*.py  tests/mod_editor/test_ea_tdb.py
 ```
 
 The shared format packages are the point: a Madden 08, Madden 12 or NCAA
-Football 09 module gets both readers for free — one reader already opens seven
-EA PS2 discs unchanged [M].
+Football 09 module gets both readers *and* the texture decoder for free — the
+container reader already opens seven EA PS2 discs unchanged [M], and `MMAP`
+and EA TDB are the same on all of them.

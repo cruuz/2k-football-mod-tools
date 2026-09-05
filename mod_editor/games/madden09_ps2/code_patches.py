@@ -66,7 +66,13 @@ if str(_TOOLS) not in sys.path:
 import ps2_iso9660 as iso_lib  # noqa: E402
 
 CAPABILITY_ID = "madden09ps2.gameplay.executable_patches"
-LANE_ID = "gameplay.executable_patches"
+#: Deliberately not ``gameplay.executable_patches``, which is what the sibling
+#: PS2 module calls its own: the conformance harness gives each lane a working
+#: directory named after its ``lane_id`` and shares one root across every
+#: hosted game, so two games using the same short id collide on it.  Capability
+#: ids are already game-scoped; this keeps the short id distinct too, and says
+#: what the lane patches while it is at it.
+LANE_ID = "gameplay.boot_elf_patches"
 SURFACE = "gameplay_tuning_sliders"
 RECIPE_SCHEMA = "madden09_ps2_code_patch_recipe/v1"
 CATALOG_SCHEMA = "madden09_ps2_code_patch_catalog/v1"

@@ -20,6 +20,13 @@
 - **Menus & UI — the text banks**, counted and measured. The catalogue carries string counts, lengths and digests and
   **not one string**, because a catalogue is a file you might share; the strings are read off your own image when you
   ask to see them.
+- **Uniforms & Equipment — the textures come off the disc.** `MMAP` turns out to be a table-of-tables, not a header
+  and a bitmap, and reading it that way gets the pixels out: **7,082 of 7,616 images** in the uniform, player-face,
+  coach-face and tattoo containers decode to PNG, and the 534 that do not fall in three groups the page names rather
+  than a silent gap. Preview, Export PNG, and an Import PNG that is checked against the texture's own palette and
+  tells you how it landed. **Write PCSX2 pack is refused by name**: that filename is built from hashes the emulator
+  computes while drawing, and nobody has captured a GS dump of Madden 09 to read them from. The verifier re-decodes
+  every exported file straight off your disc, not through the catalogue that produced it.
 - **Gameplay — the pnach pipeline, with nothing mapped.** Six subject areas named, zero sites located, every
   translation refused by name. Classified `unknown`, so the page states that and offers no control. The pipeline
   around a translation is complete and proved on a synthetic ELF, so locating one site is a one-entry change.
