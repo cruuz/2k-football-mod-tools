@@ -134,11 +134,17 @@ same catalogue and the same decoder.
 **`uniforms.mmap_export`, `extract-only`.** Catalogues, previews and exports
 the uniform, player-face, coach-face and tattoo textures as PNG. Measured on
 the retail disc [M]: **1,780 texture members, 7,616 images, 7,082 decodable**,
-534 refused in three named groups — 1,188 `IPU1` members across the wider
-sweep, 453 palette-only image entries that carry alternate CLUTs and no pixels
-of their own, and 99 `PLYRFACE` hairstyle entries whose colour Madden picks at
-run time. Across ten containers 11,039 of 12,779 images decode. Whole-disc
-catalogue with an export and its verify: **about four minutes** [M] — the cost
+534 refused. Widen the same decoder to ten containers and **11,039 of 12,779 images
+decode**, with every refusal in one of three groups the catalogue names rather
+than a silent gap [M]:
+
+| refused | why |
+|---:|---|
+| 1,188 | pixels stored under EA codec 4, `IPU1` — every `UIS_MCFL` member and nothing else. Not decoded here. |
+| 453 | a palette-only image entry: it carries alternate CLUTs for another image and has no pixels of its own. Not a failure. |
+| 99 | no palette — the `PLYRFACE` hairstyle entries, whose colour Madden picks at run time. |
+
+Whole-disc catalogue with an export and its verify: **about four minutes** [M] — the cost
 of 1,780 `LZH1` members in pure Python, and the reason the studio runs a
 catalogue in a child process with progress. Only the *surface* table is at the
 front of an `MMAP` member; the image, palette and name tables are past the
