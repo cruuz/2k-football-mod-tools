@@ -135,11 +135,12 @@ least some of what it names [M] — the owner's research confirms one member of
 and not the cache would leave a stale copy behind, so the sibling roster and
 text pages refuse the same file and this one does too.
 
-**What that means for a user:** a team renamed by this page is renamed in the
-two databases the *game* reads for rosters and streamed presentation. Whether
-Madden ever reads the `TEMPLATE.DAT` copy for a screen this page's user would
-see is **not established** [A], and no claim either way is made here. It is the
-first thing a boot should be watched for (§6).
+**What that means for a user:** a team renamed by this page is renamed in two
+of the three databases that carry its identity, and not in the third. **Which
+copy any given screen reads is not established** [A] — this project has not
+traced a screen back to a database — so no claim either way is made here, and a
+screen still showing the old name is the first thing a boot should be watched
+for (§6).
 
 ### 2.3 A team's name is also prose
 
