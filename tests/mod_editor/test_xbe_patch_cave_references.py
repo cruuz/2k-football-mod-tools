@@ -163,7 +163,8 @@ class CaveReferenceTests(unittest.TestCase):
         stack = XbeImage(self.stack)
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, retail)
         for start, size, _ in ps.CAVES:
-            self.assertEqual(manifest.overlaps(start, start + size), [], hex(start))
+            # the manifest now observes the practice squad itself; nothing ELSE may own its caves
+            self.assertEqual(manifest.overlaps(start, start + size, exclude_owner='nfl2k5_practice_squad'), [], hex(start))
             self.assertEqual(stack.read(start, size), retail.read(start, size), hex(start))
             self.assertEqual({va: refs for va, refs in self.targets.items()
                               if start <= va < start + size and any(
