@@ -21,6 +21,7 @@ from uuid import uuid4
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_crib import CribAsset, CribAssetStatus
+from mod_editor.gui.task_delivery import bound
 
 
 ProgressSink = Callable[[str, int, int], None]
@@ -1374,7 +1375,7 @@ class CribPanel(QWidget):
         task = _Task(operation)
         self._tasks.add(task)
         task.signals.progress.connect(self._progress)
-        task.signals.result.connect(on_success)
+        task.signals.result.connect(bound(self, on_success))
         task.signals.error.connect(self.error_raised.emit)
 
         def finished() -> None:
@@ -1389,7 +1390,7 @@ class CribPanel(QWidget):
             else:
                 self._refresh_controls()
 
-        task.signals.finished.connect(finished)
+        task.signals.finished.connect(bound(self, finished))
         try:
             self._pool.start(task)
         except BaseException:

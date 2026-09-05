@@ -31,6 +31,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import mod_build, modpack
 from mod_editor.gui.ux_text import XEMU_LINE, Details
+from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 PACK_FILTER = f"2K5 disc patches (*{modpack.EXTENSION});;All files (*)"
@@ -466,8 +467,8 @@ class SharePanel(QWidget):
             failed(message)
             self._refresh()
 
-        task.signals.finished.connect(finish)
-        task.signals.failed.connect(fail)
+        task.signals.finished.connect(bound(self, finish))
+        task.signals.failed.connect(bound(self, fail))
         self._task = task
         self._pool.start(task)
 

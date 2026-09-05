@@ -204,7 +204,9 @@ class CareerStatsTests(unittest.TestCase):
 
     def test_cli_export_import_and_no_overwrite(self):
         with tempfile.TemporaryDirectory(prefix='career-cli-') as directory:
-            root = Path(directory)
+            # The CLI refuses a symlinked output parent; macOS temp dirs sit under
+            # /var -> /private/var, so hand it the real path.
+            root = Path(directory).resolve()
             source, csv_path, output, receipt = (root / n for n in ('body.bin', 'stats.csv', 'result.bin', 'receipt.json'))
             body = make_body()
             source.write_bytes(body)

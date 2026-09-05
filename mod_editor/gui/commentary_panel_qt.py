@@ -38,6 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.gui.ux_text import XEMU_LINE, Details, plain_failure, show_operation_error, suggest_copy_name
+from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 AUDIO_FILTER = "Audio (*.wav *.mp3 *.flac *.ogg *.m4a *.aac);;All files (*)"
@@ -383,8 +384,8 @@ class CommentaryPanel(QWidget):
     def _run(self, operation: Callable[[], object], done: Callable[[object], None],
              failed: Callable[[str], None]) -> None:
         task = _Task(operation)
-        task.signals.finished.connect(done)
-        task.signals.failed.connect(failed)
+        task.signals.finished.connect(bound(self, done))
+        task.signals.failed.connect(bound(self, failed))
         self._task = task
         self._pool.start(task)
 
