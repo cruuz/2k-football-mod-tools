@@ -313,23 +313,27 @@ the same schema, and the lanes read both tables.
 
 **Coverage per container, and why it is what it is:**
 
-| container | textures listed | named | why |
-|---|---:|---:|---|
-| `STADIUMS.DAT` | 490 | 76 | the stadium the coin toss happens in |
-| `STADATA.DAT` | 91 | 7 | ditto, found by the extended index |
-| `FIELDART.DAT` | 73 | 32 | the field the coin toss happens on |
-| `PLYRFACE.DAT` | 520 | 45 | the captains standing at midfield |
-| `UIS_TMLO.DAT` | 285 | 58 | the team logos the coin-toss screen draws |
-| `UIS_COMN.DAT` | 98 | 10 | common in-game furniture |
-| `UIS_IG.DAT` | 66 | 6 | in-game overlay pieces |
-| every other container | 6,826 | 0 | no dumped frame drew one |
+The last column is measured, not guessed: it is how many of the 33 frames were
+drawing at least one texture of that container when PCSX2 dumped them. What
+those textures *depict* is not established by any of this.
+
+| container | textures listed | named | frames that drew one |
+|---|---:|---:|---:|
+| `STADIUMS.DAT` | 490 | 76 | 33 of 33 |
+| `STADATA.DAT` | 91 | 7 | 33 of 33 |
+| `FIELDART.DAT` | 73 | 32 | 33 of 33 |
+| `PLYRFACE.DAT` | 520 | 45 | 33 of 33 |
+| `UIS_TMLO.DAT` | 285 | 58 | 31 of 33 |
+| `UIS_COMN.DAT` | 98 | 10 | 33 of 33 |
+| `UIS_IG.DAT` | 66 | 6 | 33 of 33 |
+| every other container | 6,826 | 0 | none |
 
 **234 of the 8,449 distinct textures have a name.** That is a fact about the
-capture, not about the disc: a coin-toss frame draws a stadium, a field, two
-kits, two captains and a scoreboard, and it draws no menu, no loading screen,
-no memory-card icon and no coach's face. **The field and stadium coverage is
-therefore partial** — 76 of 490 stadium textures and 32 of 73 field textures —
-and every other page is near zero. `replacement_identity` returns `None` for
+capture, not about the disc: every frame in the corpus is a coin toss or the
+walk out to it, and the same seven containers supply almost everything drawn on
+those screens. **The field and stadium coverage is therefore partial** — 76 of
+490 stadium textures and 32 of 73 field textures — and every other page is at
+or near zero. `replacement_identity` returns `None` for
 the 8,215 textures no frame reached, and the page says *no PCSX2 dump has shown
 this one* rather than inventing a filename that would never match.
 
