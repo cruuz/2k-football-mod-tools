@@ -15,8 +15,9 @@ What is on the contract today:
 * one lane, ``colors.unif_words`` (registry row
   ``nfl2k5ps2.colors.unif_words``): the on-disc facemask/turtleneck colour
   writer, plan → build → verify on a copy of the user's own disc;
-* three windows -- the PS2 save editor, the PS2 disc inventory and the PS2
-  replacement-pack export -- so the chooser can open them.
+* four windows -- the disc studio (the module's ``studio_window``, which the
+  chooser opens under the label the core composes from the manifest), the PS2
+  save editor, the PS2 disc inventory and the PS2 replacement-pack export.
 
 The other eight registry rows stay exactly where they are; the fragment beside
 this file carries all nine so the registry-merge proof covers the whole game.
@@ -300,7 +301,10 @@ def _replacement_pack_export(parent: Any = None, **context: Any) -> Any:
 WINDOWS = (
     WindowSpec(
         window_id="disc-studio",
-        menu_label="PS2 NFL 2K5 Studio…",
+        # The chooser and the File menu show the studio label the core composes
+        # from game.json's console/game/year; this label is what the studio's
+        # own Windows menu calls the window it is already in.
+        menu_label="Disc Studio…",
         tooltip=(
             "Edit an ESPN NFL 2K5 PlayStation 2 disc: menu text, playbooks, uniform colours, the disc roster, "
             "stadium positions and audio slots, then build a new ISO with receipts. Your own disc image is never written."
@@ -372,6 +376,7 @@ GAME = GameModule(
     windows=WINDOWS,
     manifest=load_manifest(HERE),
     package=__name__,
+    studio_window="disc-studio",
 )
 
 __all__ = ["CODE_PATCH_CAPABILITY_ID", "CODE_PATCH_LANE", "GAME", "GAME_ID", "IDENTITY", "LANES", "SERIAL", "UnifColourLane", "WINDOWS"]
