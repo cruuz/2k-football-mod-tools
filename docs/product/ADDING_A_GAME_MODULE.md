@@ -77,6 +77,25 @@ sets `page = "field_art"`). Conformance refuses a lane whose page is not a studi
 page has no lane yet, say why in `game.json`'s `page_notes`: one sentence, shown on the page
 under the core's own.
 
+**Give every target its `fields`.** They are what the shell's editor draws, and a writer whose
+targets declare none fails conformance rather than showing an empty panel a user has to guess
+at. Pick the kind that says what the value *is* — `colour_argb` for a packed colour word,
+`wav` for a sound slot, `float` for a position, `choice` when the tool takes a fixed set,
+`note` for something the page should say but nobody types — and let `check_edit` stay the only
+rule about whether a value fits. A blank `text`, `colour_argb`, `png` or `wav` field is left
+out of `values`, so it means *keep what is there*; `int`, `float`, `bool` and `choice` always
+send. Mark a value the user may see but not change `read_only=True`.
+
+**Scopes are optional.** A lane whose catalogue can cover more or less of a source (one proved
+scene, or every scene) offers `scopes()` returning objects with `id`, `label` and `note`; the
+page shows a picker only when there is more than one. It is read with `getattr`, so a lane that
+has one scope says nothing.
+
+**A lane the registry has not classified is not drawn.** Only `runtime-proved`,
+`offline-writer-proved`, `extract-only` and `read-only-mapped` get controls; anything else gets
+a page stating the classification and that row's `gui.reason`, and the field checks SKIP by
+name until the row earns a classification the studio offers.
+
 Every step of a lane is runnable without a window, which is how to develop one:
 
 ```bash
@@ -95,9 +114,11 @@ game genuinely needs a window of its own. Expose any further window as a `Window
 factory imports Qt **inside the function**; a window that works on the Xbox studio's open
 project sets `needs_studio_session=True` and reads `context["facade"]`. The chooser lists
 studios, not windows — a second window is reached with `python -m mod_editor.games open
-<game-id> --window <window-id>` and from the studio's own Windows menu. Do not add File-menu
-entries or CLI flags upstream, and do not type the studio label into a menu label: the core
-composes it.
+<game-id> --window <window-id>` and from the studio's own Windows menu, which lists every
+window except the studio itself. Do not add File-menu entries or CLI flags upstream, and do not
+type the studio label into a menu label: the core composes it (`chooser.studio_menu_label`) and
+substitutes it wherever the studio is offered from outside, so your studio window's own
+`menu_label` should say what that window is called *inside* the studio ("Disc Studio…").
 
 ## 5. Fragments and pins
 

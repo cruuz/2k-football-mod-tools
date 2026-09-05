@@ -361,20 +361,44 @@ These labels come from the same capability registry used by the build system.
 The current registry has 79 cross-title rows, including 32 Xbox NFL 2K5
 capabilities and 9 NFL 2K5 PS2 rows: the separate PS2 save-import bridge, the
 read-only PS2 disc inventory, the PCSX2 replacement-pack export for edited uniform
-art (File > Export PS2 replacement pack…, or --ps2-export) and six on-disc writers
+art (the PS2 studio's Windows menu, or --ps2-export) and six on-disc writers
 (display text, playbooks, uniform colours, the disc roster, stadium positions and
 one-shot AUDO sounds), which the PS2 NFL 2K5 Studio window drives (see below). No current 2K5 capability
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.
 
-## PS2 NFL 2K5 Studio (RC85)
+## PS2 NFL 2K5 Studio (RC86)
 
-**File > PS2 NFL 2K5 Studio…**, or `python -m mod_editor --ps2-disc-studio [your.iso]`, opens
-one window over the six PlayStation 2 on-disc writers. It works on **your own SLUS-20919
-disc image**, which is opened read-only and never written: every build creates a **new**
-ISO at a name that does not exist yet, and a build that fails or is cancelled deletes
-whatever it had created. It is separate from the Xbox game image in the main window and
-never touches your Xbox project.
+**The File menu has two PlayStation 2 entries now, not five.**
+
+- **File > PS2 NFL 2K5 Studio…** (or `python -m mod_editor --ps2-disc-studio [your.iso]`)
+  opens that game's studio. Its name is not typed anywhere: the studio of every game is
+  called `<Console> <Game> <Year> Studio`, composed from what the game module declares, so
+  the next game to arrive reads the same way on the same menu.
+- **File > Select other games…** lists every installed game as one row — its studio — and
+  opens the one you pick.
+
+**The PS2 Save Editor, the PS2 Disc Inventory and Export PS2 replacement pack are still
+here.** They are that game's *other* windows, so they moved to where that game's windows
+live: the **Windows** menu inside the PS2 studio. Nothing about them changed, and
+`--ps2-save`, `--ps2-disc` and `--ps2-export` still open each one on its own. (The export
+works on your open Xbox project, so it is listed but not clickable in a studio you opened
+without one — the File-menu entry hands the studio your session, so from there it works.)
+
+The studio works on **your own SLUS-20919 disc image**, which is opened read-only and never
+written: every build creates a **new** ISO at a name that does not exist yet, and a build
+that fails or is cancelled deletes whatever it had created. It is separate from the Xbox game
+image in the main window and never touches your Xbox project.
+
+**Every page is present, and a page with nothing to offer says why.** The studio has the same
+fourteen pages as the Xbox studio, in the same order, down the left: Uniforms & Equipment,
+Names Numbers & Faces, Text & Team Identity, Field Art, Stadiums, Presentation, Menus & UI,
+The Crib, Audio, Gameplay, Playbooks & Plays, All Textures, Saves, and Build & Share. A page
+whose writer does not exist for this game yet is still there and tells you so in one sentence
+rather than disappearing; a page whose writer exists but has not earned its evidence yet — the
+executable patches — says what the capability registry says about it and offers no controls.
+Every page that *can* write carries its registry badge and, unless somebody has watched it work
+in-game, the words **Not yet tested in-game**.
 
 **Nothing built here has been seen or heard in an emulator yet.** Each lane is proved
 offline -- its bytes land where they should and an independent verifier re-derives that
@@ -430,10 +454,10 @@ How it goes:
    A JSON receipt with every step's changed bytes, digests, verdicts and timings is written next
    to the new image; *Open folder* takes you there.
 
-**PCSX2 Pack tab -- Export to PCSX2.** The one page here that is not about the disc. It
+**Uniforms & Equipment -- Export to PCSX2.** The one page here that is not about the disc. It
 exports the uniform art you have **edited in the Xbox studio** as a PCSX2
 texture-replacement pack for `SLUS-20919`, so you do not have to close this window to
-reach **File > Export PS2 replacement pack…**. It is the same export window with the same
+reach it. It is the same export window with the same
 rules: it needs a **saved `.2k5mod` Xbox project that has edited art** (this window has no
 Xbox session, so you choose the project; the one you chose last is offered back next time),
 it writes only targets that project marks edited, it asks which emulator the pack is for
@@ -1465,7 +1489,8 @@ pack for the PlayStation 2 release, which you then load in an emulator. Nothing 
 written into any disc image, and nothing is ever exported for a texture you have not
 edited, so no retail art leaves your copy.
 
-Open your project, then **File → Export PS2 replacement pack…** (or start the studio
+Open your project, then **File → PS2 NFL 2K5 Studio… → Windows → Export PS2 replacement
+pack…** (or start the studio
 with `--ps2-export`). The window lists each edited uniform target as *Will export*,
 *Skipped* or *Ambiguous*, you choose an output folder, and Export writes the files
 plus a receipt describing exactly what was written.

@@ -186,6 +186,7 @@ from mod_editor.games.contract import (
     Catalogue,
     DeclaredRange,
     Edit,
+    Field,
     GameIdentity,
     Plan,
     Receipt,
@@ -276,6 +277,14 @@ class ExampleLane:
     title = "Example slot text (placeholder lane)"
     classification = "offline-writer-proved"
     fixed_allocation = True
+    #: What the studio's editor draws for a target of this lane. The shape
+    #: only: check_edit below is still the one authority on whether a value
+    #: fits. A writer whose targets declare no fields fails conformance,
+    #: because its page would be an empty panel nobody could use.
+    FIELDS = (
+        Field("text", "text", "Slot text",
+              f"ASCII, at most {SLOT_SIZE} characters; leave blank to keep what is there."),
+    )
 
     def __init__(self, game_id: str) -> None:
         self.game_id = game_id
@@ -307,7 +316,7 @@ class ExampleLane:
         targets = tuple(
             Target(key=f"slot:{row['slot']}", label=f"slot {row['slot']} ({row['used']} of {SLOT_SIZE} characters used)",
                    detail=f"offset 0x{row['offset']:x}", budget=f"{SLOT_SIZE} ASCII characters, never longer",
-                   searchable=f"slot {row['slot']}", raw=row)
+                   searchable=f"slot {row['slot']}", raw=row, fields=self.FIELDS)
             for row in rows
         )
         return Catalogue(document["schema"], self.lane_id, str(source), targets, document)

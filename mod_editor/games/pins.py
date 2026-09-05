@@ -55,6 +55,10 @@ FROZEN_FILES: tuple[str, ...] = (
     "mod_editor/games/conformance.py",
     "mod_editor/games/chooser.py",
     "mod_editor/games/chooser_qt.py",
+    # The shell a module is drawn on: a game depends on the shape of its page,
+    # so it moves through the version procedure like the rest.  Its service
+    # (studio_service.py) and the lane verb stay out while the build page grows.
+    "mod_editor/games/studio_qt.py",
     "mod_editor/games/pins.py",
     "tests/mod_editor/games_fakes.py",
     "tests/mod_editor/test_games_contract.py",

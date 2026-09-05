@@ -316,11 +316,12 @@ hand-authored words while a translation is proved. See `PS2_CODE_PATCH_PIPELINE.
 Frozen files: `mod_editor/games/contract.py`, `__init__.py`, `registry_merge.py`,
 `conformance.py`, `chooser.py`, `chooser_qt.py`, `pins.py`; `tests/mod_editor/games_fakes.py`,
 `test_games_contract.py`, `test_games_contract_frozen.py`, `test_games_conformance.py`,
-`test_games_chooser.py`. Not frozen: `__main__.py`, `fragments.py`, `scaffold.py`,
-`studio_qt.py`, `lane_cli.py`, `_formats/`, the game directories, `CONTRACT_PINS.json` and
-`CONTRACT_CHANGELOG.md` themselves. The shell and the `lane` verb are core-owned but still
-being written; they join the frozen set when the shell is finished, which is itself a pinned
-edit to `pins.py`.
+`test_games_chooser.py`; and, since RC86, `mod_editor/games/studio_qt.py` — the shell a module
+gets as its studio, which a game now depends on the shape of. Not frozen: `__main__.py`,
+`fragments.py`, `scaffold.py`, `studio_service.py`, `lane_cli.py`, `_formats/`, the game
+directories, `CONTRACT_PINS.json` and `CONTRACT_CHANGELOG.md` themselves. The service behind
+the shell and the `lane` verb stay out while the build page is still growing; they join the
+frozen set the same way, which is itself a pinned edit to `pins.py`.
 
 The pins are **loud, not preventive**. Moving them is an event with a procedure: bump
 `CONTRACT_VERSION`; add `## <version> (unreleased)` to the changelog; `python -m
@@ -332,16 +333,20 @@ whose latest entry is not the current version.
 
 ## 13. Hooks in upstream files
 
-`mod_editor/gui/studio_qt.py`: one `QAction` ("Select other games…"), one handler
-`_open_game_chooser` importing `mod_editor.games.chooser_qt` lazily, one busy-state line.
-`mod_editor/__main__.py`: `--game`, `--window`, `--games-chooser`, delegating to
-`mod_editor.games.__main__`. Nothing else upstream names the games package; the contract test
-asserts it.
+`mod_editor/gui/studio_qt.py`: two `QAction`s — the PS2 game's studio and "Select other
+games…" — with `_open_game_chooser` importing `mod_editor.games.chooser_qt` lazily,
+`_open_ps2_disc_studio` importing `mod_editor.games.chooser.open_studio` lazily and passing
+`context={"facade": self.facade}`, `_ps2_studio_menu_entry()` composing the caption through
+`chooser.studio_menu_label`, and one busy-state line. The three PS2 side windows are no longer
+on that menu: they are that module's own windows and are listed in its studio's Windows menu.
+`mod_editor/__main__.py`: `--game` (opens the module's **studio**), `--window`,
+`--games-chooser`, delegating to `mod_editor.games.__main__`. Nothing else upstream names the
+games package; the contract test asserts it.
 
 ## 14. The studio and its pages
 
-`mod_editor.games.studio_qt.GameStudioDialog(module, *, parent=None, initial_source=None)` is
-the core-owned shell: the composed label, the module's title and platform, the boundary note,
+`mod_editor.games.studio_qt.GameStudioDialog(module, *, parent=None, initial_source=None,
+service=None, context=None)` is the core-owned shell: the composed label, the module's title and platform, the boundary note,
 and a left navigation of the fourteen pages of `PAGE_ORDER`, in the Xbox studio's order:
 
 | page id | title | default surfaces |
@@ -369,3 +374,77 @@ that belongs on the other one sets `Lane.page`. `page` is deliberately **not** a
 <studio label> yet.` plus the module's own `page_notes` sentence when it has one. Never a dead
 button, never a hidden page. A module needs no window of its own — the scaffold points
 `studio_window` at this class — and may still ship one if it must.
+
+### 14.1 What a lane page draws
+
+A page whose lanes exist draws one `LanePage` per lane, as sub-tabs when there is more than
+one: Build catalogue (in a child process, through the `lane` verb, with progress), a scope
+picker when the lane offers `scopes()`, a searchable target table, an editor, the lane's own
+inline refusal from `check_edit`, Add to build, the staged list and the exact recipe the
+patcher will be handed.
+
+**The editor is built from `Target.fields`.** The kinds map to controls once, in the core, so
+every game reads the same:
+
+| kind | control | what `values()` sends |
+|---|---|---|
+| `text`, `name_pick` (no choices) | a line | the stripped text, **omitted when blank** |
+| `name_pick` (with choices) | an editable combo | the chosen or typed text, omitted when blank |
+| `choice` | a combo | the chosen value |
+| `int` / `float` | a spinner bounded by `minimum`/`maximum` | always sent |
+| `bool` | a check box | always sent |
+| `colour_argb` | a hex line, a colour picker and a swatch | the hex text, omitted when blank |
+| `png` / `wav` | a line and a file chooser | the chosen path, omitted when blank |
+| `note` | a sentence, no control | never sent |
+
+Blank means *keep what is there*, so a lane never has to special-case an empty string. A field
+marked `read_only=True` is shown disabled and never sent. Conformance fails a writer lane whose
+catalogued targets declare no fields (`lane.<id>.targets_declare_fields`) and draws them
+offscreen to prove each kind gets a control (`lane.<id>.fields_render`).
+
+Optional protocols add controls and nothing else: `ArtLane` gets a preview, Export PNG, Import
+PNG (the lane's `encode` refusal is shown verbatim) and the target's `replacement_identity`;
+`AudioLane` gets Play and Export WAV from `decode_wav`; `CodePatchLane` gets the pnach preview
+from `translation` + `emit_pnach`; `ReadOnlyLane` gets the table and no editor at all.
+
+### 14.2 Honesty on a page
+
+Every lane page carries `honesty_line(classification)` — the registry's own badge word, the
+classification, and (unless `runtime-proved`) upstream's exact `Not yet tested in-game`
+qualifier from `mod_editor.gui.ux_text.NOT_TESTED` — plus the registry row's `gui.reason`.
+
+A lane whose classification is **not** one of `runtime-proved`, `offline-writer-proved`,
+`extract-only`, `read-only-mapped` is not drawn at all. Its page states its title, its
+classification and that row's `gui.reason` and offers no control. The list is
+`studio_qt.OFFERED_CLASSIFICATIONS`; `conformance._OFFERED_CLASSIFICATIONS` restates it so the
+static half needs no Qt, and a test holds the two together.
+
+### 14.3 Build & Share, and the Windows menu
+
+`GameStudioService(module)` (`mod_editor/games/studio_service.py`, Qt-free) is everything the
+Build page does. Every lane step runs as `python -m mod_editor.games lane …` in a child
+process, so a lane that raises takes the child down and not the window, and the command the
+studio ran is one the user can run. Three refusals are the service's own, because they are
+true before any lane is asked: the destination must not be the source, must not already exist,
+and its volume must hold the new file plus one intermediate plus `STAGING_RESERVE` (1.25 GiB).
+
+Staged lanes run in the **module's own lane order**. A `fixed_allocation` lane chains — step
+*n* reads step *n-1*'s output and is verified before that intermediate is deleted — and a lane
+that publishes files (`fixed_allocation=False`, artifacts in its receipt) is run once from the
+original source into its own folder beside the destination. One `vc_game_studio_receipt/v1`
+document names every step, every verdict and every digest, and claims nothing about a screen.
+
+The studio's **Windows** menu lists every window in `GameModule.windows` except
+`studio_window`. A window with `needs_studio_session=True` is listed and explained but not
+clickable unless the studio was handed a session (`context={"facade": …}`), which is what the
+Xbox studio's File menu passes.
+
+### 14.4 The label, composed once
+
+`GameManifest.studio_label` is the only place the rule `<Console> <Game> <Year> Studio` lives.
+`chooser.studio_menu_label(label)` adds the menu ellipsis and `chooser.studio_window_spec(game)`
+returns the module's studio `WindowSpec` **relabelled** with it. Every surface that offers a
+studio from outside — the chooser rows, `python -m mod_editor.games show`, the Xbox studio's
+File menu — reads it from there. The `menu_label` a module gives its own studio window is what
+that window is called *inside* the studio; conformance refuses a module that types the composed
+label anywhere in its own code or manifest.
