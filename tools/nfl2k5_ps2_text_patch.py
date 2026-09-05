@@ -418,8 +418,11 @@ def patch(*, source_iso, destination_iso, edits: Sequence[dict],
     catalog_document = catalog.build_catalog(source_iso)
     resolved = resolve_edits(catalog_document, edits)
 
-    # A run that would change no bytes produces a report the verifier cannot
-    # check and an output identical to the input; say so instead.
+    # Re-resolve each edit's absolute position from the ISO's own directory,
+    # independently of the catalog, and read the bytes that are actually there.
+    # This catches a catalog/ISO disagreement before anything is written, and
+    # it is where a no-op edit is rejected: one produces an output identical to
+    # its input and a report with nothing in it for the verifier to check.
     packs = _pack_entries(source_iso)
     by_pack: Dict[str, List[ResolvedEdit]] = {}
     changed_bytes = 0
@@ -428,7 +431,7 @@ def patch(*, source_iso, destination_iso, edits: Sequence[dict],
             _require(edit.pack_iso_path in packs,
                      "%s names pack %s, which this ISO does not have"
                      % (edit.selector, edit.pack_iso_path))
-            base, size = packs[edit.pack_iso_path]
+            base, _size = packs[edit.pack_iso_path]
             _require(edit.iso_byte_offset == base + edit.pack_offset,
                      "%s: catalog offset and ISO pack extent disagree" % edit.selector)
             stream.seek(edit.iso_byte_offset)
@@ -442,7 +445,6 @@ def patch(*, source_iso, destination_iso, edits: Sequence[dict],
                      "the text that is already there" % edit.selector)
             changed_bytes += differing
             by_pack.setdefault(edit.pack_iso_path, []).append(edit)
-            del size
 
     result = {
         "schema": SCHEMA,
@@ -525,7 +527,6 @@ def selftest(tmp: Optional[Path] = None) -> int:
 
     texts = ["MENU", "Press |CROSS| to go", "OPTIONS", ""]
     body = catalog.build_synthetic_strg_body(texts)
-    parsed = catalog.parse_strg(body)
     bank_id = "nfl2k5.ps2.text-bank.strg.1.0"
     extra, strings = catalog._strg_assets(body, bank_id)
     bank = {"bank_id": bank_id, "decoded": True, "compressed": False,
@@ -585,7 +586,6 @@ def selftest(tmp: Optional[Path] = None) -> int:
     except TextPatchError:
         pass
 
-    del parsed
     for line in failures:
         print("FAIL: %s" % line, file=sys.stderr)
     if failures:
