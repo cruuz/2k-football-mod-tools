@@ -103,7 +103,7 @@ The shell's fourteen pages, in its order, and what Madden 09 has on each.
 | Menus & UI | `menus.text_members` | `offline-writer-proved` | §3.4 — **edits** |
 | The Crib | — | — | page note |
 | Audio | — | — | page note |
-| Gameplay | `gameplay.executable_patches` | `unknown` | §3.5 — not drawn |
+| Gameplay | `gameplay.executable_patches` | `offline-writer-proved` | §3.5 — **edits** (pnach, or the boot ELF on a rebuilt disc) |
 | Playbooks & Plays | — | — | page note |
 | All Textures | `textures.container_inventory` | `read-only-mapped` | §3.2 |
 | Saves | — | — | page note |
@@ -374,30 +374,26 @@ therefore discounts the padding before asking. On the retail disc that finds
 NUL-padded name string in `STADATA.DAT` that the stricter rule was missing [M].
 It changes nothing about what the shared reader calls a member; the widened rule
 lives in this lane.
-### 3.5 Gameplay — executable patches, nothing mapped
+### 3.5 Gameplay — executable patches, the playbook editor caps translated
 
-`CodePatchLane`, classification **`unknown`**, so the studio draws no editor
-for it at all: the page states the classification and the registry's reason.
-
-The pipeline is complete and proved on a synthetic ELF — plan against the
-user's own boot ELF (address file-backed, original word as expected), emit a
-`.pnach` naming that ELF's own PCSX2 CRC, verify by re-reading both
-independently and failing a tampered file. **Every translation is refused by
-name.**
-
-The catalogue is six subject areas the owner's Madden 09 static-analysis work
-has opened [S] — AI play calling, blocking dominance, blocking intent, catch
-and fumble, defensive fatigue, double teams — each carrying the plain
-statement that no word has been located for it. A target here is a question,
-not a capability.
-
-**No retail address or code byte is in this repository.** What the lane knows
-about an executable it reads from the user's own image at run time.
-
-A future PR that locates one site fills in a single `TRANSLATIONS` entry and
-changes nothing else. That is what the synthetic proof exists to guarantee.
-
----
+`CodePatchLane`, classification **`offline-writer-proved`** (RC88). One host
+patch is translated, `playbook_editor_caps`: four parameters drive five
+`sltiu` immediates in `SLUS_217.70` — the formation, set, play and
+plays-per-set caps of the in-game playbook editor (20 / 20 / 100 / 60 as
+shipped). Every original word is re-read from the user's own executable at
+plan time and must match; the words are the same on the retail and the Deluxe
+executables [M]. Delivery is a PCSX2 / PenguinScreen2 `.pnach` by default, or
+the five words written into the boot ELF on a rebuilt disc through the
+bounded ISO writer; the independent verifier re-reads either artifact. What
+is **not** shipped, and why: the runtime capacity layer the owner's Madden
+2004 work needed (`table_set_capacity` takes its capacity from the table
+header the disc packed exactly full, and the insert guard refuses) is
+measured but has no immediate to raise, so raising it needs new code that
+only a boot could verify. PCSX2's own patch archive carries no entry for this
+title (4,471 files, none for `38014255` or `084562FF`) [M]. Nothing has been
+booted: the page says so, and the two witnesses the owner runs are named in
+[`MADDEN09_PS2_CODE_PATCHES.md`](MADDEN09_PS2_CODE_PATCHES.md), which carries
+the per-site disassembly and the evidence.
 
 ## 4. Pages with no lane, and why
 
@@ -736,7 +732,7 @@ mod_editor/games/madden09_ps2/
   mmap_art.py         the MMAP pixel decoder
   team_data.py        the EA TDB databases: catalogue, writer, verifier
   text_lane.py        the TEXT banks: catalogue, writer, verifier
-  code_patches.py     executable patches (CodePatchLane, nothing mapped)
+  code_patches.py     executable patches (CodePatchLane; the playbook editor caps translated)
   game.json  registry.fragment.json  allowlist.fragment.txt  pins.json
 
 mod_editor/games/_formats/
