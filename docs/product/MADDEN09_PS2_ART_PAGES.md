@@ -67,11 +67,13 @@ nothing here opens one.
 **Does not know** which stadium a texture belongs to. Neither container names
 its members; the member index is the only structure they offer [A].
 
-Five `MMAP` entries in `STADIUMS.DAT` are palette-only banks — they carry up to
-45 alternate CLUTs for another image in the same member and no pixels of their
-own — and 15 more declare a pixel layout the decoder does not implement; in
-`STADATA.DAT` 23 do. Each is counted and refused **by name** rather than drawn
-wrong [M].
+Five members of `STADIUMS.DAT` — 828 to 832 — are **palette banks**: 45
+alternate CLUTs each and **no surface at all**, so there are no pixels in them
+to draw [M]. A palette bank is a real thing this format has, not a damaged
+member, and the lane counts it, lists it and refuses it by name. Fifteen more
+images declare no palette (member 822's ten 32x64 images and five 256x512
+members, 823 to 827) and in `STADATA.DAT` 23 do; each is refused by name too,
+rather than drawn wrong [M].
 
 ### Field Art & Create-Team Art — `FIELDART.DAT`
 

@@ -34,11 +34,14 @@ nested ``TERF`` containers, empty slots, and members whose first 32 bytes match
 no format id this reader knows.  **No decoder for ``SMF`` or ``DMF`` is built
 anywhere in this repository and no layout for either is documented here**, so
 the catalogue counts them by format per container and leaves them alone.  The
-same goes for the ``MMAP`` members whose surfaces declare a pixel layout the
-decoder does not implement -- 15 in ``STADIUMS.DAT``, 23 in ``STADATA.DAT``,
-12 in ``PLYRFACE.DAT``, 140 in ``LOADDATA.DAT`` and 22 across the other UI
-containers [M]: they parse, they are counted, and ``undecodable_reason``
-refuses each by name rather than drawing it wrong.
+same goes for two kinds of ``MMAP`` entry the decoder will not draw: the ones
+that declare no palette or a pixel layout it does not implement -- 15 in
+``STADIUMS.DAT``, 23 in ``STADATA.DAT``, 12 in ``PLYRFACE.DAT``, 140 in
+``LOADDATA.DAT`` and 22 across the other UI containers -- and the **palette
+banks**, members carrying alternate CLUTs and no surface at all, of which
+``STADIUMS.DAT`` has five (828 to 832, 45 CLUTs each) [M].  All of them parse,
+all of them are counted, and ``undecodable_reason`` refuses each by name rather
+than drawing it wrong.
 
 **Classification: ``offline-writer-proved``, and never more.**  Every step is
 proved against the user's own bytes offline.  **No rebuilt Madden 09 container
