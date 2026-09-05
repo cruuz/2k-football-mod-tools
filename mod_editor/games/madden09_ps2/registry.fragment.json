@@ -2,6 +2,162 @@
   "capabilities": [
     {
       "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.audio_lane --source <SLUS-21770.iso> --banks [--out <catalogue.json>] [--export <NEW manifest.json> --limit N]",
+        "module": "mod_editor/games/madden09_ps2/audio_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/EA_SCHL_FORMAT.md",
+        "docs/product/MADDEN09_PS2_AUDIO.md",
+        "docs/product/evidence/madden09_ps2/audio_codec_census.json"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Audio page of the PS2 Madden 09 Studio with Play and Export WAV and no import at all: the page states, in the row's own words, that a bank sound is not replaced here and why. The independent verifier re-decodes every exported sound from the user's own disc by key -- not through the catalogue that produced the receipt -- and fails on a tampered file or an undeclared one."
+      },
+      "id": "madden09ps2.audio.banks",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and memory-mapped read-only; the export is a NEW manifest and a NEW folder beside it, neither of which may already exist, and the source may not be named as the destination.",
+        "The catalogue carries offsets, lengths, rates, channel counts and whether a sound loops -- never a sample.",
+        "No writer: check_edit refuses every value, because there is nothing this lane accepts to write.",
+        "A sound that declares no data offset or no sample rate is listed and refused, rather than exported at a rate nobody measured.",
+        "Bounded: a raw-CD image is refused, and at most 4,000 sounds are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "Decode the loop tags (0x86, 0x87, 0x89) and a bank writer becomes possible; the PS ADPCM encoder it would need is already here and round-trips a computed tone at 57 dB.",
+        "Establish which channel of a stereo bank sound is left. Each channel's samples are proved against ffmpeg; the pairing is not.",
+        "Join a bank to the event that plays it. SOUNDDAT.DAT names none of its members."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA SCHl and EA TERF readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter creates local WAVs and no path writes anything into the game or the emulator, so there is no runtime behaviour to witness. The decode is proved against ffmpeg's own adpcm_psx output, not against the game.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<bank member>:<sound>, as the catalogue writes it",
+            "name": "sound",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "Export writes one WAV per selected sound plus a HOW-TO that states what cannot be done with them yet. The GUI must not offer a write back to the disc from this row: there is none."
+      },
+      "source_container": {
+        "format": "BNKl banks inside EA TERF containers: 'BNKl', u16 version, u16 sound count, u32 header size, u32 data size, u32 zero, then one u32 per sound counted from its OWN slot to that sound's PT platform header. Audio is a flat run of 16-byte Sony PS ADPCM frames (shift/filter byte, flag byte, 14 bytes of two 4-bit residuals, low nibble first), channel-interleaved a frame at a time.",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "SOUNDDAT.DAT: 301 BNKl banks holding 967 Sony PS ADPCM sounds in 1,011 slots",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Read the 301 BNKl sound banks of SOUNDDAT.DAT and export their 967 sounds as WAVs. A bank is a small directory -- version, sound count, header size, data size, then one offset per sound counted from its own slot -- and each sound carries a PT platform header whose tag 0x88 gives the offset of its audio inside the member. Every one of them is Sony PlayStation ADPCM: 962 of 962 sounds whose length can be derived carry exactly 16 bytes per 28 samples, and the decoder matches ffmpeg's adpcm_psx sample for sample on every mono sound and on every channel of every stereo one. Nothing is written back: 134 of the sounds carry loop points this module has not decoded, the SPU plays a bank sound from parameters nobody here has mapped, and no rebuilt Madden 09 container has ever been booted.",
+      "surface": "audio",
+      "title": "Madden 09 (PS2) BNKl sound banks to WAV",
+      "validation_command": "bash tools/validate_madden09_ps2_audio.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.audio_lane --source <SLUS-21770.iso> [--out <catalogue.json>]",
+        "module": "mod_editor/games/madden09_ps2/audio_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/EA_SCHL_FORMAT.md",
+        "docs/product/MADDEN09_PS2_AUDIO.md",
+        "docs/product/evidence/madden09_ps2/audio_codec_census.json"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Audio page of the PS2 Madden 09 Studio with Play, Export WAV and an Import WAV that is checked before it is accepted. A sound stored in the speech codec is listed with its rate, channels and length and its Play and Export refuse by name, so the page never pretends to decode what nothing can decode. The independent verifier re-opens the destination image as a disc in its own right, finds the replaced sound by key, decodes it with the decoder and compares it with the user's own WAV, and checks every byte outside the declared ranges against the source."
+      },
+      "id": "madden09ps2.audio.streams",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and memory-mapped read-only; the destination is a NEW image that must not already exist, and the source may not be named as the destination.",
+        "Fixed allocation: the destination is the same length as the source, the container is rewritten inside its own ISO9660 extent, and a replacement longer than the stream it replaces is refused naming the byte count it had to fit.",
+        "A replacement WAV is mixed to the sound's channel count and resampled to its rate by linear interpolation, which is said on the page rather than done quietly.",
+        "The catalogue carries rates, channel counts, lengths, offsets and codec ids -- never a sample. Audio is decoded when a sound is played or exported, straight from the user's own image.",
+        "Codec 4 (MicroTalk) is refused by name on 33,751 of the 34,046 streams: ffmpeg carries no decoder for it either, so a decoder written here could not be checked against anything.",
+        "Bounded: a raw-CD image is refused (the containers run to 415 MB and are read through a memory map that needs the 2048-byte layout), and a container over 512 MB is not rewritten.",
+        "At most 4,000 sounds are listed as targets; the document's per-container totals stay complete."
+      ],
+      "portme": [
+        "Boot a rebuilt image in PCSX2 and hear the replaced track. Nothing here has been booted, which is exactly why the classification is offline-writer-proved and not runtime-proved.",
+        "Decode MicroTalk. 33,751 streams and every line of commentary on the disc are behind it, and no public decoder this project could check against exists.",
+        "Name the 47 BGM tracks. The container names none of its members, so which track is which is not established here.",
+        "Replace a whole member that holds several streams at once; today each stream is rewritten in place inside the member and the others pass through untouched."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA SCHl and EA TERF readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. A destination image is built and an independent verifier re-parses it, decodes the replaced sound and matches it against the user's WAV, and confirms every byte outside the declared ranges is identical to the source. Whether Madden NFL 09 plays the rebuilt disc is NOT claimed: no rebuilt Madden 09 image has been booted in an emulator or on hardware.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<stream>, as the catalogue writes it",
+            "name": "sound",
+            "required": true
+          },
+          {
+            "allowed": "a path to an uncompressed WAV (8-, 16-, 24- or 32-bit integer or 32-bit float, 1 to 8 channels) that fits the stream's stored bytes once encoded",
+            "name": "wav",
+            "required": false
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "A recipe that names a sound with no WAV is refused by the build: this lane writes a disc image, so every sound in it must name the file that replaces it. The GUI must not offer Play or Export WAV on a speech-codec sound; both refuse with the codec's name."
+      },
+      "source_container": {
+        "format": "EA SCHl streams inside EA TERF containers: SCHl header (platform tag GSTR or PT, then a tag list of tag/length/big-endian-value with a 0xFF escape to a 4-byte length), SCCl block count, SCDl blocks ([samples u32][per-channel offset u32][data], byte order set by the platform tag), SCEl end. Frames are 28 samples in 15 bytes of 4-bit EA-XA ADPCM, or 61 bytes of verbatim big-endian PCM behind a 0xEE control byte.",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "BGM.DAT, SOUNDDAT.DAT, SPCHDATA.DAT, SPCHFEDT.DAT, SPCHMAD1.DAT and SPCHMAD2.DAT: 11,389 SCHl members holding 34,046 streams, 295 of them decodable",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Read every EA SCHl audio stream on a user's SLUS-21770 disc and replace the ones that decode. Measured on the retail disc: 34,046 streams inside 11,389 members of six containers, every header parsing to a terminated tag list whose per-block sample counts sum exactly to the count it declares. 295 of them -- all 47 of BGM.DAT and all 248 of SOUNDDAT.DAT -- are EA-XA ADPCM and decode byte for byte against ffmpeg's adpcm_ea_r2 and adpcm_ea_r3; the other 33,751 are EA's MicroTalk speech codec, which ffmpeg refuses by name and which this module refuses rather than guess at. A replacement WAV is mixed and resampled to the sound's own rate and channel count, re-encoded as EA-XA, and must fit the bytes the sound already occupies; the member is rewritten inside the container's own extent and the destination image keeps the source's exact length. Nothing has been booted.",
+      "surface": "audio",
+      "title": "Madden 09 (PS2) EA SCHl audio streams: play, export WAV, and replace",
+      "validation_command": "bash tools/validate_madden09_ps2_audio.sh"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.games.madden09_ps2.code_patches --source <SLUS-21770.iso> --recipe <recipe.json> --destination <NEW out.pnach>",
         "module": "mod_editor/games/madden09_ps2/code_patches.py",
         "operation": "write"
@@ -603,6 +759,7 @@
   },
   "schema": "vc_mod_capability_registry_fragment/v1",
   "surfaces": [
+    "audio",
     "colors",
     "gameplay_tuning_sliders",
     "menus",

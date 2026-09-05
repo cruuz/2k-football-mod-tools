@@ -164,7 +164,7 @@ for every channel count, byte order and version the disc uses.
 | | |
 |---|---|
 | catalogue, six containers, 11,389 members, 34,046 streams | **13.4 s** [M] |
-| ffmpeg agreement, streams | **289 of 289 byte-identical**, 670,692,862 PCM samples [M] |
+| ffmpeg agreement, streams | **289 of 289 byte-identical**, 670,692,008 PCM samples [M] |
 | ffmpeg agreement, bank sounds | **508 of 508 byte-identical**, 33,451,124 PCM samples; the 459 with no declared rate are not compared [M] |
 | bank plausibility, 508 sounds | none silent; peak 11,923-32,768 (median 31,175), RMS 2,207-11,170 (median 5,249); 88 sounds touch full scale and the longest saturated run anywhere is 21 samples [M] |
 | real-disc build (one BGM stream ← a 10 s computed tone) | 122.5 s, 1,657,339,904 bytes in and out [M] |

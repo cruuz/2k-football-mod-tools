@@ -360,6 +360,8 @@ Build remains disabled until at least one replacement is staged.
 These labels come from the same capability registry used by the build system.
 The current registry has 99 cross-title rows, including 45 Xbox NFL 2K5
 capabilities, 9 NFL 2K5 PS2 rows (the separate PS2 save-import bridge, the
+The current registry has 86 cross-title rows, including 32 Xbox NFL 2K5
+capabilities and 9 NFL 2K5 PS2 rows: the separate PS2 save-import bridge, the
 read-only PS2 disc inventory, the PCSX2 replacement-pack export for edited uniform
 art -- the PS2 studio's Windows menu, or --ps2-export -- and six on-disc writers:
 display text, playbooks, uniform colours, the disc roster, stadium positions and

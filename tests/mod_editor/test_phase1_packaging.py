@@ -66,6 +66,8 @@ class ModStudioPackagingTests(unittest.TestCase):
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
+        self.assertIn("registry has 86 cross-title rows", getting_started)
+        self.assertIn("complete 12-tab sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
             "# 2K5 Mod Studio — v1.0 RC87 Release Status"
@@ -455,7 +457,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
         self.assertIn("registry=99 sections=12 nfl2k5_capabilities=45", runtime_probe)
-        self.assertIn("registry=99 sections=12 nfl2k5_capabilities=45", runtime_probe)
+        self.assertIn("registry=86 sections=12 nfl2k5_capabilities=32", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)

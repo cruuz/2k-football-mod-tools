@@ -28,7 +28,9 @@
     "ps2_iso9660_writer",
     "ps2_iso9660_verify",
     "madden09_ps2_texture_identities",
-    "mod_editor.games.madden09_ps2.identity_lane"
+    "mod_editor.games.madden09_ps2.identity_lane",
+    "mod_editor.games._formats.ea_schl",
+    "mod_editor.games.madden09_ps2.audio_lane"
   ],
   "tool_modules": [],
   "allowlist_patterns": [
@@ -43,7 +45,7 @@
     "stadiums": "STADIUMS.DAT holds 651 SMF geometry members and 434 MMAP textures, so the textures are readable and the geometry is not decoded; both are listed by the All Textures page and neither has an editor.",
     "presentation": "The scorebug and the broadcast overlays are drawn by the executable rather than by a data file, and nothing on this disc has been mapped to them.",
     "crib": "The Crib is an ESPN NFL 2K5 feature and not a Madden concept, so this page stays empty here on purpose.",
-    "audio": "SOUNDDAT.DAT, BGM.DAT and the speech containers carry EA SCHl streams and BNKl banks; no decoder for either is built here and no public writer for them exists.",
+    "audio": "BGM.DAT, SOUNDDAT.DAT and the four speech containers hold 34,046 EA SCHl streams and 301 BNKl banks. 295 of the streams -- all of the music and every sound effect stream -- are EA-XA ADPCM and play, export and can be replaced; the 967 bank sounds are Sony PlayStation ADPCM and play and export. The other 33,751 streams, which is all the speech and commentary, are EA's MicroTalk codec: ffmpeg has no decoder for it either, so they are listed with their rate, channels and length and their audio is refused by name rather than guessed at.",
     "playbooks": "Madden 09's playbook data has not been located on this disc by this project, and the owner's own research records that no playbook is among the members the GAME.QKL preload copies.",
     "saves": "A Madden 09 memory-card save is a different repository's tooling; this studio works off the disc, so nothing here reads or writes a save."
   }

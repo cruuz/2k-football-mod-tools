@@ -1862,6 +1862,8 @@ def main() -> int:
         'mod_editor.core.nfl2k5_music_archive',
         'mod_editor.studio.music_service',
         'mod_editor.gui.music_panel_qt',
+        "mod_editor.games._formats.ea_schl",
+        "mod_editor.games.madden09_ps2.audio_lane",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1967,7 +1969,8 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 99,
+    require(len(registry.capabilities) == 101,
+    require(len(registry.capabilities) == 101,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -2374,8 +2377,10 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=99 sections=12 nfl2k5_capabilities=45 "
+        "registry=101 sections=12 nfl2k5_capabilities=45 "
         "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
+        "registry=101 sections=12 nfl2k5_capabilities=32 "
+        "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
         "text_read_only=3272 roster_numbers=6522 "

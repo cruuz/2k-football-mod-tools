@@ -32,6 +32,13 @@ What is on the contract today, and what each rung rests on:
   abbreviations and two colours, written into every copy of the ``TEAM`` row
   the disc's own databases agree on: the ``DB_TEAMS.DAT`` member and the
   matching row of the bare ``STRMDATA.DB``.
+* **audio** (:mod:`.audio_lane`) -- two lanes over the disc's 34,034 ``SCHl``
+  streams and 301 ``BNKl`` banks.  The streams lane is the module's **first
+  writer**: 295 of the streams are EA-XA ADPCM and a replacement WAV is
+  re-encoded into the bytes the sound already occupies, with the preload
+  caches' copies kept in step and an independent verifier that re-decodes the
+  result.  ``offline-writer-proved``: nothing has been booted.  The banks lane
+  is ``extract-only``.
 * **executable patches** (:mod:`.code_patches`, ``unknown``) -- the whole
   pnach pipeline, proved on a synthetic ELF, with **no translation mapped**.
   The studio draws no editor for it; its page states the classification and
@@ -45,6 +52,16 @@ verifier re-derives every changed byte of the image from the two files.  **No
 rebuilt Madden 09 container has ever been booted**, so nothing here says the
 game loads the result, and no other lane in this module writes anything at all.
 ``docs/product/MADDEN09_PS2_MODULE.md`` carries both halves.
+**One writer, and it has not been booted.**  The audio streams lane writes a
+new disc image; every other lane here reads.  Its rung is
+``offline-writer-proved`` and stops there on purpose: a destination is built,
+an independent verifier re-parses it, and no rebuilt Madden 09 image has ever
+been run in an emulator or on hardware.  The art and text lanes still write
+nothing at all, because the container writer cannot shrink an ``LZH1`` member
+back down -- no encoder for that codec exists anywhere public -- and the audio
+containers are the ones that store their members uncompressed.  Both facts are
+in ``docs/product/MADDEN09_PS2_MODULE.md`` and
+``docs/product/MADDEN09_PS2_AUDIO.md``, and neither is worked around here.
 
 Retail-free: this package carries names, offsets, lengths, counts and digests.
 No member payload, no decoded pixel and no string from the game is in it.
@@ -65,6 +82,7 @@ from mod_editor.games.contract import (
 )
 
 from . import containers
+from .audio_lane import AudioBanksLane, AudioStreamsLane
 from .code_patches import Madden09CodePatchLane
 from .disc_identity import Madden09DiscIdentifier
 from .identity_lane import IdentityLane
@@ -144,6 +162,8 @@ _CANDIDATES = (
     TeamDataLane(),
     TextLane(),
     IdentityLane(),
+    AudioStreamsLane(),
+    AudioBanksLane(),
     Madden09CodePatchLane(IDENTITY),
 )
 LANES = tuple(lane for lane in _CANDIDATES if _registered(lane.capability_id))

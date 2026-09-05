@@ -7,6 +7,7 @@ mod_editor/games/_formats/ea_tdb.py
 mod_editor/games/madden09_ps2/__init__.py
 mod_editor/games/madden09_ps2/__main__.py
 mod_editor/games/madden09_ps2/allowlist.fragment.txt
+mod_editor/games/madden09_ps2/audio_lane.py
 mod_editor/games/madden09_ps2/code_patches.py
 mod_editor/games/madden09_ps2/containers.py
 mod_editor/games/madden09_ps2/disc_identity.py
@@ -18,6 +19,8 @@ mod_editor/games/madden09_ps2/registry.fragment.json
 mod_editor/games/madden09_ps2/team_data.py
 mod_editor/games/madden09_ps2/text_lane.py
 mod_editor/games/madden09_ps2/uniform_art.py
+tools/validate_madden09_ps2_audio.bat
+tools/validate_madden09_ps2_audio.sh
 tools/validate_madden09_ps2_code_patches.bat
 tools/validate_madden09_ps2_code_patches.sh
 tools/validate_madden09_ps2_inventory.bat
