@@ -1703,6 +1703,7 @@ def main() -> int:
         "mod_editor.gui.ps2_export_dialog_qt",
         "nfl2k5_ps2_replacement_pack_verify",
         "nfl2k5_ps2_replacement_pack_audit",
+        "nfl2k5_ps2_replacement_pack_kit",
         "nfl2k5_ps2_texture_map",
         "xxh3",
         "nfl2k5_ps2_text_patch",
