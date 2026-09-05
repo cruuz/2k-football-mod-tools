@@ -354,8 +354,33 @@ class Plan:
 
 
 @dataclass(frozen=True)
+class Artifact:
+    """One file a build produced, for lanes whose output is not an image.
+
+    A texture pack, a pnach, an exported folder: these declare *files* the way a
+    fixed-allocation lane declares byte ranges.  ``path`` is the file as
+    written; ``sha256`` is what the verifier and the harness check it against.
+    """
+
+    path: str
+    sha256: str
+    kind: str = ""
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.path, str) or not self.path.strip():
+            raise ContractError("An artifact needs a path.")
+        if not isinstance(self.sha256, str) or _SHA256_RE.fullmatch(self.sha256) is None:
+            raise ContractError(f"Artifact {self.path}: sha256 must be lowercase hex SHA-256.")
+
+
+@dataclass(frozen=True)
 class Receipt:
-    """What a build did.  ``document`` is the lane tool's own receipt, verbatim."""
+    """What a build did.  ``document`` is the lane tool's own receipt, verbatim.
+
+    A fixed-allocation lane declares ``declared_ranges`` in the destination
+    image; a lane that writes files declares ``artifacts``.  Every build
+    declares one or the other, and the harness checks whichever it finds.
+    """
 
     schema: str
     lane_id: str
@@ -363,10 +388,13 @@ class Receipt:
     destination: str
     declared_ranges: tuple[DeclaredRange, ...]
     document: Mapping[str, Any] = field(default_factory=dict)
+    artifacts: tuple[Artifact, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.schema, str) or not self.schema.strip():
             raise ContractError("A receipt needs a schema id.")
+        if not isinstance(self.artifacts, tuple) or not all(isinstance(item, Artifact) for item in self.artifacts):
+            raise ContractError("Receipt artifacts must be a tuple of Artifact.")
         object.__setattr__(self, "document", _frozen(self.document))
 
 
@@ -442,6 +470,113 @@ class Lane(Protocol):
 
     def conformance_edits(self, catalogue: Catalogue) -> tuple[Edit, ...]:
         """At least one edit the synthetic source accepts, for the harness."""
+        ...
+
+
+# --------------------------------------------------------------------------
+# Executable patches: a lane kind for code changes, pnach-first.
+# --------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class CodePatch:
+    """One executable patch as the *host* tool defines it, before any translation.
+
+    ``patch_id`` is the host's semantic id, ``parameters`` the values a user
+    may set (names and the ranges the host states), ``host_site`` the host's
+    own description of the code site it changes -- named targets, pinned
+    executable digests, never raw retail bytes.  A PS2 module lists the host's
+    patches so the chooser can say which are translated and which are not.
+    """
+
+    patch_id: str
+    title: str
+    surface: str
+    parameters: Mapping[str, Any] = field(default_factory=dict)
+    host_site: Mapping[str, Any] = field(default_factory=dict)
+    note: str = ""
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.patch_id, str) or _LANE_ID_RE.fullmatch(self.patch_id) is None:
+            raise ContractError(f"Code patch id {self.patch_id!r} is invalid.")
+        for name in ("title", "surface"):
+            if not isinstance(getattr(self, name), str) or not getattr(self, name).strip():
+                raise ContractError(f"Code patch {self.patch_id}: {name} must be a non-empty string.")
+        object.__setattr__(self, "parameters", _frozen(self.parameters))
+        object.__setattr__(self, "host_site", _frozen(self.host_site))
+
+
+@dataclass(frozen=True)
+class MipsWord:
+    """One 32-bit word at an EE virtual address: what it is, what it becomes."""
+
+    address: int
+    original: int
+    replacement: int
+
+    def __post_init__(self) -> None:
+        for name in ("address", "original", "replacement"):
+            value = getattr(self, name)
+            if type(value) is not int or not 0 <= value <= 0xFFFFFFFF:
+                raise ContractError(f"MipsWord {name} must be a 32-bit unsigned integer.")
+        if self.address % 4:
+            raise ContractError(f"MipsWord address 0x{self.address:08X} is not word-aligned.")
+        if self.original == self.replacement:
+            raise ContractError(f"MipsWord at 0x{self.address:08X} changes nothing.")
+
+
+@dataclass(frozen=True)
+class MipsPatch:
+    """A host patch translated to the PS2 executable: words plus the ELF it is for.
+
+    ``elf_identity`` names the executable the words were derived against --
+    serial, boot file, its SHA-256 and the PCSX2 CRC -- so a pnach is never
+    applied to, or verified against, a different build.
+    """
+
+    patch_id: str
+    words: tuple[MipsWord, ...]
+    elf_identity: Mapping[str, Any]
+    parameters: Mapping[str, Any] = field(default_factory=dict)
+    note: str = ""
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.words, tuple) or not self.words or not all(isinstance(w, MipsWord) for w in self.words):
+            raise ContractError(f"MipsPatch {self.patch_id}: words must be a non-empty tuple of MipsWord.")
+        addresses = [word.address for word in self.words]
+        if len(addresses) != len(set(addresses)):
+            raise ContractError(f"MipsPatch {self.patch_id}: an address is patched twice.")
+        object.__setattr__(self, "elf_identity", _frozen(self.elf_identity))
+        object.__setattr__(self, "parameters", _frozen(self.parameters))
+
+
+@runtime_checkable
+class CodePatchLane(Lane, Protocol):
+    """A lane whose edits are executable patches, delivered emulator-side first.
+
+    Everything :class:`Lane` requires still holds -- the catalogue lists the
+    host's patches as targets, ``check_edit`` refuses parameters out of range
+    or a patch with no translation, ``plan`` resolves words against the user's
+    own ELF, ``build`` writes a ``.pnach`` (an artifact receipt), ``verify``
+    re-reads the pnach and the ELF independently -- plus four methods that
+    name the translation problem explicitly.  Writing the words into the ELF
+    on a copy of the disc is a second, optional delivery through the
+    fixed-allocation ISO writer; nothing here requires it.
+    """
+
+    def patches(self) -> tuple[CodePatch, ...]:
+        """The host tool's patch catalogue, as it stores it; needs no source."""
+        ...
+
+    def translation(self, patch_id: str, parameters: Mapping[str, Any]) -> MipsPatch:
+        """The MIPS words for one host patch, or ``Refusal`` when it is not mapped yet."""
+        ...
+
+    def emit_pnach(self, patches: Sequence[MipsPatch], crc: str) -> str:
+        """The PCSX2 patch-file text delivering ``patches`` to the executable with ``crc``."""
+        ...
+
+    def verify_pnach(self, pnach_text: str, source: Path, expected: Sequence[MipsPatch]) -> Verdict:
+        """Independent: every address inside the ELF, every original word as expected, nothing else declared."""
         ...
 
 
@@ -791,12 +926,15 @@ def contract_surface() -> dict[str, tuple[str, ...]]:
 
 __all__ = [
     "ALLOWED_CORE_IMPORTS",
+    "Artifact",
     "SHARED_FORMATS_PACKAGE",
     "CONTRACT_MAJOR",
     "CONTRACT_MINOR",
     "CONTRACT_SCHEMA",
     "CONTRACT_VERSION",
     "Catalogue",
+    "CodePatch",
+    "CodePatchLane",
     "ContractError",
     "DeclaredRange",
     "Edit",
@@ -807,6 +945,8 @@ __all__ = [
     "Lane",
     "MANIFEST_NAME",
     "MANIFEST_SCHEMA",
+    "MipsPatch",
+    "MipsWord",
     "PINS_SCHEMA",
     "Plan",
     "REGISTRY_FRAGMENT_SCHEMA",

@@ -408,10 +408,16 @@ def check_lane_behaviour(game: GameModule, lane: Lane, work_dir: Path) -> list[C
         out.record("build_kept_size", destination.stat().st_size == source.stat().st_size,
                    f"{destination.stat().st_size:,} bytes")
     ranges = [(item.start, item.length) for item in receipt.declared_ranges]
-    out.record("receipt_declares_ranges", bool(ranges), f"{len(ranges)} ranges")
+    out.record("receipt_declares_ranges_or_artifacts", bool(ranges) or bool(receipt.artifacts),
+               f"{len(ranges)} ranges, {len(receipt.artifacts)} artifacts")
     size = destination.stat().st_size
-    out.record("declared_ranges_inside_destination",
-               all(0 <= start and start + length <= size for start, length in ranges), "")
+    if ranges:
+        out.record("declared_ranges_inside_destination",
+                   all(0 <= start and start + length <= size for start, length in ranges), "")
+    if receipt.artifacts:
+        stale = [item.path for item in receipt.artifacts
+                 if not Path(item.path).is_file() or _sha256(Path(item.path)) != item.sha256]
+        out.record("artifacts_match_their_digests", not stale, "" if not stale else f"stale: {stale}")
     changed = _changed_offsets(source, destination)
     if changed is not None:
         stray = sorted(offset for offset in changed if _outside(ranges, offset))
