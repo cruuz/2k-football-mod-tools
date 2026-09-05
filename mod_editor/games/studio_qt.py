@@ -1678,6 +1678,9 @@ class GameStudioDialog(QDialog):
         self.progress_bar.hide()
         self.cancel_button.hide()
         if error is not None:
+            # "Reading x.iso…" must not be left standing over a source that was
+            # refused: the row says what is open, and nothing is.
+            self.refresh_source_label()
             self.refresh_controls()
             self.status_label.setStyleSheet(f"color: {_WARN_COLOUR if cancelled else _INVALID_COLOUR};")
             self.report(error)
@@ -1725,6 +1728,15 @@ class GameStudioDialog(QDialog):
             lambda stage, _cancel: self.service.open(Path(path), stage),
             self._opened,
         )
+
+    def refresh_source_label(self) -> None:
+        """The source row says what is open, and says so when nothing is."""
+
+        if not self.service.is_open:
+            self.source.setText("No source opened yet.")
+            return
+        self.source.setText(self.service.identity().headline
+                            or f"Source: {self.service.source_path}")
 
     def _opened(self, identity: object) -> None:
         for page in self.lane_pages.values():

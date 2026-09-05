@@ -244,6 +244,27 @@ class GameStudioShellTests(unittest.TestCase):
         self.addCleanup(with_source.close)
         self.assertIn("my.iso", with_source.source.text())
 
+    def test_a_source_that_was_refused_does_not_leave_reading_on_the_row(self) -> None:
+        """The source row is a statement about what is open, so a refusal has
+        to take "Reading x…" back down rather than leave it standing."""
+
+        dialog = self._studio()
+        dialog.source.setText("Reading my.iso…")
+        dialog.refresh_source_label()
+        self.assertEqual(dialog.source.text(), "No source opened yet.")
+
+    def test_a_closed_studio_starts_no_more_work(self) -> None:
+        """A deferred open that fires after the window has gone is a crash, not
+        a late refresh; the window refuses the work instead."""
+
+        dialog = GameStudioDialog(self.module, initial_source=self.root / "my.iso")
+        self.addCleanup(dialog.deleteLater)
+        dialog.close()
+        self.assertTrue(dialog._closed)
+        self.assertFalse(dialog._initial_timer.isActive())
+        dialog._open_initial_source()
+        self.assertFalse(dialog.busy, "a closed studio never becomes busy")
+
 
 if __name__ == "__main__":
     unittest.main()
