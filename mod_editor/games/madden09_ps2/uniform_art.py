@@ -73,6 +73,51 @@ WRITE_SCHEMA = "madden09_ps2_uniform_art_export/v1"
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
+#: The evidence document ``tools/madden09_ps2_texture_identities.py`` writes:
+#: which texture on the disc PCSX2 saw, and under what filename.  Counts,
+#: dimensions, filenames and member indexes; no pixel.
+IDENTITY_SCHEMA = "madden09_ps2_pcsx2_texture_identities/v1"
+IDENTITY_DOCUMENT = Path("docs/product/evidence/madden09_ps2/pcsx2-texture-identities.json")
+
+#: Which name :meth:`UniformArtLane.replacement_identity` hands back when a
+#: texture was dumped under more than one convention.  ``classic`` first: it is
+#: what PenguinScreen2 and the legacy replacement packs load, and stock PCSX2
+#: ignores the TCC bit that distinguishes the two, so a classic name loads on
+#: every build there has ever been.
+IDENTITY_CONVENTIONS = ("classic", "modern")
+
+_IDENTITY_CACHE: Dict[str, Any] = {}
+
+
+def load_identities(path: Optional[Path] = None) -> Dict[str, Dict[str, List[str]]]:
+    """``target key -> {convention: [filenames]}``, or nothing at all.
+
+    An empty mapping is the honest answer for a user who has not dumped their
+    own textures, and it is the state this lane shipped in: no name is
+    invented, and the pack step keeps the refusal it always had.
+    """
+
+    resolved = Path(path) if path is not None else IDENTITY_DOCUMENT
+    if not resolved.is_absolute():
+        resolved = Path(__file__).resolve().parents[3] / resolved
+    key = str(resolved)
+    cached = _IDENTITY_CACHE.get(key)
+    if cached is not None:
+        return cached
+    out: Dict[str, Dict[str, List[str]]] = {}
+    try:
+        document = json.loads(resolved.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        document = {}
+    if isinstance(document, Mapping) and document.get("schema") == IDENTITY_SCHEMA:
+        for target, entry in (document.get("identities") or {}).items():
+            names = entry.get("names") if isinstance(entry, Mapping) else None
+            if isinstance(names, Mapping) and names:
+                out[str(target)] = {str(convention): list(values)
+                                    for convention, values in names.items() if values}
+    _IDENTITY_CACHE[key] = out
+    return out
+
 #: The art containers, and what the disc itself says about how they are
 #: organised.  Only the first column is a fact about *this* module; the rest is
 #: what the containers reveal, with an honest label on each.
@@ -251,10 +296,21 @@ class UniformArtLane:
     fixed_allocation = False
 
     NO_IDENTITY = (
-        "This lane cannot name a PCSX2 replacement file for a Madden 09 texture yet: the name "
-        "PCSX2 looks for is built from the GS TEX0 and CLUT hashes it computes while the game "
-        "draws, and getting those needs a GS dump of Madden 09 running, which nobody has "
-        "captured. Export the PNG instead; a pack cannot be written until that dump exists."
+        "This lane can only name a PCSX2 replacement file for a texture the emulator has "
+        "been seen drawing: the name is built from the GS TEX0 and CLUT hashes PCSX2 "
+        "computes at draw time, so it is learned from a texture dump of Madden 09 running "
+        "and cannot be derived from a disc file alone. "
+        "tools/madden09_ps2_texture_identities.py pairs a dump with this disc by pixels and "
+        "writes the table this lane reads; a texture no dump has shown gets no name."
+    )
+
+    #: What the page says when there is no table at all -- the state before
+    #: anyone dumped anything, and the one a user without a dump is in.
+    NO_IDENTITY_TABLE = (
+        "No PCSX2 texture dump has been paired with this disc, so no replacement filename is "
+        "known for any texture. Run the game once in PCSX2 with texture dumping on, then "
+        "tools/madden09_ps2_texture_identities.py --source <your image> --dump-dir <the dump "
+        "folder>, and the names appear here."
     )
 
     # -- catalogue -----------------------------------------------------
@@ -483,9 +539,46 @@ class UniformArtLane:
                    if tuple(rgba[position:position + 4]) in palette)
 
     def replacement_identity(self, target: Target) -> Optional[str]:
-        """``None``: PCSX2 identities need a GS dump of this game, and none exists."""
+        """The PCSX2 filename for this texture, when a dump has shown one.
 
+        ``classic`` in preference to ``modern``: the two differ only in whether
+        the ``bits`` word carries TCC in bit 14, and every PCSX2 build parses a
+        classic name, so one answer is right for both.  ``None`` when no dump
+        has shown this texture, which is not the same as "there is no such
+        thing" -- :attr:`NO_IDENTITY` is the sentence that says which.
+        """
+
+        names = self.replacement_identities(target)
+        for convention in IDENTITY_CONVENTIONS:
+            if names.get(convention):
+                return names[convention][0]
+        for values in names.values():
+            if values:
+                return values[0]
         return None
+
+    def replacement_identities(self, target: Target) -> Dict[str, List[str]]:
+        """Every filename this texture was dumped under, by naming convention.
+
+        A pack writer wants both: the classic name for PenguinScreen2 and the
+        legacy packs, the modern one for a stock build that dumped its own.
+        """
+
+        return {convention: list(values) for convention, values
+                in load_identities().get(str(target.key), {}).items()}
+
+    def identity_note(self, target: Target) -> str:
+        """One sentence about why this texture has a name, or has not."""
+
+        if not load_identities():
+            return self.NO_IDENTITY_TABLE
+        names = self.replacement_identities(target)
+        if not names:
+            return (f"No PCSX2 dump has shown {target.key} being drawn, so no replacement "
+                    f"filename is known for it. Dump the frame that draws it and re-run "
+                    f"tools/madden09_ps2_texture_identities.py.")
+        return "; ".join(f"{convention}: {', '.join(values)}"
+                         for convention, values in sorted(names.items()))
 
     # -- plan / build / verify -----------------------------------------
 
@@ -566,6 +659,8 @@ class UniformArtLane:
                 "width": target.raw.get("width"),
                 "height": target.raw.get("height"),
                 "replacement_identity": self.replacement_identity(target),
+                "replacement_identities": self.replacement_identities(target),
+                "identity_note": self.identity_note(target),
             })
         return Plan(self.lane_id, tuple(entry["texture"] for entry in entries), (), {
             "schema": RECIPE_SCHEMA,
@@ -938,9 +1033,13 @@ class UniformDiscArtWriteLane(UniformArtLane):
         rebuilt: Dict[str, bytes] = {}
         rows: List[Dict[str, Any]] = []
         member_notes: List[Dict[str, Any]] = []
+        preload = containers.preload_copies(disc)
+        caches: Dict[str, bytearray] = {}
+        cache_notes: List[Dict[str, Any]] = []
         for container_name in order:
             data_file = present[container_name]
             blob = containers.read_file(disc, data_file)
+            original = blob
             container = ea_terf.parse_terf(blob, allow_size_mismatch=True)
             for (name, member), images in sorted(by_member.items()):
                 if name != container_name:
@@ -998,6 +1097,10 @@ class UniformDiscArtWriteLane(UniformArtLane):
                     f"the rebuilt {container_name} broke the container's own layout rules "
                     f"({violations[0]}); nothing was written.")
             rebuilt[container_name] = blob
+            self._patch_preload(disc, present, preload, caches, cache_notes,
+                                container_name, original, blob,
+                                sorted(member for name, member in by_member if
+                                       name == container_name))
             existing = int(data_file.recorded_length)
             rows_for = [row for row in rows if row["container"] == container_name]
             member_notes.append({
@@ -1009,15 +1112,97 @@ class UniformDiscArtWriteLane(UniformArtLane):
                 "recorded_bytes": existing,
                 "grows_the_image": len(blob) > existing,
             })
-        grows = [name for name, blob in rebuilt.items()
+        written = dict(rebuilt)
+        written.update({name: bytes(blob) for name, blob in caches.items()})
+        grows = [name for name, blob in written.items()
                  if len(blob) > int(present[name].recorded_length)]
         return {
             "containers": rebuilt,
+            "caches": {name: bytes(blob) for name, blob in caches.items()},
+            "cache_copies": cache_notes,
             "textures": rows,
             "members": member_notes,
             "grows": grows,
-            "paths": {name: present[name].path for name in rebuilt},
+            "written": written,
+            "paths": {name: present[name].path for name in written},
         }
+
+    @staticmethod
+    def _patch_preload(disc: Any, present: Mapping[str, Any],
+                       preload: Mapping[str, Any], caches: Dict[str, bytearray],
+                       notes: List[Dict[str, Any]], container_name: str,
+                       before: bytes, after: bytes, touched: Sequence[int]) -> None:
+        """Keep the preload caches' copies of this container in step with it.
+
+        ``GAME.QKL`` and ``FE.QKL`` carry byte copies of container directories
+        and of individual members, and the game preloads from those rather than
+        from the container.  ``UNIFORMS.DAT``'s directory is copied **three
+        times** and none of its members at all [M], so a member rewrite is free
+        only while the first ``data_offset`` bytes stay put -- and they move
+        the moment a member changes stored size or codec, because both live in
+        the ``DIR1``/``COMP`` directory this copies.
+
+        A member that is itself carried must be rewritten in the cache too, and
+        the copy is a fixed slot: if its stored size changed there is nowhere
+        to put the new bytes, and that is refused by name rather than written
+        past the end of somebody else's copy.
+        """
+
+        row = preload.get(container_name.upper()) or preload.get(container_name)
+        if row is None or row.empty:
+            return
+        parsed_before = ea_terf.parse_terf(before, allow_size_mismatch=True)
+        parsed_after = ea_terf.parse_terf(after, allow_size_mismatch=True)
+
+        def cache_bytes(name: str) -> bytearray:
+            if name not in caches:
+                require(name in present,
+                        f"{name} carries a copy of {container_name} and is not on this "
+                        f"image; the two disagree and nothing was written.")
+                caches[name] = bytearray(
+                    containers.read_file(disc, present[name], limit=None))
+            return caches[name]
+
+        directory_moved = (before[:parsed_before.data_offset]
+                           != after[:parsed_after.data_offset])
+        if directory_moved:
+            require(parsed_after.data_offset == parsed_before.data_offset,
+                    f"the rebuilt {container_name}'s directory is "
+                    f"{parsed_after.data_offset} bytes and the one the preload caches copy "
+                    f"is {parsed_before.data_offset}; a cached copy is a fixed slot and "
+                    f"cannot grow. Nothing was written.")
+            for copy in row.header:
+                blob = cache_bytes(copy.cache)
+                length = copy.length_in(parsed_after)
+                end = copy.offset + length
+                require(end <= len(blob),
+                        f"{copy.cache}'s copy of {container_name}'s directory runs past the "
+                        f"end of the cache; nothing was written.")
+                blob[copy.offset:end] = after[:length]
+                notes.append({**copy.as_dict(), "length": length,
+                              "why": "the container's directory moved"})
+        for member in touched:
+            copies = row.for_member(int(member))
+            if not copies:
+                continue
+            was = parsed_before.members[int(member)].stored_size
+            now = parsed_after.members[int(member)].stored_size
+            require(was == now,
+                    f"{container_name} member {member} is copied into "
+                    f"{', '.join(sorted({copy.cache for copy in copies}))} and the rewrite "
+                    f"changed its stored size from {was} to {now}. A cached copy is a fixed "
+                    f"slot, so this member cannot be rewritten at a different size; nothing "
+                    f"was written.")
+            stored = parsed_after.stored(int(member))
+            for copy in copies:
+                blob = cache_bytes(copy.cache)
+                end = copy.offset + now
+                require(end <= len(blob),
+                        f"{copy.cache}'s copy of {container_name} member {member} runs past "
+                        f"the end of the cache; nothing was written.")
+                blob[copy.offset:end] = stored
+                notes.append({**copy.as_dict(), "length": now,
+                              "why": "the member itself was rewritten"})
 
     @staticmethod
     def _max_error(rgba: bytes, entries: Sequence[Tuple[int, int, int, int]]) -> int:
@@ -1051,7 +1236,7 @@ class UniformDiscArtWriteLane(UniformArtLane):
         composed = self._compose(Path(source), recipe, catalogue)
         writer = _iso_writer()
         replacements = {composed["paths"][name]: blob
-                        for name, blob in composed["containers"].items()}
+                        for name, blob in composed["written"].items()}
         report = writer.plan_report(Path(source), replacements,
                                     allow_growth=bool(composed["grows"]))
         ranges = tuple(DeclaredRange(item.start, item.length, item.reason)
@@ -1062,6 +1247,7 @@ class UniformDiscArtWriteLane(UniformArtLane):
                         "textures": [{k: v for k, v in row.items() if k != "png_sha256"}
                                      for row in composed["textures"]],
                         "members": composed["members"],
+                        "preload_copies": composed["cache_copies"],
                         "grows_the_image": bool(composed["grows"]),
                         "growth": report.get("growth"),
                         "declared_bytes": sum(item.length for item in ranges),
@@ -1081,7 +1267,7 @@ class UniformDiscArtWriteLane(UniformArtLane):
         composed = self._compose(source, recipe, catalogue)
         writer = _iso_writer()
         replacements = {composed["paths"][name]: blob
-                        for name, blob in composed["containers"].items()}
+                        for name, blob in composed["written"].items()}
         report = writer.replace_files(source, destination, replacements,
                                       allow_growth=bool(composed["grows"]))
         json_report = writer.report_to_json(report)
@@ -1093,10 +1279,12 @@ class UniformDiscArtWriteLane(UniformArtLane):
             "destination": str(destination),
             "textures": composed["textures"],
             "members": composed["members"],
+            "preload_copies": composed["cache_copies"],
             "containers": [
                 {"name": name, "path": composed["paths"][name], "bytes": len(blob),
-                 "sha256": _sha256(blob)}
-                for name, blob in sorted(composed["containers"].items())
+                 "sha256": _sha256(blob),
+                 "kind": "preload-cache" if name in composed["caches"] else "container"}
+                for name, blob in sorted(composed["written"].items())
             ],
             "grew_the_image": bool(json_report.get("growth")),
             "iso_report": json_report,
@@ -1142,6 +1330,7 @@ class UniformDiscArtWriteLane(UniformArtLane):
         after_files = {entry.name: entry for entry in containers.data_files(after_disc)}
         members_checked = 0
         textures_checked = 0
+        copies_checked = 0
         for container_name, rows in sorted(edited.items()):
             if container_name not in after_files:
                 return Verdict(False, f"Verification failed: {container_name} is not on the "
@@ -1172,16 +1361,66 @@ class UniformDiscArtWriteLane(UniformArtLane):
                 if verdict is not None:
                     return verdict
                 textures_checked += 1
+            verdict, checked = self._check_preload(after_disc, after_files, after_blob,
+                                                   container_name)
+            if verdict is not None:
+                return verdict
+            copies_checked += checked
         return Verdict(
             True,
             f"{textures_checked} texture(s) decode from the NEW image as the PNG(s) you gave, "
-            f"{members_checked} untouched member(s) are byte-identical, every container "
-            f"follows its layout rules, and the image-level verifier re-derived every declared "
-            f"byte. {self.NOT_BOOTED}",
+            f"{members_checked} untouched member(s) are byte-identical, {copies_checked} "
+            f"preload-cache copy/copies still equal what they copy, every container follows "
+            f"its layout rules, and the image-level verifier re-derived every declared byte. "
+            f"{self.NOT_BOOTED}",
             {"result": "PASS", "textures": textures_checked,
-             "untouched_members": members_checked,
+             "untouched_members": members_checked, "preload_copies": copies_checked,
              "image": outcome, "runtime_note": self.NOT_BOOTED},
         )
+
+    @staticmethod
+    def _check_preload(disc: Any, files: Mapping[str, Any], blob: bytes,
+                       container_name: str) -> Tuple[Optional[Verdict], int]:
+        """Every cached copy of this container still equals the container.
+
+        Derived from the destination image alone -- the caches are re-parsed
+        there and compared against the container as it now stands -- so a
+        receipt that forgot a copy fails here rather than being believed.
+        """
+
+        try:
+            preload = containers.preload_copies(disc)
+        except Refusal as exc:
+            return Verdict(False, f"Verification failed: {exc}"), 0
+        row = preload.get(container_name.upper()) or preload.get(container_name)
+        if row is None or row.empty:
+            return None, 0
+        parsed = ea_terf.parse_terf(blob, allow_size_mismatch=True)
+        cache_bytes: Dict[str, bytes] = {}
+        checked = 0
+        for copy in list(row.header) + [item for items in row.members.values()
+                                        for item in items]:
+            if copy.cache not in cache_bytes:
+                if copy.cache not in files:
+                    return Verdict(False, f"Verification failed: {copy.cache} carries a copy "
+                                          f"of {container_name} and is not on the new "
+                                          f"image."), checked
+                cache_bytes[copy.cache] = containers.read_file(
+                    disc, files[copy.cache], limit=None)
+            data = cache_bytes[copy.cache]
+            length = copy.length_in(parsed)
+            wanted = (blob[:length] if copy.is_header
+                      else parsed.stored(int(copy.member)))
+            if data[copy.offset:copy.offset + length] != wanted:
+                where = ("directory" if copy.is_header else f"member {copy.member}")
+                return Verdict(False, f"Verification failed: {copy.cache}'s copy of "
+                                      f"{container_name}'s {where} at byte "
+                                      f"0x{copy.offset:x} is not what the container now "
+                                      f"holds. The game preloads from that copy, so the "
+                                      f"edit would be read against a stale "
+                                      f"directory."), checked
+            checked += 1
+        return None, checked
 
     @staticmethod
     def _check_one_texture(before: "ea_terf.TerfContainer", after: "ea_terf.TerfContainer",
@@ -1326,6 +1565,7 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 __all__ = ["ART_CONTAINERS", "CAPABILITY_ID", "CATALOGUE_COST_NOTE", "CATALOG_SCHEMA",
+           "IDENTITY_CONVENTIONS", "IDENTITY_DOCUMENT", "IDENTITY_SCHEMA", "load_identities",
            "DISC_CAPABILITY_ID", "DISC_LANE_ID", "DISC_RECIPE_SCHEMA", "DISC_WRITE_SCHEMA",
            "LANE_ID", "MAX_TARGETS",
            "PNG_SIGNATURE", "RECIPE_SCHEMA", "UniformArtLane", "UniformDiscArtWriteLane",

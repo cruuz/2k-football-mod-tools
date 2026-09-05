@@ -220,9 +220,46 @@ class UniformArtLaneTests(unittest.TestCase):
             self.lane.parse_key("not-a-key")
         self.assertIn("<container>:<member>:<image>", str(caught.exception))
 
-    def test_replacement_identity_is_none_and_says_why(self) -> None:
+    def test_a_texture_no_dump_has_shown_gets_no_identity(self) -> None:
+        """The synthetic disc was never drawn by an emulator, so it has no name."""
         self.assertIsNone(self.lane.replacement_identity(self.target))
-        self.assertIn("GS dump", self.lane.NO_IDENTITY)
+        self.assertEqual(self.lane.replacement_identities(self.target), {})
+        self.assertIn("texture dump", self.lane.NO_IDENTITY)
+        self.assertIn("TEX0", self.lane.NO_IDENTITY)
+
+    def test_an_identity_table_gives_a_texture_its_pcsx2_name(self) -> None:
+        """The classic name wins: every PCSX2 build parses one."""
+        table = self.work / "identities.json"
+        table.write_text(json.dumps({
+            "schema": uniform_art.IDENTITY_SCHEMA,
+            "identities": {
+                self.target.key: {"names": {
+                    "modern": ["aaaa-bbbb-00001dd3.png"],
+                    "classic": ["aaaa-bbbb-00005dd3.png"],
+                }},
+            },
+        }), encoding="utf-8")
+        uniform_art._IDENTITY_CACHE.clear()
+        self.addCleanup(uniform_art._IDENTITY_CACHE.clear)
+        loaded = uniform_art.load_identities(table)
+        self.assertEqual(sorted(loaded[self.target.key]), ["classic", "modern"])
+        original = uniform_art.IDENTITY_DOCUMENT
+        uniform_art.IDENTITY_DOCUMENT = table
+        try:
+            self.assertEqual(self.lane.replacement_identity(self.target),
+                             "aaaa-bbbb-00005dd3.png")
+            self.assertIn("classic", self.lane.identity_note(self.target))
+        finally:
+            uniform_art.IDENTITY_DOCUMENT = original
+            uniform_art._IDENTITY_CACHE.clear()
+
+    def test_a_table_of_the_wrong_schema_is_ignored_rather_than_trusted(self) -> None:
+        table = self.work / "wrong.json"
+        table.write_text(json.dumps({"schema": "something/else", "identities": {
+            self.target.key: {"names": {"classic": ["x-y-z.png"]}}}}), encoding="utf-8")
+        uniform_art._IDENTITY_CACHE.clear()
+        self.addCleanup(uniform_art._IDENTITY_CACHE.clear)
+        self.assertEqual(uniform_art.load_identities(table), {})
 
     def test_a_same_size_png_is_accepted_and_reported_against_the_palette(self) -> None:
         png = self.lane.decode_png(self.source, self.target)

@@ -447,11 +447,18 @@ def _scale_alpha(value: int) -> int:
 
 def decode_rgba(payload: bytes, *, image: int = 0, level: int = 0,
                 palette: Optional[int] = None,
-                texture: Optional[MmapTexture] = None) -> Tuple[int, int, bytes]:
+                texture: Optional[MmapTexture] = None,
+                raw_alpha: bool = False) -> Tuple[int, int, bytes]:
     """One mip level of one image, as ``(width, height, RGBA bytes)``.
 
     Level 0 is the largest.  *palette* picks one of the image's alternate
     CLUTs by absolute index; the default is the image's own first.
+
+    *raw_alpha* hands back the CLUT's own alpha instead of scaling 0..128 to
+    0..255.  That is what a **PCSX2 texture dump** carries -- the emulator
+    writes the palette entry as the GS holds it -- so a matcher that pairs a
+    dumped PNG with a member on the disc has to ask for this form, while
+    anything drawn for a person wants the default.
     """
 
     info = texture if texture is not None else parse(payload)
@@ -476,6 +483,8 @@ def decode_rgba(payload: bytes, *, image: int = 0, level: int = 0,
     width, height = surface.width, surface.height
     layout = surface.pixel_layout
 
+    alpha_of = (lambda value: value) if raw_alpha else _scale_alpha
+
     if layout == PIXELS_INDEXED_8:
         _require(len(data) == width * height,
                  f"this member's {width}x{height} 8-bit surface unpacked to {len(data)} byte(s) "
@@ -484,7 +493,7 @@ def decode_rgba(payload: bytes, *, image: int = 0, level: int = 0,
         out = bytearray(width * height * 4)
         for position, index in enumerate(data):
             red, green, blue, alpha = entries[index] if index < len(entries) else (0, 0, 0, 0)
-            out[position * 4:position * 4 + 4] = bytes((red, green, blue, _scale_alpha(alpha)))
+            out[position * 4:position * 4 + 4] = bytes((red, green, blue, alpha_of(alpha)))
         return width, height, bytes(out)
 
     if layout == PIXELS_INDEXED_4:
@@ -498,7 +507,7 @@ def decode_rgba(payload: bytes, *, image: int = 0, level: int = 0,
         for byte in data:
             for index in (byte & 0x0F, byte >> 4):
                 red, green, blue, alpha = entries[index]
-                out[position * 4:position * 4 + 4] = bytes((red, green, blue, _scale_alpha(alpha)))
+                out[position * 4:position * 4 + 4] = bytes((red, green, blue, alpha_of(alpha)))
                 position += 1
         return width, height, bytes(out)
 

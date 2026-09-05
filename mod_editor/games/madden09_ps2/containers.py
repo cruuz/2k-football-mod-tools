@@ -21,7 +21,7 @@ Standard library only; importable without Qt.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import struct
 import sys
@@ -311,6 +311,208 @@ def read_file(image: Any, entry: DataFile, *, limit: Optional[int] = CONTAINER_S
     return data if recovered is None else recovered
 
 
+# --------------------------------------------------------------------------
+# The preload caches
+# --------------------------------------------------------------------------
+#
+# ``GAME.QKL`` and ``FE.QKL`` are not containers: they are **byte copies** of
+# things that already exist elsewhere on the disc, laid out so the game can
+# stream them in one read.  Two kinds of copy are carried [M]:
+#
+# * a **container header** -- the first ``data_offset`` bytes of a ``TERF``
+#   file, which is its header plus the ``DIR1`` and ``COMP`` directories;
+# * a **member**, byte for byte as that member is stored in its container.
+#
+# **This is load-bearing for any writer.**  ``UNIFORMS.DAT``'s directory is
+# copied three times (once in ``GAME.QKL``, twice in ``FE.QKL``) and none of
+# its members is copied at all [M].  So rewriting a member is free *as long as
+# the first ``data_offset`` bytes do not move* -- and they move the moment a
+# member changes stored size or codec, because both live in the directory.  An
+# edit that leaves three stale directories behind is an edit the game reads
+# against the wrong offsets.
+#
+# ## The format [M]
+#
+# ```
+# QL01 chunk   8-byte tag+size, then u32 payload offset at +0x08
+# FILS chunk   tag, size, u32 count, then count x 48-byte NUL-padded names
+# DTLS chunk   tag, size, u32 count, then count x 12-byte entries
+# DATA chunk   tag, size 0; the payload runs from the QL01 offset to EOF
+# ```
+#
+# A ``DTLS`` entry is ``u8 kind, u8, u8 file index, u8, u32 member, u32
+# offset``: *kind* 0 is a header copy and 1 a member copy, *file index* points
+# into ``FILS``, and *offset* is relative to the payload.  Measured against the
+# retail disc: 6,247 copies across the two caches, every one byte-identical to
+# what it copies, zero mismatches [M].
+
+#: The two preload caches, in the order a report lists them.
+PRELOAD_CACHES = ("GAME.QKL", "FE.QKL")
+
+QL01_MAGIC = b"QL01"
+QL01_FILS = b"FILS"
+QL01_DTLS = b"DTLS"
+QL01_PAYLOAD_OFFSET = 8
+QL01_NAME_STRIDE = 48
+QL01_ENTRY_STRIDE = 12
+QL01_CHUNK_HEADER = 8
+QL01_COUNT_OFFSET = 8
+
+#: A ``DTLS`` entry copies a container's header, or one of its members.
+PRELOAD_KIND_HEADER = 0
+PRELOAD_KIND_MEMBER = 1
+
+#: Guard rails, so a malformed cache is refused rather than walked forever.
+QL01_MAX_FILES = 4096
+QL01_MAX_ENTRIES = 1 << 20
+
+
+@dataclass(frozen=True)
+class PreloadCopy:
+    """One byte-for-byte copy a preload cache carries, and where it lives."""
+
+    cache: str
+    container: str
+    kind: int
+    #: The member copied, or ``None`` for a header copy.
+    member: Optional[int]
+    #: Absolute byte offset inside the cache file.
+    offset: int
+
+    @property
+    def is_header(self) -> bool:
+        return self.kind == PRELOAD_KIND_HEADER
+
+    def length_in(self, parsed: ea_terf.TerfContainer) -> int:
+        """How many bytes this copy is, given the container it copies."""
+
+        if self.is_header:
+            return parsed.data_offset
+        if self.member is None or not 0 <= self.member < parsed.member_count:
+            raise DiscError(
+                f"{self.cache} carries a copy of {self.container} member "
+                f"{self.member}, which that container does not have.")
+        return parsed.members[self.member].stored_size
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {"cache": self.cache, "container": self.container,
+                "kind": "header" if self.is_header else "member",
+                "member": self.member, "offset": self.offset}
+
+
+@dataclass(frozen=True)
+class ContainerPreload:
+    """Every copy of one container the caches carry."""
+
+    container: str
+    header: Tuple[PreloadCopy, ...] = ()
+    members: Mapping[int, Tuple[PreloadCopy, ...]] = field(default_factory=dict)
+
+    @property
+    def empty(self) -> bool:
+        return not self.header and not self.members
+
+    def for_member(self, index: int) -> Tuple[PreloadCopy, ...]:
+        return tuple(self.members.get(index, ()))
+
+
+def parse_preload_cache(data: bytes, cache: str) -> Tuple[PreloadCopy, ...]:
+    """Every copy a ``QL01`` cache declares.  Refuses; never guesses."""
+
+    if len(data) < QL01_CHUNK_HEADER + 4 or data[:4] != QL01_MAGIC:
+        raise DiscError(
+            f"{cache} starts with {bytes(data[:4])!r}, not {QL01_MAGIC!r}, so it is not a "
+            f"preload cache. Nothing here reads it.")
+    chunks: Dict[bytes, Tuple[int, int]] = {}
+    cursor = 0
+    while cursor + QL01_CHUNK_HEADER <= len(data):
+        tag = bytes(data[cursor:cursor + 4])
+        size, = struct.unpack_from("<I", data, cursor + 4)
+        chunks[tag] = (cursor, size)
+        if size <= 0 or cursor + size > len(data):
+            break
+        cursor += size
+    for wanted in (QL01_FILS, QL01_DTLS):
+        if wanted not in chunks:
+            raise DiscError(
+                f"{cache} carries no {wanted.decode('ascii')} chunk, so it does not say what "
+                f"it copies. Nothing here reads it.")
+    payload, = struct.unpack_from("<I", data, QL01_PAYLOAD_OFFSET)
+    if not 0 < payload <= len(data):
+        raise DiscError(
+            f"{cache} puts its payload at byte {payload} and the file is {len(data)} bytes.")
+
+    files_offset, _files_size = chunks[QL01_FILS]
+    file_count, = struct.unpack_from("<I", data, files_offset + QL01_COUNT_OFFSET)
+    if not 0 <= file_count <= QL01_MAX_FILES:
+        raise DiscError(f"{cache} declares {file_count} file name(s); that is not a cache.")
+    names: List[str] = []
+    base = files_offset + QL01_COUNT_OFFSET + 4
+    for index in range(file_count):
+        start = base + QL01_NAME_STRIDE * index
+        if start + QL01_NAME_STRIDE > len(data):
+            raise DiscError(f"{cache}'s file-name table runs past the end of the file.")
+        names.append(bytes(data[start:start + QL01_NAME_STRIDE]).split(b"\x00")[0]
+                     .decode("latin-1").upper())
+
+    entries_offset, _entries_size = chunks[QL01_DTLS]
+    entry_count, = struct.unpack_from("<I", data, entries_offset + QL01_COUNT_OFFSET)
+    if not 0 <= entry_count <= QL01_MAX_ENTRIES:
+        raise DiscError(f"{cache} declares {entry_count} copies; that is not a cache.")
+    out: List[PreloadCopy] = []
+    base = entries_offset + QL01_COUNT_OFFSET + 4
+    for index in range(entry_count):
+        start = base + QL01_ENTRY_STRIDE * index
+        if start + QL01_ENTRY_STRIDE > len(data):
+            raise DiscError(f"{cache}'s copy table runs past the end of the file.")
+        kind = data[start]
+        file_index = data[start + 2]
+        member, offset = struct.unpack_from("<II", data, start + 4)
+        if file_index >= len(names):
+            raise DiscError(
+                f"{cache} copy {index} names file {file_index} and the cache lists "
+                f"{len(names)}.")
+        if kind not in (PRELOAD_KIND_HEADER, PRELOAD_KIND_MEMBER):
+            continue
+        out.append(PreloadCopy(
+            cache=cache, container=names[file_index], kind=kind,
+            member=None if kind == PRELOAD_KIND_HEADER else int(member),
+            offset=payload + int(offset)))
+    return tuple(out)
+
+
+def preload_copies(image: Any, *, caches: Sequence[str] = PRELOAD_CACHES
+                   ) -> Dict[str, ContainerPreload]:
+    """``container name -> ContainerPreload`` for every cache on this image.
+
+    The one function every lane that writes a container calls, so the
+    coherence rule lives in one place: a member edit that changes a
+    container's directory has to change the copies of that directory too, and
+    a member that is itself copied has to be rewritten in the cache as well or
+    refused.
+    """
+
+    present = {entry.name.upper(): entry for entry in data_files(image)}
+    found: Dict[str, Dict[str, Any]] = {}
+    for cache in caches:
+        entry = present.get(cache.upper())
+        if entry is None:
+            continue
+        copies = parse_preload_cache(read_file(image, entry, limit=None), cache)
+        for copy in copies:
+            row = found.setdefault(copy.container, {"header": [], "members": {}})
+            if copy.is_header:
+                row["header"].append(copy)
+            else:
+                row["members"].setdefault(copy.member, []).append(copy)
+    return {
+        name: ContainerPreload(
+            container=name, header=tuple(row["header"]),
+            members={index: tuple(items) for index, items in sorted(row["members"].items())})
+        for name, row in sorted(found.items())
+    }
+
+
 #: What :func:`classify` answers for a file that is not a container this
 #: module reads.  Each is a state, not a failure: "there is nothing there" and
 #: "this reader cannot open it" must not render the same.
@@ -537,7 +739,10 @@ def members_of_format(
 #: The container names the synthetic disc carries.  They are the real ones so
 #: a lane's own name filter is exercised, and every byte inside them is
 #: computed here from the format's rules -- nothing is copied from a disc.
-SYNTHETIC_CONTAINERS = (UNIFORM_CONTAINER, TEAM_DATABASE_CONTAINER)
+#: Every ``/DATA`` file :func:`build_synthetic_disc` writes.  The two preload
+#: caches are there so CI proves the cache-coherence rule a writer has to
+#: follow, not because a reader needs them.
+SYNTHETIC_CONTAINERS = (UNIFORM_CONTAINER, TEAM_DATABASE_CONTAINER) + PRELOAD_CACHES
 
 
 def synthetic_palette(entries: int = 256) -> List[Tuple[int, int, int, int]]:
@@ -680,6 +885,48 @@ def synthetic_text_member(lines: Sequence[str]) -> bytes:
     return body if body else b"\x00"
 
 
+def build_synthetic_preload_cache(payload: Sequence[Tuple[str, int, Optional[int], bytes]],
+                                  *, alignment: int = 64) -> bytes:
+    """A ``QL01`` preload cache carrying the copies given, in the disc's shape.
+
+    *payload* is ``(container name, kind, member or None, bytes)`` per copy.
+    Built from the format's own rules so CI can prove the cache-coherence step
+    -- the one that keeps a container's three cached directories in step with
+    the container -- without a game.
+    """
+
+    names: List[str] = []
+    for container, _kind, _member, _bytes in payload:
+        if container.upper() not in names:
+            names.append(container.upper())
+    files = struct.pack("<I", len(names)) + b"".join(
+        name.encode("latin-1").ljust(QL01_NAME_STRIDE, b"\x00") for name in names)
+    files_chunk = QL01_FILS + struct.pack("<I", QL01_CHUNK_HEADER + len(files)) + files
+
+    body = bytearray()
+    offsets: List[int] = []
+    for _container, _kind, _member, blob in payload:
+        while len(body) % alignment:
+            body.append(0)
+        offsets.append(len(body))
+        body += blob
+    entries = struct.pack("<I", len(payload))
+    for (container, kind, member, _blob), offset in zip(payload, offsets):
+        entries += struct.pack("<BBBBII", kind, 0, names.index(container.upper()), 0,
+                               0 if member is None else member, offset)
+    entries_chunk = QL01_DTLS + struct.pack("<I", QL01_CHUNK_HEADER + len(entries)) + entries
+
+    head_length = 12 + len(files_chunk) + len(entries_chunk) + QL01_CHUNK_HEADER
+    out = bytearray()
+    out += QL01_MAGIC + struct.pack("<II", 12, head_length)
+    out += files_chunk
+    out += entries_chunk
+    out += b"DATA" + struct.pack("<I", 0)
+    assert len(out) == head_length, (len(out), head_length)
+    out += body
+    return bytes(out)
+
+
 def build_synthetic_disc(*, tdb_member: Optional[bytes] = None) -> bytes:
     """A tiny ``SLUS-21770``-shaped image carrying two synthetic containers.
 
@@ -708,6 +955,21 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None) -> bytes:
         synthetic_text_member(SYNTHETIC_TEXT_LINES),
     ]
     teams = ea_terf.build_terf([m for m in team_members], chunk="DATA")
+    teams_member_one = ea_terf.parse_terf(teams).stored(1)
+    # The preload caches carry byte copies of a container's directory, so a
+    # writer that moves one has to move them too.  The synthetic disc carries
+    # the same shape the retail disc does for this container -- one copy of
+    # UNIFORMS.DAT's directory in GAME.QKL and two in FE.QKL, and none of its
+    # members [M] -- so CI proves the coherence step rather than assuming it.
+    directory = uniforms[:ea_terf.parse_terf(uniforms).data_offset]
+    game_cache = build_synthetic_preload_cache([
+        (UNIFORM_CONTAINER, PRELOAD_KIND_HEADER, None, directory),
+        (TEAM_DATABASE_CONTAINER, PRELOAD_KIND_MEMBER, 1, teams_member_one),
+    ])
+    fe_cache = build_synthetic_preload_cache([
+        (UNIFORM_CONTAINER, PRELOAD_KIND_HEADER, None, directory),
+        (UNIFORM_CONTAINER, PRELOAD_KIND_HEADER, None, directory),
+    ])
     boot = b"BOOT2 = cdrom0:\\%s;1\r\nVER = 1.00\r\nVMODE = NTSC\r\n" % BOOT_FILE.encode("ascii")
     return iso_lib.build_synthetic_iso(
         files=[
@@ -718,6 +980,8 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None) -> bytes:
         sub_files=[
             (UNIFORM_CONTAINER.encode("ascii") + b";1", uniforms),
             (TEAM_DATABASE_CONTAINER.encode("ascii") + b";1", teams),
+            (PRELOAD_CACHES[0].encode("ascii") + b";1", game_cache),
+            (PRELOAD_CACHES[1].encode("ascii") + b";1", fe_cache),
         ],
     )
 
@@ -740,12 +1004,17 @@ __all__ = [
     "KIND_TERF",
     "KIND_UNREAD",
     "PLAYER_FACE_CONTAINER",
+    "PRELOAD_CACHES",
+    "PRELOAD_KIND_HEADER",
+    "PRELOAD_KIND_MEMBER",
     "PROBE_BYTES",
     "PRELOAD_FILES",
     "QKL_FILE_LIST",
     "QKL_MAGIC",
     "QKL_MAX_NAMES",
     "QKL_NAME_STRIDE",
+    "ContainerPreload",
+    "PreloadCopy",
     "RETAIL_BOOT_ELF_SHA256",
     "RETAIL_EDITION",
     "RETAIL_ELF_CRC",
@@ -759,6 +1028,7 @@ __all__ = [
     "TEMPLATE_CONTAINER",
     "UNIFORM_CONTAINER",
     "build_synthetic_disc",
+    "build_synthetic_preload_cache",
     "classify",
     "data_files",
     "describe_container",
@@ -767,6 +1037,8 @@ __all__ = [
     "members_of_format",
     "open_disc",
     "preload_names",
+    "parse_preload_cache",
+    "preload_copies",
     "read_file",
     "synthetic_indices",
     "synthetic_mmap",
