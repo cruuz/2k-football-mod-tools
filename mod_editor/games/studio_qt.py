@@ -1986,13 +1986,34 @@ class GameStudioDialog(QDialog):
             self.report(f"{self._busy_verb} is still running. Cancel it first, or wait for it "
                         "to finish.")
             return
+        self._shutdown()
+        super().done(result)
+
+    def closeEvent(self, event: Any) -> None:  # noqa: N802 - Qt's name
+        """A window closed without going through ``done`` still stops working.
+
+        ``close()`` on a dialog that was never shown does not reach ``done``,
+        and a deferred open firing after that is a crash rather than a late
+        refresh, so the shutdown is here as well as there.
+        """
+
+        if self.busy:
+            event.ignore()
+            self.report(f"{self._busy_verb} is still running. Cancel it first, or wait for it "
+                        "to finish.")
+            return
+        self._shutdown()
+        super().closeEvent(event)
+
+    def _shutdown(self) -> None:
+        """Stop taking work and let the service go.  Safe to call twice."""
+
         self._closed = True
         self._initial_timer.stop()
         try:
             self.service.close()
         except Exception:  # pragma: no cover - closing must never block the window
             pass
-        super().done(result)
 
 
 __all__ = [
