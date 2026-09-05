@@ -623,7 +623,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
     # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
-    if replace(plan, depth_chart_rows=False).wants_xbe_patch() or plan.edge_rename:
+    # the 2026 season step patches the executable itself, so a season-only plan is copy-first too
+    if replace(plan, depth_chart_rows=False, season_2026=False).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
