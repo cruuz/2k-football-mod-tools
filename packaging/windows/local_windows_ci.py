@@ -337,11 +337,11 @@ def hydrate_from(repo: Path, source: Path) -> list[str]:
             continue
         for parent, dirs, files in os.walk(origin, followlinks=False):
             # never descend into version-control metadata (the main checkout vendors a git repo)
-            dirs[:] = sorted(d for d in dirs if d not in (".git", ".hg", ".svn") and not (Path(parent) / d).is_symlink())
+            dirs[:] = sorted(d for d in dirs if not d.startswith(".git") and d not in (".hg", ".svn") and not (Path(parent) / d).is_symlink())
             for name in sorted(files):
                 path = Path(parent) / name
-                if path.is_symlink() or not path.is_file():
-                    continue
+                if name.startswith(".git") or path.is_symlink() or not path.is_file():
+                    continue  # a submodule checkout stores .git as a FILE; never hydrate VCS metadata
                 relative = PurePosixPath(path.relative_to(source).as_posix())
                 if hydration_target(repo, relative, tracked) is None:
                     continue
