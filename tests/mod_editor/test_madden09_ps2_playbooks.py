@@ -350,6 +350,22 @@ class StoredMemberTests(unittest.TestCase):
     def test_the_book_is_catalogued_even_though_it_is_stored(self) -> None:
         self.assertEqual(self.catalogue.document["books"], 1)
 
+    def test_a_member_that_is_not_a_database_is_refused_in_this_lane_s_words(self) -> None:
+        """The container's UI screens must not answer with a TDB reader's sentence.
+
+        This fixture carries no preload cache, so the recipe reaches the parse
+        rather than stopping at the cache rule first.
+        """
+
+        recipe = {"schema": lane_module.RECIPE_SCHEMA,
+                  "edits": [{"target": lane_module.row_key(1, "SETL", 0),
+                             "values": {"name": "Nope"}}]}
+        with self.assertRaises(Refusal) as caught:
+            self.lane.plan(self.source, recipe, None)
+        message = str(caught.exception)
+        self.assertIn("is not a database at all", message)
+        self.assertIn("UI screens", message)
+
     def test_the_write_takes_the_rewrite_path_and_verifies(self) -> None:
         key = lane_module.row_key(0, "SETL", 0)
         recipe = self.lane.compose_recipe((Edit(key, {"name": "Stored Set"}),))
@@ -404,6 +420,14 @@ class RefusalTests(_LaneCase):
         with self.assertRaises(Refusal) as caught:
             self.lane.plan(self.source, recipe, None)
         self.assertIn("this page writes", str(caught.exception))
+
+    def test_a_member_number_the_container_does_not_have_is_refused(self) -> None:
+        recipe = {"schema": lane_module.RECIPE_SCHEMA,
+                  "edits": [{"target": lane_module.row_key(99, "SETL", 0),
+                             "values": {"name": "Nope"}}]}
+        with self.assertRaises(Refusal) as caught:
+            self.lane.plan(self.source, recipe, None)
+        self.assertIn("choose one the catalogue lists", str(caught.exception))
 
     def test_an_edit_with_no_value_is_refused(self) -> None:
         recipe = {"schema": lane_module.RECIPE_SCHEMA,

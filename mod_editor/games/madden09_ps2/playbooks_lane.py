@@ -822,11 +822,20 @@ class PlaybooksLane:
                     f"names member {member}; choose one the catalogue lists."
                 )
             payload = containers.member_uncached(container, member)
-            database = ea_tdb.parse_tdb(payload)
+            try:
+                database = ea_tdb.parse_tdb(payload)
+            except ea_tdb.TdbError as exc:
+                raise PlaybookError(
+                    f"{CONTAINER} member {member} is not a database at all ({exc}); this "
+                    f"page writes the playbooks the catalogue lists, and the container's "
+                    f"other members are UI screens."
+                ) from exc
             if not is_playbook(database):
                 raise PlaybookError(
-                    f"{CONTAINER} member {member} carries no play graph, so it is not a "
-                    f"playbook; this page writes the 102 that are."
+                    f"{CONTAINER} member {member} is a database of "
+                    + ", ".join(database.table_names)
+                    + "; it carries no play graph, so it is not a playbook. This page "
+                      "writes the playbooks the catalogue lists."
                 )
             new_payload = payload
             for entry_key in sorted(wanted[member]):
