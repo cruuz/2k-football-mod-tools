@@ -14,6 +14,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt5.QtGui import QCloseEvent  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton  # noqa: E402
+from PyQt5.QtCore import QCoreApplication, QEvent
 
 from mod_editor.core.errors import ValidationError  # noqa: E402
 from mod_editor.core.nfl2k5_audio_catalog import Nfl2k5AudioService  # noqa: E402
@@ -87,6 +88,8 @@ class AudioPanelOperationContractTests(unittest.TestCase):
             finally:
                 panel.deleteLater()
                 self.application.processEvents()
+                QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+                self.application.processEvents()
 
     def test_public_content_invalidation_clears_same_id_playback_and_waveform(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -120,6 +123,8 @@ class AudioPanelOperationContractTests(unittest.TestCase):
                 self.assertTrue(panel.load_waveform_button.isEnabled())
             finally:
                 panel.deleteLater()
+                self.application.processEvents()
+                QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
                 self.application.processEvents()
 
     def test_busy_worker_makes_catalog_and_every_non_cancel_button_inert(self) -> None:
@@ -172,6 +177,8 @@ class AudioPanelOperationContractTests(unittest.TestCase):
             finally:
                 panel.deleteLater()
                 self.application.processEvents()
+                QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+                self.application.processEvents()
 
     def test_actual_waveform_busy_keeps_only_cancel_button_reachable(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -216,6 +223,8 @@ class AudioPanelOperationContractTests(unittest.TestCase):
                 self.assertEqual(panel.load_waveform_button.text(), "Load waveform")
             finally:
                 panel.deleteLater()
+                self.application.processEvents()
+                QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
                 self.application.processEvents()
 
 
@@ -265,6 +274,8 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
                 task.run()  # type: ignore[attr-defined]
                 self.application.processEvents()
         self.window.deleteLater()
+        self.application.processEvents()
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
         self.application.processEvents()
 
     def _begin_audio_operation(self) -> object:
