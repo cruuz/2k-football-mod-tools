@@ -8,7 +8,7 @@ Lane: `mod_editor/games/madden09_ps2/identity_lane.py`.
 Registry row: `madden09ps2.identity.team_records`, surface `colors`,
 classification **`offline-writer-proved`**.
 Validators: `tools/validate_madden09_ps2_identity.{sh,bat}`.
-Evidence: [`evidence/madden09_ps2/identity_blast_radius.json`](evidence/madden09_ps2/identity_blast_radius.json).
+Evidence: [`measured/madden09_ps2/identity_blast_radius.json`](measured/madden09_ps2/identity_blast_radius.json).
 
 **Nothing here has been booted.** Every claim below is about bytes on a disc
 image. §6 says exactly what a boot would have to show.
@@ -259,7 +259,7 @@ untouched image then re-verified PASS.
 
 The full numbers, the per-team copy map and the two databases' before/after
 digests are in
-[`evidence/madden09_ps2/identity_blast_radius.json`](evidence/madden09_ps2/identity_blast_radius.json).
+[`measured/madden09_ps2/identity_blast_radius.json`](measured/madden09_ps2/identity_blast_radius.json).
 
 ---
 
