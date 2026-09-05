@@ -921,6 +921,8 @@ class Ps2DiscStudioDialog(QDialog):
         )
 
     def _refresh_controls(self) -> None:
+        if getattr(self, "build_page", None) is None:
+            return      # a tab is still being constructed; the shell refreshes once it is up
         state = self.action_state()
         self.open_button.setEnabled(state.can_open)
         self.build_page.check_button.setEnabled(state.can_check)
