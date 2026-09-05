@@ -1711,7 +1711,6 @@ def main() -> int:
         "nfl2k5_ps2_replacement_pack_kit",
         "nfl2k5_ps2_uniform_art",
         "ea_terf_inspect",
-        "ea_disc_map",
         "nfl2k5_ps2_texture_map",
         "xxh3",
         "nfl2k5_ps2_text_patch",
