@@ -27,6 +27,24 @@
   tells you how it landed. **Write PCSX2 pack is refused by name**: that filename is built from hashes the emulator
   computes while drawing, and nobody has captured a GS dump of Madden 09 to read them from. The verifier re-decodes
   every exported file straight off your disc, not through the catalogue that produced it.
+- **Uniforms & Equipment — and now the textures go back on.** A second row on the same page,
+  `offline-writer-proved`: give back a PNG of exactly the texture's size and Build writes a **new** disc image.
+  Three things had to be built first. **An `LZH1` encoder** — codec 5 had no public encoder anywhere, and now
+  every one of the **1,836** compressed members of the uniform, stadium and field-art containers re-encodes and
+  decodes back byte for byte under two independent decoders, at about the size EA shipped them (1.0078× in
+  aggregate, 65% of members smaller or equal). **An `MMAP` member writer** that lays a member's tables and offsets
+  out afresh and reproduces **all 1,780** texture members of the four art containers byte for byte from their own
+  decoded pixels. And an **opt-in relocation mode** in the ISO9660 writer for a container that outgrows its extent;
+  fixed allocation stays the default and is the ordinary outcome. The two preload caches carry byte copies of a
+  container's directory — `UNIFORMS.DAT`'s is copied three times — so the writer keeps those in step and the
+  verifier checks them. Proved end to end on the owner's own retail disc: one jersey sheet recoloured, the image
+  the same 1,657,339,904 bytes it was, 724 untouched members byte-identical, 1,584,383,227 bytes compared
+  unchanged. **Not booted**: no rebuilt Madden 09 container has been loaded by the game, and the row says so.
+- **Write PCSX2 pack, one step closer.** `replacement_identity` used to be `None` for everything because the
+  filename PCSX2 looks for is built from hashes it computes while drawing. `tools/madden09_ps2_texture_identities.py`
+  learns them instead: it decodes the disc's own textures, decodes a real PCSX2 texture dump, and pairs them on
+  exact pixels — no tolerance, because two textures that differ by a byte are two textures. The pack step is still
+  not offered; what is proved is the pairing.
 - **Gameplay — the pnach pipeline, with nothing mapped.** Six subject areas named, zero sites located, every
   translation refused by name. Classified `unknown`, so the page states that and offers no control. The pipeline
   around a translation is complete and proved on a synthetic ELF, so locating one site is a one-entry change.

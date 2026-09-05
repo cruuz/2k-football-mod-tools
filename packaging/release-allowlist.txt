@@ -188,6 +188,7 @@ tools/apf_outer.py
 tools/apf_xenos_mip_layout.py
 tools/game_audio_convert.py
 tools/launch_2k5_mod_studio.sh
+tools/madden09_ps2_texture_identities.py
 tools/make_app_icons.py
 tools/nfl2k5_career_stats.py
 tools/nfl2k5_depth_roles.py
@@ -375,6 +376,7 @@ docs/product/PS2_PHASE2_TEXT.md
 docs/product/EA_TERF_FORMAT.md
 docs/product/PS2_UNIFORM_ART.md
 docs/product/GAME_STUDIO_SHELL_PLAN.md
+docs/product/evidence/madden09_ps2/pcsx2-texture-identities.json
 tools/nfl2k5_ps2_text_patch.py
 tools/nfl2k5_ps2_text_target_catalog.py
 tools/nfl2k5_ps2_text_verify.py

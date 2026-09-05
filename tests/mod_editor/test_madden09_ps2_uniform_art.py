@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import shutil
 import struct
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -28,6 +29,7 @@ if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
 from mod_editor.games.contract import EncodedArt, Refusal, Target  # noqa: E402
+from mod_editor.games._formats import ea_terf  # noqa: E402
 from mod_editor.games.madden09_ps2 import containers, mmap_art, uniform_art  # noqa: E402
 
 
@@ -550,6 +552,154 @@ class MmapEncoderTests(unittest.TestCase):
         width, height, drawn = mmap_art.decode_rgba(out)
         self.assertEqual((width, height), (16, 16))
         self.assertEqual(len(set(drawn[i:i + 4] for i in range(0, len(drawn), 4))), 16)
+
+
+class TextureIdentityToolTests(unittest.TestCase):
+    """Pairing a PCSX2 texture dump with the disc, on data these tests made.
+
+    The real proof is a real dump against a real disc and it is recorded in
+    ``docs/product/evidence/madden09_ps2/``; what runs here is the grammar, the
+    matcher's exactness and the attribution rule, on a synthetic disc.
+    """
+
+    def setUp(self) -> None:
+        import madden09_ps2_texture_identities as tool
+
+        self.tool = tool
+        self.work = Path(tempfile.mkdtemp(prefix="madden09-ident-"))
+        self.addCleanup(shutil.rmtree, self.work, True)
+
+    def test_the_selftest_passes(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "tools/madden09_ps2_texture_identities.py"),
+             "--selftest"],
+            capture_output=True, text=True, cwd=str(ROOT))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("MADDEN09_PS2_TEXTURE_IDENTITIES_SELFTEST_PASS", result.stdout)
+
+    def test_the_filename_grammar_is_pcsx2s_own(self) -> None:
+        bits = self.tool.texture_bits(0x13, 7, 7, 1)
+        self.assertEqual(bits, 0x13 | (7 << 6) | (7 << 10) | (1 << 14))
+        # %llx is unpadded; the bits word is not.
+        self.assertEqual(self.tool.replacement_name(0x405AA0413AB4001, 0xF25587A8EB66663E, bits),
+                         "405aa0413ab4001-f25587a8eb66663e-00005dd3.png")
+        self.assertEqual(self.tool.replacement_name(1, None, bits), "1-00005dd3.png")
+
+    def test_a_region_and_a_mip_suffix_are_read_not_ignored(self) -> None:
+        directory = self.work / "classic"
+        directory.mkdir(parents=True)
+        pixels = bytes(bytearray(((index * 11) & 0xFF) for index in range(8 * 8 * 4)))
+        for name in ("aaaa-bbbb-r32x64-00001dd3.png", "cccc-dddd-mip2-00001dd3.png",
+                     "eeee-ffff-00001dd3.png", "not-a-dump.png"):
+            (directory / name).write_bytes(uniform_art.write_rgba_png(pixels, 8, 8))
+        found = {dump.name: dump for dump in self.tool.scan_dump(self.work)}
+        self.assertEqual(len(found), 3, "a name outside the grammar is not a dump")
+        self.assertEqual(found["aaaa-bbbb-r32x64-00001dd3.png"].region, (32, 64))
+        self.assertEqual(found["cccc-dddd-mip2-00001dd3.png"].mip, 2)
+        self.assertIsNone(found["eeee-ffff-00001dd3.png"].region)
+        self.assertEqual({dump.convention for dump in found.values()}, {"classic"})
+
+    def test_one_name_in_two_frames_is_one_texture_with_two_frames(self) -> None:
+        pixels = bytes(bytearray(((index * 7) & 0xFF) for index in range(8 * 8 * 4)))
+        for frame in ("frame-a", "frame-b"):
+            directory = self.work / frame / "classic"
+            directory.mkdir(parents=True)
+            (directory / "aaaa-bbbb-00001dd3.png").write_bytes(
+                uniform_art.write_rgba_png(pixels, 8, 8))
+        found = self.tool.scan_dump(self.work)
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].frames, ("frame-a", "frame-b"))
+
+    def test_the_matcher_is_exact_and_reports_an_alpha_near_miss(self) -> None:
+        source = self.work / "synthetic.iso"
+        source.write_bytes(containers.build_synthetic_disc())
+        disc = [row for row in self.tool.index_disc(source, ("UNIFORMS.DAT",))
+                if row.level == 0]
+        self.assertTrue(disc)
+        image = containers.open_disc(source)
+        present = {entry.name: entry for entry in containers.data_files(image)}
+        container = ea_terf.parse_terf(
+            containers.read_file(image, present["UNIFORMS.DAT"]), allow_size_mismatch=True)
+        row = disc[0]
+        _width, _height, rgba = mmap_art.decode_rgba(
+            container.member(row.member), image=row.image, raw_alpha=True)
+        dumps = self.work / "dumps" / "classic"
+        dumps.mkdir(parents=True)
+        (dumps / "1111-2222-00001dd3.png").write_bytes(
+            uniform_art.write_rgba_png(rgba, row.width, row.height))
+        nudged = bytearray(rgba)
+        nudged[3] = (nudged[3] + 1) % 129        # one alpha byte, nothing else
+        (dumps / "3333-4444-00001dd3.png").write_bytes(
+            uniform_art.write_rgba_png(bytes(nudged), row.width, row.height))
+        report = self.tool.pair(self.tool.scan_dump(self.work / "dumps"), disc)
+        self.assertEqual(report.dumps_matched, 1)
+        self.assertEqual(len(report.rgb_only), 1,
+                         "one changed alpha byte is a near miss, never a match")
+        self.assertEqual(report.rgb_only[0]["name"], "3333-4444-00001dd3.png")
+        self.assertIn(row.key, report.matched)
+
+    def test_a_team_is_the_one_in_every_frame_that_drew_the_texture(self) -> None:
+        frames = {
+            "f1": {"colour": "Giants", "white": "Jaguars"},
+            "f2": {"colour": "Jaguars", "white": "Giants"},
+            "f3": {"colour": "Bears", "white": "Vikings"},
+        }
+        identities = {
+            "UNIFORMS.DAT:1:0": {"container": "UNIFORMS.DAT", "frames": ["f1"]},
+            "UNIFORMS.DAT:2:0": {"container": "UNIFORMS.DAT", "frames": ["f2"]},
+            "UNIFORMS.DAT:3:0": {"container": "UNIFORMS.DAT", "frames": ["f1", "f2"]},
+            "UNIFORMS.DAT:4:0": {"container": "UNIFORMS.DAT", "frames": ["f1", "f3"]},
+            # Exclusive frames win: the picture is shared, the member is not.
+            "UNIFORMS.DAT:5:0": {"container": "UNIFORMS.DAT",
+                                 "frames": ["f1", "f2", "f3"],
+                                 "exclusive_frames": ["f3"]},
+            "PLYRFACE.DAT:1:0": {"container": "PLYRFACE.DAT", "frames": ["f1"]},
+        }
+        out = self.tool.attribute_teams(identities, frames)
+        self.assertNotIn("PLYRFACE.DAT:1:0", out, "only the uniform container is attributed")
+        # One frame narrows to that matchup and no further: the coloured kit
+        # is one side's and the white kit the other's, and the frame list
+        # cannot say which this is.
+        self.assertIsNone(out["UNIFORMS.DAT:1:0"]["team"])
+        self.assertEqual(out["UNIFORMS.DAT:1:0"]["candidates"],
+                         [{"team": "Giants", "kit": "home"},
+                          {"team": "Jaguars", "kit": "away"}])
+        self.assertIsNone(out["UNIFORMS.DAT:2:0"]["team"])
+        # Both frames are the same matchup, so this narrows to two teams and
+        # each of them wore both kits across the pair.
+        self.assertIsNone(out["UNIFORMS.DAT:3:0"]["team"])
+        self.assertEqual(out["UNIFORMS.DAT:3:0"]["candidates"],
+                         [{"team": "Giants", "kit": "both"},
+                          {"team": "Jaguars", "kit": "both"}])
+        self.assertIsNone(out["UNIFORMS.DAT:4:0"]["team"], "f1 and f3 share no team")
+        # Exclusive frames win: this texture's picture is shared with other
+        # members, but the dump that matched it alone came from f3, so it is
+        # narrowed to f3's matchup rather than to nothing.
+        self.assertEqual(out["UNIFORMS.DAT:5:0"]["candidates"],
+                         [{"team": "Bears", "kit": "home"},
+                          {"team": "Vikings", "kit": "away"}])
+        summary = self.tool.team_summary(out)
+        self.assertEqual(summary["Giants"]["either side of one matchup"]["members"],
+                         [1, 2, 3])
+        self.assertEqual(summary["Bears"]["either side of one matchup"]["members"], [5])
+        self.assertIn("(shared across matchups)", summary)
+
+    def test_the_shipped_evidence_document_is_the_one_the_lane_reads(self) -> None:
+        document = ROOT / uniform_art.IDENTITY_DOCUMENT
+        if not document.is_file():
+            self.skipTest("no identity document in this tree")
+        payload = json.loads(document.read_text(encoding="utf-8"))
+        self.assertEqual(payload["schema"], uniform_art.IDENTITY_SCHEMA)
+        loaded = uniform_art.load_identities(document)
+        self.assertEqual(len(loaded), len(payload["identities"]))
+        for key, names in loaded.items():
+            self.assertRegex(key, r"^[A-Z0-9_.]+:\d+:\d+$")
+            for values in names.values():
+                for name in values:
+                    self.assertIsNotNone(self.tool._NAME.match(name), name)
+        # Retail-free: the document carries names and numbers, never pixels.
+        self.assertNotIn("pixels", payload)
+        self.assertNotIn("rgba", json.dumps(payload["identities"])[:200000])
 
 
 if __name__ == "__main__":

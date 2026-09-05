@@ -139,12 +139,12 @@ and the reason the studio runs a catalogue in a child process with progress.
 Only the *surface* table is at the front of an `MMAP` member — the image,
 palette and name tables are past the pixels — so there is no prefix shortcut.
 
-**What the page will not do, and says so.** `replacement_identity` returns
-`None`: a PCSX2 replacement filename is built from the GS `TEX0` and CLUT
-hashes the emulator computes while drawing, and reading those needs a **GS
-dump of Madden 09 running**, which nobody has captured. The *Write PCSX2 pack*
-step refuses with that sentence rather than writing a name that would silently
-never match. Nothing is written back to the disc either (§7).
+**What the page will not do, and says so.**  The *Write PCSX2 pack* step is
+still not offered from this row. `replacement_identity` now answers for a
+texture a dump has shown being drawn -- see §3.1a and §6.5 -- and `None`,
+with a sentence saying what would produce an answer, for one that has not.
+Nothing is written back to the disc from *this* row either; the writer is
+§3.1a's.
 
 **Import is checked, not decorative.** A PNG must be exactly the texture's
 size or an exact whole-number multiple, 8-bit, non-interlaced, RGB or RGBA;
@@ -165,6 +165,63 @@ those groups come from the file. `UNIFORMS.DAT` names **nothing** — 455
 members, about fifteen unnamed images each — so the member index is the only
 structure it offers, and **which team a member belongs to is not established
 here** [A]. The page says that rather than guessing.
+
+### 3.1a Uniforms & Equipment — the disc writer
+
+`ArtLane`, `offline-writer-proved`, its own registry row
+(`madden09ps2.uniforms.disc_art_writer`). The other direction: an edited PNG
+back into the `MMAP` member it came from, in a **new** disc image. It shares
+this page, the catalogue and the decoder with the exporter and earns a
+different rung, which is why it is a separate row rather than a button on the
+old one.
+
+Three encoders had to exist first and all three are proved offline:
+
+1. **`LZH1`** (`ea_terf.lzh1_compress`) — codec 5 had no public encoder.
+   1,836 of 1,836 members of `UNIFORMS.DAT`, `STADIUMS.DAT` and `FIELDART.DAT`
+   re-encode and decode back byte for byte under two independent decoders and
+   both read modes; aggregate size 1.0078× EA's, median 0.9896×, 65% of
+   members smaller or equal [M]. See `EA_TERF_FORMAT.md` §5.3.
+2. **`MMAP`** (`mmap_art.encode`) — a member's layout turned out to be fully
+   predictable: header, surface table, pixels, palette table, palettes, name
+   table, image table, each 16-byte aligned, the member ending unpadded at the
+   image table, and an extra table where one exists carried through as an
+   opaque tail. **All 1,780 `MMAP` members of the four art containers rebuild
+   byte for byte from their own decoded pixels** [M]. Where a CLUT carries a
+   duplicate colour — 420 of the 1,780 members do — indexing from pixels alone
+   has more than one right answer, so a rewrite keeps the index the file used
+   wherever a pixel is unchanged.
+3. **Relocation in the ISO9660 writer** — opt-in, for the case where a rebuilt
+   container will not fit the extent it owns. Fixed allocation stays the
+   default and is the ordinary outcome.
+
+**The preload caches are part of the writer, not a footnote.** `GAME.QKL` and
+`FE.QKL` carry byte copies of container directories and of individual members,
+and the game preloads from the copy. `UNIFORMS.DAT`'s directory is copied
+**three times** — once in `GAME.QKL`, twice in `FE.QKL` — and none of its
+members at all [M], so a member rewrite is free only while the container's
+first `data_offset` bytes stay put, and they move the moment a member changes
+stored size or codec. `containers.preload_copies(image)` is the shared reader
+(6,270 copies across 39 containers, every one byte-identical to what it copies
+[M]); the writer rewrites every stale copy, declares the ranges, and refuses a
+**carried** member whose stored size changed, because a cached copy is a fixed
+slot.
+
+**Proved on the owner's own retail disc** [M]: image 1 of `UNIFORMS.DAT`
+member 158 (128×128) replaced with a red/blue swap of itself. The member
+re-packed under `LZH1` at 131,010 bytes against 132,881, the container came
+out 55,741,504 bytes inside its 55,743,360-byte extent, **the image kept its
+exact 1,657,339,904-byte length**, and the three cached directories were
+rewritten. Verification: the texture decodes from the new image as the PNG
+that was given (10,464 of 16,384 pixels exact, worst channel 89 — the cost of
+riding a fixed CLUT), **724 untouched members byte-identical**, three cache
+copies still equal what they copy, and the independent ISO9660 verifier
+re-derived every one of 72,956,677 declared bytes with 1,584,383,227 bytes
+compared unchanged. 105 seconds; the destination image was deleted afterwards.
+
+**What it does not claim.** `offline-writer-proved` is the whole of it: **no
+rebuilt Madden 09 container has ever been booted**, and the row, the receipt
+and the verdict all say so.
 
 ### 3.2 All Textures — the container inventory
 
@@ -579,6 +636,69 @@ written from the same measurements, byte-identical on every member compared.
   art", not "the game renders it identically". That is the same gap that
   stops the pack writer, and §7 keeps it.
 
+### 6.5 The PCSX2 replacement identity, learned from a real dump [M]
+
+A replacement filename is `<tex0 hash>-<clut hash>-<bits>.png`, and the two
+hashes are XXH3-64 over the GS's own texture and CLUT memory: **no disc file
+carries them**. `tools/madden09_ps2_texture_identities.py` learns the mapping
+instead — it decodes every `MMAP` surface on the disc, decodes every PNG a
+PCSX2 dump wrote, and pairs them on **exact pixel equality**, no tolerance,
+because two textures that differ by a byte are two textures.
+
+Two details make the equality exact rather than approximate:
+
+* **PCSX2 dumps the CLUT's own alpha**, 0..128 as the PS2 stores it, not
+  rescaled to 0..255 — the alpha histogram across the dump peaks at 128 and
+  reaches 155, which a 0..255 rescale cannot produce [M]. `decode_rgba` grew a
+  `raw_alpha` flag for exactly this caller.
+* **A texture is dumped once per naming convention** — `ClassicTextureNames`
+  carries TCC in bit 14 of the `bits` word and stock PCSX2 drops it — so both
+  names are kept and `replacement_identity` prefers the classic one, which
+  every build parses.
+
+**The corpus**: 33 frames replayed from GS dumps of the retail disc through
+`pcsx2-gsrunner` — one pre-game captains frame and 32 coin-toss screens
+covering the coloured and the white kit of all 32 teams. 17,688 files,
+**9,617 unique names** after the same texture in two frames is counted once.
+
+| | |
+|---|---:|
+| disc surfaces indexed (7 containers) | 27,873 |
+| dump files matched to exactly one disc texture | 2,678 |
+| dump files matching more than one (a picture members share) | 1,637 |
+| dump files agreeing on RGB and not on alpha | 744 |
+| dump files unmatched | 6,195 |
+| — of those, region dumps (`-r<W>x<H>`, a sub-rectangle) | 3,502 |
+| **disc textures given an identity** | **3,024** |
+
+By container: `UNIFORMS.DAT` 2,797, `STADIUMS.DAT` 76, `UIS_TMLO.DAT` 58
+(team logos), `PLYRFACE.DAT` 45, `FIELDART.DAT` 32, `UIS_COMN.DAT` 10,
+`UIS_IG.DAT` 6.
+
+**Which team a member belongs to is still not in the file — but it is in the
+capture** [M/A]. `UNIFORMS.DAT` names nothing; each frame shows exactly two
+teams, one in colour and one in white, so a texture belongs to whatever team
+is in *every* frame that drew it. Of the 2,797 identified uniform textures:
+**62 are attributed to one team**, 1,808 narrow to one matchup and no further,
+and 927 are drawn in more than one matchup and are not a kit at all.
+
+The 62 are the check that the method works rather than a disappointment: they
+are **Giants and Patriots only**, and those are exactly the two teams that
+appear in *three* frames — their own coin toss plus the captains frame — so
+they are the only two whose frame sets intersect down to one team. Every other
+team plays one matchup, and one matchup cannot say whether a texture is the
+coloured side's or the white side's. A third frame per team would close it,
+and the tool needs no change to use one.
+
+**What this does not prove.** It records the names PCSX2 *wrote while
+dumping*. Nothing here has loaded a replacement pack, so the *Write PCSX2
+pack* step stays unoffered. The identity is also learned rather than derived:
+the CLUT half of the name **does** reproduce from the disc — XXH3-64 over the
+de-interleaved CLUT reproduces the dumped `clut` field exactly on every pair
+checked [M] — and the TEX0 half does not yet, so the durable
+compute-it-from-the-bytes route is half open and the pixel matcher is what
+works today.
+
 ---
 
 ## 7. What this module does not claim
@@ -586,40 +706,42 @@ written from the same measurements, byte-identical on every member compared.
 Said plainly, because a page that stays quiet about its limits is worse than
 one with fewer pages.
 
-1. **Nothing has been booted.** Two lanes now write — the team databases and
-   the text banks — and both are `offline-writer-proved` and can go no higher.
+1. **Nothing has been booted.** Four lanes now write — the team databases, the
+   text banks, the uniform art (back onto a rebuilt disc) and the executable
+   patches (a `.pnach`, or the boot ELF on a rebuilt disc) — and all four are
+   `offline-writer-proved`, which is as high as a claim can go from this box.
    The honest next test is: rebuild a container, put it back in an ISO, boot it
    in PCSX2, see the game load it and see the change on a screen. **That has not
-   been run** and cannot be run from this box. Every claim in §3.3 and §3.4 is
-   about bytes.
-2. **Two lanes still write nothing at all**: the uniform art (which exports and
-   imports but does not put an image back on a disc) and the executable patches
-   (which emit a `.pnach` beside the image, never into it).
-3. **No `LZH1` encoder exists** [S], here or anywhere public. It does not block
-   the two writers — the containers they touch store their members
-   uncompressed, so a same-size member goes back in its own slot and the
-   container comes out byte-identical outside it [M] — but it does block any
-   writer that would have to replace a *packed* member, which is most of the
-   art containers.
-4. **What a preload cache carries is not established** [A]. `GAME.QKL` and
-   `FE.QKL` name 29 and 28 files and demonstrably carry six of them verbatim;
-   whether they carry all of what they name is unknown, so every named container
-   is refused rather than half-written.
-5. **The container checksum question is open** [M/A]. No field in any
+   been run.** Every claim in §3 is about bytes.
+2. ~~No `LZH1` encoder exists.~~ One does now (`EA_TERF_FORMAT.md` §5.3), and
+   a replaced member re-packs at about the size EA shipped it [M]. The space
+   question the stored-only fallback created is gone; the boot question is not.
+2. **What the preload caches carry is measured** [M]: `GAME.QKL` and `FE.QKL`
+   hold byte copies of container directories and of particular members (6,270
+   copies across 39 containers, every one compared identical to the disc).
+   `containers.preload_copies` names them, and a writer either keeps every copy
+   in step or refuses the edit; what the game does when a copy and its container
+   disagree is not known and not tested.
+3. **The container checksum question is open** [M/A]. No field in any
    container header varies with content in any way the reader could find, and
    the layout rules hold with zero residue across 47,769 members — but that is
    the whole of the search, and it is not proof. The circumstantial evidence
    is good (the community's Deluxe disc rewrites five containers, carries two
    defects the retail disc does not, and still plays [S]); it does not close
    the question.
-6. **No PCSX2 replacement identity.** Naming a texture for a replacement pack
-   needs the GS TEX0 and CLUT hashes PCSX2 computes at draw time, which come
-   from a **GS dump of Madden 09 running on the rig**. No such dump exists.
-   `replacement_identity` therefore returns `None` and the *Write PCSX2 pack*
-   step refuses with that sentence rather than inventing a filename that would
-   silently never match.
-7. **No gameplay patch is mapped.** Six subject areas, zero located sites.
-8. **`SMF` and `DMF` geometry, `SCHl` audio and `BNKl` banks are identified
+4. **The PCSX2 replacement identity is learned, never derived.** A
+   replacement filename is built from the GS TEX0 and CLUT hashes PCSX2
+   computes at draw time, and no disc file carries them.
+   `tools/madden09_ps2_texture_identities.py` pairs a real texture dump with
+   the disc **by pixels** and writes the table `replacement_identity` reads;
+   §6.5 has the counts. A texture no dump has shown still gets `None`, and the
+   *Write PCSX2 pack* step is not offered from either row: what is proved is
+   the pairing, not that the emulator loads a pack built from it.
+5. **One gameplay patch is mapped**, the playbook editor caps (§3.5); the
+   runtime capacity layer behind them is measured and not shipped, for the
+   reason `MADDEN09_PS2_CODE_PATCHES.md` gives. The other subject areas remain
+   named questions with no located site.
+6. **`SMF` and `DMF` geometry, `SCHl` audio and `BNKl` banks are identified
    and not decoded.** Knowing a member's magic is not the same as reading it,
    and the module does not blur the two.
 

@@ -309,7 +309,7 @@ It compresses the members itself, and **decompresses every member it writes and
 compares before returning** — a container it cannot read back is never handed
 out. A `DATA` container refuses a `codecs` argument rather than dropping it.
 
-### 5.2 `rewrite_member(container, index, payload)`
+### 5.2 `rewrite_member(container, index, payload, *, codec=CODEC_STORED)`
 
 Replaces one member and keeps every other member byte-identical, updating the
 directory, the codec table and the `DATA` size. When the new payload occupies
@@ -317,31 +317,88 @@ the same aligned slot as the old one, **nothing after it moves and the file
 length does not change**; tests assert both the same-slot and the growing case.
 It refuses an index that does not exist, and refuses any container that already
 departs from the layout rules — rewriting one would move bytes the function
-cannot account for.
+cannot account for. A plain `DATA` container takes `CODEC_STORED` only: it has
+nowhere to record a codec, so a compressed member there would be handed back
+still packed.
 
-### 5.3 What cannot be written
+`plan_member_rewrite(container, index, payload)` prices a replacement before
+anything is built. **The smallest encoding wins and a tie goes to stored**;
+both shapes are ones the shipped game already loads, so the choice is about
+space rather than risk. The plan says whether the replacement stays inside the
+aligned slot the member already owns — in which case no other member moves —
+and whether the container grows at all, which is what a caller under a fixed
+allocation needs before it writes.
 
-`LZH1` has no encoder here, in the owner's repository, or anywhere public: the
-one working implementation is a lifted x86 blob inside QuickBMS with no
-readable source [S], and the owner's own encoder design document ends "**No
-encoder was written**" [S]. `build_terf` refuses an `LZH1` member by name.
+### 5.3 `lzh1_compress(payload, *, budget=None, verify=True)` — the encoder [M]
 
-### 5.4 The way out, with retail precedent [M]
+There was no `LZH1` encoder here, in the owner's repository, or anywhere
+public; there is one now. It is written from the grammar in §3.2 rather than
+lifted from anything, and the claim is one-directional: `lzh1_decompress(
+lzh1_compress(x)) == x`, never `lzh1_compress(decompress(m)) == m` for a
+shipped member — our parse and our code lengths are not EA's, and the sizes
+below show it.
 
-**A `COMP` container accepts stored members.** Madden 09 ships 270 of
+Three constraints separate it from a deflate encoder, and each one is a way to
+emit a stream that decodes to *plausible* bytes rather than to an error:
+
+* **the longest match is 227, not deflate's 258** — symbol 284 is the top of
+  the 285-symbol alphabet and carries no extra bits, so a 258-byte match from
+  the parse is **split** (227 + 31, and 228 as 225 + 3, so both halves stay
+  legal) rather than truncated;
+* **the longest distance is 32,767, not 32,768** — the window is indexed
+  `(write − distance) & 0x7FFF`, so 32,768 aliases to the write pointer;
+* **no match may reach before the start of the stream** — the window's initial
+  contents are never written, and a distance past the bytes emitted so far
+  decodes as zeros in one reader and as stale window bytes in another.
+
+Two rules of the writer's own: every code emitted is **complete** (Kraft sum
+exactly 1), and the distance table is never all-zero — whether this codec's
+decode tree tolerates an incomplete code is not established from the binary and
+this makes the question moot for the price of two four-bit fields. A
+single-symbol alphabet gets a second, never-emitted symbol at length 1.
+
+The **parse** is zlib's greedy-plus-lazy hash-chain match search, read back out
+of a raw deflate stream and re-expressed under those constraints; the entropy
+stage is this module's own — one block per member, an optimal length-limited
+Huffman code, the flat 285 + 30 four-bit table the format demands. A
+pure-Python match search would be the same algorithm two orders of magnitude
+slower over a 361 MB corpus.
+
+**The proof, over every `LZH1` member of the three art containers** [M]:
+
+| container | members | EA's bytes | ours | ratio | worst member | ≤ 1.00× |
+|---|---:|---:|---:|---:|---:|---:|
+| `UNIFORMS.DAT` | 455 | 55,700,494 | 55,889,725 | 1.0034 | 1.0681 | 172 |
+| `STADIUMS.DAT` | 666 | 60,157,259 | 61,309,008 | 1.0191 | 1.0991 | 386 |
+| `FIELDART.DAT` | 715 | 7,346,476 | 6,969,682 | 0.9487 | 1.9624 | 643 |
+| **total** | **1,836** | **123,204,229** | **124,168,415** | **1.0078** | 1.9624 | **1,201 (65%)** |
+
+361,441,396 raw bytes. **Every one of the 1,836 re-encoded members decoded back
+to its own input byte for byte, under this module's decoder and under the
+owner's independent `tools/lzh1.py`, in both the bounded read a container
+performs and the read that terminates on the end-of-stream marker** — 7,344
+successful decodes, zero failures. Aggregate size is **parity** with EA's
+encoder rather than the 0.96× the owner's design predicted on playbook data;
+the median member is 0.9896×, and the outliers in both directions are small
+members where the 158-byte flat code-length table dominates. The 15-bit code
+ceiling is binding: 210 members need a 15-bit code, so the length limiter is
+load-bearing rather than insurance.
+
+`budget=` is a hard ceiling that **raises** rather than returning a best-effort
+stream, and `verify=True` (the default) decompresses the result twice — bounded
+and to the marker — before returning it.
+
+### 5.4 Storing, and its retail precedent [M]
+
+**A `COMP` container also accepts stored members.** Madden 09 ships 270 of
 `UNIFORMS.DAT`'s 725 members and 689 of `STADIUMS.DAT`'s 1,355 as codec 0
 *inside a `COMP` container*, so a stored member there is a shape the shipped
-game already loads. `rewrite_member` therefore writes the replacement stored,
-with its `COMP` row set to `(0, len(payload))`.
-
-The cost is space: a replaced member grows to its uncompressed size, and Madden
-09's `LZH1` members compress about 3:1 (`UNIFORMS` member 0: 117,926 stored,
-356,820 unpacked). Under the fixed-allocation discipline the ISO9660 writer
-requires, a caller must check the resulting length itself — the function does
-not pretend the budget is its problem. `RLE1` is available as a middle option
-for run-heavy payloads, but note that Madden 09 uses **no** codec-1 member, so
-writing one there rests on the engine's registration of codec 1 rather than on
-retail precedent from that disc [A].
+game already loads. That is what `plan_member_rewrite` falls back to when a
+payload does not compress, and it costs space: `UNIFORMS` member 0 is 117,926
+stored against 356,820 unpacked. `RLE1` is available as a middle option for
+run-heavy payloads, but Madden 09 uses **no** codec-1 member, so writing one
+there rests on the engine's registration of codec 1 rather than on retail
+precedent from that disc [A].
 
 ---
 
@@ -462,9 +519,9 @@ Against `GAME_STUDIO_SHELL_PLAN.md` §5:
 
 | blocked | by |
 |---|---|
-| shrinking a member back down after an edit | no `LZH1` encoder (§5.3); store instead and pay the space (§5.4) |
+| ~~shrinking a member back down after an edit~~ | **unblocked**: `lzh1_compress` (§5.3) re-encodes at about EA's own size, 1,836 of 1,836 members proved |
 | promoting any on-disc writer above `offline-writer-proved` | the boot test in §6 has not been run; it needs the rig |
-| an edit to a container named in `GAME.QKL` / `FE.QKL` | those files carry byte-identical **packed** copies of members *and* of container directories, so an edit must be applied in both places [S]. `TEMPLATE.DAT` member 11 and `GAMEDATA.DAT` members 103–112 are copied; **no playbook is** [S] |
+| ~~an edit to a container named in `GAME.QKL` / `FE.QKL`~~ | **unblocked**: `containers.preload_copies(image)` reads the two `QL01` caches and returns, per container, every header copy and every member copy with its offset. Measured on the retail disc: **6,270 copies across 39 containers**, every one byte-identical to what it copies. `UNIFORMS.DAT`'s directory is copied **three times** and none of its members at all, so a member rewrite is free only while the container's first `data_offset` bytes stay put — and they move the moment a member changes stored size or codec. The uniform-art writer rewrites every stale copy and refuses a carried member whose stored size changed, because a cached copy is a fixed slot |
 | `MMAP` pixels, `SMF`/`DMF` geometry | not decoded anywhere here (§6) |
 
 ---
