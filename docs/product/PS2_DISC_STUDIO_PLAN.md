@@ -1,4 +1,4 @@
-# PS2 Disc Studio — implementation plan
+# PS2 NFL 2K5 Studio — implementation plan
 
 > **Status 2026-09-05 — delivered on branch `ps2-disc-studio`.** Service, worker, six lane
 > adapters, window shell and six tabs, the two entry points, 60 tests, allowlist lines,
@@ -14,7 +14,7 @@ lanes and exact-slot AUDO sounds (`docs/product/PS2_PHASE2_*.md`; registry rows
 Each row's `gui.reason` says the same thing: *nothing in `mod_editor/` is wired to
 it — there is no Qt-free service and no dialog — and when it surfaces it will be a
 separate PS2 window off the File menu, following the PS2 save editor and PS2 Disc
-Inventory windows.* The **PS2 Disc Studio** is that window: one dialog, a tab per
+Inventory windows.* The **PS2 NFL 2K5 Studio** is that window: one dialog, a tab per
 lane, a Build page that writes a **new** ISO from the user's own disc and shows
 the independent verifier's verdict.
 
@@ -25,7 +25,7 @@ entry + `--flag`). Nothing here repeats those except where a decision is new.
 
 ## 1. Definition of done
 
-1. `File ▸ PS2 Disc Studio…` and `python -m mod_editor --ps2-disc-studio [ISO]`
+1. `File ▸ PS2 NFL 2K5 Studio…` and `python -m mod_editor --ps2-disc-studio [ISO]`
    open one window that: opens the user's ISO read-only and identity-checks it;
    builds or loads each lane's target catalogue **from that disc** through the
    lane's own catalogue tool; lets the user stage bounded edits per lane with the
@@ -55,7 +55,7 @@ lane stays `offline-writer-proved`; the window says so in plain words.
 ## 2. What the user experiences
 
 ```
-File ▸ PS2 Disc Studio…   (or  --ps2-disc-studio  [my.iso])
+File ▸ PS2 NFL 2K5 Studio…   (or  --ps2-disc-studio  [my.iso])
   → Open Disc Image…  → identity line: "SLUS-20919 · retail boot ELF · 4,665,081,856 bytes"
   → each tab shows "Catalogue: not built yet — Build catalogue (about N s)"; building runs in
     the background with progress and a Cancel button; a built catalogue is cached on this
@@ -320,7 +320,7 @@ seen or heard in an emulator yet."*
 
 ## 8. Entry points
 
-`studio_qt.py`: `File ▸ PS2 Disc Studio…` after the export entry, tooltip
+`studio_qt.py`: `File ▸ PS2 NFL 2K5 Studio…` after the export entry, tooltip
 "Edit text, playbooks, uniform colours, rosters, stadium positions and sounds on
 a copy of an ESPN NFL 2K5 PlayStation 2 disc image. A new image is written; your
 original and your Xbox project are not changed."; the handler mirrors
@@ -381,7 +381,7 @@ deleted after the verifiers ran. `reports/` is evidence only and is not allowlis
 
 ## 11. Docs, allowlist, coordinator handoff
 
-- Getting-started: "PS2 Disc Studio" section (how to open, what each tab does,
+- Getting-started: "PS2 NFL 2K5 Studio" section (how to open, what each tab does,
   the budgets, a new ISO is written and the original never touched, nothing
   seen in game yet, cache location, time expectations).
 - Changelog RC85: one bullet.

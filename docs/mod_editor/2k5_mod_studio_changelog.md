@@ -2,6 +2,10 @@
 
 ## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
 
+- **PS2 NFL 2K5 Studio.** The PS2 disc window is now named the way every game's studio will be, console, game, year:
+  File ▸ PS2 NFL 2K5 Studio…, and it is the first window **Select other games…** offers for the PS2 module (it was
+  missing from that list). Its last page is now called **Uniforms** and explains in plain words why the uniform
+  art comes from the studio's project and reaches the PS2 game through PCSX2's texture swap.
 - **Windows console fix.** `python -m mod_editor.games …` (the `--game` / `--games-chooser` command line and the
   conformance harness) no longer dies with `UnicodeEncodeError` on a cp1252 console when a lane message quotes a
   character the console cannot show; such characters print as `\uXXXX` escapes instead. Found by running the
@@ -49,7 +53,7 @@
   same classic-named pack also loaded on three stock upstream PCSX2 builds). Evidence: hashes-only report at
   `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`; frames stay on the rig.
 - Six new `nfl2k5_ps2` capability rows, all `offline-writer-proved` and each a tab of the new
-  **PS2 Disc Studio** (File ▸ PS2 Disc Studio…, or `--ps2-disc-studio`), the separate PS2 window that
+  **PS2 NFL 2K5 Studio** (File ▸ PS2 NFL 2K5 Studio…, or `--ps2-disc-studio`), the separate PS2 window that
   follows the save editor and Disc Inventory: `nfl2k5ps2.menus.text_banks` (display text inside its own allocation —
   shorter or equal, never longer; 6,658 editable strings), `nfl2k5ps2.scripts.director_playbook`
   (formations and plays inside the 37 fixed-capacity books, the Xbox writer unchanged),
@@ -71,7 +75,7 @@
   payload; every catalogue tool rebuilds its catalogue from the user's own disc.
 - Registry 71 -> 78 rows; the `audio`, `colors`, `menus`, `players_rosters`, `scripts_config`,
   `stadiums_fields` and `uniforms` surfaces now cover the PS2 target.
-- **PS2 Disc Studio** (File > PS2 Disc Studio…, or `--ps2-disc-studio [ISO]`): one window over
+- **PS2 NFL 2K5 Studio** (File > PS2 NFL 2K5 Studio…, or `--ps2-disc-studio [ISO]`): one window over
   the six on-disc writers -- a tab per lane (Text, Playbooks, Colours, Roster, Stadium, Audio) and a
   Build page. It opens the user's SLUS-20919 ISO read-only, builds each lane's catalogue from that
   disc with the lane's own tool (cached per disc under the private application-data folder),

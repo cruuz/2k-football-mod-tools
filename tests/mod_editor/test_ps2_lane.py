@@ -87,7 +87,7 @@ class Ps2RegistryTests(unittest.TestCase):
             self.assertIs(capability.raw["gui"]["expose"], True)
             self.assertIs(capability.raw["gui"]["default_enabled"],
                           capability.raw["id"] != "nfl2k5ps2.stadiums.position_lanes")
-            self.assertIn("PS2 Disc Studio", capability.raw["gui"]["reason"])
+            self.assertIn("PS2 NFL 2K5 Studio", capability.raw["gui"]["reason"])
             self.assertTrue(capability.raw["validation_command"])
             if capability.raw["id"] in heard:
                 # One AUDO slot was heard on a cold boot (menu-appear_01); the

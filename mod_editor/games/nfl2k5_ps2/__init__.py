@@ -268,8 +268,16 @@ class UnifColourLane:
 
 
 # --------------------------------------------------------------------------
-# Windows: the three shipped PS2 dialogs, imported only when opened.
+# Windows: the four shipped PS2 dialogs, imported only when opened. The Disc
+# Studio comes first: it is where the disc is edited; the rest read or export.
 # --------------------------------------------------------------------------
+
+def _disc_studio(parent: Any = None, **context: Any) -> Any:
+    from mod_editor.gui.ps2_disc_studio_qt import Ps2DiscStudioDialog
+
+    iso = context.get("iso")
+    return Ps2DiscStudioDialog(parent=parent, initial_iso=Path(iso) if iso else None)
+
 
 def _save_editor(parent: Any = None, **_context: Any) -> Any:
     from mod_editor.gui.ps2_save_dialog_qt import Ps2SaveEditorDialog
@@ -290,6 +298,16 @@ def _replacement_pack_export(parent: Any = None, **context: Any) -> Any:
 
 
 WINDOWS = (
+    WindowSpec(
+        window_id="disc-studio",
+        menu_label="PS2 NFL 2K5 Studio…",
+        tooltip=(
+            "Edit an ESPN NFL 2K5 PlayStation 2 disc: menu text, playbooks, uniform colours, the disc roster, "
+            "stadium positions and audio slots, then build a new ISO with receipts. Your own disc image is never written."
+        ),
+        flag="ps2-disc-studio",
+        factory=_disc_studio,
+    ),
     WindowSpec(
         window_id="save-editor",
         menu_label="PS2 Save Editor…",

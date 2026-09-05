@@ -160,7 +160,7 @@ class ChooserDialogTests(unittest.TestCase):
         self.addCleanup(dialog.deleteLater)
         self.assertTrue(dialog.select_game("nfl2k5_ps2"))
         labels = [dialog.windows.item(i).text() for i in range(dialog.windows.count())]
-        self.assertEqual(labels, ["PS2 Save Editor…", "PS2 Disc Inventory…",
+        self.assertEqual(labels, ["PS2 NFL 2K5 Studio…", "PS2 Save Editor…", "PS2 Disc Inventory…",
                                   "Export PS2 replacement pack… (needs the studio's open project)"])
         self.assertTrue(dialog.open_selected("disc-inventory"))
         self.assertEqual(dialog.last_opened.windowTitle(), "PS2 Disc Inventory")

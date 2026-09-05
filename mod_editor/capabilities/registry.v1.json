@@ -5089,7 +5089,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Audio tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; one slot (menu-appear_01) heard on a cold boot; every other slot's in-game cue is unproved."
+        "reason": "Surfaces as the Audio tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; one slot (menu-appear_01) heard on a cold boot; every other slot's in-game cue is unproved."
       },
       "id": "nfl2k5ps2.audio.audo_exact_slot_replace",
       "input_constraints": [
@@ -5101,7 +5101,7 @@
         "A payload that would cross a 1 GiB pack seam is refused. No AUDO does (0 of 844); the guard exists because 2 of the 17 AUSB stream banks do, and AUSB is a separate row.",
         "The source ISO is opened read-only and re-hashed after the run; the destination is created with O_EXCL so a run cannot overwrite an existing image or land on the image it read, and every refusal leaves no output image behind.",
         "690 of 844 chunks share a name with another chunk (161 distinct names across 844 chunks; two crowd sounds occupy 340 chunks each). The physical span is exact but the in-game cue is not proved, so a UI must warn that replacing one slot may change an unexpected or duplicate-sounding cue.",
-        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
+        "In the PS2 NFL 2K5 Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Extend the runtime proof beyond menu-appear_01: a headless button seam in PenguinScreen2 (or a person at the controls) would let crowd loops and in-game cues be heard; each newly heard slot widens the recorded context, nothing more.",
@@ -5170,7 +5170,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Colours tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
+        "reason": "Surfaces as the Colours tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.colors.unif_words",
       "input_constraints": [
@@ -5182,7 +5182,7 @@
         "A no-op is refused: the record already holding those colours is an error, not a silent success.",
         "The source image is opened read-only and is byte-identical afterwards; the destination is created with O_EXCL and must not already exist, and every refusal leaves no destination behind.",
         "Ownership of the two words is inherited from the Xbox static executable trace, not re-derived against SLUS_209.19 and not confirmed by any runtime capture on either platform.",
-        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
+        "In the PS2 NFL 2K5 Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Runtime witness attempted 2026-09-05 and not reached: a cold boot renders in-engine football from baked intro assets (frame byte-identical to stock with every one of the 634 facemask/turtleneck pairs set to magenta changed), no attract demo auto-starts, save-state boots are non-deterministic, and the fork has no headless button seam; a witness needs either that seam or a person reaching gameplay in PenguinScreen2 with the patched image (rebuilds from the committed recipe in ~20 s on the rig).",
@@ -5329,7 +5329,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Text tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
+        "reason": "Surfaces as the Text tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.menus.text_banks",
       "input_constraints": [
@@ -5343,7 +5343,7 @@
         "An optional expect_sha256 per edit pins the original string's digest, so a recipe written against a different disc or index is refused before anything is created.",
         "Aliasing is reported, never hidden: 281 allocations are referenced by more than one lookup record, 279 of them editable and the most-shared editable one by 18 records, so a UI must show 'used by N records' rather than pretending aliases are independent strings.",
         "The source image is opened read-only and re-hashed; the destination is created with O_EXCL and must not already exist.",
-        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
+        "In the PS2 NFL 2K5 Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Take a PCSX2/PenguinScreen2 spot check of the trial image before any runtime claim; it would retire most of the remaining risk at once and is the cheapest witness in the lane.",
@@ -5416,7 +5416,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Roster tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
+        "reason": "Surfaces as the Roster tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.players.disc_roster",
       "input_constraints": [
@@ -5430,7 +5430,7 @@
         "Exactly one ROST object must be labelled as the boot roster or the catalogue refuses to build; targets are identified by that label rather than by outer index.",
         "The source image is opened read-only and is byte-identical afterwards; the destination is created with O_EXCL and must not already exist, and every refusal leaves no destination behind.",
         "A loaded roster or franchise save may override this disc seed.",
-        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
+        "In the PS2 NFL 2K5 Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Runtime witness attempted 2026-09-05 and not reached: a cold boot renders in-engine football from baked intro assets (frame byte-identical to stock with every one of 2,462 jersey numbers set to 7 changed), no attract demo auto-starts, save-state boots are non-deterministic, and the fork has no headless button seam; a witness needs either that seam or a person reaching gameplay in PenguinScreen2 with the patched image (rebuilds from the committed recipe in ~20 s on the rig).",
@@ -5590,7 +5590,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Playbooks tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
+        "reason": "Surfaces as the Playbooks tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.scripts.director_playbook",
       "input_constraints": [
@@ -5603,7 +5603,7 @@
         "The PLAY chunks are uncompressed on all 37 books, so there is no decode on read and no recompression on write; a compressed family would need a re-encoder that fits the old size and this writer does not have one.",
         "An unknown book id or a recipe with the wrong schema is refused, and the source ISO is opened read-only while the destination is created with O_EXCL and must not already exist.",
         "The memory-card overlay risk is untested on PS2: plays created by the in-game editor may live in save containers that overlay the disc book at load, which would mask a disc edit. That claim is unproven on either platform and belongs in the UI as a note.",
-        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
+        "In the PS2 NFL 2K5 Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Runtime witness not attempted 2026-09-05: the play-call menu exists only in RAM-resident save states, which boot non-deterministically frame-to-frame; a witness needs a headless button seam or a person reaching the menu in PenguinScreen2.",
@@ -5675,7 +5675,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaces as the Stadium tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested. Off by default: catalogue and build steps take tens of minutes and only one scene is proved."
+        "reason": "Surfaces as the Stadium tab of the PS2 NFL 2K5 Studio (File \u25b8 PS2 NFL 2K5 Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested. Off by default: catalogue and build steps take tens of minutes and only one scene is proved."
       },
       "id": "nfl2k5ps2.stadiums.position_lanes",
       "input_constraints": [
@@ -5688,7 +5688,7 @@
         "Aliased lanes are refused: several batch descriptors can point at the same DMA chain, so of 1,041 catalogued targets there are 890 distinct payload spans and 274 targets share a span with another. Each row carries its payload_span_target_count and a recipe editing two aliases of one lane is rejected -- the first real-disc trial run was refused by exactly that check.",
         "The source ISO is opened read-only and its digest re-checked afterwards; the destination is created with O_EXCL and must not already exist.",
         "The 8 batches on the trial scene whose VIF command 0x3F is unknown are excluded rather than guessed at; coverage there is 646 of 654 batches.",
-        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
+        "In the PS2 NFL 2K5 Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Runtime witness not attempted 2026-09-05: one scene is catalogued and the only input-free stadium shot (the cold-boot intro) proved insensitive to the other disc lanes; a witness needs the scene the game actually loads for a reachable screen and either a headless button seam or a person at the controls.",
@@ -5842,7 +5842,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "export",
-        "reason": "The exporter writes only the uniform targets the open Xbox project marks edited, naming each file by the PS2 texture's PCSX2 replacement identity from the shipped manifest (TEX0 and CLUT XXH3-64 hashes computed offline from the stock disc; 4,732 names resolve to exactly one Xbox asset). It never emits an unedited texture, never touches the user's ISO, and publishes into a fresh folder with a receipt. The independent verifier re-derives from folder + receipt + manifest, importing none of the exporter. It is a separate window (File menu, or --ps2-export) in the shape of the PS2 disc inventory and save editor, not a card in the Xbox sidebar. Before exporting, the window asks where the pack will be used (three answers, nothing preselected, Export disabled until one is chosen) and explains the emulator naming history on hover; that explanation is a validated contract, not decoration. It is also reachable from the PS2 Disc Studio's PCSX2 Pack page, which opens this same window on a saved .2k5mod the user chooses (that window has no Xbox session) and afterwards offers tools/nfl2k5_ps2_replacement_pack_kit.py to write that emulator's kit beside the pack; no disc image is read and no ISO is written by that path."
+        "reason": "The exporter writes only the uniform targets the open Xbox project marks edited, naming each file by the PS2 texture's PCSX2 replacement identity from the shipped manifest (TEX0 and CLUT XXH3-64 hashes computed offline from the stock disc; 4,732 names resolve to exactly one Xbox asset). It never emits an unedited texture, never touches the user's ISO, and publishes into a fresh folder with a receipt. The independent verifier re-derives from folder + receipt + manifest, importing none of the exporter. It is a separate window (File menu, or --ps2-export) in the shape of the PS2 disc inventory and save editor, not a card in the Xbox sidebar. Before exporting, the window asks where the pack will be used (three answers, nothing preselected, Export disabled until one is chosen) and explains the emulator naming history on hover; that explanation is a validated contract, not decoration. It is also reachable from the PS2 NFL 2K5 Studio's PCSX2 Pack page, which opens this same window on a saved .2k5mod the user chooses (that window has no Xbox session) and afterwards offers tools/nfl2k5_ps2_replacement_pack_kit.py to write that emulator's kit beside the pack; no disc image is read and no ISO is written by that path."
       },
       "id": "nfl2k5ps2.uniforms.replacement_pack_export",
       "input_constraints": [

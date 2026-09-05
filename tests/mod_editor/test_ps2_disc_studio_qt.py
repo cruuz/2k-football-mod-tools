@@ -8,7 +8,7 @@ disc-inventory and export windows' tests.  The entry points are checked
 statically, as the wording tests check copy: constructing the whole Xbox
 studio window is not this module's business.
 
-The PCSX2 Pack page is covered the same way and with the same fixtures the
+The Uniforms page is covered the same way and with the same fixtures the
 export window's own tests use: a synthetic ``.2k5mod`` and a synthetic mapping
 manifest, exported by the Qt-free service so the pack and its receipt are real,
 then handed to the page.  The export window itself is stood in for where the
@@ -192,10 +192,10 @@ class WordingTests(unittest.TestCase):
 class EntryPointTests(unittest.TestCase):
     def test_the_file_menu_action_mirrors_the_other_ps2_windows(self) -> None:
         source = (ROOT / "mod_editor" / "gui" / "studio_qt.py").read_text(encoding="utf-8")
-        self.assertIn('file_menu.addAction("PS2 Disc Studio…")', source)
+        self.assertIn('file_menu.addAction("PS2 NFL 2K5 Studio…")', source)
         handler = source[source.index("def _open_ps2_disc_studio"):]
         handler = handler[:handler.index("\n    def ", 10)]
-        self.assertIn('_refuse_while_audio_busy("open the PS2 Disc Studio")', handler)
+        self.assertIn('_refuse_while_audio_busy("open the PS2 NFL 2K5 Studio")', handler)
         self.assertIn("from .ps2_disc_studio_qt import Ps2DiscStudioDialog", handler)
         self.assertIn("your Xbox project was not changed", handler)
         self.assertIn("self._ps2_disc_studio_action.setEnabled(not global_busy)", source)
@@ -260,7 +260,7 @@ class DialogTests(unittest.TestCase):
             self.assertEqual(list(dialog.tabs), list(lanes.LANE_ORDER))
             self.assertEqual(dialog.tab_widget.count(), 8)
             self.assertEqual(dialog.tab_widget.tabText(6), "Build")
-            self.assertEqual(dialog.tab_widget.tabText(7), "PCSX2 Pack")
+            self.assertEqual(dialog.tab_widget.tabText(7), "Uniforms")
             self.assertFalse(dialog.build_page.build_button.isEnabled())
             self.assertFalse(dialog.build_page.check_button.isEnabled())
             self.assertTrue(dialog.open_button.isEnabled())

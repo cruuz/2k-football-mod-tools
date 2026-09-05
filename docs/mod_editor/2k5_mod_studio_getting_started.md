@@ -363,13 +363,13 @@ capabilities and 9 NFL 2K5 PS2 rows: the separate PS2 save-import bridge, the
 read-only PS2 disc inventory, the PCSX2 replacement-pack export for edited uniform
 art (File > Export PS2 replacement pack…, or --ps2-export) and six on-disc writers
 (display text, playbooks, uniform colours, the disc roster, stadium positions and
-one-shot AUDO sounds), which the PS2 Disc Studio window drives (see below). No current 2K5 capability
+one-shot AUDO sounds), which the PS2 NFL 2K5 Studio window drives (see below). No current 2K5 capability
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.
 
-## PS2 Disc Studio (RC85)
+## PS2 NFL 2K5 Studio (RC85)
 
-**File > PS2 Disc Studio…**, or `python -m mod_editor --ps2-disc-studio [your.iso]`, opens
+**File > PS2 NFL 2K5 Studio…**, or `python -m mod_editor --ps2-disc-studio [your.iso]`, opens
 one window over the six PlayStation 2 on-disc writers. It works on **your own SLUS-20919
 disc image**, which is opened read-only and never written: every build creates a **new**
 ISO at a name that does not exist yet, and a build that fails or is cancelled deletes

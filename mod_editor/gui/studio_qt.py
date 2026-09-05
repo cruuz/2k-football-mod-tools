@@ -1659,7 +1659,7 @@ class StudioMainWindow(QMainWindow):
             "targets are written; your Xbox project is not changed."
         )
         self._ps2_export_action.triggered.connect(self._open_ps2_export)
-        self._ps2_disc_studio_action = file_menu.addAction("PS2 Disc Studio…")
+        self._ps2_disc_studio_action = file_menu.addAction("PS2 NFL 2K5 Studio…")
         self._ps2_disc_studio_action.setToolTip(
             "Edit text, playbooks, uniform colours, rosters, stadium positions "
             "and sounds on a copy of an ESPN NFL 2K5 PlayStation 2 disc image. "
@@ -2256,15 +2256,15 @@ class StudioMainWindow(QMainWindow):
         a NEW image and never the source; nothing here touches the Xbox project.
         """
 
-        if self._refuse_while_audio_busy("open the PS2 Disc Studio"):
+        if self._refuse_while_audio_busy("open the PS2 NFL 2K5 Studio"):
             return
         try:
             from .ps2_disc_studio_qt import Ps2DiscStudioDialog
         except Exception as exc:  # pragma: no cover - defensive import guard
             QMessageBox.warning(
                 self,
-                "PS2 Disc Studio is unavailable",
-                f"The PS2 Disc Studio could not be loaded: {str(exc).strip()}\n\n"
+                "PS2 NFL 2K5 Studio is unavailable",
+                f"The PS2 NFL 2K5 Studio could not be loaded: {str(exc).strip()}\n\n"
                 "Nothing was changed.",
             )
             return
@@ -2272,7 +2272,7 @@ class StudioMainWindow(QMainWindow):
         dialog.exec_()
         dialog.deleteLater()
         self._set_status(
-            "PS2 Disc Studio closed • your Xbox project was not changed."
+            "PS2 NFL 2K5 Studio closed • your Xbox project was not changed."
         )
 
     def _recover_candidate(self, candidate: RecoveryCandidate) -> None:

@@ -1,4 +1,4 @@
-"""Modal PS2 Disc Studio for ESPN NFL 2K5: one window over the six on-disc writers.
+"""Modal PS2 NFL 2K5 Studio (the PS2 Disc Studio) for ESPN NFL 2K5: one window over the six on-disc writers.
 
 The window owns presentation and gating only.  Opening the ISO, building each
 lane's catalogue from it, checking an edit, composing and dry-running a recipe,
@@ -23,7 +23,7 @@ says so in its boundary note, its Build page and its receipt; every lane is
 offline-proved only, and the caveats each tab shows come from the lane's
 registry row.
 
-The PCSX2 Pack page is the one thing here that is not about the disc.  It
+The Uniforms page is the one thing here that is not about the disc.  It
 offers the same replacement-pack export the main window's File menu offers,
 because the two jobs meet in the same place -- somebody making a PS2 disc from
 their Xbox edits wants the uniform art on the same emulator -- and asking them
@@ -526,12 +526,13 @@ class PackPage(QWidget):
     """
 
     INTRO = (
-        "Your edited Xbox uniform art, written as a PCSX2 texture-replacement pack for this "
-        "disc's serial. It reads a saved .2k5mod project you choose -- this window has no Xbox "
-        "session of its own -- and writes a new folder of your own PNGs. No disc image is "
-        "opened here and no ISO is built by this page; only art you have actually edited is "
-        "written, and the export window asks which emulator the pack is for before it writes "
-        "anything."
+        "Uniform art for PCSX2. The PS2 game's uniform textures cannot be edited on the disc yet, "
+        "so PCSX2 swaps them while the game runs, from a folder of PNGs named for this disc's "
+        "textures. This page builds that folder from the uniforms you have edited in the studio, "
+        "which are the Xbox disc's copies of the same art: choose a saved .2k5mod project and only "
+        "the textures you actually changed are written. No disc image is opened here and no ISO "
+        "is built by this page; the export window asks which emulator the pack is for before it "
+        "writes anything."
     )
 
     def __init__(self, window: "Ps2DiscStudioDialog") -> None:
@@ -632,7 +633,7 @@ class Ps2DiscStudioDialog(QDialog):
         self._stale: set = set()
         self._plan_errors: Dict[str, str] = {}
         self._receipt: Any = None
-        #: The last replacement-pack export made from the PCSX2 Pack page, its
+        #: The last replacement-pack export made from the Uniforms page, its
         #: kit report, and the .2k5mod the export window was last on. None of
         #: the three has anything to do with the open disc, so opening another
         #: image leaves them alone.
@@ -642,7 +643,7 @@ class Ps2DiscStudioDialog(QDialog):
         self.tabs: Dict[str, Any] = {}
 
         self.setObjectName("ps2DiscStudioDialog")
-        self.setWindowTitle("PS2 Disc Studio")
+        self.setWindowTitle("PS2 NFL 2K5 Studio")
         self.setModal(True)
         self.setMinimumSize(980, 660)
         self.resize(1280, 820)
@@ -662,7 +663,7 @@ class Ps2DiscStudioDialog(QDialog):
 
         header = QHBoxLayout()
         titles = QVBoxLayout()
-        title = QLabel("PS2 Disc Studio")
+        title = QLabel("PS2 NFL 2K5 Studio")
         title.setObjectName("panelTitle")
         subtitle = QLabel(
             "Edit text, playbooks, uniform colours, rosters, stadium positions and sounds on a "
@@ -699,7 +700,7 @@ class Ps2DiscStudioDialog(QDialog):
         self.tab_widget.setAccessibleName("Lanes")
         self.tab_widget.setAccessibleDescription(
             "One tab per lane -- Text, Playbooks, Colours, Roster, Stadium, Audio -- the Build "
-            "page, and the PCSX2 Pack page that exports edited Xbox uniform art without "
+            "page, and the Uniforms page that builds a PCSX2 uniform-art pack without "
             "touching a disc image."
         )
         from mod_editor.gui.ps2_disc_studio_tabs_qt import make_lane_tab
@@ -711,7 +712,7 @@ class Ps2DiscStudioDialog(QDialog):
         self.build_page = BuildPage(self)
         self.tab_widget.addTab(self.build_page, "Build")
         self.pack_page = PackPage(self)
-        self.tab_widget.addTab(self.pack_page, "PCSX2 Pack")
+        self.tab_widget.addTab(self.pack_page, "Uniforms")
         root.addWidget(self.tab_widget, 1)
 
         footer = QHBoxLayout()

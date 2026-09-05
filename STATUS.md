@@ -18,7 +18,7 @@
   ISO. **Witnessed** 2026-09-05 in PenguinScreen2 `8226182a` by GS-dump replay: an exported pack
   rendered in place of the disc's art (shield, scorebug, kick-meter dial), and uniform parts (torso,
   sleeves, pants, gloves) on two player-filling dumps; stock upstream PCSX2 loads the same pack.
-- **Six PS2 on-disc writers**, each a tab of the new PS2 Disc Studio and offline-writer-proved: display text, playbooks,
+- **Six PS2 on-disc writers**, each a tab of the new PS2 NFL 2K5 Studio and offline-writer-proved: display text, playbooks,
   uniform colours, the disc roster, stadium positions and one-shot AUDO sounds. Each writes a NEW
   image through the fixed-allocation ISO9660 writer and ships an independent verifier; each was
   proven once on the real disc. One AUDO slot has been heard on a cold boot (that row is runtime-proved
@@ -2839,7 +2839,7 @@ Export-only boundary instead of pretending that registry status is an action.
 
 | Product surface | Exact release-candidate coverage |
 | --- | ---: |
-| Capability registry | 79 rows total; 32 Xbox NFL 2K5 rows; 9 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, PCSX2 replacement-pack export, six on-disc writers (PS2 Disc Studio tabs): text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
+| Capability registry | 79 rows total; 32 Xbox NFL 2K5 rows; 9 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, PCSX2 replacement-pack export, six on-disc writers (PS2 NFL 2K5 Studio tabs): text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
 | Sidebar tabs | 11 |
 | Specialized visual assets | 63,592 total; all 63,592 Editable, including 28,530 package-local equipment P8 palettes |
 | Text banks | 716 |
