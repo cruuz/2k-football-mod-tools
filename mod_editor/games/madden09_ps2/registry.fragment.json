@@ -442,7 +442,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "export",
-        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 Madden 09 Studio with preview, Export PNG and a checked Import PNG, and with Write PCSX2 pack refused by name: a replacement filename needs a GS dump of this game and none exists. Export is the value today. The independent verifier re-decodes every exported texture from the user's own disc by key -- not through the catalogue that produced the receipt -- and fails on a tampered file or an undeclared one."
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 Madden 09 Studio with preview, Export PNG and a checked Import PNG, and with Write PCSX2 pack still not offered: the replacement filenames are known for 3,024 textures now, but no pack built from them has been loaded. Export is the value today. The independent verifier re-decodes every exported texture from the user's own disc by key -- not through the catalogue that produced the receipt -- and fails on a tampered file or an undeclared one."
       },
       "id": "madden09ps2.uniforms.mmap_export",
       "input_constraints": [
@@ -450,11 +450,11 @@
         "The catalogue carries dimensions, formats, counts and file names -- never a pixel. Pixels are decoded when a texture is previewed or exported, straight from the user's own image.",
         "An import is checked, never silently resized: a PNG must be exactly the texture's size or an exact whole-number multiple of it, 8-bit, non-interlaced, RGB or RGBA. Anything else is refused naming the size that was wanted.",
         "A same-size PNG is indexed against the texture's OWN palette and the result reported: a Madden 09 texture rides its own CLUT, so a colour that palette does not carry cannot be introduced, and the user is told how many pixels landed exactly.",
-        "replacement_identity returns None: naming a PCSX2 replacement file needs the GS TEX0 and CLUT hashes the emulator computes at draw time, which need a GS dump of Madden 09 that nobody has captured. The pack step refuses with that sentence rather than writing a name that would never match.",
+        "replacement_identity answers for a texture a PCSX2 dump has been seen drawing and None for one it has not. The name is built from hashes the emulator computes at draw time, so tools/madden09_ps2_texture_identities.py learns it by pairing a dump with this disc on exact pixels; 3,024 textures have one today. The Write PCSX2 pack step is still not offered: what is proved is the pairing, not that the emulator loads a pack.",
         "Version-1 MMAP members store their pixels under EA codec 4 (IPU1), which nothing here decodes; all 1,188 of them are refused by name rather than exported wrong."
       ],
       "portme": [
-        "Capture a GS dump of Madden 09 on the rig, derive the PCSX2 replacement names from it, and this lane becomes a pack writer with no change to its decoder.",
+        "Load a pack built from these names in PCSX2 and see the replacement drawn; that is the only thing between the identity table and a pack writer, and it needs the rig.",
         "Join the uniform members to teams. UNIFORMS.DAT names none of its 455 members or their images, so which team a member belongs to is not established; the executable's own tables are the place to look.",
         "Decode IPU1 so the 1,188 memory-card front-end textures can be exported too.",
         "Writing a texture back into the container needs an LZH1 encoder and one rebuilt disc booted; neither exists, and until they do this stays extract-only."
@@ -467,7 +467,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "Extract-only: the exporter creates local PNGs and no path writes anything into the game or the emulator, so there is no runtime behaviour to witness. That PCSX2 would render these textures identically is NOT claimed -- no GS dump of Madden 09 exists, which is the same gap that stops the pack writer. The evidence for the decode is that the exported PNGs are recognisable art when looked at, not that the game draws them.",
+        "scope": "Extract-only: the exporter creates local PNGs and no path writes anything into the game or the emulator, so there is no runtime behaviour to witness. That PCSX2 would render these textures identically is NOT claimed. A texture dump of the game running now exists and the exported pixels pair with it exactly, which is evidence about the decode; no pack has been loaded, which is the gap that stops the pack writer. The evidence for the decode is that the exported PNGs are recognisable art when looked at, not that the game draws them.",
         "status": "not-applicable"
       },
       "selectors": {
