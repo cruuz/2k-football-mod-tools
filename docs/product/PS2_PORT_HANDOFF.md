@@ -710,22 +710,36 @@ built, tested (56 tests) and verified against real discs, preserved on branch
 `offline-writer-proved` row behind them (~2 days) — this is not a reversal, it
 is the documented trigger firing.
 
-### Reachability, best-prepared first
+### Reachability — REVISED by the WP3 triage (measured, 2026-09-04)
 
-| surface | already in hand | missing | est. |
-|---|---|---|---|
-| **Stadiums / geometry** | ⭐ PS2 SCNE strides **already decoded** by the disc inventory — texture `0x38`, material `0x60` (name at `+0x58`), node `0x60`, shape `0x70`, marker `0x40`. Xbox side already does bounded glTF round-trip + a same-count position writer that refuses topology changes | port the bounded writer to PS2 strides | **4–6 d** |
-| **Text / menus** | Xbox edits 20,074 strings across 716 banks; fixed-allocation editing already proven by the PS2 save writer | PS2 string writer | **2–3 d** |
-| **Playbooks / formations** | upstream shipped this for Xbox in Betas 49–53 | PS2 data-table format | **3–5 d** |
-| **Audio** | 844 `AUDO` + 17 `AUSB` on the PS2 disc; pcsx2-VR's own `SPU2` tree is a reference decoder | **SPU-ADPCM codec — nothing exists in-repo** (Xbox side is IMA ADPCM, not portable) | **8–12 d** |
+The earlier table put stadiums first as "a port". The triage measured
+otherwise: only the SCNE *table* strides were decoded; nothing has ever read
+PS2 vertex payload, and only 312 of 4,139 PS2 SCNE chunks are the same size as
+their Xbox counterparts. Meanwhile text and playbook chunk families are
+**byte-size-identical across discs**, and two cheap surfaces were missing from
+the table entirely. Revised order and verdicts:
+
+| # | surface | parity evidence | verdict | in flight |
+|---|---|---|---|---|
+| 1 | **Text / menus** | `STRG`/`SITU`/`CRED`/`TRIV` byte-size-identical | **port** — unknown: UTF-16LE + pointer encoding on PS2 | `p2-text` |
+| 2 | **Playbooks / formations** | 37 `PLAY` + 5 `DRCT` identical | **port, gated** on `validate_play` over PS2 PLAY bodies (`nfl2k5_play_codec.py` ports Xbox-VA consumers) | `p2-playbooks` (research) |
+| 3 | **Colors** (facemask/turtleneck words) | 634 `Unif` identical | **port** — same-size in-place words, ideal fixed-allocation case | `p2-colors-rosters` |
+| 4 | **Disc rosters** | 76 `ROST` identical; `tools/nfl_roster.py` already parses PS2 ROST (save editor) | **port** — reuse the save writer's fixed-allocation field edits | `p2-colors-rosters` |
+| 5 | **Stadiums / geometry** | table strides known; **vertex payload layout unknown**; 312/4,139 same-size | **new research** first, port only if the lanes match | `p2-stadiums` (told) |
+| 6 | **Audio** | 844 `AUDO` + 17 `AUSB`; no SPU-ADPCM code anywhere in-repo | **blocked** pending codec research | `p2-audio` (research) |
+
+`SURFACE_GAMES` staging for these (from the triage): `colors` → `players_rosters`
+→ `scripts_config` → `menus` → `models_shap_scne` → `audio`; all widen to
+`GAMES`; no schema edits needed. The gitignored `.tsv.gz` inventories may not be
+cited as registry `evidence` — cite the committed `reports/gameplay_tuning/`
+artifacts.
 
 ### Order and gate
 
-**Stadiums → text → playbooks → audio.** Stadiums first because it is the
-best-prepared surface: the PS2 SCNE layout fell out of the inventory work for
-free and the hard part (bounded, topology-refusing geometry editing) already
-exists on the Xbox side, so it is a port rather than research. Audio last — it
-is the only surface needing genuine new codec work.
+**Text → playbooks → colors → rosters → stadiums → audio.** Cheapest, best-
+evidenced first; research-verdict surfaces implement only on a "port" or
+"feasible" result, and a "blocked" result comes back to the owner rather than
+into a sprint.
 
 **Hard gate: do not start Phase 2 until M1 is reached — a texture *witnessed*
 rendering in PenguinScreen2.** An earlier version gated on "Slice 1", which is
