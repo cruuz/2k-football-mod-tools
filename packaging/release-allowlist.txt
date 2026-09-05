@@ -573,7 +573,6 @@ docs/mod_editor/nfl2k5_zone_drop_capability.json
 ASTRA_MOMENTUM_BUILD_REPORT.md
 ASTRA_DEFENSIVE_TRY_REPORT.md
 ASTRA_ZONE_DROP_REPORT.md
-docs/product/evidence/madden09_ps2/playbook-databases.json
 docs/product/measured/madden09_ps2/playbook-databases.json
 mod_editor/games/madden09_ps2/playbooks_lane.py
 tools/validate_madden09_ps2_playbooks.bat
