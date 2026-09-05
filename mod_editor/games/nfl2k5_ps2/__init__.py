@@ -22,17 +22,18 @@ What is on the contract today:
   ``nfl2k5ps2.uniforms.replacement_pack_export``): the disc's own uniform
   textures decoded to PNG, edited, and written back out as a PCSX2 replacement
   pack -- see :mod:`.uniform_art`;
-* four windows -- the disc studio (the module's ``studio_window``, which the
-  chooser opens under the label the core composes from the manifest), the PS2
-  save editor, the PS2 disc inventory and the PS2 replacement-pack export.
+* five windows -- the studio (the module's ``studio_window``: the *core shell*
+  over the lanes above, which the chooser opens under the label the core
+  composes from the manifest), the hand-written disc window it grew out of
+  (kept for its play designers), the PS2 save editor, the PS2 disc inventory
+  and the PS2 replacement-pack export.  The last four are what the studio's
+  own Windows menu lists.
 
-Two registry rows have no lane.  ``nfl2k5ps2.saves.roster_name_writer`` edits a
-memory-card save rather than a disc image, and
-``nfl2k5ps2.uniforms.replacement_pack_export`` exports a PCSX2 pack from an
-*Xbox* project -- neither reads the PS2 source a lane's ``synthetic_source``
-and identifier are built around, so both stay windows.  The fragment beside
-this file carries all nine rows either way, so the registry-merge proof covers
-the whole game.
+One registry row has no lane.  ``nfl2k5ps2.saves.roster_name_writer`` edits a
+memory-card save rather than a disc image, so it stays a window; the
+``uniforms.replacement_pack_export`` row is claimed by the art lane above (its Xbox-project
+route stays a window too).  The fragment beside this file carries all nine rows either way,
+so the registry-merge proof covers the whole game.
 
 A lane joins ``GAME.lanes`` when its registry row is in the fragment: the
 executable-patch lane (``code_patches.py``) is complete as an interface and
@@ -292,10 +293,38 @@ class UnifColourLane:
 
 # --------------------------------------------------------------------------
 # Windows: the four shipped PS2 dialogs, imported only when opened. The Disc
-# Studio comes first: it is where the disc is edited; the rest read or export.
+# The studio comes first: it is what the chooser opens; the rest are the
+# windows its own Windows menu lists.
 # --------------------------------------------------------------------------
 
+def _studio(parent: Any = None, **context: Any) -> Any:
+    """The core shell over this module's lanes: the window the chooser opens.
+
+    Nothing about it is written here.  The pages, the editors, the build queue
+    and the honesty rules are the core's, and this module reaches them by
+    having lanes; the whole factory is one construction.  Whatever opened the
+    studio -- the Xbox studio's File menu passes its live session -- is handed
+    through, so the export window in the Windows menu can be offered.
+    """
+
+    from mod_editor.games.studio_qt import GameStudioDialog
+
+    iso = context.pop("iso", None)
+    return GameStudioDialog(
+        GAME, parent=parent, initial_source=Path(iso) if iso else None, context=context,
+    )
+
+
 def _disc_studio(parent: Any = None, **context: Any) -> Any:
+    """The hand-written disc window, kept while it can still do what the shell cannot.
+
+    Its Playbooks tab drives the studio's Formation and Play Designers on a
+    book read from the disc, which no ``Target.fields`` editor expresses yet.
+    Until that lands on the shell the window stays -- reachable by id, from the
+    studio's Windows menu and from ``--ps2-disc-studio`` -- and its tests stay
+    green.  It is no longer this module's studio.
+    """
+
     from mod_editor.gui.ps2_disc_studio_qt import Ps2DiscStudioDialog
 
     iso = context.get("iso")
@@ -322,14 +351,25 @@ def _replacement_pack_export(parent: Any = None, **context: Any) -> Any:
 
 WINDOWS = (
     WindowSpec(
-        window_id="disc-studio",
-        # The chooser and the File menu show the studio label the core composes
-        # from game.json's console/game/year; this label is what the studio's
-        # own Windows menu calls the window it is already in.
-        menu_label="Disc Studio…",
+        window_id="studio",
+        # The chooser, the File menu and 'show' display the studio label the
+        # core composes from game.json's console/game/year; a module may not
+        # type it, so this is what the window is called from inside itself.
+        menu_label="This studio",
         tooltip=(
             "Edit an ESPN NFL 2K5 PlayStation 2 disc: menu text, playbooks, uniform colours, the disc roster, "
             "stadium positions and audio slots, then build a new ISO with receipts. Your own disc image is never written."
+        ),
+        flag="ps2-studio",
+        factory=_studio,
+    ),
+    WindowSpec(
+        window_id="disc-studio",
+        menu_label="Disc Studio (classic)…",
+        tooltip=(
+            "The hand-written disc window this studio grew out of. Kept while its Playbooks tab can "
+            "still do what the shell's pages cannot: design a formation or a play on a book read from "
+            "your disc. Same lanes, same refusals, same new-image rule."
         ),
         flag="ps2-disc-studio",
         factory=_disc_studio,
@@ -404,7 +444,7 @@ GAME = GameModule(
     windows=WINDOWS,
     manifest=load_manifest(HERE),
     package=__name__,
-    studio_window="disc-studio",
+    studio_window="studio",
 )
 
 __all__ = ["CODE_PATCH_CAPABILITY_ID", "CODE_PATCH_LANE", "DISC_LANES", "GAME", "GAME_ID", "IDENTITY", "LANES", "SERIAL",

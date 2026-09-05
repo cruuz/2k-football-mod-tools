@@ -71,6 +71,10 @@ Also in 1.0 (RC86, work package A2) — the shell's pages, and what a lane now o
   `shell.studio_windows_menu_lists_the_side_windows`.
 - **`mod_editor/games/studio_qt.py` joins the frozen set**: a game now depends on the shape of
   the page it is drawn on, so it moves through the version procedure like the rest.
+- **`nfl2k5_ps2`'s `studio_window` is the shell.** Its six on-disc writers and its read-only
+  inventory are lanes now, so the module's studio is `GameStudioDialog` and its hand-written
+  disc window is one more entry in the Windows menu (`disc-studio`, `--ps2-disc-studio`),
+  kept only while its Playbooks tab can still do what a `Target.fields` editor cannot.
 
 A module written against 1.0 before this entry no longer loads unchanged: it must add the three
 manifest fields and a `studio_window`. That is a breaking change to an *unreleased* version,

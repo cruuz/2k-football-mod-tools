@@ -342,10 +342,17 @@ class DiscoveryTests(unittest.TestCase):
         game = report.game("nfl2k5_ps2")
         self.assertEqual(game.identity.serials, ("SLUS-20919",))
         self.assertEqual(game.version, "0.1.0")
-        self.assertEqual([window.flag for window in game.windows], ["ps2-disc-studio", "ps2-save", "ps2-disc", "ps2-export"])
+        self.assertEqual([window.flag for window in game.windows],
+                         ["ps2-studio", "ps2-disc-studio", "ps2-save", "ps2-disc", "ps2-export"])
         self.assertEqual(game.manifest.studio_label, "PS2 NFL 2K5 Studio")
-        self.assertEqual(game.studio_window, "disc-studio")
+        self.assertEqual(game.studio_window, "studio")
         self.assertIs(game.studio, game.windows[0])
+        # Every page the studio cannot fill yet says why in the module's own
+        # words; a page with a lane must not also carry a note, or the note
+        # would be prose nobody ever reads.
+        pages_with_lanes = {contract.lane_page(lane) for lane in game.lanes}
+        self.assertTrue(set(game.manifest.page_notes), "the empty pages carry the game's reason")
+        self.assertEqual(set(game.manifest.page_notes) & pages_with_lanes, set())
         # One lane per registry row the fragment carries: the six on-disc
         # writers, the read-only inventory and the executable patches (whose
         # row arrived on 2026-09-05).  The set is asserted rather than the

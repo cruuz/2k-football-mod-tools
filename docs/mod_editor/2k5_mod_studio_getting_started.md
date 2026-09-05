@@ -400,6 +400,13 @@ executable patches — says what the capability registry says about it and offer
 Every page that *can* write carries its registry badge and, unless somebody has watched it work
 in-game, the words **Not yet tested in-game**.
 
+**Where the old window went.** The disc window this studio grew out of is still here, as
+**Windows > Disc Studio (classic)…** (or `--ps2-disc-studio`), for one reason: its Playbooks tab
+drives the studio's Formation Designer and Play Designer on a book read from your disc, and the
+new Playbooks page cannot do that yet. Everything else -- the same six writers, the same
+refusals, the same new-image rule -- is on the studio's own pages. The classic window goes when
+the designers reach the Playbooks page.
+
 **Nothing built here has been seen or heard in an emulator yet.** Each lane is proved
 offline -- its bytes land where they should and an independent verifier re-derives that
 from the two images -- and no further. The window says so in its boundary note and in the

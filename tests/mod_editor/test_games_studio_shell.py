@@ -232,10 +232,11 @@ class GameStudioShellTests(unittest.TestCase):
         module = games.load("nfl2k5_ps2")
         self.assertEqual(studio_menu_label(module.manifest.studio_label), "PS2 NFL 2K5 Studio…")
         self.assertEqual(studio_window_spec(module).menu_label, "PS2 NFL 2K5 Studio…")
-        self.assertEqual(module.studio.menu_label, "Disc Studio…",
-                         "the module names the window as the studio's own menu calls it")
         self.assertNotIn(module.manifest.studio_label, module.studio.menu_label,
-                         "and never types the composed label itself")
+                         "the module never types the composed label itself")
+        self.assertNotIn("Studio", studio_window_spec(module).menu_label.replace(
+            module.manifest.studio_label, ""),
+            "the composed label is the whole caption, not a prefix on the module's own")
 
     def test_an_initial_source_is_shown_and_nothing_is_opened_without_one(self) -> None:
         self.assertIn("No source opened yet", self._studio().source.text())

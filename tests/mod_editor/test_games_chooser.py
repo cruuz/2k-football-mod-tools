@@ -191,11 +191,15 @@ class ChooserDialogTests(unittest.TestCase):
         self.assertTrue(dialog.select_game("nfl2k5_ps2"))
         row = dialog.selected_row()
         self.assertEqual(row.studio_label, "PS2 NFL 2K5 Studio")
-        self.assertEqual(row.studio_window, "disc-studio")
+        self.assertEqual(row.studio_window, "studio")
         self.assertEqual([dialog.table.item(index, 0).text() for index in range(dialog.table.rowCount())],
                          ["PS2 NFL 2K5 Studio"])
+        # The studio window's own menu_label is what it is called from inside
+        # itself; every row that offers it from outside reads the composed one.
+        studio_row = [window for window in row.windows if window.window_id == row.studio_window]
+        self.assertEqual([window.menu_label for window in studio_row], ["PS2 NFL 2K5 Studio\u2026"])
         self.assertTrue(dialog.open_selected())
-        self.assertIn("PS2 NFL 2K5 Studio: opened disc-studio", dialog.detail.text())
+        self.assertIn("PS2 NFL 2K5 Studio: opened studio", dialog.detail.text())
         dialog.last_opened.close()
         dialog.last_opened.deleteLater()
 
