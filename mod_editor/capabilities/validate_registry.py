@@ -62,7 +62,7 @@ SURFACE_GAMES["colors"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["audio"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["menus"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["players_rosters"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
-SURFACE_GAMES["scripts_config"] = _ESTABLISHED_GAMES
+SURFACE_GAMES["scripts_config"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["stadiums_fields"] = _ESTABLISHED_GAMES
 # nfl2k5_ps2 rows join these surfaces' coverage rule:
 SURFACE_GAMES["gameplay_tuning_sliders"] = _ESTABLISHED_GAMES + ("madden09_ps2",)

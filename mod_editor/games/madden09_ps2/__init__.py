@@ -25,6 +25,11 @@ What is on the contract today, and what each rung rests on:
 * **team data** (:mod:`.team_data`, ``read-only-mapped``) -- the EA TDB
   databases inside ``DB_TEAMS.DAT``, ``TEMPLATE.DAT`` and ``GAMEDATA.DAT``,
   and the bare ``STRMDATA.DB``, catalogued table by table.  **Readers only.**
+* **playbooks** (:mod:`.playbooks_lane`, ``offline-writer-proved``) -- the 102
+  shipped playbooks, ``LZH1``-packed EA TDB databases inside
+  ``GAMEDATA.DAT``.  Renames the formation, set and play names inside a book
+  and re-packs the member into a **new** disc image.
+  ``docs/product/MADDEN09_PS2_PLAYBOOKS.md`` carries the evidence.
 * **text** (:mod:`.text_lane`, ``read-only-mapped``) -- the disc's ``TEXT``
   banks, counted and measured; the strings are read from the user's own image
   on demand and never stored.
@@ -44,13 +49,13 @@ What is on the contract today, and what each rung rests on:
   The studio draws no editor for it; its page states the classification and
   the registry's reason.
 
-**One writer, and what it does not claim.**  The uniform-art writer produces a
-new disc image and is filed ``offline-writer-proved``: the member decodes back
-to the pixels it was given, the container keeps the layout rules the retail
-discs follow, every untouched member is byte-identical, and an independent
-verifier re-derives every changed byte of the image from the two files.  **No
-rebuilt Madden 09 container has ever been booted**, so nothing here says the
-game loads the result, and no other lane in this module writes anything at all.
+**What the writers do not claim.**  Each writer produces a new disc image and
+is filed ``offline-writer-proved``: the edit reads back out of the destination,
+the container keeps the layout rules the retail discs follow, every untouched
+member is byte-identical, every copy a preload cache carries still equals what
+it copies, and an independent verifier re-derives every changed byte of the
+image from the two files.  **No rebuilt Madden 09 container has ever been
+booted**, so nothing here says the game loads the result.
 ``docs/product/MADDEN09_PS2_MODULE.md`` carries both halves.
 **One writer, and it has not been booted.**  The audio streams lane writes a
 new disc image; every other lane here reads.  Its rung is
@@ -87,6 +92,7 @@ from .code_patches import Madden09CodePatchLane
 from .disc_identity import Madden09DiscIdentifier
 from .identity_lane import IdentityLane
 from .inventory_lane import InventoryLane
+from .playbooks_lane import PlaybooksLane
 from .team_data import TeamDataLane
 from .text_lane import TextLane
 from .uniform_art import UniformArtLane, UniformDiscArtWriteLane
@@ -164,6 +170,7 @@ _CANDIDATES = (
     IdentityLane(),
     AudioStreamsLane(),
     AudioBanksLane(),
+    PlaybooksLane(),
     Madden09CodePatchLane(IDENTITY),
 )
 LANES = tuple(lane for lane in _CANDIDATES if _registered(lane.capability_id))

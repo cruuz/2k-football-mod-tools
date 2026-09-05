@@ -3128,6 +3128,92 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.playbooks_lane --source <SLUS-21770.iso> --recipe <edits.json> --destination <new.iso> [--out <catalogue.json>] [--report <receipt.json>] [--dry-run]",
+        "module": "mod_editor/games/madden09_ps2/playbooks_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MADDEN09_PS2_PLAYBOOKS.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
+        "docs/product/EA_TERF_FORMAT.md",
+        "docs/product/evidence/madden09_ps2/playbook-databases.json"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaces on the Playbooks & Plays page of the PS2 Madden 09 Studio as an editor. Targets come from this lane's catalogue over the user's own disc -- 102 playbooks, 1,938 tables and 78,875 editable rows on the retail image -- and each row offers the name it is drawn under plus, where the research says what a number means, the formation type, the audible slot, the play's risk and whether it sends a man in motion. A book carries no name on the disc, so it is listed as the container member it is and described by what it holds. Budgets are on screen (a name's is its field's bytes less the terminator), refusals are inline, a dry run resolves every edit and reports which of the two packing paths it takes before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. No control adds or removes a row: every table on the disc is packed exactly full, and raising the editor's own caps is the Gameplay page's separate row. Bytes proven; nothing has been seen in-game -- no rebuilt Madden 09 disc has been booted in an emulator, so no claim is made about what the game does with the edit."
+      },
+      "id": "madden09ps2.playbooks.databases",
+      "input_constraints": [
+        "Names and six numbers only. Eight of the nineteen tables carry a STRING 'name' field and every one is offered; a numeric field is offered only where the owner's research says what it means -- FORM.FTYP, PBFM.FTYP and PBAU.FTYP (the six-valued formation type), PBAU.PBAU (the audible slot), and PLYL.risk and PLYL.motn. Row ids, foreign keys and undecoded numbers are not offered: a renamed play is a bounded change, a re-pointed foreign key is a dangling reference nobody has booted.",
+        "No row is added or removed. Every table in every shipped playbook has record_count == max_records -- 1,944 of 1,944 on the retail disc -- so there is no spare slot anywhere; growing a table means the editor caps in the boot executable, which is a separate capability row on the Gameplay page.",
+        "A record edit changes no length, so the database comes back the same size and the member is re-packed under a byte budget equal to the bytes it already occupies. When the LZH1 stream fits it is padded to exactly that size and spliced in place: the container directory is byte-identical, no other member moves, and the image keeps its length. When it does not fit, ea_terf.plan_member_rewrite lays the container out again and the image is allowed to grow.",
+        "GAMEDATA.DAT is named in both preload caches, so the rule is per member and is read off the user's own image: GAME.QKL carries byte copies of members 103-112 and FE.QKL carries two copies of the container's directory. No playbook is cached, which is what makes members 0-101 writable; a member that is cached is refused by name, and a directory that moved is written into both of its copies or the write is refused.",
+        "All four CRC-32/MPEG-2 checksum sites are recomputed on every write and re-derived from the destination's own bytes by the verifier. The pass that proved the reader first: 8,926 stored checksums across all 355 databases of the retail disc equal the recomputed value at every one, 4,096 of them in GAMEDATA.DAT.",
+        "The source is opened read-only and never written; the destination must not already exist and may not be the source. The verifier imports none of the writer, and fails on a byte changed outside the declared ranges, on a member changed behind the receipt's back, on a stale checksum, and on a preload-cache copy that no longer equals what it copies."
+      ],
+      "portme": [
+        "Real-disc trial: GAMEDATA.DAT member 67 -- the deepest shipped book, 346 plays -- SETL record 0 renamed. The re-encoded LZH1 stream came out at 63,166 bytes against the 67,149 EA stored, so it took the exact-size path with 3,983 bytes of padding; the container directory was byte-identical, neither preload cache had to be rewritten, and the 1,657,339,904-byte destination is the source's exact size. The verifier passed: the new name read back, 40 checksum slots correct, 114 untouched members byte-identical, 12 preload-cache copies still equal to what they copy, 0 undeclared changed bytes, and 1,652,917,496 unchanged bytes compared.",
+        "A runtime witness would be a PCSX2 boot of a rebuilt image, opening that playbook in the play-call screen and reading the renamed set.",
+        "Not offered yet: route geometry (ARTL's twelve points), the play-graph foreign keys, the AI candidate pool's weights in PBAI, and anything that would change a table's row count."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not; nothing has been on a screen. The real-disc trial renamed one set in GAMEDATA.DAT member 67, declaring 4,422,408 bytes in two ranges (the container's whole extent and its directory record's 8-byte length field), and the independent verifier passed: the edited value read back out of the destination's own container and database, all 40 checksum slots of the edited playbook correct, every byte of the member that differed inside a declared field span or a checksum slot, 114 untouched members byte-identical, 12 preload-cache copies still equal to what they copy, and ps2_iso9660_verify comparing 1,652,917,496 unchanged bytes of the two 1,657,339,904-byte images. No PCSX2 run. A runtime witness would be a boot showing the renamed set on the play-call screen.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "0..101 on the retail disc -- the members of GAMEDATA.DAT that carry a play graph; the two ARTL/OPTM/PSAL route menus beside them are not playbooks and are not listed",
+            "name": "member",
+            "required": false
+          },
+          {
+            "allowed": "FORM, PBFM, PBST, SETL, SGF\\x00, PBPL, PLYL, SPKF or PBAU for an editable row; any of the nineteen to browse the schema",
+            "name": "table",
+            "required": false
+          },
+          {
+            "allowed": "0..recordCount-1 within that table",
+            "name": "record",
+            "required": false
+          },
+          {
+            "allowed": "name on the eight tables that carry one; FTYP on FORM, PBFM and PBAU; PBAU on PBAU; risk and motn on PLYL",
+            "name": "field",
+            "required": false
+          }
+        ],
+        "notes": "A row target is spelled row:/DATA/GAMEDATA.DAT#<member>:<table>:<record> and carries the values it offers, read from the user's own image. Table names are spelled as the file spells them, with \\xNN for a byte that is not a character -- the set-group table really is named SGF followed by a NUL. The GUI must not offer a record to be added or removed, a foreign key to be re-pointed, or an edit to a member a preload cache carries; each of those is refused by the lane with the reason."
+      },
+      "source_container": {
+        "format": "EA TDB v8 databases packed as LZH1 (codec 5) members of a TERF -> DIR1 -> COMP -> DATA container aligned to 64 bytes; the database is a 24-byte header, an 8-byte-per-table directory whose offsets are relative to the directory's end, a 40-byte table header, a 16-byte-per-field directory, then tightly bit-packed little-endian records",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "/DATA/GAMEDATA.DAT: 115 members, 104 of them EA TDB databases; 102 shipped playbooks of 19 tables each, 1,938 tables, 670,263 records and 24,684 field definitions, of which 78,875 rows are editable",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Read every shipped playbook on a user's SLUS-21770 disc and rename what is inside it. Madden 09's playbooks are EA TDB v8 databases packed as LZH1 members 0-101 of /DATA/GAMEDATA.DAT; all 102 carry the same nineteen tables, one of which is named SGF followed by a NUL byte and was unreadable until the shared TDB reader learned to decode a name that is not four characters. Measured on the retail disc: 102 books, 1,938 tables, 670,263 records, 24,684 field definitions and 4,080 checksum slots, none of them wrong; every table is packed exactly full, so no row can be added. The page edits the eight name fields -- formation, set, set-group, play and special-teams-formation names -- and six numbers the research gives a meaning. A record edit changes no length, so the member is re-packed under the bytes it already occupies and spliced in place with the container directory untouched; when a stream does not fit, the container is laid out again and both copies of its directory in FE.QKL are rewritten with it. Nothing has been booted.",
+      "surface": "scripts_config",
+      "title": "Madden 09 (PS2) playbook formation, set and play names",
+      "validation_command": "bash tools/validate_madden09_ps2_playbooks.sh"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.games.madden09_ps2.team_data --source <SLUS-21770.iso> --recipe <edits.json> --destination <new.iso> [--out <catalogue.json>] [--report <receipt.json>] [--dry-run]",
         "module": "mod_editor/games/madden09_ps2/team_data.py",
         "operation": "write"
