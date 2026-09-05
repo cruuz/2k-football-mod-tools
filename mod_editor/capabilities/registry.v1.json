@@ -5735,6 +5735,78 @@
       "surface": "textures",
       "title": "NFL 2K5 (PS2) disc resource inventory",
       "validation_command": "bash tools/validate_nfl2k5_ps2_disc_inventory.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor --ps2-export  |  service: mod_editor/core/ps2_export_service.py plan_export(project, manifest) / run_export(plan, out_dir)",
+        "module": "mod_editor/core/ps2_export_service.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/PS2_M1_PLAN.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "mod_editor/data/nfl2k5-xbox-map.v1.json",
+        "reports/gameplay_tuning/nfl2k5-xbox-map.unresolved.v1.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "The exporter writes only the uniform targets the open Xbox project marks edited, naming each file by the PS2 texture's PCSX2 replacement identity from the shipped manifest (TEX0 and CLUT XXH3-64 hashes computed offline from the stock disc; 4,732 names resolve to exactly one Xbox asset). It never emits an unedited texture, never touches the user's ISO, and publishes into a fresh folder with a receipt. The independent verifier re-derives from folder + receipt + manifest, importing none of the exporter. It is a separate window (File menu, or --ps2-export) in the shape of the PS2 disc inventory and save editor, not a card in the Xbox sidebar."
+      },
+      "id": "nfl2k5ps2.uniforms.replacement_pack_export",
+      "input_constraints": [
+        "Only edited targets are eligible: an uniform target without user-authored PNG bytes in the open project is never written, because an unedited texture would be retail pixels leaving the disc.",
+        "Names come from the shipped manifest only (schema nfl2k5_ps2_to_xbox_texture_map/v1); a target with no manifest row, or an ambiguous one, is reported as skipped with its reason and nothing is written for it.",
+        "The output folder must not already exist and may not be a symlink; files are written to a temporary sibling and published by rename, and the folder contains only textures/SLUS-20919/replacements/*.png plus the receipt.",
+        "Where the PS2 native geometry (TW/TH decoded from the name's bits word) differs in aspect from the user's PNG, the image is resampled to the PS2 aspect and the resample is recorded in the receipt.",
+        "Correct rendering requires PenguinScreen2 with LoadTextureReplacements=true and ClassicTextureNames=true (SLUS-20919 is not a classic-default serial); the receipt carries this warning verbatim from the manifest provenance."
+      ],
+      "portme": [
+        "A witnessed render is the next claim: an exported kit seen rendering in PenguinScreen2 build 8226182a by GS-dump replay (route proven 2026-09-04 with the community pack: V1-V4 PASS). The registry binds runtime-proved to a writer with an edit surface; this row is an exporter whose output the emulator applies, so the witness would also justify extending that rule (or a companion row) rather than relabelling this one. The runtime report goes in runtime.evidence either way.",
+        "Resolve the TSET fan-out via the shared (id, chunk) key (77% of PS2 TSETs) so more uniform parts gain unique rows; today only names resolving to exactly one Xbox asset are exported.",
+        "Shared era art: the disc shares torso, sleeve, pants and helmet textures across a team's era variants, so no uniform kit maps all 8 mappable components today (the best-covered kit maps 7 of 8); a texture several kits share ships only under its texture id, and the unresolved sidecar names every losing claim with its reason (1,478 names shared by kits, 747 superseded by a logical id, 1,673 unexplained, 473 tex0-only, 288 without an Xbox id, 4 TCC-bit divergences).",
+        "The 1,673 pack identities whose hash does not yet reproduce from disc bytes remain unexplained and are excluded from the manifest until a fix reproduces a real hash.",
+        "Widen beyond uniforms surface by surface following the WP3 staging order (logos_cards, portraits_faces, scorebug_presentation, stadiums_fields field art, crib_assets)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the exporter, the independent verifier, the validators and the hashes-and-names manifest; the user's Xbox disc, their edited PNGs and the exported pack stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline-proved exporter, classified extract-only by the registry's own definition: a validated exporter creates a standard local asset (a PCSX2 replacement pack) and no path writes anything back into the game -- the emulator overlays the pack at draw time. The independent verifier confirms the folder holds exactly the receipted files, every name is a canonical PCSX2 replacement name present in the manifest for its claimed Xbox asset, every PNG parses, and no receipted target is unedited. In-game rendering is not claimed here.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "an edited uniform target id of the open Xbox project (tset:{entry}:{chunk}:{child}:{name} or p8:{entry}:{name})",
+            "name": "xbox_asset_id",
+            "required": true
+          },
+          {
+            "allowed": "a new, non-existent directory",
+            "name": "out_dir",
+            "required": true
+          }
+        ],
+        "notes": "Targets are chosen by editing them in the Xbox studio, not in this window; the exporter lists the project's edited uniform targets with mapped / unmapped / ambiguous status and exports the mapped ones. It offers no byte editing and no disc writing."
+      },
+      "source_container": {
+        "format": "PCSX2 texture-replacement folder: textures/SLUS-20919/replacements/<tex0hash>-<cluthash>-<bits>.png (64-bit fields %llx unpadded, bits %08x with TCC bit 14 set), plus nfl2k5-ps2-export-receipt.v1.json",
+        "hash_pins": [],
+        "resource": "5,379 manifest rows, one per PS2 replacement filename (12,958 of 15,104 pack identities both-hash proved; 120,779 disc textures scanned), mapping to 5,001 distinct Xbox asset ids: 3,816 p8, 1,394 logical nfl2k5.uniform.* (1,016 target ids across 378 of 634 selectors), 98 tset, 71 crib scene; uniform surface only at this row",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) Xbox XISO as the authoring source; user-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO is NOT required at export time"
+      },
+      "summary": "Export the open Xbox project's edited uniform textures as a PCSX2 replacement pack for the PS2 release, named by hashes computed offline from the stock disc, with an independent verifier.",
+      "surface": "uniforms",
+      "title": "NFL 2K5 PS2 uniform replacement-pack export",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_replacement_pack.sh"
     }
   ],
   "classification_definitions": {

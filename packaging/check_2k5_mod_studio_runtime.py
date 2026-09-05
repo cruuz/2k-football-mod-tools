@@ -1699,6 +1699,12 @@ def main() -> int:
         "nfl2k5_ps2_save",
         "nfl2k5_ps2_disc_inventory",
         "ps2_iso9660",
+        "mod_editor.core.ps2_export_service",
+        "mod_editor.gui.ps2_export_dialog_qt",
+        "nfl2k5_ps2_replacement_pack_verify",
+        "nfl2k5_ps2_replacement_pack_audit",
+        "nfl2k5_ps2_texture_map",
+        "xxh3",
         "nfl2k5_ps2_text_patch",
         "nfl2k5_ps2_text_verify",
         "nfl2k5_ps2_text_target_catalog",
@@ -1820,7 +1826,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 77,
+    require(len(registry.capabilities) == 78,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -2227,7 +2233,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=77 sections=12 nfl2k5_capabilities=32 "
+        "registry=78 sections=12 nfl2k5_capabilities=32 "
         "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

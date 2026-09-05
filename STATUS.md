@@ -2,6 +2,17 @@
 
 ## Beta 61 (unreleased) — NFL 2K5 (PS2): six on-disc writers, proven offline
 
+- **PS2 uniform replacement-pack export** (`nfl2k5ps2.uniforms.replacement_pack_export`, extract-only):
+  the edited uniform textures of the open Xbox project leave as a PCSX2 texture-replacement pack
+  for `SLUS-20919`, each file named by the hashes PCSX2 computes at draw time, computed offline from
+  the stock disc (5,379 manifest rows, 4,732 unique names). Separate PS2 export window and
+  `--ps2-export`; independent verifier; never emits an unedited texture; never writes the user's
+  ISO. A witnessed GS-dump replay in PenguinScreen2 is the next step, not claimed here.
+- **Six PS2 on-disc writers**, all CLI-only and offline-writer-proved: display text, playbooks,
+  uniform colours, the disc roster, stadium positions and one-shot AUDO sounds. Each writes a NEW
+  image through the fixed-allocation ISO9660 writer and ships an independent verifier; each was
+  proven once on the real disc. Nothing has been on a screen or heard.
+
 ## Beta 60 (unreleased) — NFL 2K5 (PS2): the disc, read by name
 
 Source/UI versions are **2K5 RC85** and **APF alpha.84**.
@@ -2770,7 +2781,7 @@ Export-only boundary instead of pretending that registry status is an action.
 
 | Product surface | Exact release-candidate coverage |
 | --- | ---: |
-| Capability registry | 77 rows total; 32 Xbox NFL 2K5 rows; 8 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, six CLI-only on-disc writers: text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
+| Capability registry | 78 rows total; 32 Xbox NFL 2K5 rows; 9 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, PCSX2 replacement-pack export, six CLI-only on-disc writers: text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
 | Sidebar tabs | 11 |
 | Specialized visual assets | 63,592 total; all 63,592 Editable, including 28,530 package-local equipment P8 palettes |
 | Text banks | 716 |

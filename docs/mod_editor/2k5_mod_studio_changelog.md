@@ -2,6 +2,22 @@
 
 ## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
 
+- New capability `nfl2k5ps2.uniforms.replacement_pack_export` (extract-only by the registry's
+  definition: a validated exporter, nothing written back into the game): export the open Xbox
+  project's **edited** uniform textures as a PCSX2 texture-replacement pack for the PlayStation 2
+  release. Each file is named by the PS2 texture's replacement identity -- the TEX0 and CLUT
+  XXH3-64 hashes PCSX2 computes at draw time -- computed offline from the stock `SLUS-20919` disc
+  and shipped as a names-and-hashes manifest (`mod_editor/data/nfl2k5-xbox-map.v1.json`: 5,379
+  rows, one per PS2 filename; 4,732 resolve to exactly one Xbox asset; 1,394 rows carry the
+  studio's logical `nfl2k5.uniform.*` ids). The user's ISO is never touched and nothing is ever
+  emitted for an unedited texture, so no retail pixel leaves the disc.
+- Separate PS2 export window (File > Export PS2 replacement pack…, or `--ps2-export`) in the
+  shape of the PS2 save and disc windows: lists the project's edited uniform targets as mapped /
+  unmapped / ambiguous and exports the mapped ones into a fresh folder with a receipt.
+  Independent verifier `tools/nfl2k5_ps2_replacement_pack_verify.py` plus
+  `tools/validate_nfl2k5_ps2_replacement_pack.sh/.bat`. Correct rendering needs PenguinScreen2 /
+  PCSX2 with `LoadTextureReplacements=true` and `ClassicTextureNames=true`; the receipt carries
+  the warning. In-game rendering is not yet claimed.
 - Six new `nfl2k5_ps2` capability rows, all `offline-writer-proved` and CLI-only for now
   (hidden from the studio sidebar; each will surface as a separate PS2 window like the save
   and disc windows): `nfl2k5ps2.menus.text_banks` (display text inside its own allocation —
@@ -23,8 +39,8 @@
   refit into a chunk with 3 spare bytes; audio 6,080 bytes with none outside the slot.
 - Catalogues and trial receipts under `reports/gameplay_tuning/` are evidence, not release
   payload; every catalogue tool rebuilds its catalogue from the user's own disc.
-- Registry 71 -> 77 rows; the `audio`, `colors`, `menus`, `players_rosters`, `scripts_config`
-  and `stadiums_fields` surfaces now cover the PS2 target.
+- Registry 71 -> 78 rows; the `audio`, `colors`, `menus`, `players_rosters`, `scripts_config`,
+  `stadiums_fields` and `uniforms` surfaces now cover the PS2 target.
 
 ## v1.0 RC84 — NFL 2K5 (PS2): the disc, read by name (unreleased)
 
