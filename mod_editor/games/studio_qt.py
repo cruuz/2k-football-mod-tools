@@ -1320,6 +1320,10 @@ class GameStudioDialog(QDialog):
         self._task_title = ""
         self._task_note = ""
         self._cancel: Optional[CancelToken] = None
+        #: Set the moment the window really closes.  Nothing may start work
+        #: after that: a deferred open or a queued task result arriving at a
+        #: closed window is a use-after-free, not a late refresh.
+        self._closed = False
         self.setObjectName("gameStudioDialog")
         self.setWindowTitle(self.studio_label)
         self.setMinimumSize(940, 620)
@@ -1329,8 +1333,14 @@ class GameStudioDialog(QDialog):
         # has to say out loud before anyone has touched a page.
         self.refresh_queue()
         self.refresh_controls()
+        # Owned by this window, so it dies with it.  A bare
+        # ``QTimer.singleShot(0, lambda: ...)`` has no receiver and fires even
+        # after the window has gone, which segfaults the moment its task lands.
+        self._initial_timer = QTimer(self)
+        self._initial_timer.setSingleShot(True)
+        self._initial_timer.timeout.connect(self._open_initial_source)
         if self.initial_source is not None:
-            QTimer.singleShot(0, lambda: self.open_source(self.initial_source))
+            self._initial_timer.start(0)
 
     # -- construction --------------------------------------------------
 
@@ -1619,6 +1629,8 @@ class GameStudioDialog(QDialog):
     ) -> None:
         """Hand one service operation to the pool and settle when it lands."""
 
+        if self._closed:
+            return
         self.busy = True
         self._busy_verb = verb
         self._task_title = title
@@ -1649,6 +1661,10 @@ class GameStudioDialog(QDialog):
     def _task_finished(self) -> None:
         """Clear the busy state first, then report -- never a modal over a spinner."""
 
+        if self._closed:
+            # The window went while the task was in flight; there is nothing
+            # left to report to and nothing this can safely touch.
+            return
         outcome, error, done, title, note = (
             self._task_outcome, self._task_error, self._task_done, self._task_title, self._task_note,
         )
@@ -1688,10 +1704,16 @@ class GameStudioDialog(QDialog):
         if selected:
             self.open_source(Path(selected))
 
+    def _open_initial_source(self) -> None:
+        """Open the source the caller handed us, once the window is on screen."""
+
+        if self.initial_source is not None:
+            self.open_source(self.initial_source)
+
     def open_source(self, path: Path) -> None:
         """Identify the user's file in the background; refusals land inline."""
 
-        if self.busy:
+        if self.busy or self._closed:
             return
         self._plan_errors.clear()
         self._receipt = None
@@ -1952,6 +1974,8 @@ class GameStudioDialog(QDialog):
             self.report(f"{self._busy_verb} is still running. Cancel it first, or wait for it "
                         "to finish.")
             return
+        self._closed = True
+        self._initial_timer.stop()
         try:
             self.service.close()
         except Exception:  # pragma: no cover - closing must never block the window

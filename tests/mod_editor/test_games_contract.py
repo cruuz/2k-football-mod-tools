@@ -346,10 +346,18 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(game.manifest.studio_label, "PS2 NFL 2K5 Studio")
         self.assertEqual(game.studio_window, "disc-studio")
         self.assertIs(game.studio, game.windows[0])
-        # A lane joins once its registry row exists: the executable-patch lane on
-        # 2026-09-05, the uniform-art lane on the row the M1 exporter already had.
-        self.assertEqual([lane.lane_id for lane in game.lanes],
-                         ["colors.unif_words", "uniforms.art", "gameplay.executable_patches"])
+        # One lane per registry row the fragment carries: the six on-disc
+        # writers, the read-only inventory and the executable patches (whose
+        # row arrived on 2026-09-05).  The set is asserted rather than the
+        # order, which is the module's to choose and the build queue's to follow.
+        self.assertEqual({lane.lane_id for lane in game.lanes},
+                         {"colors.unif_words", "menus.text_banks", "players.disc_roster",
+                          "scripts.director_playbook", "stadiums.position_lanes",
+                          "audio.audo_exact_slot_replace", "textures.disc_inventory", "uniforms.art",
+                          "gameplay.executable_patches"})
+        rows = {row["id"] for row in game.manifest.registry_document()["capabilities"]}
+        self.assertTrue({lane.capability_id for lane in game.lanes} <= rows,
+                        "a lane is a claim on a registry row; every one it claims exists")
 
 
 class RegistryFragmentTests(unittest.TestCase):
