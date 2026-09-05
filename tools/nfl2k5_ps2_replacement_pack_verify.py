@@ -16,11 +16,30 @@ exported from, it re-derives from the bytes alone that
   4. the receipt's provenance block is the manifest's, key for key -- a pack
      whose filenames came from one disc and emulator convention cannot claim
      another's;
-  5. **no receipt entry names a target the project does not mark edited.** This
+  5. the receipt says which emulator the pack was exported for, and its
+     instructions are that emulator's -- a pack telling a stock PCSX2 user to
+     turn on a setting their build does not have, or telling a PenguinScreen2
+     user nothing about Classic Texture Names, is wrong in the way that costs
+     an evening;
+  6. **no receipt entry names a target the project does not mark edited.** This
      is the hard rule of the whole lane: an unedited texture in a pack is
      retail pixels leaving the disc. It needs the project as a third input;
      without one the verdict is downgraded to ``INCOMPLETE`` and says so,
      rather than passing silently.
+
+Emulator target
+---------------
+
+The filenames are the same for every emulator; what differs is which of them a
+build looks *up*. PCSX2 v1.7.4034 began hashing only the clamped draw region
+instead of the whole texture, so a pack named the original way -- as this one
+is -- is not looked for on a texture the game draws clamped; PenguinScreen2's
+Classic Texture Names restores the original hashing. (v1.7.5606 later dropped
+the TCC flag from dumped names but ignores that bit when reading, so it never
+broke loading.) The receipt therefore carries ``emulator_target`` and the
+instructions that go with it, and this tool restates the settings each target
+needs rather than importing them: a receipt with no target, an unknown one, or
+instructions belonging to a different one is a failure.
 
 **Nothing here is imported from the exporter.** A verifier that reuses the
 writer's code cannot see a bug in the writer, because both sides would compute
@@ -76,6 +95,36 @@ RECEIPT_SCHEMA = "nfl2k5_ps2_export_receipt/v1"
 MAPPING_MANIFEST = "nfl2k5-xbox-map.v1.json"
 MAPPING_SCHEMA = "nfl2k5_ps2_to_xbox_texture_map/v1"
 PROVENANCE_KEYS = ("disc", "emulator", "method", "generated", "counts")
+
+#: The emulator a pack says it is for, and what each one has to turn on.
+#: Restated, not imported -- see the module docstring.
+TARGET_PENGUINSCREEN2_CLASSIC = "penguinscreen2_classic"
+TARGET_PCSX2_MODERN = "pcsx2_modern"
+TARGET_PCSX2_LEGACY = "pcsx2_legacy"
+EMULATOR_TARGETS = (
+    TARGET_PENGUINSCREEN2_CLASSIC, TARGET_PCSX2_MODERN, TARGET_PCSX2_LEGACY,
+)
+#: Settings the instructions for a target must name...
+TARGET_REQUIRED_SETTINGS = {
+    TARGET_PENGUINSCREEN2_CLASSIC: ("ClassicTextureNames=true",
+                                    "LoadTextureReplacements=true"),
+    TARGET_PCSX2_MODERN: ("LoadTextureReplacements=true",),
+    TARGET_PCSX2_LEGACY: ("LoadTextureReplacements=true",),
+}
+#: ...and settings they must not: a stock PCSX2 has no Classic Texture Names,
+#: and a user told to turn it on will look for it until they give up.
+TARGET_FORBIDDEN_SETTINGS = {
+    TARGET_PENGUINSCREEN2_CLASSIC: (),
+    TARGET_PCSX2_MODERN: ("ClassicTextureNames",),
+    TARGET_PCSX2_LEGACY: ("ClassicTextureNames",),
+}
+#: What the steps for a target have to still say, so instructions cannot be
+#: swapped between targets while keeping the settings list plausible.
+TARGET_REQUIRED_INSTRUCTION_FACTS = {
+    TARGET_PENGUINSCREEN2_CLASSIC: ("Classic Texture Names",),
+    TARGET_PCSX2_MODERN: ("1.7.4034", "clamped"),
+    TARGET_PCSX2_LEGACY: ("1.7.4034",),
+}
 
 #: The files a pack may carry at its root. Anything else there is an extra.
 ROOT_FILES = (RECEIPT_NAME, MAPPING_MANIFEST)
@@ -279,6 +328,24 @@ def read_receipt(path: Path):
     provenance = document.get("provenance")
     _require(isinstance(provenance, dict),
              f"the export receipt carries no provenance block: {path}")
+    target = document.get("emulator_target")
+    _require(
+        target in EMULATOR_TARGETS,
+        "the export receipt does not say which emulator it was exported for "
+        "(emulator_target must be one of " + ", ".join(EMULATOR_TARGETS)
+        + f"): {path}",
+    )
+    instructions = document.get("instructions")
+    _require(isinstance(instructions, dict),
+             f"the export receipt carries no instructions block: {path}")
+    settings = instructions.get("settings")
+    lines = instructions.get("lines")
+    for name, value in (("settings", settings), ("lines", lines)):
+        _require(
+            isinstance(value, list) and value
+            and all(isinstance(row, str) and row.strip() for row in value),
+            f"the receipt's instructions have no {name}: {path}",
+        )
     return document, rows, provenance
 
 
@@ -448,7 +515,30 @@ def verify(pack, manifest=None, project=None):
         f"  manifest: {json.dumps(manifest_provenance, sort_keys=True)}",
     )
 
-    # 5. no receipt entry names an unedited target.
+    # 5. the instructions are the ones this emulator needs, and not another's.
+    target = receipt["emulator_target"]
+    settings = list(receipt["instructions"]["settings"])
+    steps = "\n".join(receipt["instructions"]["lines"])
+    for needed in TARGET_REQUIRED_SETTINGS[target]:
+        _require(
+            needed in settings,
+            f"a pack for {target} must tell the user to turn on {needed}, and "
+            f"its receipt does not: {receipt_path}",
+        )
+    for refused in TARGET_FORBIDDEN_SETTINGS[target]:
+        _require(
+            not any(refused in row for row in settings),
+            f"a pack for {target} must not tell the user to turn on {refused}; "
+            f"that build has no such setting: {receipt_path}",
+        )
+    for fact in TARGET_REQUIRED_INSTRUCTION_FACTS[target]:
+        _require(
+            fact in steps,
+            f"the instructions in this receipt are not {target}'s: they never "
+            f"mention {fact}: {receipt_path}",
+        )
+
+    # 6. no receipt entry names an unedited target.
     result = RESULT_PASS
     downgrade = ""
     edited_checked = 0
@@ -476,6 +566,7 @@ def verify(pack, manifest=None, project=None):
         "pack": root.as_posix(),
         "manifest": Path(manifest_path).as_posix(),
         "project": Path(project).as_posix() if project is not None else None,
+        "emulator_target": target,
         "files_checked": checked,
         "files_resampled": resampled,
         "edited_targets_checked": edited_checked,
@@ -487,6 +578,7 @@ def verify(pack, manifest=None, project=None):
             "png_headers_and_digests": True,
             "provenance_matches_manifest": True,
             "bundled_manifest_matches_receipt": True,
+            "instructions_match_the_emulator_target": True,
             "no_unedited_target": project is not None,
         },
         "result": result,
@@ -599,6 +691,15 @@ def build_synthetic_pack(root: Path):
             "file": MAPPING_MANIFEST,
             "sha256": _sha256_bytes((pack / MAPPING_MANIFEST).read_bytes()),
         },
+        "emulator_target": TARGET_PENGUINSCREEN2_CLASSIC,
+        "instructions": {
+            "settings": list(
+                TARGET_REQUIRED_SETTINGS[TARGET_PENGUINSCREEN2_CLASSIC]),
+            "lines": [
+                "1. Copy the textures folder into PenguinScreen2.",
+                "2. Turn on Classic Texture Names and texture replacement.",
+            ],
+        },
         "counts": {"files": 2, "resampled": 0, "skipped": 0, "targets": 1},
         "files": rows,
         "skipped": [],
@@ -628,6 +729,7 @@ def selftest(tmp=None) -> int:
         assert report["result"] == RESULT_PASS, report
         assert report["files_checked"] == 2, report
         assert report["edited_targets_checked"] == 2, report
+        assert report["emulator_target"] == TARGET_PENGUINSCREEN2_CLASSIC, report
 
         without = verify(pack, manifest)
         assert without["result"] == RESULT_INCOMPLETE, without
@@ -738,20 +840,57 @@ def selftest(tmp=None) -> int:
                  "xbox_asset_id": "p8:1:smuggled"})
             _write_json(case_pack / MAPPING_MANIFEST, document)
 
+        def drop_the_emulator_target(case_pack, _manifest, _project):
+            path = case_pack / RECEIPT_NAME
+            document = json.loads(path.read_text(encoding="utf-8"))
+            del document["emulator_target"]
+            _write_json(path, document)
+
+        def claim_an_unknown_emulator(case_pack, _manifest, _project):
+            path = case_pack / RECEIPT_NAME
+            document = json.loads(path.read_text(encoding="utf-8"))
+            document["emulator_target"] = "dolphin"
+            _write_json(path, document)
+
+        def instructions_for_another_emulator(case_pack, _manifest, _project):
+            """Say PCSX2 while carrying PenguinScreen2's settings."""
+
+            path = case_pack / RECEIPT_NAME
+            document = json.loads(path.read_text(encoding="utf-8"))
+            document["emulator_target"] = TARGET_PCSX2_MODERN
+            _write_json(path, document)
+
+        def instructions_that_say_nothing(case_pack, _manifest, _project):
+            path = case_pack / RECEIPT_NAME
+            document = json.loads(path.read_text(encoding="utf-8"))
+            document["instructions"]["lines"] = ["1. Copy the folder."]
+            _write_json(path, document)
+
         rejected("uncanonical", uncanonical_name,
                  "a filename that is not a canonical PCSX2 hash name")
         rejected("swapped_map", swap_the_bundled_manifest,
                  "a bundled manifest swapped after export")
+        rejected("no_target", drop_the_emulator_target,
+                 "a receipt that does not say which emulator it is for")
+        rejected("unknown_target", claim_an_unknown_emulator,
+                 "a receipt naming an emulator this tool does not know")
+        rejected("crossed_target", instructions_for_another_emulator,
+                 "instructions belonging to a different emulator")
+        rejected("empty_instructions", instructions_that_say_nothing,
+                 "instructions that never mention what the target needs")
     finally:
         if tmp is None:
             shutil.rmtree(room, ignore_errors=True)
 
     print(
         "NFL2K5_PS2_REPLACEMENT_PACK_VERIFY_SELFTEST_PASS decoder=independent "
-        "accepts=receipt-exact rejects=mutated-byte,extra-file,unedited-target,"
+        "accepts=receipt-exact "
+        "targets=penguinscreen2_classic,pcsx2_modern,pcsx2_legacy "
+        "rejects=mutated-byte,extra-file,unedited-target,"
         "unmapped-name,missing-file,forged-provenance,stray-directory,"
-        "uncanonical-name,swapped-bundled-map downgrades=no-project "
-        "audit=xbox_mapping_ready"
+        "uncanonical-name,swapped-bundled-map,no-emulator-target,"
+        "unknown-emulator-target,crossed-instructions,empty-instructions "
+        "downgrades=no-project audit=xbox_mapping_ready"
     )
     return 0
 

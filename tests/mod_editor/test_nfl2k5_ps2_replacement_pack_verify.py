@@ -364,6 +364,114 @@ class DowngradedVerdictTests(_PackTestCase):
         self.assertNotEqual(report["result"], verify.RESULT_PASS)
 
 
+class EmulatorTargetTests(_PackTestCase):
+    """A pack must say which emulator it is for, and say the right thing to it.
+
+    The filenames are the same for all three, so nothing else in this file
+    could catch a pack that tells a stock PCSX2 user to turn on Classic Texture
+    Names -- a setting their build does not have -- or one that says nothing
+    about the setting a PenguinScreen2 user does need.
+    """
+
+    def test_the_honest_pack_names_the_emulator_it_is_for(self) -> None:
+        report = verify.verify(self.pack, self.manifest, self.project)
+        self.assertEqual(report["emulator_target"],
+                         verify.TARGET_PENGUINSCREEN2_CLASSIC)
+        self.assertTrue(
+            report["checks"]["instructions_match_the_emulator_target"])
+
+    def test_every_target_the_exporter_offers_verifies(self) -> None:
+        for target in exporter.EMULATOR_TARGETS:
+            with self.subTest(target=target):
+                pack = self.work / ("pack-" + target)
+                exporter.export_replacement_pack(
+                    exporter.project_from_targets(self.project_targets), pack,
+                    self.manifest, emulator_target=target,
+                )
+                report = verify.verify(pack, self.manifest, self.project)
+                self.assertEqual(report["result"], verify.RESULT_PASS)
+                self.assertEqual(report["emulator_target"], target)
+
+    def test_the_two_tools_agree_on_the_three_targets(self) -> None:
+        """Restated in the verifier, never imported -- so they can disagree."""
+
+        self.assertEqual(verify.EMULATOR_TARGETS, exporter.EMULATOR_TARGETS)
+        for target in exporter.EMULATOR_TARGETS:
+            self.assertEqual(
+                set(verify.TARGET_REQUIRED_SETTINGS[target])
+                - set(exporter.TARGET_SETTINGS[target]),
+                set(),
+                target,
+            )
+
+    def test_a_receipt_with_no_emulator_target_is_caught(self) -> None:
+        document = self.receipt_document()
+        del document["emulator_target"]
+        self.rewrite_receipt(document)
+        with self.assertRaises(verify.PackVerifyError) as caught:
+            verify.verify(self.pack, self.manifest, self.project)
+        self.assertIn("emulator_target", str(caught.exception))
+
+    def test_a_receipt_naming_an_unknown_emulator_is_caught(self) -> None:
+        document = self.receipt_document()
+        document["emulator_target"] = "dolphin"
+        self.rewrite_receipt(document)
+        with self.assertRaises(verify.PackVerifyError):
+            verify.verify(self.pack, self.manifest, self.project)
+
+    def test_a_receipt_with_no_instructions_is_caught(self) -> None:
+        document = self.receipt_document()
+        del document["instructions"]
+        self.rewrite_receipt(document)
+        with self.assertRaises(verify.PackVerifyError) as caught:
+            verify.verify(self.pack, self.manifest, self.project)
+        self.assertIn("instructions", str(caught.exception))
+
+    def test_another_targets_instructions_are_caught(self) -> None:
+        """PenguinScreen2's settings under a stock-PCSX2 label."""
+
+        document = self.receipt_document()
+        document["emulator_target"] = verify.TARGET_PCSX2_MODERN
+        self.rewrite_receipt(document)
+        with self.assertRaises(verify.PackVerifyError) as caught:
+            verify.verify(self.pack, self.manifest, self.project)
+        self.assertIn("ClassicTextureNames", str(caught.exception))
+
+    def test_instructions_missing_the_setting_the_target_needs_are_caught(self) -> None:
+        document = self.receipt_document()
+        document["instructions"]["settings"] = ["ClassicTextureNames=true"]
+        self.rewrite_receipt(document)
+        with self.assertRaises(verify.PackVerifyError) as caught:
+            verify.verify(self.pack, self.manifest, self.project)
+        self.assertIn("LoadTextureReplacements=true", str(caught.exception))
+
+    def test_instructions_that_explain_nothing_are_caught(self) -> None:
+        """The steps must still carry the fact that makes them right."""
+
+        document = self.receipt_document()
+        document["instructions"]["lines"] = ["1. Copy the folder somewhere."]
+        self.rewrite_receipt(document)
+        with self.assertRaises(verify.PackVerifyError) as caught:
+            verify.verify(self.pack, self.manifest, self.project)
+        self.assertIn("Classic Texture Names", str(caught.exception))
+
+    def test_a_modern_pack_must_say_what_it_will_skip(self) -> None:
+        pack = self.work / "modern"
+        exporter.export_replacement_pack(
+            exporter.project_from_targets(self.project_targets), pack,
+            self.manifest, emulator_target=exporter.TARGET_PCSX2_MODERN,
+        )
+        path = pack / verify.RECEIPT_NAME
+        document = json.loads(path.read_text(encoding="utf-8"))
+        document["instructions"]["lines"] = [
+            "1. Copy it.", "2. Turn on LoadTextureReplacements=true.",
+        ]
+        path.write_bytes(_json_bytes(document))
+        with self.assertRaises(verify.PackVerifyError) as caught:
+            verify.verify(pack, self.manifest, self.project)
+        self.assertIn("1.7.4034", str(caught.exception))
+
+
 class CliTests(_PackTestCase):
     """Exit non-zero on a violation; name the offending path."""
 
