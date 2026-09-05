@@ -31,6 +31,8 @@ What it edits, for rows of an existing game:
   ``mod_editor/capabilities/validate_registry.py`` (the coverage rule is set
   equality, so a row on a newly covered surface and its widening land together);
 * ``--module NAME``: a ``product_modules`` entry in the 2K5 runtime gate;
+* ``--allowlist-fragment FILE``: the module's ``allowlist.fragment.txt`` lines appended to
+  ``packaging/release-allowlist.txt`` (a duplicate is fatal);
 * ``--rc OLD NEW --changelog-section FILE --status-heading TEXT``: the RC bump
   every registry commit carries (version, its asserted spellings, the
   changelog section, the STATUS heading);
@@ -73,6 +75,7 @@ MODEL = "mod_editor/core/model.py"
 REGISTRY_SCHEMA = "mod_editor/capabilities/registry.schema.json"
 PROJECT_SCHEMA = "mod_editor/project.schema.json"
 RUNTIME_GATE = "packaging/check_2k5_mod_studio_runtime.py"
+ALLOWLIST = "packaging/release-allowlist.txt"
 APF_RUNTIME_GATE = "packaging/check_apf2k8_mod_studio_runtime.py"
 INSTALLER_TEST = "tests/mod_editor/test_apf_studio_installer.py"
 PACKAGING_TEST = "tests/mod_editor/test_phase1_packaging.py"
@@ -291,6 +294,28 @@ def add_modules(plan: Plan, modules: Sequence[str]) -> None:
     plan.log.append(f"[modules] + {', '.join(modules)}")
 
 
+def add_allowlist_lines(plan: Plan, fragment: Optional[Path], game: str) -> None:
+    """Append a module's allowlist fragment to the release allowlist; a duplicate is fatal."""
+
+    if fragment is None:
+        return
+    lines = [line.strip() for line in fragment.read_text(encoding="utf-8").splitlines()
+             if line.strip() and not line.strip().startswith("#")]
+    if not lines:
+        raise ApplyError(f"{fragment}: no allowlist lines to append")
+    text = plan.read(ALLOWLIST)
+    existing = {line.strip() for line in text.splitlines() if line.strip() and not line.startswith("#")}
+    duplicates = [line for line in lines if line in existing]
+    if duplicates:
+        raise ApplyError(f"{ALLOWLIST}: already lists {duplicates}")
+    if not text.endswith("\n"):
+        text += "\n"
+    text += f"# {game}: shipped by the game module (mod_editor/games/{game}/allowlist.fragment.txt).\n"
+    text += "".join(f"{line}\n" for line in lines)
+    plan.stage(ALLOWLIST, text)
+    plan.log.append(f"[allowlist] + {len(lines)} lines")
+
+
 def register_new_game(plan: Plan, game: str, display_name: str, enum_member: str, title: str) -> None:
     """The sites only a new game id touches; each located exactly once."""
 
@@ -433,12 +458,13 @@ def apply(
     changelog_section: Optional[Path] = None,
     status_heading: Optional[str] = None,
     repin_paths: Sequence[str] = (),
+    allowlist_fragment: Optional[Path] = None,
     dry_run: bool = False,
 ) -> Plan:
     if _GAME_ID_RE.fullmatch(game) is None:
         raise ApplyError(f"game id {game!r} is not a registry game id")
-    if not rows and new_game is None:
-        raise ApplyError("nothing to do: give --row and/or --new-game")
+    if not rows and new_game is None and allowlist_fragment is None and not modules:
+        raise ApplyError("nothing to do: give --row, --new-game, --module or --allowlist-fragment")
     plan = Plan(root.resolve())
     entry = None
     if new_game is not None:
@@ -452,16 +478,18 @@ def apply(
         enum_member = enum_member or game.upper()
         if re.fullmatch(r"[A-Z][A-Z0-9_]*", enum_member) is None:
             raise ApplyError(f"--enum-member {enum_member!r} must be an UPPER_CASE identifier")
-    added, before, after = add_rows(plan, game, list(rows), entry)
+    added, before, after = add_rows(plan, game, list(rows), entry) if (rows or entry is not None) else ([], None, None)
     if entry is not None:
         register_new_game(plan, game, display_name or "", enum_member or game.upper(), str(entry["title"]))
         covered = sorted({row["surface"] for row in added})
         missing = [surface for surface in covered if surface not in widen_surfaces]
         if missing:
             raise ApplyError(f"a new game's rows cover {missing}; pass --widen for each covered surface")
-    move_count_pins(plan, before, after)
+    if before is not None and after is not None and before != after:
+        move_count_pins(plan, before, after)
     widen(plan, widen_surfaces, game, entry is not None)
     add_modules(plan, modules)
+    add_allowlist_lines(plan, allowlist_fragment, game)
     if rc is not None:
         if changelog_section is None or status_heading is None:
             raise ApplyError("--rc needs --changelog-section and --status-heading")
@@ -486,6 +514,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--changelog-section", type=Path)
     parser.add_argument("--status-heading")
     parser.add_argument("--repin", action="append", default=[], metavar="PATH")
+    parser.add_argument("--allowlist-fragment", type=Path, metavar="FILE",
+                        help="append this module allowlist fragment to packaging/release-allowlist.txt")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     try:
@@ -493,7 +523,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             args.repo_root, game=args.game, rows=args.row, widen_surfaces=args.widen, modules=args.module,
             new_game=args.new_game, display_name=args.display_name, enum_member=args.enum_member,
             rc=tuple(args.rc) if args.rc else None, changelog_section=args.changelog_section,
-            status_heading=args.status_heading, repin_paths=args.repin, dry_run=args.dry_run,
+            status_heading=args.status_heading, repin_paths=args.repin,
+            allowlist_fragment=args.allowlist_fragment, dry_run=args.dry_run,
         )
     except ApplyError as exc:
         print(f"REGISTRY_ADD_ROWS_REFUSED: {exc}", file=sys.stderr)

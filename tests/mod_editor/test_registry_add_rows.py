@@ -26,7 +26,7 @@ COPIED = (
     tool.REGISTRY, tool.VALIDATOR, tool.CAPABILITIES, tool.MODEL, tool.REGISTRY_SCHEMA, tool.PROJECT_SCHEMA,
     tool.RUNTIME_GATE, tool.APF_RUNTIME_GATE, tool.INSTALLER_TEST, tool.PACKAGING_TEST, tool.VALIDATE_ALL,
     tool.APF_README, tool.APF_STATUS, tool.GETTING_STARTED, tool.STATUS, tool.CHANGELOG, tool.PACKAGE_INIT,
-    tool.FREEZE_TEST, "mod_editor/core/errors.py",
+    tool.FREEZE_TEST, tool.ALLOWLIST, "mod_editor/core/errors.py",
 )
 
 
@@ -123,6 +123,17 @@ class ExistingGameRowsTests(unittest.TestCase):
             tool.apply(self.root, game="nfl2k5_ps2", rows=[row], widen_surfaces=["colors"], dry_run=True)
         for relative, payload in snapshot.items():
             self.assertEqual((self.root / relative).read_bytes(), payload, relative)
+
+    def test_allowlist_lines_append_once(self) -> None:
+        fragment = self.root / "allowlist.fragment.txt"
+        fragment.write_text("# header\nmod_editor/games/zz/__init__.py\nmod_editor/games/zz/game.json\n",
+                            encoding="utf-8", newline="\n")
+        tool.apply(self.root, game="zz_game", rows=[], allowlist_fragment=fragment)
+        text = (self.root / tool.ALLOWLIST).read_text(encoding="utf-8")
+        self.assertTrue(text.endswith("# zz_game: shipped by the game module (mod_editor/games/zz_game/allowlist.fragment.txt).\n"
+                                      "mod_editor/games/zz/__init__.py\nmod_editor/games/zz/game.json\n"))
+        with self.assertRaisesRegex(tool.ApplyError, "already lists"):
+            tool.apply(self.root, game="zz_game", rows=[], allowlist_fragment=fragment)
 
     def test_widening_a_surface_lands_with_its_row(self) -> None:
         # portraits_faces has no PS2 row today; a PS2 row there needs the widening.
