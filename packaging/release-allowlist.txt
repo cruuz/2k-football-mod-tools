@@ -385,6 +385,11 @@ tools/validate_nfl2k5_ps2_disc_roster.bat
 # the writer's Path.write_text at ps2_iso9660_writer.py:1343 changed to a
 # byte write -- test_generated_artifacts_are_lf fails on it the moment the
 # module becomes shipped code.  Land that with the capability row.
+#
+# The real-disc trial's receipt: which slot was replaced, its declared
+# sizes and offsets, and both verifiers' verdicts.  Names, offsets and
+# digests only -- no disc bytes, no decoded audio.
+reports/gameplay_tuning/nfl2k5_ps2_audo_trial.v1.json
 tools/spu_adpcm.py
 tools/nfl2k5_ps2_audo_target_catalog.py
 tools/nfl2k5_ps2_audo_patch.py
