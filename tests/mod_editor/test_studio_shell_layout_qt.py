@@ -75,7 +75,7 @@ class StudioShellLayoutTests(unittest.TestCase):
             self.assertNotIn(moved, titles)
         patches = self.window._gameplay_patches_panel
         assert patches is not None
-        self.assertEqual(set(patches.checks), {"catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing"})
+        self.assertEqual(set(patches.checks), {"catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing", "scorebug", "scorebug_runtime", "music_policy", "music_unlock", "music_userlist"})
 
     def test_presentation_page_has_inventory_scorebug_and_commentary(self) -> None:
         page = self.window._category_pages[ProductCategory.SCOREBUG_PRESENTATION]
@@ -91,10 +91,11 @@ class StudioShellLayoutTests(unittest.TestCase):
         self.assertIsInstance(page, QTabWidget)
         assert isinstance(page, QTabWidget)
         self.assertEqual(page.objectName(), "audioTabs")
-        self.assertEqual(_tab_titles(page), ["Music & Sounds", "Replace a Sound"])
+        self.assertEqual(_tab_titles(page), ["Audio Cues", "Music", "Replace a Sound"])
         self.assertEqual(page.currentIndex(), 0)
         self.assertIs(page.widget(0), self.window._audio_panel)
-        self.assertIs(page.widget(1), self.window._sounds_panel)
+        self.assertIs(page.widget(1), self.window._music_panel)
+        self.assertIs(page.widget(2), self.window._sounds_panel)
         self.assertTrue(page.isAncestorOf(self.window._audio_panel))
 
     def test_team_identity_page_hosts_the_edge_rename(self) -> None:

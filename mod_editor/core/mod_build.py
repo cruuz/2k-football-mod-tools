@@ -21,6 +21,7 @@ import os
 from mod_editor.core import platform_compat
 import shutil
 import sys
+import tempfile
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
@@ -213,6 +214,12 @@ class BuildPlan:
     # presentation
     guardian_cap: bool = False  # helmet C resource trial, experimental and unwitnessed
     scorebug: bool = False
+    scorebug_runtime: bool = False
+    music_policy: str = "retail"
+    music_unlock: bool = False
+    music_userlist: bool = False
+    music_project: str | None = None
+    music_library: str | None = None
     commentary: list[CommentarySwap] = field(default_factory=list)
     # free-form description carried into receipts / packs
     name: str = ""
@@ -224,7 +231,9 @@ class BuildPlan:
                 or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice)
-                or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star)
+                or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star
+                or self.scorebug_runtime or self.music_policy != "retail" or self.music_unlock or self.music_userlist
+                or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -241,6 +250,8 @@ class BuildPlan:
 PRESETS: dict[str, dict[str, Any]] = {
     # BASIC keeps the game in 2004: only the fixes a 2K5 update would have shipped.
     "softdrink_basic": {
+        "scorebug_runtime": False,
+        "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "guardian_cap": False, "scheme_labels": False, "camera": False,
@@ -249,14 +260,18 @@ PRESETS: dict[str, dict[str, Any]] = {
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
+        "scorebug_runtime": False,
+        "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
-        "edge_rename": True, "scorebug": True, "guardian_cap": False, "scheme_labels": True, "camera": True,
+        "edge_rename": True, "scorebug": False, "guardian_cap": False, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
         "position_pools": True, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
+        "scorebug_runtime": True,
+        "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "guardian_cap": True,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
@@ -345,6 +360,13 @@ def availability() -> dict[str, bool]:
         # the user's own disc image at build time (nfl2k5_scorebug_source_art), so the step is
         # available whenever the writer and the generator are: the source is checked when the
         # build runs, where a non-image source is already refused with its own message.
+        "scorebug_runtime": all(_core_module(name) is not None for name in (
+            "nfl2k5_scorebug_runtime", "nfl2k5_scorebug_ingame", "nfl2k5_scorebug_resources", "nfl2k5_xbe_space")),
+        **{key: _core_module("nfl2k5_music_policy") is not None for key in
+           ("music_policy", "music_unlock", "music_userlist")},
+        "music_project": all(_core_module(name) is not None for name in (
+            "nfl2k5_music_build", "nfl2k5_music_catalog")),
+        "music_library": _core_module("nfl2k5_music_banks") is not None,
         "scorebug": (_tools_module("nfl2k5_scorebug_layout") is not None
                      and _core_module("nfl2k5_scorebug_source_art") is not None
                      and _scorebug_art_available()),
@@ -402,6 +424,10 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "guardian_cap": report.get("guardian_cap", "n/a"),
         "screen_timing": "n/a",
+        **{key: report.get(key, "foreign") for key in (
+            "scorebug_runtime", "scorebug_xbe", "music_policy", "music_unlock",
+            "music_userlist", "music_state", "music_metadata_patch")},
+        "scorebug_runtime_resources": "n/a", "music_project": "n/a", "music_library": "n/a",
         "scorebug": "n/a", "edge_rename": "unknown", "commentary": "unknown",
         # a pack is a recipe compiled into the books; there is no single site to read back,
         # so the receipt (not inspect) is the record of which packs went in
@@ -409,6 +435,19 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "depth_roles": "n/a",
     }
     if report.get("container") == "xiso":
+        runtime = _core_module("nfl2k5_scorebug_ingame")
+        if runtime is not None:
+            out["scorebug_runtime_resources"] = runtime.runtime_image_status(source)
+        try:
+            archive = _core_module("nfl2k5_music_archive")
+            with archive.Disc(source) as disc:
+                out["music_library"] = "available"
+                out["music_library_counts"] = {k: len(v.boundaries) - 1 for k, v in disc.banks.items()}
+            music = _core_module("nfl2k5_music_build")
+            with music._banks_module().DiscBanks(source) as disc:
+                out["music_project"] = "available"
+        except (ValueError, OSError):
+            pass
         screen = inspect_screen_timing(source, screen_timing or "D")
         out["screen_timing"] = screen["status"]
         out["screen_timing_details"] = screen
@@ -596,21 +635,70 @@ def _with_identity(exc: ValueError, source: Path, is_image: bool) -> ValueError:
     return ValueError(f"{text.rstrip()}{joiner}{note}")
 
 
-def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
-    """Apply the whole plan to a copy of ``plan.source`` at ``plan.target``; return the receipt."""
+def _music_library_document(path):
+    return _core_module("nfl2k5_music_banks")._load(path)
 
+
+def _prepare_music_project(source, project, directory, progress):
+    from .nfl2k5_source_cache import Nfl2k5SourceCache
+    from .nfl2k5_audio_catalog import Nfl2k5AudioCatalog, Nfl2k5AudioService
+    from .nfl2k5_audio_origin_preparation import Nfl2k5AudioOriginPreparation
+    from mod_editor.studio.session import StudioSession
+    from mod_editor.studio.music_service import MusicService
+    cache = Nfl2k5SourceCache(directory / "cache").index(source, progress)
+    audio = Nfl2k5AudioService(cache, Nfl2k5AudioCatalog(cache))
+    preparation = Nfl2k5AudioOriginPreparation()
+    if not preparation.is_ready(cache):
+        preparation.prepare(cache, progress)
+    audio.load_private_origin_inventories()
+    session = StudioSession(cache, object(), root=directory / "sessions")
+    session.attach_audio_service(audio)
+    service = MusicService(session)
     try:
-        return _build(plan, progress)
+        service.load_project(project, progress=progress)
+        return service.encoded_edits(progress=progress)
+    finally:
+        service.invalidate()
+
+
+def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
+    """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+    try:
+        source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
+        if source == target.resolve():
+            raise ValueError("target must not be the source")
+        if target.exists() and not plan.overwrite:
+            raise FileExistsError(f"{target} exists")
+        with tempfile.TemporaryDirectory(prefix=".studio-build-", dir=target.parent) as folder:
+            directory = Path(folder)
+            edits = None
+            if plan.music_project:
+                if not tt.is_disc_image(source):
+                    raise ValueError("Music replacements need a disc image")
+                edits = _prepare_music_project(source, plan.music_project, directory, progress or (lambda *_: None))
+            receipt = _build(replace(plan, target=str(directory / target.name), overwrite=False), progress,
+                             music_edits=edits)
+            if progress:
+                progress("Publishing verified disc", 0, 0)
+            os.replace(directory / target.name, target)
+            receipt["target"] = str(target)
+            receipt["result"]["path"] = str(target)
+            return receipt
     except ValueError as exc:
         source = Path(plan.source)
         raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
 
 
-def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
+def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits=None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
     if plan.screen_timing is not None and (
             not isinstance(plan.screen_timing, str) or plan.screen_timing not in ("A", "B", "C", "D")):
         raise ValueError("screen_timing must be None or A, B, C, D")
+    if (plan.music_policy not in ("retail", "jukebox_menus") or type(plan.music_unlock) is not bool
+            or type(plan.music_userlist) is not bool or (plan.music_userlist and plan.music_policy != "jukebox_menus")):
+        raise ValueError("Music policies require retail or jukebox_menus, boolean switches, and jukebox menus for UserList")
+    if plan.scorebug_runtime:
+        plan = replace(plan, scorebug=True, xbe_space=True)
     if plan.kickoff_relocated:
         plan = replace(plan, xbe_space=True, dynamic_kickoff=True)
     if plan.dynamic_kickoff:
@@ -625,6 +713,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
     is_image = tt.is_disc_image(source)
     if (plan.xbe_space or plan.kickoff_relocated) and not is_image:
         raise ValueError("experimental extra patch space needs a disc image")
+    if plan.music_library:
+        if not is_image:
+            raise ValueError("Music libraries need a disc image")
+        library = _core_module("nfl2k5_music_banks")
+        library.plan(source, plan.music_library)  # refuse missing assets before any ordinary writes
     if plan.screen_timing is not None and not is_image:
         raise ValueError("screen timing needs a disc image (the timing lives in PLAY resources)")
     if plan.guardian_cap:
@@ -686,6 +779,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
     # Defense v2 recipes require native personnel fingerprints before the pool recode.
     # Keep offense recipes in their original later position relative to other PLAY writers.
     defense_packs: list[Path] = []
+    option_packs: list[Path] = []
     offense_packs: list[Path] = []
     if plan.playbook_packs:
         packs = _core_module("nfl2k5_playbook_pack")
@@ -693,13 +787,27 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
             raise RuntimeError("the playbook pack module is not available in this build")
         for path in dict.fromkeys(Path(p) for p in plan.playbook_packs):
             pack = packs.load_pack(path)
-            (defense_packs if pack.schema == packs.DEFENSE_SCHEMA else offense_packs).append(path)
+            (option_packs if any(p.option_intent for p in pack.plays) else
+             defense_packs if pack.schema == packs.DEFENSE_SCHEMA else offense_packs).append(path)
+
+    if option_packs and offense_packs:
+        for option_path in option_packs:
+            option = packs.load_pack(option_path)
+            protected_plays = {p.replace_index for p in option.plays}
+            protected_formations = {p.link_formation for p in option.plays}
+            for other_path in offense_packs:
+                other = packs.load_pack(other_path)
+                if option.book.team == other.book.team and (
+                        protected_plays & {p.replace_index for p in other.plays}
+                        or protected_formations & {f.replace_index for f in other.formations}):
+                    raise ValueError("Option and Modern Gun Core replacements overlap in " + option.book.team +
+                                     "; select one stock seed or author a reviewed combined pack")
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
     # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
     # the 2026 season step patches the executable itself, so a season-only plan is copy-first too
-    if replace(plan, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False).wants_xbe_patch() or plan.edge_rename:
+    if replace(plan, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, music_library=None).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -713,13 +821,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
                                   "penalties": plan.penalties, "uniform_choice": uniform_choice_mode(plan.uniform_choice),
                                   "kick_laces": plan.kick_laces, "franchise_practice": plan.franchise_practice, "practice_squad": plan.practice_squad,
                                   "depth_locks": plan.depth_locks, "season_cap": plan.season_cap,
+                                  "music_policy": plan.music_policy, "music_unlock": plan.music_unlock, "music_userlist": plan.music_userlist,
                                   "prospect_names": plan.prospect_names,
                                   "player_star": plan.player_star,
                                   "dynamic_kickoff": plan.dynamic_kickoff, "dynamic_kickoff_settings": plan.dynamic_kickoff_settings}
         if settings is not None:
             kwargs["settings"] = settings
         step = tt.write_copy(source, target, **kwargs)
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -728,7 +837,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         receipt["steps"].append({"step": "copy"})
 
     # 3. presentation on the copy
-    if plan.scorebug:
+    if plan.scorebug and not plan.scorebug_runtime:
         sbl = _tools_module("nfl2k5_scorebug_layout")
         if sbl is None:
             raise RuntimeError("scorebug layout tool is not available in this build")
@@ -740,7 +849,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
             # a Qt worker thread whose runner catches Exception, so a SystemExit there would kill
             # the thread silently and leave the panel waiting for a result that never comes.
             raise RuntimeError(f"the ESPN scorebug could not be written: {exc}") from exc
-        receipt["steps"].append({"step": "scorebug", **{k: rec.get(k) for k in ("filled_bytes", "padding_bytes", "wrapper_identical", "root", "textures", "text_colours", "persistent", "hud_layout", "layout", "art_origin", "art_reference_match", "art_skipped")}})
+        receipt["steps"].append({"step": "scorebug", **rec})
+    if option_packs:
+        progress("Installing experimental option playbook packs", 0, 0)
+        rec = packs.apply_packs_to_image(target, option_packs, progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "option_playbook_packs", **rec, "experimental": True, "witnessed": False})
     if defense_packs:
         progress("Installing experimental native defense playbook packs", 0, 0)
         pack_receipt = packs.apply_packs_to_image(
@@ -990,7 +1103,18 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         cap_receipt = cap.apply_to_image(target)
         receipt["steps"].append({"step": "guardian_cap", **cap_receipt})
 
-    if plan.xbe_space or plan.kickoff_relocated:
+    if music_edits is not None:
+        with tempfile.TemporaryDirectory(prefix=".music-fixed-", dir=target.parent) as folder:
+            destination = Path(folder) / target.name
+            rec = _core_module("nfl2k5_music_build").build_copy(target, destination, music_edits, progress=progress)
+            os.replace(destination, target)
+        receipt["steps"].append({"step": "music_project", "project": plan.music_project, **rec})
+
+    if plan.scorebug_runtime:
+        progress("Installing team logos and scorebug effects (unwitnessed)", 0, 0)
+        rec = _core_module("nfl2k5_scorebug_ingame").runtime_apply_in_place(target, with_kickoff=plan.kickoff_relocated)
+        receipt["steps"].append({"step": "scorebug_runtime", **rec})
+    elif plan.xbe_space or plan.kickoff_relocated:
         progress("Adding experimental extra patch space", 0, 0)
         patched, space_receipt = tt._apply_all(
             _xbe_bytes(target), wanted=None, catch_slider=False, arc_table=False,
@@ -1001,6 +1125,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
                                  "xbe_space": tt.xbe_space_patch.status(patched),
                                  "kickoff_relocated": tt.kickoff_relocated_patch.status(patched),
                                  "kickoff_relocated_settings": tt.kickoff_relocated_patch.read_settings(patched)})
+
+    if plan.music_library:
+        library = _core_module("nfl2k5_music_banks")
+        progress("Planning your music library on the working image", 0, 0)
+        preview = library.plan(target, plan.music_library)
+        progress(f"Music output: {preview['layout']['image_size']:,} bytes; scratch: {preview['scratch_bytes']:,} bytes", 0, 0)
+        with tempfile.TemporaryDirectory(prefix=".music-library-", dir=target.parent) as folder:
+            destination = Path(folder) / target.name
+            rec = library.rebuild(target, destination, plan.music_library, expected_plan=preview, progress=progress)
+            os.replace(destination, target)
+        receipt["steps"].append({"step": "music_library", "library": plan.music_library, **rec})
 
     receipt["result"] = inspect(target, screen_timing=plan.screen_timing)
     return receipt

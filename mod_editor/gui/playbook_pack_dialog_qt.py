@@ -68,6 +68,8 @@ def team_choices(pack: pack_mod.PlaybookPack, available: Sequence[str]) -> tuple
     choices: list[tuple[str, object]] = []
     if pack.book.team in available:
         choices.append((f"As authored — {pack.book.team}", pack.book.team))
+    if any(p.option_intent for p in pack.plays):
+        return tuple(choices)
     for team in available:
         if team == pack.book.team:
             continue

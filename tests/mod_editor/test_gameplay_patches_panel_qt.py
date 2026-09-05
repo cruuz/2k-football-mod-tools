@@ -27,7 +27,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_three_patches_with_explanations_and_gating(self) -> None:
-        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'prospect_names', 'franchise_practice', 'player_star', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'screen_timing', 'guardian_cap', 'season_cap', 'depth_locks'])
+        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'prospect_names', 'franchise_practice', 'player_star', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'screen_timing', 'music_policy', 'music_unlock', 'music_userlist', 'scorebug', 'scorebug_runtime', 'guardian_cap', 'season_cap', 'depth_locks'])
         for _k, _l, explanation in PATCHES:
             self.assertIn("Retail", explanation)
             self.assertIn("Patch", explanation)
@@ -45,7 +45,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("Full disc required", check.toolTip())
                         continue
-                    if key in ("camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star"):
+                    if key in ("depth_locks", "music_policy", "music_unlock", "music_userlist", "camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "practice_squad", "player_star"):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("neither retail nor this patch", check.toolTip())
                     elif key in NEEDS_IMAGE:

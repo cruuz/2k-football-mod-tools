@@ -68,6 +68,11 @@ from . import nfl2k5_depth_locks as depth_locks_patch
 from . import nfl2k5_season_cap as season_cap_patch
 from . import nfl2k5_xbe_space as xbe_space_patch
 from . import nfl2k5_dynamic_kickoff_relocated as kickoff_relocated_patch
+from . import nfl2k5_scorebug_runtime as scorebug_runtime_patch
+from . import nfl2k5_scorebug_ingame as scorebug_reference
+from . import nfl2k5_music_policy as music_policy_patch
+from . import nfl2k5_music_metadata as music_metadata_patch
+from . import nfl2k5_music_storage as music_storage
 from . import nfl2k5_playoff_picture as playoff_picture_patch
 
 
@@ -621,6 +626,10 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "season_cap": season_cap_patch.status(payload),
         "xbe_space": xbe_space_patch.status(payload),
         "kickoff_relocated": kickoff_relocated_patch.status(payload),
+        "scorebug_runtime": scorebug_runtime_patch.status(payload),
+        "scorebug_xbe": scorebug_reference.xbe_status(payload),
+        "music_metadata_patch": music_metadata_patch.status(payload),
+        **_music_status(payload),
         "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(payload),
         "playoff_picture": playoff_picture_patch.status(payload),
         "kick_power": _kick_power_status(payload),
@@ -683,7 +692,7 @@ def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
     except xc.PatchError as exc:
         raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
     if length != EXPECTED_XBE_SIZE:
-        _require(length in (depth_chart_storage.FILE_SIZE, xbe_space_patch.FILE_SIZE),
+        _require(length in (depth_chart_storage.FILE_SIZE, xbe_space_patch.FILE_SIZE, music_storage.FILE_SIZE),
                  f"default.xbe inside the image is {length} bytes, not the retail size or a recognised grown size")
         candidate = platform_compat.pread(descriptor, length, offset)
         _require(len(candidate) == length
@@ -737,9 +746,14 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "depth_locks": depth_locks_patch.status(payload),
         "screen_timing": "unchecked",
         "guardian_cap": _guardian_image_status(path),
+        "scorebug_runtime_resources": scorebug_reference.runtime_image_status(path),
         "season_cap": season_cap_patch.status(payload),
         "xbe_space": xbe_space_patch.status(payload),
         "kickoff_relocated": kickoff_relocated_patch.status(payload),
+        "scorebug_runtime": scorebug_runtime_patch.status(payload),
+        "scorebug_xbe": scorebug_reference.xbe_status(payload),
+        "music_metadata_patch": music_metadata_patch.status(payload),
+        **_music_status(payload),
         "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(payload),
         "playoff_picture": playoff_picture_patch.status(payload),
         "kick_power": _kick_power_status(payload),
@@ -971,8 +985,9 @@ class _dynamic_kickoff_adapter:
 
 
 class _xbe_space_adapter:
-    def __init__(self, with_kickoff: bool):
-        self.requests = kickoff_relocated_patch.REQUESTS if with_kickoff else ()
+    def __init__(self, with_kickoff: bool, runtime: bool = False):
+        self.requests = ((kickoff_relocated_patch.REQUESTS if with_kickoff else ())
+                         + (scorebug_runtime_patch.REQUESTS if runtime else ()))
 
     def status(self, payload):
         state = xbe_space_patch.status(payload)
@@ -982,6 +997,27 @@ class _xbe_space_adapter:
 
     def apply(self, payload):
         return xbe_space_patch.apply(payload, self.requests)
+
+
+class _music_metadata_adapter:
+    def __init__(self, records):
+        self.records = records
+
+    def status(self, payload):
+        state = music_metadata_patch.status(payload)
+        if state == "applied":
+            music_metadata_patch.apply(payload, self.records)
+        return state
+
+    def apply(self, payload):
+        return music_metadata_patch.apply(payload, self.records)
+
+
+def _music_status(payload):
+    state = music_policy_patch.read_any(payload)
+    return {**{key: state.get(key, "foreign") for key in
+               ("music_policy", "music_unlock", "music_userlist")},
+            "music_state": state["status"]}
 
 
 def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]]] | None,
@@ -1000,7 +1036,10 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                dynamic_kickoff_settings: Mapping[str, object] | None = None,
                depth_chart_rows: bool = False, practice_squad: bool = False,
                depth_locks: bool = False, season_cap: bool = False,
-               xbe_space: bool = False, kickoff_relocated: bool = False) -> tuple[bytes, dict[str, object]]:
+               xbe_space: bool = False, kickoff_relocated: bool = False,
+               scorebug_runtime: bool = False, music_policy: str = "retail",
+               music_unlock: bool = False, music_userlist: bool = False,
+               music_metadata=None) -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
 
@@ -1096,7 +1135,10 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (depth_chart_rows, depth_chart_rows_patch, "depth_chart_rows_patch", "SPECIAL tab"),
                                      (practice_squad, practice_squad_patch, "practice_squad_patch", "practice squad"),
                                      (depth_locks, depth_locks_patch, "depth_locks_patch", "depth locks"),
-                                     (season_cap, season_cap_patch, "season_cap_patch", "season cap")):
+                                     (season_cap, season_cap_patch, "season_cap_patch", "season cap"),
+                                     (music_policy != "retail" or music_unlock or music_userlist,
+                                      music_policy_patch.Selection(music_policy, music_unlock, music_userlist),
+                                      "music_policy_patch", "music policy")) :
         if not flag:
             continue
         state = module.status(patched)
@@ -1141,10 +1183,13 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         receipt["boot_logo"] = {"status": boot_logo.status(patched)}
     # Final owners: choose the complete allocation set before the first growth.
     for flag, module, key, label in (
-        (xbe_space or kickoff_relocated, _xbe_space_adapter(kickoff_relocated),
+        (xbe_space or kickoff_relocated or scorebug_runtime, _xbe_space_adapter(kickoff_relocated, scorebug_runtime),
          "xbe_space_patch", "experimental executable space"),
         (kickoff_relocated, kickoff_relocated_patch,
          "kickoff_relocated_patch", "experimental relocated kickoff"),
+        (scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects"),
+        (music_metadata is not None, _music_metadata_adapter(music_metadata),
+         "music_metadata_patch", "music library titles"),
     ):
         if not flag:
             continue
@@ -1193,18 +1238,23 @@ def write_xbe_copy(
     season_cap: bool = False,
     xbe_space: bool = False,
     kickoff_relocated: bool = False,
+    scorebug_runtime: bool = False,
+    music_policy: str = "retail",
+    music_unlock: bool = False,
+    music_userlist: bool = False,
+    music_metadata=None,
 ) -> dict[str, object]:
     """Write a patched COPY of ``source_xbe`` to ``target_xbe``."""
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
     _prepare_target(source, target, overwrite)
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated, scorebug_runtime=scorebug_runtime, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
     try:
@@ -1248,6 +1298,10 @@ def write_xbe_copy(
         "season_cap": season_cap_patch.status(result),
         "xbe_space": xbe_space_patch.status(result),
         "kickoff_relocated": kickoff_relocated_patch.status(result),
+        "scorebug_runtime": scorebug_runtime_patch.status(result),
+        "scorebug_xbe": scorebug_reference.xbe_status(result),
+        "music_metadata_patch": music_metadata_patch.status(result),
+        **_music_status(result),
         "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(result),
         "playoff_picture": playoff_picture_patch.status(result),
         "kick_power": _kick_power_status(result),
@@ -1282,6 +1336,28 @@ def write_xbe_copy(
 _COPY_CHUNK = 32 * 1024 * 1024
 
 
+def _transactional_image_writer(writer):
+    from functools import wraps
+    import tempfile
+
+    @wraps(writer)
+    def write(source_image, target_image, **kwargs):
+        source = Path(source_image).resolve(strict=True)
+        target = Path(target_image).absolute()
+        _require(not target.is_symlink(), "target is not a regular file")
+        _require(source != target.resolve() and not (target.exists() and os.path.samefile(source, target)),
+                 "source and target are the same file")
+        _require(not target.exists() or kwargs.get("overwrite", False), "target already exists")
+        with tempfile.TemporaryDirectory(prefix=".xbe-disc-", dir=target.parent) as folder:
+            stage = Path(folder) / target.name
+            receipt = writer(source, stage, **{**kwargs, "overwrite": False})
+            os.replace(stage, target)
+            receipt["target"]["path"] = str(target)
+            return receipt
+    return write
+
+
+@_transactional_image_writer
 def write_image_copy(
     source_image: Path | str,
     target_image: Path | str,
@@ -1320,6 +1396,11 @@ def write_image_copy(
     season_cap: bool = False,
     xbe_space: bool = False,
     kickoff_relocated: bool = False,
+    scorebug_runtime: bool = False,
+    music_policy: str = "retail",
+    music_unlock: bool = False,
+    music_userlist: bool = False,
+    music_metadata=None,
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
 
@@ -1329,7 +1410,7 @@ def write_image_copy(
     """
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
@@ -1343,13 +1424,13 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated)
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not scorebug_runtime, kickoff_relocated=kickoff_relocated and not scorebug_runtime, scorebug_runtime=False, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata)
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
             entries, _directory = _xdvdfs_module().parse_xdvdfs(src, size)
             disc_before = edge_rename_patch.disc_status(src, entries)
-        _require(patched != original or disc_before.get("status") == "retail",
+        _require(scorebug_runtime or patched != original or disc_before.get("status") == "retail",
                  "nothing to write: the requested curves and patches already match the image")
         dst = _open_binary(target, os.O_RDWR | os.O_CREAT | os.O_EXCL)   # read-write: the disc text pass verifies as it goes
         try:
@@ -1413,6 +1494,16 @@ def write_image_copy(
         _require(disc_after == disc_receipt["after"], "EDGE disc sites read back differently inside the copy")
         receipt = {**receipt, "edge_rename_disc_patch": disc_receipt,
                    "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(disc_receipt["changed_bytes"])}
+    if scorebug_runtime:
+        runtime_receipt = scorebug_reference.runtime_apply_in_place(target, with_kickoff=kickoff_relocated)
+        receipt["scorebug_runtime_patch"] = runtime_receipt
+        check = _open_binary(target, os.O_RDONLY)
+        try:
+            actual_size = os.fstat(check).st_size
+            after_offset, after_length = image_xbe_extent(check, actual_size)
+            after = platform_compat.pread(check, after_length, after_offset)
+        finally:
+            os.close(check)
     verified = _verify_written(after, wanted or {})
     arc_state = arc_table_status(after)
     if arc_table:
@@ -1442,9 +1533,14 @@ def write_image_copy(
         "depth_locks": depth_locks_patch.status(after),
         "screen_timing": "unchecked",
         "guardian_cap": _guardian_image_status(target),
+        "scorebug_runtime_resources": scorebug_reference.runtime_image_status(target),
         "season_cap": season_cap_patch.status(after),
         "xbe_space": xbe_space_patch.status(after),
         "kickoff_relocated": kickoff_relocated_patch.status(after),
+        "scorebug_runtime": scorebug_runtime_patch.status(after),
+        "scorebug_xbe": scorebug_reference.xbe_status(after),
+        "music_metadata_patch": music_metadata_patch.status(after),
+        **_music_status(after),
         "kickoff_relocated_settings": kickoff_relocated_patch.read_settings(after),
         "playoff_picture": playoff_picture_patch.status(after),
         "kick_power": _kick_power_status(after),
@@ -1463,7 +1559,7 @@ def write_image_copy(
         "boot_logo": boot_logo.status(after),
         "source": {"path": str(source), "size": size, "xbe_sha256": _digest(original),
                    "xbe_matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},
-        "target": {"path": str(target), "size": size, "xbe_sha256": _digest(after)},
+        "target": {"path": str(target), "size": actual_size, "xbe_sha256": _digest(after)},
         "xbe_byte_offset": offset,
         "written_ranges": [{"xbe_offset": f"0x{a:x}", "image_offset": f"0x{offset + a:x}", "length": b - a}
                            for a, b in ranges],

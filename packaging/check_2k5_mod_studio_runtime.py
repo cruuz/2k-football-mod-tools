@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "a907eef004174397cec2630b4a2d665bf5ca4c01eb1c4ce0603680cdee2f08c9",
+        "fa98f775835d75c1500d118b4e00908a85200ced963c89d5d7386d3b2d74eef9",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -107,7 +107,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/facade.py":
         "9e53ff74c87926bdb54f5329abefb5090e0915a4bdf194db0d570dd4e638aa93",
     "mod_editor/studio/project_archive.py":
-        "7a3a8db07bc5b67e0833085bd32987336088978b83dc074681af83cfe83c2f1e",
+        "cdda01f3ef5341d7a238cae0c0d98c15fbfed37d5011710e406c97cc963c3d36",
     "mod_editor/studio/session.py":
         "8ad359de6df43093836b26d0d4301f4b108221fb2fde775ebd048da28bf4e679",
 }
@@ -1776,6 +1776,18 @@ def main() -> int:
         "mod_editor.gui.ux_text",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
+        'mod_editor.core.nfl2k5_scorebug_runtime',
+        'mod_editor.core.nfl2k5_scorebug_resources',
+        'mod_editor.core.nfl2k5_scorebug_ingame',
+        'mod_editor.core.nfl2k5_music_policy',
+        'mod_editor.core.nfl2k5_music_catalog',
+        'mod_editor.core.nfl2k5_music_build',
+        'mod_editor.core.nfl2k5_music_banks',
+        'mod_editor.core.nfl2k5_music_metadata',
+        'mod_editor.core.nfl2k5_music_storage',
+        'mod_editor.core.nfl2k5_music_archive',
+        'mod_editor.studio.music_service',
+        'mod_editor.gui.music_panel_qt',
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1792,6 +1804,24 @@ def main() -> int:
     packs = modules["mod_editor.core.nfl2k5_playbook_pack"]
     require(packs.load_pack(ROOT / "data/playbooks/softdrink_modern_defense.2k5book").schema == packs.DEFENSE_SCHEMA,
             "bundled modern defense pack must retain its v2 intent schema")
+    option = packs.load_pack(ROOT / "data/playbooks/softdrink_option.2k5book")
+    require(option.schema == packs.OPTION_SCHEMA and len(option.plays) == 8
+            and not option.formations and packs.check_pack(option).ok, "bundled option pack contract changed")
+    music = modules["mod_editor.core.nfl2k5_music_build"]
+    music._banks_module()
+    panel = modules["mod_editor.gui.music_panel_qt"].MusicPanel()
+    require(panel.service is None and not panel.operation_in_progress, "empty Music panel is not idle")
+    panel.close()
+    runtime = modules["mod_editor.core.nfl2k5_scorebug_runtime"]
+    require(bool(runtime.REQUESTS) and runtime.status(b"bad") == "foreign", "runtime scorebug gate changed")
+    art = modules["mod_editor.core.nfl2k5_scorebug_resources"]
+    require(bool(art.runtime_panel_name(art.TEAM_LOGOS["MIN"]["asset_code"], "away", 3)), "runtime panel names unavailable")
+    import contextlib
+    with contextlib.redirect_stdout(io.StringIO()):
+        try:
+            importlib.import_module("nfl2k5_scorebug_reference").main(["--help"])
+        except SystemExit as exc:
+            require(exc.code == 0, "scorebug CLI help parser failed")
     animation = modules["mod_editor.core.nfl2k5_animation"]
     for name in ("nfl_outer", "nfl_motion_inventory", "nfl_scene_probe", "nfl_scne_inventory", "nfl_txtr", "xbe_info"):
         animation._tool(name)
@@ -1809,6 +1839,9 @@ def main() -> int:
             "relocated kickoff named allocations missing")
 
     tool_modules = (
+        "nfl2k5_music_banks",
+        "nfl2k5_scorebug_reference",
+        "nfl2k5_scorebug_layout",
         "nfl2k5_playbook_position_recode",
         "nfl_all_texture_xiso_workflow",
         "nfl_tset_png_import",

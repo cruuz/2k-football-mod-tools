@@ -339,7 +339,7 @@ class SharePanel(QWidget):
                      f"created {info['created'] or '?'} with {info['tool'].get('name') or '?'} {info['tool'].get('version') or ''}")
         if info.get("patch_operations"):
             labels = {"byte_runs": "Byte changes", "xbe_grow": "SPECIAL executable growth",
-                      "file_replace": "Named file replacement", "file_grow": "Named file growth"}
+                      "file_replace": "Named file replacement", "file_grow": "Named file growth", "file_shrink": "Named file shrink"}
             lines.append("Disc operations: " + ", ".join(labels.get(op["name"], op["name"]) for op in info["patch_operations"]))
         if info.get("result", {}).get("size", base["size"]) != base["size"]:
             lines.append(f"Disc size: {_human(base['size'])} → {_human(info['result']['size'])}.")

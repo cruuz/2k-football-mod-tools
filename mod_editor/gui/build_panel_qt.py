@@ -31,6 +31,10 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+import threading
+import tempfile
+from dataclasses import replace, asdict
+
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
@@ -67,11 +71,16 @@ class _Task(QRunnable):
         super().__init__()
         self.signals = _Signals()
         self._operation = operation
+        self.cancelled = threading.Event()
         self.setAutoDelete(False)
 
     def run(self) -> None:
         try:
-            result = self._operation(lambda msg, _a, _b: self.signals.progress.emit(msg))
+            def progress(message, done, total):
+                if self.cancelled.is_set():
+                    raise ValueError("Build cancelled; no output was published")
+                self.signals.progress.emit(message)
+            result = self._operation(progress)
         except Exception as exc:  # noqa: BLE001
             self.signals.failed.emit(f"{type(exc).__name__}: {exc}")
         else:
@@ -81,11 +90,13 @@ class _Task(QRunnable):
 class BuildPanel(QWidget):
     """One-stop build of every patch into a single copy."""
 
+    operation_state_changed = pyqtSignal(bool)
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._facade = facade
+        self.operation_guard = None
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
         self._state: dict[str, object] | None = None
@@ -204,6 +215,10 @@ class BuildPanel(QWidget):
         self.build_button.setObjectName("primaryButton")
         self.build_button.clicked.connect(self._build)
         actions.addWidget(self.build_button)
+        self.cancel_button = QPushButton("Cancel build")
+        self.cancel_button.setEnabled(False)
+        self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
+        actions.addWidget(self.cancel_button)
         self.blocker_label = QLabel("")
         self.blocker_label.setObjectName("throwMuted")
         self.blocker_label.setWordWrap(True)
@@ -512,11 +527,34 @@ class BuildPanel(QWidget):
             pl, "guardian_cap", "Guardian caps on helmet C (experimental)",
             cap.UI_TEXT + " Neutral gray artwork is for Detroit current away only. "
             "EXPERIMENTAL / UNWITNESSED.", badge=NOT_TESTED, needs_image=True)
-        self.scorebug_check = self._option(pl, "scorebug", "Modern ESPN scorebar",
-                                           "One bar at the bottom centre that never swaps sides and stays up during plays.",
-                                           needs_image=True,
-                                           details="Also repaints the frame atlas and the ESPN strip, lifts the kick meter and turns the line-up strip off; "
-                                                   "the mesh lives in the field resource pack, which is why the full disc is needed.")
+        self.scorebug_check = self._option(pl, "scorebug", "Experimental ESPN scorebar",
+            "A bottom score display with a white clock strip and ESPN corner mark.", needs_image=True,
+            badge=NOT_TESTED, details="Not tested in game. Team names remain live. The kick meter moves up and the lineup strip is hidden. Team logos and events require scorebug effects.")
+        self.scorebug_runtime_check = self._option(pl, "scorebug_runtime", "Team logos and scorebug effects (experimental)",
+            'Retail: team panels and timeout marks use the stock display. Patch: adds team logos, remaining timeout marks, a score flash, down refresh and a red play clock below five seconds. Unwitnessed in game; use a separate disc copy.', needs_image=True, badge=NOT_TESTED)
+        self.music_policy_check = self._option(pl, "music_policy", "Use jukebox songs in menus", "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes.", badge=NOT_TESTED)
+        self.music_unlock_check = self._option(pl, "music_unlock", "Make every music collection available",
+            "Every collection is available without spending credits. Experimental, not yet tested in game.", badge=NOT_TESTED)
+        self.music_userlist_check = self._option(pl, "music_userlist", "Use jukebox songs instead of user playlists",
+            "Requires jukebox menus. Experimental, not yet tested in game.", badge=NOT_TESTED)
+        self.music_project_check = self._option(pl, "music_project", "Include Music tab replacements",
+            "Include the shared project, including Music replacements, or choose an authored .2k5music subset. Experimental, not yet tested in game.", needs_image=True, badge=NOT_TESTED)
+        self.music_library_check = self._option(pl, "music_library", "Include my music library (experimental)",
+            "Build the chosen recipe. Experimental, not yet tested in game. Create a fresh playlist after rebuilding.", needs_image=True, badge=NOT_TESTED)
+        for key, label, file_filter in (
+                ("music_project", "Music project", "Music project (*.2k5music)"),
+                ("music_library", "Music library recipe", "Music library (*.json)")):
+            row = QHBoxLayout()
+            row.addWidget(QLabel(label))
+            edit = QLineEdit()
+            edit.setAccessibleName(label)
+            edit.textChanged.connect(self._refresh)
+            setattr(self, key + "_field", edit)
+            row.addWidget(edit, 1)
+            button = QPushButton("Choose...")
+            button.clicked.connect(lambda _checked=False, k=key, f=file_filter: self._choose_music_input(k, f))
+            row.addWidget(button)
+            pl.addLayout(row)
         self.camera_check = self._option(pl, "camera", "Make Standard camera look like Far",
                                          "The Standard preset takes Far's look-at, lens and offset; Far itself is untouched.")
         self.widescreen_check = self._option(pl, "widescreen", "Widescreen 16:9",
@@ -599,6 +637,10 @@ class BuildPanel(QWidget):
         self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
         prow.addWidget(self.packs_remove_button)
         prow.addWidget(self.modern_defense_button)
+        self.option_pack_button = QPushButton("SOFTDRINK option (experimental)")
+        self.option_pack_button.setToolTip("Eight replacement calls in MIN I Jokers. Experimental and unwitnessed. Use the selected defensive test formation. Incompatible with the stock MIN Modern Gun Core seed.")
+        self.option_pack_button.clicked.connect(self._add_option_pack)
+        prow.addWidget(self.option_pack_button)
         prow.addStretch(1)
         pb.addLayout(prow)
         packs_note = QLabel("Installed in order into the copy's team books; full disc required. "
@@ -845,6 +887,11 @@ class BuildPanel(QWidget):
             self._set_badge("depth_chart_rows", "Unrecognized source data")
         self.packs_add_button.setEnabled(is_image and self._available.get("playbook_packs", True))
         self.packs_add_button.setToolTip("" if is_image else "Full disc required.")
+        gate(self.scorebug_runtime_check, "scorebug_runtime", needs_image=True)
+        for key in ("music_policy", "music_unlock", "music_userlist"):
+            gate(getattr(self, key + "_check"), key)
+        for key in ("music_project", "music_library"):
+            getattr(self, key + "_check").setEnabled(is_image and self._available.get(key, False))
         gate(self.scorebug_check, "scorebug", needs_image=True)
         gate(self.guardian_cap_check, "guardian_cap", needs_image=True)
         gate(self.screen_timing_check, "screen_timing", needs_image=True)
@@ -899,7 +946,7 @@ class BuildPanel(QWidget):
         for key, box in boxes.items():
             if key not in values:
                 continue
-            want = bool(values[key])
+            want = values[key] != "retail" if key == "music_policy" else bool(values[key])
             if want and not box.isEnabled() and key not in ("realistic_flight", "arc_by_distance"):
                 skipped.append(key)
                 continue
@@ -937,6 +984,8 @@ class BuildPanel(QWidget):
         return {
             "throw": self.throw_check, "catch_slider": self.catch_check, "accel_ramp": self.accel_check,
             "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check,
+            **{key: getattr(self, key + "_check") for key in (
+                "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "music_project", "music_library")},
             "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "guardian_cap": self.guardian_cap_check, "screen_timing": self.screen_timing_check, "scheme_labels": self.scheme_labels_check,
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
             "position_pools": self.position_pools_check, "depth_roles": self.depth_roles_check,
@@ -1012,6 +1061,11 @@ class BuildPanel(QWidget):
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
             screen_timing=(self.screen_timing_combo.currentText() if self.screen_timing_check.isChecked() else None),
+            scorebug_runtime=self.scorebug_runtime_check.isChecked(),
+            music_policy="jukebox_menus" if self.music_policy_check.isChecked() else "retail",
+            music_unlock=self.music_unlock_check.isChecked(), music_userlist=self.music_userlist_check.isChecked(),
+            music_project=(self.music_project_field.text().strip() or None) if self.music_project_check.isChecked() else None,
+            music_library=(self.music_library_field.text().strip() or None) if self.music_library_check.isChecked() else None,
             guardian_cap=self.guardian_cap_check.isChecked(),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
             playbook_packs=tuple(self.playbook_packs),
@@ -1027,8 +1081,8 @@ class BuildPanel(QWidget):
 
     def has_work(self) -> bool:
         p = self.plan()
-        return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or p.edge_rename or p.screen_timing is not None or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+        return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
+                    or p.scorebug_runtime or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits
                     or p.commentary or p.playbook_packs)
 
@@ -1059,6 +1113,9 @@ class BuildPanel(QWidget):
 
         if self._task is not None:
             return "Wait for the current build to finish."
+        denial = self.operation_guard() if self.operation_guard is not None else None
+        if denial:
+            return denial
         if self._reading:
             return "Reading disc…"
         source = self.source_field.text().strip()
@@ -1066,6 +1123,9 @@ class BuildPanel(QWidget):
             return "Open your game disc (top right), or choose a disc / default.xbe above."
         if self._state is None:
             return "Waiting for the disc to be read."
+        for key in ("music_project", "music_library"):
+            if getattr(self, key + "_check").isChecked() and not getattr(self, key + "_field").text().strip() and not (key == "music_project" and self._include_session_project()):
+                return "Choose a " + key.replace("_", " ") + " before building."
         if self.career_stats_check.isChecked() and not self.career_stats_field.text().strip():
             return "Choose a career stats CSV file."
         if self.roster_edits_check.isChecked() and not self.roster_edits_field.text().strip():
@@ -1084,6 +1144,14 @@ class BuildPanel(QWidget):
         return ""
 
     def _refresh(self) -> None:
+        if hasattr(self, "music_userlist_check"):
+            enabled = self.music_policy_check.isChecked() or (self._state or {}).get("music_policy") == "applied"
+            self.music_userlist_check.setEnabled(enabled and (self._state or {}).get("music_userlist") == "retail")
+            if not enabled:
+                self.music_userlist_check.setChecked(False)
+            if self.scorebug_runtime_check.isChecked():
+                self.scorebug_check.setChecked(True)
+                self.xbe_space_check.setChecked(True)
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
         self.realistic_check.setEnabled(self.throw_check.isChecked())
         self.arc_by_distance_check.setEnabled(self.throw_check.isChecked())
@@ -1097,6 +1165,7 @@ class BuildPanel(QWidget):
         else:
             self.summary_label.setText("Selected: nothing yet.")
         blocker = self.blocker()
+        self.cancel_button.setEnabled(self._task is not None)
         self.build_button.setEnabled(not blocker)
         self.blocker_label.setText(blocker)
         self.build_button.setToolTip(blocker or "Copies the disc and writes the selected changes into the copy (a few minutes).")
@@ -1173,6 +1242,23 @@ class BuildPanel(QWidget):
         self.commentary_box.setTitle(f"Commentary replacements ({len(self.commentary)})")
         self._refresh()
 
+    def _choose_music_input(self, key, file_filter):
+        chosen, _ = QFileDialog.getOpenFileName(self, "Choose music input", str(Path.home()), file_filter)
+        if chosen:
+            getattr(self, key + "_field").setText(chosen)
+            getattr(self, key + "_check").setChecked(True)
+
+    def set_music_policy(self, values):
+        self.music_policy_check.setChecked(values.get("music_policy") == "jukebox_menus")
+        self.music_unlock_check.setChecked(bool(values.get("music_unlock")))
+        self.music_userlist_check.setChecked(bool(values.get("music_userlist")))
+        self._refresh()
+
+    def _add_option_pack(self):
+        seed = str(mod_build.ROOT / "data/playbooks/softdrink_option.2k5book")
+        if Path(seed).resolve() not in {Path(p).resolve() for p in self.playbook_packs}:
+            self.set_playbook_packs([*self.playbook_packs, seed])
+
     def _add_modern_defense_pack(self) -> None:
         seed = str(mod_build.ROOT / "data/playbooks/softdrink_modern_defense.2k5book")
         paths = list(self.playbook_packs)
@@ -1237,6 +1323,9 @@ class BuildPanel(QWidget):
     def confirmation_text(self, plan: mod_build.BuildPlan) -> str:
         """What the user is about to make: source, output, every selected change and file."""
 
+        for key in ("music_project", "music_library"):
+            if getattr(self, key + "_check").isChecked() and not getattr(plan, key) and not (key == "music_project" and self._include_session_project()):
+                raise ValueError("Choose a " + key.replace("_", " ") + " before building")
         is_image = tt.is_disc_image(plan.source)
         lines = [f"Source (unchanged): {plan.source}",
                  (f"Replace existing disc copy: {plan.target}" if plan.overwrite
@@ -1253,6 +1342,8 @@ class BuildPanel(QWidget):
             files.append(f"roster edits: {Path(plan.roster_edits).name}")
         if plan.playbook_packs:
             files.append(f"playbook packs: {len(plan.playbook_packs)}")
+        if self._include_session_project():
+            files.append("shared project: all current edits, including Music replacements")
         if plan.commentary:
             files.append(f"commentary lines: {len(plan.commentary)}")
         if plan.player_tags:
@@ -1262,6 +1353,31 @@ class BuildPanel(QWidget):
         lines += ["", "Takes a few minutes. " + XEMU_LINE]
         return "\n".join(lines)
 
+    def _include_session_project(self):
+        return bool(self.music_project_check.isChecked() and not self.music_project_field.text().strip()
+                    and getattr(self._facade, "_session", None) is not None
+                    and getattr(self._facade, "modified_count", 0))
+
+    def _build_operation(self, plan, progress, include_session=False):
+        if not include_session:
+            return mod_build.build(plan, progress)
+        source = Path(plan.source).resolve(strict=True)
+        facade = self._facade
+        with facade._lock:
+            cache, session = facade._cache, facade._session
+            if source != Path(facade.source_path).resolve(strict=True):
+                raise ValueError("Choose the open project's source disc to include its Music replacements")
+        # Compile the shared canonical project once, including both music twins.
+        # The patch plan then builds on that verified intermediate, never pristine source.
+        with tempfile.TemporaryDirectory(prefix=".shared-build-", dir=Path(plan.target).absolute().parent) as folder:
+            staged = Path(folder) / "project.iso"
+            result = facade.build_service.build(cache, session, staged,
+                lambda event: progress(event.message, event.completed, event.total))
+            receipt = mod_build.build(replace(plan, source=str(staged)), progress)
+        receipt["source"] = str(source)
+        receipt["steps"].insert(0, {"step": "shared_project", **asdict(result)})
+        return receipt
+
     def _build(self) -> None:
         plan = self.plan()
         if not self.has_work() or self.blocker():
@@ -1270,17 +1386,20 @@ class BuildPanel(QWidget):
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
-        task = _Task(lambda progress: mod_build.build(plan, progress))
+        include_session = self._include_session_project()
+        task = _Task(lambda progress: self._build_operation(plan, progress, include_session))
         task.signals.progress.connect(self.progress_label.setText)
         task.signals.finished.connect(self._done)
         task.signals.failed.connect(self._failed)
         self._task = task
+        self.operation_state_changed.emit(True)
         self.progress_bar.show()
         self._refresh()
         self._pool.start(task)
 
     def _done(self, receipt: object) -> None:
         self._task = None
+        self.operation_state_changed.emit(False)
         self.progress_bar.hide()
         self.progress_label.setText("")
         assert isinstance(receipt, dict)
@@ -1307,6 +1426,7 @@ class BuildPanel(QWidget):
 
     def _failed(self, message: str) -> None:
         self._task = None
+        self.operation_state_changed.emit(False)
         self.progress_bar.hide()
         self.progress_label.setText("")
         self.status_label.setText(plain_failure("make the disc", message))

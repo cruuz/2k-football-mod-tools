@@ -81,8 +81,9 @@ class PresetButtonTests(unittest.TestCase):
             result = panel.apply_preset("softdrink_advanced")
             plan = panel.plan()
             self.assertTrue(plan.arc_by_distance)
-            # a bare default.xbe has no scorebug mesh: advanced must skip it, not fail
-            self.assertIn("scorebug", result["skipped"])
+            # Advanced leaves the unwitnessed scorebug off on every source.
+            self.assertNotIn("scorebug", result["skipped"])
+            self.assertFalse(panel.scorebug_check.isChecked())
             self.assertIn("position_pools", result["skipped"])
             self.assertIn("season_2026", result["skipped"])
             self.assertFalse(plan.scorebug)

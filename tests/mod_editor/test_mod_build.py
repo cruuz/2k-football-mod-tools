@@ -76,6 +76,9 @@ class ModBuildTests(unittest.TestCase):
             self.assertTrue(art.available())
             self.assertTrue(mod_build.availability()["scorebug"])
         with mock.patch.object(art, "AUDIT", missing / "audit.json"):
+            self.assertTrue(art.available())
+        from mod_editor.core import nfl2k5_scorebug_resources as resources
+        with mock.patch.object(resources, "PATCHED_SHA256", {}):
             self.assertFalse(art.available())
             self.assertFalse(mod_build.availability()["scorebug"])
 
@@ -108,7 +111,7 @@ class PresetTests(unittest.TestCase):
         # advanced carries the modern spots (which include the power re-spacing), not the power-only fix
         self.assertTrue(advanced["kick_rules"]); self.assertFalse(advanced["kick_power"])
         plan = mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t"), "softdrink_advanced")
-        self.assertTrue(plan.accel_ramp and plan.progression and plan.scorebug and plan.arc_by_distance and plan.position_pools
+        self.assertTrue(plan.accel_ramp and plan.progression and not plan.scorebug and plan.arc_by_distance and plan.position_pools
                         and plan.season_2026 and plan.edge_rename and plan.overtime and plan.camera and plan.scheme_labels)
         self.assertFalse(plan.widescreen or plan.kickoff_alignment or plan.seven_on_seven)
 

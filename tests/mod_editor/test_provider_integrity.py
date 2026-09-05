@@ -185,12 +185,14 @@ class ProviderIntegrityTests(unittest.TestCase):
         )
         self.assertEqual(
             [len(provider.module_pins) for provider in providers],
-            # 81: the unified visual provider includes standalone/SCNE Crib
+            # The reviewed closure includes the original visual adapters and
+            # the integrated music, scorebug, animation and gameplay compilers.
+            # The unified visual provider includes standalone/SCNE Crib
             # textures, bounded Crib/Stadium geometry, stock PLAY route copy,
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [83, 9, 8, 9, 8, 9],   # 83 since RC82: nfl2k5_models joined the unified visual closure (per-shape UV)
+            [170, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -204,6 +206,24 @@ class ProviderIntegrityTests(unittest.TestCase):
                 # Both package init files stay absent so their unrelated eager
                 # GUI/provider imports cannot escape the finite pin closure.
                 adapters = frozenset({
+                    "mod_editor/core/nfl2k5_guardian_cap.py",
+                    "mod_editor/core/nfl2k5_animation.py",
+                    "mod_editor/core/nfl2k5_animation_math.py",
+                    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+                    "mod_editor/core/nfl2k5_scorebug_resources.py",
+                    "mod_editor/core/nfl2k5_scorebug_ingame.py",
+                    "mod_editor/core/nfl2k5_music_policy.py",
+                    "mod_editor/core/nfl2k5_music_catalog.py",
+                    "mod_editor/core/nfl2k5_music_build.py",
+                    "mod_editor/core/nfl2k5_music_banks.py",
+                    "mod_editor/core/nfl2k5_music_metadata.py",
+                    "mod_editor/core/nfl2k5_music_storage.py",
+                    "mod_editor/core/nfl2k5_music_archive.py",
+                    "mod_editor/core/nfl2k5_xbe_space.py",
+                    "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py",
+                    "mod_editor/core/nfl2k5_season_cap.py",
+                    "mod_editor/core/nfl2k5_screen_timing.py",
+
                     "mod_editor/core/nfl2k5_audo_fixed_slots.py",
                     "mod_editor/core/nfl2k5_safe_text_banks.py",
                     "mod_editor/core/nfl2k5_scorebug_unified_adapter.py",

@@ -155,6 +155,7 @@ class MusicPanel(QWidget):
     def __init__(self, service=None, parent=None):
         super().__init__(parent)
         self.service = None
+        self.operation_guard = None
         self._epoch = 0
         self._task = None
         self._closing = False
@@ -324,6 +325,10 @@ class MusicPanel(QWidget):
         self.policy_changed.emit(dict(self.service.policy))
 
     def _run(self, action, completed=None):
+        denial = self.operation_guard() if self.operation_guard is not None else None
+        if denial:
+            self.status.setText(denial)
+            return
         if self.service is None or self._task is not None:
             return
         self.stop_preview()

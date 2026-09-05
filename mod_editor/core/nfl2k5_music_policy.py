@@ -50,6 +50,14 @@ SITES = (Site("music_policy", MENU_VA, struct.pack("<I", 0xE92D4C),
 def _context(payload: bytes) -> XbeImage:
     image = XbeImage(payload)
     context = bytearray(image.read(CONTEXT_VA, CONTEXT_SIZE))
+    if len(image.sections) == 25:
+        from . import nfl2k5_music_metadata as metadata
+        if metadata.status(payload) != "applied":
+            raise MusicPolicyError("Music library metadata is not recognized")
+        # The sealed library owns only collection counts and record pointers.
+        # Normalize those verified fields while preserving every policy/context pin.
+        for i, values in enumerate(metadata.RETAIL):
+            struct.pack_into("<2I", context, metadata.COLLECTIONS + i * 32 + 24 - CONTEXT_VA, *values)
     for site in SITES:
         section = image.section(site.va, len(site.before))
         if section is None or section.name != ".data" or section.flags != 7:

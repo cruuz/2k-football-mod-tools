@@ -19,7 +19,7 @@ import nfl2k5_scorebug_layout as layout
 
 
 def write_json(path,value):
-    path.write_text(json.dumps(value,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+    path.write_text(json.dumps(value,indent=2,sort_keys=True)+"\n",encoding="utf-8",newline="\n")
 
 
 def apply_copy(source: Path,target: Path, *, overwrite: bool=False, runtime: bool=False, with_kickoff: bool=False):

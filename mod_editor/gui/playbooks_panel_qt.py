@@ -776,6 +776,10 @@ class PlaybooksPanel(QWidget):
         self.modern_defense_button.setToolTip("Export the EXPERIMENTAL / UNWITNESSED defense pack for this book, then review it in Install Playbook Pack.")
         self.modern_defense_button.clicked.connect(self._modern_defense_pack)
         create_row.addWidget(self.modern_defense_button)
+        self.option_pack_button = QPushButton("SOFTDRINK option (experimental)")
+        self.option_pack_button.setToolTip("Review the eight MIN option replacements and their defensive test fixture. Unwitnessed in play.")
+        self.option_pack_button.clicked.connect(self._option_pack)
+        create_row.addWidget(self.option_pack_button)
         create_row.addWidget(self.export_pack_button)
         create_row.addStretch(1)
         inspector_layout.addLayout(create_row)
@@ -1310,7 +1314,7 @@ class PlaybooksPanel(QWidget):
         self.assignment_table.clearContents()
         self.assignment_table.setRowCount(len(play.assignments))
         for row, assignment in enumerate(play.assignments):
-            chain = book.chain(assignment.chain_start_index)
+            chain = book.assignment_chain(assignment)
             values = (
                 str(assignment.slot_index),
                 f"0x{assignment.descriptor_word:08x}",
@@ -1338,7 +1342,10 @@ class PlaybooksPanel(QWidget):
             return
         item = self.assignment_table.item(rows[0].row(), 0)
         start_index = int(item.data(Qt.UserRole))
-        chain = book.chain(start_index)
+        linked = self._selected_linked_play()
+        if linked is None:
+            return
+        chain = book.assignment_chain(linked.play.assignments[rows[0].row()])
         self.node_table.clearContents()
         self.node_table.setRowCount(len(chain.nodes))
         for row, node in enumerate(chain.nodes):
@@ -1351,7 +1358,9 @@ class PlaybooksPanel(QWidget):
                 "yes" if node.ends_chain else "",
             )
             for column, value in enumerate(values):
-                self.node_table.setItem(row, column, QTableWidgetItem(value))
+                item = QTableWidgetItem(value)
+                item.setToolTip(node.description + ("\n" + str(node.condition) if node.condition else ""))
+                self.node_table.setItem(row, column, item)
         linked = self._selected_linked_play()
         target_slot = rows[0].row()
         if (
@@ -1908,6 +1917,11 @@ class PlaybooksPanel(QWidget):
             ),
             ready,
         )
+
+    def _option_pack(self):
+        from mod_editor.gui.playbook_pack_dialog_qt import PlaybookPackInstallDialog
+        from mod_editor.core.mod_build import ROOT
+        PlaybookPackInstallDialog(self.host, ROOT / "data/playbooks/softdrink_option.2k5book", self).exec_()
 
     def _modern_defense_pack(self) -> None:
         from mod_editor.core import nfl2k5_playbook_pack as pk

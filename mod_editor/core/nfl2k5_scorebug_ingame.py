@@ -527,21 +527,36 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False):
 
 
 def runtime_image_status(path):
-    """Recognition only. Never rasterize artwork or invoke a writer for status."""
+    """Recognize the complete owned HUD and XBE, resolving current archive offsets."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
-    from . import nfl2k5_xbe_space as space, platform_compat as io
+    from . import nfl2k5_xbe_space as space, nfl2k5_music_storage as music_storage, platform_compat as io
     try:
         with Path(path).open("rb") as stream:
             fd = stream.fileno()
             entries, _ = layout.xc.parse_xdvdfs(fd, os.fstat(fd).st_size)
             p, x = entries["vc_53450030/0"], entries["default.xbe"]
-            if p.size not in (PACK_SIZE, PACK_SIZE + resources.RUNTIME_GROWTH) or x.size not in (
-                    space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, space.FILE_SIZE):
+            if x.size not in (space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE,
+                              space.FILE_SIZE, music_storage.FILE_SIZE):
                 return "foreign"
-            states = (resources.runtime_pack_status(io.pread(fd, p.size, p.byte_offset)),
-                      runtime.status(io.pread(fd, x.size, x.byte_offset)))
-            return states[0] if len(set(states)) == 1 else "foreign"
-    except (OSError, ValueError, KeyError, struct.error, SystemExit):
+            xbe_state = runtime.status(io.pread(fd, x.size, x.byte_offset))
+            resource_state = "foreign"
+            if p.size in (PACK_SIZE, PACK_SIZE + resources.RUNTIME_GROWTH):
+                resource_state = resources.runtime_pack_status(io.pread(fd, p.size, p.byte_offset))
+        if resource_state == "foreign" and xbe_state == "applied":
+            # A later music transaction may move this entire owner. Resolve its
+            # current outer range through the validated archive, then retain the
+            # exact full HUD and appended-texture pins. No installation gate changes.
+            from . import nfl2k5_music_archive as archive
+            with archive.Disc(path) as disc:
+                entry = disc.archive_entries[resources.HUD_OUTER_INDEX]
+                if entry.name_id != 11965036 or entry.size != resources.HUD_SIZE + resources.RUNTIME_APPEND_SIZE:
+                    return "foreign"
+                hud = disc.read_entry_range(entry, 0, entry.size)
+                if (digest(hud[:resources.HUD_SIZE]) == resources.RUNTIME_PINS["hud_after"]
+                        and digest(hud[resources.HUD_SIZE:]) == resources.RUNTIME_PINS["appendix"]):
+                    resource_state = "applied"
+        return resource_state if resource_state == xbe_state else "foreign"
+    except (OSError, ValueError, KeyError, IndexError, struct.error, SystemExit):
         return "foreign"
 
 

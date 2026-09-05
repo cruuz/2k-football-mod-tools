@@ -348,3 +348,21 @@ mod_editor/gui/animations_panel_qt.py
 tools/nfl_motion_inventory.py
 data/playbooks/softdrink_modern_defense.2k5book
 mod_editor/core/nfl2k5_cave_oracle.py
+
+# Integrated experimental music and scorebug tools; authored inputs stay local.
+mod_editor/core/nfl2k5_scorebug_runtime.py
+mod_editor/core/nfl2k5_scorebug_resources.py
+mod_editor/core/nfl2k5_scorebug_ingame.py
+mod_editor/core/nfl2k5_music_policy.py
+mod_editor/core/nfl2k5_music_catalog.py
+mod_editor/core/nfl2k5_music_build.py
+mod_editor/core/nfl2k5_music_banks.py
+mod_editor/core/nfl2k5_music_metadata.py
+mod_editor/core/nfl2k5_music_storage.py
+mod_editor/core/nfl2k5_music_archive.py
+mod_editor/studio/music_service.py
+mod_editor/gui/music_panel_qt.py
+tools/nfl2k5_music_banks.py
+tools/nfl2k5_scorebug_reference.py
+data/playbooks/softdrink_option.2k5book
+mod_editor/core/nfl2k5_import_preflight.py

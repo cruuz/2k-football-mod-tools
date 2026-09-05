@@ -109,6 +109,8 @@ from mod_editor.core.nfl2k5_text_catalog import (
 from mod_editor.core.nfl2k5_crib import CribAsset
 from mod_editor.gui.stadium_viewer import GltfWireframeModel, StadiumViewport
 from mod_editor.gui.audio_panel_qt import AudioPanel
+from mod_editor.gui.music_panel_qt import MusicPanel
+from mod_editor.studio.music_service import MusicService
 from mod_editor.gui.bump_panel_qt import BumpPanel
 from mod_editor.gui.save_panel_qt import SavePanel
 from mod_editor.gui.crib_panel_qt import CribPanel
@@ -1159,6 +1161,10 @@ _WORKSPACE_CAPABILITIES = {
     "nfl2k5.portraits_faces.live_textures": "Portraits & Faces",
     "nfl2k5.stadiums.create_team_field_art": "Field Art & Create-Team Art",
     "nfl2k5.scorebug_presentation.inventory": "Presentation",
+    "nfl2k5.scorebug_presentation.runtime": "Presentation",
+    "nfl2k5.music.policy": "Audio",
+    "nfl2k5.music.fixed_slot": "Audio",
+    "nfl2k5.music.bank_rebuild": "Audio",
     "nfl2k5.crib.assets": "The Crib",
     "nfl2k5.audio.audo_wav": "Audio",
     # The Stadiums page exports the pinned scene to glTF, imports same-topology
@@ -1560,6 +1566,10 @@ class StudioMainWindow(QMainWindow):
         self._workers: set[_BackgroundTask] = set()
         self._blocking = False
         self._embedded_audio_busy = False
+        self._embedded_music_busy = False
+        self._embedded_build_busy = False
+        self._music_close_pending = False
+        self._music_policy_values = {}
         self._embedded_crib_busy = False
         self._post_blocking_continuations: list[Callable[[], None]] = []
         self._selected_asset: Any | None = None
@@ -1592,6 +1602,7 @@ class StudioMainWindow(QMainWindow):
         self._universal_browser: _UniversalBrowserState | None = None
         self._stadium_browser: _StadiumBrowserState | None = None
         self._audio_panel: AudioPanel | None = None
+        self._music_panel: MusicPanel | None = None
         self._bump_panel: BumpPanel | None = None
         self._save_panel: SavePanel | None = None
         self._text_roster_panel: TextRosterPanel | None = None
@@ -1791,6 +1802,59 @@ class StudioMainWindow(QMainWindow):
     def _focus_category_navigation(self) -> None:
         self.navigation.setFocus(Qt.ShortcutFocusReason)
 
+    def _build_operation_state_changed(self, busy):
+        self._embedded_build_busy = bool(busy)
+        self._embedded_operation_state_changed("Build", busy)
+
+    def _music_operation_state_changed(self, busy):
+        self._embedded_music_busy = bool(busy)
+        self._embedded_operation_state_changed("Music", busy)
+        if not busy and self._music_close_pending:
+            self._music_close_pending = False
+            QTimer.singleShot(0, self.close)
+
+    def _sync_music_service(self):
+        panel = self._music_panel
+        if panel is None or panel.operation_in_progress or self._blocking:
+            return
+        session = getattr(self.facade, "_session", None)
+        if session is None or not getattr(self.facade, "audio_editing_ready", False):
+            if panel.service is not None:
+                panel.set_service(None)
+            panel.status.setText("Open a disc and prepare audio editing in Audio Cues to edit music.")
+            return
+        if panel.service is None or panel.service.session is not session:
+            try:
+                service = MusicService(session, lock=getattr(self.facade, "_lock", None))
+                if self._music_policy_values:
+                    service.set_policy(**self._music_policy_values)
+                panel.set_service(service)
+            except ValueError as exc:
+                panel.status.setText(str(exc))
+
+    def _music_policy_changed(self, values):
+        self._music_policy_values = dict(values)
+        if self._build_panel is not None:
+            self._build_panel.set_music_policy(values)
+
+    def _music_changed(self):
+        if self._build_panel is not None:
+            self._build_panel.music_project_check.setChecked(bool(getattr(self.facade, "modified_count", 0)))
+        self._mark_workspace_changed()
+        if self._music_panel is not None:
+            self._music_panel.invalidate_audio_content()
+        if self._audio_panel is not None:
+            self._audio_panel.invalidate_audio_content()
+
+    def _music_receipt_ready(self, receipt):
+        self._last_music_receipt = receipt
+        box = QMessageBox(self)
+        box.setWindowTitle("Music receipt")
+        box.setText("Music output completed. Experimental, not yet tested in game.")
+        box.setDetailedText(json.dumps(receipt, indent=2, default=str))
+        box.setAttribute(Qt.WA_DeleteOnClose)
+        box.show()
+
     def _audio_operation_state_changed(self, busy: bool) -> None:
         """Track Audio as one owner of the shared embedded-operation lane."""
 
@@ -1828,7 +1892,7 @@ class StudioMainWindow(QMainWindow):
     def _embedded_operation_is_busy(self) -> bool:
         """Use tracked edges for cheap UI gating of both embedded worker lanes."""
 
-        return self._embedded_audio_busy or self._embedded_crib_busy
+        return self._embedded_audio_busy or self._embedded_crib_busy or self._embedded_music_busy or self._embedded_build_busy
 
     def _embedded_operation_owners(self) -> tuple[str, ...]:
         """Include live panel properties so direct callers cannot miss an edge."""
@@ -1843,7 +1907,9 @@ class StudioMainWindow(QMainWindow):
         )
         return tuple(
             name
-            for name, active in (("Audio", audio_busy), ("Crib", crib_busy))
+            for name, active in (("Audio", audio_busy), ("Crib", crib_busy),
+                                 ("Music", self._embedded_music_busy or bool(self._music_panel and self._music_panel.operation_in_progress)),
+                                 ("Build", self._embedded_build_busy))
             if active
         )
 
@@ -2533,7 +2599,19 @@ class StudioMainWindow(QMainWindow):
                 audio_tabs = QTabWidget()
                 audio_tabs.setObjectName("audioTabs")
                 audio_tabs.setAccessibleName("Audio workspaces")
-                audio_tabs.addTab(self._audio_panel, tab_title("Music & Sounds"))
+                audio_tabs.addTab(self._audio_panel, tab_title("Audio Cues"))
+                self._music_panel = MusicPanel()
+                self._music_panel.operation_guard = lambda: self._embedded_operation_denial("Music")
+                self._music_panel.changed.connect(self._music_changed)
+                self._music_panel.policy_changed.connect(self._music_policy_changed)
+                self._music_panel.receipt_ready.connect(self._music_receipt_ready)
+                self._music_panel.operation_state_changed.connect(self._music_operation_state_changed)
+                audio_tabs.addTab(self._music_panel, "Music")
+                audio_tabs.currentChanged.connect(lambda _index: self._music_panel.stop_preview())
+                self.navigation.currentRowChanged.connect(lambda _index: self._music_panel.stop_preview())
+                for signal in (self._audio_panel.audio_modified, self._audio_panel.audio_reverted,
+                               self._audio_panel.audio_batch_imported):
+                    signal.connect(lambda *_: self._music_panel.invalidate_audio_content())
                 self._sounds_panel = SoundsPanel(self.facade)
                 audio_tabs.addTab(self._sounds_panel, "Replace a Sound")
                 audio_tabs.setCurrentIndex(0)
@@ -6424,10 +6502,13 @@ class StudioMainWindow(QMainWindow):
     ) -> None:
         if self._refuse_while_audio_busy("open another disc"):
             return
+        if self._music_panel is not None:
+            self._music_panel.set_service(None)
         if self._audio_panel is not None:
             self._audio_panel.invalidate_preview_for_source_change()
 
         def failed(_message: str) -> None:
+            self._sync_music_service()
             if self._audio_panel is not None:
                 self._audio_panel.recover_after_source_change_failure()
 
@@ -6969,6 +7050,8 @@ class StudioMainWindow(QMainWindow):
     ) -> None:
         if self._refuse_while_audio_busy("open another project"):
             return
+        if self._music_panel is not None:
+            self._music_panel.set_service(None)
         if self._audio_panel is not None:
             self._audio_panel.invalidate_audio_content()
 
@@ -7107,6 +7190,8 @@ class StudioMainWindow(QMainWindow):
     def _undo(self) -> None:
         if self._refuse_while_audio_busy("undo the last edit"):
             return
+        if self._music_panel is not None:
+            self._music_panel.invalidate_audio_content()
         if self._audio_panel is not None:
             self._audio_panel.invalidate_audio_content()
 
@@ -7148,6 +7233,8 @@ class StudioMainWindow(QMainWindow):
         )
         if answer != QMessageBox.Yes:
             return
+        if self._music_panel is not None:
+            self._music_panel.invalidate_audio_content()
         if self._audio_panel is not None:
             self._audio_panel.invalidate_audio_content()
 
@@ -7784,6 +7871,13 @@ class StudioMainWindow(QMainWindow):
         self.close()
 
     def closeEvent(self, event: QCloseEvent) -> None:  # type: ignore[override]
+        if self._music_panel is not None:
+            self._music_panel.stop_preview()
+            if self._music_panel.operation_in_progress:
+                self._music_close_pending = True
+                self._music_panel.invalidate_audio_content()
+                event.ignore()
+                return
         if self._refuse_while_embedded_busy("close Mod Studio"):
             event.ignore()
             return
@@ -7894,6 +7988,7 @@ class StudioMainWindow(QMainWindow):
         self._refresh_action_states()
 
     def _refresh_action_states(self) -> None:
+        self._sync_music_service()
         ready = bool(getattr(self.facade, "source_ready", False))
         modified = set(getattr(self.facade, "modified_asset_ids", ()))
         count = int(getattr(self.facade, "modified_count", 0))
@@ -8065,6 +8160,8 @@ class StudioMainWindow(QMainWindow):
         self.launch_button.setProperty("disableReason", blocker)
         self.launch_button.setAccessibleDescription(self.launch_button.toolTip())
         self.navigation.setEnabled(not global_busy)
+        build_busy = self._embedded_build_busy
+        music_busy = self._embedded_music_busy
         audio_busy = self._embedded_audio_busy
         crib_busy = self._embedded_crib_busy
         for page in self._category_pages.values():
@@ -8076,19 +8173,23 @@ class StudioMainWindow(QMainWindow):
                 self._crib_panel is not None
                 and page.isAncestorOf(self._crib_panel)
             )
+            owns_build = self._build_panel is not None and page.isAncestorOf(self._build_panel)
             page.setEnabled(
-                not self._blocking
+                (not build_busy or owns_build) and not self._blocking
                 and (
-                    not (audio_busy or crib_busy)
+                    not (audio_busy or crib_busy or music_busy)
+                    or (music_busy and not audio_busy and not crib_busy and owns_audio)
                     or (audio_busy and not crib_busy and owns_audio)
                     or (crib_busy and not audio_busy and owns_crib)
                 )
             )
         self.welcome_page.setEnabled(not global_busy)
         if self._audio_panel is not None:
-            self._audio_panel.setEnabled(not self._blocking and not crib_busy)
+            self._audio_panel.setEnabled(not self._blocking and not crib_busy and not music_busy and not build_busy)
         if self._crib_panel is not None:
-            self._crib_panel.setEnabled(not self._blocking and not audio_busy)
+            self._crib_panel.setEnabled(not self._blocking and not audio_busy and not music_busy and not build_busy)
+        if self._music_panel is not None:
+            self._music_panel.setEnabled(not self._blocking and not audio_busy and not crib_busy and not build_busy)
         for state in self._visual_browsers.values():
             self._refresh_visual_action_states(state)
         self._refresh_stadium_actions()
@@ -8135,6 +8236,10 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_panel = BuildPanel(self.facade)
+        self._build_panel.operation_guard = lambda: self._embedded_operation_denial("Build")
+        self._build_panel.operation_state_changed.connect(self._build_operation_state_changed)
+        if self._music_policy_values:
+            self._build_panel.set_music_policy(self._music_policy_values)
         self._connect_star_players()
         # ★ Rosters writes a roster-edits document; the Build tab carries it as the roster_edits step
         roster_editor = getattr(self, "_roster_editor_panel", None)

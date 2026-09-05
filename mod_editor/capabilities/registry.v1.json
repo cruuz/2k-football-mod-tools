@@ -4293,6 +4293,217 @@
     },
     {
       "backend": {
+        "command": "Python API: mod_editor/core/nfl2k5_music_banks.py rebuild(source, output, recipe)",
+        "module": "mod_editor/core/nfl2k5_music_banks.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_MUSIC_BANKS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_music_banks.py",
+        "tests/mod_editor/test_nfl2k5_music_metadata.py",
+        "tests/mod_editor/test_nfl2k5_music_acceptance.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game. EXPERIMENTAL / UNWITNESSED."
+      },
+      "id": "nfl2k5.music.bank_rebuild",
+      "input_constraints": [
+        "Verified user-owned source and complete descriptor context pins; publish a separate output copy.",
+        "Source-origin authorization and containment checks remain required for portable fixed-slot authored replacements; private originals stay local.",
+        "Maximum ten minutes and 512 MiB per WAV, PCM16 at 22050 Hz, one or two channels, encoded twins below 2 GiB, positive pack F below 2 GiB, metadata content at most 65408 bytes.",
+        "Two-song femusic is refused. Re-plan against the working image after all other passes; exact same-recipe replay only. Presets never choose a personal library."
+      ],
+      "portme": [
+        "Complete Noah's menu, jukebox, twin playback, collection, UserList, saved-playlist and next-game witness matrix.",
+        "All-screen shuffle and runtime playback claims remain deferred."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Only authored WAVs, encoded replacements and metadata are portable. Private source originals, rebuilt packs and local listening exports are not authored mod projects.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED. Offline compiler and transport checks; no game playback witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "nfl2k5_music_library/v1 recipe path",
+            "name": "music_library",
+            "required": true
+          },
+          {
+            "allowed": "femusic or cribmusic",
+            "name": "bank",
+            "required": true
+          },
+          {
+            "allowed": "ordered complete bank, 1..400 entries",
+            "name": "tracks",
+            "required": true
+          }
+        ],
+        "notes": "Music tab and Build controls; every personal input stays opt-in."
+      },
+      "source_container": {
+        "format": "NFL 2K5 USA XBE and XDVDFS AUSB archives",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Policy fields and seven fixed-slot music banks; full-library rebuild validates all 17 descriptor owners.",
+        "retail_file": "default.xbe and vc_53450030/0..F"
+      },
+      "summary": "Rebuild a personal menu or jukebox bank with authored WAVs and retained source tracks. Jukebox mono twins and titles are one transaction. Experimental, not yet tested in game.",
+      "surface": "audio",
+      "title": "Music library (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_music_banks"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/studio/music_service.py MusicService.replace_batch / build_copy",
+        "module": "mod_editor/studio/music_service.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_MUSIC_BUILD_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_music_build.py",
+        "tests/mod_editor/test_music_service.py",
+        "tests/mod_editor/test_music_panel_qt.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "86 logical music slots; 59 jukebox entries update stereo and mono together. Exact-length fit, restore, Undo, authored projects and copy builds. In-game playback has not been witnessed. EXPERIMENTAL / UNWITNESSED."
+      },
+      "id": "nfl2k5.music.fixed_slot",
+      "input_constraints": [
+        "Verified user-owned source and complete descriptor context pins; publish a separate output copy.",
+        "Source-origin authorization and containment checks remain required for portable fixed-slot authored replacements; private originals stay local.",
+        "Complete twin transactions, PCM16 at 22050 Hz with whole-block fixed lengths; verify encoded and decoded hashes and refuse changed descriptor geometry."
+      ],
+      "portme": [
+        "Complete Noah's menu, jukebox, twin playback, collection, UserList, saved-playlist and next-game witness matrix.",
+        "All-screen shuffle and runtime playback claims remain deferred."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Only authored WAVs, encoded replacements and metadata are portable. Private source originals, rebuilt packs and local listening exports are not authored mod projects.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED. Offline compiler and transport checks; no game playback witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "bank:index in femusic, cribmusic, crib22, loadm, wrapupm, halftimeaudio, drafta; crib22 is linked through cribmusic",
+            "name": "slot",
+            "required": true
+          }
+        ],
+        "notes": "Music tab and Build controls; every personal input stays opt-in."
+      },
+      "source_container": {
+        "format": "NFL 2K5 USA XBE and XDVDFS AUSB archives",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Policy fields and seven fixed-slot music banks; full-library rebuild validates all 17 descriptor owners.",
+        "retail_file": "default.xbe and vc_53450030/0..F"
+      },
+      "summary": "86 logical music slots; 59 jukebox entries update stereo and mono together. Exact-length fit, restore, Undo, authored projects and copy builds. In-game playback has not been witnessed.",
+      "surface": "audio",
+      "title": "Music fixed slots (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_music_service"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/nfl2k5_music_policy.py Selection(...).apply(payload)",
+        "module": "mod_editor/core/nfl2k5_music_policy.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_MUSIC_BUILD_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_music_policy.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Menus can use the 59 jukebox recordings in the game's random order. The seven menu songs are excluded; twelve jukebox tracks are spoken outtakes. Collections and UserList substitution are independent opt-ins. EXPERIMENTAL / UNWITNESSED."
+      },
+      "id": "nfl2k5.music.policy",
+      "input_constraints": [
+        "Verified user-owned source and complete descriptor context pins; publish a separate output copy.",
+        "Source-origin authorization and containment checks remain required for portable fixed-slot authored replacements; private originals stay local.",
+        "Validate all selected and unselected policy context bytes before changing any field. Retail/off preserves policies already in the source."
+      ],
+      "portme": [
+        "Complete Noah's menu, jukebox, twin playback, collection, UserList, saved-playlist and next-game witness matrix.",
+        "All-screen shuffle and runtime playback claims remain deferred."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Only authored WAVs, encoded replacements and metadata are portable. Private source originals, rebuilt packs and local listening exports are not authored mod projects.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED. Offline compiler and transport checks; no game playback witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "retail or jukebox_menus",
+            "name": "music_policy",
+            "required": true
+          },
+          {
+            "allowed": "false or true",
+            "name": "music_unlock",
+            "required": true
+          },
+          {
+            "allowed": "false or true; requires jukebox_menus",
+            "name": "music_userlist",
+            "required": true
+          }
+        ],
+        "notes": "Music tab and Build controls; every personal input stays opt-in."
+      },
+      "source_container": {
+        "format": "NFL 2K5 USA XBE and XDVDFS AUSB archives",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Policy fields and seven fixed-slot music banks; full-library rebuild validates all 17 descriptor owners.",
+        "retail_file": "default.xbe and vc_53450030/0..F"
+      },
+      "summary": "Menus can use the 59 jukebox recordings in the game's random order. The seven menu songs are excluded; twelve jukebox tracks are spoken outtakes. Collections and UserList substitution are independent opt-ins.",
+      "surface": "audio",
+      "title": "Music policies (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_music_policy"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl_player_roster_general_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --plan <plan.json> --manifest <manifest.json> --audit <audit.json>",
         "module": "tools/nfl_player_roster_general_workflow.py",
         "operation": "write"
@@ -4729,14 +4940,15 @@
         "reports/assets/nfl2k5_scorebug_font_xemu_runtime.json",
         "reports/assets/nfl2k5_scorebug_shield_xemu_runtime.json",
         "reports/assets/nfl2k5_scorebug_xemu_runtime.json",
-        "reports/assets/scorebug_presentation_audit.json"
+        "reports/assets/scorebug_presentation_audit.json",
+        "ASTRA_SCOREBUG_INGAME_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
-        "default_enabled": true,
+        "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Three named P8 scorebug/font textures have strict PNG-to-fixed-span copied-XISO writers; scene geometry and behavior remain read-only."
+        "reason": "Install the experimental neutral v7 bottom scorebar with its matching atlas, white clock strip, ESPN corner mark and down-panel slide. Team logos and event hooks use the separate paired runtime installation. Unwitnessed in game."
       },
       "id": "nfl2k5.scorebug_presentation.inventory",
       "input_constraints": [
@@ -4766,7 +4978,7 @@
           "reports/assets/nfl2k5_scorebug_font_xemu_runtime/digital-font-magenta-not-visible-demo.png"
         ],
         "scope": "score_buga and shield_espn are separately visible-proved in xemu demo gameplay; a digital_font candidate booted but produced zero diagnostic pixels in one no-input field-HUD/lower-third frame, so its visibility and global side effects remain unproved.",
-        "status": "partial"
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
@@ -4786,10 +4998,77 @@
         "resource": "outer 346 score_buga/shield_espn TXTR spans and outer 3 digital_font TXTR span",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Replace the NFL field-scorebug frame atlas, ESPN strip, or global digital font in a verified copied XISO; scene structure and behavior remain read-only.",
+      "summary": "Install the experimental neutral v7 bottom scorebar with its matching atlas, white clock strip, ESPN corner mark and down-panel slide. Team logos and event hooks use the separate paired runtime installation.",
       "surface": "scorebug_presentation",
       "title": "NFL 2K5 scorebug texture editor",
       "validation_command": "bash tools/validate_scorebug_products.sh"
+    },
+    {
+      "backend": {
+        "command": "Python API: mod_editor/core/nfl2k5_scorebug_ingame.py runtime_apply_in_place(output_copy)",
+        "module": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+        "tests/mod_editor/test_nfl2k5_scorebug_resources.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Experimental preset or explicit selection. EXPERIMENTAL / UNWITNESSED."
+      },
+      "id": "nfl2k5.scorebug_presentation.runtime",
+      "input_constraints": [
+        "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
+        "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
+        "An XBE alone cannot install the required 264 native panel textures. Rebuild from base when changing the owner set."
+      ],
+      "portme": [
+        "Complete Noah's boot, team identity, scoring, timeout, clock, down-slide and next-game witness list."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute the compiler and recipes; derive native resources from the user's own disc. Do not distribute generated game resources, executables or discs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
+          "docs/scorebug_runtime/evidence.json"
+        ],
+        "scope": "Static analysis and bounded Unicorn execution prove the native descriptor relocation, lookup, binding and event paths. Actual kernel loading, asynchronous collection lifetime, GPU rendering, memory pressure and gameplay remain unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false by default; true only for an experimental disc build",
+            "name": "scorebug_runtime",
+            "required": true
+          }
+        ],
+        "notes": "Implies scorebug and xbe_space. Relocated kickoff is independent and requires its existing alignment prerequisites."
+      },
+      "source_container": {
+        "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+          "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
+          "5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49"
+        ],
+        "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
+        "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
+      },
+      "summary": "Bind native team panels and show timeout counts, score flashes, down refresh and play-clock urgency.",
+      "surface": "scorebug_presentation",
+      "title": "Team logos and scorebug effects (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_runtime"
     },
     {
       "backend": {
@@ -5008,7 +5287,10 @@
         "tests/mod_editor/test_nfl2k5_play_author.py",
         "tests/mod_editor/test_nfl2k5_defense_play.py",
         "tests/mod_editor/test_nfl2k5_defense_play_qt.py",
-        "ASTRA_DEFENSE_PLAY_REPORT.md"
+        "ASTRA_DEFENSE_PLAY_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_read_option.py",
+        "tests/mod_editor/test_nfl2k5_read_option_qt.py",
+        "ASTRA_READ_OPTION_BUILD_REPORT.md"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -5028,7 +5310,8 @@
         "Authored plays append new 8-byte node chains to the book's node pool (count word at +0x40 bumped, zero tail verified, 3,500-node capacity), rewrite only the eleven descriptor/pointer fields of the created play, and must pass the ported retail validator (chain grammar, side nibble, feature byte, ball-possession simulation, handoff pairing); the descriptor high byte is inherited from the donor slot.",
         "Node operands are encoded with the retail per-opcode encoders (bit-exact round trip on all 91,833 stock nodes); opcode 0x19 is refused because the game refuses it, and motion/link chains (0x1A) are editable only as raw operands.",
         "HB/WR/TE screen presets read actual assignment slots, cost 31 nodes per full play and show the type-9 endpoint guide. EXPERIMENTAL / UNWITNESSED.",
-        "Defense recipes require one of 48 proved native personnel/package fingerprints. Compile before position-pool recoding; pooled sources refuse. EXPERIMENTAL / UNWITNESSED."
+        "Defense recipes require one of 48 proved native personnel/package fingerprints. Compile before position-pool recoding; pooled sources refuse. EXPERIMENTAL / UNWITNESSED.",
+        "Option packs are replacement-only and bound to their exact source book. Compile before position recoding. No runtime read, dynamic edge selection, modern mesh policy or RPO readiness fallback is claimed."
       ],
       "portme": [
         "Capture the authored formation lining up and the authored routes running in xemu (play-call art plus post-snap frames) to move runtime status from offline-proved to runtime-witnessed.",
@@ -5053,7 +5336,7 @@
             "required": true
           }
         ],
-        "notes": "The GUI exposes exact stock assignment copying, clone creates, and the Formation/Play Designers (slot coordinates and node chains built from the retail opcode vocabulary). Freehand pixel drawing is not offered; routes are composed from the game's route segments."
+        "notes": "The GUI exposes exact stock assignment copying, clone creates, and the Formation/Play Designers (slot coordinates and node chains built from the retail opcode vocabulary). Freehand pixel drawing is not offered; routes are composed from the game's route segments. Option schema v3 retains all explicit branch flags and nfl2k5_option_intent/v1."
       },
       "source_container": {
         "format": "little-endian fixed-capacity NFL DRCT/PLAY resources inside a layout-identical copied XISO",
@@ -5063,7 +5346,7 @@
         "resource": "five inspected DRCT graphs and 37 fixed-capacity PLAY books; write-back changes descriptor/pointer fields only",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Browse and raw-export all 37 NFL PLAY books, copy exact stock assignment routes within one book, create formations/plays as bounded clones into proved-empty slots (optionally named, optionally menu-linked), design new formations by repositioning the eleven players, design new plays from the game's own route/block/coverage opcodes with a live retail-validator check, Revert them, and build a verified copied XISO. Defense v2 recipes preserve Spy authoring intent. Spy is a shallow middle zone; a true spy needs the runtime patch (not yet shipped).",
+      "summary": "Browse and raw-export all 37 NFL PLAY books, copy exact stock assignment routes within one book, create formations/plays as bounded clones into proved-empty slots (optionally named, optionally menu-linked), design new formations by repositioning the eleven players, design new plays from the game's own route/block/coverage opcodes with a live retail-validator check, Revert them, and build a verified copied XISO. Defense v2 recipes preserve Spy authoring intent. Spy is a shallow middle zone; a true spy needs the runtime patch (not yet shipped). Option v3 supports explicit branch flags and nfl2k5_option_intent/v1 with three experimental option presets, native under-center I personnel and pinned opponent fixtures. Stock MIN option and Modern Gun Core seeds overlap and cannot be combined.",
       "surface": "scripts_config",
       "title": "NFL 2K5 stock route copier and playbook viewer",
       "validation_command": "bash tools/validate_director_inventory.sh"

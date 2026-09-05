@@ -8,6 +8,7 @@ The JSON contains addresses, sizes and hashes, never XBE/disc byte payloads.
 from __future__ import annotations
 
 from contextlib import ExitStack
+from dataclasses import replace
 import functools
 import hashlib
 import importlib
@@ -243,8 +244,15 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                         stack.enter_context(patch.object(module, name, recorder.wrapper(module, name)))
             receipt = build.build(plan, progress=lambda message, *_: progress(message))
             preset_xbe = build._xbe_bytes(target)
+            if plan.scorebug_runtime:
+                target.unlink()
+                progress("Building the separate dormant-owner allocation probe")
+                build.build(replace(plan, scorebug_runtime=False, xbe_space=False,
+                                    kickoff_relocated=False, scorebug=True),
+                            progress=lambda message, *_: progress(message))
+            owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
-            extra, _ = tt._apply_all(preset_xbe, None, catch_slider=False, seven_on_seven=True)
+            extra, _ = tt._apply_all(owner_base, None, catch_slider=False, seven_on_seven=True)
             build._write_xbe_bytes(target, extra)
             progress("Applying dormant seven-on-seven playbook to disposable image")
             try:
@@ -257,7 +265,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
             final = build._xbe_bytes(target)
             if final != extra:
                 raise OracleError("seven-on-seven book writer unexpectedly changed XBE bytes")
-            # These owners are default-off until the protected UI is wired.
+            # The separate probe adds dormant owners using the complete union.
             # Observe their real pure-byte writers after every disc/XBE pass.
             # The generalized writer resolves the grown extent directly, so
             # manifest generation does not depend on the protected dispatcher.

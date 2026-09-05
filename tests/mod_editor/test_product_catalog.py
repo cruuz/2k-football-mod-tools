@@ -70,6 +70,10 @@ class ProductCatalogTests(unittest.TestCase):
             "nfl2k5.menus.layouts",
             "nfl2k5.mode_state_routing.state_graph",
             "nfl2k5.models.guardian_cap_c_trial",
+            "nfl2k5.music.policy",
+            "nfl2k5.music.fixed_slot",
+            "nfl2k5.music.bank_rebuild",
+            "nfl2k5.scorebug_presentation.runtime",
             "nfl2k5.models.scne_gltf",
             "nfl2k5.models.scne_same_count_position",
             "nfl2k5.models.scne_same_footprint_geometry",
@@ -94,7 +98,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 38)
+        self.assertEqual(len(first_ids), 42)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -133,10 +137,10 @@ class ProductCatalogTests(unittest.TestCase):
             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
             ProductCategory.STADIUMS: (8, 3, 1, 1, 0, 3, 0),
-            ProductCategory.SCOREBUG_PRESENTATION: (3, 1, 0, 0, 0, 2, 0),
+            ProductCategory.SCOREBUG_PRESENTATION: (4, 2, 0, 0, 0, 2, 0),
             ProductCategory.MENUS_UI: (2, 0, 2, 0, 0, 0, 0),
             ProductCategory.CRIB: (1, 1, 0, 0, 0, 0, 0),
-            ProductCategory.AUDIO: (4, 3, 0, 1, 0, 0, 0),
+            ProductCategory.AUDIO: (7, 6, 0, 1, 0, 0, 0),
             ProductCategory.SLIDERS_GAMEPLAY: (8, 2, 4, 0, 0, 0, 2),
             ProductCategory.PLAYBOOKS_PLAYS: (3, 3, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
@@ -166,7 +170,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (38, 21, 7, 2, 0, 6, 2),
+            (42, 25, 7, 2, 0, 6, 2),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -219,7 +223,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 38)
+        self.assertEqual(len(seen), 42)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

@@ -195,6 +195,11 @@ PATCHES = (
      "D combines them. Screens without the full release sequence are listed "
      "and left alone. These are experiments, not measured improvements. "
      "Requires a disc image and paired play tests."),
+    ('music_policy', 'Use jukebox songs in menus (experimental)', "Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings in the game's random order. The 7 menu tracks are not included yet. Twelve jukebox tracks are spoken outtakes."),
+    ('music_unlock', 'Make every music collection available (experimental)', 'Retail: collections need Crib purchases. Patch: every collection is available without spending credits or setting purchase bits.'),
+    ('music_userlist', 'Use jukebox songs instead of user playlists (experimental)', "Retail: UserList follows the user's disc or HDD playlist. Patch: UserList uses the 59-song jukebox bank instead. Requires jukebox menus."),
+    ('scorebug', 'Experimental ESPN scorebar', 'Retail: a stacked score display near the top of the screen. Patch: a wider display at the bottom, a white clock strip, an ESPN corner mark and a short slide when the down panel appears. Experimental and not tested in game. Team logos and events require the separate scorebug effects option.'),
+    ('scorebug_runtime', 'Team logos and scorebug effects (experimental, unwitnessed)', 'Retail: team panels and timeout marks use the stock display. Patch: adds team logos, remaining timeout marks, a score flash, down refresh and a red play clock below five seconds. Unwitnessed in game; use a separate disc copy.'),
     ("guardian_cap", "Guardian caps on helmet C (experimental)",
      "Retail: Helmet C has its normal hard-shell look. Patch: Every player wearing "
      "helmet C shows a guardian cap. Helmet C's normal look is replaced while this is on. "
@@ -281,9 +286,9 @@ LABELS: dict[str, tuple[str, str, str]] = {
 }
 
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
-STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
+STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -531,8 +536,14 @@ class GameplayPatchesPanel(QWidget):
             on = check.isChecked()
             if key == "screen_timing":
                 plan.screen_timing = self.screen_timing_combo.currentText() if on else None
+            elif key == "music_policy":
+                plan.music_policy = "jukebox_menus" if on else "retail"
             else:
                 setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
+        if plan.scorebug_runtime:
+            plan.scorebug = plan.xbe_space = True
+        if plan.music_userlist:
+            plan.music_policy = "jukebox_menus"
         if plan.depth_chart_rows:
             # the rows build on the pools, the scheme labels and the playbook roles: switch on whatever the source lacks
             state = self._state or {}
@@ -542,6 +553,11 @@ class GameplayPatchesPanel(QWidget):
         return plan
 
     def _refresh(self) -> None:
+        if "music_userlist" in self.checks:
+            enabled = self.checks["music_policy"].isChecked() or (self._state or {}).get("music_policy") == "applied"
+            self.checks["music_userlist"].setEnabled(enabled and (self._state or {}).get("music_userlist") == "retail")
+            if not enabled:
+                self.checks["music_userlist"].setChecked(False)
         any_on = any(c.isChecked() for c in self.checks.values())
         self.write_button.setEnabled(any_on and bool(self.source_field.text()) and bool(self.target_field.text())
                                      and self._task is None and not self._reading)
