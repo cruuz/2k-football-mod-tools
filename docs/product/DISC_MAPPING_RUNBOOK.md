@@ -60,16 +60,17 @@ Madden 2004 with its 1.7 GB movie container in about 40 s.
 
 For each studio page, look at the containers whose decompressed formats feed it:
 
-| page | feeding formats | day-one rung when the format is… |
+| page | feeding formats | rung TODAY (the map alone), and what lifts it |
 |---|---|---|
-| Uniforms & Equipment, Field Art, Stadiums (textures), All Textures | `MMAP` | read-only-mapped (inventory) → extract-only once a PNG decoder exists for that title |
+| Uniforms & Equipment, Field Art, Stadiums (textures), All Textures | `MMAP` | **read-only-mapped** today; extract-only only after a PNG decoder for that title's MMAP exists (none exists for EA titles yet) |
 | Names, Numbers & Faces; Text & Team Identity (team data) | `TDB` members, bare `.DB` files | read-only-mapped (schema + rows) → offline-writer-proved only when an independent verifier exists |
-| Text & Team Identity, Menus & UI | `TEXT` members | read-only-mapped → extract-only |
-| Audio | `SCHl` | extract-only (decode to WAV) only if a decoder exists; otherwise read-only-mapped; never a writer (no public encoder) |
+| Text & Team Identity, Menus & UI | `TEXT` members | **read-only-mapped** today; extract-only after a TEXT decoder |
+| Audio | `SCHl` | **read-only-mapped** today (no SCHl decoder in the fork); extract-only after one; never a writer (no public encoder) |
 | Stadiums (geometry) | `SMF` | read-only-mapped |
 | Playbooks & Plays, Gameplay | executable / data | `unknown` until a lane exists; the code-patch scaffold is `unknown` |
 | The Crib, Saves | not on the disc | honest empty page |
 
+Write the rung as it stands TODAY in the fork and name what lifts it in the "blocked by" column; never write the future rung.
 A container that is `COMP` with LZH1 members can be read but **not rewritten** until an LZH1 encoder
 exists; note "read-only until the LZH1 encoder" on every writer row it would block. A `DATA`
 container, or a `COMP` container whose relevant members are stored (codec 0), can be rewritten with

@@ -43,9 +43,9 @@ MMAP members: <n> across <k> containers; dimensions (top): <WxH ×n, …>. Faces
 
 TEXT members: <n> (<bytes>). SCHl members: <n> in <containers>. Nested TERF: <n>.
 
-## Page-by-page: what a studio could offer on day one
+## Page-by-page: what a studio could offer today (rungs as they stand, not as they could be)
 
-| page | feeding containers | format | day-one rung | blocked by |
+| page | feeding containers | format | rung today | what lifts it |
 |---|---|---|---|---|
 | Uniforms & Equipment | | | | |
 | Names, Numbers & Faces | | | | |

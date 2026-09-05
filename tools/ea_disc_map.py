@@ -123,7 +123,7 @@ def schema_signature(schema: Dict[str, Any]) -> str:
 # --------------------------------------------------------------------------
 # containers
 # --------------------------------------------------------------------------
-def map_terf(data, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_000) -> Dict[str, Any]:
+def map_terf(data, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_000, depth: int = 0) -> Dict[str, Any]:
     """One TERF container, as counts: chain, codecs, formats, MMAP sizes, TDB schemas, TEXT totals."""
     container = ea_terf.parse_terf(data, allow_size_mismatch=True)
     result: Dict[str, Any] = {
@@ -133,6 +133,9 @@ def map_terf(data, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_00
         "formats": container.format_histogram(), "layout_violations": container.layout_violations()[:8],
     }
     dims: Counter = Counter()
+    nested_formats: Dict[str, int] = {}
+    nested_tdb = 0
+    nested_schemas: set = set()
     text_members = 0
     text_bytes = 0
     nested = 0
@@ -164,6 +167,16 @@ def map_terf(data, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_00
                 pass
         elif kind == "TERF":
             nested += 1
+            if depth < 1:
+                try:
+                    inner = map_terf(container.member(index), schemas, depth=depth + 1)
+                    for fmt, n in inner["formats"].items():
+                        nested_formats[fmt] = nested_formats.get(fmt, 0) + n
+                    nested_tdb += len(inner["tdb_members"])
+                    for sig in {t.get("schema") for t in inner["tdb_members"] if t.get("schema")}:
+                        nested_schemas.add(sig)
+                except (ea_terf.TerfError, ValueError, MapError):
+                    nested_formats["undecodable"] = nested_formats.get("undecodable", 0) + 1
         elif kind == "TDB":
             try:
                 schema = tdb_schema(container.member(index))
@@ -177,6 +190,9 @@ def map_terf(data, schemas: Dict[str, Dict[str, Any]], *, max_mmap: int = 100_00
     result["text_members"] = text_members
     result["text_bytes"] = text_bytes
     result["nested_terf"] = nested
+    result["nested_formats"] = dict(sorted(nested_formats.items(), key=lambda kv: -kv[1]))
+    result["nested_tdb_members"] = nested_tdb
+    result["nested_schemas"] = sorted(nested_schemas)
     result["undecodable"] = undecodable
     result["unclassified_heads"] = dict(unknown_heads.most_common(8))
     result["tdb_members"] = tdb_members
@@ -339,7 +355,9 @@ def render_markdown(m: Dict[str, Any]) -> str:
         formats = ", ".join(f"{k} {v}" for k, v in sorted(c["formats"].items(), key=lambda kv: -kv[1]))
         mm = ", ".join(f"{k} ×{v}" for k, v in list(c["mmap_dimensions"].items())[:4])
         notes = []
-        if c["nested_terf"]: notes.append(f"{c['nested_terf']} nested TERF")
+        if c["nested_terf"]:
+            inner = ", ".join(f"{k} {v}" for k, v in list(c.get("nested_formats", {}).items())[:5])
+            notes.append(f"{c['nested_terf']} nested TERF" + (f" holding {inner}" if inner else "") + (f"; {c['nested_tdb_members']} TDB inside" if c.get("nested_tdb_members") else ""))
         if c["undecodable"]: notes.append(f"{c['undecodable']} undecodable")
         if c["layout_violations"]: notes.append(f"{len(c['layout_violations'])} layout violations")
         if c["size_mismatch"]: notes.append(f"size mismatch {c['size_mismatch']:+,}")
@@ -423,11 +441,13 @@ def selftest() -> int:
         checks += 1
     mmap = b"MMAP" + struct.pack("<I", 2) + b"\x00\x01\x02\x03" + struct.pack("<HH", 1, 1) + struct.pack("<I", 1) + struct.pack("<I", 0x2a0) + struct.pack("<I", 0x28) + struct.pack("<III", 0x240, 0x290, 0) + struct.pack("<HH", 32, 32) + bytes(0x2a0 - 44)
     text = b"TEXT" + bytes(60)
-    container = ea_terf.build_terf([db, mmap, text, b""], chunk="DATA")
+    inner_terf = ea_terf.build_terf([db, text], chunk="DATA")
+    container = ea_terf.build_terf([db, mmap, text, b"", inner_terf], chunk="DATA")
     schemas: Dict[str, Dict[str, Any]] = {}
     mapped = map_terf(container, schemas)
-    check(mapped["members"] == 4 and mapped["chain"].startswith("TERF"), "container parsed: %s" % mapped["chain"])
-    check(mapped["formats"].get("TDB") == 1 and mapped["formats"].get("MMAP") == 1, "formats %s" % mapped["formats"])
+    check(mapped["nested_terf"] == 1 and mapped["nested_formats"].get("TDB") == 1 and mapped["nested_tdb_members"] == 1, "nested TERF recursed: %s" % mapped["nested_formats"])
+    check(mapped["members"] == 5 and mapped["chain"].startswith("TERF"), "container parsed: %s" % mapped["chain"])
+    check(mapped["formats"].get("TDB") == 1 and mapped["formats"].get("MMAP") == 1 and mapped["formats"].get("TERF") == 1, "formats %s" % mapped["formats"])
     check(mapped["mmap_dimensions"].get("32x32") == 1, "mmap dims %s" % mapped["mmap_dimensions"])
     check(len(mapped["tdb_members"]) == 1 and len(schemas) == 1, "tdb member schema recorded once")
     comp = ea_terf.build_terf([db, mmap], chunk="COMP")
