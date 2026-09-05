@@ -53,9 +53,11 @@ GAMES_ROOT = Path(__file__).resolve().parent
 class RefusedGame:
     """A package under the games root that could not be hosted, and why.
 
-    ``title``, ``platform``, ``version`` and ``contract`` are read leniently
-    from the package's ``game.json`` so a chooser can still show *which* game
-    was refused; each falls back to ``"?"`` when the manifest cannot say.
+    ``title``, ``platform``, ``console``, ``game``, ``year``, ``version`` and
+    ``contract`` are read leniently from the package's ``game.json`` so a
+    chooser can still show *which* game was refused -- including the studio
+    label it would have had; each falls back to ``"?"`` when the manifest
+    cannot say.
     """
 
     directory: str
@@ -64,16 +66,30 @@ class RefusedGame:
     platform: str = "?"
     version: str = "?"
     contract: str = "?"
+    console: str = "?"
+    game: str = "?"
+    year: str = "?"
 
     @property
     def game_id(self) -> str:
         return self.directory
 
+    @property
+    def studio_label(self) -> str:
+        """The label the module would have carried, when its manifest says enough."""
+
+        if "?" in (self.console, self.game, self.year):
+            return self.title if self.title != "?" else self.directory
+        return f"{self.console} {self.game} {self.year} Studio"
+
 
 def _lenient_fields(directory: Path) -> dict[str, str]:
     """Display fields from a possibly-invalid manifest; never raises."""
 
-    fields = {"title": "?", "platform": "?", "version": "?", "contract": "?"}
+    fields = {
+        "title": "?", "platform": "?", "version": "?", "contract": "?",
+        "console": "?", "game": "?", "year": "?",
+    }
     try:
         document = json.loads((directory / MANIFEST_NAME).read_text(encoding="utf-8"))
     except (OSError, ValueError):

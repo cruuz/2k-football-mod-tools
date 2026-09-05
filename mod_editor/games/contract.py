@@ -100,6 +100,77 @@ _CLASSIFICATIONS = (
     "unknown",
     "unsafe/deferred",
 )
+#: The shapes an editor value may take.  A lane names the shape through
+#: :class:`Field`; ``check_edit`` stays the authority on whether a value fits.
+_FIELD_KINDS = (
+    "text",
+    "int",
+    "float",
+    "bool",
+    "choice",
+    "colour_argb",
+    "png",
+    "wav",
+    "name_pick",
+    "note",
+)
+
+#: The studio's pages, in the Xbox studio's order, as ``(page_id, title)``.
+#: Every game's studio has all of them: a page whose lane does not exist yet is
+#: present and says why, never hidden and never a dead button.
+PAGE_ORDER: tuple[tuple[str, str], ...] = (
+    ("uniforms", "Uniforms & Equipment"),
+    ("rosters", "Names, Numbers & Faces"),
+    ("identity", "Text & Team Identity"),
+    ("field_art", "Field Art & Create-Team Art"),
+    ("stadiums", "Stadiums"),
+    ("presentation", "Presentation"),
+    ("menus", "Menus & UI"),
+    ("crib", "The Crib"),
+    ("audio", "Audio"),
+    ("gameplay", "Gameplay"),
+    ("playbooks", "Playbooks & Plays"),
+    ("textures", "All Textures"),
+    ("saves", "Saves"),
+    ("build", "Build & Share"),
+)
+
+#: Which page hosts a lane of a given capability-registry surface, by default.
+#: A lane may name its own ``page`` instead; :func:`lane_page` reads both.  A
+#: surface that two pages could claim is filed under the page that owns the
+#: whole surface (``menus`` under *Menus & UI*, ``textures`` under *All
+#: Textures*, ``logos_cards`` under *Text & Team Identity*); a lane that
+#: belongs on the other page says so with ``page``.  The four surfaces the
+#: shell plan's table does not name -- the two model surfaces, the cross-title
+#: franchise restoration and the mode/state graph -- are filed on the nearest
+#: page here rather than left without one.
+SURFACE_PAGES: Mapping[str, str] = MappingProxyType({
+    "audio": "audio",
+    "catching_drops": "gameplay",
+    "colors": "identity",
+    "cpu_ai_draft": "gameplay",
+    "crib_assets": "crib",
+    "cross_title_model_conversion": "stadiums",
+    "franchise_restoration_cross_title": "saves",
+    "gameplay_tuning_sliders": "gameplay",
+    "logos_cards": "identity",
+    "menus": "menus",
+    "mode_state_routing": "gameplay",
+    "models_shap_scne": "stadiums",
+    "players_rosters": "rosters",
+    "portraits_faces": "rosters",
+    "saves": "saves",
+    "schedules_franchise": "saves",
+    "scorebug_presentation": "presentation",
+    "scripts_config": "playbooks",
+    "stadiums_fields": "stadiums",
+    "textures": "textures",
+    "uniforms": "uniforms",
+})
+
+#: Where a lane goes when its surface is not in :data:`SURFACE_PAGES`: the
+#: catch-all asset page, so a lane is always reachable somewhere.
+_FALLBACK_PAGE = "textures"
 
 
 class ContractError(ValidationError):
@@ -247,12 +318,54 @@ class SourceIdentifier(Protocol):
 # --------------------------------------------------------------------------
 
 @dataclass(frozen=True)
+class Field:
+    """One editable value of a target, in the shape an editor should draw it.
+
+    ``kind`` is one of ``text``, ``int``, ``float``, ``bool``, ``choice``,
+    ``colour_argb``, ``png``, ``wav``, ``name_pick``, ``note``.  ``choices``
+    lists the admissible values of a ``choice``; ``minimum`` and ``maximum``
+    bound a number.  A field is the *shape* of a value, never the rule:
+    ``Lane.check_edit`` stays the only authority on whether an edit fits, so a
+    shell that draws a field it does not understand can still ask the lane.
+    """
+
+    key: str
+    kind: str
+    label: str
+    help: str = ""
+    choices: tuple[Any, ...] = ()
+    minimum: Optional[float] = None
+    maximum: Optional[float] = None
+    read_only: bool = False
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.key, str) or not self.key.strip():
+            raise ContractError("A field needs a non-empty key.")
+        if self.kind not in _FIELD_KINDS:
+            raise ContractError(
+                f"Field {self.key}: kind {self.kind!r} is not one of "
+                + ", ".join(_FIELD_KINDS) + "."
+            )
+        if not isinstance(self.label, str) or not self.label.strip():
+            raise ContractError(f"Field {self.key}: label must be a non-empty string.")
+        if not isinstance(self.choices, tuple):
+            raise ContractError(f"Field {self.key}: choices must be a tuple.")
+        for name in ("minimum", "maximum"):
+            value = getattr(self, name)
+            if value is not None and not isinstance(value, (int, float)):
+                raise ContractError(f"Field {self.key}: {name} must be a number or None.")
+        if type(self.read_only) is not bool:
+            raise ContractError(f"Field {self.key}: read_only must be a bool.")
+
+
+@dataclass(frozen=True)
 class Target:
     """One editable thing a lane's catalogue names.
 
     ``key`` is the selector the lane's recipe schema takes; ``budget`` is the
     fixed allocation in the user's words ("9 characters", "two 4-byte words");
-    ``raw`` is the lane's own catalogue row, read-only.
+    ``raw`` is the lane's own catalogue row, read-only.  ``fields`` is what an
+    editor shows for the target -- the shape only; ``check_edit`` is the rule.
     """
 
     key: str
@@ -261,12 +374,18 @@ class Target:
     budget: str = ""
     searchable: str = ""
     raw: Mapping[str, Any] = field(default_factory=dict)
+    fields: tuple[Field, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.key, str) or not self.key.strip():
             raise ContractError("A target needs a non-empty key.")
         if not isinstance(self.label, str) or not self.label.strip():
             raise ContractError(f"Target {self.key}: label must be a non-empty string.")
+        if not isinstance(self.fields, tuple) or not all(isinstance(item, Field) for item in self.fields):
+            raise ContractError(f"Target {self.key}: fields must be a tuple of Field.")
+        keys = [item.key for item in self.fields]
+        if len(keys) != len(set(keys)):
+            raise ContractError(f"Target {self.key}: two fields claim one key.")
         object.__setattr__(self, "raw", _frozen(self.raw))
 
 
@@ -473,6 +592,94 @@ class Lane(Protocol):
         ...
 
 
+@runtime_checkable
+class ReadOnlyLane(Lane, Protocol):
+    """A lane that only catalogues: ``plan``, ``build`` and ``verify`` refuse.
+
+    An inventory is the shape: it names what is on the user's source, with
+    sizes and digests, and writes nothing ever.  The shell renders its page as
+    *inspect* -- a target table and no editor.
+
+    ``read_only`` is the marker.  A protocol that added no member would match
+    every lane at runtime (``isinstance`` asks only which members exist), so a
+    read-only lane declares ``read_only = True`` and the shell reads the
+    value, not merely the class.
+    """
+
+    read_only: bool
+
+
+@dataclass(frozen=True)
+class EncodedArt:
+    """What an :class:`ArtLane` made of a user's PNG: the bytes and their size.
+
+    ``png`` is the image as the lane would deliver it (a PCSX2 replacement
+    pack carries PNGs), ``width`` and ``height`` the size it settled on, and
+    ``note`` whatever the lane wants the user told -- "scaled 2x, PCSX2 scales
+    it back", "palette reduced to 256 colours".  A PNG the lane cannot take is
+    a :class:`Refusal` naming the size it wanted, never a silent resize.
+    """
+
+    png: bytes
+    width: int
+    height: int
+    note: str = ""
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.png, (bytes, bytearray)) or not self.png:
+            raise ContractError("Encoded art needs non-empty PNG bytes.")
+        for name in ("width", "height"):
+            value = getattr(self, name)
+            if type(value) is not int or value <= 0:
+                raise ContractError(f"Encoded art needs a positive {name}.")
+        object.__setattr__(self, "png", bytes(self.png))
+
+
+@runtime_checkable
+class ArtLane(Lane, Protocol):
+    """A lane whose targets are texture art, previewable and replaceable.
+
+    The shell's art pages get preview, Export PNG, Import PNG and *Write
+    PCSX2 pack* from these three methods and nothing else.
+    """
+
+    def decode_png(self, source: Path, target: Target) -> bytes:
+        """The target's art from the user's own source, as PNG bytes."""
+        ...
+
+    def encode(self, source: Path, target: Target, png: bytes) -> EncodedArt:
+        """Take the user's PNG for ``target``, or :class:`Refusal` with the size it wanted."""
+        ...
+
+    def replacement_identity(self, target: Target) -> Optional[str]:
+        """The PCSX2 replacement filename for the target, or None when the game does not run there."""
+        ...
+
+
+@runtime_checkable
+class AudioLane(Lane, Protocol):
+    """A lane whose targets are sounds: the page gets Play and Export WAV."""
+
+    def decode_wav(self, source: Path, target: Target) -> bytes:
+        """The target's sound from the user's own source, as WAV bytes."""
+        ...
+
+
+def lane_page(lane: Any) -> str:
+    """Which studio page hosts ``lane``: its own ``page``, else its surface's.
+
+    ``page`` is deliberately *not* a member of :class:`Lane`: making it one
+    would refuse every lane written before the shell existed.  A lane that
+    names one wins; otherwise :data:`SURFACE_PAGES` decides from the lane's
+    capability-registry surface.
+    """
+
+    named = getattr(lane, "page", None)
+    if isinstance(named, str) and named.strip():
+        return named.strip()
+    return SURFACE_PAGES.get(getattr(lane, "surface", ""), _FALLBACK_PAGE)
+
+
 # --------------------------------------------------------------------------
 # Executable patches: a lane kind for code changes, pnach-first.
 # --------------------------------------------------------------------------
@@ -629,6 +836,11 @@ class GameManifest:
     The gates -- registry validation, release staging, the runtime closure --
     read this file and the fragments it names.  They never import the game.
     Paths are relative to the package directory and may not escape it.
+
+    ``console``, ``game`` and ``year`` are the three display fields the core
+    composes :attr:`studio_label` from ("PS2", "NFL", "2K5" -> "PS2 NFL 2K5
+    Studio").  ``title`` and ``platform`` stay: they are the long forms a
+    detail pane and a receipt use.
     """
 
     schema: str
@@ -636,6 +848,9 @@ class GameManifest:
     package: str
     title: str
     platform: str
+    console: str
+    game: str
+    year: str
     version: str
     contract: str
     registry_fragment: str
@@ -648,13 +863,19 @@ class GameManifest:
     #: release allowlist, for ``python -m mod_editor.games fragments``.
     #: Optional in ``game.json``; defaults to the package's own directory.
     allowlist_patterns: tuple[str, ...] = ()
+    #: ``{page_id: sentence}``: the game's own reason a studio page has no
+    #: lane yet, shown under the core's default sentence.  Optional.
+    page_notes: Mapping[str, str] = field(default_factory=dict)
 
     _REQUIRED = (
-        "schema", "game_id", "package", "title", "platform", "version", "contract",
+        "schema", "game_id", "package", "title", "platform", "console", "game", "year",
+        "version", "contract",
         "registry_fragment", "allowlist_fragment", "pins",
         "product_modules", "tool_modules",
     )
-    _OPTIONAL = ("allowlist_patterns",)
+    #: ``(key, maximum length, whitespace allowed)`` for the three label fields.
+    _LABEL_FIELDS = (("console", 8, False), ("game", 24, True), ("year", 8, False))
+    _OPTIONAL = ("allowlist_patterns", "page_notes")
 
     def __post_init__(self) -> None:
         if self.schema != MANIFEST_SCHEMA:
@@ -668,6 +889,24 @@ class GameManifest:
                 f"{self.root / MANIFEST_NAME}: declares contract {self.contract!r}; this core "
                 f"hosts {CONTRACT_SCHEMA}."
             )
+        for name, limit, spaces_allowed in self._LABEL_FIELDS:
+            value = getattr(self, name)
+            if not isinstance(value, str) or not value.strip() or len(value) > limit:
+                raise ContractError(
+                    f"{self.root / MANIFEST_NAME}: {name} is {value!r}; it must be 1 to "
+                    f"{limit} characters. The studio label is composed as "
+                    "'<console> <game> <year> Studio'."
+                )
+            if not spaces_allowed and any(character.isspace() for character in value):
+                raise ContractError(
+                    f"{self.root / MANIFEST_NAME}: {name} is {value!r}; it must not contain "
+                    "whitespace (the studio label separates the three fields with spaces)."
+                )
+            if value != value.strip():
+                raise ContractError(
+                    f"{self.root / MANIFEST_NAME}: {name} is {value!r}; it must not begin or "
+                    "end with whitespace."
+                )
         if _VERSION_RE.fullmatch(self.version or "") is None:
             raise ContractError(
                 f"{self.root / MANIFEST_NAME}: version {self.version!r} must look like 1.2.3 "
@@ -687,6 +926,38 @@ class GameManifest:
                 raise ContractError(f"{self.root / MANIFEST_NAME}: {name} must be a list of strings.")
         if not self.allowlist_patterns:
             object.__setattr__(self, "allowlist_patterns", (f"mod_editor/games/{self.root.name}/*",))
+        pages = {page_id for page_id, _title in PAGE_ORDER}
+        unknown = sorted(set(self.page_notes) - pages)
+        if unknown:
+            raise ContractError(
+                f"{self.root / MANIFEST_NAME}: page_notes names {unknown}, which are not studio "
+                "pages; the pages are " + ", ".join(sorted(pages)) + "."
+            )
+        for page_id, note in self.page_notes.items():
+            if not isinstance(note, str) or not note.strip():
+                raise ContractError(
+                    f"{self.root / MANIFEST_NAME}: the page_notes entry for {page_id!r} must be "
+                    "one non-empty sentence."
+                )
+        object.__setattr__(self, "page_notes", _frozen(self.page_notes))
+
+    @property
+    def studio_label(self) -> str:
+        """``"<console> <game> <year> Studio"`` -- composed here, never hand-typed.
+
+        One rule for every game, so a second title reads like the first:
+        ``PS2 NFL 2K5 Studio``, ``PS2 Madden 09 Studio``, ``PS2 NCAA 06
+        Studio``.  A module that spells the label out in its own files is
+        refused by the conformance harness.
+        """
+
+        return f"{self.console} {self.game} {self.year} Studio"
+
+    def page_note(self, page_id: str) -> str:
+        """The game's own sentence about why a page is not available yet, if any."""
+
+        note = self.page_notes.get(page_id, "")
+        return note if isinstance(note, str) else ""
 
     def _fragment_path(self, relative: str, name: str) -> Path:
         if not isinstance(relative, str) or not relative or Path(relative).is_absolute() or ".." in Path(relative).parts:
@@ -768,6 +1039,14 @@ def load_manifest(package_dir: Path) -> GameManifest:
     root = Path(package_dir)
     path = root / MANIFEST_NAME
     document = _read_json(path)
+    label_fields = [name for name, _limit, _spaces in GameManifest._LABEL_FIELDS]
+    absent = [key for key in label_fields if key not in document]
+    if absent:
+        raise ContractError(
+            f"{path}: a game module must declare " + ", ".join(absent) + " in game.json; the "
+            "studio label is composed as '<console> <game> <year> Studio' and is never "
+            "hand-typed (e.g. \"console\": \"PS2\", \"game\": \"NFL\", \"year\": \"2K5\")."
+        )
     missing = [key for key in GameManifest._REQUIRED if key not in document]
     extra = sorted(set(document) - set(GameManifest._REQUIRED) - set(GameManifest._OPTIONAL))
     if missing or extra:
@@ -779,6 +1058,9 @@ def load_manifest(package_dir: Path) -> GameManifest:
         if key in ("product_modules", "tool_modules", "allowlist_patterns"):
             if not isinstance(value, list):
                 raise ContractError(f"{path}: {key} must be a list.")
+        elif key == "page_notes":
+            if not isinstance(value, dict):
+                raise ContractError(f"{path}: page_notes must be an object of page id to sentence.")
         elif not isinstance(value, str):
             raise ContractError(f"{path}: {key} must be a string.")
     return GameManifest(
@@ -787,6 +1069,9 @@ def load_manifest(package_dir: Path) -> GameManifest:
         package=document["package"],
         title=document["title"],
         platform=document["platform"],
+        console=document["console"],
+        game=document["game"],
+        year=document["year"],
         version=document["version"],
         contract=document["contract"],
         registry_fragment=document["registry_fragment"],
@@ -796,6 +1081,7 @@ def load_manifest(package_dir: Path) -> GameManifest:
         tool_modules=tuple(document["tool_modules"]),
         root=root,
         allowlist_patterns=tuple(document.get("allowlist_patterns", [])),
+        page_notes=dict(document.get("page_notes", {})),
     )
 
 
@@ -814,6 +1100,11 @@ class GameModule:
     windows: tuple[WindowSpec, ...]
     manifest: GameManifest
     package: str
+    #: The window id of this module's studio -- the one the chooser opens and
+    #: the one ``python -m mod_editor.games open <game>`` opens with no
+    #: ``--window``.  It must name one of :attr:`windows`; every other window
+    #: stays reachable by id.  ``"studio"`` by convention.
+    studio_window: str
 
     def __post_init__(self) -> None:
         if not accepts_contract(self.contract):
@@ -867,6 +1158,16 @@ class GameModule:
         flags = [window.flag for window in self.windows]
         if len(window_ids) != len(set(window_ids)) or len(flags) != len(set(flags)):
             raise ContractError(f"Game {self.identity.game_id}: window ids or flags repeat.")
+        if not isinstance(self.studio_window, str) or not self.studio_window.strip():
+            raise ContractError(
+                f"Game {self.identity.game_id}: studio_window must name the window that is this "
+                "module's studio; its windows are " + (", ".join(window_ids) or "none") + "."
+            )
+        if self.studio_window not in window_ids:
+            raise ContractError(
+                f"Game {self.identity.game_id}: studio_window {self.studio_window!r} is not one "
+                "of its windows (" + (", ".join(window_ids) or "none") + ")."
+            )
 
     @property
     def game_id(self) -> str:
@@ -876,6 +1177,12 @@ class GameModule:
     def version(self) -> str:
         """The module's own version, declared once in its manifest."""
         return self.manifest.version
+
+    @property
+    def studio(self) -> WindowSpec:
+        """The module's studio window: what the chooser and ``open`` open."""
+
+        return self.window(self.studio_window)
 
     def lane(self, lane_id: str) -> Lane:
         for candidate in self.lanes:
@@ -919,7 +1226,7 @@ def contract_surface() -> dict[str, tuple[str, ...]]:
             surface[name] = tuple(sorted(members))
         elif callable(value) and getattr(value, "__module__", None) == __name__:
             surface[name] = ("function",)
-        elif isinstance(value, (str, int, tuple)):
+        elif isinstance(value, (str, int, tuple, MappingProxyType)):
             surface[name] = ("constant",)
     return surface
 
@@ -927,6 +1234,8 @@ def contract_surface() -> dict[str, tuple[str, ...]]:
 __all__ = [
     "ALLOWED_CORE_IMPORTS",
     "Artifact",
+    "ArtLane",
+    "AudioLane",
     "SHARED_FORMATS_PACKAGE",
     "CONTRACT_MAJOR",
     "CONTRACT_MINOR",
@@ -938,6 +1247,8 @@ __all__ = [
     "ContractError",
     "DeclaredRange",
     "Edit",
+    "EncodedArt",
+    "Field",
     "GAME_ATTRIBUTE",
     "GameIdentity",
     "GameManifest",
@@ -945,13 +1256,16 @@ __all__ = [
     "Lane",
     "MANIFEST_NAME",
     "MANIFEST_SCHEMA",
+    "PAGE_ORDER",
     "MipsPatch",
     "MipsWord",
     "PINS_SCHEMA",
     "Plan",
     "REGISTRY_FRAGMENT_SCHEMA",
+    "ReadOnlyLane",
     "Receipt",
     "Refusal",
+    "SURFACE_PAGES",
     "SourceIdentifier",
     "SourceIdentity",
     "Target",
@@ -959,6 +1273,7 @@ __all__ = [
     "WindowSpec",
     "accepts_contract",
     "contract_surface",
+    "lane_page",
     "load_manifest",
     "parse_contract",
     "require",
