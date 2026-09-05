@@ -101,7 +101,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         cls.patched, _ = pools.apply(cls.patched)
-        cls.patched, _ = rows.apply(cls.patched)
+        cls.patched, cls.rows_receipt = rows.apply(cls.patched)
+        if rows.status(cls.patched) != "applied":
+            raise AssertionError("SPECIAL rows and summary spacing did not compose")
         from mod_editor.core import nfl2k5_depth_locks as locks
         cls.patched, _ = locks.apply(cls.patched)
         from mod_editor.core import nfl2k5_practice_reserves as practice_reserves
@@ -226,6 +228,18 @@ class PatchWriteTests(unittest.TestCase):
         self.assertFalse(image.runtime_writable(code["va"], code["size"]))
         self.assertTrue(image.runtime_writable(data["va"], data["size"]))
 
+
+
+    def test_special_spacing_is_an_existing_data_descriptor_not_code_storage(self) -> None:
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        self.assertEqual(image.section(rows.SUMMARY_STYLE_VA, 48).name, ".data")
+        self.assertTrue(image.runtime_writable(rows.SUMMARY_STYLE_VA, 48))
+        self.assertEqual(rows._read(self.patched, rows.SUMMARY_STYLE_VA, 48), rows.SUMMARY_STYLE_BYTES)
+        self.assertTrue(any(e["label"] == "summary_row_spacing" and e["size"] == 48
+                            for e in self.rows_receipt["edits"]))
+        self.assertEqual(image.section(rows.SUMMARY_LABEL_WIDTH_VA, 4).name, ".rdata")
 
 if __name__ == "__main__":
     unittest.main()

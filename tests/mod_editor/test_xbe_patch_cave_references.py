@@ -54,7 +54,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         cls.patched, _ = pools.apply(cls.patched)
-        cls.patched, _ = rows.apply(cls.patched)
+        cls.patched, cls.rows_receipt = rows.apply(cls.patched)
+        if rows.status(cls.patched) != "applied":
+            raise AssertionError("SPECIAL rows and summary spacing did not compose")
         cls.stack = cls.patched
         from mod_editor.core import nfl2k5_practice_squad as ps
         cls.patched, _ps_receipt = ps.apply(cls.stack)
@@ -229,6 +231,17 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual(evidence["manifest_overlaps"], [])
         self.assertEqual(XbeImage(self.patched).read(storage.SECTION_VA, storage.RETAIL_SIZE),
                          image.read(storage.SECTION_VA, storage.RETAIL_SIZE))
+
+    def test_special_spacing_reuses_its_live_descriptor_without_a_new_cave(self) -> None:
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        entry = next(e for e in self.rows_receipt["edits"] if e["label"] == "summary_row_spacing")
+        self.assertEqual(int(entry["va"], 16), rows.SUMMARY_STYLE_VA)
+        self.assertEqual(entry["size"], len(rows.RETAIL_SUMMARY_STYLE))
+        self.assertTrue(self.sec[".data"][0] <= rows.SUMMARY_SPACING_VA < self.sec[".data"][1])
+        self.assertEqual(rows._read(self.patched, rows.SUMMARY_SPACING_VA, 4), struct.pack("<f", 1))
+        self.assertTrue(self.sec[".rdata"][0] <= rows.SUMMARY_LABEL_WIDTH_VA < self.sec[".rdata"][1])
+        self.assertTrue(any(e["label"] == "summary_label_width" and e["size"] == 4
+                            for e in self.rows_receipt["edits"]))
 
     def test_depth_locks_use_only_in_place_routine_rewrites(self) -> None:
         from mod_editor.core import nfl2k5_depth_locks as locks
