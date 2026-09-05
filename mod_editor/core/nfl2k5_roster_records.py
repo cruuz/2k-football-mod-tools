@@ -410,6 +410,19 @@ SKIN_GROUPS = ("Lightest", "Light", "Light Medium", "Dark Medium", "Dark", "Dark
 
 # Derived controls that write a rating byte for you: the segmented Power Run Style the game's own
 # editor shows, and the throw-style parity bit that moves without disturbing the Scramble magnitude.
+ABILITY_BITS = {
+    "speedster": ("unknown_52", 0x20),
+    "right_stick_moves": ("unknown_52", 0x40),
+    "juke": ("unknown_52", 0x80),
+    "spin": ("unknown_53_high", 0x01),
+    "truck": ("unknown_53_high", 0x02),
+    "hurdle": ("unknown_53_high", 0x04),
+    "stiff_arm": ("unknown_53_high", 0x08),
+}
+ABILITY_LABELS = {"speedster": "Speedster", "right_stick_moves": "Right-Stick Moves",
+                  "juke": "Juke (phase 2)", "spin": "Spin (phase 2)",
+                  "truck": "Shoulder Charge / Truck (phase 2)",
+                  "hurdle": "Hurdle (phase 2)", "stiff_arm": "Stiff-Arm (phase 2)"}
 VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style")
 
 ENUMS: dict[str, Sequence[str]] = {
@@ -870,14 +883,30 @@ class PlayerRecord:
         value = self.values["unknown_52"]
         self.values["unknown_52"] = value | bit if enabled else value & ~bit
 
+    @property
+    def abilities(self) -> dict[str, bool]:
+        return {name: bool(self.values[field] & bit) for name, (field, bit) in ABILITY_BITS.items()}
+
+    def set_ability(self, name: str, enabled: bool) -> None:
+        _require(name in ABILITY_BITS, f"unknown ability {name!r}")
+        _require(isinstance(enabled, bool), "enabled must be a boolean")
+        field, bit = ABILITY_BITS[name]
+        self.values[field] = self.values[field] | bit if enabled else self.values[field] & ~bit
+
     # ------------------------------------------------------------------ raw field access
     def get(self, name: str) -> int:
+        if name in ABILITY_BITS:
+            return int(self.abilities[name])
         if name in COMPOSITE_FIELDS or name in VIRTUAL_FIELDS:
             return int(getattr(self, name))
         _require(name in FIELD_BY_NAME, f"no roster field named {name!r}")
         return self.values[name]
 
     def set(self, name: str, value: int) -> None:
+        if name in ABILITY_BITS:
+            _require(value in (0, 1), "ability accepts 0 or 1")
+            self.set_ability(name, bool(value))
+            return
         if name in COMPOSITE_FIELDS or name in VIRTUAL_FIELDS:
             setattr(self, name, int(value))
             return
@@ -1451,6 +1480,30 @@ class RosterDocument:
         self.free_agent_count_field = fa_count
         self.original_free_agents: tuple[int, ...] = tuple(self.free_agents)
         self.free_agent_capacity = self._measure_free_agent_capacity()
+        # Reserve ownership is separate from active pointers and keyed by stable identity.
+        from . import nfl2k5_practice_squad as ps
+        self.reserve_owner: dict[tuple[str, int], int] = {}
+        self.reserves: dict[int, tuple[int, ...]] = {}
+        for team in self.teams:
+            raw = bytes(b[team.offset:team.offset + TEAM_SIZE])
+            metadata = (raw[ps.VERSION_OFFSET], raw[ps.COUNT], raw[ps.MARKER_OFFSET])
+            # Legacy corrupt active lists remain available to the existing repair UI.
+            # Any reserve metadata must pass the strict storage decoder.
+            try:
+                ids = ps.reserve_list(raw, team_offset=team.offset,
+                                      player_pool_offset=self.primary_table) if metadata != (0, 0, 0) else ()
+                for index in ids:
+                    key = ("primary", index)
+                    _require(key not in self.reserve_owner, "duplicate reserve owner")
+                    target = self.primary_table + index * PLAYER_SIZE
+                    _require(target in self.by_offset and self.by_offset[target].pool == "primary",
+                             "reserve index outside primary pool")
+                    _require(not any(t < CLUB_TEAM_COUNT for t in self.by_offset[target].teams)
+                             and target not in self.free_agents, "reserve has another owner")
+                    self.reserve_owner[key] = team.index
+                self.reserves[team.index] = ids
+            except ps.PracticeSquadError as exc:
+                raise RosterRecordError(f"{team.display}: {exc}") from exc
         # names, colleges and groups
         name_offsets: list[int] = []
         self.name_refs: dict[int, int] = {}
@@ -1470,6 +1523,11 @@ class RosterDocument:
             player.college_index = self.college_record_index.get(record_offset) if record_offset is not None else None
             player.college = self.colleges[player.college_index] if player.college_index is not None else ""
             self._reclassify(player, free_agent_set)
+        if self.reserve_owner:
+            try:
+                ps.validate_save(bytes(b))
+            except ValueError as exc:
+                raise RosterRecordError(str(exc)) from exc
 
     def _reclassify(self, player: Player, free_agent_set: set[int] | None = None) -> str:
         """team / free_agent / draft_class / pool from the lists and the +0x08 flags.
@@ -1479,7 +1537,9 @@ class RosterDocument:
 
         members = free_agent_set if free_agent_set is not None else set(self.free_agents)
         kind = player.record.values["player_type"]
-        if player.teams:
+        if (player.pool, player.index) in self.reserve_owner:
+            player.group = "reserve"
+        elif player.teams:
             player.group = "team"
         elif player.offset in members:
             player.group = "free_agent"
@@ -1690,6 +1750,78 @@ class RosterDocument:
                 for key, players in groups.items() if len(players) > 1]
 
     # ------------------------------------------------------------------ membership
+    def reserve_players(self, team_index: int) -> list[Player]:
+        return [self.by_offset[self.primary_table + index * PLAYER_SIZE]
+                for index in self.reserves.get(team_index, ())]
+
+    def adopt_body(self, payload: bytes) -> None:
+        """Publish re-decoded bytes, retaining objects held by the UI and undo commands."""
+        _require(len(payload) == len(self.body), "the roster arena changed size")
+        fresh = RosterDocument(payload, base=self.base, source=self.source, container=self.container,
+                               resource_header=self.resource_header, scheme=self.scheme)
+        old_players = {(p.pool, p.index): p for p in self.players}
+        _require(set(old_players) == {(p.pool, p.index) for p in fresh.players},
+                 "pool remapping requires an explicit complete identity map")
+        _require(all(old_players[p.pool, p.index].offset == p.offset for p in fresh.players),
+                 "pool relocation requires an explicit identity remap")
+        _require(len(fresh.teams) == len(self.teams), "team remapping requires an explicit identity map")
+        # Re-decoding a membership move must not forget freed name allocations.
+        # Retain the known arena bounds, then rediscover free gaps from live strings.
+        for old_pool, new_pool in ((self.names, fresh.names), (self.college_pool, fresh.college_pool)):
+            if old_pool is None or new_pool is None:
+                continue
+            new_pool.start = min(old_pool.start, new_pool.start)
+            new_pool.end = max(old_pool.end, new_pool.end)
+            cursor, free = new_pool.start, {}
+            for offset, allocation in sorted(new_pool.blocks.items()):
+                if offset > cursor:
+                    free[cursor] = offset - cursor
+                cursor = max(cursor, offset + allocation.capacity)
+            if cursor < new_pool.end:
+                free[cursor] = new_pool.end - cursor
+            new_pool.free = free
+        original, detection = self.original, self.scheme_detection
+        for i, player in enumerate(fresh.players):
+            current = old_players[player.pool, player.index]
+            _require(current.offset == player.offset, "pool relocation requires an explicit identity remap")
+            current.__dict__.update(player.__dict__)
+            fresh.players[i] = current
+            fresh.by_offset[current.offset] = current
+        for i, team in enumerate(fresh.teams):
+            current = self.teams[i]
+            current.__dict__.update(team.__dict__)
+            fresh.teams[i] = current
+        self.__dict__.update(fresh.__dict__)
+        self.original, self.scheme_detection = original, detection
+
+    def reserve_move_check(self, team_index: int, primary_index: int, *, promote: bool) -> None:
+        from . import nfl2k5_practice_squad as ps
+        try:
+            ps.reserve_transaction(self.to_body(), team_index, primary_index,
+                                   promote=promote, check_only=True)
+        except ValueError as exc:
+            raise MembershipRefused(str(exc)) from exc
+
+    def _reserve_move(self, team_index: int, primary_index: int, *, promote: bool) -> dict[str, Any]:
+        from . import nfl2k5_practice_squad as ps
+        try:
+            candidate, receipt = ps.reserve_transaction(self.to_body(), team_index, primary_index, promote=promote)
+            self.adopt_body(candidate)
+        except ValueError as exc:
+            raise MembershipRefused(str(exc)) from exc
+        return receipt
+
+    def promote_reserve(self, team_index: int, primary_index: int) -> dict[str, Any]:
+        return self._reserve_move(team_index, primary_index, promote=True)
+
+    def demote_active(self, team_index: int, primary_index: int) -> dict[str, Any]:
+        return self._reserve_move(team_index, primary_index, promote=False)
+
+    def check_depth_locks(self) -> None:
+        for team in self.teams:
+            _require(not self.depth_lock_conflicts(team.index),
+                     f"{team.display}: conflicting depth locks; unlock or assign distinct rows before saving")
+
     def team_of(self, player: Player) -> int | None:
         """The first team this player is listed on (a club before an all-star side), or None."""
 
@@ -1700,6 +1832,9 @@ class RosterDocument:
     def club_of(self, player: Player) -> int | None:
         """The NFL club (or created-team slot) the player is on, ignoring the all-star squads."""
 
+        owner = self.reserve_owner.get((player.pool, player.index))
+        if owner is not None:
+            return owner
         clubs = [index for index in player.teams if index < CLUB_TEAM_COUNT]
         return min(clubs) if clubs else None
 
@@ -1712,10 +1847,33 @@ class RosterDocument:
     def check_operation(self, player: Player, operation: str) -> None:
         """Finn's refusals, before any list is touched."""
 
+        _require(self.by_offset.get(player.offset) is player, "player belongs to another document")
+        if (player.pool, player.index) in self.reserve_owner:
+            raise MembershipRefused("Promote this team's reserve before signing, moving, releasing, swapping or placing on IR")
+        from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
+        if is_franchise_save(bytes(self.body)):
+            ir = FranchiseSave(bytes(self.body)).injured_reserve()
+            if player.pool == "primary" and any(e.player_index == player.index for e in ir):
+                raise MembershipRefused("Activate this player from injured reserve first")
+        if any(self.reserves.values()):
+            from .nfl2k5_practice_squad import validate_save
+            try:
+                validate_save(self.to_body())
+            except ValueError as exc:
+                raise MembershipRefused(str(exc)) from exc
+        if player.record.on_injured_reserve:
+            raise MembershipRefused("Activate this player from injured reserve first")
         if self.is_draft_class(player):
             raise MembershipRefused(f"{MSG_DRAFT_CLASS} {player.display}: {DRAFT_CLASS_WHY}.")
         if operation == "injured_reserve" and self.is_free_agent(player) and not player.teams:
             raise MembershipRefused(MSG_FREE_AGENT_IR)
+
+    def membership_limit(self, team_index: int) -> int:
+        from .nfl2k5_franchise_save import is_franchise_save, SEASON_BLOCK, S_STAGE
+        limit = TEAM_SLOTS - len(self.reserves.get(team_index, ()))
+        if is_franchise_save(bytes(self.body)) and self.body[SEASON_BLOCK + S_STAGE] >= 8:
+            limit = min(limit, 53)
+        return limit
 
     def _team_for_membership(self, team_index: int) -> TeamRecord:
         _require(0 <= team_index < len(self.teams), f"no team {team_index}")
@@ -1801,6 +1959,7 @@ class RosterDocument:
             if other is not None:
                 raise MembershipRefused(f"{player.display} is on {self.teams[other].display}; move him "
                                         "between teams instead of signing him twice")
+        maximum = min(maximum, self.membership_limit(team_index))
         if len(team.slots) >= maximum:
             raise MembershipRefused(f"{MSG_SIGN_MAX_PLAYERS} {team.display} has {len(team.slots)} "
                                     f"(the cap is {maximum}).")
@@ -1836,6 +1995,7 @@ class RosterDocument:
         _require(player.offset not in target.slots, f"{player.display} is already on {target.display}")
         if len(source.slots) - 1 < minimum:
             raise MembershipRefused(MSG_RELEASE_MINIMUM.format(team=source.display, minimum=minimum))
+        maximum = min(maximum, self.membership_limit(to_team))
         if len(target.slots) >= maximum:
             raise MembershipRefused(f"{MSG_SIGN_MAX_PLAYERS} {target.display} has {len(target.slots)} "
                                     f"(the cap is {maximum}).")
@@ -1888,13 +2048,17 @@ class RosterDocument:
         """Everything the membership operations touch, for undo: every team list, the free-agent
         list and every record's rank/side bits."""
 
-        return {"teams": {team.index: list(team.slots) for team in self.teams},
+        return {"body": self.to_body(),
+                "teams": {team.index: list(team.slots) for team in self.teams},
                 "free_agents": list(self.free_agents),
                 "depth_locks": {p.offset: p.record.values["unknown_52"] for p in self.players},
                 "depth": {p.offset: (p.record.values["depth_rank"], p.record.values["depth_side"])
                           for p in self.players}}
 
     def restore_membership(self, snapshot: Mapping[str, Any]) -> None:
+        if "body" in snapshot:
+            self.adopt_body(snapshot["body"])
+            return
         for team in self.teams:
             team.slots = list(snapshot["teams"][team.index])
         self.free_agents = list(snapshot["free_agents"])
@@ -1947,18 +2111,32 @@ class RosterDocument:
                 free.append(target)
         return slots, free
 
-    def _membership_map(self, slots: Mapping[int, Sequence[int]], free: Sequence[int]) -> dict[int, str]:
+    def _read_reserve_lists(self, body: bytes | bytearray) -> dict[int, tuple[int, ...]]:
+        from . import nfl2k5_practice_squad as ps
+        result = {}
+        for team in self.teams:
+            raw = body[team.offset:team.offset + TEAM_SIZE]
+            result[team.index] = (ps.reserve_list(raw, team_offset=team.offset,
+                                                  player_pool_offset=self.primary_table)
+                                  if (raw[ps.VERSION_OFFSET], raw[ps.COUNT], raw[ps.MARKER_OFFSET]) != (0, 0, 0) else ())
+        return result
+
+    def _membership_map(self, slots: Mapping[int, Sequence[int]], free: Sequence[int],
+                        reserves: Mapping[int, Sequence[int]] | None = None) -> dict[int, str]:
         """offset -> membership text, for one load state of the lists."""
 
         by_offset: dict[int, list[tuple[int, int, int]]] = {}
         for team_index, members in slots.items():
             for slot, offset in enumerate(members):
                 by_offset.setdefault(offset, []).append((team_index, slot, len(members)))
+        reserve_owners = {index: team for team, indices in (reserves or {}).items() for index in indices}
         free_set = set(free)
         out: dict[int, str] = {}
         for player in self.players:
             entries = sorted(by_offset.get(player.offset, []))
-            if entries:
+            if player.pool == "primary" and player.index in reserve_owners:
+                text = f"{self.teams[reserve_owners[player.index]].abbreviation} Reserves"
+            elif entries:
                 team_index, slot, count = entries[0]
                 text = f"{self.teams[team_index].abbreviation} ({slot + 1} of {count})"
                 extra = [self.teams[t].abbreviation for t, _s, _c in entries[1:]]
@@ -1976,20 +2154,24 @@ class RosterDocument:
     def membership_text(self, player: Player) -> str:
         """Where the player is now: ``IND (12 of 53)``, ``IND (3 of 53) + AMW``, ``Free Agents``…"""
 
+        owner = self.reserve_owner.get((player.pool, player.index))
+        if owner is not None:
+            return f"{self.teams[owner].abbreviation} Reserves"
         return self._membership_map({t.index: t.slots for t in self.teams}, self.free_agents)[player.offset]
 
     def original_membership(self) -> dict[int, str]:
         """offset -> membership text as the roster was loaded (or as ``original`` says)."""
 
         slots, free = self._read_lists(self.original, self.teams, self.obj_base, self.by_offset)
-        return self._membership_map(slots, free)
+        return self._membership_map(slots, free, self._read_reserve_lists(self.original))
 
     def membership_changes(self) -> list[dict[str, Any]]:
         """Every player whose team / free-agent membership differs from the load state."""
 
         slots, free = self._read_lists(self.original, self.teams, self.obj_base, self.by_offset)
-        before_map = self._membership_map(slots, free)
-        now_map = self._membership_map({t.index: t.slots for t in self.teams}, self.free_agents)
+        before_reserves = self._read_reserve_lists(self.original)
+        before_map = self._membership_map(slots, free, before_reserves)
+        now_map = self._membership_map({t.index: t.slots for t in self.teams}, self.free_agents, self.reserves)
         before_teams: dict[int, list[tuple[int, int]]] = {}
         for team_index, members in slots.items():
             for slot, offset in enumerate(members):
@@ -2001,7 +2183,9 @@ class RosterDocument:
             was_teams = sorted(before_teams.get(player.offset, []))
             now_teams = sorted((t, self.teams[t].slots.index(player.offset)) for t in player.teams)
             if [t for t, _s in was_teams] == [t for t, _s in now_teams] and \
-                    (player.offset in before_free) == (player.offset in now_free):
+                    (player.offset in before_free) == (player.offset in now_free) and \
+                    [t for t, ids in before_reserves.items() if player.pool == "primary" and player.index in ids] == \
+                    [t for t, ids in self.reserves.items() if player.pool == "primary" and player.index in ids]:
                 continue
             out.append({"pool": player.pool, "index": player.index, "name": player.display,
                         "was": before_map[player.offset], "now": now_map[player.offset],
@@ -2032,13 +2216,14 @@ class RosterDocument:
                     struct.pack_into("<i", out, field_offset, target - field_offset + 1)
                 continue
             _require(team.clean_parse, f"{team.display}: cannot rewrite a list that did not parse cleanly")
-            for slot in range(TEAM_SLOTS):
-                field_offset = team.offset + slot * 4
-                if slot < len(team.slots):
-                    struct.pack_into("<i", out, field_offset, team.slots[slot] - field_offset + 1)
-                else:
-                    struct.pack_into("<i", out, field_offset, 0)
-            out[team.offset + TEAM_PLAYER_COUNT] = len(team.slots)
+            from . import nfl2k5_practice_squad as ps
+            raw = bytes(out[team.offset:team.offset + TEAM_SIZE])
+            # Snapshot reserves before moving the active boundary.
+            active = [(offset - self.primary_table) // PLAYER_SIZE for offset in team.slots]
+            out[team.offset:team.offset + TEAM_SIZE] = ps.repack_team(
+                raw, active, self.reserves[team.index], team_offset=team.offset,
+                player_pool_offset=self.primary_table, player_count=len(self.by_pool("primary")),
+                mark=bool(raw[ps.VERSION_OFFSET]))
         if tuple(self.free_agents) != self.original_free_agents:
             _require(self.free_agent_list is not None, "this roster has no free-agent list")
             _require(len(self.original_free_agents) == self.free_agent_count_field,
@@ -2054,6 +2239,14 @@ class RosterDocument:
                     struct.pack_into("<i", out, field_offset, self.free_agents[index] - field_offset + 1)
                 else:
                     struct.pack_into("<i", out, field_offset, 0)
+        if self.version == 0 and any(self.body[t.offset + 0x19b] == 1 for t in self.teams):
+            from . import nfl2k5_practice_squad as ps
+            try:
+                for team in self.teams[:32]:
+                    if team.changed or team.repaired:
+                        out = bytearray(ps.recompute_salary(bytes(out), team.index))
+            except ValueError as exc:
+                raise MembershipRefused(str(exc)) from exc
         return bytes(out)
 
     def changed_offsets(self) -> list[int]:
@@ -2426,10 +2619,13 @@ class SaveContainer:
                 _require(overwrite or not item.exists(), f"{item} exists")
                 item.write_bytes(data)
             written = str(destination)
+        reopened = SaveContainer.load(destination, require_signature=True)
+        _require(reopened.savegame == payload, "signed-copy SAVEGAME.DAT read-back differs")
+        _require(reopened.members == members, "signed-copy members differ on read-back")
         untouched = [name for name in self.members if name not in (self.savegame_name, self.extra_name)]
         return {"target": written, "kind": self.kind, "savegame": self.savegame_name,
                 "extra": self.extra_name, "extra_sha1": members[self.extra_name].hex(),
-                "members_copied_byte_for_byte": untouched, "signed": True}
+                "members_copied_byte_for_byte": untouched, "signed": True, "readback_verified": True}
 
 
 def _member_named(members: Mapping[str, bytes], leaf: str) -> str | None:
@@ -2469,8 +2665,12 @@ def save_document(document: RosterDocument, target: Path | str, *, overwrite: bo
 
     _require(document.container is not None, "this document did not come from a save container")
     assert document.container is not None
+    document.check_depth_locks()
     payload = document.to_body()        # for a save-loaded document this is the whole arena
     _require(len(payload) == len(document.container.savegame), "the arena changed size; refusing to write")
+    from .nfl2k5_practice_squad import validate_save
+    if document.version == 0 or any(document.reserves.values()):
+        validate_save(payload)
     return document.container.write(target, payload, overwrite=overwrite)
 
 
@@ -2478,6 +2678,14 @@ def save_document(document: RosterDocument, target: Path | str, *, overwrite: bo
 def edits_document(document: RosterDocument, *, name: str = "", author: str = "") -> dict[str, Any]:
     """A sparse, shareable record of everything changed since load (the Build & Share asset)."""
 
+    document.check_depth_locks()
+    from . import nfl2k5_practice_squad as ps
+    for team in document.teams:
+        raw = document.original[team.offset:team.offset + TEAM_SIZE]
+        old = (ps.reserve_list(raw, team_offset=team.offset, player_pool_offset=document.primary_table)
+               if (raw[ps.VERSION_OFFSET], raw[ps.COUNT], raw[ps.MARKER_OFFSET]) != (0, 0, 0) else ())
+        _require(old == document.reserves[team.index],
+                 "Reserve moves require a signed-save copy; Build & Share cannot represent these moves")
     edits = []
     for entry in document.diff():
         player = next(p for p in document.players if p.pool == entry["pool"] and p.index == entry["index"])
@@ -2605,6 +2813,7 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             fields_written += 1
             changed = True
         applied += 1 if changed else 0
+    roster.check_depth_locks()
     out = roster.to_body()
     return out, {"edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
@@ -2756,7 +2965,7 @@ CSV_IDENTITY = ("pool", "index", "team", "first", "last", "position", "jersey", 
                 "face_mask", "face_shield", "mouthpiece", "turtleneck", "sleeves", "neck_roll",
                 "left_glove", "right_glove", "left_wrist", "right_wrist", "left_elbow",
                 "right_elbow", "left_shoe", "right_shoe", "depth_rank", "depth_side", "player_type")
-CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER
+CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS)
 CSV_READ_ONLY = frozenset({"pool", "index"})
 FREE_AGENT_CSV_WORDS = frozenset({"free_agent", "free agents", "free agent", "fa"})
 
@@ -2766,7 +2975,9 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
     birth = record.birth_date
     row: dict[str, Any] = {
         "pool": player.pool, "index": player.index,
-        "team": document.teams[player.teams[0]].abbreviation if player.teams else player.group,
+        "team": (f"reserve:{document.teams[document.reserve_owner[player.pool, player.index]].abbreviation}"
+                 if (player.pool, player.index) in document.reserve_owner else
+                 document.teams[player.teams[0]].abbreviation if player.teams else player.group),
         "first": player.first, "last": player.last, "position": record.position_name,
         "jersey": record.values["jersey"], "years_pro": record.values["years_pro"],
         "height": record.values["height"], "weight": record.weight,
@@ -2793,6 +3004,7 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
         "depth_rank": record.values["depth_rank"], "depth_side": record.values["depth_side"],
         "player_type": record.values["player_type"],
     }
+    row.update({name: int(value) for name, value in record.abilities.items()})
     row.update(record.ratings())
     return row
 
@@ -2887,6 +3099,8 @@ def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
 
     record = player.record
     if column == "team":
+        if value == _csv_row(document, player)["team"]:
+            return 0, ""
         return _apply_csv_team(document, player, value)
     if column in ("first", "last"):
         if value == getattr(player, column):
@@ -2937,7 +3151,7 @@ def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
             new = instead
     else:
         new = _enum_value(column, value) if column in ENUMS else int(value)
-    if record.values.get(column) == new:
+    if (record.get(column) if column in ABILITY_BITS else record.values.get(column)) == new:
         return 0, note
     record.set(column, new)
     return 1, note
@@ -3300,7 +3514,7 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
     and ``["EDGE"]`` select the same players and a condition written on a retail disc still runs on
     a one-pool one."""
 
-    _require(attribute in FIELD_BY_NAME or attribute in COMPOSITE_FIELDS or attribute in VIRTUAL_FIELDS,
+    _require(attribute in ABILITY_BITS or attribute in FIELD_BY_NAME or attribute in COMPOSITE_FIELDS or attribute in VIRTUAL_FIELDS,
              f"no roster field named {attribute!r}")
     _require(mode in ("equal", "add", "percent"), "mode must be equal, add or percent")
     if attribute == "position":
@@ -3334,7 +3548,7 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
             after = before + int(round(value))
         else:
             after = int(round(before * (1.0 + value / 100.0)))
-        ceiling = len(ENUMS[attribute]) - 1 if attribute in VIRTUAL_FIELDS else maximum
+        ceiling = 1 if attribute in ABILITY_BITS else len(ENUMS[attribute]) - 1 if attribute in VIRTUAL_FIELDS else maximum
         after = max(minimum, min(ceiling, after))
         if after != before:
             out.append({"pool": player.pool, "index": player.index, "name": player.display,

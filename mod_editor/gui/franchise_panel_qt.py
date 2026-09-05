@@ -131,6 +131,10 @@ class FranchiseEdit:
             save.set_coach_field(int(a["coach"]), str(a["name"]), int(a["value"]))
         elif self.kind == "ir_place":
             save.place_on_injured_reserve(int(a["team"]), int(a["player"]))
+        elif self.kind == "promote_reserve":
+            save.promote_reserve(int(a["team"]), int(a["player"]))
+        elif self.kind == "demote_active":
+            save.demote_active(int(a["team"]), int(a["player"]))
         elif self.kind == "ir_activate":
             save.activate_from_injured_reserve(int(a["team"]), int(a["player"]))
         else:
@@ -174,6 +178,7 @@ class FranchisePanel(QWidget):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
+        self.shared_roster_panel = None
         self._container: rr.SaveContainer | None = None
         self._document: rr.RosterDocument | None = None
         self._base = b""
@@ -588,11 +593,22 @@ class FranchisePanel(QWidget):
             self._last_error = "the roster arena changed size"
             self._set_status(f"Refused: {self._last_error}")
             return False
-        if body != self._base:
+        if self.shared_roster_panel is not None:
             self._base = body
-            self._rebuild()
+            self._save = self._fresh_save()
+            self._save.original = bytes(self._container.savegame)
+            self._last_error = ""
             self._refresh_all()
-        return True
+            return True
+        if body != self._base:
+            old_base = self._base
+            self._base = body
+            if not self._rebuild():
+                self._base = old_base
+                return False
+            self._refresh_all()
+            return True
+        return self._rebuild()
 
     # ------------------------------------------------------------------ the journal
     def _fresh_save(self) -> fs.FranchiseSave:
@@ -600,36 +616,43 @@ class FranchisePanel(QWidget):
         return fs.FranchiseSave(self._base, container=self._container, source=str(self._container.path),
                                 base_year=self._base_year)
 
-    def _rebuild(self) -> None:
-        """The live save = base + edits[:cursor].  An edit the roster pulled the rug from under is dropped and said."""
-
+    def _rebuild(self) -> bool:
+        """Replay on a private candidate. A failed ownership edit stays in the journal."""
         save = self._fresh_save()
-        applied = 0
-        for edit in self._edits[:self._cursor]:
-            try:
+        try:
+            for edit in self._edits[:self._cursor]:
                 edit.apply(save)
-            except (fs.FranchiseSaveError, rr.RosterRecordError) as exc:
-                self._set_status(f"Dropped a franchise edit the roster changed underneath: {edit.label} ({exc})")
-                break
-            applied += 1
-        if applied != self._cursor:
-            del self._edits[applied:]
-            self._cursor = applied
+            from mod_editor.core.nfl2k5_practice_squad import validate_save
+            validate_save(save.to_bytes())
+        except ValueError as exc:
+            self._last_error = f"Franchise journal replay refused: {exc}"
+            self._set_status(self._last_error)
+            return False
+        self._last_error = ""
         self._save = save
+        return True
 
     def push(self, edit: FranchiseEdit) -> bool:
         """Apply one edit to the live save and journal it; a refusal restores the live save and says why."""
 
         if self._save is None:
             return False
+        if self.shared_roster_panel is not None:
+            return self.shared_roster_panel._franchise_edit(edit)
+        if not self.sync_from_roster():
+            return False
+        candidate = fs.FranchiseSave(self._save.to_bytes(), container=self._container)
+        candidate.original = self._save.original
         try:
-            edit.apply(self._save)
-        except (fs.FranchiseSaveError, rr.RosterRecordError) as exc:
+            edit.apply(candidate)
+            from mod_editor.core.nfl2k5_practice_squad import validate_save
+            validate_save(candidate.to_bytes())
+        except ValueError as exc:
             self._last_error = str(exc)
-            self._rebuild()                                     # set_game can have written a byte before refusing
             self._refresh_all()
             self._set_status(f"Refused: {exc}")
             return False
+        self._save = candidate
         del self._edits[self._cursor:]
         self._edits.append(edit)
         self._cursor += 1
@@ -639,28 +662,39 @@ class FranchisePanel(QWidget):
         return True
 
     def undo(self) -> str:
+        if self.shared_roster_panel is not None:
+            return self.shared_roster_panel.undo()
         if self._cursor == 0:
             return ""
         self._cursor -= 1
         label = self._edits[self._cursor].label
-        self._rebuild()
+        if not self._rebuild():
+            self._cursor += 1
+            return ""
         self._checks_stale = True
         self._refresh_all()
         self._set_status(f"Undid: {label}")
         return label
 
     def redo(self) -> str:
+        if self.shared_roster_panel is not None:
+            return self.shared_roster_panel.redo()
         if self._cursor >= len(self._edits) or self._save is None:
             return ""
+        if not self.sync_from_roster():
+            return ""
         edit = self._edits[self._cursor]
+        candidate = fs.FranchiseSave(self._save.to_bytes(), container=self._container)
+        candidate.original = self._save.original
         try:
-            edit.apply(self._save)
-        except (fs.FranchiseSaveError, rr.RosterRecordError) as exc:
-            del self._edits[self._cursor:]
-            self._rebuild()
+            edit.apply(candidate)
+            from mod_editor.core.nfl2k5_practice_squad import validate_save
+            validate_save(candidate.to_bytes())
+        except ValueError as exc:
             self._refresh_all()
             self._set_status(f"Could not redo {edit.label}: {exc}")
             return ""
+        self._save = candidate
         self._cursor += 1
         self._checks_stale = True
         self._refresh_all()
@@ -766,6 +800,9 @@ class FranchisePanel(QWidget):
         self.dirty_label.setText(f"● {count} franchise edit{'s' if count != 1 else ''} (not yet written)" if count else "")
         self.undo_button.setEnabled(loaded and self._cursor > 0)
         self.redo_button.setEnabled(loaded and self._cursor < len(self._edits))
+        if self.shared_roster_panel is not None:
+            self.undo_button.setEnabled(loaded and self.shared_roster_panel.undo_stack.can_undo())
+            self.redo_button.setEnabled(loaded and self.shared_roster_panel.undo_stack.can_redo())
         self.undo_button.setToolTip(f"Undo: {self._edits[self._cursor - 1].label}" if self._cursor else "")
         self.redo_button.setToolTip(f"Redo: {self._edits[self._cursor].label}" if self._cursor < len(self._edits) else "")
 

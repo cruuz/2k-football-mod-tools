@@ -338,107 +338,43 @@ protected artifact was regenerated in this task.
 ---
 
 # Depth locks handoff — 2026-09-05
+# Rosters UI integration handoff, 2026-09-05
 
-The executable patch, record APIs, native screen setters, safety gates and
-bounded execution tests are implemented in this branch. This handoff is the
-remaining work in the brief's protected files. No GUI, build orchestrator,
-throw-tuning orchestrator or release allowlist was edited here.
+The host implementation is complete in this branch. Protected files were not edited.
+Reserve transactions use signed save copies. Abilities are stored flags only.
+No new save allocation, XBE allocation, native menu, or abilities runtime is added.
 
-## Build integration for Claude
+## Required packaging changes
 
-1. Add an experimental, opt-in `BuildPlan.depth_locks: bool = False` flag,
-   availability and source-status entries, recipe serialization and receipt
-   display. Use `nfl2k5_depth_locks.status(xbe_bytes)` and
-   `apply(xbe_bytes) -> (bytes, receipt)`. `read_any` gives per-site diagnostics.
-   Do not advertise the feature as runtime witnessed. It works with retail
-   depth rows or the existing expanded rows; it requires no position split.
-2. Run the patch after the shared XBE pass, position pools and depth-chart
-   rows in `mod_editor/core/mod_build.py`, following the existing pure-byte
-   post-passes. Feed its result into the existing XBE/section writer. Apply is
-   idempotent; mixed/foreign code refuses before mutation. Enable the existing
-   returner fix alongside it so unlocked CPU picks receive that bug fix too.
-   Both orders with returner fix and both sides of rows expansion are tested.
-3. Add the module to `packaging/release-allowlist.txt` and the relevant build
-   availability/recipe tests. There is no assembler dependency at runtime:
-   embedded bytes are verified against the annotated `.S` source in tests.
-4. **Regenerate `data/nfl2k5_cave_reservations.json` after wiring this flag.**
-   No new cave or absolute flag was allocated, but six in-place spans now
-   have an additional owner and player pad byte +0x52 bits 0..4 are assigned.
-   Ensure the manifest builder actually enables/observes `depth_locks`; simply
-   rerunning the old preset without the new flag would miss it. The apply
-   receipt declares the full span of every edit, including unchanged padding.
-   Keep the oracle's source-drift check intact. Until regeneration, the old
-   manifest does not describe this new stack.
+Add these exact lines to `packaging/release-allowlist.txt`:
 
-   ```sh
-   python3 tools/nfl2k5_cave_oracle.py manifest \
-     '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
-     --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
-     --work-dir /tmp \
-     --json data/nfl2k5_cave_reservations.json
-   ```
-
-5. Use the existing output-copy workflow. The new patch performs no file I/O.
-   If adding descriptor-based XBE/disc I/O, include
-   `getattr(os, "O_BINARY", 0)` in `os.open` flags on Windows; `Path.read_bytes`
-   / `write_bytes` and `open(..., "rb"/"wb")` already use binary mode.
-
-## ★ Rosters integration for Claude — no GUI edits made here
-
-The compatibility codec key `unknown_52` is retained so existing record
-imports, exports, exact round trips and diffs keep their schema. Its low five
-bits are now depth locks; high bits remain unowned and untouched. Star tags
-at +0x53 are independent.
-
-```python
-player.record.depth_locks
-# {'rank': bool, 'side': bool, 'kr1': bool, 'kr2': bool, 'pr': bool}
-
-document.set_depth_lock(player, 'rank', True)   # current rank, including LT/LG
-
-document.set_depth_lock(player, 'side', True)   # current side, including RT/RG
-
-document.set_depth_lock(player, 'kr1', True)    # transfers this team's KR1 claim
-
-document.set_depth_lock(player, 'pr', False)    # releases a claim
-
-document.depth_lock_conflicts(team_index)       # diagnoses duplicate imports
+```text
+mod_editor/core/nfl2k5_depth_locks.py
+mod_editor/core/nfl2k5_cave_oracle.py
 ```
 
-- Add a Locks column with independent Rank, Side, KR1, KR2 and PR controls,
-  using the document API for writes. Display LT/LG when a T/G has rank 0;
-  RT/RG when it has side 0. A player can be on both lists. Do not describe the
-  two fields as a single global roster order.
-- Wrap edits in the normal undo transaction. A returner role transfer changes
-  its previous owner's bit too; undo must include those records. Membership
-  snapshots now include locks; transfer/release/rerank clears departing
-  assignments and undo restores them. Normal `to_body()` persists all bits.
-- Call `depth_lock_conflicts` before saving an edited lock selection. Resolve
-  imported collisions explicitly; the patch preserves conflicting locked
-  rank values, and a duplicate returner claim resolves to the lowest current
-  roster index. Row 7 is overflow, not a unique starter slot.
-- Show a note when the target executable lacks the patch: record bits alone
-  do not stop a retail executable's auto-depth. Studio returner bit edits take
-  effect at the next patched compaction; this API does not immediately rewrite
-  saved team returner indices. A build UI must not imply otherwise.
-- The existing studio ↑/↓ API `move_in_depth` only moves team pointers. It does
-  **not** set rank/side, so do not wire it as an assignment/lock control without
-  actually changing the desired chain. Use the existing rank/side fields for
-  assigning rows, then set the lock. Never attach a lock just to a list reorder.
-- Keep an Unlock action in the studio. The game adds no new label or controller
-  binding: swapping in the existing depth screen locks the changed chain on
-  both participants; confirmed KR/PR choices and bench promotions lock their
-  resulting assignments. Re-selecting returners transfers their claims.
+The roster record API already imported the depth-lock module lazily; the Locks
+column now exercises that import whenever players are displayed. The depth-lock
+module imports `XbeImage` from the cave oracle. Both files are absent from this
+checkout's allowlist. Its other runtime imports (`nfl2k5_bump_strength`,
+`nfl2k5_modern_positions`, `nfl2k5_returner_fix`, `nfl2k5_depth_chart_rows`) are
+already listed. Capstone and the assembler are not needed by the host controls.
+The salary arithmetic is pure Python; the optional native parity test is not a
+product dependency.
 
-Lock storage is per player, as are retail depth fields. Shared all-star player
-records share their bits; a removal from any roster clears that player's
-claims. A newly cloned/recreated player is not promised to inherit pad bits.
+Add `mod_editor.core.nfl2k5_depth_locks` and
+`mod_editor.core.nfl2k5_cave_oracle` to `product_modules` in
+`packaging/check_2k5_mod_studio_runtime.py`. Exercise `PlayerRecord.abilities`,
+`depth_locks`, the two reserve transaction entry points, and an offscreen
+`RosterEditorPanel` load from a synthetic signed save when extending that check.
+The existing roster, franchise, save codec and practice-squad modules are
+already in the release closure; no additional product module was created here.
 
-## Noah's in-game checklist
+Regenerate `data/nfl2k5_cave_reservations.json` with the existing oracle command
+once the final beta-61 stack is composed. Host edits changed source fingerprints;
+no cave capacity or runtime address was added. Do not edit fingerprints manually.
 
-Use a disposable franchise/save and the built executable carrying the patch.
-These checks are still required; no game, GUI, audio or console emulator was
-launched for this work.
+## Dispatcher and Build UI contract
 
 1. With CPU depth management enabled, move a visibly worse T into the LT
    starting row using the game's existing selection/move action. That swap
@@ -1345,3 +1281,53 @@ This job edits only its listed modules, their tests, its pack and deliverables. 
 ## Future runtime Spy lookup
 
 `PlayCreateRequest.spy_slots` is serialized as `spy_intent = {"schema": "nfl2k5_spy_intent/v1", "slots": [5]}` per authored play. It is part of the selector hash. After final index assignment, the compiler receipt emits `spy_intent.records` containing `play_index`, `slot`, `intent="spy"`, `runtime_available=false`, and a matching `zone_donor_play_index`. The containing receipt identifies the book/asset and source/replacement SHA-256. This is authoring intent, not a PLAY opcode or XBE flag. A later allocator-backed patch must consume the lookup and implement its own identity/lifecycle contract. PLAY bytes alone cannot recover intent; an ordinary shallow zone is deliberately identical.
+For the host changes in this job, `_apply_all` gets **no new tuple or kwarg**;
+the four status dictionaries get **no host-only patch state**. `BuildPlan` gets
+**no reserve-move or abilities field**, and basic / advanced / experimental
+presets enable **none** of these data edits automatically. There is no new
+Gameplay Patches `PATCHES` entry, `NEEDS_IMAGE` entry or Build `_option` for
+abilities or reserve moves. The existing export signal is retained; reserve
+moves disable roster JSON export and the core exporter refuses direct calls.
+
+The prior depth-lock runtime handoff is still separate protected work. If wiring
+that existing patch as part of the release, its concrete contract is:
+
+- Import `nfl2k5_depth_locks as depth_locks_patch` in throw tuning. Add
+  `depth_locks: bool = False` to `_apply_all`, `write_xbe_copy`,
+  `write_image_copy`, their forwarding calls and the no-op request guard.
+  The dispatcher tuple is `(depth_locks, "depth_locks", depth_locks_patch)`.
+  Use `status(payload)` and `apply(payload) -> (bytes, receipt)` in the existing
+  pure-byte dispatcher and receipt pattern. Ensure final ordering in `mod_build`
+  is after position pools and expanded rows. Enable `returner_fix` with locks.
+- Add `"depth_locks": depth_locks_patch.status(payload)` to `read_xbe` and
+  `read_image`; use `result` in `write_xbe_copy`'s result dictionary and `after`
+  in `write_image_copy`'s result dictionary. Those are the four status dicts.
+- `BuildPlan.depth_locks: bool = False`; basic and advanced presets off;
+  experimental preset may opt in with `returner_fix=True`. Include availability,
+  source inspection, recipe round trips, plan serialization and receipt text.
+- Gameplay Patches tuple: key `depth_locks`, caption `Persistent depth locks`,
+  text `Retail auto-depth can replace your assignments. Patch: keep independent
+  Rank, Side, KR1, KR2 and PR selections. Experimental and unwitnessed in game.`
+  Include `depth_locks` in `NEEDS_IMAGE`, following the existing XBE patch gates.
+- Build `_option` caption: `Keep depth and returner assignments` (34 characters).
+  Include the checkbox in load/store/availability and selected-options summaries.
+- The two allowlist and runtime-closure imports above also satisfy this patch.
+  The six existing patch spans are already exercised by the two XBE safety
+  suites; this branch corrects their expanded-row context validation. Retain
+  those tests and regenerate the manifest after wiring the final plan.
+
+## Capability metadata
+
+This adds controls inside the existing `players_rosters` / `saves` surfaces,
+not a new surface enum or router destination. A release registry entry can use
+`nfl2k5.players.roster_save_management`, backend
+`mod_editor.core.nfl2k5_roster_records` (`operation: write`),
+`classification: offline-writer-proved`, game `nfl2k5_xbox`, surface
+`players_rosters`, and GUI `expose: true`, `mode: edit`,
+`default_enabled: false`. Evidence is `ASTRA_ROSTERS_UI_REPORT.md` and the three
+new `test_rosters_*` files. Runtime status must remain `not-tested`, with the
+report's human witness list; abilities have no gameplay effect in this release.
+Input constraints: stable pool/index, version-0 save for reserve moves, valid
+ownership/IR and storage, 53 promotion limit, 12 reserves, 65 physical slots,
+masked lock/star/ability fields, and signed output copies. Do not widen the
+older `nfl2k5.players.disc_roster` entry's narrow legacy writer claims.

@@ -500,24 +500,25 @@ class SharedBytesTests(_PanelCase):
         self.assertTrue(self.page.place_on_ir(0, 2))
         receipt, written = self.write()
         expected = fs.FranchiseSave(document.to_body())
-        expected.place_on_injured_reserve(0, 2)
+        # The roster and franchise pages now expose the same composed ownership state.
         self.assertEqual(written, expected.to_bytes())
         back = fs.FranchiseSave(written)
         self.assertEqual(back.team_player_indices(0), [3, 1])
         self.assertEqual(back.team_player_indices(1), [0, 4, 5])
         self.assertEqual([(e.team, e.player_index) for e in back.injured_reserve()], [(0, 2)])
-        # the roster page pulling the rug: IR James, then swap him away on the roster page -> the IR edit is dropped and said
+        # Ownership edits are visible immediately; an IR player cannot be traded away.
         self.panel.load_save(self.root / "fr")
         document = self.panel.document
-        assert document is not None
         self.assertTrue(self.page.place_on_ir(0, 2))
         james = next(p for p in document.players if p.index == 2)
         dunn = next(p for p in document.players if p.index == 4)
-        document.swap(james, dunn)
+        before = document.to_body()
+        labels = self.page.edit_labels()
+        with self.assertRaisesRegex(rr.MembershipRefused, "injured reserve"):
+            document.swap(james, dunn)
         self.assertTrue(self.page.sync_from_roster())
-        self.assertEqual(self.page.edit_labels(), [])
-        self.assertIn("Dropped a franchise edit", self.page.status_label.text())
-        self.assertIn("not on team 0", self.page.status_label.text())
+        self.assertEqual(document.to_body(), before)
+        self.assertEqual(self.page.edit_labels(), labels)
 
 
 class ChecksTests(_PanelCase):

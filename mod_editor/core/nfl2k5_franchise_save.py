@@ -368,7 +368,11 @@ class FranchiseSave:
     def write(self, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
         _require(self.container is not None, "this save was not opened from a container; nothing to re-sign")
         assert self.container is not None
-        return self.container.write(target, self.to_bytes(), overwrite=overwrite)
+        from .nfl2k5_practice_squad import validate_save
+        payload = self.to_bytes()
+        validate_save(payload)
+        rr.RosterDocument(payload, base=ARENA_PREAMBLE).check_depth_locks()
+        return self.container.write(target, payload, overwrite=overwrite)
 
     # ------------------------------------------------------------------ raw helpers
     def u8(self, offset: int) -> int:
@@ -410,10 +414,10 @@ class FranchiseSave:
     # ------------------------------------------------------------------ the arena (roster side)
     @property
     def roster(self) -> rr.RosterDocument:
-        """The ★ Rosters document over the same bytes (parsed lazily, from the ORIGINAL bytes)."""
+        """The ★ Rosters document over the same bytes (parsed lazily from the current bytes)."""
 
         if self._roster is None:
-            self._roster = rr.RosterDocument(self.original, base=ARENA_PREAMBLE, source=self.source,
+            self._roster = rr.RosterDocument(self.to_bytes(), base=ARENA_PREAMBLE, source=self.source,
                                              base_year=self.base_year, reference_year=self.header.display_year)
         return self._roster
 
@@ -642,9 +646,9 @@ class FranchiseSave:
 
         _require(0 <= team < self.league_team_count, f"team {team} is not an NFL team in this arena")
         target = self.player_offset(player_index)
+        from . import nfl2k5_practice_squad as ps
         count, slots = self._team_slots(team)
         _require(target in slots[:count], f"player {player_index} is not on team {team}")
-        position = slots.index(target)
         _require(self.buffer[target + 0x28] != IR_MARK, f"player {player_index} is already marked injured reserve")
         free = None
         for slot in range(IR_SLOTS):
@@ -654,12 +658,21 @@ class FranchiseSave:
                 break
         _require(free is not None, f"team {team} already has {IR_SLOTS} players on injured reserve")
         assert free is not None
-        for slot in range(position, count - 1):
-            self._write_team_slot(team, slot, slots[slot + 1])
-        self._write_team_slot(team, count - 1, None)
-        self.buffer[self.team_offset(team) + rr.TEAM_PLAYER_COUNT] = count - 1
-        self.buffer[target + 0x28] = IR_MARK
-        struct.pack_into("<H", self.buffer, free[1], player_index)
+        squads = self._validate_ownership()
+        candidate = bytearray(self.buffer)
+        active = [self.player_index(o) for o in slots[:count] if o != target]
+        self._repack_candidate(candidate, team, active, squads[team])
+        candidate[target + 0x28] = IR_MARK
+        candidate[target + 0x52] &= ~0x1f
+        struct.pack_into("<H", candidate, free[1], player_index)
+        if candidate[self.team_offset(team) + ps.VERSION_OFFSET] == ps.VERSION:
+            try:
+                candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
+            except ValueError as exc:
+                raise FranchiseSaveError(str(exc)) from exc
+        self._validate_ownership(bytes(candidate))
+        self.buffer = candidate
+        self._roster = None
         return InjuredReserveEntry(team, free[0], free[1], player_index, self.player_name(player_index))
 
     def activate_from_injured_reserve(self, team: int, player_index: int) -> None:
@@ -674,13 +687,57 @@ class FranchiseSave:
                 found = offset
                 break
         _require(found is not None, f"player {player_index} is not on team {team}'s injured reserve")
+        from . import nfl2k5_practice_squad as ps
+        squads = self._validate_ownership()
         count, slots = self._team_slots(team)
-        _require(count < rr.TEAM_SLOTS, f"team {team} has no free roster slot")
+        limit = min(53 if self.header.stage >= 8 else 65, 65 - len(squads[team]))
+        _require(count < limit, f"team {team} has no free roster slot (active limit {limit})")
         assert found is not None
-        struct.pack_into("<H", self.buffer, found, IR_EMPTY)
-        self.buffer[target + 0x28] = 0
-        self._write_team_slot(team, count, target)
-        self.buffer[self.team_offset(team) + rr.TEAM_PLAYER_COUNT] = count + 1
+        candidate = bytearray(self.buffer)
+        struct.pack_into("<H", candidate, found, IR_EMPTY)
+        candidate[target + 0x28] = 0
+        active = [self.player_index(o) for o in slots[:count]] + [player_index]
+        self._repack_candidate(candidate, team, active, squads[team])
+        if candidate[self.team_offset(team) + ps.VERSION_OFFSET] == ps.VERSION:
+            try:
+                candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
+            except ValueError as exc:
+                raise FranchiseSaveError(str(exc)) from exc
+        self._validate_ownership(bytes(candidate))
+        self.buffer = candidate
+        self._roster = None
+
+    def _validate_ownership(self, payload: bytes | None = None):
+        from . import nfl2k5_practice_squad as ps
+        try:
+            return ps.validate_save(self.to_bytes() if payload is None else payload)
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
+
+    def _repack_candidate(self, candidate: bytearray, team: int, active: list[int], reserves) -> None:
+        from . import nfl2k5_practice_squad as ps
+        off = self.team_offset(team)
+        count, pool = self.player_table
+        raw = bytes(candidate[off:off + rr.TEAM_SIZE])
+        candidate[off:off + rr.TEAM_SIZE] = ps.repack_team(
+            raw, active, reserves, team_offset=off, player_pool_offset=pool,
+            player_count=count, mark=bool(raw[ps.VERSION_OFFSET]))
+
+    def promote_reserve(self, team: int, player_index: int) -> dict[str, Any]:
+        return self._reserve_move(team, player_index, promote=True)
+
+    def demote_active(self, team: int, player_index: int) -> dict[str, Any]:
+        return self._reserve_move(team, player_index, promote=False)
+
+    def _reserve_move(self, team: int, player_index: int, *, promote: bool) -> dict[str, Any]:
+        from . import nfl2k5_practice_squad as ps
+        try:
+            candidate, receipt = ps.reserve_transaction(self.to_bytes(), team, player_index, promote=promote)
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
+        self.buffer = bytearray(candidate)
+        self._roster = None
+        return receipt
 
     def order_table(self, table: int) -> tuple[int, ...]:
         """One of the 14 per-team byte tables at F+0 (table 0 = a team permutation; HYPOTHESIS: draft order)."""
