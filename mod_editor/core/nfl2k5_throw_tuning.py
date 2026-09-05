@@ -67,6 +67,9 @@ from . import nfl2k5_practice_reserves as practice_reserves_patch
 from . import nfl2k5_depth_locks as depth_locks_patch
 from . import nfl2k5_season_cap as season_cap_patch
 from . import nfl2k5_xbe_space as xbe_space_patch
+from . import nfl2k5_momentum as momentum_patch
+from . import nfl2k5_defensive_try as defensive_try_patch
+from . import nfl2k5_zone_drop as zone_drop_patch
 from . import nfl2k5_dynamic_kickoff_relocated as kickoff_relocated_patch
 from . import nfl2k5_scorebug_runtime as scorebug_runtime_patch
 from . import nfl2k5_scorebug_ingame as scorebug_reference
@@ -624,6 +627,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "screen_timing": "n/a",
         "guardian_cap": "n/a",
         "season_cap": season_cap_patch.status(payload),
+        **_allocator_feature_status(payload),
         "xbe_space": xbe_space_patch.status(payload),
         "kickoff_relocated": kickoff_relocated_patch.status(payload),
         "scorebug_runtime": scorebug_runtime_patch.status(payload),
@@ -692,7 +696,7 @@ def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
     except xc.PatchError as exc:
         raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
     if length != EXPECTED_XBE_SIZE:
-        _require(length in (depth_chart_storage.FILE_SIZE, xbe_space_patch.FILE_SIZE, music_storage.FILE_SIZE),
+        _require(length in (depth_chart_storage.FILE_SIZE, xbe_space_patch.FILE_SIZE, music_storage.FILE_SIZE, xbe_space_patch.EXT_FILE_SIZE),
                  f"default.xbe inside the image is {length} bytes, not the retail size or a recognised grown size")
         candidate = platform_compat.pread(descriptor, length, offset)
         _require(len(candidate) == length
@@ -748,6 +752,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "guardian_cap": _guardian_image_status(path),
         "scorebug_runtime_resources": scorebug_reference.runtime_image_status(path),
         "season_cap": season_cap_patch.status(payload),
+        **_allocator_feature_status(payload),
         "xbe_space": xbe_space_patch.status(payload),
         "kickoff_relocated": kickoff_relocated_patch.status(payload),
         "scorebug_runtime": scorebug_runtime_patch.status(payload),
@@ -984,10 +989,17 @@ class _dynamic_kickoff_adapter:
         return dynamic_kickoff_patch.apply(payload, **self.settings)
 
 
+def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False):
+    return ((kickoff_relocated_patch.REQUESTS if with_kickoff else ())
+            + (scorebug_runtime_patch.REQUESTS if runtime else ())
+            + (momentum_patch.REQUESTS if momentum > 0 else ())
+            + (defensive_try_patch.REQUESTS if defensive_try else ())
+            + (zone_drop_patch.REQUESTS if zone_drop_cap else ()))
+
+
 class _xbe_space_adapter:
-    def __init__(self, with_kickoff: bool, runtime: bool = False):
-        self.requests = ((kickoff_relocated_patch.REQUESTS if with_kickoff else ())
-                         + (scorebug_runtime_patch.REQUESTS if runtime else ()))
+    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False):
+        self.requests = _selected_space_requests(with_kickoff, runtime, momentum, defensive_try, zone_drop_cap)
 
     def status(self, payload):
         state = xbe_space_patch.status(payload)
@@ -997,6 +1009,39 @@ class _xbe_space_adapter:
 
     def apply(self, payload):
         return xbe_space_patch.apply(payload, self.requests)
+
+
+class _defensive_try_adapter(_xbe_space_adapter):
+    def status(self, payload):
+        return defensive_try_patch.status(payload)
+
+    def apply(self, payload):
+        grown, allocation = xbe_space_patch.apply(payload, self.requests)
+        result, receipt = defensive_try_patch.apply(grown)
+        return result, {**receipt, "allocation": allocation,
+                        "changed_bytes": sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload)}
+
+
+class _momentum_adapter:
+    def __init__(self, level, contact):
+        self.level, self.contact = level, contact
+
+    def status(self, payload):
+        return momentum_patch.status(payload)
+
+    def apply(self, payload):
+        return momentum_patch.apply(payload, momentum=self.level, momentum_contact=self.contact)
+
+
+def _allocator_feature_status(payload):
+    state = momentum_patch.status(payload)
+    settings = momentum_patch.read_settings(payload)
+    contact = ("foreign" if state == "foreign" else "applied"
+               if state == "applied" and settings.get("momentum_contact") else "retail")
+    return {"momentum": state, "momentum_settings": settings, "momentum_contact": contact,
+            "defensive_try": defensive_try_patch.status(payload),
+            "zone_drop_cap": zone_drop_patch.status(payload),
+            "zone_drop_settings": zone_drop_patch.read_settings(payload)}
 
 
 class _music_metadata_adapter:
@@ -1037,18 +1082,26 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                depth_chart_rows: bool = False, practice_squad: bool = False,
                depth_locks: bool = False, season_cap: bool = False,
                xbe_space: bool = False, kickoff_relocated: bool = False,
+               momentum: int = 0, momentum_contact: bool = False,
+               defensive_try: bool = False, zone_drop_cap: bool = False,
                scorebug_runtime: bool = False, music_policy: str = "retail",
                music_unlock: bool = False, music_userlist: bool = False,
                music_metadata=None) -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
 
+    momentum_patch._settings(momentum, momentum_contact)
+    _require(type(defensive_try) is bool and type(zone_drop_cap) is bool, "experimental switches must be boolean")
+    legacy_disabled = momentum > 0 and accel_ramp
+    if momentum > 0:
+        accel_ramp = False
     if kickoff_relocated:
         dynamic_kickoff, xbe_space = True, True
     if dynamic_kickoff:
         # the hold / landing-zone patch sits on the modern kick spots and never on the power-only variant
         kick_rules, kick_power = True, False
     receipt: dict[str, object] = {"changes": [], "section_digests": [], "changed_byte_count": 0}
+    receipt["legacy_accel_ramp_disabled_by_momentum_profile"] = legacy_disabled
     patched = payload
     if wanted and (_curves_differ(payload, wanted) or not arc_table):
         patched, receipt = plan_patch(patched, wanted)
@@ -1183,11 +1236,16 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         receipt["boot_logo"] = {"status": boot_logo.status(patched)}
     # Final owners: choose the complete allocation set before the first growth.
     for flag, module, key, label in (
-        (xbe_space or kickoff_relocated or scorebug_runtime, _xbe_space_adapter(kickoff_relocated, scorebug_runtime),
+        (defensive_try, _defensive_try_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap),
+         "defensive_try_patch", "experimental defensive try"),
+        (xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or defensive_try or zone_drop_cap,
+         _xbe_space_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap),
          "xbe_space_patch", "experimental executable space"),
         (kickoff_relocated, kickoff_relocated_patch,
          "kickoff_relocated_patch", "experimental relocated kickoff"),
         (scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects"),
+        (momentum > 0, _momentum_adapter(momentum, momentum_contact), "momentum_patch", "experimental player momentum"),
+        (zone_drop_cap, zone_drop_patch, "zone_drop_patch", "experimental initial corner deep-zone cap"),
         (music_metadata is not None, _music_metadata_adapter(music_metadata),
          "music_metadata_patch", "music library titles"),
     ):
@@ -1198,6 +1256,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         patched, sub_receipt = module.apply(patched)
         receipt[key] = sub_receipt
         receipt["changed_byte_count"] = int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])
+    receipt["legacy_accel_ramp_disabled_by_momentum_profile"] = bool(legacy_disabled)
     return patched, receipt
 
 
@@ -1238,6 +1297,8 @@ def write_xbe_copy(
     season_cap: bool = False,
     xbe_space: bool = False,
     kickoff_relocated: bool = False,
+    momentum: int = 0, momentum_contact: bool = False,
+    defensive_try: bool = False, zone_drop_cap: bool = False,
     scorebug_runtime: bool = False,
     music_policy: str = "retail",
     music_unlock: bool = False,
@@ -1247,14 +1308,14 @@ def write_xbe_copy(
     """Write a patched COPY of ``source_xbe`` to ``target_xbe``."""
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
     _prepare_target(source, target, overwrite)
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated, scorebug_runtime=scorebug_runtime, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space, kickoff_relocated=kickoff_relocated, scorebug_runtime=scorebug_runtime, momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
     try:
@@ -1296,6 +1357,7 @@ def write_xbe_copy(
         "screen_timing": "n/a",
         "guardian_cap": "n/a",
         "season_cap": season_cap_patch.status(result),
+        **_allocator_feature_status(result),
         "xbe_space": xbe_space_patch.status(result),
         "kickoff_relocated": kickoff_relocated_patch.status(result),
         "scorebug_runtime": scorebug_runtime_patch.status(result),
@@ -1396,6 +1458,8 @@ def write_image_copy(
     season_cap: bool = False,
     xbe_space: bool = False,
     kickoff_relocated: bool = False,
+    momentum: int = 0, momentum_contact: bool = False,
+    defensive_try: bool = False, zone_drop_cap: bool = False,
     scorebug_runtime: bool = False,
     music_policy: str = "retail",
     music_unlock: bool = False,
@@ -1409,8 +1473,13 @@ def write_image_copy(
     XBE; the receipt lists every changed range.
     """
 
+    momentum_patch._settings(momentum, momentum_contact)
+    _require(type(defensive_try) is bool and type(zone_drop_cap) is bool, "experimental switches must be boolean")
+    legacy_disabled = momentum > 0 and accel_ramp
+    if momentum > 0:
+        accel_ramp = False
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
@@ -1424,7 +1493,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not scorebug_runtime, kickoff_relocated=kickoff_relocated and not scorebug_runtime, scorebug_runtime=False, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=music_metadata)
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not scorebug_runtime, kickoff_relocated=kickoff_relocated and not scorebug_runtime, scorebug_runtime=False, momentum=0 if scorebug_runtime else momentum, momentum_contact=False if scorebug_runtime else momentum_contact, defensive_try=defensive_try and not scorebug_runtime, zone_drop_cap=zone_drop_cap and not scorebug_runtime, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if scorebug_runtime else music_metadata)
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
@@ -1495,8 +1564,19 @@ def write_image_copy(
         receipt = {**receipt, "edge_rename_disc_patch": disc_receipt,
                    "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(disc_receipt["changed_bytes"])}
     if scorebug_runtime:
-        runtime_receipt = scorebug_reference.runtime_apply_in_place(target, with_kickoff=kickoff_relocated)
+        runtime_receipt = scorebug_reference.runtime_apply_in_place(target, with_kickoff=kickoff_relocated,
+            extra_requests=_selected_space_requests(momentum=momentum, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap))
         receipt["scorebug_runtime_patch"] = runtime_receipt
+        with target.open("r+b") as stream:
+            fd = stream.fileno()
+            off, size = _xdvdfs_module().xbe_extent(fd, os.fstat(fd).st_size)
+            from . import platform_compat as io, nfl2k5_depth_chart_storage as storage
+            final, extra = _apply_all(io.pread(fd, size, off), None, False,
+                xbe_space=True, kickoff_relocated=kickoff_relocated, scorebug_runtime=True,
+                momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try,
+                zone_drop_cap=zone_drop_cap, music_metadata=music_metadata)
+            storage.write_image_xbe(fd, final)
+        receipt.update({key: value for key, value in extra.items() if key != "scorebug_runtime_patch"})
         check = _open_binary(target, os.O_RDONLY)
         try:
             actual_size = os.fstat(check).st_size
@@ -1504,6 +1584,7 @@ def write_image_copy(
             after = platform_compat.pread(check, after_length, after_offset)
         finally:
             os.close(check)
+    receipt["legacy_accel_ramp_disabled_by_momentum_profile"] = bool(legacy_disabled)
     verified = _verify_written(after, wanted or {})
     arc_state = arc_table_status(after)
     if arc_table:
@@ -1535,6 +1616,7 @@ def write_image_copy(
         "guardian_cap": _guardian_image_status(target),
         "scorebug_runtime_resources": scorebug_reference.runtime_image_status(target),
         "season_cap": season_cap_patch.status(after),
+        **_allocator_feature_status(after),
         "xbe_space": xbe_space_patch.status(after),
         "kickoff_relocated": kickoff_relocated_patch.status(after),
         "scorebug_runtime": scorebug_runtime_patch.status(after),

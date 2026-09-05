@@ -1,3 +1,229 @@
+# Defensive try handoff, 2026-09-05
+
+The new backend is `mod_editor/core/nfl2k5_defensive_try.py`, owner
+`nfl2k5_defensive_try`, option **`defensive_try`**. This section is additive;
+all earlier handoffs below remain intact. See `ASTRA_DEFENSIVE_TRY_REPORT.md`.
+Label this **EXPERIMENTAL / UNWITNESSED**. The bounded rules implementation is
+available for an exhibition witness, but the requested retail defensive
+conversion box-score row is **not implemented**. Do not describe that stat
+requirement as completed. `read_runtime_stats()` exposes a temporary diagnostic
+line only, limited to the 128 retained drives, with no saved category.
+
+## Protected BuildPlan, presets and final growth pass
+
+In `mod_editor/core/mod_build.py`, add `defensive_try: bool = False` beside
+`xbe_space`. Explicitly set `"defensive_try": False` in **all three** preset
+dictionaries: `softdrink_basic`, `softdrink_advanced`, and
+`softdrink_experimental`. Switching presets must clear a prior manual opt-in.
+Noah's disposable witness disc selects it manually. Do not change a preset to
+true to make manifest generation observe it; the manifest helper now observes
+the dormant owner separately.
+
+Add the key to `wants_xbe_patch()`, recipe loading, availability, inspection,
+nonempty-selection checks, receipt/status maps, Studio plan construction, and
+checkbox state restoration. Availability requires this module and
+`nfl2k5_xbe_space`. Normalize `plan.defensive_try` to imply `xbe_space=True`.
+Extend the existing grown-feature image-only preflight to include it. Both
+retail kick spots and `kick_rules` modern spots compose; this option alone
+does not imply `kickoff_relocated` or dynamic kickoff.
+
+Defer **all three grown flags** until the existing final growth pass near
+`receipt["result"] = inspect(target)`. Add `defensive_try=False` to the early
+`replace(plan, ..., xbe_space=False, kickoff_relocated=False)` decision and
+keep the early XBE writer's flags false. Extend the final condition to
+`plan.xbe_space or plan.kickoff_relocated or plan.defensive_try`, pass
+`defensive_try=plan.defensive_try` to `_apply_all`, and include both
+`defensive_try_patch` and `defensive_try` in that step's receipt. This keeps
+every existing resource/XBE pass before growth, including Guardian caps.
+
+## Protected executable dispatcher and four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`:
+
+```python
+from . import nfl2k5_defensive_try as defensive_try_patch
+```
+
+Add the keyword `defensive_try: bool = False` to `_apply_all`,
+`write_xbe_copy`, and `write_image_copy`, their nonempty-selection checks and
+every forwarding call. Do not insert a positional argument into existing
+callers. `defensive_try` implies `xbe_space=True`.
+
+The brief requests the tuple after kick rules and before the allocator's
+final tuple. Use a union-aware adapter in that final group, after all existing
+retail writers and logo handling. A bare early `defensive_try_patch.apply`
+would allocate only its own requests and make later relocation refuse.
+The complete, concrete adapter change is:
+
+```python
+def _selected_space_requests(with_kickoff, with_defensive_try):
+    return ((kickoff_relocated_patch.REQUESTS if with_kickoff else ())
+            + (defensive_try_patch.REQUESTS if with_defensive_try else ()))
+
+class _xbe_space_adapter:
+    def __init__(self, with_kickoff, with_defensive_try=False):
+        self.requests = _selected_space_requests(with_kickoff, with_defensive_try)
+
+    def status(self, payload):
+        state = xbe_space_patch.status(payload)
+        if state == "applied":
+            xbe_space_patch.apply(payload, self.requests)  # validate exact union
+        return state
+
+    def apply(self, payload):
+        return xbe_space_patch.apply(payload, self.requests)
+
+class _defensive_try_adapter:
+    def __init__(self, with_kickoff):
+        self.requests = _selected_space_requests(with_kickoff, True)
+
+    def status(self, payload):
+        return defensive_try_patch.status(payload)
+
+    def apply(self, payload):
+        # Pure byte writers: nothing is published if either preflight refuses.
+        grown, allocation = xbe_space_patch.apply(payload, self.requests)
+        result, receipt = defensive_try_patch.apply(grown)
+        return result, {
+            **receipt,
+            "allocation": allocation,
+            "source_sha256": hashlib.sha256(payload).hexdigest(),
+            "result_sha256": hashlib.sha256(result).hexdigest(),
+            "changed_bytes": (sum(a != b for a, b in zip(payload, result))
+                              + len(result) - len(payload)),
+        }
+```
+
+Add `import hashlib` if needed. Replace only the final owners tuple with:
+
+```python
+for flag, module, key, label in (
+    (defensive_try, _defensive_try_adapter(kickoff_relocated),
+     "defensive_try_patch", "experimental defensive try"),
+    (xbe_space or kickoff_relocated or defensive_try,
+     _xbe_space_adapter(kickoff_relocated, defensive_try),
+     "xbe_space_patch", "experimental executable space"),
+    (kickoff_relocated, kickoff_relocated_patch,
+     "kickoff_relocated_patch", "experimental relocated kickoff"),
+):
+    # Keep the existing final loop body, including apply on an applied state.
+    ...
+```
+
+The first adapter allocates the **complete union before first growth**. The
+allocator tuple then validates it without growth. Both defensive/relocated
+installation orders are byte-identical when preallocated, as the tests prove.
+An already-grown input with a different owner union must refuse with a
+rebuild-from-base message. Do not shrink, silently reallocate or disable pins.
+
+Add exactly these status entries; use the existing byte variable:
+
+| Function return dictionary | Entry |
+|---|---|
+| `read_xbe` | `"defensive_try": defensive_try_patch.status(payload)` |
+| `read_image` | `"defensive_try": defensive_try_patch.status(payload)` |
+| `write_xbe_copy` | `"defensive_try": defensive_try_patch.status(result)` |
+| `write_image_copy` | `"defensive_try": defensive_try_patch.status(after)` |
+
+Carry `limitations`, `experimental`, and `runtime_witnessed` from the backend
+receipt. An installed status proves bytes only; it does not prove gameplay.
+
+## Protected Gameplay Patches and Build controls
+
+Add `"defensive_try"` to `NEEDS_IMAGE` and this `PATCHES` entry in
+`mod_editor/gui/gameplay_patches_panel_qt.py`:
+
+```python
+("defensive_try", "Defensive two-point returns (experimental)",
+ "Retail: Defensive possession ends a try. Patch: Allows defensive returns, "
+ "two points for a return score and one point for a try safety. "
+ "EXPERIMENTAL / UNWITNESSED. The separate conversion tally is temporary; "
+ "a retail box-score row and saved player or season totals are not implemented.")
+```
+
+This is the backend's `UI_TEXT`. Preserve its stat limitation in visible
+help. Update the short label map if present. In `build_panel_qt.py`, use the
+existing gameplay layout's `_option` call:
+
+```python
+self.defensive_try_check = self._option(
+    gameplay_layout, "defensive_try",
+    "Defensive two-point returns (experimental)", defensive_try_patch.UI_TEXT)
+```
+
+Use that panel's actual gameplay layout variable. The caption has 42
+characters, under 60. Wire checked/enabled state, image eligibility and all
+preset resets. In `studio_qt.py` and any Gameplay-to-Build handoff, forward
+the boolean with default false. No separate feature GUI module is needed.
+
+## Allowlist, runtime closure and capability entry
+
+Add these exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_defensive_try.py
+docs/mod_editor/nfl2k5_defensive_try_capability.json
+ASTRA_DEFENSIVE_TRY_REPORT.md
+```
+
+Retain the existing allowlisted allocator and its dependencies. The new
+production import is `mod_editor.core.nfl2k5_defensive_try`; its direct core
+closure is `nfl2k5_xbe_space`, `nfl2k5_bump_strength`, `nfl2k5_draft_ai` and
+their existing transitive imports. Add the new module to
+`packaging/check_2k5_mod_studio_runtime.py`'s import probe. Capstone/Unicorn
+are test dependencies, not production imports. `read_runtime_stats` takes
+an external reader callback and adds no debugger dependency.
+
+The new standalone test belongs in source CI:
+`tests/mod_editor/test_nfl2k5_defensive_try.py`. Retain both modified XBE
+gate tests and the existing manifest tests. No new release-tag rule, updater
+change, network dependency or GUI test is required by this backend.
+
+Merge the complete object in
+`docs/mod_editor/nfl2k5_defensive_try_capability.json` into the canonical
+registry using its existing canonical serializer/validator. Its classification
+is `offline-writer-proved`, runtime status `not-tested`, default false.
+The missing box-score category must stay explicit. This is a reviewable
+entry, not a claim that the protected GUI integration has already shipped.
+
+## Protected cave manifest regeneration and integration checks
+
+`nfl2k5_cave_manifest.py` now observes this dormant owner, including its
+zero-initialized data, and allocates the defensive/relocated union. The
+checked-in JSON was not changed. After integration, Claude must regenerate:
+
+```bash
+python3 tools/nfl2k5_cave_oracle.py manifest \
+  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  --work-dir .scratch/defensive-try-manifest \
+  --json data/nfl2k5_cave_reservations.json
+```
+
+Create the scratch directory first. Its disc copy needs over 6 GB. Retain all
+prior owners. New code/data addresses with relocated kickoff are
+`0x14BA2C0`/`0x14BB000` for defensive try and
+`0x14BA860`/`0x14BB410` for relocated kickoff. The allocator's parent pages
+reserve every unused byte. Re-run the three feature/gate test scripts below.
+The cave gate currently validates the protected historical layout before
+substituting the new named reservations **in memory only**; it uses the new
+manifest directly once that contains this owner.
+
+The old `space-proof` CLI defaults to the kickoff-only layout. With the new
+manifest use `space.allocation_evidence(retail, manifest, allocated=final_xbe)`
+(as the composed gate does), or add an explicit allocated-XBE argument to the
+CLI. Do not treat a mismatch with the old layout as a free allocation.
+
+Before a witness disc, verify plan serialization and preset switching, a
+defensive-only image build, defensive plus modern kick rules, defensive plus
+relocated kickoff, status inspection and receipts. The backend scripts are:
+
+```bash
+python3 tests/mod_editor/test_nfl2k5_defensive_try.py
+python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+python3 tests/mod_editor/test_xbe_patch_cave_references.py
+```
+
 # Guardian cap route B handoff, 2026-09-05
 
 The resource compiler is complete. This section specifies the remaining
@@ -2259,3 +2485,436 @@ after integration. This job generated and tested `.scratch/music-cave-manifest.j
 without modifying that protected release manifest. Keep source-drift rejection
 enabled. The RO proof is a new loader allocation outside retail mappings, not
 a free-cave claim; the audit retains all 469 raw reference-encoding candidates.
+# Momentum model 1 handoff, 2026-09-05
+
+**EXPERIMENTAL / UNWITNESSED.** This section is the protected-file integration
+contract for `nfl2k5_momentum.py`. See `ASTRA_MOMENTUM_BUILD_REPORT.md` for exact
+calibration, bounded proofs, limitations and Noah's witness list. Earlier
+allocator instructions above now need the union of all selected requests.
+No protected product file was edited by this job.
+
+## BuildPlan, presets and normalization
+
+In `mod_editor/core/mod_build.py`, add:
+
+```python
+momentum: int = 0
+momentum_contact: bool = False
+```
+
+Validate the integer strictly in 0..100, rejecting Boolean levels. Contact
+requires a nonzero level. All three presets, `softdrink_basic`,
+`softdrink_advanced`, and `softdrink_experimental`, must explicitly set
+`momentum=0, momentum_contact=False`. Switching presets must clear both.
+Include both fields in recipe loading, plan round trips, availability,
+inspection, selected options and receipt display. Any positive level implies
+extra executable space. This is an image experiment, with the existing grown
+XBE writer required; use a disposable build copy.
+
+The Momentum profile retains native acceleration. Normalize `accel_ramp=False`
+when choosing this profile, including its Retail level, and record a previously
+enabled legacy selection as `legacy_accel_ramp_disabled_by_momentum_profile`.
+Keep an explicitly named legacy profile available separately. The pure-byte
+APIs also compose with a fully recognized legacy ramp in either order for
+compatibility testing; receipts report it as retained. That combination cannot
+claim human/CPU parity because the legacy ramp bypasses controller marker -1.
+Never remove a ramp from an already patched source in place. Rebuild from the
+supported source when changing installed settings, allocations or profiles.
+
+## Dispatcher tuple and kwargs
+
+Import `nfl2k5_momentum as momentum_patch` in
+`mod_editor/core/nfl2k5_throw_tuning.py`. Thread keyword arguments
+`momentum: int = 0, momentum_contact: bool = False` through `_apply_all`,
+`write_xbe_copy`, `write_image_copy`, their forwarding calls and nonempty guards.
+The two options are ONE executable owner and must be installed together.
+
+Extend `_xbe_space_adapter` to collect `momentum_patch.REQUESTS` when the level
+is positive, along with `kickoff_relocated_patch.REQUESTS` and any integrated
+new owner's requests. Choose this complete union before first growth, and
+validate the same request set on replay. Do not allocate an unknown address or
+silently enlarge/shift an existing owner. Ordinary passes still precede growth.
+
+Add this adapter and the following tuple to the existing **final** `_apply_all`
+loop, after its allocator entry and alongside relocated kickoff:
+
+```python
+class _momentum_adapter:
+    def __init__(self, level, contact):
+        self.level, self.contact = level, contact
+
+    def status(self, payload):
+        return momentum_patch.status(payload)
+
+    def apply(self, payload):
+        return momentum_patch.apply(
+            payload, momentum=self.level, momentum_contact=self.contact)
+
+# The allocator tuple's flag also includes momentum > 0.
+(momentum > 0, _momentum_adapter(momentum, momentum_contact),
+ "momentum_patch", "experimental player momentum"),
+```
+
+Always call this adapter's `apply` on a recognized installed image, so replay
+checks both settings. Do not use the earlier legacy loop's generic
+`already_applied` shortcut. Reject `momentum_contact=True, momentum=0` before
+any writer runs. `mod_build` must forward the fields in its final grown-XBE
+pass after all ordinary XBE/resource passes, as in the allocator handoff.
+The contact checkbox is not a second tuple that reconfigures an installed owner.
+
+Momentum owns `0x1CD5D7..0x1CD5DD`; kickoff owns the preceding seven bytes.
+Kickoff's hold gate executes first; its released path reaches Momentum, which
+captures both dispatcher returns. Both install orders produce identical bytes
+when the union is preallocated. Momentum leaves `0x75CC8` and `0x75CD5` alone.
+The defensive-try module is absent here: after integrating it, add its actual
+REQUESTS and execute both orders with its real owner. The conditional test in
+`test_nfl2k5_momentum.py` currently names `nfl2k5_defensive_try`; update that name
+if its delivered module differs. Do not mistake the skip for composition proof.
+
+## Four status dictionaries
+
+Add these entries to all four protected dictionaries, using the indicated
+local byte variable:
+
+| Dictionary | Byte variable |
+| --- | --- |
+| `read_xbe()` return | `payload` |
+| `read_image()` return | `payload` |
+| `write_xbe_copy()` post-write return | `result` |
+| `write_image_copy()` post-write return | `after` |
+
+```python
+"momentum": momentum_patch.status(payload),
+"momentum_settings": momentum_patch.read_settings(payload),
+```
+
+Replace `payload` with `result`/`after` in the latter two dictionaries. The
+settings include level/contact when applied, model version and experimental /
+unwitnessed fields. Display Retail as level 0 when status is retail. Contact
+status is foreign if Momentum is foreign, applied only when Momentum is applied
+and its stored contact flag is true, otherwise retail. Do not infer settings
+from the source plan or label foreign bytes as Retail. Copy these fields through
+`mod_build.inspect` and rebuilt-image reporting.
+
+## Gameplay Patches, Gameplay tab and Build tab
+
+Add these exact PATCHES three-field entries to the protected
+`mod_editor/gui/gameplay_patches_panel_qt.py`, with both keys in `NEEDS_IMAGE`:
+
+```python
+("momentum", "Player momentum (experimental, unwitnessed)",
+ "Retail: stock turning and stopping. Patch: wider turns at speed and more "
+ "room to stop during ordinary running. Experimental / Unwitnessed."),
+("momentum_contact", "Running start in contact (experimental, unwitnessed)",
+ "Retail: speed and weight already affect contact. Patch: a sustained running "
+ "start can give the ball carrier a small extra boost through contact. "
+ "Experimental / Unwitnessed. Requires player momentum."),
+```
+
+The existing `gameplay_panel_qt.py` is a read-only inspection/table panel and
+has no editable-slider binding pattern. Use the brief's fallback here: an
+opt-in Momentum card with **Retail (0), Light (25), Medium (50), Heavy (100)**
+and a separate **Running start in contact** checkbox. Light/Medium/Heavy are
+three non-retail levels; Retail remains an explicit choice. A later shared
+slider component can expose every integer from 0 to 100 with endpoints
+**Retail** and **Heavy**, without changing the model. Keep the card visibly
+**Experimental / Unwitnessed**. Description: "Players take wider turns at speed
+and need more room to stop." Show the contact sentence only when its box is on.
+Do not add addresses, history-slot language or rating-cache details to the card.
+
+Build `_option` captions (both under 60 characters):
+
+```python
+self._option(layout, "momentum", "Player momentum (experimental)", helper,
+             badge="EXPERIMENTAL")
+self._option(layout, "momentum_contact", "Running start in contact (experimental)",
+             contact_helper, badge="EXPERIMENTAL")
+```
+
+The first checkbox needs an integer adapter: checked means the selected
+positive level (initially Medium/50), unchecked means 0. Never serialize its
+Boolean value into `BuildPlan.momentum`. Preserve the last positive selection
+in UI state, reset it on a preset change, and disable/clear contact at Retail.
+Include both controls in load/store/availability/summary maps in the Build
+panel and Studio. Add neither flag to Basic, Advanced or Experimental defaults.
+
+## Packaging, closure, capabilities and manifest
+
+Append these release allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_momentum.py
+mod_editor/core/nfl2k5_momentum_code.py
+```
+
+Retain the existing entries for `nfl2k5_accel_ramp.py`, `nfl2k5_xbe_space.py`,
+`nfl2k5_bump_strength.py`, `nfl2k5_cave_oracle.py` and allocator dependencies.
+`tools/nfl2k5_momentum.S` and `tools/nfl2k5_momentum_assemble.py` are development
+sources, not runtime requirements. Runtime does not spawn GNU as or import
+Unicorn/Capstone. In protected `packaging/check_2k5_mod_studio_runtime.py`, add
+`mod_editor.core.nfl2k5_momentum` and `mod_editor.core.nfl2k5_momentum_code` to
+`product_modules`, with their existing allocator/helper closure. Exercise
+`REQUESTS`, `status`, `read_settings`, `apply`, and `code_for` availability.
+
+Copy the complete row from `docs/mod_editor/nfl2k5_momentum_capability.json`
+into the capability registry and update protected runtime registry counts.
+Its id is `nfl2k5.gameplay.momentum`; classification is
+`offline-writer-proved`, runtime status `not-tested`, defaults off. This row
+covers both controls. No commercial game image is a release artifact.
+
+The unprotected manifest builder now observes the actual Momentum owner at
+100/contact-on after preallocating kickoff plus Momentum. Both composed XBE
+gates enumerate Momentum. A private full-disc manifest was generated and the
+oracle suite passed with it; the protected release manifest remains unchanged.
+After all parallel integrations, regenerate it with the actual complete union:
+
+```sh
+python3 tools/nfl2k5_cave_oracle.py manifest \
+  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  --work-dir /tmp --json data/nfl2k5_cave_reservations.json
+```
+
+Do not update fingerprints manually or relax the source-drift refusal. The
+current Momentum allocation is 944 RX bytes and 2,064 RW bytes. Logo + kickoff
++ Momentum leave 496 code bytes and 2,016 data bytes; an additional 512-byte
+abilities allocation does not fit. The Speedster hook remains free, but its
+future code needs a smaller allocation, an explicit scope tradeoff, or a
+separate verified allocator extension. No allocation is promised for an absent
+parallel owner.
+# r61b: initial corner deep-zone drop cap (2026-09-05)
+
+This section adds `mod_editor/core/nfl2k5_zone_drop.py`, owner
+`nfl2k5_zone_drop`, backend `apply(payload, *, cap=None)`, `status(payload)` and
+`read_settings(payload)`. The option key is **`zone_drop_cap`**, superseding the
+research memo's suggested `cb_deep_zone_drop`. Statuses are `retail`, `applied`
+or `foreign`; an identical replay returns `status: already_applied` and zero
+changed bytes. Both fresh and replay receipts retain `experimental: true` and
+`runtime_witnessed: false`. Cap values in receipts are the actual float32 value.
+
+## Required allocator integration before claiming the complete stack
+
+The brief's append-stable allocator premise does not match this checkout.
+`nfl2k5_xbe_space.apply` seals a sorted complete request set, refuses a changed
+set on a grown input, and provides one 4096-byte RX page. Here the boot logo,
+relocated kickoff and runtime scorebug consume 4064 bytes after alignment.
+Adding this exact 80-byte owner requires **4144 bytes**, 48 beyond that page.
+The defensive-try and momentum modules named in the brief are absent here.
+
+Do not bypass these refusals, consume padding outside an allocation, shrink
+another owner's declaration, or put executable scratch in retail `.text`.
+The allocator owner must supply sufficient formally owned code capacity and
+validate stable allocations for the final owner set. Until that prerequisite
+lands, support zone drop alone, zone drop plus relocated kickoff, or zone drop
+plus runtime scorebug hooks, with the **complete union reserved first**. Both
+orders of each available pair produce byte-identical images. Simultaneous
+zone drop + relocated kickoff + runtime scorebug must fail the capacity check.
+
+Both composed XBE gates retain the existing kickoff/runtime stack and add a
+second ordinary-stack + relocated-kickoff + zone-drop image in `setUpClass`.
+They explicitly inspect this new owner's complete call and 80-byte allocation.
+This is pairwise coverage, not proof of the unavailable complete union. After
+the allocator change, merge the branches into one complete stack and run all
+orders with the actual defensive-try and momentum modules. Do not count
+placeholder owner bytes as execution/composition evidence.
+
+## BuildPlan, presets, reader status and build ordering
+
+In protected `mod_editor/core/mod_build.py`, add:
+
+```python
+zone_drop_cap: bool = False  # EXPERIMENTAL / UNWITNESSED
+```
+
+Add the key with **False in all three** `softdrink_basic`,
+`softdrink_advanced`, and `softdrink_experimental` preset dictionaries. Noah's
+witness build must opt in explicitly. Promotion to Experimental is a later
+decision only after his witness; Basic and Advanced remain off.
+
+Include it in `BuildPlan.wants_xbe_patch`, `availability()` (requires the new
+module and allocator), `inspect_source`, build keyword forwarding, receipt
+step projection (`zone_drop_cap`, `zone_drop_settings`, `zone_drop_patch`), and
+the recipe/apply-state paths. Selecting it implies `xbe_space=True`, without
+implicitly selecting dynamic kickoff or any scorebug option. The existing
+dataclass recipe serialization will then preserve the explicit opt-in.
+
+Run ordinary XBE owners, uniform choice and boot-logo repair first. Assemble
+the final selected owner request union once, then install the final owned
+wrappers. For image builds use the existing grown-extent reader and
+`nfl2k5_depth_chart_storage.write_image_xbe`, which supports the new extent and
+repins through existing helpers; do not force the grown payload through a
+fixed retail-length writer. Close all handles before replacement.
+
+The backend cap is configurable via `apply(payload, cap=...)` over
+**0.50..0.84**, default **0.84**. No numerical UI or additional BuildPlan field
+is required for this witness experiment. This caps the depth term; lateral
+demand remains retail and can still reach 0.84. Values above 0.84 would be
+promoted by retail to at least 0.91, defeating the requested animation band.
+Values below 0.50 cannot beat retail's final floor. Changing an installed cap
+requires a clean rebuild; do not silently replace or repair an installed body.
+
+## Dispatcher tuple, keyword and all four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_zone_drop as zone_drop_patch
+```
+
+Add keyword-only `zone_drop_cap: bool = False` to `_apply_all`,
+`write_xbe_copy` and `write_image_copy`, include it in both public writer
+"at least one selected patch" checks, and forward it through every wrapper
+and Build call. In the final `_xbe_space_adapter`, extend the earlier kickoff
+and scorebug handoff to reserve:
+
+```python
+self.requests = ((kickoff_relocated_patch.REQUESTS if relocated else ())
+                 + (scorebug_runtime_patch.REQUESTS if runtime else ())
+                 + (zone_drop_patch.REQUESTS if zone_drop_cap else ()))
+```
+
+Include the actual selected defensive-try and momentum requests when those
+modules land. Call the allocator's capacity validation before attempting any
+disc transport. With today's allocator, the three-owner union above must
+refuse. The adapter's status must also validate the exact declared request
+set on a grown input. Never infer that a `retail` zone-drop status reserves
+space: a recognized grown image missing this owner is inspectable, but apply
+refuses it until rebuilt with the full union.
+
+After the final allocation tuple and beside the other owned wrappers add:
+
+```python
+(zone_drop_cap, zone_drop_patch,
+ "zone_drop_patch", "experimental corner deep-zone drop"),
+```
+
+The allocator tuple predicate becomes
+`xbe_space or kickoff_relocated or scorebug_runtime or zone_drop_cap`.
+For this owner always call `apply` after accepting `status` in
+`("retail", "applied")`, including replay, and retain its complete receipt.
+Add its `changed_bytes` to `changed_byte_count`. Do not replace a replay with
+only `{"already_applied": True}`, which would lose cap and witness metadata.
+
+Add both keys to **all four** status dictionaries:
+
+```python
+"zone_drop_cap": zone_drop_patch.status(image_bytes),
+"zone_drop_settings": zone_drop_patch.read_settings(image_bytes),
+```
+
+| Dictionary | Replace `image_bytes` with |
+| --- | --- |
+| `read_xbe` | `payload` |
+| `read_image` | `payload` |
+| `write_xbe_copy` | `result` |
+| `write_image_copy` | `after` |
+
+For the earlier paired runtime scorebug resource handoff, extend
+`nfl2k5_scorebug_ingame.runtime_apply_in_place` and its XBE preflight to accept
+`zone_drop_cap=False`, include this owner's request in that transaction's
+union, and call `zone_drop_patch.apply` on its final XBE before transport.
+Forward the flag from Build and image-copy entry points. Leave it disabled in
+the preceding ordinary dispatcher pass. This preserves paired resource/XBE
+preflight and avoids prematurely sealing a smaller allocation set. The
+scorebug+zone pair is structurally tested here; resource transaction wiring
+and a played composed disc remain integration/witness work.
+
+## Gameplay Patches, Build tab and Studio routing
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, add exactly this
+`PATCHES` tuple and add `zone_drop_cap` to `NEEDS_IMAGE`:
+
+```python
+("zone_drop_cap", "Corner deep-zone backpedal (experimental, unwitnessed)",
+ "Retail: corners close to the line can turn and run on their initial deep-zone drop. "
+ "Patch: Corners in deep zones backpedal instead of turning and running when they "
+ "line up close to the line. Ball reaction and interceptions are not changed by "
+ "this. Experimental and unwitnessed in game; a slower drop may allow more deep completions."),
+```
+
+This uses the requested plain-language behavior text verbatim. The surrounding
+experimental/unwitnessed label describes its evidence level: visible technique
+and interception outcomes have not been played. "Not changed" refers to the
+ball-response and catch code, not a guarantee of identical outcomes after a
+movement change. Do not advertise a read-and-react or interception fix.
+
+Build tab `_option` caption: **`Corner deep-zone backpedal (experimental)`**
+(41 characters, under the 60-character limit):
+
+```python
+self.zone_drop_cap_check = self._option(
+    layout, "zone_drop_cap", "Corner deep-zone backpedal (experimental)",
+    helper, badge="EXPERIMENTAL")
+```
+
+Use the same helper text, retaining the unwitnessed notice. Add the checkbox
+to option maps, availability/image gates, plan creation, build summary,
+apply-state, dirty detection, reset and preset paths in protected
+`build_panel_qt.py`. Forward/route the new key through the existing Build and
+Gameplay Patches state handlers in protected `studio_qt.py` and
+`gameplay_panel_qt.py` wherever they enumerate patch keys. No panel was edited
+in this session. There is no new feature panel or implicit preset activation.
+
+## Packaging, closure, capability and reservation manifest
+
+Add the explicit protected release-allowlist line:
+
+```text
+mod_editor/core/nfl2k5_zone_drop.py
+```
+
+Retain existing allowance for `nfl2k5_xbe_space.py`,
+`nfl2k5_depth_chart_storage.py`, `nfl2k5_boot_logo.py`,
+`nfl2k5_bump_strength.py`, `nfl2k5_draft_ai.py`, and `nfl2k5_cave_oracle.py`.
+These are the backend's existing helper closure; this feature adds no new
+application dependencies. Retain the application's existing Pillow import
+through package initialization. Unicorn
+and Capstone stay optional proof dependencies and are never runtime imports
+of the new module. Do not package `.scratch`, game executables or discs.
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, add dotted import
+`mod_editor.core.nfl2k5_zone_drop`, inspect `REQUESTS`, check
+`status(b"bad") == "foreign"`, and assemble an 80-byte `code_for` result
+without optional disassembly/emulation packages. Retain the helper imports
+above in the runtime closure.
+
+The concrete staged registry row is
+`docs/mod_editor/nfl2k5_zone_drop_capability.json`. Copy its sole object into
+`mod_editor/capabilities/registry.v1.json`, ID
+`nfl2k5.gameplay.zone_drop_cap`, existing surface `gameplay_tuning_sliders`,
+classification `offline-writer-proved`, runtime `not-tested`, GUI default
+false. Update capability count/catalog expectations and findings routing to
+the new PATCHES key when integrating. There is no new schema surface.
+
+After allocator capacity and the final owners land, extend
+`nfl2k5_cave_manifest.py` to observe `nfl2k5_zone_drop`: include it in the
+module map; add its owner to the recorder's allowed grown writers and
+`space.reservations` branches; include `zone.REQUESTS` in the complete final
+union; call its real `apply` under the recorder; and add it to `extra_owners`,
+`image_steps` and model text. The new standalone test already proves the
+recorder covers the complete 80-byte allocation and five-byte hook when
+observing a separately reserved compatible layout. Regenerate protected
+`data/nfl2k5_cave_reservations.json` with the existing manifest CLI after
+these integration changes. Preserve all source-fingerprint drift checks.
+
+Run the two feature suites and both composed gates listed in
+`ASTRA_ZONE_DROP_REPORT.md`, then the existing cave-oracle suite with the
+fresh complete manifest. Today's protected manifest is deliberately untouched;
+the feature test does not relabel a pairwise recording as a complete stack
+manifest. Noah's complete witness list and all current gaps are in the report.
+
+# Integration 3 resolution, 2026-09-05
+
+The Momentum, defensive try and zone drop handoffs above are integrated. Their
+historical one-page capacity warnings are superseded by the two-RX-page allocator.
+Existing kickoff/runtime allocations remain stable when these owners are added.
+Both XBE safety gates now compose every owner, including music metadata, and run
+all gate assertions in both installation orders. No separate reduced zone-drop
+stack remains. The full request union is selected before first growth. Build
+uses the paired scorebug transaction with that union reserved, then installs
+remaining owners before its outer transaction publishes the complete disc.
+
+All new options remain experimental and unwitnessed, Retail/off in every preset.
+The defensive conversion box-score row and persistent category remain missing;
+only its diagnostic tally is implemented. See ASTRA_INTEGRATION_3_REPORT.md for
+capacity, receipts, complete CI accounting and delivery details.

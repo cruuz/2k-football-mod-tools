@@ -36,7 +36,7 @@ def _section(payload: bytes):
 
 def state(payload: bytes) -> str:
     try:
-        if struct.unpack_from("<I", payload, 0x11C)[0] in (24, 25):
+        if struct.unpack_from("<I", payload, 0x11C)[0] in (24, 25, 26):
             from . import nfl2k5_xbe_space as space
             return space.special_state(payload)
         s = _section(payload)
@@ -144,7 +144,7 @@ def write_image_xbe(descriptor: int, payload: bytes) -> dict:
     entry = entries.get("default.xbe")
     from . import nfl2k5_xbe_space as space
     from . import nfl2k5_music_storage as music_storage
-    if entry is None or entry.size not in (RETAIL_FILE_SIZE, FILE_SIZE, space.FILE_SIZE, music_storage.FILE_SIZE):
+    if entry is None or entry.size not in (RETAIL_FILE_SIZE, FILE_SIZE, space.FILE_SIZE, music_storage.FILE_SIZE, space.EXT_FILE_SIZE):
         raise ValueError("unknown default.xbe extent")
     original = io.pread(descriptor, entry.size, entry.byte_offset)
     if (len(original) != entry.size or
@@ -199,7 +199,7 @@ def recognized_grown_xbe(payload: bytes) -> bool:
     from . import nfl2k5_depth_chart_rows as rows
     from . import nfl2k5_xbe_space as space
     from . import nfl2k5_music_storage as music_storage
-    if len(payload) in (space.FILE_SIZE, music_storage.FILE_SIZE) and space.status(payload) == "applied":
+    if len(payload) in (space.FILE_SIZE, music_storage.FILE_SIZE, space.EXT_FILE_SIZE) and space.status(payload) == "applied":
         return space.special_state(payload) == "retail" or rows.status(payload) == "applied"
     return len(payload) == FILE_SIZE and rows.status(payload) == "applied"
 

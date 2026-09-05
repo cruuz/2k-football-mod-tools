@@ -64,7 +64,10 @@ class ProductCatalogTests(unittest.TestCase):
             "nfl2k5.cross_title_model_conversion.to_apf",
             "nfl2k5.franchise_restoration_cross_title.port",
             "nfl2k5.gameplay.kickoff_relocated",
+            "nfl2k5.gameplay.momentum",
             "nfl2k5.gameplay.xbe_space",
+            "nfl2k5.gameplay.zone_drop_cap",
+            "nfl2k5.gameplay_tuning_sliders.defensive_try",
             "nfl2k5.gameplay_tuning_sliders.rating_view",
             "nfl2k5.logos.team_select_cards",
             "nfl2k5.menus.layouts",
@@ -98,7 +101,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 42)
+        self.assertEqual(len(first_ids), 45)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -141,7 +144,7 @@ class ProductCatalogTests(unittest.TestCase):
             ProductCategory.MENUS_UI: (2, 0, 2, 0, 0, 0, 0),
             ProductCategory.CRIB: (1, 1, 0, 0, 0, 0, 0),
             ProductCategory.AUDIO: (7, 6, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (8, 2, 4, 0, 0, 0, 2),
+            ProductCategory.SLIDERS_GAMEPLAY: (11, 5, 4, 0, 0, 0, 2),
             ProductCategory.PLAYBOOKS_PLAYS: (3, 3, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
@@ -170,7 +173,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (42, 25, 7, 2, 0, 6, 2),
+            (45, 28, 7, 2, 0, 6, 2),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -223,7 +226,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 42)
+        self.assertEqual(len(seen), 45)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

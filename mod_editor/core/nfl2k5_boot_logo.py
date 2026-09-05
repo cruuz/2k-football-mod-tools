@@ -98,7 +98,7 @@ def status(payload: bytes) -> str:
     if len(payload) < 0x1000 or payload[:4] != b"XBEH":
         return "foreign"
     addr, size, headers = _fields(payload)
-    if headers == 0x1000 and payload[0xDA0:0xDA8] == b"XSPACE1\0":
+    if headers == 0x1000 and payload[0xDA0:0xDA8] in (b"XSPACE1\0", b"XSPACE2\0"):
         from . import nfl2k5_xbe_space as space
         if space.status(payload) == "applied":
             return "applied"

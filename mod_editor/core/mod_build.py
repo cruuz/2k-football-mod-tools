@@ -113,6 +113,10 @@ class BuildPlan:
     # takes the touchback with the given probabilities; implies kick_rules + kickoff_alignment (and never kick_power)
     xbe_space: bool = False  # opt-in witness disc only, experimental and unwitnessed
     kickoff_relocated: bool = False
+    momentum: int = 0  # experimental and unwitnessed; 0 is Retail
+    momentum_contact: bool = False
+    defensive_try: bool = False
+    zone_drop_cap: bool = False
     dynamic_kickoff: bool = False
     dynamic_kickoff_settings: dict[str, object] = field(default_factory=lambda: {
         "touchback_yard": 35, "cpu_landing_probability": 90, "cpu_target_yards": (5, 15), "cpu_touchback_probability": 90})
@@ -232,7 +236,7 @@ class BuildPlan:
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice)
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star
-                or self.scorebug_runtime or self.music_policy != "retail" or self.music_unlock or self.music_userlist
+                or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
     def to_recipe(self) -> dict[str, Any]:
@@ -251,6 +255,7 @@ PRESETS: dict[str, dict[str, Any]] = {
     # BASIC keeps the game in 2004: only the fixes a 2K5 update would have shipped.
     "softdrink_basic": {
         "scorebug_runtime": False,
+        "momentum": 0, "momentum_contact": False, "defensive_try": False, "zone_drop_cap": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
@@ -261,6 +266,7 @@ PRESETS: dict[str, dict[str, Any]] = {
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
         "scorebug_runtime": False,
+        "momentum": 0, "momentum_contact": False, "defensive_try": False, "zone_drop_cap": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
@@ -271,6 +277,7 @@ PRESETS: dict[str, dict[str, Any]] = {
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
         "scorebug_runtime": True,
+        "momentum": 0, "momentum_contact": False, "defensive_try": False, "zone_drop_cap": False,
         "music_policy": "retail", "music_unlock": False, "music_userlist": False,
         "guardian_cap": True,
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
@@ -303,6 +310,9 @@ def availability() -> dict[str, bool]:
 
     return {
         "throw": True, "catch_slider": True, "accel_ramp": True, "draft_ai": True,
+        **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
+           for key, module in (("momentum", "nfl2k5_momentum"), ("momentum_contact", "nfl2k5_momentum"),
+                               ("defensive_try", "nfl2k5_defensive_try"), ("zone_drop_cap", "nfl2k5_zone_drop"))},
         "xbe_space": _core_module("nfl2k5_xbe_space") is not None,
         "kickoff_relocated": (_core_module("nfl2k5_dynamic_kickoff_relocated") is not None
                               and _core_module("nfl2k5_xbe_space") is not None
@@ -414,6 +424,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "practice_reserves": report.get("practice_reserves", "unknown"),
         "depth_locks": report.get("depth_locks", "unknown"),
         "season_cap": report.get("season_cap", "unknown"),
+        **{key: report.get(key, "unknown") for key in
+           ("momentum", "momentum_contact", "momentum_settings", "defensive_try", "zone_drop_cap", "zone_drop_settings")},
         "xbe_space": report.get("xbe_space", "unknown"),
         "kickoff_relocated": report.get("kickoff_relocated", "unknown"),
         "kickoff_relocated_settings": report.get("kickoff_relocated_settings"),
@@ -697,6 +709,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if (plan.music_policy not in ("retail", "jukebox_menus") or type(plan.music_unlock) is not bool
             or type(plan.music_userlist) is not bool or (plan.music_userlist and plan.music_policy != "jukebox_menus")):
         raise ValueError("Music policies require retail or jukebox_menus, boolean switches, and jukebox menus for UserList")
+    tt.momentum_patch._settings(plan.momentum, plan.momentum_contact)
+    if type(plan.defensive_try) is not bool or type(plan.zone_drop_cap) is not bool:
+        raise ValueError("experimental switches must be boolean")
+    legacy_disabled = plan.momentum > 0 and plan.accel_ramp
+    if plan.momentum > 0:
+        plan = replace(plan, accel_ramp=False)
+    if plan.momentum > 0 or plan.defensive_try or plan.zone_drop_cap:
+        plan = replace(plan, xbe_space=True)
     if plan.scorebug_runtime:
         plan = replace(plan, scorebug=True, xbe_space=True)
     if plan.kickoff_relocated:
@@ -710,6 +730,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if target.exists() and not plan.overwrite:
         raise FileExistsError(f"{target} exists")
     receipt: dict[str, Any] = {"plan": plan.to_recipe(), "steps": [], "source": str(source), "target": str(target)}
+    receipt["legacy_accel_ramp_disabled_by_momentum_profile"] = bool(legacy_disabled)
     is_image = tt.is_disc_image(source)
     if (plan.xbe_space or plan.kickoff_relocated) and not is_image:
         raise ValueError("experimental extra patch space needs a disc image")
@@ -807,7 +828,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     #    including its disc text spans when the source is an image)
     # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
     # the 2026 season step patches the executable itself, so a season-only plan is copy-first too
-    if replace(plan, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, music_library=None).wants_xbe_patch() or plan.edge_rename:
+    if replace(plan, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, momentum=0, momentum_contact=False, defensive_try=False, zone_drop_cap=False, music_library=None).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -1112,16 +1133,21 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
 
     if plan.scorebug_runtime:
         progress("Installing team logos and scorebug effects (unwitnessed)", 0, 0)
-        rec = _core_module("nfl2k5_scorebug_ingame").runtime_apply_in_place(target, with_kickoff=plan.kickoff_relocated)
+        rec = _core_module("nfl2k5_scorebug_ingame").runtime_apply_in_place(target, with_kickoff=plan.kickoff_relocated,
+            extra_requests=tt._selected_space_requests(momentum=plan.momentum, defensive_try=plan.defensive_try, zone_drop_cap=plan.zone_drop_cap))
         receipt["steps"].append({"step": "scorebug_runtime", **rec})
-    elif plan.xbe_space or plan.kickoff_relocated:
+    if ((plan.xbe_space or plan.kickoff_relocated) and not plan.scorebug_runtime
+            or plan.momentum > 0 or plan.defensive_try or plan.zone_drop_cap):
         progress("Adding experimental extra patch space", 0, 0)
         patched, space_receipt = tt._apply_all(
             _xbe_bytes(target), wanted=None, catch_slider=False, arc_table=False,
             xbe_space=plan.xbe_space, kickoff_relocated=plan.kickoff_relocated,
+            scorebug_runtime=plan.scorebug_runtime, momentum=plan.momentum, momentum_contact=plan.momentum_contact,
+            defensive_try=plan.defensive_try, zone_drop_cap=plan.zone_drop_cap,
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings)
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
+                                 **tt._allocator_feature_status(patched),
                                  "xbe_space": tt.xbe_space_patch.status(patched),
                                  "kickoff_relocated": tt.kickoff_relocated_patch.status(patched),
                                  "kickoff_relocated_settings": tt.kickoff_relocated_patch.read_settings(patched)})

@@ -43,6 +43,8 @@ def synthetic():
     struct.pack_into("<II", buf, 0x11C, 22, 0x10000 + space.TABLE)
     struct.pack_into("<II", buf, 0x170, space.logo.RETAIL_LOGO_VA, space.logo.LOGO_SIZE)
     buf[0xA10:0xA10 + space.logo.LOGO_SIZE] = space.logo.RETAIL_LOGO
+    for off, va in space.LIB_POINTERS:
+        struct.pack_into("<I", buf, off, va)
     for i in range(22):
         name = 0x868 + i * 4
         buf[name:name + 4] = f"s{i:02d}".encode() + b"\0"
@@ -74,6 +76,7 @@ class PublicTests(unittest.TestCase):
         cls.pins = ExitStack()
         cls.addClassCleanup(cls.pins.close)
         for module, name, value in (
+            (space, "LIB_SHA256", space._sha(cls.retail[space.LIB_START:space.LIB_END])),
             (space, "METADATA_SHA256", space._sha(cls.retail[space.META_START:space.META_END])),
             (space, "GEOMETRY_SHA256", space._sha(b"".join(cls.retail[space.TABLE + i*56:space.TABLE + i*56 + 36] for i in range(22)))),
             (special, "RETAIL_CONTENT_SHA256", space._sha(bytes(special.RETAIL_SIZE))),
@@ -106,12 +109,34 @@ class PublicTests(unittest.TestCase):
             self.assertEqual(head, tail)  # both boundaries occupy the same page
             self.assertEqual(image.read(head, 2), b"\0\0")
 
+    def test_second_code_page_relocates_pinned_library_and_can_hold_logo(self):
+        requests = (("alpha", "code", 4096, 16), ("beta", "code", 128, 16))
+        grown, _ = space.apply(self.retail, requests)
+        self.assertEqual(space.status(grown), "applied")
+        self.assertEqual(len(grown), space.EXT_FILE_SIZE)
+        self.assertEqual(space.apply(self.retail, reversed(requests))[0], grown)
+        self.assertEqual(space.apply(grown, requests)[0], grown)
+        logo = next(a for a in space.layout(grown)["allocations"] if a["owner"] == space.LOGO_REQUEST[0])
+        self.assertGreaterEqual(logo["va"], space.CODE2_VA)
+        self.assertEqual(XbeImage(grown).read(logo["va"], logo["size"]), space.logo.RETAIL_LOGO)
+        self.assertEqual(grown[space.LIB_COPY:space.PAGE], self.retail[space.LIB_START:space.LIB_END])
+        for off, va in space.LIB_POINTERS:
+            self.assertEqual(struct.unpack_from("<I", grown, off)[0], va + space.LIB_COPY-space.LIB_START)
+        filled, _ = space.install_code(grown, "alpha", b"\xc3" + b"\xcc" * 4095)
+        self.assertEqual(space.status(filled), "applied")
+        self.assertEqual(space.install_code(filled, "alpha", b"\xc3" + b"\xcc" * 4095)[0], filled)
+        for offset in (space.LIB_COPY, space.LIB_COPY-1, space.CODE2_REFS, space.FILE_SIZE):
+            bad = bytearray(grown); bad[offset] ^= 1
+            self.assertEqual(space.status(bad), "foreign")
+            with self.assertRaises(ValueError):
+                space.apply(bad, requests)
+
     def test_request_errors_and_rebuild_refusal(self):
         for req in (("a", "code", 0, 1), ("a", "code", True, 1), ("a", "data", 1, 3),
                     ("a", "data", 1, 8192), ("a", "bad", 1, 1), ("A", "code", 1, 1)):
             with self.subTest(req=req), self.assertRaises(ValueError):
                 space.apply(self.retail, [req])
-        for requests in ([REQUESTS[0], REQUESTS[0]], [("a", "code", 4096, 1), ("b", "code", 1, 1)],
+        for requests in ([REQUESTS[0], REQUESTS[0]], [("a", "code", 4096, 1), ("b", "code", 4096, 1), ("c", "code", 1, 1)],
                          [("owner_" + str(i) * 50, "code", 1, 1) for i in range(8)]):
             with self.assertRaises(ValueError):
                 space.apply(self.retail, requests)
@@ -231,7 +256,8 @@ class RetailTests(unittest.TestCase):
     def test_fresh_allocation_proof_and_retired_cave_pin(self):
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
-        combined, _ = space.apply(self.retail, relocated.REQUESTS + runtime.REQUESTS)
+        from tests.nfl2k5_allocator_stack import REQUESTS as all_requests
+        combined, _ = space.apply(self.retail, all_requests)
         self.assertEqual(space.allocation_evidence(self.retail, manifest, allocated=combined)["encoded_references"], [])
         old = kickoff._offset(self.grown, kickoff.CAVE_VA, kickoff.CAVE_SIZE)
         self.assertEqual(self.grown[old:old+kickoff.CAVE_SIZE], self.legacy[old:old+kickoff.CAVE_SIZE])

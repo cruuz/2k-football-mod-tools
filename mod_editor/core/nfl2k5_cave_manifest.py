@@ -78,11 +78,13 @@ class Recorder:
             from . import nfl2k5_xbe_space as space
             allow_append = (owner == "nfl2k5_depth_chart_rows" and storage.state(before) == "retail"
                             and storage.state(after) == "applied")
-            allow_append |= (owner in (space.OWNER, "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime")
+            allow_append |= (owner in (space.OWNER, "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop")
                              and space.status(before) == "retail" and space.status(after) == "applied")
             if owner == 'nfl2k5_music_metadata':
                 from . import nfl2k5_music_metadata as music
                 allow_append |= music.status(before) == 'retail' and music.status(after) == 'applied'
+        from . import nfl2k5_xbe_space as space
+        grown_regions = space.layout(after)["regions"] if space.status(after) == "applied" else []
         runs = list(changed_runs(before, after, allow_append=allow_append))
         self.mapping_end = max(self.mapping_end, post_image.base + post_image.image_size)
         if len(after) > len(self.covered):
@@ -99,7 +101,8 @@ class Recorder:
                     stop += 1
                 if va is not None:
                     from . import nfl2k5_xbe_space as space
-                    page_owner = space.OWNER if space.CODE_VA <= va < space.DATA_VA + space.PAGE else owner
+                    page_owner = space.OWNER if any(r["va"] <= va < r["va"] + r["size"]
+                        for r in grown_regions if r["kind"] != "read_only") else owner
                     self.reserve(va, stop - at, page_owner, "observed byte diff")
                 at = stop
         self.steps.append({"owner": owner, "function": function,
@@ -107,7 +110,7 @@ class Recorder:
                            "after_sha256": hashlib.sha256(after).hexdigest(),
                            "changed_bytes": sum(b - a for a, b in runs),
                            "file_runs": [[hex(a), hex(b)] for a, b in runs]})
-        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata"):
+        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop"):
             from . import nfl2k5_xbe_space as space
             for reservation in space.reservations(after):
                 # The preset and the dormant-owner probe can assign different
@@ -223,6 +226,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_ingame as scorebug_ingame
     from . import nfl2k5_music_metadata as music
+    from . import nfl2k5_momentum as momentum
+    from . import nfl2k5_defensive_try as defensive_try, nfl2k5_zone_drop as zone_drop
     progress = progress or (lambda _message: None)
     xiso = xiso.resolve(strict=True)
     work_dir = work_dir.resolve(strict=True)
@@ -231,7 +236,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     recorder = Recorder(retail)
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
-    modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame, music)})
+    modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame, music, momentum, defensive_try, zone_drop)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -279,9 +284,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
             # Observe their real pure-byte writers after every disc/XBE pass.
             # The generalized writer resolves the grown extent directly, so
             # manifest generation does not depend on the protected dispatcher.
-            final, _ = space.apply(final, relocated.REQUESTS + runtime.REQUESTS)
+            final, _ = space.apply(final, relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS)
+            final, _ = defensive_try.apply(final)
+            final, _ = zone_drop.apply(final)
             final, _ = relocated.apply(final)
             final, _ = runtime.apply(final)
+            final, _ = momentum.apply(final, momentum=100, momentum_contact=True)
             # Ownership probe only, on a disposable oracle disc. Presets never
             # enable a personal music library; no playback claim is made here.
             final, _ = music.apply(final, [dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256)
@@ -312,9 +320,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                              if str((ROOT / name).resolve()) in loaded_paths}
         return {"schema": MANIFEST_SCHEMA, "retail_sha256": RETAIL_SHA256, "complete": True,
                 "stack_image_size": XbeImage(final).image_size,
-                "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime and music metadata; exact diffs union owned pages and named allocations",
+                "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime music metadata, Momentum, defensive try and zone drop; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER],
+                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER],
                 "seven_on_seven_book": book_note,
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,
                 "preset_xbe_sha256": hashlib.sha256(preset_xbe).hexdigest(),
@@ -322,5 +330,5 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                 "section_digests_verified": True,
                 "image_options": {"scorebug_textures": True, "runtime_panel_resources": False,
                                   "reason": "Manifest proves XBE ownership only; panel transport has its own resource tests"},
-                "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated", "scorebug_runtime", "music_metadata"],
+                "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated", "scorebug_runtime", "music_metadata", "momentum", "defensive_try", "zone_drop_cap"],
                 "source_sha256": used_fingerprints, "steps": recorder.steps, "spans": spans}

@@ -37,10 +37,19 @@ PATCHES = (
      "and floored at a 10 % pick chance, which is why the forums call it broken. Patch: the catch roll is "
      "divided by twice the receiver's side's Catching slider (goes to 200) and a defender's roll by twice the "
      "Interception slider (0 = no picks, 50 = retail, 100 = double)."),
-    ("accel_ramp", "Acceleration ramp",
-     "Retail has no acceleration: everyone is at top speed on the first step, so linemen keep pace with "
-     "receivers and slow quarterbacks burst out of the pocket. Patch: players wind up from 60 % to 100 % of "
-     "their Speed rating, about 1 s at 99 Agility and 2 s at 30; standing still resets it."),
+    ("accel_ramp", "Legacy acceleration ramp",
+     "Retail: native movement already accelerates. Patch: adds a rating-based speed envelope "
+     "to controller-driven players. This legacy profile does not apply equally to CPU players."),
+    ("momentum", "Player momentum (experimental, unwitnessed)",
+     "Retail: stock turning and stopping. Patch: wider turns at speed and more room to stop "
+     "during ordinary running. Experimental / Unwitnessed."),
+    ("momentum_contact", "Running start in contact (experimental, unwitnessed)",
+     "Retail: speed and weight already affect contact. Patch: a sustained running start can give "
+     "the ball carrier a small extra boost through contact. Experimental / Unwitnessed. Requires player momentum."),
+    ("defensive_try", "Defensive two-point returns (experimental)", tt.defensive_try_patch.UI_TEXT),
+    ("zone_drop_cap", "Corner deep-zone backpedal (experimental, unwitnessed)",
+     "Retail: corners can request full depth during their initial deep-zone drop. Patch: caps that initial "
+     "depth request for cornerbacks. Later steering and ball response stay native. Experimental / Unwitnessed."),
     ("draft_ai", "Realistic, unpredictable CPU drafts and free agency in franchise",
      "Retail: on the clock a CPU team takes the best raw overall among its neediest positions, and raw "
      "overall is compared across positions, so the positions whose rookies roll the highest overalls (HB, DE, "
@@ -259,7 +268,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "season_cap": ("128-season franchise gate (experimental)",
                    "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet.", NOT_TESTED),
     "catch_slider": ("Fix Catching & Interception sliders", "Catching controls drops; Interception controls picks.", ""),
-    "accel_ramp": ("Gradual player acceleration", "Agility controls how quickly players reach top speed.", ""),
+    "accel_ramp": ("Legacy acceleration ramp", "A separate rating-based envelope for controller-driven players.", ""),
     "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
     "returner_fix": ("Fix CPU kick & punt returners", "Changes automatic depth-chart selection.", ""),
     "progression": ("Change player growth & decline", "Growth over years 1-5, harder decline after years 9-12; more stars and busts.", ""),
@@ -288,7 +297,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -398,6 +407,9 @@ class GameplayPatchesPanel(QWidget):
         lb.setSpacing(8)
         for key, label, explanation in self._patches:
             short, helper, badge = LABELS.get(key, (label, "", ""))
+            if key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap"):
+                badge = "EXPERIMENTAL / UNWITNESSED"
+                helper = explanation if key == "defensive_try" else "Select a level in Build or here; rebuild from the supported source." if key == "momentum" else ""
             row = QWidget()
             rl = QVBoxLayout(row)
             rl.setContentsMargins(0, 0, 0, 2)
@@ -408,6 +420,16 @@ class GameplayPatchesPanel(QWidget):
             check.setAccessibleDescription(helper or label)
             check.toggled.connect(lambda _c: self._refresh())
             head.addWidget(check)
+            if key == "momentum":
+                self.momentum_level = QComboBox()
+                for text, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
+                    self.momentum_level.addItem(text, value)
+                self._momentum_last_positive = 50
+                self.momentum_level.setCurrentIndex(0)
+                self.momentum_level.setAccessibleName("Player momentum level, experimental and unwitnessed")
+                self.momentum_level.currentIndexChanged.connect(self._momentum_changed)
+                check.toggled.connect(self._momentum_toggled)
+                head.addWidget(self.momentum_level)
             if key == "screen_timing":
                 self.screen_timing_combo = QComboBox()
                 self.screen_timing_combo.setAccessibleName("Screen timing experiment")
@@ -536,6 +558,8 @@ class GameplayPatchesPanel(QWidget):
             on = check.isChecked()
             if key == "screen_timing":
                 plan.screen_timing = self.screen_timing_combo.currentText() if on else None
+            elif key == "momentum":
+                plan.momentum = int(self.momentum_level.currentData() or 50) if on else 0
             elif key == "music_policy":
                 plan.music_policy = "jukebox_menus" if on else "retail"
             else:
@@ -550,9 +574,45 @@ class GameplayPatchesPanel(QWidget):
             plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
             plan.scheme_labels = plan.scheme_labels or state.get("scheme_labels") != "applied"
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
+        if getattr(self, "_momentum_legacy_disabled", False):
+            plan.notes = (plan.notes + "\nlegacy_accel_ramp_disabled_by_momentum_profile=true").strip()
         return plan
 
+    def _momentum_toggled(self, on):
+        if on and "accel_ramp" in self.checks:
+            if self.checks["accel_ramp"].isChecked():
+                self._momentum_legacy_disabled = True
+            self.checks["accel_ramp"].setChecked(False)
+        self._refresh()
+
+    def _momentum_changed(self):
+        if self.momentum_level.currentData() > 0:
+            self._momentum_last_positive = int(self.momentum_level.currentData())
+        legacy = self.checks.get("accel_ramp")
+        if legacy is not None and legacy.isChecked():
+            self._momentum_legacy_disabled = True
+        level = int(self.momentum_level.currentData())
+        self.checks["momentum"].setChecked(level > 0 and self.checks["momentum"].isEnabled())
+        if "accel_ramp" in self.checks:
+            self.checks["accel_ramp"].setChecked(False)
+        self._refresh()
+
     def _refresh(self) -> None:
+        if "momentum_contact" in self.checks:
+            enabled = self.checks["momentum"].isChecked()
+            self.checks["momentum_contact"].setEnabled(enabled and (self._state or {}).get("momentum_contact") == "retail")
+            if not enabled:
+                self.checks["momentum_contact"].setChecked(False)
+            installed = (self._state or {}).get("momentum") == "applied"
+            level = (self._state or {}).get("momentum_settings", {})
+            level = level.get("momentum", 0) if isinstance(level, dict) else 0
+            selected = level if installed else self._momentum_last_positive if enabled else 0
+            self.momentum_level.blockSignals(True)
+            if installed and self.momentum_level.findData(selected) < 0:
+                self.momentum_level.addItem(f"Installed ({selected})", selected)
+            self.momentum_level.setCurrentIndex(self.momentum_level.findData(selected))
+            self.momentum_level.blockSignals(False)
+            self.momentum_level.setEnabled(self.checks["momentum"].isEnabled())
         if "music_userlist" in self.checks:
             enabled = self.checks["music_policy"].isChecked() or (self._state or {}).get("music_policy") == "applied"
             self.checks["music_userlist"].setEnabled(enabled and (self._state or {}).get("music_userlist") == "retail")

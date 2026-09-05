@@ -50,7 +50,8 @@ SITES = (Site("music_policy", MENU_VA, struct.pack("<I", 0xE92D4C),
 def _context(payload: bytes) -> XbeImage:
     image = XbeImage(payload)
     context = bytearray(image.read(CONTEXT_VA, CONTEXT_SIZE))
-    if len(image.sections) == 25:
+    from . import nfl2k5_xbe_space as space
+    if space.has_music(payload):
         from . import nfl2k5_music_metadata as metadata
         if metadata.status(payload) != "applied":
             raise MusicPolicyError("Music library metadata is not recognized")

@@ -7,6 +7,11 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = (
+    "test_nfl2k5_momentum.py",
+    "test_nfl2k5_defensive_try.py",
+    "test_nfl2k5_zone_drop.py",
+    "test_nfl2k5_zone_drop_unicorn.py",
+    "test_beta61_allocator_integration.py",
     "test_nfl2k5_animation.py",
     "test_nfl2k5_xbe_space.py",
     "test_nfl2k5_guardian_cap.py",

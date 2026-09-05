@@ -495,7 +495,7 @@ def preview_data(source: Path):
     return m,image
 
 
-def runtime_image_plan(fd: int, *, with_kickoff: bool = False):
+def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()):
     """Preflight both files before any write; use the generalized extent reader."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as kickoff
@@ -505,17 +505,15 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False):
     if pack_entry is None or xbe_entry is None:
         raise ScorebugError("missing scorebug disc files")
     if pack_entry.size not in (PACK_SIZE, PACK_SIZE + resources.RUNTIME_GROWTH) or xbe_entry.size not in (
-            space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, space.FILE_SIZE):
+            space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, space.FILE_SIZE, space.EXT_FILE_SIZE):
         raise ScorebugError("unknown scorebug disc extents")
     pack = io.pread(fd, pack_entry.size, pack_entry.byte_offset)
     xbe = io.pread(fd, xbe_entry.size, xbe_entry.byte_offset)
     states = (resources.runtime_pack_status(pack), runtime.status(xbe))
     if "foreign" in states or len(set(states)) != 1:
         raise ScorebugError("runtime scorebug files are mixed or foreign; rebuild from base")
-    prepared = xbe
-    if space.status(xbe) == "retail":
-        requests = runtime.REQUESTS + (kickoff.REQUESTS if with_kickoff else ())
-        prepared, _ = space.apply(xbe, requests)
+    requests = runtime.REQUESTS + (kickoff.REQUESTS if with_kickoff else ()) + tuple(extra_requests)
+    prepared, _ = space.apply(xbe, requests)
     if with_kickoff:
         prepared, _ = kickoff.apply(prepared)
     new_xbe, xr = runtime.apply(prepared)
@@ -536,7 +534,7 @@ def runtime_image_status(path):
             entries, _ = layout.xc.parse_xdvdfs(fd, os.fstat(fd).st_size)
             p, x = entries["vc_53450030/0"], entries["default.xbe"]
             if x.size not in (space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE,
-                              space.FILE_SIZE, music_storage.FILE_SIZE):
+                              space.FILE_SIZE, music_storage.FILE_SIZE, space.EXT_FILE_SIZE):
                 return "foreign"
             xbe_state = runtime.status(io.pread(fd, x.size, x.byte_offset))
             resource_state = "foreign"
@@ -560,7 +558,7 @@ def runtime_image_status(path):
         return "foreign"
 
 
-def runtime_apply_in_place(path, *, with_kickoff=False):
+def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=()):
     """Transactional resource growth and allocator XBE transport on an output copy.
 
     Pack 0 is appended intact, then its existing XDVDFS node is switched. The
@@ -571,7 +569,7 @@ def runtime_apply_in_place(path, *, with_kickoff=False):
     from . import nfl2k5_depth_chart_storage as storage, platform_compat as io
     with Path(path).open("r+b") as stream:
         fd = stream.fileno()
-        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff)
+        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff, extra_requests=extra_requests)
         original_size = os.fstat(fd).st_size
         nodes = []
         for entry, before, _after in jobs:

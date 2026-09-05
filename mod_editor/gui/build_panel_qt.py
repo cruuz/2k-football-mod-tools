@@ -308,10 +308,33 @@ class BuildPanel(QWidget):
                                         "Catching controls drops; Interception controls picks.",
                                         details="The catch roll is divided by twice the receiver's side's Catching slider (the menu goes to 200) "
                                                 "and a defender's roll by twice the Interception slider (0 = no picks, 50 = original, 100 = double).")
-        self.accel_check = self._option(g, "accel_ramp", "Gradual player acceleration",
-                                        "Agility controls how quickly players reach top speed.",
-                                        details="The original has no acceleration: everyone is at top speed on the first step. Players now wind up "
-                                                "from 60 % to 100 % of their Speed, about 1 s at 99 Agility and 2 s at 30; standing still resets it.")
+        self.accel_check = self._option(g, "accel_ramp", "Legacy acceleration ramp",
+            "Adds a rating-based speed envelope to controller-driven players.",
+            details="Native movement already accelerates. This legacy profile does not apply equally to CPU players.")
+        self.momentum_check = self._option(g, "momentum", "Player momentum (experimental)",
+            "Players take wider turns at speed and need more room to stop. Experimental / Unwitnessed.",
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.momentum_level = QComboBox()
+        for label, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
+            self.momentum_level.addItem(label, value)
+        self._momentum_last_positive = 50
+        self.momentum_level.setCurrentIndex(0)
+        self.momentum_level.setAccessibleName("Player momentum level, experimental and unwitnessed")
+        g.addWidget(self.momentum_level)
+        self.momentum_level.currentIndexChanged.connect(self._momentum_level_changed)
+        self.momentum_contact_check = self._option(g, "momentum_contact", "Running start in contact (experimental)",
+            "Experimental / Unwitnessed. Requires player momentum.",
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.momentum_contact_note = QLabel("A sustained running start can give the ball carrier a small extra boost through contact.")
+        self.momentum_contact_note.setWordWrap(True)
+        self.momentum_contact_note.hide()
+        self.momentum_check.toggled.connect(self._momentum_toggled)
+        g.addWidget(self.momentum_contact_note)
+        self.defensive_try_check = self._option(g, "defensive_try", "Defensive two-point returns (experimental)",
+            tt.defensive_try_patch.UI_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.zone_drop_cap_check = self._option(g, "zone_drop_cap", "Corner deep-zone backpedal (experimental)",
+            "Caps the initial deep-zone depth request for cornerbacks. Experimental / Unwitnessed.",
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.kick_rules_check = self._option(g, "kick_rules", "Modern kick spots & kicking power",
                                              "Kickoff: 35 · touchback: 35 · PAT snap: 15.",
                                              details="These describe the shipped patch, not a newly verified NFL ruleset. Two-point tries stay at the 2; "
@@ -850,6 +873,8 @@ class BuildPanel(QWidget):
                 self._set_badge(key, self._static_badges.get(key, ""))
         gate(self.catch_check, "catch_slider")
         gate(self.accel_check, "accel_ramp")
+        for key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap"):
+            gate(getattr(self, key + "_check"), key, needs_image=True)
         gate(self.draft_check, "draft_ai")
         gate(self.returner_check, "returner_fix")
         gate(self.progression_check, "progression")
@@ -943,6 +968,11 @@ class BuildPanel(QWidget):
     def apply_preset(self, name: str) -> dict[str, list[str]]:
         """Tick the preset's toggles (only those the source can still take); returns what was skipped."""
 
+        self._momentum_legacy_disabled = False
+        self._momentum_last_positive = 50
+        self.momentum_level.blockSignals(True)
+        self.momentum_level.setCurrentIndex(0)
+        self.momentum_level.blockSignals(False)
         values = mod_build.PRESETS[name]
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
@@ -991,7 +1021,8 @@ class BuildPanel(QWidget):
             "throw": self.throw_check, "catch_slider": self.catch_check, "accel_ramp": self.accel_check,
             "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check,
             **{key: getattr(self, key + "_check") for key in (
-                "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "music_project", "music_library")},
+                "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "music_project", "music_library",
+                "momentum", "momentum_contact", "defensive_try", "zone_drop_cap")},
             "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "guardian_cap": self.guardian_cap_check, "screen_timing": self.screen_timing_check, "scheme_labels": self.scheme_labels_check,
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
             "position_pools": self.position_pools_check, "depth_roles": self.depth_roles_check,
@@ -1040,6 +1071,9 @@ class BuildPanel(QWidget):
             arc=float(self.arc_spin.value()) / 100.0,
             realistic_flight=self.realistic_check.isChecked(),
             arc_by_distance=self.arc_by_distance_check.isChecked(),
+            momentum=int(self.momentum_level.currentData() or 50) if self.momentum_check.isChecked() else 0,
+            momentum_contact=self.momentum_contact_check.isChecked(),
+            defensive_try=self.defensive_try_check.isChecked(), zone_drop_cap=self.zone_drop_cap_check.isChecked(),
             catch_slider=self.catch_check.isChecked(), accel_ramp=self.accel_check.isChecked(),
             draft_ai=self.draft_check.isChecked(), edge_rename=self.edge_check.isChecked(),
             returner_fix=self.returner_check.isChecked(), progression=self.progression_check.isChecked(),
@@ -1083,12 +1117,14 @@ class BuildPanel(QWidget):
             plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
             plan.scheme_labels = plan.scheme_labels or state.get("scheme_labels") != "applied"
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
+        if getattr(self, "_momentum_legacy_disabled", False):
+            plan.notes = (plan.notes + "\nlegacy_accel_ramp_disabled_by_momentum_profile=true").strip()
         return plan
 
     def has_work(self) -> bool:
         p = self.plan()
         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or p.scorebug_runtime or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+                    or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits
                     or p.commentary or p.playbook_packs)
 
@@ -1101,6 +1137,8 @@ class BuildPanel(QWidget):
                 continue
             if box.isChecked():
                 text = box.text().replace("&&", "&")
+                if key == "momentum":
+                    text += f" ({self.momentum_level.currentData()})"
                 if key == "screen_timing":
                     text += f" ({self.screen_timing_combo.currentText()})"
                 if key == "throw":
@@ -1149,7 +1187,40 @@ class BuildPanel(QWidget):
             return "Source and output are the same file. Fix: choose a different output file."
         return ""
 
+    def _momentum_toggled(self, on):
+        if on:
+            if self.accel_check.isChecked():
+                self._momentum_legacy_disabled = True
+            self.accel_check.setChecked(False)
+        self._refresh()
+
+    def _momentum_level_changed(self):
+        if self.momentum_level.currentData() > 0:
+            self._momentum_last_positive = int(self.momentum_level.currentData())
+        legacy = self.accel_check
+        if legacy is not None and legacy.isChecked():
+            self._momentum_legacy_disabled = True
+        self.momentum_check.setChecked(self.momentum_level.currentData() > 0 and self.momentum_check.isEnabled())
+        self.accel_check.setChecked(False)
+        self._refresh()
+
     def _refresh(self) -> None:
+        if hasattr(self, "momentum_contact_note"):
+            enabled = self.momentum_check.isChecked()
+            installed = (self._state or {}).get("momentum") == "applied"
+            level = (self._state or {}).get("momentum_settings", {})
+            level = level.get("momentum", 0) if isinstance(level, dict) else 0
+            selected = level if installed else self._momentum_last_positive if enabled else 0
+            self.momentum_level.blockSignals(True)
+            if installed and self.momentum_level.findData(selected) < 0:
+                self.momentum_level.addItem(f"Installed ({selected})", selected)
+            self.momentum_level.setCurrentIndex(self.momentum_level.findData(selected))
+            self.momentum_level.blockSignals(False)
+            self.momentum_level.setEnabled(self.momentum_check.isEnabled())
+            self.momentum_contact_check.setEnabled(enabled and (self._state or {}).get("momentum_contact") == "retail")
+            if not enabled:
+                self.momentum_contact_check.setChecked(False)
+            self.momentum_contact_note.setVisible(self.momentum_contact_check.isChecked())
         if hasattr(self, "music_userlist_check"):
             enabled = self.music_policy_check.isChecked() or (self._state or {}).get("music_policy") == "applied"
             self.music_userlist_check.setEnabled(enabled and (self._state or {}).get("music_userlist") == "retail")

@@ -75,7 +75,7 @@ class StudioShellLayoutTests(unittest.TestCase):
             self.assertNotIn(moved, titles)
         patches = self.window._gameplay_patches_panel
         assert patches is not None
-        self.assertEqual(set(patches.checks), {"catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing", "scorebug", "scorebug_runtime", "music_policy", "music_unlock", "music_userlist"})
+        self.assertEqual(set(patches.checks), {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star", "depth_roles", "dynamic_kickoff", "depth_chart_rows", "practice_squad", "depth_locks", "season_cap", "xbe_space", "kickoff_relocated", "guardian_cap", "screen_timing", "scorebug", "scorebug_runtime", "music_policy", "music_unlock", "music_userlist"})
 
     def test_presentation_page_has_inventory_scorebug_and_commentary(self) -> None:
         page = self.window._category_pages[ProductCategory.SCOREBUG_PRESENTATION]

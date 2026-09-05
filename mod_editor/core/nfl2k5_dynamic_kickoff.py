@@ -443,7 +443,7 @@ def status(payload: bytes) -> str:
     legacy = _legacy_status(payload)
     if legacy != "foreign":
         return legacy
-    if payload[0xDA0:0xDA8] == b"XSPACE1\0":
+    if payload[0xDA0:0xDA8] in (b"XSPACE1\0", b"XSPACE2\0"):
         from . import nfl2k5_dynamic_kickoff_relocated as relocated
         if relocated.status(payload) == "applied":
             return "applied"

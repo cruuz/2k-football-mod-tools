@@ -194,7 +194,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [173, 9, 8, 9, 8, 9],
+            [177, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -208,6 +208,11 @@ class ProviderIntegrityTests(unittest.TestCase):
                 # Both package init files stay absent so their unrelated eager
                 # GUI/provider imports cannot escape the finite pin closure.
                 adapters = frozenset({
+                    "mod_editor/core/nfl2k5_momentum.py",
+                    "mod_editor/core/nfl2k5_momentum_code.py",
+                    "mod_editor/core/nfl2k5_defensive_try.py",
+                    "mod_editor/core/nfl2k5_zone_drop.py",
+
                     "mod_editor/core/nfl2k5_guardian_cap.py",
                     "mod_editor/core/nfl2k5_animation.py",
                     "mod_editor/core/nfl2k5_animation_math.py",

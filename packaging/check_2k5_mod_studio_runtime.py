@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "fa98f775835d75c1500d118b4e00908a85200ced963c89d5d7386d3b2d74eef9",
+        "711d4608487a88aff82ad56dd48c27f6029aba3ab59a805c247bde5ed62ab96f",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1669,6 +1669,11 @@ def main() -> int:
                 f"private or retail-derived {forbidden} data was included in the release")
 
     product_modules = (
+        "mod_editor.core.nfl2k5_momentum",
+        "mod_editor.core.nfl2k5_momentum_code",
+        "mod_editor.core.nfl2k5_defensive_try",
+        "mod_editor.core.nfl2k5_zone_drop",
+
         "mod_editor.core.nfl2k5_cave_oracle",
         "mod_editor.gui.play_designer_qt",
         "mod_editor.gui.create_play_wizard_qt",
@@ -1843,6 +1848,11 @@ def main() -> int:
     require(bool(modules["mod_editor.core.nfl2k5_dynamic_kickoff_relocated"].REQUESTS),
             "relocated kickoff named allocations missing")
 
+    for name in ("nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop"):
+        owner = modules["mod_editor.core." + name]
+        require(bool(owner.REQUESTS) and owner.status(b"") == "foreign", name + " ownership/foreign gate missing")
+        require(all(callable(getattr(owner, method, None)) for method in ("apply", "code_for")), name + " API missing")
+    require(callable(modules["mod_editor.core.nfl2k5_momentum"].read_settings), "Momentum settings missing")
     tool_modules = (
         "nfl2k5_music_banks",
         "nfl2k5_scorebug_reference",
@@ -1888,11 +1898,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 80,
+    require(len(registry.capabilities) == 83,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 42,
+    require(len(product_catalog.capabilities) == 45,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2295,7 +2305,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=80 sections=12 nfl2k5_capabilities=42 "
+        "registry=83 sections=12 nfl2k5_capabilities=45 "
         "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

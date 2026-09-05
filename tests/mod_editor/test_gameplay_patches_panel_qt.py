@@ -27,7 +27,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_three_patches_with_explanations_and_gating(self) -> None:
-        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'prospect_names', 'franchise_practice', 'player_star', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'screen_timing', 'music_policy', 'music_unlock', 'music_userlist', 'scorebug', 'scorebug_runtime', 'guardian_cap', 'season_cap', 'depth_locks'])
+        self.assertEqual([k for k, _l, _e in PATCHES], ['catch_slider', 'accel_ramp', 'momentum', 'momentum_contact', 'defensive_try', 'zone_drop_cap', 'draft_ai', 'returner_fix', 'progression', 'team_column', 'kick_rules', 'dynamic_kickoff', 'overtime', 'camera', 'position_row', 'probowl_order', 'penalties', 'uniform_choice', 'kick_laces', 'prospect_names', 'franchise_practice', 'player_star', 'depth_roles', 'depth_chart_rows', 'practice_squad', 'xbe_space', 'kickoff_relocated', 'screen_timing', 'music_policy', 'music_unlock', 'music_userlist', 'scorebug', 'scorebug_runtime', 'guardian_cap', 'season_cap', 'depth_locks'])
         for _k, _l, explanation in PATCHES:
             self.assertIn("Retail", explanation)
             self.assertIn("Patch", explanation)

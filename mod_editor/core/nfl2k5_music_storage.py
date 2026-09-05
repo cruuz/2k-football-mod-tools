@@ -24,16 +24,24 @@ PREFIX = 128
 MAGIC = b'MUSICRO1'
 
 
-def _descriptor(data):
+def _slots(extended):
+    return ((space.META_START + 168, space.MUSIC2_NAME, space.MUSIC2_REFS)
+            if extended else (HEADER, NAME, REFS))
+
+
+def _descriptor(data, extended=False):
+    _header, name, refs = _slots(extended)
     return struct.pack('<9I20s', 0x3A, VA, CAPACITY, RAW, CAPACITY,
-                       0x10000 + NAME, 0, 0x10000 + REFS, 0x10000 + REFS + 2,
+                       0x10000 + name, 0, 0x10000 + refs, 0x10000 + refs + 2,
                        space._digest(data))
 
 
 def unwrap(payload):
     """Validate the complete allocation and project the original 24 sections."""
-    space._require(len(payload) == FILE_SIZE, 'foreign music allocation extent')
-    block = payload[RAW:]
+    extended = len(payload) == space.EXT_FILE_SIZE
+    space._require(len(payload) in (FILE_SIZE, space.EXT_FILE_SIZE), 'foreign music allocation extent')
+    header, name, refs = _slots(extended)
+    block = payload[RAW:RAW + CAPACITY]
     space._require(block[:8] == MAGIC, 'foreign music allocation magic')
     size = struct.unpack_from('<I', block, 8)[0]
     space._require(0 < size <= CAPACITY-PREFIX, 'foreign music allocation size')
@@ -41,18 +49,32 @@ def unwrap(payload):
     space._require(block[12:44] == hashlib.sha256(data).digest()
                    and not any(block[44:PREFIX]) and not any(block[PREFIX+size:]),
                    'foreign music allocation seal/padding')
-    space._require(payload[HEADER:NAME] == _descriptor(block)
-                   and payload[NAME:REFS+4] == b'.ASTRAr\0' + bytes(4),
+    space._require(payload[header:header+56] == _descriptor(block, extended)
+                   and payload[name:refs+4] == b'.ASTRAr\0' + bytes(4),
                    'foreign read-only music section')
-    space._require(payload[REFS+4:space.META_END] ==
-                   payload[space.META_COPY+REFS+4-space.META_START:space.NAMES],
-                   'foreign retired music header suffix')
-    space._require(struct.unpack_from('<I', payload, 0x10C)[0] == VA+CAPACITY-0x10000,
+    expected_image = space.EXT_IMAGE_SIZE if extended else VA+CAPACITY-0x10000
+    space._require(struct.unpack_from('<I', payload, 0x10C)[0] == expected_image,
                    'foreign music image size')
-    base = bytearray(payload[:RAW])
-    base[HEADER:space.META_END] = payload[space.META_COPY+112:space.NAMES]
-    struct.pack_into('<I', base, 0x11C, 24)
-    struct.pack_into('<I', base, 0x10C, space.IMAGE_SIZE)
+    base = bytearray(payload if extended else payload[:RAW])
+    if extended:
+        base[RAW:RAW + CAPACITY] = bytes(CAPACITY)
+        # Restore the exact extended allocator tail, including code-page name.
+        tail = space._extra_header_tail()
+        expected = bytearray(tail)
+        offset = header - (space.META_START + 168)
+        expected[offset:offset+56] = _descriptor(block, True)
+        offset = name - (space.META_START + 168)
+        expected[offset:offset+12] = b'.ASTRAr\0' + bytes(4)
+        space._require(payload[space.META_START+168:space.LIB_END] == expected,
+                       'foreign extended music header suffix')
+        base[space.META_START+168:space.LIB_END] = tail
+    else:
+        space._require(payload[REFS+4:space.META_END] ==
+                       payload[space.META_COPY+REFS+4-space.META_START:space.NAMES],
+                       'foreign retired music header suffix')
+        base[HEADER:space.META_END] = payload[space.META_COPY+112:space.NAMES]
+    struct.pack_into('<I', base, 0x11C, 25 if extended else 24)
+    struct.pack_into('<I', base, 0x10C, space.EXT_IMAGE_SIZE if extended else space.IMAGE_SIZE)
     return bytes(base), data
 
 
@@ -61,24 +83,27 @@ def install(payload, data):
     data = bytes(data)
     space._require(0 < len(data) <= CAPACITY-PREFIX, 'music read-only allocation exceeds 65408 bytes')
     count = struct.unpack_from('<I', payload, 0x11C)[0]
-    if count == 25:
+    if space.has_music(payload):
         base, old = unwrap(payload)
         space._require(space.status(base) == 'applied' and old == data, 'foreign/different music allocation')
         return payload, {'status': 'already_applied', 'changed_bytes': 0}
-    space._require(count == 24 and space.status(payload) == 'applied', 'music requires established XBE allocator')
+    space._require(count in (24, 25) and space.status(payload) == 'applied', 'music requires established XBE allocator')
+    extended = count == 25
+    header, name, refs = _slots(extended)
     block = bytearray(CAPACITY)
     block[:8] = MAGIC
     struct.pack_into('<I', block, 8, len(data))
     block[12:44] = hashlib.sha256(data).digest()
     block[PREFIX:PREFIX+len(data)] = data
-    buf = bytearray(payload) + block
-    buf[HEADER:NAME] = _descriptor(block)
-    buf[NAME:REFS+4] = b'.ASTRAr\0' + bytes(4)
-    struct.pack_into('<I', buf, 0x11C, 25)
-    struct.pack_into('<I', buf, 0x10C, VA+CAPACITY-0x10000)
+    buf = bytearray(payload) if extended else bytearray(payload) + block
+    buf[RAW:RAW + CAPACITY] = block
+    buf[header:header+56] = _descriptor(block, extended)
+    buf[name:refs+4] = b'.ASTRAr\0' + bytes(4)
+    struct.pack_into('<I', buf, 0x11C, 26 if extended else 25)
+    struct.pack_into('<I', buf, 0x10C, space.EXT_IMAGE_SIZE if extended else VA+CAPACITY-0x10000)
     result = bytes(buf)
     space._require(space.status(result) == 'applied', 'music allocation postcondition failed')
-    return result, {'status': 'applied', 'file_growth': CAPACITY, 'reservations': reservations()}
+    return result, {'status': 'applied', 'file_growth': len(result) - len(payload), 'reservations': reservations()}
 
 
 def reservations():

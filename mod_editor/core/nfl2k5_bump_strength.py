@@ -115,12 +115,18 @@ def _sections(payload: bytes) -> list[_Section]:
     _require(image_base == IMAGE_BASE,
              f"XBE image base is 0x{image_base:x}, not 0x{IMAGE_BASE:x}")
     count, table_va = struct.unpack_from("<II", payload, 0x11C)
-    grown_headers = (count in (SECTION_COUNT + 2, SECTION_COUNT + 3) and table_va == 0x10370
-                     and payload[0xDA0:0xDA8] == b"XSPACE1\0"
+    grown_headers = (count in (SECTION_COUNT + 2, SECTION_COUNT + 3, SECTION_COUNT + 4) and table_va == 0x10370
+                     and payload[0xDA0:0xDA8] in (b"XSPACE1\0", b"XSPACE2\0")
                      and struct.unpack_from("<I", payload, 0x108)[0] == 0x1000)
-    if count == SECTION_COUNT + 3 and grown_headers:
-        from . import nfl2k5_music_storage as music_storage
-        music_storage.unwrap(payload)  # exact owned RO geometry/seal, not arbitrary extra sections
+    if grown_headers and count >= SECTION_COUNT + 3:
+        from . import nfl2k5_xbe_space as space, nfl2k5_music_storage as music_storage
+        base = music_storage.unwrap(payload)[0] if space.has_music(payload) else payload
+        if struct.unpack_from("<I", base, 0x11C)[0] == SECTION_COUNT + 3:
+            space._library(base, True)
+            h = space.META_START + 112
+            _require(len(base) == space.EXT_FILE_SIZE and
+                     base[h:h+56] == space._descriptor("code2", base[h+36:h+56]),
+                     "foreign extended code section geometry")
     _require(count == SECTION_COUNT or grown_headers,
              f"XBE declares {count} sections, not {SECTION_COUNT}")
     table_offset = table_va - image_base

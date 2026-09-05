@@ -366,3 +366,15 @@ tools/nfl2k5_music_banks.py
 tools/nfl2k5_scorebug_reference.py
 data/playbooks/softdrink_option.2k5book
 mod_editor/core/nfl2k5_import_preflight.py
+
+# Experimental and unwitnessed allocator-owned gameplay.
+mod_editor/core/nfl2k5_momentum.py
+mod_editor/core/nfl2k5_momentum_code.py
+mod_editor/core/nfl2k5_defensive_try.py
+mod_editor/core/nfl2k5_zone_drop.py
+docs/mod_editor/nfl2k5_momentum_capability.json
+docs/mod_editor/nfl2k5_defensive_try_capability.json
+docs/mod_editor/nfl2k5_zone_drop_capability.json
+ASTRA_MOMENTUM_BUILD_REPORT.md
+ASTRA_DEFENSIVE_TRY_REPORT.md
+ASTRA_ZONE_DROP_REPORT.md

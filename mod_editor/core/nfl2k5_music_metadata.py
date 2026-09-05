@@ -113,7 +113,7 @@ def status(payload):
             at = _offset(payload,COLLECTIONS+i*32+8,12)
             space._require(struct.unpack_from('<3I',payload,at) == (15280692,15280712,1),
                            'foreign collection bank pointers/enabled word')
-        if struct.unpack_from('<I', payload, 0x11C)[0] != 25:
+        if not space.has_music(payload):
             return 'retail' if _fields(payload) == list(RETAIL) else 'foreign'
         _, fields = build(songs(payload))
         return 'applied' if _fields(payload) == fields else 'foreign'
