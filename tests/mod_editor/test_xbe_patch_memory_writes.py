@@ -116,6 +116,11 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
         cls.patched, _ = space.apply(cls.patched, relocated.REQUESTS)
         cls.patched, _ = relocated.apply(cls.patched)
+        from mod_editor.core import nfl2k5_music_policy as music
+        cls.patched, cls.music_receipt = music.apply(
+            cls.patched, music_unlock=True, music_userlist=True)
+        if music.status(cls.patched) != "applied":
+            raise AssertionError("music policy owner missing from the composed XBE")
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True

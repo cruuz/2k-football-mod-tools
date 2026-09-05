@@ -1421,3 +1421,305 @@ its replacements and 4-3 fixture before selecting it. CHI and ARZ have passing
 Gun Core -> modern defense -> regenerated option proofs (3462 and 3378 nodes).
 Basic/Advanced and unrelated builds must remain unchanged. No cave manifest,
 allocator, XBE status, or memory-write/cave-reference test registration applies.
+
+
+---
+
+# Music tiers 1 and 2 handoff, r61b-music-build, 2026-09-05
+
+This section is additive; retain all earlier handoffs. The implementation is
+EXPERIMENTAL / UNWITNESSED. `ASTRA_MUSIC_BUILD_REPORT.md` records the actual
+validation and Noah's witness rows. No protected file was edited in this task.
+
+## XBE dispatcher, kwargs and all four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import
+`nfl2k5_music_policy as music_policy_patch`. Add these keyword parameters to
+`_apply_all`, `write_xbe_copy` and `write_image_copy`, and forward them unchanged
+through both writers' `_apply_all` calls; `write_copy` already forwards kwargs:
+
+```python
+music_policy: str = "retail",
+music_unlock: bool = False,
+music_userlist: bool = False,
+```
+
+Append this exact entry to `_apply_all`'s `(flag, module, key, label)` tuple:
+
+```python
+(music_policy != "retail" or music_unlock or music_userlist,
+ music_policy_patch.Selection(music_policy, music_unlock, music_userlist),
+ "music_policy_patch", "music policy"),
+```
+
+Use `Selection`, not the module's aggregate `status`: an unlocked executable
+with retail menus has aggregate status `applied`, but still needs a requested
+menu redirect. The adapter reports whether the particular selection is done.
+It returns the dispatcher's `changed_byte_count` as well as `changed_bytes`.
+The three independent options compose monotonically. Retail/off means keep
+source bytes; it does not uninstall policies from an already patched source.
+The UserList option requires `music_policy="jukebox_menus"` in a BuildPlan.
+All selected and unselected music fields/context pins are checked before any
+music mutation. Partly zeroed collection keys and partial UserList words refuse.
+
+Add the following status fields to **all four** dictionaries:
+`read_xbe` (payload), `read_image` (payload), `write_xbe_copy` (result), and
+`write_image_copy` (after). Bind `music_state` once to `read_any` of the bytes
+used by that dictionary, not to the original input when reporting the result:
+
+```python
+music_state = music_policy_patch.read_any(payload)  # result / after in writers
+# inside each returned dictionary:
+"music_policy": music_state.get("music_policy", "foreign"),
+"music_unlock": music_state.get("music_unlock", "foreign"),
+"music_userlist": music_state.get("music_userlist", "foreign"),
+"music_state": music_state["status"],
+```
+
+Retain the `music_policy_patch` receipt returned by dispatch. Do not replace
+all three independent statuses with the aggregate. The new owner is already
+composed into both XBE gate `setUpClass` methods after relocated kickoff, with
+all three music options enabled. No runtime state, cave or allocation exists.
+The exact edited fields are `0xAC9ECC..0xAC9ED0`, the fourteen four-byte words
+at `0xAC9C94 + 0x20*c` (c=0..13), and `0xAC9ED4..0xAC9EE0`, all in `.data`.
+Its digest is repinned. Preserve oracle ownership checks; Claude can regenerate
+the protected reservation manifest after final integration if the oracle's
+source closure changes. No address is claimed as a new allocation here.
+
+## BuildPlan, presets, copy ordering and receipts
+
+In protected `mod_editor/core/mod_build.py` add:
+
+```python
+music_policy: str = "retail"  # only retail / jukebox_menus
+music_unlock: bool = False
+music_userlist: bool = False  # explicitly substitutes the bank for disc/HDD playlists
+music_project: str | None = None  # optional authored .2k5music subset
+```
+
+All three presets (`softdrink_basic`, `softdrink_advanced`,
+`softdrink_experimental`) leave music policy retail, unlock off and UserList
+off. None selects a music project or overwrites a chosen library. Preset
+application must preserve the active session's personal music replacements;
+these are content, not a general gameplay preset. Reject other policy strings,
+nonboolean switches, and UserList without jukebox menus. Do not expose
+`all_songs`, full-length banks or an all-screen shuffle option.
+
+Extend `wants_xbe_patch()` with the three policy selections only. A music
+project/content edit independently counts as a nonempty build request, but
+must not falsely require an XBE policy edit. Add availability imports for
+`nfl2k5_music_policy`, `nfl2k5_music_catalog`, `nfl2k5_music_build` and
+`studio.music_service`. In `inspect()` return the three independent policy
+states above for a verified XBE/XISO; content availability requires an image
+and seven validated AUSB descriptors. Carry all three kwargs in the existing
+selected-key forwarder to `tt.write_copy`. Include `music_state`, the three
+states and `music_policy_patch` in the XBE step receipt key list. Preserve the
+full music content receipt: hashes, lengths, each twin's spans/decoded hash,
+no-layout-change flag and `runtime_witnessed=False`.
+
+`MusicService` writes replacements into the active `StudioSession` via
+`replace_audio_batch`. The existing canonical build project consequently
+already contains one `ausb_audio` edit for each physical twin. Prefer that
+normal build path when combining Music with other session edits; do not apply
+a second independent music writer to the same slots. The standalone Music
+buttons deliberately build/export the music subset, as their captions say.
+
+For a headless `.2k5music` input, load it into the verified active/staging
+session with `MusicService.load_project`, then build the session's canonical
+project. Alternatively, snapshot `service.encoded_edits()` and use
+`nfl2k5_music_build.build_copy(already_staged_image, next_disposable_copy,
+encoded_edits, **policy)` after unrelated edits. This resolves current XDVDFS
+extents and retains earlier edits, including changed XBE size. It exclusively
+creates a fresh output, closes all source/read/write handles before publication,
+checks the complete source hash after copying, and removes the private stage
+on cancellation/failure. Never rebuild from pristine source over staged edits.
+The enclosing build owns final publication; do not expose its temporary target.
+
+Format 2 is implemented with explicit `byte_runs`, type 0, version 1, minimum
+reader 2. Export via `nfl2k5_music_build.export_patch` using the same staged
+base and completed music copy, or `service.export_patch` for a music-only
+patch. Payload runs are complete authored encoded slots, divided only at pack
+seams, plus generated policy fields/digest when selected. They never coalesce
+untouched music/neighboring archive bytes. The recipe operation is
+`{"op":"music_fixed_slots","schema_version":1,...}` and carries every
+stream receipt. Export verifies the whole result against declared operations;
+a result with undeclared roster/texture changes is refused. In a combined
+format-2 export, compose those other authored operations explicitly in order.
+No operation ID is reserved by this tier. A future free-length implementation
+needs a semantic bank rebuild operation; do not reuse this fixed-span recipe
+for shifted archives. Generic format-2 apply keeps its existing exact-run and
+partition checks, with ready/applied/mismatch and transactional copy behavior.
+
+## Studio registration, session lifecycle and project formats
+
+In protected `mod_editor/gui/studio_qt.py` import
+`mod_editor.gui.music_panel_qt.MusicPanel` and
+`mod_editor.studio.music_service.MusicService`. Mount `MusicPanel` as **Music**
+in the Audio tabs, next to the existing Audio panel and Sounds panel. The
+current inherited Audio panel title is `Music & Sounds` and Sounds is
+`Replace a Sound`; rename the old broad browser to **Audio Cues** if desired
+to remove duplicate naming. Do not move another panel's state into Music.
+
+Create `MusicService(facade._session, lock=facade._lock)` only after the shared
+session has its `Nfl2k5AudioService` attached and source-origin inventories
+prepared. Pass it to `panel.set_service(service)`. Do not create a second
+StudioSession. No developer retail path, cache inventory or FFmpeg binary is
+needed merely to import/mount the empty panel.
+
+Connect `changed` to the normal modified/Undo/build refresh, `policy_changed`
+to BuildPlan's three fields, `receipt_ready` to receipt presentation, and
+`operation_state_changed(bool)` to the shell's cross-workspace busy barrier.
+`operation_in_progress` is public. Serialize source changes/builds/shared
+Undo/project opens against a running import or export. Before any source or
+session replacement call `set_service(None)`; it stops playback, cancels work,
+invalidates the old service, and rejects late delivery. On a successful source
+open mount a new service. On failure, recreate a service for the retained
+session rather than reusing an invalidated adapter. `invalidate_audio_content()`
+stops preview/cancels stale jobs and refreshes after external Audio Cues edits,
+shared Undo or project reopening. Stop previews on tab/window/source changes;
+`closeEvent` cancels a worker and defers closing until it has returned. The
+process is owned by QProcess, including termination/kill and wait before output
+publication. QtMultimedia is not a dependency. FFplay works when installed;
+Linux can also use the existing paplay/aplay fallback. No auto-play occurs.
+
+The panel defaults to 66 rows; Show presentation music reveals 20 more. Drops
+freeze visible order and incoming URL order, allow reordering in review,
+prepare/authorize the whole batch in a worker, then show fit/trim/volume/twins
+before Apply. Overflow does not wrap or partially apply. Original means the
+selected source baseline, including a deliberately modified source. Restore
+removes both edits together; one Undo restores them. A single twin changed
+through Audio Cues displays Needs attention until Replace/Restore repairs it.
+
+The ordinary `.2k5mod` project and canonical build project already transport
+both conformed authored WAVs through the existing audio route. The dedicated
+**Save/Open Music project** `.2k5music` format additionally retains input name
+and duration, fit/gain results, original/encoded hashes, encoder version and
+all three policy selections. It stores only authored WAVs plus JSON, checks
+the selected source SHA-256, re-encodes and verifies the exact encoded result
+before one shared-session commit. Originals are reconstructed from that
+source. Reopening a music project replaces the music subset and preserves
+other domains. Ordinary `.2k5mod` does not carry Music-specific fit/policy
+metadata; use `.2k5music` to retain that information. This is an explicit
+format choice, not an implicit extension to the shared project schema.
+
+Local Export current set uses `audio_bundle` for current encoded-preview WAVs,
+manifest and M3U (one canonical row per song). It can include source originals
+and is a local listening export, separate from authored project/patch transport.
+The 86-row export fits its existing 256-row / 2 GiB limits. All output actions
+exclusively create new files; choose a new name instead of overwriting a source.
+
+## Gameplay Patches text, NEEDS_IMAGE and Build captions
+
+Add these `(key, title, explanation)` entries to the protected Gameplay
+Patches `PATCHES` model, preserving the enum adapter for `music_policy`:
+
+- `music_policy`: **Use jukebox songs in menus (experimental)**.
+  **Retail: menus use the menu bank. Patch: menus use the 59 jukebox recordings
+  in the game's random order. The 7 menu tracks are not included yet. Twelve
+  jukebox tracks are spoken outtakes.**
+- `music_unlock`: **Make every music collection available (experimental)**.
+  **Retail: collections need Crib purchases. Patch: every collection is
+  available without spending credits or setting purchase bits.**
+- `music_userlist`: **Use jukebox songs instead of user playlists (experimental)**.
+  **Retail: UserList follows the user's disc or HDD playlist. Patch: UserList
+  uses the 59-song jukebox bank instead. Requires jukebox menus.**
+
+These data-only policies work on verified XBE inputs; keep all three out of
+`NEEDS_IMAGE`. Any `music_project`/content toggle **belongs in NEEDS_IMAGE**.
+The current checkbox-oriented patch panel must map its menu toggle to
+`"jukebox_menus"`/`"retail"`, never boolean True/False. Loading/show rules,
+initial fixed index and all-screen behavior have not been promoted.
+
+Protected Build tab `_option` captions (all <=60 characters):
+
+```text
+Use jukebox songs in menus
+Make every music collection available
+Use jukebox songs instead of user playlists
+Include Music tab replacements
+```
+
+Show **Experimental, not yet tested in game**. Gate UserList on jukebox menus.
+Keep bank/twin offsets and source authorization details out of the main flow.
+The exact required scope text is exported as `nfl2k5_music_policy.MENU_TEXT`.
+
+## Allowlist, runtime closure and capability records
+
+Add these exact lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_music_policy.py
+mod_editor/core/nfl2k5_music_catalog.py
+mod_editor/core/nfl2k5_music_build.py
+mod_editor/studio/music_service.py
+mod_editor/gui/music_panel_qt.py
+```
+
+Already allowlisted dependencies modified here: `audio_conform.py`,
+`nfl2k5_ausb_fixed_slots.py`, `tools/game_audio_convert.py`,
+`tools/nfl2k5_commentary_swap.py`, and `modpack.py` (plain-language Music recipe
+description). Existing closure also includes
+`nfl2k5_audio_catalog`, `nfl2k5_bump_strength`, `nfl2k5_cave_oracle`,
+`platform_compat`, `json_stream`, `modpack`, `modpack_ops`, the Studio session,
+project archive, audio-origin modules, `audio_bundle`, `gui.audio_panel_qt`,
+`tools/nfl_outer.py`, `tools/nfl_uniform_color_xiso_direct_patch.py` and
+`tools/xbox_ima_encoder.py`. Do not add originals, caches, .scratch or the brief.
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, add the five new
+module paths to required source files and import these module names in the
+runtime closure smoke check:
+
+```text
+mod_editor.core.nfl2k5_music_policy
+mod_editor.core.nfl2k5_music_catalog
+mod_editor.core.nfl2k5_music_build
+mod_editor.studio.music_service
+mod_editor.gui.music_panel_qt
+```
+
+Also exercise `nfl2k5_music_build._banks_module()` so its lazy commentary/outer
+closure is actually imported. Test empty `MusicPanel()` with offscreen Qt.
+Optional NumPy and FFmpeg must remain optional: native 22050 Hz PCM16 WAV fit,
+fixed-slot encoding and preview decode work without them. Other rates/formats
+explain that FFmpeg and FFprobe are required; converter processes are cancellable
+and reaped before temporary directories are removed. No emulator/audio/display
+launch belongs in the packaging test.
+
+Add capability entries for **nfl2k5.music.policy** and
+**nfl2k5.music.fixed_slot** to `mod_editor/capabilities/registry.v1.json` using
+its current canonical schema. Concrete field values for both:
+
+| Field | Policy | Fixed slot |
+| --- | --- | --- |
+| game / surface | nfl2k5_xbox / audio | nfl2k5_xbox / audio |
+| title | Music policies (experimental) | Music fixed slots (experimental) |
+| classification | offline-writer-proved | offline-writer-proved |
+| backend.module | mod_editor/core/nfl2k5_music_policy.py | mod_editor/studio/music_service.py |
+| backend.command | Python API: Selection(...).apply(payload) | Python API: MusicService.replace_batch / build_copy |
+| backend.operation | write | write |
+| gui | expose true, mode edit, default_enabled false | expose true, mode edit, default_enabled false |
+| runtime | status not-tested, evidence [], scope EXPERIMENTAL / UNWITNESSED | status not-tested, evidence [], scope EXPERIMENTAL / UNWITNESSED |
+| validation_command | python3 tests/mod_editor/test_nfl2k5_music_policy.py | python3 tests/mod_editor/test_music_service.py |
+| evidence | ASTRA_MUSIC_BUILD_REPORT.md, tests/mod_editor/test_nfl2k5_music_policy.py | ASTRA_MUSIC_BUILD_REPORT.md, tests/mod_editor/test_nfl2k5_music_build.py, tests/mod_editor/test_music_panel_qt.py |
+
+`summary`/`gui.reason`: use the scope text above for policy; for fixed slots,
+"86 logical music slots; 59 jukebox entries update stereo and mono together.
+Exact-length fit, restore, Undo, authored projects and copy builds. In-game
+playback has not been witnessed." `source_container`: XBE or XISO default.xbe
+for policy; XISO vc_53450030 AUSB descriptors and indexed external ranges for
+fixed slots. `selectors.fields`: the three policy options with their exact
+allowed values; for fixed slots logical `bank:index`, only the seven scoped
+banks, with crib22 selected through its linked cribmusic row. `input_constraints`
+must include verified pins/source, complete twin transactions, fixed 22050 Hz
+whole-block lengths, and all named format/source-origin checks. `portme` must
+name Noah's matrix and explicitly defer free-length and all-screen shuffle.
+`public_distribution`: tooling source-and-schemas-only; game_data
+never-bundle-retail-data; mod_payload user-authored-inputs-and-recipes; rule
+"Only authored WAVs, encoded replacements and metadata are portable. Private
+source originals and local listening exports are not authored mod projects."
+
+Do not register bank-rebuild or allocator-playlist capabilities as implemented.
+After protected integration, rerun both composed XBE gates, the six new Music
+test files, normal build/project tests, capability validation and the packaged
+runtime closure. No release-tag, update-check or CI workflow edit is required
+by this feature itself.

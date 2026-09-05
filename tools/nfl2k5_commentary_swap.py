@@ -314,13 +314,15 @@ class DiscBanks:
         self.image_size = os.fstat(self.descriptor).st_size
         try:
             entries, _info = xiso.parse_xdvdfs(self.descriptor, self.image_size)
-        except xiso.PatchError as exc:
-            os.close(self.descriptor)
-            raise CommentarySwapError(f"not an NFL 2K5 XISO: {exc}") from exc
-        self.entries = entries
-        self.pack_extents = self._pack_extents()
-        self.archive_entries = self._parse_archive()
-        self.banks = self._read_banks()
+            self.entries = entries
+            self.pack_extents = self._pack_extents()
+            self.archive_entries = self._parse_archive()
+            self.banks = self._read_banks()
+        except BaseException:
+            # Parsing can fail after the directory walk (e.g. a bad second
+            # descriptor). Windows must not retain that reader through replace.
+            self.close()
+            raise
 
     def close(self) -> None:
         if self.descriptor >= 0:

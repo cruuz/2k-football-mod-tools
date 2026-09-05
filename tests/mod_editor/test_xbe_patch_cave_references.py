@@ -73,6 +73,11 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
         cls.patched, _ = space.apply(cls.patched, relocated.REQUESTS)
         cls.patched, _ = relocated.apply(cls.patched)
+        from mod_editor.core import nfl2k5_music_policy as music
+        cls.patched, cls.music_receipt = music.apply(
+            cls.patched, music_unlock=True, music_userlist=True)
+        if music.status(cls.patched) != "applied":
+            raise AssertionError("music policy owner missing from the composed XBE")
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}

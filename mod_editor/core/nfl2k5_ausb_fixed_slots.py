@@ -745,7 +745,8 @@ def encode_strict_pcm16_wav(
 
 
 def verify_xbox_ima_stream(
-    encoded_stream: BinaryIO, slot: CanonicalStreamingSlot
+    encoded_stream: BinaryIO, slot: CanonicalStreamingSlot, *,
+    cancelled: CancellationCallback | None = None,
 ) -> StreamingVerifyResult:
     """Stream-validate exact length, step indices, framing, and decoded shape."""
 
@@ -754,6 +755,8 @@ def verify_xbox_ima_stream(
     decoded_hash = hashlib.sha256()
     block_bytes = CHANNEL_BLOCK_BYTES * slot.channels
     for _ in range(slot.block_count):
+        if cancelled is not None and cancelled():
+            raise StreamingEncodeCancelled("Music verification cancelled")
         payload = _read_exact(encoded_stream, block_bytes, "Xbox IMA payload")
         decoded = decode_xbox_ima_time_block(payload, slot.channels)
         encoded_hash.update(payload)

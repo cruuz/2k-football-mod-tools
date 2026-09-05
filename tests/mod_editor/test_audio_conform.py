@@ -200,6 +200,8 @@ class ConformTests(unittest.TestCase):
 
         from mod_editor.core import nfl2k5_audo_fixed_slots as fixed
 
+        if not fixed.CAPACITY_REPORT.is_file():
+            self.skipTest("retail AUDO capacity evidence is absent: reports/assets/nfl2k5_audo_import_capacity.json")
         slots = fixed.slot_map()
         chosen = sorted(slots.items())[:3]
         source = _strict_wav(self.root / "src.wav", 2, 48000, 48000)

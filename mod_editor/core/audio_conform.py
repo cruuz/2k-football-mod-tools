@@ -217,3 +217,169 @@ def conform(supplied, shape, destination_directory) -> ConformResult:
         notes=tuple(report.notes),
         report=report,
     )
+
+
+@dataclass(frozen=True)
+class MusicConformReport:
+    """Fixed music fit v1. RMS uses useful content, never its padding tail."""
+
+    source_seconds: float
+    slot_seconds: float
+    trimmed_seconds: float
+    padded_seconds: float
+    fade_seconds: float
+    original_rms: float
+    input_rms: float
+    output_rms: float
+    gain_db: float
+    peak_limited: bool
+    gain_capped: bool
+    match_volume: bool
+    notes: tuple[str, ...]
+
+    @property
+    def summary(self):
+        return (f"File {self.source_seconds:.3f} s; slot {self.slot_seconds:.3f} s; "
+                f"trimmed {self.trimmed_seconds:.3f} s; "
+                f"silence added {self.padded_seconds:.3f} s. " + " ".join(self.notes))
+
+
+def _pcm_samples(pcm):
+    import array
+    import sys
+    samples = array.array("h", pcm)
+    if sys.byteorder != "little":
+        samples.byteswap()
+    return samples
+
+
+def _pcm_bytes(samples):
+    import sys
+    if sys.byteorder != "little":
+        samples = samples[:]
+        samples.byteswap()
+    return samples.tobytes()
+
+
+def music_rms(pcm):
+    import math
+    samples = _pcm_samples(pcm)
+    return math.sqrt(sum(x*x for x in samples) / len(samples)) / 32768 if samples else 0.0
+
+
+def music_downmix(pcm):
+    """Arithmetic (L+R)/2 after stereo gain; report destructive cancellation."""
+    import array
+    values = _pcm_samples(pcm)
+    if len(values) % 2:
+        raise AudioConformError("Stereo audio has an incomplete frame")
+    mono = _pcm_bytes(array.array("h", (round((values[i]+values[i+1])/2)
+                                       for i in range(0, len(values), 2))))
+    cancellation = music_rms(pcm) > 1/32768 and music_rms(mono) < music_rms(pcm)*0.1
+    return mono, cancellation
+
+
+def conform_music(supplied, shape, original_pcm: bytes, *, match_volume=True,
+                  cancelled=None):
+    """Return exact PCM and a report without changing the other panels' defaults.
+
+    Gain is capped at +12 dB and peaks at -1 dBFS. Silent input/original uses
+    unity gain (peak protection still applies). Fade the last 50 ms on trim.
+    Native 22050-Hz PCM16 WAV fits without FFmpeg, including mono/stereo remix.
+    Other formats/rates use the existing bounded FFmpeg/FFprobe converter.
+    Cancellation is checked around conversion and during the PCM processing.
+    """
+    import array
+    import math
+    import wave
+    from .json_stream import read_bounded_regular_file
+    import io
+
+    def check():
+        if cancelled and cancelled():
+            raise AudioConformError("Music import cancelled; nothing was changed")
+
+    check()
+    if type(match_volume) is not bool or shape.sample_rate != 22050:
+        raise AudioConformError("Music requires 22050 Hz and a boolean volume switch")
+    if len(original_pcm) != shape.pcm_bytes:
+        raise AudioConformError("Original music does not match the target slot")
+    source = Path(supplied)
+    module = _convert_module()
+    if module is None:
+        raise AudioConformError("The audio converter is unavailable")
+    native = None
+    downmix_cancelled = False
+    if source.suffix.lower() == ".wav":
+        _path, payload = read_bounded_regular_file(source, "Music WAV", maximum=module.MAX_SOURCE_BYTES)
+        try:
+            with wave.open(io.BytesIO(payload), "rb") as wav:
+                if wav.getsampwidth() == 2 and wav.getframerate() == 22050 and wav.getnchannels() in (1, 2):
+                    frames, channels = wav.getnframes(), wav.getnchannels()
+                    if not 0 < frames*channels*2 <= module.MAX_DECODED_BYTES:
+                        raise AudioConformError("Music WAV exceeds the decode limit or is empty")
+                    pcm = wav.readframes(frames)
+                    if len(pcm) != frames*channels*2:
+                        raise AudioConformError("Music WAV is truncated")
+                    if channels == 2 and shape.channels == 1:
+                        pcm, downmix_cancelled = music_downmix(pcm)
+                    elif channels == 1 and shape.channels == 2:
+                        pcm = _pcm_bytes(array.array("h", (v for x in _pcm_samples(pcm) for v in (x,x))))
+                    native = (pcm, frames)
+        except (wave.Error, EOFError):
+            pass
+    converter_limited = False
+    if native is None:
+        if not module.ffmpeg_available():
+            raise AudioConformError("Install FFmpeg and FFprobe to import this file, or supply a "
+                                    "22050 Hz PCM16 mono/stereo WAV. Music keeps the slot length.")
+        pcm, report = module.convert(source, shape, fade_on_trim=False, cancelled=cancelled)
+        seconds = report.source.duration_seconds
+        supplied_frames = max(1, round(seconds*shape.sample_rate))
+        useful = min(shape.frame_count, report.frames_supplied)
+        converter_limited = report.limited
+    else:
+        pcm, supplied_frames = native
+        seconds = supplied_frames/shape.sample_rate
+        useful = min(shape.frame_count, supplied_frames)
+    check()
+    samples = _pcm_samples(pcm[:useful*shape.channels*2])
+    input_rms = music_rms(_pcm_bytes(samples))
+    baseline = music_rms(original_pcm)
+    notes = []
+    if downmix_cancelled:
+        notes.append("The mono version is nearly silent because the stereo channels cancel.")
+    wanted = 1.0
+    if match_volume and baseline > 1/32768 and input_rms > 1/32768:
+        wanted = baseline/input_rms
+    elif match_volume:
+        notes.append("Silent input or original: volume gain left unchanged.")
+    gain = min(wanted, 10**(12/20))
+    gain_capped = gain < wanted
+    peak = max((abs(x)/32768 for x in samples), default=0)
+    ceiling = 10**(-1/20)
+    limited = peak*gain > ceiling
+    if limited:
+        gain = ceiling/peak
+    if gain_capped:
+        notes.append("Volume gain capped at +12 dB; original RMS may not be reached.")
+    if limited or converter_limited:
+        notes.append("Peak protection reduced volume; original RMS may not be reached.")
+    trimmed = max(0, supplied_frames-shape.frame_count)
+    fade = min(useful, round(0.05*shape.sample_rate)) if trimmed else 0
+    for i, sample in enumerate(samples):
+        if i % 32768 == 0:
+            check()
+        frame = i//shape.channels
+        scale = gain
+        if fade and frame >= useful-fade:
+            scale *= (useful-1-frame)/max(1, fade-1)
+        samples[i] = max(-32768, min(32767, round(sample*scale)))
+    output_rms = music_rms(_pcm_bytes(samples))
+    samples.extend(array.array("h", bytes((shape.frame_count-useful)*shape.channels*2)))
+    check()
+    return _pcm_bytes(samples), MusicConformReport(
+        seconds, shape.duration_seconds, trimmed/shape.sample_rate,
+        max(0, shape.frame_count-useful)/shape.sample_rate, fade/shape.sample_rate,
+        baseline, input_rms, output_rms, 20*math.log10(gain),
+        limited or converter_limited, gain_capped, match_volume, tuple(notes))

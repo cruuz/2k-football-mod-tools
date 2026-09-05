@@ -8,9 +8,12 @@ import hashlib
 import io
 from pathlib import Path
 import struct
+import sys
 from types import MappingProxyType
 import unittest
 from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from mod_editor.core import nfl2k5_ausb_build_adapter as adapter
 from mod_editor.core.nfl2k5_audio_containment_fingerprints import (
