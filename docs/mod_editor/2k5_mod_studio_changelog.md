@@ -2,6 +2,14 @@
 
 ## v1.0 RC84 — ★ Rosters does what Finn's did (real saves, Franchise tab, membership, templates), dynamic kickoff, slot / nickel / dime, practice squads, career stats, simpler words everywhere (2026-09-04)
 
+- **Fixed before release: the star under tagged players never drew.** Beta 58's star patch widened the controller-
+  indicator gate so a tagged player was queued, but the game's indicator pass marks every CPU body and skips the whole
+  drawing branch for them, so nothing appeared under anyone. The patch now runs its own pass after the game's: for every
+  player on the field whose roster record carries the tag it draws a closed white five-point outline at his feet, hollow in
+  the middle, whoever is controlling him, in games, practice and franchise, following the same HUD and coach-camera
+  visibility as the ordinary circle. Proved by bounded execution of the real queue, decoder and model-selection routines
+  and of the live-game roster copy (the tag byte survives the load). The tag bit is the same one the future ability gates
+  will read. Unwitnessed until Noah's next play.
 - **Fixed before release: the dynamic kickoff's coverage men lined up beside the kicker.** Noah's first play of the
   pre-release disc showed the ten coverage players standing at the kicking 35 with the kicker instead of on the receiving
   40. The playbook data was right; a retail pre-snap clamp (0x183F60, called from the selected-play target routine)
