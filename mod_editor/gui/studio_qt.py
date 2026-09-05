@@ -1519,6 +1519,7 @@ class StudioMainWindow(QMainWindow):
         self._ps2_save_action: QAction | None = None
         self._ps2_disc_action: QAction | None = None
         self._ps2_export_action: QAction | None = None
+        self._ps2_disc_studio_action: QAction | None = None
 
         self.setWindowTitle("2K5 Mod Studio")
         icon = _window_icon()
@@ -1599,6 +1600,14 @@ class StudioMainWindow(QMainWindow):
             "targets are written; your Xbox project is not changed."
         )
         self._ps2_export_action.triggered.connect(self._open_ps2_export)
+        self._ps2_disc_studio_action = file_menu.addAction("PS2 Disc Studio…")
+        self._ps2_disc_studio_action.setToolTip(
+            "Edit text, playbooks, uniform colours, rosters, stadium positions "
+            "and sounds on a copy of an ESPN NFL 2K5 PlayStation 2 disc image. "
+            "A new image is written; your original and your Xbox project are "
+            "not changed."
+        )
+        self._ps2_disc_studio_action.triggered.connect(self._open_ps2_disc_studio)
         file_menu.addSeparator()
         quit_action = file_menu.addAction("Quit")
         quit_action.setShortcut("Ctrl+Q")
@@ -2130,6 +2139,34 @@ class StudioMainWindow(QMainWindow):
         dialog.deleteLater()
         self._set_status(
             "PS2 replacement-pack export closed • your Xbox project was not changed."
+        )
+
+    def _open_ps2_disc_studio(self, _checked: bool = False) -> None:
+        """Open the PS2 Disc Studio: the six on-disc writers behind one window.
+
+        A PS2 disc image is the user's own file and has nothing to do with the
+        Xbox image this window may have loaded, so -- like the other PS2
+        windows -- it is a self-contained dialog off the File menu.  It writes
+        a NEW image and never the source; nothing here touches the Xbox project.
+        """
+
+        if self._refuse_while_audio_busy("open the PS2 Disc Studio"):
+            return
+        try:
+            from .ps2_disc_studio_qt import Ps2DiscStudioDialog
+        except Exception as exc:  # pragma: no cover - defensive import guard
+            QMessageBox.warning(
+                self,
+                "PS2 Disc Studio is unavailable",
+                f"The PS2 Disc Studio could not be loaded: {str(exc).strip()}\n\n"
+                "Nothing was changed.",
+            )
+            return
+        dialog = Ps2DiscStudioDialog(parent=self)
+        dialog.exec_()
+        dialog.deleteLater()
+        self._set_status(
+            "PS2 Disc Studio closed • your Xbox project was not changed."
         )
 
     def _recover_candidate(self, candidate: RecoveryCandidate) -> None:
@@ -7658,6 +7695,8 @@ class StudioMainWindow(QMainWindow):
             # Likewise: a PS2 disc image is the user's own file, opened
             # read-only, unrelated to the Xbox source.
             self._ps2_disc_action.setEnabled(not global_busy)
+        if self._ps2_disc_studio_action is not None:
+            self._ps2_disc_studio_action.setEnabled(not global_busy)
         if self._recent_source_menu is not None:
             self._recent_source_menu.setEnabled(not global_busy)
         if self._recent_project_menu is not None:

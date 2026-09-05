@@ -76,6 +76,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     action.add_argument(
+        "--ps2-disc-studio",
+        nargs="?",
+        const="",
+        default=None,
+        metavar="SLUS-20919.iso",
+        help=(
+            "open only the PlayStation 2 Disc Studio -- text, playbooks, "
+            "uniform colours, rosters, stadium positions and sounds written "
+            "into a NEW copy of your own disc image -- without the rest of the "
+            "studio; give the ISO to open it straight away, or omit it and "
+            "choose one in the window"
+        ),
+    )
+    action.add_argument(
         "--check-registry",
         action="store_true",
         help="validate the capability registry without opening a display",
@@ -543,6 +557,21 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         application = QApplication.instance() or QApplication(sys.argv[:1])
         dialog = Ps2ExportDialog(Path(args.ps2_export) if args.ps2_export else None)
+        dialog.show()
+        return application.exec_()
+    if args.ps2_disc_studio is not None:
+        # Same shape as --ps2-disc: the studio works on the user's own PS2 ISO
+        # and needs none of the Xbox-derived startup inputs.  The empty string
+        # is "--ps2-disc-studio with no path" and opens the window on its
+        # disc chooser.
+        from PyQt5.QtWidgets import QApplication
+
+        from .gui.ps2_disc_studio_qt import Ps2DiscStudioDialog
+
+        application = QApplication.instance() or QApplication(sys.argv[:1])
+        dialog = Ps2DiscStudioDialog(
+            initial_iso=Path(args.ps2_disc_studio) if args.ps2_disc_studio else None
+        )
         dialog.show()
         return application.exec_()
 
