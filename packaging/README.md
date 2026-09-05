@@ -22,6 +22,64 @@ Mint those package names are normally `python3`, `python3-pyqt5`, and
 into a directory on `PATH`; the launcher resolves that symlink back to the
 application root.
 
+## Local Windows CI
+
+On Linux with Wine, run the Windows test-file matrix using the same SHA-256
+pinned CPython 3.12.10, PyQt5 and Pillow as the installer:
+
+```bash
+python3 packaging/windows/local_windows_ci.py --os-check
+python3 packaging/windows/local_windows_ci.py
+python3 packaging/windows/local_windows_ci.py --only test_modpack.py
+python3 packaging/windows/local_windows_ci.py --only 'test_apf_*' --only test_modpack.py -j 2
+python3 packaging/windows/local_windows_ci.py --changed
+```
+
+The first run calls the installer's unchanged `build_runtime`, downloading its
+pinned interpreter and four wheels, then creates a dedicated headless Wine
+prefix. The default cache is `~/.cache/2k-football-mod-tools/winci/`; use
+`--work /tmp/winci` to move it. Building from already downloaded inputs measured
+1.557 seconds here; download and first-prefix costs remain unmeasured. Cached
+runs reuse the runtime and prefix. Host Python needs pip; curl, wine, wineboot
+and winepath must be on PATH. An offline build can use cached files in `WORK/dl`
+with `PIP_NO_INDEX=1 PIP_FIND_LINKS=/absolute/path/to/WORK/dl`.
+
+`--repo DIR` tests another checkout. `--changed` uses the local merge-base with
+`origin/main`, including committed, staged, unstaged and untracked changes;
+it selects changed tests and tests whose source mentions a changed Python
+module's filename stem. It never fetches. Combine it with `--only` to intersect
+the selections. Unmatched `--only` patterns are errors. This is a text-based
+selection heuristic, so run the full matrix before relying on coverage.
+
+Each file has a 420-second timeout (`--timeout SECS` overrides it), a full log
+at `WORK/logs/test_name.py.log`, and the same PASS/FAIL and SUMMARY accounting
+as CI. All selected files run even after failures; `--keep-going` explicitly
+requests this default. File skips follow CI's exact lean-checkout evidence
+rule. Setup failures exit 2 without a success summary; test failures exit 1.
+Timeouts print `TIMED OUT`, target the recorded Windows PID and descendants
+with `taskkill /T /F`, and kill the Unix launcher's process group. The runner
+never kills a shared Wine server. A prefix must be empty or owned by this
+runner; `--prefix DIR` chooses a separate one. Cache/prefix locks prevent
+overlapping invocations from corrupting state or logs.
+
+Use the default `-j 1` until the matrix has been validated on this machine.
+Its 32 logical CPUs and 31 GiB RAM suggest `-j 2` as a conservative experiment,
+but no parallel Wine setting has yet been demonstrated safe here. Qt windows
+run offscreen, without DISPLAY or desktop/audio integration. `--os-check`
+checks the actual Qt platform, prints Windows interpreter facts and the
+pre-normalization CRT environment values, and proves normal versus isolated
+child imports. The runner uses a private runtime copy for Python path setup;
+the cached installer runtime and installer build output are unchanged.
+
+Wine can expose Windows CPython branches, binary I/O and Windows handle
+sharing behavior. It does not certify native Windows filesystem, GUI, shell,
+installer or driver behavior, nor the CI Python 3.11 matrix. The hosted job
+also installs current dependencies, whereas this runner intentionally uses the
+installer pins. No Wine acceptance run completed in the implementation session:
+the execution sandbox killed Wine with SIGSYS before Python started. See
+[`ASTRA_WIN_LOCAL_CI_REPORT.md`](../ASTRA_WIN_LOCAL_CI_REPORT.md) for exact
+blocked RED/GREEN/full-matrix attempts and remaining validation.
+
 ## Application icons
 
 `tools/make_app_icons.py` generates every icon both editors use, from geometry
