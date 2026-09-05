@@ -299,9 +299,9 @@ def build_kit(pack: Path, out_dir: Path, targets: Sequence[str] = EMULATOR_TARGE
                     "path": member.as_posix(), "sha256": _sha256(destination),
                 })
             (staging / "HOW-TO.txt").write_text(
-                how_to_text(target, receipt_target), encoding="utf-8")
+                how_to_text(target, receipt_target), encoding="utf-8", newline="\n")
             (staging / "settings.ini").write_text(
-                settings_text(target), encoding="utf-8")
+                settings_text(target), encoding="utf-8", newline="\n")
             (staging / KIT_NAME).write_text(json.dumps({
                 "schema": KIT_SCHEMA,
                 "serial": SERIAL,
@@ -316,7 +316,7 @@ def build_kit(pack: Path, out_dir: Path, targets: Sequence[str] = EMULATOR_TARGE
                     "receipt_sha256": _sha256(pack / RECEIPT_NAME),
                     "files": copied,
                 },
-            }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            }, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
             staging.replace(kit_root)
         finally:
             shutil.rmtree(staging, ignore_errors=True)
@@ -364,7 +364,7 @@ def _synthetic_pack(root: Path, target: str = TARGET_PENGUINSCREEN2_CLASSIC) -> 
             "xbox_asset_id": "nfl2k5.uniform.demo",
             "source_target": "demo",
         })
-    (pack / "nfl2k5-xbox-map.v1.json").write_text('{"rows": []}\n', encoding="utf-8")
+    (pack / "nfl2k5-xbox-map.v1.json").write_text('{"rows": []}\n', encoding="utf-8", newline="\n")
     (pack / RECEIPT_NAME).write_text(json.dumps({
         "schema": "nfl2k5-ps2-export-receipt.v1",
         "serial": SERIAL,
@@ -375,7 +375,7 @@ def _synthetic_pack(root: Path, target: str = TARGET_PENGUINSCREEN2_CLASSIC) -> 
         },
         "files": rows,
         "provenance": {"disc": SERIAL},
-    }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    }, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     return pack
 
 
@@ -453,7 +453,7 @@ def selftest() -> int:
         unknown = _synthetic_pack(root / "unknown")
         document = json.loads((unknown / RECEIPT_NAME).read_text(encoding="utf-8"))
         document["emulator_target"] = "dolphin"
-        (unknown / RECEIPT_NAME).write_text(json.dumps(document), encoding="utf-8")
+        (unknown / RECEIPT_NAME).write_text(json.dumps(document), encoding="utf-8", newline="\n")
         _expect_refusal("an unknown emulator",
                         lambda: build_kit(unknown, root / "kits-unknown"))
         rejects.append("unknown-emulator-target")
@@ -464,7 +464,7 @@ def selftest() -> int:
         crossed_pack = _synthetic_pack(root / "crossed")
         document = json.loads((crossed_pack / RECEIPT_NAME).read_text(encoding="utf-8"))
         document["instructions"]["settings"] = [LOAD_REPLACEMENTS_SETTING]
-        (crossed_pack / RECEIPT_NAME).write_text(json.dumps(document), encoding="utf-8")
+        (crossed_pack / RECEIPT_NAME).write_text(json.dumps(document), encoding="utf-8", newline="\n")
         _expect_refusal("a receipt with another target's settings",
                         lambda: build_kit(crossed_pack, root / "kits-crossed"))
         rejects.append("crossed-settings")

@@ -361,7 +361,7 @@ automatable, no gameplay required.**
 build `8226182a` ran in 12.7 s with the *community* pack and returned all four
 harness verdicts PASS: V1 classic ⊇ modern (214 tcc-bit additions) · V2 no
 region-suffixed names · **V3 classic-mode dump names match 49 community-pack
-names against 1 in modern mode — `ClassicTextureNames=true` is mandatory,
+names against 1 in modern mode — `ClassicTextureNames=true` is mandatory for classic-name *dumps*; loading was later measured to work either way,
 measured** · **V4 pack engages under classic: frame sets differ.** The harness
 neutralises both per-game inis (`SLUS-20919_42F9D5AF.ini`, `_C0272027.ini`)
 and restores them on exit. Evidence: rig `~/classicdump-validate-20260904-220239/`.
@@ -380,7 +380,7 @@ spaces — compare via the harness's verdicts or `find -print0`, never
    canonical stripped key and additionally the verbatim alias when
    `ClassicTextureNames=true`. ⚠ With classic **off**, a bit-14 name aliases onto
    the TCC=0 variant's key (ISS-042, `GSTextureCache.cpp:7110-7117`) → wrong
-   art. **`ClassicTextureNames=true` is required**, and `SLUS-20919` is *not* in
+   art. **`ClassicTextureNames=true` is required for classic-name dumps** (loading works without it: measured 2026-09-05 on three stock builds), and `SLUS-20919` is *not* in
    `s_classic_default_serials` (`VMManager.cpp:743-749`, only M09/NCAA09/M12) —
    set it explicitly.
 2. **Rig safety.** Run the shared-headset live-session check as its own command
