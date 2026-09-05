@@ -163,7 +163,10 @@ class ModStudioPackagingTests(unittest.TestCase):
     def test_launcher_and_packaging_docs_require_pyqt5_not_tk(self) -> None:
         launcher = (ROOT / "tools/launch_2k5_mod_studio.sh").read_text(encoding="utf-8")
         readme = (ROOT / "packaging/README.md").read_text(encoding="utf-8")
-        combined = launcher + "\n" + readme
+        # Windows CI documents unavailable optional modules separately from the
+        # desktop installation requirements; those diagnostics are not dependencies.
+        install_readme = readme.split("\n## Local Windows CI\n", 1)[0]
+        combined = launcher + "\n" + install_readme
         self.assertIn("from PyQt5 import QtWidgets; import PIL; import mod_editor", launcher)
         self.assertIn("python3 -m mod_editor --studio", combined)
         self.assertIn("python3-pyqt5", readme)

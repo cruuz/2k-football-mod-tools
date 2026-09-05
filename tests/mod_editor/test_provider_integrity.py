@@ -140,10 +140,12 @@ def local_import_closure(
 
     pending = [(relative, relative in exact_path_entries) for relative in entries]
     closure: set[str] = set()
+    visited: set[tuple[str, bool]] = set()
     while pending:
         relative, exact_path_mode = pending.pop()
-        if relative in closure:
+        if (relative, exact_path_mode) in visited:
             continue
+        visited.add((relative, exact_path_mode))
         closure.add(relative)
         tree = ast.parse((WORKSPACE / relative).read_text(encoding="utf-8"))
         visitor = _RuntimeImportVisitor()
@@ -161,7 +163,7 @@ def local_import_closure(
                 for count in range(len(parts), 0, -1):
                     candidate = _local_module_path(".".join(parts[:count]))
                     if candidate is not None:
-                        if candidate not in closure:
+                        if (candidate, False) not in visited:
                             pending.append((candidate, False))
                         break
     return closure
@@ -192,7 +194,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [170, 9, 8, 9, 8, 9],
+            [173, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -233,7 +235,15 @@ class ProviderIntegrityTests(unittest.TestCase):
                     "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
                 })
                 expected_closure.update(local_import_closure(
-                    *adapters, exact_path_entries=adapters
+                    *adapters, exact_path_entries=frozenset({
+                        "mod_editor/core/nfl2k5_audo_fixed_slots.py",
+                        "mod_editor/core/nfl2k5_safe_text_banks.py",
+                        "mod_editor/core/nfl2k5_scorebug_unified_adapter.py",
+                        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+                        "mod_editor/core/nfl2k5_p8_texture_writer.py",
+                        "mod_editor/core/nfl2k5_unif_color_writer.py",
+                        "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+                    })
                 ))
                 self.assertNotIn("mod_editor/__init__.py", expected_closure)
                 self.assertNotIn("mod_editor/core/__init__.py", expected_closure)

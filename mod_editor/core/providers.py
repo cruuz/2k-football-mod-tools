@@ -513,6 +513,10 @@ class Nfl2k5UnifiedVisualProvider:
     )
     backend_module_sha256 = "3e60888ae7e26d87cc9ce80744969cebcf71788838986c957a0c94f1bb02745f"
     module_pins: Mapping[str, str] = {
+        "mod_editor/core/modpack.py": "7524c5de4d03c23997f88355c6888f1e013e5d5e62a995d07e8b963d1be9fd2a",
+        "mod_editor/core/modpack_ops.py": "3c87748a731f715b7ba4bf8106788e0ff1f717800907205f2a21e8ff2a2462ca",
+        "mod_editor/core/nfl2k5_disc_identity.py": "bb9701f911996e4fd208f2eabbdce0c00b1519cc036055518830c19f06e223a4",
+
         "mod_editor/core/audio_conform.py": "466f8f4352da350a02b65092bdc5736f6059c1a6e45525f3aca271111bc984d0",
         "mod_editor/core/mod_build.py": "3ddb7514d2d85a3973a65dc822c89179909a29f1ad0327ca754357b9e23e7b3e",
         "mod_editor/core/nfl2k5_accel_ramp.py": "35efee308a841b12939248f6d388e670b97dd99723efe1c3832212afc89f2b1d",
