@@ -374,3 +374,4 @@ tools/validate_nfl2k5_ps2_disc_roster.bat
 # the validators.  The patcher writes through tools/ps2_iso9660_writer.py, so
 # that module and its verifier ship with it.
 tools/spu_adpcm.py
+tools/nfl2k5_ps2_audo_target_catalog.py
