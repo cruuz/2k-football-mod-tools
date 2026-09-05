@@ -122,6 +122,8 @@ class PatchWriteTests(unittest.TestCase):
         if music.status(cls.patched) != "applied":
             raise AssertionError("music policy owner missing from the composed XBE")
         cls.table = sections(cls.patched)
+        from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
+        cls.patched, _ = scorebug.apply_xbe(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 
@@ -245,6 +247,27 @@ class PatchWriteTests(unittest.TestCase):
         self.assertTrue(any(e["label"] == "summary_row_spacing" and e["size"] == 48
                             for e in self.rows_receipt["edits"]))
         self.assertEqual(image.section(rows.SUMMARY_LABEL_WIDTH_VA, 4).name, ".rdata")
+
+@unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
+class ScorebugReferenceWrites(unittest.TestCase):
+    def test_complete_scorebug_instructions_and_data_destinations(self):
+        from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        retail=XBE.read_bytes()
+        patched,_=scorebug.apply_xbe(retail)
+        image=XbeImage(patched)
+        for va,old,new,label in scorebug.xbe_specs():
+            if va < 0x11000:
+                continue  # existing reserved header constants, never runtime writes
+            section=image.section(va,len(new))
+            if section.name != ".text":
+                self.assertTrue(image.runtime_writable(va,len(new)),label)
+            else:
+                for write in absolute_writes(patched,[(va,va+len(new))]):
+                    if write["target"] is not None:
+                        self.assertTrue(write["writable"],write)
+        self.assertEqual(scorebug.apply_xbe(patched)[0],patched)
+
 
 if __name__ == "__main__":
     unittest.main()

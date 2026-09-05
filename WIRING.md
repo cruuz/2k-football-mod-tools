@@ -334,6 +334,137 @@ final `.XTLID`; no new cave, runtime global, section or resource is added.
 Both source modules' hashes changed, including depth locks' composition fix.
 Passing the composed gates does not replace manifest regeneration. No
 protected artifact was regenerated in this task.
+# Scorebug r61b handoff, 2026-09-05
+
+The existing scorebug option now calls the v7 reference implementation through
+`tools.nfl2k5_scorebug_layout.status/apply_in_place`. Code, offline preview,
+fixed-span resource writer, XBE fields, staging data generator and local test
+disc are complete. All new behavior is EXPERIMENTAL / UNWITNESSED. See
+`ASTRA_SCOREBUG_INGAME_REPORT.md`. Protected product files were not edited.
+
+## Dispatcher, BuildPlan and status dictionaries
+
+Keep `BuildPlan.scorebug: bool = False`. Keep the existing image-only
+presentation post-pass at `mod_build.py` lines 659 onward. It must own the
+scene, atlas and XBE as one preflighted transaction. Set presets explicitly:
+basic `scorebug=False`, advanced `scorebug=False` (currently True; disable
+until witnessed), experimental `scorebug=True`. The existing option remains
+available for explicit selection in other presets. No new user flag is needed.
+
+`nfl2k5_throw_tuning._apply_all` **tuple and kwarg: none for this revision**.
+This is a deliberate resource-writer exception to the standard XBE-only
+handoff pattern. Applying `apply_xbe` inside that dispatcher first would leave
+retail SCNE/atlas plus applied XBE, a mixed state which the transaction correctly
+refuses. Do not add a duplicate `(scorebug, ..., ...)` dispatcher tuple or pass
+the BuildPlan bit into `_apply_all`. `apply_xbe` is exposed for composition
+gates and a future coordinated dispatcher, not as an independent UI option.
+
+For the four XBE status dictionaries in `nfl2k5_throw_tuning.py`, no executable
+scorebug enable state is needed for dispatch. If source diagnostics should
+expose it, add a read-only `scorebug_xbe` entry to **all four**, as follows:
+
+| Dictionary | Optional exact diagnostic expression |
+| --- | --- |
+| Loose-XBE source inspection, near line 585 | `"scorebug_xbe": scorebug_reference.xbe_status(payload)` |
+| Image source inspection, near line 698 | `"scorebug_xbe": scorebug_reference.xbe_status(payload)` |
+| Loose-XBE apply result, near line 1152 | `"scorebug_xbe": scorebug_reference.xbe_status(result)` |
+| Image apply result, near line 1337 | `"scorebug_xbe": scorebug_reference.xbe_status(after)` |
+
+These must not replace `mod_build.inspect`'s image-level `scorebug` status,
+which checks the complete resource set. Keep the unavailable loose-XBE option
+explanation: this feature needs a disc image. Keep the existing availability
+call into `nfl2k5_scorebug_source_art.available()`; v7 uses shipped metadata,
+independent of the old presentation research audit.
+
+Preserve the full nested receipt in the protected build orchestrator. Replace
+the old v6 receipt key filter with at least: `layout`, `experimental`,
+`witnessed`, `state_before`, `root`, `textures`, `resources`, `xbe`,
+`wrapper_identical`, `runtime_team_logos`, `timeout_dimming`, `under_5_color`,
+`animation`. `resources` contains exact spans and hashes; `xbe` contains
+every changed field and shared-owner receipts; driver pins are in the metadata
+module and report evidence. The old
+filter silently loses this information. Continue catching normal exceptions
+on the build worker; the new refusal is a `ValueError` subclass.
+
+## Gameplay Patches and Build text
+
+The Build tab already has the option. The Gameplay Patches `PATCHES` tuple
+currently does not contain `scorebug`; add it there if this option is mirrored
+on that panel, using the existing BuildPlan key:
+
+```python
+("scorebug", "Experimental ESPN scorebar",
+ "Retail: a stacked score display near the top of the screen. Patch: a wider "
+ "display at the bottom, a white clock strip, an ESPN corner mark and a short "
+ "slide when the down panel appears. Experimental and not tested in game. "
+ "Team logos, timeout counting and a red low clock are still being developed.")
+```
+
+Add `"scorebug"` to `NEEDS_IMAGE` there. No second executable-only toggle.
+Build tab `_option` caption: **Experimental ESPN scorebar** (26 characters).
+Helper: `A bottom score display with a white clock strip and ESPN corner mark.`
+Details: `Not tested in game. Team names remain live. Team logos, timeout
+counting and low-clock color are still being developed. The kick meter moves
+up and the lineup strip is hidden.` Remove the old claim that the shared ESPN
+strip is repainted; this version leaves that texture unchanged.
+
+The preview resolver now renders the installable neutral fallback. Do not
+substitute the staged-logo target for the default Studio preview or label
+sample slide frames as a game capture. A future binding option needs its own
+runtime witness before claiming real current-team logos in the installed bar.
+
+## Packaging and runtime closure
+
+Add exactly these new release allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_scorebug_ingame.py
+mod_editor/core/nfl2k5_scorebug_resources.py
+tools/nfl2k5_scorebug_reference.py
+```
+
+Keep the existing source-art/layout/position/HUD/boot-logo modules and the
+existing `nfl_txtr`, `nfl_vc_lz_fill`, `nfl_tset_png_import`, `nfl_static_gltf`,
+`nfl2k5_scorebug_espn_art`, pack locator and XBE digest helpers. The new
+runtime imports resolve from these modules and Pillow; there is no SVG
+converter, Ghidra, capstone, unicorn, filesystem research corpus or network
+dependency in the product path. Metadata is Python, so no new JSON asset
+closure is required. `nfl2k5_scorebug_reference` is needed for the default CLI
+subcommands; source-art imports the new core directly for Studio previews.
+
+Update `packaging/check_2k5_mod_studio_runtime.py` to import the three added
+modules in its isolated runtime closure and assert `source_art.available()`.
+Do not allowlist the test disc, raw logo exports, staged RGBA buffers or
+documentation previews. They are derived from the user's disc and generated
+locally. The existing capability `nfl2k5.scorebug_presentation.inventory`
+remains; no new GUI/edit selector is introduced. Amend its evidence/limits
+to reference the v7 report if capability copy is updated, keeping runtime
+team logos and event hooks explicitly unwitnessed and unimplemented.
+
+Regenerate `data/nfl2k5_cave_reservations.json` with the v7 writer once wired.
+Its recorded source hashes necessarily predate these edits. New field
+ownership includes the two mark binding pointers, clock contrast words and
+down-slide duration/direction. The position constants reuse the already
+reserved `0x10A40..0x10A48`; no new code allocation is made. The future hook
+at `0xFCE56` is only a candidate in the report, not an allocation.
+
+## Inherited blocker in both XBE gates
+
+Both supplied full gates fail before reaching scorebug code, and the untouched
+HEAD versions reproduce the failure. `nfl2k5_depth_locks._context` selects the
+retail bench block whenever `modern.layout_stride(payload)==11`, but the
+current `nfl2k5_depth_chart_rows` keeps stride 11 while relocating its table
+and rewriting that bench block. The depth-lock gate still assumes its older
+stride-13 expansion. `sites()`'s swap-chain selection and the hardcoded bench
+return addresses also require an audit against the current row writer.
+
+Repair the depth-lock context using the actual table/layout identity, validate
+the current bench return addresses and chain test, then rerun the composition
+tests and both full gates. Do not accept arbitrary bench bytes, infer an
+allocation from the oracle's `unknown`, or disable an owner in the gates.
+This task adds the scorebug to both existing `setUpClass` compositions and
+adds independently runnable scorebug checks. Both direct scorebug checks
+pass; the inherited full-stack errors remain visible and are a release blocker.
 
 ---
 

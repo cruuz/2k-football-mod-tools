@@ -29,7 +29,14 @@ ASSETS = ROOT / "mod_editor" / "assets" / "nfl2k5_scorebug_espn"
 
 class ScorebugLayoutTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.retail = L.retail_scne_bytes()
+        extraction = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted"))
+        pack = extraction / "ESPN NFL 2K5 (USA)/vc_53450030/0"
+        if not pack.is_file():
+            self.skipTest("retail pack 0 evidence absent")
+        with pack.open("rb") as stream:
+            stream.seek(L.CHUNK78_PACK_OFFSET)
+            self.span = stream.read(L.SPAN_SIZE)
+        self.retail = nfl_txtr.decode_chunk(self.span, nfl_txtr.parse_chunks(self.span)[0])[0]
 
     def test_retail_mesh_parses_to_the_known_layout(self) -> None:
         m = L.Mesh(self.retail)
@@ -67,7 +74,7 @@ class ScorebugLayoutTests(unittest.TestCase):
             self.assertTrue(in_pos or in_shape or in_transform or in_uv, f"unexpected edit at {i:#x}")
 
     def test_edited_mesh_refits_the_retail_fixed_span(self) -> None:
-        span = (ASSETS / "score_bug_retail_span.bin").read_bytes()
+        span = self.span
         self.assertEqual(len(span), L.SPAN_SIZE)
         m = L.Mesh(self.retail)
         L.espn_layout(m)
@@ -170,10 +177,6 @@ class ScorebugLayoutTests(unittest.TestCase):
                 self.assertGreater(out.stat().st_size, 1000)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class ScorebugXbePatchTests(unittest.TestCase):
     """Text-colour and persistence patches on the retail executable (skipped without the base image)."""
 
@@ -183,11 +186,11 @@ class ScorebugXbePatchTests(unittest.TestCase):
         if not self.BASE.exists():
             self.skipTest("base disc image not present")
         from mod_editor.core import nfl2k5_throw_tuning as tt
-        fd = os.open(self.BASE, os.O_RDONLY)
+        fd = os.open(self.BASE, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         try:
             size = os.fstat(fd).st_size
             off, length = tt.image_xbe_extent(fd, size)
-            self.xbe = os.pread(fd, length, off)
+            self.xbe = L._pread(fd, length, off)
         finally:
             os.close(fd)
 
@@ -244,7 +247,8 @@ NODE_NAMES = ("bscore_buga", "bscore_buga1", "bscore_buga2", "cscore_buga", "dsc
               "yscore_buga", "yscore_buga1", "zscore_buga", "zz_ESPN_bug", "zz_ESPN_bug1")
 
 
-@unittest.skipUnless(HAVE_UNICORN, "unicorn not installed")
+@unittest.skipUnless(HAVE_UNICORN and os.environ.get("NFL2K5_SCOREBUG_EMULATION_TEST") == "1",
+                     "bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1")
 class ScorebugEmulationTests(unittest.TestCase):
     """Run the retail routines that own the two in-game symptoms (skipped without the base image)."""
 
@@ -254,11 +258,11 @@ class ScorebugEmulationTests(unittest.TestCase):
         if not self.BASE.exists():
             self.skipTest("base disc image not present")
         from mod_editor.core import nfl2k5_throw_tuning as tt
-        fd = os.open(self.BASE, os.O_RDONLY)
+        fd = os.open(self.BASE, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         try:
             size = os.fstat(fd).st_size
             off, length = tt.image_xbe_extent(fd, size)
-            self.xbe = os.pread(fd, length, off)
+            self.xbe = L._pread(fd, length, off)
         finally:
             os.close(fd)
 
@@ -359,3 +363,29 @@ class ScorebugEmulationTests(unittest.TestCase):
         for name in NODE_NAMES:
             if not name.startswith(("zz_ESPN", "yscore")):
                 self.assertEqual((mode0[name], mode1[name]), (1, 1), name)
+
+
+class ReferenceLayoutTests(unittest.TestCase):
+    setUp = ScorebugLayoutTests.setUp
+    def test_reference_widest_preview_uses_patched_texels(self):
+        from mod_editor.core import nfl2k5_scorebug_ingame as reference
+        from PIL import Image
+        m = reference.mesh(self.retail)
+        self.assertEqual(reference.serialize(m), reference.decode(reference.apply(self.span, "score_bug")[0])[1])
+        # A diagnostic atlas tests actual texture sampling, independently of fonts.
+        texture = Image.new("RGBA", (64, 64), (21, 33, 49, 255))
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "reference.png"
+            L.preview_reference(m, texture, path, widest=True)
+            with Image.open(path) as im:
+                self.assertEqual(im.size, (1280, 960))
+                self.assertEqual(im.getpixel((180, 780)), (21, 33, 49))
+        for name in ("away_score", "home_score"):
+            self.assertEqual(m.world[L.T[name]][1], 10)
+        self.assertEqual(m.world[L.T["drop_down"]][1], 27)
+        self.assertEqual(m.world[L.T["quarter"]][1], 2)
+
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -78,6 +78,8 @@ class CaveReferenceTests(unittest.TestCase):
             cls.patched, music_unlock=True, music_userlist=True)
         if music.status(cls.patched) != "applied":
             raise AssertionError("music policy owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
+        cls.patched, _ = scorebug.apply_xbe(cls.patched)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -273,6 +275,28 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual(relocated.status(self.patched), "applied")
         for r in space.reservations(self.patched):
             self.assertGreaterEqual(int(r["start"], 0), space.CODE_VA)
+
+
+@unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
+class ScorebugReferenceReservations(unittest.TestCase):
+    def test_scorebug_uses_existing_reserved_constants_and_no_new_cave(self):
+        from mod_editor.core import nfl2k5_scorebug_ingame as scorebug
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        retail=XBE.read_bytes()
+        image=XbeImage(retail)
+        manifest=ReservationManifest.load(DEFAULT_MANIFEST,image)
+        reservations=manifest.overlaps(0x10a40,0x10a48)
+        self.assertTrue(reservations)
+        patched,_=scorebug.apply_xbe(retail)
+        md=Cs(CS_ARCH_X86,CS_MODE_32)
+        for va,old,new,label in scorebug.xbe_specs():
+            section=image.section(va,len(new))
+            if section is not None and section.name == ".text":
+                self.assertLess(len(new),CAVE_MIN,label)
+                insns=list(md.disasm(new,va))
+                self.assertEqual(sum(i.size for i in insns),len(new),label)
+                self.assertTrue(all(i.mnemonic in ("nop","fadd") for i in insns),label)
+        self.assertEqual(scorebug.xbe_status(patched),"applied")
 
 
 if __name__ == "__main__":

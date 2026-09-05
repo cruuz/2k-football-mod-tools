@@ -1,5 +1,9 @@
 """ESPN scorebug inputs, resolved from the user's own disc instead of shipped files.
 
+The public preview and availability helpers now use the v7 reference writer and
+its shipped metadata. The following legacy-art resolvers remain for older tools;
+their developer overrides and generated v6 textures do not control the v7 install.
+
 The ESPN bar needs four things that used to live as loose files in a developer-only
 ``mod_editor/assets/nfl2k5_scorebug_espn`` folder, which is why the step reported
 "Not available in this build" on every install that was not this workstation:
@@ -146,6 +150,13 @@ def texture_targets() -> dict[str, dict[str, Any]]:
 
     global _AUDIT_CACHE
     if _AUDIT_CACHE is None:
+        if not AUDIT.exists():
+            # Legacy art export remains available in a checkout without research
+            # reports. The v7 writer owns its smaller, independently pinned set.
+            from .nfl2k5_scorebug_resources import RESOURCES, LEGACY_DIGITAL_FONT
+            return {**{n:{**RESOURCES[n], "pack_path":PACK0_PATH} for n in ("score_buga","shield_espn")},
+                    "digital_font":{**LEGACY_DIGITAL_FONT,"pack_path":PACK0_PATH},
+                    "NAVTEXTURE":dict(NAVTEXTURE)}
         try:
             report = json.loads(AUDIT.read_text(encoding="utf-8"))
             rows = report["nfl2k5"]["texture_targets"]
@@ -485,7 +496,7 @@ def resolve_art(source: Path | None) -> dict[str, Any]:
 PREVIEW_FILE_NAME = "preview_espn.png"
 
 
-def preview_mockup(source: Path | None) -> Path | None:
+def _legacy_preview_mockup(source: Path | None) -> Path | None:
     """The Presentation tab's planned-look mockup: developer copy, cache, or rendered here.
 
     The mockup is a render of the edited mesh with the repainted mark wrapped onto it, so it
@@ -521,7 +532,7 @@ def preview_mockup(source: Path | None) -> Path | None:
     return folder / PREVIEW_FILE_NAME
 
 
-def available() -> bool:
+def _legacy_available() -> bool:
     """Whether this build can produce the scorebug's art at all (given a disc image).
 
     True when the generator, the audit and Pillow are present -- the retail inputs are the
@@ -536,3 +547,37 @@ def available() -> bool:
     except Exception:  # noqa: BLE001
         return False
     return AUDIT.is_file()
+
+
+def preview_mockup(source: Path | None) -> Path | None:
+    """Studio preview of the installable v7 data, without claiming live team logos."""
+    if source is None:
+        return None
+    try:
+        from . import nfl2k5_scorebug_ingame as reference
+        layout = _tools_module("nfl2k5_scorebug_layout")
+        mesh, texture = reference.preview_data(Path(source))
+        folder = cache_dir(create=True).resolve()
+        import tempfile
+        fd, name = tempfile.mkstemp(prefix=".reference-", suffix=".png", dir=folder)
+        os.close(fd)
+        temporary = Path(name).resolve()
+        try:
+            layout.preview_reference(mesh, texture, temporary)
+            output = folder / "preview_reference_v7.png"
+            os.replace(temporary, output)
+        finally:
+            temporary.unlink(missing_ok=True)
+        return output
+    except (Exception, SystemExit):
+        return None
+
+
+def available() -> bool:
+    """V7 uses its shipped metadata pins, independent of the old research audit."""
+    try:
+        from . import nfl2k5_scorebug_ingame, nfl2k5_scorebug_resources
+        import PIL.Image
+        return bool(nfl2k5_scorebug_resources.PATCHED_SHA256)
+    except ImportError:
+        return False
