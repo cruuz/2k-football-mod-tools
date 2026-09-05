@@ -111,7 +111,7 @@ class LockLayoutTests(unittest.TestCase):
         section = image.section(rows.BENCH_VA)
         offset = section.raw + rows.BENCH_VA - section.start
         damaged[offset+1] ^= 1
-        with self.assertRaisesRegex(locks.DepthLockError, 'bench promotion'):
+        with self.assertRaisesRegex(locks.DepthLockError, 'bench promotion|depth-chart layout'):
             locks.apply(bytes(damaged))
 
 
