@@ -373,5 +373,21 @@ tools/validate_nfl2k5_ps2_disc_roster.bat
 # The codec, the target catalogue, the patcher, its independent verifier and
 # the validators.  The patcher writes through tools/ps2_iso9660_writer.py, so
 # that module and its verifier ship with it.
+# PS2 Phase 2: exact-slot AUDO audio replacement on the SLUS-20919 disc --
+# the codec, the target catalogue, the patcher, its independent verifier and
+# the validators.
+#
+# NOT YET COMPLETE: nfl2k5_ps2_audo_patch.py writes through
+# tools/ps2_iso9660_writer.py, which is still shelved and therefore absent
+# from this list, so a release staged today would ship a patcher whose
+# dependency is missing.  Appending tools/ps2_iso9660_writer.py and
+# tools/ps2_iso9660_verify.py is what unblocks it, and doing so first needs
+# the writer's Path.write_text at ps2_iso9660_writer.py:1343 changed to a
+# byte write -- test_generated_artifacts_are_lf fails on it the moment the
+# module becomes shipped code.  Land that with the capability row.
 tools/spu_adpcm.py
 tools/nfl2k5_ps2_audo_target_catalog.py
+tools/nfl2k5_ps2_audo_patch.py
+tools/nfl2k5_ps2_audo_verify.py
+tools/validate_nfl2k5_ps2_audo.sh
+tools/validate_nfl2k5_ps2_audo.bat
