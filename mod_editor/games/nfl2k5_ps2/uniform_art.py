@@ -70,6 +70,8 @@ from mod_editor.games.contract import (
     Target,
     Verdict,
     require,
+    EncodedArt,
+    Field,
 )
 
 HERE = Path(__file__).resolve().parent
@@ -117,41 +119,7 @@ PS2_ALPHA_OPAQUE = 0x80
 #
 # RC86 work package A1 adds ``ArtLane``, ``EncodedArt`` and ``Field`` to
 # mod_editor/games/contract.py on another branch.  These two dataclasses move
-# to the contract at integration; the three ArtLane methods below already carry
-# the names and signatures the plan specifies, so the isinstance check passes
-# the moment the Protocol lands.
 # --------------------------------------------------------------------------
-
-@dataclass(frozen=True)
-class EncodedArt:
-    """One accepted replacement image, normalised.  Moves to the contract at integration."""
-
-    png: bytes
-    width: int
-    height: int
-    note: str = ""
-
-
-@dataclass(frozen=True)
-class Field:
-    """One editable value of a target.  Moves to the contract at integration."""
-
-    key: str
-    kind: str
-    label: str
-    help: str = ""
-    choices: Tuple[str, ...] = ()
-    minimum: Optional[float] = None
-    maximum: Optional[float] = None
-    read_only: bool = False
-
-    def as_dict(self) -> Dict[str, Any]:
-        return {
-            "key": self.key, "kind": self.kind, "label": self.label,
-            "help": self.help, "choices": list(self.choices),
-            "minimum": self.minimum, "maximum": self.maximum,
-            "read_only": self.read_only,
-        }
 
 
 def _target_with_fields(fields: Tuple[Field, ...], **kwargs: Any) -> Target:
