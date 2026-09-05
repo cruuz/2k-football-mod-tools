@@ -491,6 +491,10 @@ class Manifest:
     provenance: Mapping[str, Any]
     sha256: str
     document: Mapping[str, Any]
+    #: The manifest's own bytes, so the copy dropped beside a pack is verbatim
+    #: and hashes to ``sha256``. Re-serializing would produce a copy whose
+    #: digest did not match the one the receipt records for the shipped file.
+    raw: bytes = b""
     path: Optional[Path] = None
 
     @property
@@ -525,7 +529,8 @@ def load_manifest(source: Any = None) -> Manifest:
     else:
         _require(isinstance(source, Mapping), "A mapping manifest must be a JSON object")
         document = dict(source)
-        digest = _sha256_bytes(_canonical_json(document))
+        payload = _canonical_json(document)
+        digest = _sha256_bytes(payload)
 
     _require(isinstance(document, dict), "A mapping manifest must be a JSON object")
     _require(document.get("schema") == MAPPING_SCHEMA,
@@ -562,6 +567,7 @@ def load_manifest(source: Any = None) -> Manifest:
         provenance=provenance,
         sha256=digest,
         document=document,
+        raw=payload,
         path=path,
     )
 
@@ -617,6 +623,8 @@ class ExportPlan:
     provenance: Mapping[str, Any]
     manifest_sha256: str
     manifest_document: Mapping[str, Any]
+    #: The manifest's own bytes, copied into the pack verbatim.
+    manifest_raw: bytes = b""
     project_source: str = ""
 
     @property
@@ -716,6 +724,7 @@ def plan_export(project: Any, manifest: Any = None) -> ExportPlan:
         provenance=dict(resolved_manifest.provenance),
         manifest_sha256=resolved_manifest.sha256,
         manifest_document=resolved_manifest.document,
+        manifest_raw=resolved_manifest.raw,
         project_source=resolved_project.source,
     )
 
@@ -851,8 +860,13 @@ def run_export(plan: ExportPlan, out_dir: Path) -> ExportReceipt:
         _write_new(stage / RECEIPT_NAME, _canonical_json(receipt_document))
         # The audit tool reports ``xbox_mapping_ready`` only when the pack
         # carries the source-owned manifest beside it, so the pack ships one.
-        # It is hashes and names, never pixels.
-        _write_new(stage / MAPPING_MANIFEST, _canonical_json(plan.manifest_document))
+        # It is hashes and names, never pixels. The copy is byte-verbatim, so
+        # it hashes to the digest the receipt records for the shipped file --
+        # re-serializing would produce a copy whose digest did not match.
+        _write_new(
+            stage / MAPPING_MANIFEST,
+            plan.manifest_raw or _canonical_json(plan.manifest_document),
+        )
 
         try:
             # require_atomic=False keeps the two-step reserve available on the

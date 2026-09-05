@@ -298,6 +298,37 @@ class ForgedReceiptTests(_PackTestCase):
         with self.assertRaises(verify.PackVerifyError):
             verify.verify(self.pack, self.manifest, self.project)
 
+    def test_a_bundled_manifest_swapped_after_export_is_caught(self) -> None:
+        """The pack ships its own map copy; it must be the one exported.
+
+        Every other check would still pass: the files, names and digests are
+        untouched, and the added row's provenance is unchanged. Only the
+        digest the receipt recorded for the map itself catches this.
+        """
+
+        bundled = self.pack / verify.MAPPING_MANIFEST
+        document = json.loads(bundled.read_text(encoding="utf-8"))
+        document["entries"].append(
+            {"pcsx2_png": "dead-beef-" + WIDE + ".png",
+             "xbox_asset_id": "p8:1:smuggled"}
+        )
+        bundled.write_bytes(_json_bytes(document))
+        with self.assertRaises(verify.PackVerifyError) as caught:
+            verify.verify(self.pack, self.manifest, self.project)
+        self.assertIn("recorded a digest for", str(caught.exception))
+
+    def test_the_exporter_bundles_the_manifest_verbatim(self) -> None:
+        """The copy must hash to the digest the receipt records, byte for byte.
+
+        Re-serializing the map on the way out would break that link and make
+        the check above unenforceable.
+        """
+
+        bundled = (self.pack / verify.MAPPING_MANIFEST).read_bytes()
+        self.assertEqual(bundled, self.manifest.read_bytes())
+        recorded = self.receipt_document()["mapping_manifest"]["sha256"]
+        self.assertEqual(hashlib.sha256(bundled).hexdigest(), recorded)
+
 
 class DowngradedVerdictTests(_PackTestCase):
     """Without the project, the unedited-target check cannot run. Say so."""
@@ -433,21 +464,64 @@ class IndependenceTests(unittest.TestCase):
                     self.assertNotIn("ps2_export_service", alias.name)
                     self.assertFalse(alias.name.startswith("mod_editor"), alias.name)
 
-    def test_the_verifier_imports_only_the_standard_library(self) -> None:
-        """It also ships as a standalone tool, so it must need nothing else."""
+    #: The one non-stdlib module the verifier may name, and only deferred: the
+    #: audit tool its self-test gates on. Mirrors ``ps2_iso9660_verify``, whose
+    #: self-test imports the ISO writer purely to manufacture fixtures.
+    SIBLING = "nfl2k5_ps2_replacement_pack_audit"
+
+    def _imports(self):
+        """Every import in the file, as ``(module, at_module_scope)``."""
+
+        tree = ast.parse(self._source())
+        top = {id(node) for node in tree.body}
+        found = []
+        for node in ast.walk(tree):
+            at_top = id(node) in top
+            if isinstance(node, ast.ImportFrom):
+                found.append(((node.module or "").split(".")[0], at_top))
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    found.append((alias.name.split(".")[0], at_top))
+        return found
+
+    def test_module_scope_imports_only_the_standard_library(self) -> None:
+        """It ships as a standalone tool, so importing it must need nothing else.
+
+        This is the property ``test_shipped_tools_are_self_sufficient`` execs
+        for real under ``python -I``; asserting it here names the offender.
+        """
 
         allowed = {
             "argparse", "hashlib", "json", "os", "pathlib", "re", "stat",
             "struct", "sys", "zipfile", "zlib", "shutil", "tempfile",
             "__future__",
         }
-        tree = ast.parse(self._source())
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom):
-                self.assertIn((node.module or "").split(".")[0], allowed, node.module)
-            elif isinstance(node, ast.Import):
-                for alias in node.names:
-                    self.assertIn(alias.name.split(".")[0], allowed, alias.name)
+        for module, at_top in self._imports():
+            if at_top:
+                self.assertIn(module, allowed, module)
+
+    def test_the_only_sibling_import_is_the_audit_tool_and_it_is_deferred(self) -> None:
+        """M1 requires the audit tool to agree, so the self-test gates on it.
+
+        It stays inside ``selftest`` behind a ``sys.path`` guard: the installed
+        Windows runtime is an embeddable CPython whose ``._pth`` does not add
+        the script's own directory, so a module-scope sibling import would
+        make the tool unimportable there.
+        """
+
+        stdlib = {
+            "argparse", "hashlib", "json", "os", "pathlib", "re", "stat",
+            "struct", "sys", "zipfile", "zlib", "shutil", "tempfile",
+            "__future__",
+        }
+        outside = [module for module, _top in self._imports() if module not in stdlib]
+        self.assertEqual(outside, [self.SIBLING])
+        deferred = [
+            module for module, at_top in self._imports()
+            if module == self.SIBLING and not at_top
+        ]
+        self.assertEqual(deferred, [self.SIBLING])
+        self.assertIn("sys.path.insert", self._source())
 
     def test_the_two_modules_agree_on_the_shared_contract(self) -> None:
         """Independent copies, kept equal by test rather than by import."""

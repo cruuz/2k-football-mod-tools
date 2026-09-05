@@ -426,7 +426,20 @@ def verify(pack, manifest=None, project=None):
             resampled += 1
         checked += 1
 
-    # 4. provenance is the manifest's, key for key.
+    # 4. provenance is the manifest's, key for key -- and, where the pack
+    # carries its own copy of the manifest, that copy is the very file whose
+    # digest the receipt recorded. A pack whose bundled map had been swapped
+    # after export would otherwise still satisfy every other check.
+    bundled = root / MAPPING_MANIFEST
+    recorded = receipt.get("mapping_manifest")
+    if bundled.is_file() and isinstance(recorded, dict):
+        expected = recorded.get("sha256")
+        if isinstance(expected, str) and expected:
+            _require(
+                _sha256_bytes(bundled.read_bytes()) == expected,
+                "the manifest bundled with the pack is not the one the receipt "
+                f"recorded a digest for: {bundled}",
+            )
     _require(
         receipt_provenance == manifest_provenance,
         "the receipt's provenance is not the manifest's; this pack's filenames "
@@ -473,6 +486,7 @@ def verify(pack, manifest=None, project=None):
             "names_canonical_and_mapped": True,
             "png_headers_and_digests": True,
             "provenance_matches_manifest": True,
+            "bundled_manifest_matches_receipt": True,
             "no_unedited_target": project is not None,
         },
         "result": result,
@@ -575,19 +589,22 @@ def build_synthetic_pack(root: Path):
             "source_target": asset,
             "xbox_asset_id": asset,
         })
+    _write_json(pack / MAPPING_MANIFEST, manifest)
     receipt = {
         "schema": RECEIPT_SCHEMA,
         "serial": SERIAL,
         "exported": "2026-01-01T00:00:00Z",
         "replacements_directory": REPLACEMENTS_POSIX,
-        "mapping_manifest": {"file": MAPPING_MANIFEST, "sha256": "0" * 64},
+        "mapping_manifest": {
+            "file": MAPPING_MANIFEST,
+            "sha256": _sha256_bytes((pack / MAPPING_MANIFEST).read_bytes()),
+        },
         "counts": {"files": 2, "resampled": 0, "skipped": 0, "targets": 1},
         "files": rows,
         "skipped": [],
         "provenance": provenance,
     }
     _write_json(pack / RECEIPT_NAME, receipt)
-    _write_json(pack / MAPPING_MANIFEST, manifest)
     return pack, manifest_path, project_path
 
 
@@ -713,8 +730,18 @@ def selftest(tmp=None) -> int:
                  "provenance that is not the manifest's")
         rejected("stray_dir", add_a_stray_directory,
                  "a directory outside the replacements folder")
+        def swap_the_bundled_manifest(case_pack, _manifest, _project):
+            document = json.loads(
+                (case_pack / MAPPING_MANIFEST).read_text(encoding="utf-8"))
+            document["entries"].append(
+                {"pcsx2_png": "dead-beef-00006269.png",
+                 "xbox_asset_id": "p8:1:smuggled"})
+            _write_json(case_pack / MAPPING_MANIFEST, document)
+
         rejected("uncanonical", uncanonical_name,
                  "a filename that is not a canonical PCSX2 hash name")
+        rejected("swapped_map", swap_the_bundled_manifest,
+                 "a bundled manifest swapped after export")
     finally:
         if tmp is None:
             shutil.rmtree(room, ignore_errors=True)
@@ -723,7 +750,8 @@ def selftest(tmp=None) -> int:
         "NFL2K5_PS2_REPLACEMENT_PACK_VERIFY_SELFTEST_PASS decoder=independent "
         "accepts=receipt-exact rejects=mutated-byte,extra-file,unedited-target,"
         "unmapped-name,missing-file,forged-provenance,stray-directory,"
-        "uncanonical-name downgrades=no-project audit=xbox_mapping_ready"
+        "uncanonical-name,swapped-bundled-map downgrades=no-project "
+        "audit=xbox_mapping_ready"
     )
     return 0
 
