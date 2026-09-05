@@ -83,8 +83,7 @@ class ModBuildTests(unittest.TestCase):
             self.assertFalse(mod_build.availability()["scorebug"])
 
 
-if __name__ == "__main__":
-    unittest.main()
+
 
 
 class PresetTests(unittest.TestCase):
@@ -176,11 +175,11 @@ class PresetTests(unittest.TestCase):
         real_inspect = mod_build.inspect
         pretend_image = lambda _path: True   # noqa: E731 - only the plan's image gate
 
-        def inspect_for_real(target):
+        def inspect_for_real(target, **options):
             # inspect() reads the real container; only the plan gate is pretending
             mod_build.tt.is_disc_image = real_is_image
             try:
-                return real_inspect(target)
+                return real_inspect(target, **options)
             finally:
                 mod_build.tt.is_disc_image = pretend_image
 
@@ -220,3 +219,7 @@ class PresetTests(unittest.TestCase):
             mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t"), "nope")
         plan = mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t", name="mine"), "softdrink_basic")
         self.assertEqual(plan.name, "mine")
+
+
+if __name__ == "__main__":
+    unittest.main()

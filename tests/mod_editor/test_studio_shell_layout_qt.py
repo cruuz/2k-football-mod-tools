@@ -147,8 +147,7 @@ class StudioShellLayoutTests(unittest.TestCase):
         self.assertFalse(panel.franchise_panel.edits)
 
 
-if __name__ == "__main__":
-    unittest.main()
+
 
 
 class BuildShareActionBarTests(StudioShellLayoutTests):
@@ -179,3 +178,7 @@ class BuildShareActionBarTests(StudioShellLayoutTests):
                 self.assertEqual(getattr(facade._last_build, "output_xiso", None), image)
             # a missing file must not crash the window
             self.window._on_build_tab_built({"target": str(Path(tmp) / "gone.iso")})
+
+
+if __name__ == "__main__":
+    unittest.main()
