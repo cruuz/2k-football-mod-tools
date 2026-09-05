@@ -102,7 +102,7 @@ class RetailTests(unittest.TestCase):
         prepared, _ = modern.apply(edge.apply(source)[0])
         special, _ = rows.apply(pools.apply(prepared)[0])
         self.assertEqual(locks.read_any(special)["stride"], 11)
-        self.assertTrue(locks.read_any(special)["special"])
+        self.assertEqual(locks.read_any(special)["layout"], "special")
         # The current bench code still returns to the literal recognized by
         # PATCHED_COMPACT, carrying the encoded chain in EAX after pop eax.
         call_va, return_va = 0x24445F, 0x244464

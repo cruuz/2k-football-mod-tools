@@ -229,6 +229,8 @@ class CaveReferenceTests(unittest.TestCase):
     def test_depth_locks_use_only_in_place_routine_rewrites(self) -> None:
         from mod_editor.core import nfl2k5_depth_locks as locks
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        # the regenerated manifest records the lock rewrites as their own owner; exclude them so the
+        # check below only sees reservations that belong to OTHER owners (rows' chain test)
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
         self.assertEqual(locks.CAVES, ())
         self.assertEqual(locks.RUNTIME_GLOBALS, ())
@@ -238,7 +240,7 @@ class CaveReferenceTests(unittest.TestCase):
             # The only shared reservation is rows' two-byte chain test. It
             # remains unchanged; no byte belonging to another owner is used.
             for va in range(site.va, site.va + len(site.before)):
-                if manifest.overlaps(va, va + 1):
+                if manifest.overlaps(va, va + 1, exclude_owner="nfl2k5_depth_locks"):
                     self.assertEqual(self.patched[va - BASE], self.before_depth_locks[va - BASE], hex(va))
 
 
