@@ -1,8 +1,10 @@
 # PS2 Phase 2 — audio: what is on the disc and what a writer would cost
 
 **Target:** ESPN NFL 2K5, PS2, stock `SLUS-20919`.
-**Status:** research only. Nothing here is implemented; no writer, no registry row.
-**Purpose:** let a later agent implement an `offline-writer-proved` audio row
+**Status:** researched in §1–§11, then built — see **§12**. A patcher, an
+independent verifier, a committed 844-slot catalogue and a real-disc trial
+exist; the registry row does not yet, and §12.4 says what is still in its way.
+**Purpose:** let a later agent finish the `offline-writer-proved` audio row
 without re-deriving any of it.
 
 [`PS2_PORT_HANDOFF.md`](PS2_PORT_HANDOFF.md)'s Phase-2 table budgets audio at
@@ -623,7 +625,139 @@ Secondary, none blocking:
 
 ---
 
-## 12. Reproducing this
+## 12. Implementation — what was built, and what it proves
+
+Sections 1–11 are the research, written before any of this existed. This
+section records what was then built against it, on branch `p2-audio`. The
+findings above all held; where the build departed from §9's plan, it is called
+out below.
+
+### 12.1 What was built
+
+| what | path | size | notes |
+|---|---|---:|---|
+| Codec | `tools/spu_adpcm.py` | 455 | `decode`, `encode`, `encode_to_slot`, `validate_payload`. Coefficients and flag bits transcribed from `pcsx2/SPU2/Mixer.cpp`, per §4. Exhaustive 5 × 13 search by default; `shift_candidates` narrows it. |
+| Catalogue builder | `tools/nfl2k5_ps2_audo_target_catalog.py` | 449 | Walks the disc, emits the target list. |
+| The catalogue | `reports/gameplay_tuning/nfl2k5_ps2_audo_catalog.v1.json` | 844 slots | **Committed, not gitignored** — see 12.4. |
+| Patcher | `tools/nfl2k5_ps2_audo_patch.py` | 596 | WAV in, new ISO out. `--replace SLOT=WAV`, `--recipe`, `--dry-run`, `--selftest`. |
+| Verifier | `tools/nfl2k5_ps2_audo_verify.py` | 541 | §9.3's checks, importing neither the patcher nor the writer's ISO reader. |
+| Validators | `tools/validate_nfl2k5_ps2_audo.{sh,bat}` | 27 / 41 | Four `--selftest` runs; no game data required. |
+| Tests | `tests/mod_editor/test_nfl2k5_ps2_audo.py` | 335 | 21 cases against a synthetic `/VC_20919` disc. |
+
+The catalogue's totals reproduce §1, §3, §7 and §11 exactly: **844 slots**
+across **691** outer entries, **8,866,224** payload bytes, **806 mono / 38
+stereo**, **161 distinct names** of which only **154 are disc-unique**, and the
+eight sample rates of §3 with the same counts.
+
+Two of those numbers are pinned rather than merely reported. The builder holds
+`EXPECTED_SLOT_COUNT` and `EXPECTED_UNIQUE_NAME_COUNT` and prints `DIVERGES` if
+a disc disagrees; `test_the_committed_catalogue_is_well_formed` turns that into
+an assertion, and also enforces the retail-free rule — the catalogue may not
+carry a `payload_sha256`, `decoded_sha256` or `pcm_sha256` anywhere.
+
+### 12.2 The real-disc trial
+
+One slot replaced on a copy of the user's own disc. `menu-error_01` was picked
+because it is mono, short, and one of the 154 disc-unique names — so a later
+runtime witness can attribute what it hears (§11).
+
+| | |
+|---|---|
+| slot | `nfl2k5ps2.audio.audo.o0009.c0038` — `menu-error_01`, outer 9 / chunk 38 |
+| declared | mono, 16,000 Hz, `video_bytes` = `per_channel_bytes` = **6,544** (409 blocks, 11,452 frames) |
+| pack / offset | `/VC_20919/0.` at pack offset 7,179,488 → **ISO byte 37,160,160** |
+| written | a generated 720/1440 Hz chirp: 8,000 frames → **286 blocks**, then **123 silent filler blocks** to fill the slot exactly |
+| image | source and output both **4,665,081,856** bytes |
+| audio verifier | **pass** — 6,080 bytes changed, **0 outside the declared span**, 78/78 tree entries identical, boot ELF hash unchanged |
+| `ps2_iso9660_verify.py` | **pass** on the writer's own declared ranges |
+| cost | patch **166.9 s**, verify **34.1 s** |
+
+Receipt: `reports/gameplay_tuning/nfl2k5_ps2_audo_trial.v1.json` — names,
+offsets and digests only. Neither ISO is committed and no decoded audio is.
+
+Two details worth keeping. **6,080 changed, not 6,544**: no 16-byte block
+survives (0 of 409 are byte-identical to retail), but the filler blocks are
+almost all zero and 464 of those zeros land where retail already had a zero.
+And **the terminator sits where §8 said it should** — `LOOP_END | LOOP` on
+block 285, the last real block, so the SPU stops before the filler; the
+physical last block carries it too, matching the retail convention §4 found on
+844/844 chunks.
+
+### 12.3 §9's plan versus what exists
+
+| §9.1 planned | built | why |
+|---|---|---|
+| `tools/nfl2k5_ps2_audo_capacity_audit.py` → `reports/assets/…_import_capacity.json`, **gitignored**, only its SHA-256 shipped | `tools/nfl2k5_ps2_audo_target_catalog.py` → `reports/gameplay_tuning/…_catalog.v1.json`, **committed** | The catalogue records names, offsets, sizes and descriptor fields and deliberately records **no payload hash**, so it is retail-free and can ship. That removes the pin-and-regenerate dance the Xbox capacity report needs. |
+| `mod_editor/core/nfl2k5_ps2_audo_fixed_slots.py` + `mod_editor/core/ps2_audio_write_service.py` | **not built** | The lane is CLI-only so far. This is the main gap; see 12.4. |
+| `tools/nfl2k5_ps2_audio_verify.py` | `tools/nfl2k5_ps2_audo_verify.py` | Named for `AUDO` specifically, since `AUSB` will want its own. |
+
+Nothing in §1–§11 was contradicted by the build or the trial.
+
+### 12.4 What remains before the row can claim `offline-writer-proved`
+
+1. **The ISO writer is not shipped.** `tools/nfl2k5_ps2_audo_patch.py` writes
+   through `tools/ps2_iso9660_writer.py`, which is still shelved and absent
+   from `packaging/release-allowlist.txt`; a release staged today would ship a
+   patcher whose dependency is missing. Allowlisting it *first* requires the
+   `Path.write_text` at `ps2_iso9660_writer.py:1343` to become a byte write, or
+   `test_generated_artifacts_are_lf` fails the moment the module counts as
+   shipped code. `tools/ps2_iso9660_verify.py` goes with it. Both are shared
+   with the stadium and text lanes, so whichever lane lands first pays for it
+   and the others must not append a duplicate entry.
+2. **No Qt-free service, so the studio cannot do this.** §9.1's
+   `nfl2k5_ps2_audo_fixed_slots.py` and `ps2_audio_write_service.py` do not
+   exist; the capability is reachable only from the command line.
+3. **No registry row.** `nfl2k5ps2.audio.audo_exact_slot_replace` with
+   `surface: "audio"`, `backend.operation: "write"`, and `SURFACE_GAMES["audio"]`
+   widened to include `nfl2k5_ps2` — the two-sided atomic change of §9.4, with
+   every count pin moving in the same commit. Template: `93e1f6a`.
+
+The offline evidence itself is complete: a real disc, an exact slot, two
+independent verifiers, and a receipt.
+
+### 12.5 What remains for `runtime-proved`
+
+`runtime.status` should stay `not-tested` until someone hears the replaced
+sound in PenguinScreen2. The obstacle is not the writer, it is **selector
+ownership**: 690 of 844 chunks share a name with another chunk, so for most
+slots nothing offline establishes which in-game event plays them (§11). Only
+**154 of 844** have a disc-unique name, which is why the trial deliberately
+spent itself on one of them. A witness is: boot the patched image, trigger a
+menu error, hear the chirp. That is ½–1 d plus rig time, and it proves
+ownership for that one slot — not for the other 843.
+
+### 12.6 `AUSB` is the next row, not this one
+
+The 17 stream banks are 2.07 GiB against `AUDO`'s 8.5 MiB, 53,570 ranges
+against 844 slots, two banks straddle a 1 GiB pack seam so writes become
+transactional across pack files, there is no `LOOP_END` convention to lean on,
+and the stereo layout is a working model rather than a proof (§11). None of it
+blocks the `AUDO` row. Estimate unchanged: **+4–6 d**.
+
+### 12.7 `replace_spans` — §9.2's recommendation, now with a measurement
+
+§9.2 flagged that `ps2_iso9660_writer.replace_files` is whole-file and
+recommended adding a bounded `replace_spans`. The trial priced it:
+
+| | |
+|---|---|
+| bytes the user asked to change | **6,544** (6,080 actually differ) |
+| bytes the writer declares in `declared_ranges` | **1,073,741,832** — the whole `/VC_20919/0.` extent, plus the 8-byte directory-record length field |
+| ratio | **≈164,000×** the slot the user asked for — ≈176,000× the bytes that actually differ |
+| cost | a 1 GiB pack read into a temp file, a 1 GiB write, then a 4.665 GiB image copy: **166.9 s** for one sound |
+| what recovers the tight claim | the audio verifier streams both images and proves only 6,080 bytes differ — **another 34.1 s** |
+
+So today the tight claim is made *after* the fact, by the verifier, exactly as
+option (a) predicted. `replace_spans(source, destination, {iso_path: [(offset,
+bytes)]})` would let the writer declare 6,544 bytes up front and copy the image
+once. **Recommendation stands: option (b), ~½ day, strictly additive**, and it
+is a shared Phase-2 dependency — stadiums, text and playbooks all pay the same
+1 GiB toll — rather than an audio cost. It is not on the critical path for
+`offline-writer-proved`; item 1 of 12.4 is.
+
+---
+
+## 13. Reproducing this
 
 The probes live under the gitignored `docs/research/audio/` in this worktree
 (`disc.py` virtual-offset reader, `spu.py` decoder, `survey2.py`,
