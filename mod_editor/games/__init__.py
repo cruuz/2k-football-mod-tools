@@ -175,6 +175,11 @@ def _import_package(directory: Path, root: Path) -> Any:
     # A foreign root (tests use one): load the package from its path without
     # touching the real ``mod_editor.games`` namespace.
     name = f"_mod_editor_games_probe.{directory.name}"
+    # Two roots may carry a package of the same name (a test scaffolds into
+    # several scratch roots); a cached submodule from the previous root would
+    # otherwise satisfy this package's relative imports with the wrong file.
+    for cached in [key for key in sys.modules if key == name or key.startswith(name + ".")]:
+        del sys.modules[cached]
     spec = importlib.util.spec_from_file_location(
         name, directory / "__init__.py", submodule_search_locations=[str(directory)]
     )

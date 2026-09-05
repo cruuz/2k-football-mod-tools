@@ -16,11 +16,30 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 import textwrap
 
 from mod_editor.games import contract, registry_merge
 
 SHA = "0" * 64
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def cli_command(*arguments: str) -> list[str]:
+    """``python -m mod_editor.games <arguments>`` without relying on PYTHONPATH.
+
+    The installed Windows runtime is an embeddable CPython whose ``._pth``
+    ignores PYTHONPATH, so a subprocess test that depended on it passed
+    everywhere except where users actually run the product.  Inserting the
+    repository root from inside the child is what works on every runtime.
+    """
+
+    bootstrap = (
+        "import sys; sys.path.insert(0, sys.argv[1]); "
+        "from mod_editor.games.__main__ import main; "
+        "sys.exit(main(sys.argv[2:]))"
+    )
+    return [sys.executable, "-c", bootstrap, str(REPO_ROOT), *arguments]
 
 OK_GAME_SOURCE = textwrap.dedent(
     '''
@@ -152,6 +171,8 @@ def incompatible_reason(root: Path) -> str:
 
 __all__ = [
     "INCOMPATIBLE_CONTRACT",
+    "REPO_ROOT",
+    "cli_command",
     "OK_GAME_SOURCE",
     "SHA",
     "incompatible_reason",

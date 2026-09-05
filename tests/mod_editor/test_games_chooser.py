@@ -34,7 +34,7 @@ try:
 except ImportError:  # PyQt5 is not installed here
     QApplication = None  # type: ignore[assignment]
 
-from games_fakes import write_fake_root  # noqa: E402
+from games_fakes import cli_command, write_fake_root  # noqa: E402
 
 
 def _fake_root() -> Path:
@@ -84,10 +84,9 @@ class ChooserModelTests(unittest.TestCase):
             chooser.open_window(self.report, "oldgame", "main")
 
     def test_the_command_line_lists_and_describes(self) -> None:
-        env = {**os.environ, "PYTHONPATH": str(ROOT)}
         def run(*verbs):
-            return subprocess.run([sys.executable, "-m", "mod_editor.games", "--games-root", str(self.root), *verbs],
-                                  cwd=str(ROOT), capture_output=True, text=True, timeout=300, env=env)
+            return subprocess.run(cli_command("--games-root", str(self.root), *verbs),
+                                  cwd=str(ROOT), capture_output=True, text=True, timeout=300)
 
         listing = run()
         self.assertEqual(listing.returncode, 0, listing.stderr)

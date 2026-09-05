@@ -29,7 +29,7 @@ for _candidate in (ROOT, ROOT / "tests" / "mod_editor"):
 
 import mod_editor.games as games  # noqa: E402
 from mod_editor.games import chooser, conformance, contract  # noqa: E402
-from games_fakes import incompatible_reason, write_fake_root  # noqa: E402
+from games_fakes import cli_command, incompatible_reason, write_fake_root  # noqa: E402
 
 
 class EveryHostedGameConformsTests(unittest.TestCase):
@@ -57,9 +57,8 @@ class EveryHostedGameConformsTests(unittest.TestCase):
 
     def test_the_command_line_entry_agrees(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "-m", "mod_editor.games", "conformance", "--static-only"],
+            cli_command("conformance", "--static-only"),
             cwd=str(ROOT), capture_output=True, text=True, timeout=600,
-            env={**os.environ, "PYTHONPATH": str(ROOT)},
         )
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
         self.assertIn("conformance checks passed", completed.stdout)
@@ -98,9 +97,8 @@ class FakeModulesTests(unittest.TestCase):
 
     def test_the_command_line_reports_the_refusal_and_fails(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "-m", "mod_editor.games", "--games-root", str(self.root), "conformance", "--static-only"],
+            cli_command("--games-root", str(self.root), "conformance", "--static-only"),
             cwd=str(ROOT), capture_output=True, text=True, timeout=600,
-            env={**os.environ, "PYTHONPATH": str(ROOT)},
         )
         self.assertEqual(completed.returncode, 1, completed.stdout + completed.stderr)
         self.assertIn("REFUSED oldgame: " + incompatible_reason(self.root), completed.stdout)

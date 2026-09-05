@@ -19,11 +19,13 @@ import unittest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+for _candidate in (ROOT, ROOT / "tests" / "mod_editor"):
+    if str(_candidate) not in sys.path:
+        sys.path.insert(0, str(_candidate))
 
 import mod_editor.games as games  # noqa: E402
 from mod_editor.games import conformance, contract, fragments, registry_merge, scaffold  # noqa: E402
+from games_fakes import cli_command  # noqa: E402
 
 GAME_ID = "demo_ps2"
 
@@ -95,10 +97,9 @@ class ScaffoldTests(unittest.TestCase):
     def test_the_command_line_scaffolds_too(self) -> None:
         with tempfile.TemporaryDirectory(prefix="scaffold-cli-") as other:
             completed = subprocess.run(
-                [sys.executable, "-m", "mod_editor.games", "new", "madden08_ps2", "--title", "Madden NFL 08 (USA, PlayStation 2)",
-                 "--platform", "PlayStation 2", "--serial", "SLUS-21638", "--repo-root", other],
+                cli_command("new", "madden08_ps2", "--title", "Madden NFL 08 (USA, PlayStation 2)",
+                            "--platform", "PlayStation 2", "--serial", "SLUS-21638", "--repo-root", other),
                 cwd=str(ROOT), capture_output=True, text=True, timeout=300,
-                env={**os.environ, "PYTHONPATH": str(ROOT)},
             )
             self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
             self.assertIn("SCAFFOLDED game=madden08_ps2 files=10", completed.stdout)
@@ -140,6 +141,7 @@ class FragmentsTests(unittest.TestCase):
 
         (self.package / "registry.fragment.json").write_bytes(b'{"schema": "wrong"}\n')
         (self.package / "allowlist.fragment.txt").write_text("# header\nmod_editor/games/demo_ps2/game.json\n", encoding="utf-8", newline="\n")
+        (self.package / "pins.json").write_bytes(b'{"schema": "vc_game_module_pins/v1", "game_id": "demo_ps2"}\n')
         problems = fragments.check(GAME_ID, repo_root=self.repo, games_root=self.games_root)
         self.assertEqual(sorted(problems), sorted([
             "registry.fragment.json differs from the canonical files",
@@ -156,8 +158,8 @@ class FragmentsTests(unittest.TestCase):
     def test_the_ps2_module_is_in_step_with_the_canonical_files(self) -> None:
         self.assertEqual(fragments.check("nfl2k5_ps2"), [])
         completed = subprocess.run(
-            [sys.executable, "-m", "mod_editor.games", "fragments", "nfl2k5_ps2", "--check"],
-            cwd=str(ROOT), capture_output=True, text=True, timeout=300, env={**os.environ, "PYTHONPATH": str(ROOT)},
+            cli_command("fragments", "nfl2k5_ps2", "--check"),
+            cwd=str(ROOT), capture_output=True, text=True, timeout=300,
         )
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
         self.assertIn("FRAGMENTS_OK game=nfl2k5_ps2", completed.stdout)

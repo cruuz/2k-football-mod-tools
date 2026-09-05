@@ -1,16 +1,16 @@
 {
   "contract_version": "1.0",
   "files": {
-    "mod_editor/games/__init__.py": "1aaa01fa73e4077590f4ebe2ce3991d515fe97b2a8a7d04690ccd5a6506cbac1",
+    "mod_editor/games/__init__.py": "fba15a62e10e6cb7d857b29de7acce81c6ee2f9194d83abc9c31d41bd6a7a9ad",
     "mod_editor/games/chooser.py": "1ef94bfcc05fc4899c89320919140c7f86e71bdb114869cd1c5479e0eb939178",
     "mod_editor/games/chooser_qt.py": "37513b9b63ce08c3e559bd7f4fb0da3fde5ac4e0d20c85fdd138478e6887badf",
     "mod_editor/games/conformance.py": "4ee6ee21ab55debcceed714453b736a4bade9d717afd562e544bf99b6fb61bf0",
     "mod_editor/games/contract.py": "875a135b95b5c047f23ef3ba684770c4da726df2e8fc803fc6ebfe110b71c2ee",
     "mod_editor/games/pins.py": "75de2153561ca7184516e9360d2df805fe8261c95cf1ae61845e9d46575e7647",
     "mod_editor/games/registry_merge.py": "4407313c47a62f25ec2a651f2b0045fde47052b5abfac813135ebc5c6ef0facf",
-    "tests/mod_editor/games_fakes.py": "8147b5b2301def5f70140ab84f8577158a15a62ccd1679a7c1ac70fd9fdacab8",
-    "tests/mod_editor/test_games_chooser.py": "f4346c021a4a6c7831f0d5bacdceb3a6e2b5687bff6b124cb2e8ae8eae971df8",
-    "tests/mod_editor/test_games_conformance.py": "55609e56da007226893f9863aae4c27bacdf11076e3be40d3538f1955324b5b5",
+    "tests/mod_editor/games_fakes.py": "597a42592730441734915066445b9eed5efe66effdc3e88c167425940c4ec9a9",
+    "tests/mod_editor/test_games_chooser.py": "5606ba5eb4613bdc2b5797680c60a4858c5401d1acc0a91a1f8ed5459555c030",
+    "tests/mod_editor/test_games_conformance.py": "98c2a706277d873a14e5f0be74746993577b267750f576fd3f70474a3caf380d",
     "tests/mod_editor/test_games_contract.py": "443b8210a6ebfdcac29e0730d2072ce973cc2450389e49e8a2a0b463a01bb7c9",
     "tests/mod_editor/test_games_contract_frozen.py": "c32deb7ed8faf546515dbbddfb11db8697791c86b43dad0779dbff4d69a4dc98"
   },
