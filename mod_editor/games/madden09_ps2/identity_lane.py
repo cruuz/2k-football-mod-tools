@@ -1229,6 +1229,12 @@ def verify_build(source: Path, destination: Path,
         members = sorted({edit.get("member") for edit in edits
                           if str(edit["iso_path"]) == iso_path},
                          key=lambda item: (item is not None, item))
+        # Opened once per file, not once per member: a user who renames all 32
+        # teams edits 32 members of one 2.5 MB container.
+        source_container = destination_container = None
+        if any(member is not None for member in members):
+            source_container = containers.load_container(source_image, name)
+            destination_container = containers.load_container(destination_image, name)
         for member in members:
             if member is None:
                 if name not in source_files or name not in destination_files:
@@ -1242,9 +1248,8 @@ def verify_build(source: Path, destination: Path,
                 what = iso_path
             else:
                 try:
-                    before = containers.load_container(source_image, name).member(int(member))
-                    after = containers.load_container(destination_image, name).member(
-                        int(member))
+                    before = source_container.member(int(member))
+                    after = destination_container.member(int(member))
                 except ea_terf.TerfError as exc:
                     raise IdentityError(
                         f"member {member} of {iso_path} could not be read back out of the "
