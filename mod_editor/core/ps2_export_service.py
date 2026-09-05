@@ -84,7 +84,7 @@ import shutil
 import stat
 import struct
 import tempfile
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 from uuid import uuid4
 import zipfile
 
