@@ -58,6 +58,9 @@ class CaveReferenceTests(unittest.TestCase):
         cls.stack = cls.patched
         from mod_editor.core import nfl2k5_practice_squad as ps
         cls.patched, _ps_receipt = ps.apply(cls.stack)
+        from mod_editor.core import nfl2k5_depth_locks as locks
+        cls.before_depth_locks = cls.patched
+        cls.patched, _ = locks.apply(cls.patched)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -216,6 +219,21 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual(evidence["manifest_overlaps"], [])
         self.assertEqual(XbeImage(self.patched).read(storage.SECTION_VA, storage.RETAIL_SIZE),
                          image.read(storage.SECTION_VA, storage.RETAIL_SIZE))
+
+    def test_depth_locks_use_only_in_place_routine_rewrites(self) -> None:
+        from mod_editor.core import nfl2k5_depth_locks as locks
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        self.assertEqual(locks.CAVES, ())
+        self.assertEqual(locks.RUNTIME_GLOBALS, ())
+        self.assertEqual(locks.status(self.before_depth_locks), "retail")
+        self.assertEqual(locks.status(self.patched), "applied")
+        for site in locks.sites(13):
+            # The only shared reservation is rows' two-byte chain test. It
+            # remains unchanged; no byte belonging to another owner is used.
+            for va in range(site.va, site.va + len(site.before)):
+                if manifest.overlaps(va, va + 1):
+                    self.assertEqual(self.patched[va - BASE], self.before_depth_locks[va - BASE], hex(va))
 
 
 if __name__ == "__main__":

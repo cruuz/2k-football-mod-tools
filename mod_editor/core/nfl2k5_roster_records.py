@@ -805,6 +805,20 @@ class PlayerRecord:
     def copy(self) -> "PlayerRecord":
         return PlayerRecord(self.values, self.scheme)
 
+    @property
+    def depth_locks(self) -> dict[str, bool]:
+        """Independent rank/side/KR1/KR2/PR locks; +0x53's star is separate."""
+        from .nfl2k5_depth_locks import LOCK_BITS
+        return {role: bool(self.values["unknown_52"] & bit) for role, bit in LOCK_BITS.items()}
+
+    def set_depth_lock(self, role: str, enabled: bool = True) -> None:
+        """Raw record setter. Use the document API to validate team conflicts."""
+        from .nfl2k5_depth_locks import lock_bit
+        bit = lock_bit(role)
+        _require(isinstance(enabled, bool), "enabled must be a boolean")
+        value = self.values["unknown_52"]
+        self.values["unknown_52"] = value | bit if enabled else value & ~bit
+
     # ------------------------------------------------------------------ raw field access
     def get(self, name: str) -> int:
         if name in COMPOSITE_FIELDS or name in VIRTUAL_FIELDS:
@@ -1552,6 +1566,67 @@ class RosterDocument:
         team.slots[slot], team.slots[target] = team.slots[target], team.slots[slot]
         return True
 
+    def set_depth_lock(self, player: Player, role: str, enabled: bool = True,
+                       *, team_index: int | None = None) -> None:
+        """Lock the current chain row or claim a returner role on this team.
+
+        Conflicting chain locks refuse before mutation. Returner selection
+        transfers that role's bit from its previous owner. The next patched
+        in-game compaction resolves the returner bit to a roster-slot index.
+        Pointer-list arrows alone do not change a rank/side assignment.
+        """
+        from .nfl2k5_depth_locks import lock_bit
+        lock_bit(role)
+        _require(isinstance(enabled, bool), "enabled must be a boolean")
+        _require(self.by_offset.get(player.offset) is player, "player belongs to another document")
+        if not enabled:
+            player.record.set_depth_lock(role, False)
+            return
+        if team_index is None:
+            team_index = self.club_of(player)
+        _require(team_index is not None, "select a rostered player and team before locking")
+        assert team_index is not None
+        team = self._team_for_membership(team_index)
+        _require(player.offset in team.slots, "player is not on the selected team")
+        peers = self.team_players(team_index)
+        if role in ("rank", "side"):
+            field = "depth_" + role
+            row = player.record.values[field]
+            conflicts = [p for p in peers if p is not player and row < 7
+                         and p.record.position_code == player.record.position_code
+                         and p.record.values[field] == row and p.record.depth_locks[role]]
+            _require(not conflicts, f"{role} row {row} already has a locked player")
+        else:
+            _require(player.record.position_code in (3, 4, 5, 6, 7, 8),
+                     "returner locks require WR, CB, FS, SS, HB or FB")
+            for peer in peers:
+                if peer is not player:
+                    peer.record.set_depth_lock(role, False)
+        player.record.set_depth_lock(role, True)
+
+    def depth_lock_conflicts(self, team_index: int) -> list[dict[str, Any]]:
+        """Diagnose imported duplicate claims without changing any record.
+
+        Rank 7 is overflow and may have multiple owners. Returner claims are
+        team-wide; rank/side claims are scoped to a player's position pool.
+        """
+        groups: dict[tuple, list[Player]] = {}
+        for player in self.team_players(team_index):
+            for role, enabled in player.record.depth_locks.items():
+                if not enabled:
+                    continue
+                key: tuple = (role,)
+                if role in ("rank", "side"):
+                    row = player.record.values["depth_" + role]
+                    if row == 7:
+                        continue
+                    key += (player.record.position_code, row)
+                groups.setdefault(key, []).append(player)
+        return [{"role": key[0], "position": key[1] if len(key) > 1 else None,
+                 "row": key[2] if len(key) > 1 else None,
+                 "players": [p.offset for p in players]}
+                for key, players in groups.items() if len(players) > 1]
+
     # ------------------------------------------------------------------ membership
     def team_of(self, player: Player) -> int | None:
         """The first team this player is listed on (a club before an all-star side), or None."""
@@ -1599,6 +1674,8 @@ class RosterDocument:
         rank = min(len(same), DEPTH_ROW_CAP)
         side = min(DEPTH_SIDE_FOR_RANK.get(rank, rank), DEPTH_ROW_CAP)
         before = (player.record.values["depth_rank"], player.record.values["depth_side"])
+        # Assignments belong to the previous roster/pool, not the destination.
+        player.record.values["unknown_52"] &= ~0x1F
         player.record.values["depth_rank"] = rank
         player.record.values["depth_side"] = side
         return {"depth_rank": (before[0], rank), "depth_side": (before[1], side)}
@@ -1608,6 +1685,7 @@ class RosterDocument:
         slot = team.slots.index(player.offset)
         del team.slots[slot]
         player.teams.remove(team_index)
+        player.record.values["unknown_52"] &= ~0x1F
         return slot
 
     def _attach(self, player: Player, team_index: int, slot: int | None) -> int:
@@ -1750,6 +1828,7 @@ class RosterDocument:
 
         return {"teams": {team.index: list(team.slots) for team in self.teams},
                 "free_agents": list(self.free_agents),
+                "depth_locks": {p.offset: p.record.values["unknown_52"] for p in self.players},
                 "depth": {p.offset: (p.record.values["depth_rank"], p.record.values["depth_side"])
                           for p in self.players}}
 
@@ -1760,6 +1839,8 @@ class RosterDocument:
         for offset, (rank, side) in snapshot["depth"].items():
             record = self.by_offset[offset].record
             record.values["depth_rank"], record.values["depth_side"] = rank, side
+        for offset, value in snapshot.get("depth_locks", {}).items():
+            self.by_offset[offset].record.values["unknown_52"] = value
         self._reindex_membership()
 
     def _reindex_membership(self) -> None:
