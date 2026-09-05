@@ -726,13 +726,22 @@ the table entirely. Revised order and verdicts:
 | 3 | **Colors** (facemask/turtleneck words) | 634 `Unif` identical | **port** — same-size in-place words, ideal fixed-allocation case | `p2-colors-rosters` |
 | 4 | **Disc rosters** | 76 `ROST` identical; `tools/nfl_roster.py` already parses PS2 ROST (save editor) | **port** — reuse the save writer's fixed-allocation field edits | `p2-colors-rosters` |
 | 5 | **Stadiums / geometry** | table strides known; **vertex payload layout unknown**; 312/4,139 same-size | **new research** first, port only if the lanes match | `p2-stadiums` (told) |
-| 6 | **Audio** | 844 `AUDO` + 17 `AUSB`; no SPU-ADPCM code anywhere in-repo | **blocked** pending codec research | `p2-audio` (research) |
+| 6 | **Audio** | 844 `AUDO` (identical 0x20 wrapper + 8-word descriptor; PS2 resolves two Xbox-unnamed fields: word0 = channels, word3 bit 0x40 = stereo); `AUSB` field-for-field Xbox layout, 53,571 ranges exactly; codec **confirmed** — 0 invalid of 554,139 blocks; an independent encoder reproduces `menu-back_01` **byte-for-byte** | **PORT, founded: 6–8 d for the AUDO row** (+4–6 d AUSB streaming). Exact-slot fitting is *easier* than Xbox — SPU-ADPCM self-terminates, so short input + silent filler hits the byte count with no metadata rewrite. Unknown that caps it at `offline-writer-proved`: runtime selector ownership — only **154/844** slots have a disc-unique name | `p2-audio` (implementing) |
 
 `SURFACE_GAMES` staging for these (from the triage): `colors` → `players_rosters`
 → `scripts_config` → `menus` → `models_shap_scne` → `audio`; all widen to
 `GAMES`; no schema edits needed. The gitignored `.tsv.gz` inventories may not be
 cited as registry `evidence` — cite the committed `reports/gameplay_tuning/`
 artifacts.
+
+### Shared writer improvement surfaced by audio research
+
+`ps2_iso9660_writer.replace_files` is whole-file: patching one audio slot costs
+a full 1 GiB read/write and that much RAM. Add an additive `replace_spans`
+(same declared-range discipline, byte ranges instead of whole files; ~½ day)
+and teach the verifier its receipt. Stadiums, text, colors, rosters and
+playbooks all want it. **Deferred until the current agent wave lands** so no
+one edits the writer under four builders that call it.
 
 ### Order and gate
 
