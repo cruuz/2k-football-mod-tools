@@ -435,3 +435,188 @@ A new game is **one new directory and its tests**: `__init__.py` (identity, lane
 `pins.json`, tools and validators under its own names, synthetic fixtures, and test files CI
 globs. **Zero upstream edits, zero pins moved, no version bump of the host** — against today's
 11–17 upstream files per full-cost commit, eight times for one game.
+
+## 6. How SOFTDRINKTV maintains it
+
+### 6.1 Ownership
+
+| the core team owns | a game team owns |
+|---|---|
+| `mod_editor/games/contract.py` (the contract and its version), `__init__.py` (discovery), `registry_merge.py`, `conformance.py`, `chooser.py`, `chooser_qt.py`, `__main__.py` | `mod_editor/games/<game>/**` — identity, lanes, windows, manifest, fragments, pins |
+| the three core tests: `test_games_contract.py` (frozen surface, discovery, merge, boundary), `test_games_conformance.py` (the CI gate), `test_games_chooser.py` | `tests/mod_editor/test_<game>_*.py`, the game's `tools/<game>_*.py` trio per lane and its `validate_<lane>.sh/.bat` |
+| the one-time hooks (§5.4), the release archives if modules ship inside them, CI | synthetic fixtures (retail-free, in the repository) and real captures (in the owner's private fixtures repositories, never here) |
+| the boundary rule for `_formats/`; a format package is owned by whoever ships it and used by everyone | its `_formats/<format>` contributions and their tests |
+| the getting-started sentence for "Select other games…" | the game's own getting-started section and changelog lines |
+
+He never learns a game: nothing under a game directory is his to review beyond "does the
+conformance suite pass and does the boundary hold", and both are mechanical.
+
+### 6.2 What his CI proves for a game he has never seen
+
+The whole of §4.8 on the module's own synthetic sources: identity refuses what it should,
+catalogues are retail-free, plans refuse before writing, builds change only declared bytes and
+leave the source intact, verifiers pass and *can fail*, the boundary holds, the fragments agree
+with the code, every shipped file exists. The Windows/macOS/Linux matrix runs it too, so the
+platform defects this repository's history is made of (text-mode newlines, POSIX-only flags,
+directory renames) are caught for a game's tools exactly as for his — the existing repo-wide
+rules already scan `mod_editor/**` and every allowlisted tool, and a game's allowlist fragment
+puts its tools under them.
+
+What CI cannot prove and the contract does not pretend to: that a written byte is *visible* in
+a game. A lane stays `offline-writer-proved` until a witness; that evidence is the game team's,
+recorded in the registry fragment under the registry's own rules.
+
+### 6.3 How a game's tests run without his catalogs
+
+A lane's `synthetic_source` is a fixture *generator*, not a fixture file: the PS2 tools build a
+real ISO9660 volume with a real `/VC_20919` archive in a temp directory in milliseconds, and
+the conformance harness drives that. Nothing the maintainer lacks — no disc, no `reports/`
+inventory, no extracted volume — is needed; the pattern is the one `tests/conftest.py` already
+enforces for the rest of the suite (game data absent ⇒ skip, never fail), applied in the other
+direction (game data never needed).
+
+### 6.4 The cheap freeze fallback
+
+If the hooks are declined, or simply not yet merged: pin an upstream tag as the core, ship the
+game modules as a drop-in `mod_editor/games/<game>/` directory (a zip unpacked into the
+installed `app/mod_editor/games/`), and launch through `python -m mod_editor.games` — listing,
+describing, opening windows, the chooser and conformance all work today with **zero upstream
+edits**. The owner's CI runs the conformance suite against the frozen core; moving to a newer
+upstream is "re-run the suite", and the frozen-surface test says whether the contract moved.
+Costs: no "Select other games…" entry in his menu until he merges the hook, and the drop-in's
+tools must meet the self-sufficiency and LF rules themselves (they do, because the same tests
+scan them here).
+
+## 7. Migration: the three existing products on the contract, without changing behaviour
+
+| product | identity | lanes | windows | manifest / fragments | fits | misfits and the smallest honest change |
+|---|---|---|---|---|---|---|
+| **NFL 2K5 (PS2)** — `nfl2k5_ps2` | `SLUS-20919`, boot-ELF + image digests, through `_formats/ps2_disc` | 6 disc writers (catalogue/patch/verify trio each), 1 save writer (`nfl2k5_ps2_save` open/edit/write + `verify`), 1 read-only inventory, 1 extract-only export | save editor, disc inventory, pack export | done: `game.json`, fragment (9 rows), allowlist fragment (54 lines), pins | **fits** — proven by the adapter for `colors.unif_words`; the other five disc lanes are the same three calls each (`plan/apply/verify`, or `patch(dry_run)` for text, `compile_edits/patch` for playbooks, `plan/apply` for audio, `patch` for stadiums) and `PS2_DISC_STUDIO_PLAN.md §4.4` already specifies them as lane adapters | (a) a **read-only** lane (inventory) has nothing to build — v1 `Lane` must still answer `plan/build/verify`; today it would raise `Refusal("read-only")`; honest v1.1 addition: a `ReadOnlyLane` protocol (catalogue only). (b) an **extract-only** lane (pack export) writes a *folder*, not an image: `fixed_allocation=False` and no byte ranges — the harness's `receipt_declares_ranges` would fail; v1.1: `Receipt.artifacts` (paths + digests) as the export form of declared ranges. (c) the five CLI-only writers have no window yet — the disc-studio window is the plan; until then they are reachable through `python -m mod_editor.games` only if the CLI grows a `--lane` verb (v1.1). |
+| **NFL 2K5 (Xbox)** — `nfl2k5_xbox`, the host product | `default.xbe` digest + contained-fingerprint of the XISO (`sources.py`), five image kinds (`nfl2k5_disc_identity.py`) — fits `GameIdentity`/`SourceIdentity` (kinds) | 32 rows, backed by typed **providers** with pinned module hashes and a whole-project atomic **build service** | the studio itself | fragment = its games entry + 32 rows; allowlist = the rest of `release-allowlist.txt`; product modules = the rest of the gate's tuple | identity, fragments, pins and windows fit; **it should not be migrated**: it *is* the host. Re-expressing it as a module would mean a `WindowSpec` whose factory is `launch_studio` — technically valid, pointless | (a) its unit of work is a **project** of edits across many rows built in one pass, not a per-row lane; the contract's per-row `Lane` is the wrong grain — a v2 `Project` concept, or one composite lane, would be needed and is not worth it. (b) provider self-integrity pins (`module_pins` sha256) are stronger than the contract requires — they fit as game-owned pins. Smallest honest change: **none** — express only its identity and fragments so §5.1's derived coverage covers it; the provider system stays untouched. |
+| **APF 2K8 (Xbox 360)** — `apf2k8_xbox360` | `default.xex` + volume-0A digests (`sources.py`) | its writers (field art, uniforms, crests, rosters, ratings, playbooks, audio) live in `tools/` and are imported through `apf_studio/backend.py` — the same `sys.path` idiom as the adapter | one window: its own studio (`apf_studio.gui.launch_studio`), `needs_studio_session=False` | its own allowlist (`apf2k8-release-allowlist.txt`), gates, installer and version (`0.1.0-alpha.84`) map 1:1 onto a manifest + fragments; fragment = 37 rows | identity, windows, manifest, fragments **fit**; the second-product precedent is exactly a module with one big window | (a) most APF writer tests are gated on **extracted retail data** (`@skipUnless(DISC_AVAILABLE)`) and lack synthetic sources, so its lanes cannot pass the behavioural harness today — it would start as `lanes=()` + one window, lanes joining as synthetic fixtures are written (the harness then *raises* APF's own bar). (b) it ships as a **separate archive with its own installer** — the contract does not take over a whole product's packaging; its manifest's `allowlist_fragment` would describe what goes into *his* archive only if he chooses to merge the two releases. Smallest honest change: an `apf2k8_xbox360/game.json` + fragment + a 30-line adapter exposing the studio as a window — zero behaviour change, both releases unchanged. |
+
+The table is the proof that the contract is not shaped around one tool: the PS2 lane fits
+whole, the APF product fits as "identity + one window + fragments" with its packaging left
+alone, and the Xbox host is deliberately *not* migrated because a host is not a plugin. The
+honest v1.1 items it surfaces (`ReadOnlyLane`, `Receipt.artifacts`, a `--lane` CLI verb) are
+additive — minor bumps, no breakage.
+
+## 8. Roadmap
+
+| step | what | effort | depends on |
+|---|---|---|---|
+| 0 ✅ | contract, discovery, merge, harness, chooser, PS2 adapter, 40 tests (this branch) | done | — |
+| 1 | **upstream hooks PR**: the §5.4 edits, one RC29 re-pin of `studio_qt.py`, getting-started section, changelog bullet | 1 day + his review | his acceptance (§10 Q1) |
+| 2 | **PS2 migration**: delete the PS2 rows/allowlist lines/`product_modules` from the core files (the fragment becomes the single source), retire the PS2 `SURFACE_GAMES` lines, move `test_ps2_lane.py:81` to `pins.json` — two-sided atomic, guarded by the round-trip test | 1 day | 1 |
+| 3 | **widen the adapter**: the other five disc lanes, the save lane, the inventory (read-only) and the export (extract-only) — with the v1.1 additions (`ReadOnlyLane`, `Receipt.artifacts`, `--lane`) | 3–4 days | 0 |
+| 4 | **first new game — Madden NFL 08 (PS2), rosters + draft classes** (below) | ~20 days | 0 (1 optional: freeze fallback) |
+| 5 | Madden 09 / 12 PS2 by parameterisation (serials, templates; PLAY layout drift is metadata-driven) | 2 days each | 4 |
+| 6 | Madden 12 PS3 roster + franchise, Madden 25 PS3 roster (BE TDB, RPCS3 `dev_hdd0` path) | 3 + 2 days | 4 |
+| 7 | NCAA 09 / 11 PS2 rosters (TDB saves); NCAA "Send to Madden" export as the draft-class lane's input | 5 days | 4 |
+| 8 | **ESPN NBA 2K5 PS2 — measure first**: run the disc inventory with a parameterised pack directory against the user's own NBA disc; report reused fourccs and counts (hashes only) | 2 days | 0 |
+| 9 | if shared: extract `_formats/vc_ps2` from the six NFL tools' restated constants, NFL adapter composes it (no behaviour change, its 502 tests stay green); NBA identity + inventory lane; then rosters via the save pipeline against the community's 2025 memory-card roster as the reference | 5 + 2 + 3–5 days | 8 |
+| 10 | MVP Baseball 2005 PC: identity; TDB probe of `database/*.dat`; `_formats/ea_big` + `ea_fsh` (known formats) → textures lane; consoles inventory-only | ~10 days | 0 |
+| 11 | Madden 04 / NCAA 04 PS2: TDB probe of a user's save, then parameterise or stop | 1 day + | 4 |
+
+### 8.1 Why Madden 08 PS2 is the first game
+
+- **Every format is already proven end-to-end** in the owner's sibling repository: TDB parsed
+  and written byte-exact in Python and C#, the four CRCs recomputed, the franchise preamble
+  handled, the 138,240-byte draft class compiled and imported by Madden 08 in PCSX2 (2018
+  verified), 18 seasons of rosters and 19 of draft classes generated, `.max/.psu` packing via
+  a known container.
+- **The deliverables are saves, not disc writes**: no TERF reverse engineering, no ISO
+  writer, no emulator-side dependency; identity is the serial (`BASLUS-21638…`) plus the TDB
+  table signature of the user's own template save, so a wrong game is refused before anything
+  is written.
+- **Synthetic sources are cheap**: a minimal TDB with the right header, table directory, field
+  directory and CRCs is a few hundred bytes; a 1600-record class with filler is 138,240 bytes
+  of generated data — no retail byte anywhere.
+- **It exercises the "different engine" axis** end to end (`ea_tdb` + `ps2_memcard` format
+  packages), so the second and third EA titles are parameterisation.
+- **Demand exists**: the Madden 09/12 Deluxe projects ship rosters exactly this way
+  (`.psu/.max` on a PCSX2 memory card).
+
+Lane plan and effort: `_formats/ea_tdb` (port of `parse_madden_tdb.py`/`write_madden_tdb.py`,
+LE + BE, synthetic builder, tests) 3 d; `_formats/ps2_memcard` (wrap the PSU/card code in
+`tools/nfl2k5_ps2_save.py` with generic directory names) 2 d; **roster lane** (recipe =
+canonical roster JSON; catalogue = the template save's TEAM/PLAY slots; build = compile into a
+copy of the user's template; verifier = an independent TDB decoder + whole-file compare outside
+declared ranges) 4 d; **draft-class lane** (recipe = canonical draft JSON; template = the user's
+own NCAA export; fixed 1600 × 86) 3 d; **franchise lane** (calendar, cap, contracts) 3 d;
+chooser-hosted window 3 d; validators + docs 1 d; PCSX2 witness 1 d.
+
+## 9. Risks
+
+| risk | mitigation |
+|---|---|
+| Upstream declines the hooks or the `mod_editor/games/` package | the freeze fallback (§6.4) costs nothing; every deliverable here already runs without a hook |
+| The RC29 hash pins: the one hook in `studio_qt.py` forces a re-pin, and `repin.py` does not see dict-shaped pins | one re-pin in the hooks PR, audited with the ten-line loop the PS2 handoff prescribes; never again |
+| Two sources of truth for PS2 rows during migration | `test_the_committed_ps2_fragment_is_the_split_of_the_canonical_registry` fails on any drift until step 2 removes the duplicates |
+| `GameId` stays closed: a module game never becomes a `ModProject`, and `project.schema.json` keeps its three ids | accepted and stated; module games have their own windows and recipes and never enter the Xbox project model |
+| A game imports Qt or core internals at module level and breaks headless CI or binds to code the maintainer moves | `check_boundary` refuses it in the conformance suite; window factories import lazily |
+| Conformance time grows with games | synthetic sources are generators, each lane's run is sub-second today; the harness is per game and CI runs files in parallel jobs already |
+| The read-only and extract-only PS2 rows do not fit v1 `Lane` cleanly | named as v1.1 additions (§7); additive minor bump |
+| APF lanes lack synthetic fixtures | APF joins as identity + window + fragments first; lanes join as fixtures are built — the harness raises the bar rather than lowering it |
+| NBA 2K5 format sharing is unconfirmed | measurement step first (§8 step 8); `vc_ps2` is extracted only after the numbers say so; the NFL adapter keeps working either way |
+| MVP `.dat` identity and every MVP console save are unknown | PC first with a TDB probe; consoles inventory-only; no promise of a writer without a decoded format |
+| On-disc Madden/NCAA PS2 (TERF `.DAT`) has no public spec | saves are the route for every EA lane in this plan; TERF is research, not integration |
+| `mymcplus` is GPL | not vendored; the MIT PSU/card code already in `tools/nfl2k5_ps2_save.py` is the format package's base |
+| M25 PS3 franchise is a `FrTk` log, not TDB | out of scope; M25 rosters carry contracts, so the roster lane suffices |
+| The canonical-JSON rule: a merged registry is never written, only validated | the canonical-bytes check stays on the core file; fragments carry their own canonical form |
+
+## 10. Open questions only the upstream author can answer
+
+1. Will he host `mod_editor/games/` and the §5.4 hooks in `cruuz/2k-football-mod-tools`, or
+   should game modules ship as a separate drop-in (§6.4)? Both work; the answer decides whether
+   his archives grow allowlist fragments.
+2. Does he want plugin games' registry rows **in his canonical registry at all**, or fragments
+   only? (Recommendation: fragments only; `validate_registry.py` validates the merged document
+   and the shipped file stays the core's.)
+3. Who bumps the contract's minor/major version, and is the frozen-surface test his to edit? A
+   `CODEOWNERS`-style rule for `mod_editor/games/contract.py` would make the boundary
+   organisational as well as mechanical.
+4. Is `GameId` allowed to stay the closed enum of natively hosted products (module games as
+   plain ids), or does he prefer an open id registry? The former is a 10-line change; the latter
+   touches `model.py`, `project.schema.json` and the controller.
+5. The one-time RC29 re-pin of `studio_qt.py`: does he want the hook landed inside a release he
+   is cutting anyway (his stated practice for shipped-file edits)?
+6. Should the game-module conformance suite run in his three-OS matrix on every PR (it adds
+   seconds per game today), or in a separate job?
+7. Are ESPN NBA 2K5 and College Hoops 2K5 in scope for a product called "2K Football Mod
+   Tools", or should basketball modules be badged as a sibling product in the chooser?
+8. Does he accept `_formats/` as a shared, co-owned namespace, and the rule that a game never
+   imports a sibling game?
+9. May a game module carry a *reviewed* metadata file (a catalogue schema, a template's table
+   signature) under the release gate's existing pinned-metadata contract, or must every such
+   file be generated from the user's own copy at run time?
+10. Product naming: do module windows get desktop launchers/installer entries of their own, or
+    only the chooser and `--game`?
+
+## Appendix A — what is proven in this branch, and how to re-run it
+
+```
+# the 40 new tests (Python 3.11, PyQt5 for the dialog tests; offscreen)
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python tests/mod_editor/test_games_contract.py      # 23
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python tests/mod_editor/test_games_conformance.py   #  9
+QT_QPA_PLATFORM=offscreen PYTHONPATH=. python tests/mod_editor/test_games_chooser.py       #  8
+# the two repository gates the brief names (7 tests)
+python -m unittest tests.mod_editor.test_generated_artifacts_are_lf tests.mod_editor.test_shipped_tools_are_self_sufficient
+# the harness by hand (55 checks for the PS2 adapter) and the chooser
+python -m mod_editor.games --conformance
+python -m mod_editor.games
+python -m mod_editor.games nfl2k5_ps2 --window disc-inventory
+python -m mod_editor.games --chooser
+```
+
+Commits: `c74a481` (contract, discovery, merge, harness, chooser, CLI), `a5c2c91` (shared
+`ps2_disc` format package, NFL 2K5 PS2 adapter, fragments, pins, tests), `19f8c5f` and this
+document. No upstream file was edited; `git status` after each commit showed only additions.
+
+## Appendix B — v1.1 candidates surfaced by the migration table
+
+`ReadOnlyLane` (catalogue only) and `Receipt.artifacts` (paths + digests for export lanes);
+a `--lane <id>` CLI verb (plan/build/verify a recipe from the command line, so CLI-only writers
+are reachable before their window exists); an optional `progress`/cancel protocol for long
+catalogue builds (the disc-studio plan's subprocess model); `SourceIdentity.classification`
+for the Xbox-style image kinds (retail dump / repack / modified). All additive.
