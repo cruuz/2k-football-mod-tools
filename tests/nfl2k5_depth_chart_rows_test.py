@@ -247,7 +247,7 @@ class LayoutTests(unittest.TestCase):
                         return real_write(descriptor, data, offset)
 
                     with patch.object(io, "pwrite", side_effect=short_directory):
-                        with self.assertRaisesRegex(ValueError, "short SPECIAL"):
+                        with self.assertRaisesRegex(ValueError, "short grown"):
                             storage.write_image_xbe(fd, self.patched)
                     self.assertEqual(path.read_bytes(), image)
                 else:

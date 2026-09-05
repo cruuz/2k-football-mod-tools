@@ -110,6 +110,11 @@ class PatchWriteTests(unittest.TestCase):
         cls.patched, _ = season_cap.apply(cls.patched)
         if season_cap.status(cls.patched) != "applied":
             raise AssertionError("season-cap owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
+        cls.patched, _ = space.apply(cls.patched, relocated.REQUESTS)
+        cls.patched, _ = relocated.apply(cls.patched)
+        cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 
@@ -200,6 +205,26 @@ class PatchWriteTests(unittest.TestCase):
         self.assertFalse(section.executable)
         self.assertTrue(section.flags & 2)
         self.assertFalse(image.runtime_writable(rows.TABLE_VA, rows.TABLE_SIZE))
+
+    def test_grown_code_owner_writes_only_to_the_named_writable_data_allocation(self) -> None:
+        from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        code, data = relocated._sites(self.patched)
+        self.assertEqual(space.status(self.patched), "applied")
+        self.assertEqual(relocated.status(self.patched), "applied")
+        writes = absolute_writes(self.patched, [(code["va"], code["va"] + code["size"])])
+        checked = 0
+        for write in writes:
+            if write["target"] is not None:
+                self.assertTrue(write["writable"], write)
+                target = int(write["target"], 0)
+                if space.CODE_VA <= target < space.DATA_VA + space.PAGE:
+                    checked += 1
+                    self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
+        self.assertGreater(checked, 0)
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
 
 
 if __name__ == "__main__":

@@ -74,8 +74,11 @@ class Recorder:
         allow_append = False
         if len(before) != len(after):
             from . import nfl2k5_depth_chart_storage as storage
+            from . import nfl2k5_xbe_space as space
             allow_append = (owner == "nfl2k5_depth_chart_rows" and storage.state(before) == "retail"
                             and storage.state(after) == "applied")
+            allow_append |= (owner in (space.OWNER, "nfl2k5_dynamic_kickoff_relocated")
+                             and space.status(before) == "retail" and space.status(after) == "applied")
         runs = list(changed_runs(before, after, allow_append=allow_append))
         self.mapping_end = max(self.mapping_end, post_image.base + post_image.image_size)
         if len(after) > len(self.covered):
@@ -91,13 +94,20 @@ class Recorder:
                 while stop < b and post_image.va_for_offset(stop) == (va + stop - at if va is not None else None):
                     stop += 1
                 if va is not None:
-                    self.reserve(va, stop - at, owner, "observed byte diff")
+                    from . import nfl2k5_xbe_space as space
+                    page_owner = space.OWNER if space.CODE_VA <= va < space.DATA_VA + space.PAGE else owner
+                    self.reserve(va, stop - at, page_owner, "observed byte diff")
                 at = stop
         self.steps.append({"owner": owner, "function": function,
                            "before_sha256": hashlib.sha256(before).hexdigest(),
                            "after_sha256": hashlib.sha256(after).hexdigest(),
                            "changed_bytes": sum(b - a for a, b in runs),
                            "file_runs": [[hex(a), hex(b)] for a, b in runs]})
+        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated"):
+            from . import nfl2k5_xbe_space as space
+            for reservation in space.reservations(after):
+                self.reserve(int(reservation["start"], 0), reservation["size"],
+                             reservation["owner"], reservation["basis"])
         if not runs:
             return
         # Include bytes in declared sites that happen to equal retail, plus cave
@@ -166,7 +176,7 @@ class Recorder:
         for name in ("HOME_FLIP_VA", "AWAY_FLIP_VA", "AWAY_VALUE_VA"):
             self.reserve(getattr(uniform, name), 4, "nfl2k5_uniform_choice", "runtime dword: " + name)
         self.reserve(playoffs.LAST7_VA, 4, "nfl2k5_playoffs14", "runtime saved seed dword: LAST7_VA")
-        self.reserve(logo.NEW_LOGO_VA, logo.LOGO_SIZE, "nfl2k5_boot_logo", "complete relocated loader bitmap")
+        self.reserve(logo._fields(final)[0], logo.LOGO_SIZE, "nfl2k5_boot_logo", "complete relocated loader bitmap")
         # Preserve the whole shared host, including alignment padding between owners.
         self.reserve(0xB4A60, 16, "nfl2k5_penalties", "shared host allocation including stub padding")
         self.reserve(0xB4A70, 32, "nfl2k5_prospect_names", "shared host allocation")
@@ -196,14 +206,16 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     from . import mod_build as build, nfl2k5_throw_tuning as tt
     from . import nfl2k5_position_pools as pools, nfl2k5_season_length as season
     from . import nfl2k5_seven_on_seven_book as seven_book
+    from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
     progress = progress or (lambda _message: None)
     xiso = xiso.resolve(strict=True)
+    work_dir = work_dir.resolve(strict=True)
     if build._xbe_bytes(xiso) != retail:
         raise OracleError("disc default.xbe does not match the supplied pinned retail XBE")
     recorder = Recorder(retail)
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
-    modules.update({m.__name__: m for m in (tt, pools, season)})
+    modules.update({m.__name__: m for m in (tt, pools, season, space, relocated)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -213,7 +225,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
     modules[hud.__name__] = hud
     fingerprints = source_fingerprints()
     with tempfile.TemporaryDirectory(prefix="nfl2k5-oracle-", dir=work_dir) as temp:
-        target = Path(temp) / "stack.xiso.iso"
+        target = (Path(temp) / "stack.xiso.iso").resolve()
         preset = dict(build.PRESETS["softdrink_experimental"])
         plan = build.BuildPlan(source=str(xiso), target=str(target), **preset)
         with ExitStack() as stack:
@@ -247,6 +259,22 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
             final = build._xbe_bytes(target)
             if final != extra:
                 raise OracleError("seven-on-seven book writer unexpectedly changed XBE bytes")
+            # These owners are default-off until the protected UI is wired.
+            # Observe their real pure-byte writers after every disc/XBE pass.
+            # The generalized writer resolves the grown extent directly, so
+            # manifest generation does not depend on the protected dispatcher.
+            final, _ = space.apply(final, relocated.REQUESTS)
+            final, _ = relocated.apply(final)
+            from . import nfl2k5_depth_chart_storage as storage, platform_compat as io
+            import os
+            descriptor = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
+            try:
+                storage.write_image_xbe(descriptor, final)
+                offset, length = tt._xdvdfs_module().xbe_extent(descriptor, os.fstat(descriptor).st_size)
+                if io.pread(descriptor, length, offset) != final:
+                    raise OracleError("grown manifest XBE read-back differs")
+            finally:
+                os.close(descriptor)
         # Validate section digest scheme on the complete, observed stack.
         from .nfl2k5_bump_strength import _sections, section_digest
         if any(section_digest(final, s) != s.stored_digest for s in _sections(final)):
@@ -263,9 +291,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                              if str((ROOT / name).resolve()) in loaded_paths}
         return {"schema": MANIFEST_SCHEMA, "retail_sha256": RETAIL_SHA256, "complete": True,
                 "stack_image_size": XbeImage(final).image_size,
-                "model": "observed experimental disc build plus dormant seven-on-seven; exact diffs union declared capacity/runtime storage",
+                "model": "observed experimental disc build plus dormant seven-on-seven and grown kickoff; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book"],
+                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER],
                 "seven_on_seven_book": book_note,
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,
                 "preset_xbe_sha256": hashlib.sha256(preset_xbe).hexdigest(),
@@ -273,5 +301,5 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                 "section_digests_verified": True,
                 "image_options": {"scorebug_textures": False,
                                   "reason": "PNG atlas generation/import is asset-only; actual image mesh and all XBE/HUD writers ran"},
-                "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book"],
+                "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated"],
                 "source_sha256": used_fingerprints, "steps": recorder.steps, "spans": spans}

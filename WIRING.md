@@ -946,3 +946,226 @@ were reproduced from a clean `git archive HEAD` snapshot within `.scratch`.
 No animation module is imported by either failing setup. No protected file or
 other feature's patch was changed to mask the failure. Claude must repair the
 existing stack composition before declaring those global gates green.
+# r61 XBE space and relocated kickoff handoff, 2026-09-05
+
+This section adds to the depth-lock handoff above. All features below are
+EXPERIMENTAL/UNWITNESSED. No protected file was edited. The two new flags default
+to false. Enable them only in `softdrink_experimental`; explicitly set both
+false in `softdrink_basic` and `softdrink_advanced`. An ordinary custom plan
+leaves both off. The allocator reserves two 4096-byte pages, with a named,
+unchanged boot bitmap in the code page, plus named kickoff code/data when
+requested. This release does not promise an arbitrarily growing arena.
+
+## BuildPlan and dispatcher
+
+Add to `mod_editor/core/mod_build.py::BuildPlan`:
+
+```python
+xbe_space: bool = False
+kickoff_relocated: bool = False
+```
+
+`kickoff_relocated` implies `xbe_space`, `dynamic_kickoff`, `kickoff_alignment`
+and `kick_rules`; disable `kick_power` as for the existing dynamic kickoff.
+Keep the existing kickoff settings dictionary and playbook alignment pass.
+No additional PLAY/ROST changes belong to this relocation.
+
+Add imports in the protected `mod_editor/core/nfl2k5_throw_tuning.py`:
+
+```python
+from . import nfl2k5_xbe_space as xbe_space_patch
+from . import nfl2k5_dynamic_kickoff_relocated as kickoff_relocated_patch
+```
+
+Thread keyword-only `xbe_space: bool = False, kickoff_relocated: bool = False`
+through `_apply_all`, `write_xbe_copy`, `write_image_copy`, their kwargs and
+nonempty-operation guards. Pass the plan fields through the build service,
+recipe round trip, inspection/availability and patch selection routes. Apply
+the existing dynamic kickoff before relocation so custom settings are inherited
+and all eleven hook sites have an exact known source.
+
+The final `_apply_all` tuple needs this adapter, because allocations must be
+chosen before the first growth, and a replay must verify the request set:
+
+```python
+class _xbe_space_adapter:
+    def __init__(self, with_kickoff):
+        self.requests = kickoff_relocated_patch.REQUESTS if with_kickoff else ()
+
+    def status(self, payload):
+        state = xbe_space_patch.status(payload)
+        if state == "applied":
+            xbe_space_patch.apply(payload, self.requests)  # validates replay
+        return state
+
+    def apply(self, payload):
+        return xbe_space_patch.apply(payload, self.requests)
+```
+
+Use this **separate final tuple after uniform choice and boot-logo repair**, at
+the end of `_apply_all`, immediately before returning to the section writer:
+
+```python
+for flag, module, key, label in (
+    (xbe_space or kickoff_relocated, _xbe_space_adapter(kickoff_relocated),
+     "xbe_space_patch", "experimental executable space"),
+    (kickoff_relocated, kickoff_relocated_patch,
+     "kickoff_relocated_patch", "experimental relocated kickoff"),
+):
+    if not flag:
+        continue
+    state = module.status(patched)
+    _require(state in ("retail", "applied"), f"{label} is {state}; refusing")
+    patched, sub_receipt = module.apply(patched)
+    receipt[key] = sub_receipt
+    receipt["changed_byte_count"] = int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])
+```
+
+`mod_build.build` also has later XBE passes for presentation, season, pools,
+SPECIAL, depth locks and reserves. Its calls to the earlier shared dispatcher
+must leave the new flags false. Once **every existing pass is complete**, read
+the final XBE, invoke the final dispatcher with these flags (all other flags
+false, `wanted=None`, `arc_table=False`), then send its bytes to the generalized
+writer. This makes the allocator last at both entry points. SPECIAL is tested
+in either order, but the final build order prevents other owners from claiming
+its transferred header storage. Do not run boot-logo relocation or any new
+header allocator after these final passes.
+
+Add these entries to all **four** status dictionaries in throw tuning:
+`read_xbe` (`payload`), `read_image` (`payload`), `write_xbe_copy` (`result`),
+and `write_image_copy` (`after`). Use the corresponding local byte variable:
+
+```python
+"xbe_space": xbe_space_patch.status(payload),
+"kickoff_relocated": kickoff_relocated_patch.status(payload),
+"kickoff_relocated_settings": kickoff_relocated_patch.read_settings(payload),
+```
+
+Existing `dynamic_kickoff.status/read_settings` already delegate recognition of
+relocated hooks. Include both new status keys in build availability, source
+inspection, receipt display and feature selection. Reject adding kickoff to an
+already-grown image which did not reserve its named allocations; rebuild from
+the supported base. The allocator does not silently shift existing owners.
+
+## Exact image extent and writer changes
+
+Replace only the non-retail-length branch of
+`nfl2k5_throw_tuning.image_xbe_extent()` with this snippet. The upper-bound
+check happens before reading an untrusted directory length:
+
+```python
+if length != EXPECTED_XBE_SIZE:
+    _require(length in (depth_chart_storage.FILE_SIZE, xbe_space_patch.FILE_SIZE),
+             f"unknown default.xbe grown size: {length}")
+    candidate = platform_compat.pread(descriptor, length, offset)
+    _require(len(candidate) == length
+             and depth_chart_storage.recognized_grown_xbe(candidate),
+             "larger default.xbe has a foreign or incomplete grown layout")
+return int(offset), int(length)
+```
+
+`recognized_grown_xbe()` requires `xbe_space.status(candidate) == "applied"`
+for the new size. SPECIAL-only bytes still require complete rows recognition;
+a grown SPECIAL table also requires rows recognition. A foreign page, header,
+name, counter, allocation directory, code seal, digest or length refuses.
+
+In `mod_build._write_xbe_bytes` and the protected throw writer, route **every
+recognized grown payload**, including same-size replays, through
+`nfl2k5_depth_chart_storage.write_image_xbe(fd, payload)`. Keep the ordinary
+retail writer for retail-size outputs. Do not just gate on `length !=
+len(payload)`: the generalized writer also provides rollback/read-back for
+same-size writes. It uses the actual directory node, appends the full XBE,
+verifies bytes, switches sector/length and verifies the directory; failure
+restores the original node/extent or original same-size bytes. Caller owns and
+closes the descriptor; use `os.O_RDWR | getattr(os, "O_BINARY", 0)`.
+
+The direct pure-byte `apply` APIs and generalized writer work now. The GUI and
+protected readers cannot yet open the new size until this snippet is wired.
+
+## Gameplay Patches and Build tab
+
+Add these exact three-field entries to `gameplay_patches_panel_qt.PATCHES`:
+
+```python
+("xbe_space", "Extra patch space (experimental, unwitnessed)",
+ "Retail: patches have no spare room for larger changes. Patch: adds room for "
+ "experimental features. Needs a disc boot check before regular use."),
+("kickoff_relocated", "Kickoff in extra space (experimental, unwitnessed)",
+ "Retail: the extra patch space is unused. Patch: moves the dynamic kickoff "
+ "there with the same settings. Check that both teams still line up, hold "
+ "until contact and return normally. Unwitnessed in game."),
+```
+
+Add both keys to `NEEDS_IMAGE`. Use these Build tab `_option` captions (each
+under 60 characters), with an experimental badge and the same helper text:
+
+```python
+self._option(layout, "xbe_space", "Extra patch space (experimental)", helper, badge="EXPERIMENTAL")
+self._option(layout, "kickoff_relocated", "Kickoff in extra space (experimental)", helper, badge="EXPERIMENTAL")
+```
+
+Wire both checkboxes to plan serialization and preset reset; a basic/advanced
+preset must clear a previously enabled experimental flag. Keep addresses,
+section names and allocation details in the receipt, outside the user flow.
+
+## Release closure and capability entries
+
+Add these allowlist lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_xbe_space.py
+mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py
+```
+
+The changed helper files must retain their existing allowlist entries:
+`nfl2k5_bump_strength.py`, `nfl2k5_boot_logo.py`, `nfl2k5_dynamic_kickoff.py`,
+`nfl2k5_depth_chart_storage.py`, `nfl2k5_depth_locks.py`, and
+`nfl2k5_cave_oracle.py`. No Unicorn/Capstone import is required by the allocator
+or runtime patch; those libraries are offline test/proof dependencies only.
+
+Add both new dotted imports to `product_modules` in the protected runtime
+closure checker, and exercise the public status/requests exports. Retain its
+imports of the listed helpers, the draft assembler and platform compatibility.
+
+When exposing these new surfaces, add registry rows in
+`mod_editor/capabilities/registry.v1.json` using the existing complete gameplay
+row schema (and update the protected runtime registry counts):
+
+Copy the two complete, schema-validated objects from
+`docs/mod_editor/nfl2k5_xbe_space_capabilities.json` into `capabilities`.
+This handoff file is documentation, not another runtime registry or allowlist
+entry. Its fields are summarized below.
+
+| Field | Allocator | Relocation |
+| --- | --- | --- |
+| id | `nfl2k5.gameplay.xbe_space` | `nfl2k5.gameplay.kickoff_relocated` |
+| backend module | `mod_editor/core/nfl2k5_xbe_space.py` | `mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py` |
+| operation | `write` | `write` |
+| classification | `offline-writer-proved` | `offline-writer-proved` |
+| runtime status | `not-tested` | `not-tested` |
+| GUI | experimental edit, default disabled | experimental edit, default disabled |
+| evidence | `ASTRA_XBE_SPACE_REPORT.md`, standalone space tests | same, dynamic kickoff tests |
+| constraints | pinned USA geometry, recognized prior owners, disposable disc copy, bounded named capacity | same, reserved kickoff requests, matching settings, existing alignment pass |
+
+Runtime scope must explicitly say the kernel/xemu load order, boot bitmap
+availability in the new preloaded section, boot and played kickoffs remain
+unwitnessed. Do not promote bounded Unicorn execution to a gameplay witness.
+
+## Manifest regeneration
+
+The builder now observes these owners automatically after its complete
+experimental disc build, even while the new protected flags are absent. It
+records parent pages, named children, unchanged zero-initialized data and
+transferred boot-logo storage. Keep the oracle source-drift refusal unchanged.
+Claude must regenerate the protected manifest after integration:
+
+```sh
+python3 tools/nfl2k5_cave_oracle.py manifest \
+  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  --work-dir /tmp --json data/nfl2k5_cave_reservations.json
+```
+
+`space-proof <retail.xbe> --manifest <manifest.json>` prints the bounded fresh
+allocation proof. An optional `--json <path>` records it. Generated ownership
+permits the established boot-logo/kickoff children, and refuses other overlaps.

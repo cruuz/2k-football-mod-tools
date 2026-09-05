@@ -67,6 +67,10 @@ class CaveReferenceTests(unittest.TestCase):
         cls.patched, _ = season_cap.apply(cls.patched)
         if season_cap.status(cls.patched) != "applied":
             raise AssertionError("season-cap owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
+        cls.patched, _ = space.apply(cls.patched, relocated.REQUESTS)
+        cls.patched, _ = relocated.apply(cls.patched)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -242,6 +246,15 @@ class CaveReferenceTests(unittest.TestCase):
             for va in range(site.va, site.va + len(site.before)):
                 if manifest.overlaps(va, va + 1, exclude_owner="nfl2k5_depth_locks"):
                     self.assertEqual(self.patched[va - BASE], self.before_depth_locks[va - BASE], hex(va))
+
+    def test_grown_owner_pages_have_no_retail_reference_encoding(self) -> None:
+        from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        self.assertEqual(space.allocation_evidence(self.retail, manifest)["encoded_references"], [])
+        self.assertEqual(relocated.status(self.patched), "applied")
+        for r in space.reservations(self.patched):
+            self.assertGreaterEqual(int(r["start"], 0), space.CODE_VA)
 
 
 if __name__ == "__main__":

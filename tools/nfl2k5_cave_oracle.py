@@ -63,10 +63,23 @@ def main(argv=None) -> int:
     manifest.add_argument("--xiso", type=Path, required=True)
     manifest.add_argument("--work-dir", type=Path, required=True, help="existing writable directory for disposable 6+ GB image")
     manifest.add_argument("--json", type=Path, required=True)
+    fresh = commands.add_parser("space-proof", help="prove no retail address encoding reaches the owned grown pages")
+    fresh.add_argument("xbe", type=Path)
+    fresh.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    fresh.add_argument("--json", type=Path)
     args = parser.parse_args(argv)
     try:
         data = args.xbe.read_bytes()
         image = XbeImage(data)
+        if args.command == "space-proof":
+            from mod_editor.core import nfl2k5_xbe_space as space
+            ownership = ReservationManifest.load(args.manifest, image)
+            report = space.allocation_evidence(data, ownership)
+            if args.json:
+                write_json(args.json, report, [args.xbe, args.manifest])
+            else:
+                print(json.dumps(report, indent=2))
+            return 0
         if args.command == "manifest":
             from mod_editor.core.nfl2k5_cave_manifest import build_manifest
             report = build_manifest(data, args.xiso, work_dir=args.work_dir,
