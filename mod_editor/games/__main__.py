@@ -88,7 +88,27 @@ def _row(rows, game_id: str):
     return row, 0
 
 
+def _tolerant_console() -> None:
+    """Never let a console code page kill a report.
+
+    Lane messages quote file names and bytes verbatim, so a refusal can carry a
+    character the console cannot encode (a Windows console is cp1252 by default;
+    a flipped pnach byte decodes to U+FFFD).  Printing has to degrade to an
+    escape such as ``\\ufffd`` instead of dying with UnicodeEncodeError part
+    way through the conformance lines, which is what happened on Windows.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(errors="backslashreplace")
+        except (LookupError, ValueError):  # pragma: no cover - exotic streams
+            pass
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
+    _tolerant_console()
     args = _parser().parse_args(argv)
     command = args.command or "list"
 

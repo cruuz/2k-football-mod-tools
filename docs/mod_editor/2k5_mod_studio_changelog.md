@@ -2,6 +2,10 @@
 
 ## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
 
+- **Windows console fix.** `python -m mod_editor.games …` (the `--game` / `--games-chooser` command line and the
+  conformance harness) no longer dies with `UnicodeEncodeError` on a cp1252 console when a lane message quotes a
+  character the console cannot show; such characters print as `\uXXXX` escapes instead. Found by running the
+  shipped portable build's conformance harness on Windows (it stopped at check 88 of 89).
 - **Game modules.** A versioned game-module contract (`mod_editor/games/`, `vc_game_module/v1`) lets further
   games ship as their own packages that the studio only discovers: per-game registry and allowlist fragments
   mirrored byte-for-byte, a conformance harness with a named CI job, frozen contract files with a release
