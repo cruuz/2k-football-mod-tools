@@ -194,9 +194,11 @@ Agreement is checked **field by field, on the values being written**: the
 `STRMDATA.DB` copy is written only where it says today what the anchor said
 before the edit. A row that already differs is not a copy of this team's
 identity, and writing it would be a guess dressed as consistency — so it is
-left alone and the receipt names the field that made it differ. On the retail
-disc all 32 teams' two copies agree, so 32 edited teams write 64 rows [M];
-the disagreement path exists for a modified image and is covered by tests.
+left alone and the receipt names the field that made it differ. The catalogue
+says the same thing before a build: each target lists its copies and, for each,
+the fields that copy will not take. On the retail disc all 32 teams' two copies
+agree, so 32 edited teams write 64 rows [M]; the disagreement path exists for a
+modified image and is covered by tests.
 
 ---
 
@@ -291,7 +293,7 @@ in 543 `TEXT` members until the Menus & UI page edits them.
 | `mod_editor/games/_formats/ea_tdb.py` | the TDB reader, writer and the four checksums |
 | `mod_editor/games/_formats/ea_terf.py` | the container reader and same-size member rewrite |
 | `tools/ps2_iso9660_writer.py` / `_verify.py` | the bounded image write, and the independent check of it |
-| `tests/mod_editor/test_madden09_ps2_identity.py` | 61 tests, on synthetic databases only |
+| `tests/mod_editor/test_madden09_ps2_identity.py` | 62 tests, on synthetic databases only |
 | `tools/validate_madden09_ps2_identity.{sh,bat}` | the shipped-tree validators |
 
 Run it without a window:

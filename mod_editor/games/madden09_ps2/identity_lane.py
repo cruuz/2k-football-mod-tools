@@ -559,36 +559,46 @@ class IdentityLane:
                     index: int) -> List[Dict[str, Any]]:
         """Every database on the disc that carries this team's identity.
 
-        The anchor is always written.  A second copy is written only when it
-        **agrees** with the anchor today: a row that already says something
-        else is not a copy of this team's identity, and writing it would be a
-        guess dressed as consistency.
+        The anchor is always written.  A second copy is written **field by
+        field**, and only where it agrees with the anchor today: a value that
+        already says something else is not a copy of this team's, and writing
+        it would be a guess dressed as consistency.  So a copy that differs in
+        one name still takes a colour, and the row says which fields it will
+        not take rather than reading as all or nothing.
         """
 
         out: List[Dict[str, Any]] = [{
             "file": TEAM_CONTAINER, "member": member, "record": index,
-            "written": True, "reason": "the row this target names",
+            "written": True, "fields_not_written": [],
+            "reason": "the row this target names",
         }]
         if not stream.get("present") or team_id is None:
             if stream.get("note"):
                 out.append({"file": STREAM_DATABASE, "member": None, "record": None,
-                            "written": False, "reason": stream.get("note", "")})
+                            "written": False, "fields_not_written": sorted(values),
+                            "reason": stream.get("note", "")})
             return out
         record = stream.get("by_team_id", {}).get(team_id)
         if record is None:
             out.append({"file": STREAM_DATABASE, "member": None, "record": None,
-                        "written": False,
+                        "written": False, "fields_not_written": sorted(values),
                         "reason": f"no {TEAM_TABLE} row carries {TEAM_ID_FIELD} {team_id}"})
             return out
         other = team_values(stream["database"], stream["table"], record,
                             tuple(Field(key, "note", key) for key in values))
         differ = sorted(key for key in values if other.get(key) != values.get(key))
+        if not differ:
+            reason = "carries the same identity"
+        elif len(differ) < len(values):
+            reason = ("carries a different " + ", ".join(differ)
+                      + "; those are left alone and the rest are written")
+        else:
+            reason = ("carries a different value in every field this page writes; a "
+                      "build leaves it alone")
         out.append({
             "file": STREAM_DATABASE, "member": None, "record": record,
-            "written": not differ,
-            "reason": "carries the same identity" if not differ
-                      else "carries a different " + ", ".join(differ)
-                           + "; a build leaves it alone",
+            "written": len(differ) < len(values), "fields_not_written": differ,
+            "reason": reason,
         })
         return out
 
@@ -604,6 +614,10 @@ class IdentityLane:
         parts.extend(str(values[key]) for key in ("primary", "secondary") if key in values)
         written = sum(1 for item in copies if item.get("written"))
         parts.append(f"{written} of {len(copies)} copies written")
+        held = sorted({name for item in copies for name in item.get("fields_not_written", ())})
+        if held:
+            parts.append("another copy already differs in " + ", ".join(held)
+                         + ", so those stay as they are")
         return " · ".join(parts)
 
     # -- editing -------------------------------------------------------

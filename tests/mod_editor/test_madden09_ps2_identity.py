@@ -523,11 +523,26 @@ class DisagreeingCopyTests(unittest.TestCase):
         self.catalogue = self.lane.build_catalogue(self.source)
         self.team = self.catalogue.targets[0]
 
-    def test_the_catalogue_says_the_copy_will_not_be_written(self) -> None:
+    def test_the_catalogue_names_the_field_the_copy_will_not_take(self) -> None:
+        """One name differs, so that name is held back and the rest are not."""
+
         stream = [dict(item) for item in self.team.raw["copies"]
                   if item["file"] == identity_lane.STREAM_DATABASE][0]
-        self.assertFalse(stream["written"])
+        self.assertEqual(list(stream["fields_not_written"]), ["TSNA"])
+        self.assertTrue(stream["written"], "a colour still goes into this copy")
         self.assertIn("TSNA", stream["reason"])
+        self.assertIn("TSNA", self.team.detail)
+
+    def test_a_copy_that_differs_in_everything_is_not_written_at_all(self) -> None:
+        source = self.work / "all-different.iso"
+        source.write_bytes(disc_with(stream_database_with(
+            TDNA="OTHERNAME", TLNA="Elsewhere", TSNA="OTH", TMNC="Other",
+            CYID=200, TBCR=1, TBCG=2, TBCB=3, TB2R=4, TB2G=5, TB2B=6)))
+        catalogue = self.lane.build_catalogue(source)
+        stream = [dict(item) for item in catalogue.targets[0].raw["copies"]
+                  if item["file"] == identity_lane.STREAM_DATABASE][0]
+        self.assertFalse(stream["written"])
+        self.assertIn("every field this page writes", stream["reason"])
 
     def test_a_build_writes_the_anchor_and_reports_the_copy_it_left(self) -> None:
         recipe = self.lane.compose_recipe((Edit(self.team.key, {"TSNA": "MOD"}),))
