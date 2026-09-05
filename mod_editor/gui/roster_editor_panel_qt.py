@@ -773,11 +773,14 @@ class RosterEditorPanel(QWidget):
         layout.addWidget(intro)
 
         source_row = QHBoxLayout()
-        self.open_disc_button = QPushButton("Open a disc…")
+        self.open_disc_button = QPushButton("Open disc roster…")
+        self.open_disc_button.setToolTip("Read the roster out of any game disc file (.iso).")
         self.open_disc_button.clicked.connect(self._choose_disc)
-        self.open_save_button = QPushButton("Open an Xbox save…")
+        self.open_save_button = QPushButton("Open Xbox save…")
+        self.open_save_button.setToolTip("Read a roster or franchise save (SAVEGAME.DAT) from your Xbox. No disc needed.")
         self.open_save_button.clicked.connect(self._choose_save)
-        self.use_loaded_button = QPushButton("Use the loaded XISO")
+        self.use_loaded_button = QPushButton("Use the open disc")
+        self.use_loaded_button.setToolTip("Read the roster of the disc opened at the top right. Replaces what is loaded here.")
         self.use_loaded_button.clicked.connect(self.load_from_facade)
         self.source_label = QLabel("No roster loaded.")
         self.source_label.setWordWrap(True)
@@ -866,14 +869,14 @@ class RosterEditorPanel(QWidget):
                        self.paste_button, self.template_button, self.passes_button, self.csv_button):
             tools.addWidget(widget)
         tools.addStretch(1)
-        self.save_edits_button = QPushButton("Save roster edits…")
-        self.save_edits_button.setToolTip("Writes the edits as a small JSON document. Build & Share "
-                                          "carries it as the roster_edits step and packs it into a "
-                                          ".2k5patch, so the edit travels without the disc.")
+        self.save_edits_button = QPushButton("Export roster edits (.json)…")
+        self.save_edits_button.setToolTip("Export a snapshot of these changes for ★ Build & Share. "
+                                          "This is not a playable save or a project file.")
         self.save_edits_button.clicked.connect(self._save_edits)
-        self.write_button = QPushButton("Write a copy…")
-        self.write_button.setToolTip("Disc: copies the image and edits the copy. Save: writes a "
-                                     "re-signed container beside the original.")
+        self.write_button = QPushButton("Save disc copy…")
+        self.write_button.setToolTip("Write a copy you can reopen in ★ Rosters. Your loaded disc or save stays unchanged. "
+                                     "Disc roster: writes a separate disc copy. Xbox save: writes a signed save "
+                                     "container in the folder you choose.")
         self.write_button.clicked.connect(self._write_copy)
         tools.addWidget(self.save_edits_button)
         tools.addWidget(self.write_button)
@@ -1255,6 +1258,7 @@ class RosterEditorPanel(QWidget):
         self._baseline = None
         self._source_path = source
         self._source_kind = kind
+        self.write_button.setText("Save Xbox save copy…" if kind == "save" else "Save disc copy…")
         self._show_franchise(None)
         self._dirty.clear()
         self.undo_stack.clear()
@@ -1290,7 +1294,7 @@ class RosterEditorPanel(QWidget):
 
         source = getattr(self._facade, "source_path", None) or getattr(self._facade, "source", None)
         if not source:
-            self._set_status("No XISO is loaded. Use File → Open XISO first, or Open a disc… here.")
+            self._set_status("No disc is open. Open your game disc (top right), or use Open disc roster… here.")
             return False
         return self.load_disc(Path(str(source)))
 
@@ -2375,7 +2379,7 @@ class RosterEditorPanel(QWidget):
     def _save_edits(self) -> None:
         if self.document is None:
             return
-        chosen, _f = QFileDialog.getSaveFileName(self, "Save roster edits", "roster_edits.json", EDITS_FILTER)
+        chosen, _f = QFileDialog.getSaveFileName(self, "Export roster edits (for ★ Build & Share)", "roster_edits.json", EDITS_FILTER)
         if chosen:
             self.save_edits_to(chosen)
 
@@ -2404,9 +2408,9 @@ class RosterEditorPanel(QWidget):
         if self.document is None:
             return
         if self._source_kind == "save":
-            chosen = QFileDialog.getExistingDirectory(self, "Write the re-signed save copy into")
+            chosen = QFileDialog.getExistingDirectory(self, "Choose the folder for the signed Xbox save copy")
         else:
-            chosen, _f = QFileDialog.getSaveFileName(self, "Write a patched copy of the disc",
+            chosen, _f = QFileDialog.getSaveFileName(self, "Save disc copy as",
                                                      "roster-edited.xiso.iso", DISC_FILTER)
         if not chosen:
             return

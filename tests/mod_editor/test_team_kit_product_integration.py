@@ -467,7 +467,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         self.assertTrue(self.window.undo_button.isEnabled())
         self.assertIn("one Undo action", receipts[-1])
         self.assertIn("source XISO was not changed", receipts[-1])
-        self.assertIn("2 pending edits", self.window.edit_count.text())
+        self.assertIn("2 project edits", self.window.edit_count.text())
 
     def test_unchanged_or_invalid_import_does_not_dirty_the_project(self) -> None:
         self._ready()

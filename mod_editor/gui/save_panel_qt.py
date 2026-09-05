@@ -122,7 +122,7 @@ class SavePanel(QWidget):
         root.addWidget(subtitle)
 
         xbe_row = QHBoxLayout()
-        xbe_row.addWidget(QLabel("Signing XBE"))
+        xbe_row.addWidget(QLabel("Game executable (default.xbe)"))
         self.xbe_field = QLineEdit()
         self.xbe_field.setReadOnly(True)
         self.xbe_field.setPlaceholderText(
@@ -183,11 +183,11 @@ class SavePanel(QWidget):
         root.addLayout(options_row)
 
         out_row = QHBoxLayout()
-        out_row.addWidget(QLabel("Output save"))
+        out_row.addWidget(QLabel("Save the copy as"))
         self.out_field = QLineEdit()
         self.out_field.setReadOnly(True)
         self.out_field.setPlaceholderText(
-            "Choose where to write the mutated SAVEGAME.DAT copy"
+            "Where the new SAVEGAME.DAT copy goes (the original is never written)"
         )
         out_row.addWidget(self.out_field, 1)
         self.out_button = QPushButton("Choose…")
@@ -195,7 +195,7 @@ class SavePanel(QWidget):
         root.addLayout(out_row)
 
         actions = QHBoxLayout()
-        self.apply_button = QPushButton("Apply edits && re-sign copy")
+        self.apply_button = QPushButton("Make a signed save copy…")
         actions.addStretch(1)
         actions.addWidget(self.apply_button)
         root.addLayout(actions)

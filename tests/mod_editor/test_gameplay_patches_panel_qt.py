@@ -43,7 +43,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
                 for key, check in panel.checks.items():
                     if key == "depth_roles":          # lives in the playbooks: a bare default.xbe cannot take it
                         self.assertFalse(check.isEnabled(), key)
-                        self.assertEqual(check.toolTip(), "Needs a disc image.")
+                        self.assertIn("Full disc required", check.toolTip())
                         continue
                     if key in ("camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "dynamic_kickoff", "depth_chart_rows", "franchise_practice", "player_star"):
                         self.assertFalse(check.isEnabled(), key)

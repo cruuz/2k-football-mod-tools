@@ -26,6 +26,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions, write_caption
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 
@@ -237,7 +238,7 @@ class GameplayPatchesPanel(QWidget):
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *,
                  patches: tuple[tuple[str, str, str], ...] = PATCHES,
                  title: str = "Gameplay Patches",
-                 intro: str = "Executable patches that change how the game plays.") -> None:
+                 intro: str = "Select fixes and write one copy. For presets and other changes, use ★ Build & Share.") -> None:
         super().__init__(parent)
         self._facade = facade
         self._pool = QThreadPool(self)
@@ -257,22 +258,22 @@ class GameplayPatchesPanel(QWidget):
         title = QLabel(self._title)
         title.setObjectName("throwTitle")
         root.addWidget(title)
-        intro = QLabel(self._intro + " Each writes a copy; the source is never "
-                       "touched. xemu-only (the RSA signature stays stale). For a release copy with everything, "
-                       "use Build & Share → Build.")
+        intro = QLabel(self._intro + " The source is never changed. " + XEMU_LINE)
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
         src = QHBoxLayout()
-        src.addWidget(QLabel("Source"))
+        self.source_caption = QLabel("Game disc (.iso)")
+        src.addWidget(self.source_caption)
         self.source_field = QLineEdit()
         self.source_field.setReadOnly(True)
+        self.source_field.setPlaceholderText("Filled in when you open a disc (top right), or choose a disc / default.xbe here")
         src.addWidget(self.source_field, 1)
         self.source_button = QPushButton("Choose…")
         self.source_button.clicked.connect(self._choose_source)
         src.addWidget(self.source_button)
         root.addLayout(src)
-        self.source_status = QLabel("Choose a default.xbe or a disc image to read which patches it already carries.")
+        self.source_status = QLabel("Open your game disc (top right), or choose a disc / default.xbe here, to read which changes it already carries.")
         self.source_status.setObjectName("throwMuted")
         self.source_status.setWordWrap(True)
         root.addWidget(self.source_status)
@@ -289,7 +290,8 @@ class GameplayPatchesPanel(QWidget):
             root.addWidget(box)
             self.checks[key] = check
         out = QHBoxLayout()
-        out.addWidget(QLabel("Write copy to"))
+        self.target_caption = QLabel("Save disc copy as")
+        out.addWidget(self.target_caption)
         self.target_field = QLineEdit()
         out.addWidget(self.target_field, 1)
         self.target_button = QPushButton("Choose…")
@@ -297,7 +299,7 @@ class GameplayPatchesPanel(QWidget):
         out.addWidget(self.target_button)
         root.addLayout(out)
         actions = QHBoxLayout()
-        self.write_button = QPushButton("Write patched copy")
+        self.write_button = QPushButton("Make disc with these changes")
         self.write_button.clicked.connect(self._write)
         actions.addWidget(self.write_button)
         actions.addStretch(1)
@@ -311,23 +313,29 @@ class GameplayPatchesPanel(QWidget):
         self._state = state
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"
+        source_caption, target_caption = source_captions(is_image)
+        self.source_caption.setText(source_caption)
+        self.target_caption.setText(target_caption)
+        self.write_button.setText(write_caption(is_image))
         for key, _label, _e in self._patches:
             value = str(state.get(key))
             check = self.checks[key]
             needs_image = key in NEEDS_IMAGE and not is_image
             check.setEnabled(value == "retail" and not needs_image)
             check.setChecked(False)
-            tip = {"applied": "Already applied in this source.",
-                   "foreign": "Bytes at the patch sites are neither retail nor this patch; refusing.",
-                   "partial": "Only one half of this patch is in the source (executable or name pool); refusing.",
+            tip = {"applied": "Already installed on this source.",
+                   "foreign": "Not recognised: the bytes at this change's sites are neither retail nor this patch "
+                              "(changed by another tool), so it can't be added here.",
+                   "partial": "Only one half of this change is on the source (executable or name pool), so it can't be added here.",
                    "retail": ""}.get(value, "Unknown state.")
             # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
-            check.setToolTip("Needs a disc image." if needs_image and value not in ("applied", "foreign", "partial") else tip)
+            check.setToolTip("Full disc required (not a bare default.xbe)." if needs_image and value not in ("applied", "foreign", "partial") else tip)
         row_check = self.checks.get("depth_chart_rows")
         if row_check is not None and any(state.get(k) == "foreign" for k in ("position_pools", "scheme_labels", "depth_roles")):
             row_check.setEnabled(False)
-            row_check.setToolTip("A dependency of the rows (pools, scheme labels or playbook roles) is neither retail nor this patch.")
+            row_check.setToolTip("Not recognised: something these rows depend on (position groups, scheme names or playbook roles) "
+                                 "is neither retail nor this patch, so they can't be added here.")
         self.source_status.setText("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches) + ".")
         self._refresh()
 
@@ -352,17 +360,17 @@ class GameplayPatchesPanel(QWidget):
         self.write_button.setEnabled(any_on and bool(self.source_field.text()) and bool(self.target_field.text()) and self._task is None)
 
     def _choose_source(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Choose default.xbe or a disc image", str(Path.home()), SOURCE_FILTER)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
         if not chosen:
             return
         try:
             self.apply_state(mod_build.inspect(Path(chosen)))
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.critical(self, "Could not read the source", str(exc))
+            show_operation_error(self, "read that file", str(exc))
 
     def _choose_target(self) -> None:
         is_image = bool(self.source_field.text()) and tt.is_disc_image(self.source_field.text())
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the patched copy",
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?" if is_image else "Save the patched executable as",
                                                  "ESPN NFL 2K5 (gameplay patched).xiso.iso" if is_image else "default_patched.xbe")
         if chosen:
             self.target_field.setText(chosen)
@@ -372,9 +380,14 @@ class GameplayPatchesPanel(QWidget):
         plan = self.plan()
         if not any(check.isChecked() for check in self.checks.values()):
             return
-        answer = QMessageBox.question(self, "Write a patched copy?",
-                                      f"Source (untouched): {plan.source}\n" + ("REPLACING: " if plan.overwrite else "New copy: ") + plan.target
-                                      + "\n\nxemu-only: the RSA signature stays stale.",
+        is_image = tt.is_disc_image(plan.source)
+        chosen = [label for key, label, _e in self._patches if self.checks[key].isChecked()]
+        answer = QMessageBox.question(self, "Make disc with these changes?" if is_image else "Save a patched executable?",
+                                      f"Source (unchanged): {plan.source}\n"
+                                      + (f"Replace existing copy: {plan.target}" if plan.overwrite
+                                         else f"New {'disc' if is_image else 'executable'}: {plan.target}")
+                                      + "\n\nChanges: " + ", ".join(chosen)
+                                      + "\n\n" + XEMU_LINE,
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
@@ -389,7 +402,10 @@ class GameplayPatchesPanel(QWidget):
     def _done(self, receipt: object) -> None:
         self._task = None
         assert isinstance(receipt, dict)
-        self.status_label.setText(f"Written: {Path(str(receipt.get('target'))).name}.")
+        target = Path(str(receipt.get("target")))
+        self.status_label.setText(
+            f"Disc ready: {target.name}. Open it in xemu." if tt.is_disc_image(target)
+            else f"Patched executable saved: {target.name}.")
         try:
             self.apply_state(mod_build.inspect(Path(str(receipt.get("target")))))
         except Exception:  # noqa: BLE001
@@ -398,8 +414,8 @@ class GameplayPatchesPanel(QWidget):
 
     def _failed(self, message: str) -> None:
         self._task = None
-        self.status_label.setText(f"Failed: {message}")
-        QMessageBox.critical(self, "Write failed", message)
+        self.status_label.setText(plain_failure("write the copy", message))
+        show_operation_error(self, "write the copy", message)
         self._refresh()
 
 

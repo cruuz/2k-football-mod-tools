@@ -472,7 +472,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
                 roster_panel.tabs.tabText(index)
                 for index in range(roster_panel.tabs.count())
             ],
-            ["Current Roster Players", "Historical Teams & Players"],
+            ["Current Roster Players", "Historical Teams && Players"],
         )
         self.assertEqual(roster_panel.current_model.rowCount(), 2)
         self.assertEqual(roster_panel.historical_model.rowCount(), 2)
@@ -532,7 +532,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
             [
                 "All Text",
                 "Current Roster Players",
-                "Historical Teams & Players",
+                "Historical Teams && Players",
             ],
         )
         self.assertEqual(panel.current_model.rowCount(), 2)

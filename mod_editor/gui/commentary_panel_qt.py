@@ -37,6 +37,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error
+
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 AUDIO_FILTER = "Audio (*.wav *.mp3 *.flac *.ogg *.m4a *.aac);;All files (*)"
 SPEECH_BANKS = ("cutsceneaudio", "lines", "teams", "players", "coacha", "halftimeaudio",
@@ -134,11 +136,11 @@ class CommentaryPanel(QWidget):
         intro.setWordWrap(True)
         layout.addWidget(intro)
 
-        source_box = QGroupBox("1. Disc image to read")
+        source_box = QGroupBox("1. Game disc (.iso)")
         source_layout = QHBoxLayout(source_box)
         self.source_field = QLineEdit()
         self.source_field.setReadOnly(True)
-        self.source_field.setPlaceholderText("Choose an NFL 2K5 disc image (.iso)")
+        self.source_field.setPlaceholderText("Filled in when you open a disc (top right), or choose one here")
         source_button = QPushButton("Choose…")
         source_button.clicked.connect(self._choose_source)
         source_layout.addWidget(self.source_field, 1)
@@ -204,11 +206,11 @@ class CommentaryPanel(QWidget):
         clip_layout.addWidget(self.loudnorm_check)
         layout.addWidget(clip_box)
 
-        target_box = QGroupBox("4. Copy to write")
+        target_box = QGroupBox("4. Save disc copy as")
         target_layout = QVBoxLayout(target_box)
         row = QHBoxLayout()
         self.target_field = QLineEdit()
-        self.target_field.setPlaceholderText("Where the modified copy will be written")
+        self.target_field.setPlaceholderText("Where the new disc goes (never the source)")
         self.target_field.textChanged.connect(self._refresh)
         target_button = QPushButton("Choose…")
         target_button.clicked.connect(self._choose_target)
@@ -223,10 +225,10 @@ class CommentaryPanel(QWidget):
         layout.addWidget(target_box)
 
         row = QHBoxLayout()
-        self.write_button = QPushButton("Write the copy")
+        self.write_button = QPushButton("Make disc with this line")
         self.write_button.clicked.connect(self._write)
         row.addWidget(self.write_button)
-        self.status_label = QLabel("Choose a disc image to begin.")
+        self.status_label = QLabel("Open your game disc (top right), or choose one above, to begin.")
         self.status_label.setWordWrap(True)
         row.addWidget(self.status_label, 1)
         layout.addLayout(row)
@@ -267,7 +269,7 @@ class CommentaryPanel(QWidget):
 
     # ------------------------------------------------------------------ actions
     def _choose_source(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Choose a disc image", str(Path.home()), IMAGE_FILTER)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso)", str(Path.home()), IMAGE_FILTER)
         if not chosen:
             return
         path = Path(chosen)
@@ -313,7 +315,7 @@ class CommentaryPanel(QWidget):
             self.audio_field.setText(chosen)
 
     def _choose_target(self) -> None:
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the copy",
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?",
                                                  "ESPN NFL 2K5 (commentary).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
@@ -322,7 +324,7 @@ class CommentaryPanel(QWidget):
         source = Path(self.source_field.text())
         target = Path(self.target_field.text())
         if target.exists() and target.resolve() == source.resolve():
-            QMessageBox.warning(self, "Same file", "The copy must not be the source.")
+            QMessageBox.warning(self, "Same file", "Source and output are the same file. Fix: choose a different output file.")
             return
         try:
             start_seconds = float(self.start_field.text() or 0)
@@ -334,11 +336,11 @@ class CommentaryPanel(QWidget):
         audio = Path(self.audio_field.text())
         retail = Path(self.retail_field.text()) if self.retail_field.text().strip() else None
         answer = QMessageBox.question(
-            self, "Write the commentary copy?",
-            f"Source (untouched): {source}\n"
-            + (f"REPLACING existing copy: {target}" if target.exists() else f"New copy: {target}")
-            + f"\n\nStream {stream_id} will be replaced with {audio.name} (cut from {start_seconds:g}s "
-              "to the slot length, padded with silence if shorter).\n\nxemu-only: the RSA signature stays stale.",
+            self, "Make disc with this line?",
+            f"Source (unchanged): {source}\n"
+            + (f"Replace existing disc copy: {target}" if target.exists() else f"New disc: {target}")
+            + f"\n\nLine {stream_id} will be replaced with {audio.name} (cut from {start_seconds:g}s "
+              "to the slot length; a shorter recording is padded with silence).\n\n" + XEMU_LINE,
             QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
@@ -369,13 +371,13 @@ class CommentaryPanel(QWidget):
             f"(+{receipt.get('padded_silence_frames')} silent frames), gate={receipt.get('retail_gate')}, "
             f"SNR {receipt.get('encode_snr_db')} dB. Read-back verified."
         )
-        QMessageBox.information(self, "Commentary copy written",
-                                f"{target}\n\nKeep it xemu-only: the RSA signature cannot be regenerated.")
+        QMessageBox.information(self, "Disc ready",
+                                f"{target}\n\nOpen it in xemu. " + XEMU_LINE)
         self._refresh()
 
     def _failed(self, message: str) -> None:
-        self.status_label.setText(f"Failed: {message}")
-        QMessageBox.critical(self, "Could not write the copy", message)
+        self.status_label.setText(plain_failure("make the disc", message))
+        show_operation_error(self, "make the disc", message)
         self._refresh()
 
 

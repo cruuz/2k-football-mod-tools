@@ -1008,7 +1008,7 @@ class TextRosterPanel(QWidget):
             self._historical_tab = self._build_historical_tab()
             self.tabs.addTab(self._current_tab, "Current Roster Players")
             self.tabs.addTab(
-                self._historical_tab, "Historical Teams & Players"
+                self._historical_tab, "Historical Teams && Players"
             )
         layout.addWidget(self.tabs, 1)
 
@@ -1518,7 +1518,7 @@ class TextRosterPanel(QWidget):
 
         if self.view == "text":
             self._status(
-                f"Text ready • {len(catalog.assets):,} strings",
+                f"Text loaded ({len(catalog.assets):,} items)",
                 detail=(
                     f"Indexed {len(catalog.assets):,} strings "
                     f"({catalog.editable_count:,} Editable) across "
@@ -1529,7 +1529,7 @@ class TextRosterPanel(QWidget):
         assert coverage is not None
         if self.view == "rosters":
             self._status(
-                f"Rosters ready • {coverage.total:,} jersey numbers",
+                "Player names and numbers loaded.",
                 detail=(
                     f"Indexed all {coverage.total:,} jersey numbers: "
                     f"{coverage.current:,} current and "

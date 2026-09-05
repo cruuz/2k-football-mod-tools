@@ -226,9 +226,9 @@ class ModelsPanel(QWidget):
         options.addStretch(1)
         import_layout.addLayout(options)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Source image"))
+        row.addWidget(QLabel("3. Game disc (.iso)"))
         self.source_field = QLineEdit()
-        self.source_field.setPlaceholderText("The disc image to copy (never written)")
+        self.source_field.setPlaceholderText("The game disc to copy (never written); filled in when you open a disc")
         self.source_field.textChanged.connect(self._refresh)
         row.addWidget(self.source_field, 1)
         choose_source = QPushButton("Choose…")
@@ -236,15 +236,15 @@ class ModelsPanel(QWidget):
         row.addWidget(choose_source)
         import_layout.addLayout(row)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Write copy to"))
+        row.addWidget(QLabel("Save disc copy as"))
         self.target_field = QLineEdit()
-        self.target_field.setPlaceholderText("Where the modified copy will be written")
+        self.target_field.setPlaceholderText("Where the new disc goes")
         self.target_field.textChanged.connect(self._refresh)
         row.addWidget(self.target_field, 1)
         choose_target = QPushButton("Choose…")
         choose_target.clicked.connect(self._choose_target)
         row.addWidget(choose_target)
-        self.write_button = QPushButton("Write the copy")
+        self.write_button = QPushButton("Make disc with this model")
         self.write_button.clicked.connect(self._write)
         row.addWidget(self.write_button)
         import_layout.addLayout(row)
@@ -364,7 +364,7 @@ class ModelsPanel(QWidget):
         self.status_label.setText(message)
         self.details.appendPlainText("\n" + message)
         if self.isVisible():                    # never a modal box for a widget nobody can see (tests, headless)
-            QMessageBox.critical(self, "Models", message)
+            QMessageBox.critical(self, "Couldn't finish that", message)
 
     # ------------------------------------------------------------------ catalog
     def reload(self) -> None:
@@ -491,12 +491,12 @@ class ModelsPanel(QWidget):
             self.edited_field.setText(chosen)
 
     def _choose_source(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Choose the disc image to copy", str(Path.home()), IMAGE_FILTER)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose the game disc to copy (.iso)", str(Path.home()), IMAGE_FILTER)
         if chosen:
             self.source_field.setText(chosen)
 
     def _choose_target(self) -> None:
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the copy", "ESPN NFL 2K5 (models).xiso.iso", IMAGE_FILTER)
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?", "ESPN NFL 2K5 (models).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
 

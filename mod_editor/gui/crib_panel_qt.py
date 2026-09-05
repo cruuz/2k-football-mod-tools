@@ -663,7 +663,7 @@ class CribPanel(QWidget):
         actions.addWidget(self.replace_button, 1)
         actions.addWidget(self.revert_button)
         detail_layout.addLayout(actions)
-        self.tabs.addTab(preview_tab, "Preview & Edit")
+        self.tabs.addTab(preview_tab, "Preview && Edit")
 
         model_tab = QWidget()
         model_layout = QVBoxLayout(model_tab)
@@ -710,7 +710,7 @@ class CribPanel(QWidget):
         findings.setObjectName("cribFindings")
         findings.setOpenExternalLinks(False)
         findings.setHtml(CRIB_FINDINGS_HTML)
-        self.tabs.addTab(findings, "Findings & limits")
+        self.tabs.addTab(findings, "What's possible")
         splitter.addWidget(self.tabs)
         splitter.setStretchFactor(0, 6)
         splitter.setStretchFactor(1, 4)

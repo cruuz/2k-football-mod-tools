@@ -36,6 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.gui.ux_text import XEMU_LINE, show_operation_error, source_captions, write_caption
 
 ProgressSink = Callable[[str, int, int], None]
 
@@ -105,13 +106,9 @@ class ThrowTuningPanel(QWidget):
         title = QLabel("Throw Distance & Pass Arc")
         title.setObjectName("throwTitle")
         subtitle = QLabel(
-            "NFL 2K5 caps every throw at a distance that is a curve of the passer's "
-            "arm strength (retail: 55 yards at 99 arm, and the ball never climbs "
-            "higher on a longer throw). These two sliders re-shape the game's own "
-            "curve tables in default.xbe: a higher ceiling scales the whole league "
-            "so mid-tier arms gain a few yards and only elite arms reach the top; "
-            "more arc makes deep balls hang and climb. The patched copy is "
-            "xemu-only (its signature cannot be regenerated)."
+            "Set throw distance and deep-ball flight. The original maximum at 99 Pass Arm "
+            "Strength is 55 yards. The sliders re-shape the game's own curve tables in a copy; "
+            "the source is never changed. " + XEMU_LINE
         )
         subtitle.setObjectName("throwMuted")
         subtitle.setWordWrap(True)
@@ -119,18 +116,19 @@ class ThrowTuningPanel(QWidget):
         root.addWidget(subtitle)
 
         source_row = QHBoxLayout()
-        source_row.addWidget(QLabel("Source"))
+        self.source_caption = QLabel("Game disc (.iso)")
+        source_row.addWidget(self.source_caption)
         self.source_field = QLineEdit()
         self.source_field.setReadOnly(True)
         self.source_field.setPlaceholderText(
-            "Choose a default.xbe or a disc image to read its throw tables (read-only)"
+            "Filled in when you open a disc (top right), or choose a disc / default.xbe here"
         )
         source_row.addWidget(self.source_field, 1)
         self.source_button = QPushButton("Choose…")
         source_row.addWidget(self.source_button)
         root.addLayout(source_row)
 
-        self.source_status = QLabel("Choose a source to read its current throw tables.")
+        self.source_status = QLabel("Open your game disc (top right), or choose a disc / default.xbe here, to read its throw tables.")
         self.source_status.setObjectName("throwMuted")
         self.source_status.setWordWrap(True)
         root.addWidget(self.source_status)
@@ -139,11 +137,12 @@ class ThrowTuningPanel(QWidget):
         root.addWidget(self._build_preview(), 1)
 
         out_row = QHBoxLayout()
-        out_row.addWidget(QLabel("Patched copy"))
+        self.target_caption = QLabel("Save disc copy as")
+        out_row.addWidget(self.target_caption)
         self.target_field = QLineEdit()
         self.target_field.setReadOnly(True)
         self.target_field.setPlaceholderText(
-            "Choose where to save the patched COPY (a new file; the source is never written)"
+            "Where the new copy goes (a new file; the source is never written)"
         )
         out_row.addWidget(self.target_field, 1)
         self.target_button = QPushButton("Choose…")
@@ -154,7 +153,7 @@ class ThrowTuningPanel(QWidget):
         self.reset_button = QPushButton("Reset to retail")
         actions.addWidget(self.reset_button)
         actions.addStretch(1)
-        self.write_button = QPushButton("Write patched copy")
+        self.write_button = QPushButton("Make disc with these changes")
         actions.addWidget(self.write_button)
         root.addLayout(actions)
 
@@ -494,7 +493,7 @@ class ThrowTuningPanel(QWidget):
     # -------------------------------------------------------------- source
     def _choose_source(self) -> None:
         chosen, _filter = QFileDialog.getOpenFileName(
-            self, "Choose default.xbe or a disc image", str(Path.home()), SOURCE_FILTER,
+            self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER,
         )
         if chosen:
             self.load_source(Path(chosen))
@@ -513,6 +512,11 @@ class ThrowTuningPanel(QWidget):
 
         self._report = report
         self.source_field.setText(str(report["path"]))
+        is_image = tt.is_disc_image(str(report["path"]))
+        source_caption, target_caption = source_captions(is_image)
+        self.source_caption.setText(source_caption)
+        self.target_caption.setText(target_caption)
+        self.write_button.setText(write_caption(is_image))
         settings = report["settings"]
         assert isinstance(settings, tt.TuningSettings)
         self.set_settings(settings)
@@ -626,7 +630,7 @@ class ThrowTuningPanel(QWidget):
         is_image = bool(source) and tt.is_disc_image(source)
         default_name = "ESPN NFL 2K5 (throw tuned).xiso.iso" if is_image else "default_throw_tuned.xbe"
         chosen, _filter = QFileDialog.getSaveFileName(
-            self, "Choose where to save the patched copy", default_name,
+            self, "Where should the new disc go?" if is_image else "Save the patched executable as", default_name,
             IMAGE_FILTER if is_image else XBE_FILTER,
         )
         if chosen:
@@ -682,7 +686,7 @@ class ThrowTuningPanel(QWidget):
         top = self.preview_rows()[-1]
         confirmation = QMessageBox.question(
             self,
-            "Write a patched copy?",
+            "Make disc with these changes?" if is_image else "Save a patched executable?",
             f"Ceiling {settings.max_deep_yards:g} yd at 99 arm, arc {int(round(settings.arc * 100))} % "
             f"({top.hang_seconds:.1f} s hang, {top.apex_yards:.0f} yd apex on the longest ball)"
             + ("\nCatching/Interception-slider patch: ON (executable patch, Catching menu max 200)" if want_catch else "")
@@ -692,11 +696,11 @@ class ThrowTuningPanel(QWidget):
             + ("\nReturner fix: ON (executable patch, franchise auto depth chart)" if want_returner else "")
             + ("\nNFL-shaped development: ON (aging curves + archetype weights)" if want_progression else "")
             + ("\nEDGE rename: ON (position tables, long names, formation slots" + (", historic-roster names, trivia" if is_image else "") + ")" if want_edge else "")
-            + f"\n\nSource (untouched): {source}\n"
-            + (f"REPLACING existing copy: {target}" if overwrite else f"New copy: {target}")
-            + ("\n\nThis copies the whole disc image, then patches default.xbe inside the copy."
+            + f"\n\nSource (unchanged): {source}\n"
+            + (f"Replace existing copy: {target}" if overwrite else f"New {'disc' if is_image else 'executable'}: {target}")
+            + ("\n\nThis copies the whole disc, then patches default.xbe inside the copy."
                if is_image else "")
-            + "\n\nThe copy is xemu-only: its RSA signature stays stale.",
+            + "\n\n" + XEMU_LINE,
             QMessageBox.Ok | QMessageBox.Cancel,
             QMessageBox.Cancel,
         )
@@ -736,16 +740,13 @@ class ThrowTuningPanel(QWidget):
             if result.get("progression") == "applied" and want_progression:
                 summary = (summary + ", " if summary else "") + "NFL-shaped development"
             self.status_label.setText(
-                f"Patched copy written to {target.name}: {summary} "
-                f"({result.get('changed_byte_count')} bytes changed, digest recomputed, "
-                "read-back verified)."
+                f"{'Disc ready' if is_image else 'Patched executable saved'}: {target.name}. Changes: {summary} "
+                f"({result.get('changed_byte_count')} bytes changed, read-back verified)."
             )
             QMessageBox.information(
                 self,
-                "Patched copy written",
-                f"{target}\n\nTables rewritten: {summary}.\n\n"
-                "Keep this xemu-only: the RSA signature cannot be regenerated, so real "
-                "hardware will reject it.",
+                "Disc ready" if is_image else "Patched executable saved",
+                f"{target}\n\nChanges: {summary}.\n\n" + XEMU_LINE,
             )
             try:
                 self.apply_report(tt.read_any(target))
@@ -802,7 +803,7 @@ class ThrowTuningPanel(QWidget):
     def _failed(self, message: str) -> None:
         self.status_label.setText(f"Failed: {message}")
         self.error_raised.emit(message)
-        QMessageBox.warning(self, "Throw tuning", message)
+        show_operation_error(self, "finish the throw tuning", message)
 
     def _refresh_controls(self) -> None:
         ready = not self._busy

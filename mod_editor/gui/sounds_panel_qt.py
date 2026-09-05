@@ -39,6 +39,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error
+
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 WAV_FILTER = "WAV audio (*.wav);;All files (*)"
 STANDALONE = "audo"
@@ -460,11 +462,11 @@ class SoundsPanel(QWidget):
         intro.setWordWrap(True)
         layout.addWidget(intro)
 
-        source_box = QGroupBox("1. Disc image to read")
+        source_box = QGroupBox("1. Game disc (.iso)")
         source_layout = QHBoxLayout(source_box)
         self.source_field = QLineEdit()
         self.source_field.setReadOnly(True)
-        self.source_field.setPlaceholderText("Choose an NFL 2K5 disc image (.iso)")
+        self.source_field.setPlaceholderText("Filled in when you open a disc (top right), or choose one here")
         self.source_button = QPushButton("Choose…")
         self.source_button.clicked.connect(self._choose_source)
         source_layout.addWidget(self.source_field, 1)
@@ -537,12 +539,12 @@ class SoundsPanel(QWidget):
         clip_layout.addWidget(self.fit_label)
         layout.addWidget(clip_box)
 
-        target_box = QGroupBox("4. Copy to write")
+        target_box = QGroupBox("4. Save disc copy as")
         target_layout = QVBoxLayout(target_box)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Write copy to"))
+        row.addWidget(QLabel("File"))
         self.target_field = QLineEdit()
-        self.target_field.setPlaceholderText("Where the modified copy will be written (never the source)")
+        self.target_field.setPlaceholderText("Where the new disc goes (never the source)")
         self.target_field.textChanged.connect(self._refresh)
         target_button = QPushButton("Choose…")
         target_button.clicked.connect(self._choose_target)
@@ -559,14 +561,14 @@ class SoundsPanel(QWidget):
         layout.addWidget(target_box)
 
         row = QHBoxLayout()
-        self.write_button = QPushButton("Write sound copy")
+        self.write_button = QPushButton("Make disc with this sound")
         self.write_button.clicked.connect(self._write)
         row.addWidget(self.write_button)
-        self.verify_button = QPushButton("Verify copy")
+        self.verify_button = QPushButton("Check the disc")
         self.verify_button.setToolTip("Re-read the copy and check every payload holds exactly the encoded WAV.")
         self.verify_button.clicked.connect(self._verify)
         row.addWidget(self.verify_button)
-        self.status_label = QLabel("Choose a disc image to begin.")
+        self.status_label = QLabel("Open your game disc (top right), or choose one above, to begin.")
         self.status_label.setWordWrap(True)
         self.status_label.setAccessibleName("Sounds status")
         row.addWidget(self.status_label, 1)
@@ -768,7 +770,7 @@ class SoundsPanel(QWidget):
 
     # ------------------------------------------------------------------ actions
     def _choose_source(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Choose a disc image", str(Path.home()), IMAGE_FILTER)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso)", str(Path.home()), IMAGE_FILTER)
         if chosen:
             self.load_source(Path(chosen))
 
@@ -778,7 +780,7 @@ class SoundsPanel(QWidget):
             self.audio_field.setText(chosen)
 
     def _choose_target(self) -> None:
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the copy",
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?",
                                                  "ESPN NFL 2K5 (sounds).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
@@ -814,7 +816,7 @@ class SoundsPanel(QWidget):
         source = self._catalog.source
         target = Path(self.target_field.text().strip())
         if _same_file(source, target):
-            QMessageBox.warning(self, "Same file", "The copy must not be the source.")
+            QMessageBox.warning(self, "Same file", "Source and output are the same file. Fix: choose a different output file.")
             return
         wav = Path(self.audio_field.text().strip())
         retail = Path(self.retail_field.text().strip()) if self.retail_field.text().strip() else None
@@ -831,11 +833,11 @@ class SoundsPanel(QWidget):
             gate = ("retail packs: every span is compared with the retail bytes first" if packs_ok
                     else "NO retail packs folder: the bank spans are written without a retail check")
         answer = QMessageBox.question(
-            self, "Write the sound copy?",
-            f"Source (untouched): {source}\n"
-            + (f"REPLACING existing copy: {target}" if target.exists() else f"New copy: {target}")
-            + f"\n\n{what} will be replaced with {wav.name}.\n{self.fit_label.text()}\n\nGate — {gate}."
-              "\n\nxemu-only: the RSA signature stays stale.",
+            self, "Make disc with this sound?",
+            f"Source (unchanged): {source}\n"
+            + (f"Replace existing disc copy: {target}" if target.exists() else f"New disc: {target}")
+            + f"\n\n{what} will be replaced with {wav.name}.\n{self.fit_label.text()}\n\nCheck before writing — {gate}."
+              "\n\n" + XEMU_LINE,
             QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
@@ -913,13 +915,13 @@ class SoundsPanel(QWidget):
             f"Written: {target.name}. {len(rows)} payload(s) replaced. Receipt: "
             f"{Path(str(receipt.get('receipt_path'))).name}"
         )
-        QMessageBox.information(self, "Sound copy written",
-                                f"{target}\n\nKeep it xemu-only: the RSA signature cannot be regenerated.")
+        QMessageBox.information(self, "Disc ready",
+                                f"{target}\n\nOpen it in xemu. " + XEMU_LINE)
         self._refresh()
 
     def _failed(self, message: str) -> None:
-        self.status_label.setText(f"Failed: {message}")
-        QMessageBox.critical(self, "Could not complete", message)
+        self.status_label.setText(plain_failure("finish that", message))
+        show_operation_error(self, "finish that", message)
         self._refresh()
 
 

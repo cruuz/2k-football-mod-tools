@@ -1611,7 +1611,7 @@ if PYQT5_AVAILABLE:
                 "Export an audio replacement template"
             )
             self.import_replacement_pack_button = QPushButton(
-                "Preview & import pack…"
+                "Preview && import pack…"
             )
             self.import_replacement_pack_button.setObjectName("audioPrimaryButton")
             self.import_replacement_pack_button.setAccessibleName(

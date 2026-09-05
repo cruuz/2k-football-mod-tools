@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, source_captions
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
@@ -81,22 +82,25 @@ class BuildPanel(QWidget):
         title = QLabel("Build")
         title.setObjectName("throwTitle")
         root.addWidget(title)
-        intro = QLabel("Pick a source, tick what you want, write one patched copy. The source is never written. "
-                       "Everything here is xemu-only (the RSA signature stays stale).")
+        intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
+                       "This uses the selections on this tab; project edits (art, text, audio) use Make disc "
+                       "from project on their own pages. " + XEMU_LINE)
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
 
         src = QHBoxLayout()
-        src.addWidget(QLabel("Source"))
+        self.source_caption = QLabel("Game disc (.iso)")
+        src.addWidget(self.source_caption)
         self.source_field = QLineEdit()
+        self.source_field.setPlaceholderText("Filled in when you open a disc (top right), or choose a disc / default.xbe here")
         self.source_field.setReadOnly(True)
         src.addWidget(self.source_field, 1)
         self.source_button = QPushButton("Choose…")
         self.source_button.clicked.connect(self._choose_source)
         src.addWidget(self.source_button)
         root.addLayout(src)
-        self.source_status = QLabel("Choose a default.xbe or a disc image to read what it already carries.")
+        self.source_status = QLabel("Open your game disc (top right), or choose a disc / default.xbe here, to read what it already carries.")
         self.source_status.setObjectName("throwMuted")
         self.source_status.setWordWrap(True)
         root.addWidget(self.source_status)
@@ -296,7 +300,8 @@ class BuildPanel(QWidget):
         root.addWidget(pres)
 
         out = QHBoxLayout()
-        out.addWidget(QLabel("Write copy to"))
+        self.target_caption = QLabel("Save disc copy as")
+        out.addWidget(self.target_caption)
         self.target_field = QLineEdit()
         out.addWidget(self.target_field, 1)
         self.target_button = QPushButton("Choose…")
@@ -305,7 +310,8 @@ class BuildPanel(QWidget):
         root.addLayout(out)
 
         actions = QHBoxLayout()
-        self.build_button = QPushButton("Build patched copy")
+        self.build_button = QPushButton("Make my disc")
+        self.build_button.setObjectName("primaryButton")
         self.build_button.clicked.connect(self._build)
         actions.addWidget(self.build_button)
         actions.addStretch(1)
@@ -337,6 +343,9 @@ class BuildPanel(QWidget):
         self._state = state
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"
+        source_caption, target_caption = source_captions(is_image)
+        self.source_caption.setText(source_caption)
+        self.target_caption.setText(target_caption)
         bits = []
         settings = state.get("throw")
         if isinstance(settings, tt.TuningSettings):
@@ -532,13 +541,13 @@ class BuildPanel(QWidget):
 
     # ------------------------------------------------------------ actions
     def _choose_source(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Choose default.xbe or a disc image", str(Path.home()), SOURCE_FILTER)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
         if not chosen:
             return
         try:
             self.apply_state(mod_build.inspect(Path(chosen)))
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.critical(self, "Could not read the source", str(exc))
+            show_operation_error(self, "read that file", str(exc))
 
     def _choose_roster_edits(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose a roster-edits document", str(Path.home()),
@@ -576,7 +585,7 @@ class BuildPanel(QWidget):
 
     def _choose_target(self) -> None:
         is_image = bool(self.source_field.text()) and tt.is_disc_image(self.source_field.text())
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the patched copy",
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?" if is_image else "Save the patched executable as",
                                                  "ESPN NFL 2K5 (modded).xiso.iso" if is_image else "default_modded.xbe",
                                                  IMAGE_FILTER if is_image else XBE_FILTER)
         if chosen:
@@ -625,8 +634,8 @@ class BuildPanel(QWidget):
         self._task = None
         self.progress_bar.hide()
         self.progress_label.setText("")
-        self.status_label.setText(f"Failed: {message}")
-        QMessageBox.critical(self, "Build failed", message)
+        self.status_label.setText(plain_failure("make the disc", message))
+        show_operation_error(self, "make the disc", message)
         self._refresh()
 
 
