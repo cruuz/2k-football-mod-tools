@@ -6,7 +6,7 @@ booted**; §8 says exactly what a boot would have to show.
 
 Registry row: `madden09ps2.playbooks.databases`, surface `scripts_config`,
 page `playbooks`. Lane: `mod_editor/games/madden09_ps2/playbooks_lane.py`.
-Evidence document: `docs/product/evidence/madden09_ps2/playbook-databases.json`.
+Evidence document: `docs/product/measured/madden09_ps2/playbook-databases.json`.
 Validators: `tools/validate_madden09_ps2_playbooks.{sh,bat}`.
 
 **Evidence tags.** **[M]** measured here on the owner's retail

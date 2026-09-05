@@ -421,7 +421,7 @@
         "docs/product/MADDEN09_PS2_PLAYBOOKS.md",
         "docs/product/MADDEN09_PS2_MODULE.md",
         "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/evidence/madden09_ps2/playbook-databases.json"
+        "docs/product/measured/madden09_ps2/playbook-databases.json"
       ],
       "game": "madden09_ps2",
       "gui": {

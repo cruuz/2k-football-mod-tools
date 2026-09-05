@@ -23,6 +23,7 @@
     "mod_editor.games.madden09_ps2.disc_identity",
     "mod_editor.games.madden09_ps2.inventory_lane",
     "mod_editor.games.madden09_ps2.mmap_art",
+    "mod_editor.games.madden09_ps2.playbooks_lane",
     "mod_editor.games.madden09_ps2.uniform_art",
     "mod_editor.games.madden09_ps2.team_data",
     "mod_editor.games.madden09_ps2.text_lane",
@@ -30,8 +31,7 @@
     "madden09_ps2_texture_identities",
     "mod_editor.games.madden09_ps2.identity_lane",
     "mod_editor.games._formats.ea_schl",
-    "mod_editor.games.madden09_ps2.audio_lane",
-    "mod_editor.games.madden09_ps2.playbooks_lane"
+    "mod_editor.games.madden09_ps2.audio_lane"
   ],
   "tool_modules": [],
   "allowlist_patterns": [
