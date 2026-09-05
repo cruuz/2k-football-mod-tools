@@ -177,11 +177,6 @@ def sites(layout: str = "retail") -> tuple[Site, ...]:
         raise DepthLockError("unknown depth-chart layout")
     swap_before, swap_after = bytearray(RETAIL_SWAP), bytearray(PATCHED_SWAP)
     swap_before[3:5] = swap_after[3:5] = bytes.fromhex("85c0" if layout == "retail" else "a801")
-def sites(stride: int = 11, *, special: bool = False) -> tuple[Site, ...]:
-    if stride not in (11, 13):
-        raise DepthLockError("unknown depth-chart stride")
-    swap_before, swap_after = bytearray(RETAIL_SWAP), bytearray(PATCHED_SWAP)
-    swap_before[3:5] = swap_after[3:5] = bytes.fromhex("a801" if special or stride == 13 else "85c0")
     values = (
         ("compactor", COMPACT_VA, RETAIL_COMPACT, PATCHED_COMPACT),
         ("weekly_rank_stage", RANK_STAGE_VA, RETAIL_RANK_STAGE, PATCHED_RANK_STAGE),
@@ -204,14 +199,6 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     if rows_state == "foreign":
         raise DepthLockError("unknown or mixed retail/SPECIAL depth-chart layout")
     layout = "special" if rows_state == "applied" else "retail"
-def _context(payload: bytes) -> tuple[XbeImage, int, bool]:
-    from . import nfl2k5_depth_chart_rows as rows
-    image = XbeImage(payload)
-    stride = modern.layout_stride(payload)
-    # SPECIAL now relocates the table while keeping unit stride 11. Its
-    # pinned bench block still returns at 0x244464 with EAX=encoded chain,
-    # exactly the ABI the compactor already handles. No runtime bytes change.
-    special = modern.layout_table(payload) == rows.TABLE_VA
     if hashlib.sha256(image.read(0x2BDCF0, 0xF0)).hexdigest() != SORT_PREFIX_SHA256:
         raise DepthLockError("unknown native weekly pointer-sort frame")
     if hashlib.sha256(image.read(0x242BB0, 0x4A)).hexdigest() != FALLBACK_SHA256:
@@ -224,17 +211,6 @@ def _context(payload: bytes) -> tuple[XbeImage, int, bool]:
         if section is None or section.name != ".text" or section.flags != 0x16:
             raise DepthLockError("expected retail read-only text mapping")
     return image, layout
-    if image.read(rows.BENCH_VA, len(rows.RETAIL_BENCH)) != (
-            rows.bench_bytes() if special or stride == 13 else rows.RETAIL_BENCH):
-        raise DepthLockError("unknown bench promotion call sites")
-    if image.read(returners.SITE_VA, returners.SITE_SIZE) not in (
-            returners.RETAIL_SITE, returners.site_bytes()):
-        raise DepthLockError("unknown returner selection loop")
-    for site in sites(stride, special=special):
-        section = image.section(site.va, len(site.before))
-        if section is None or section.name != ".text" or section.flags != 0x16:
-            raise DepthLockError("expected retail read-only text mapping")
-    return image, stride, special
 
 
 def read_any(payload: bytes) -> dict[str, object]:
@@ -243,9 +219,6 @@ def read_any(payload: bytes) -> dict[str, object]:
         image, layout = _context(payload)
         states = {}
         for site in sites(layout):
-        image, stride, special = _context(payload)
-        states = {}
-        for site in sites(stride, special=special):
             got = image.read(site.va, len(site.before))
             states[site.label] = ("retail" if got == site.before else
                                   "applied" if got == site.after else "foreign")
@@ -253,7 +226,6 @@ def read_any(payload: bytes) -> dict[str, object]:
         state = next(iter(unique)) if len(unique) == 1 else "foreign"
         return {"status": state, "sites": states, "stride": modern.SLOTS_PER_UNIT,
                 "layout": layout}
-        return {"status": state, "sites": states, "stride": stride, "special": special}
     except (ValueError, struct.error, IndexError) as exc:
         return {"status": "foreign", "reason": str(exc)}
 
@@ -275,11 +247,6 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     sections = _sections(payload)
     touched, edits = set(), []
     for site in sites(layout):
-    image, stride, special = _context(payload)
-    buf = bytearray(payload)
-    sections = _sections(payload)
-    touched, edits = set(), []
-    for site in sites(stride, special=special):
         off = image.offset(site.va, len(site.before))
         buf[off:off + len(site.after)] = site.after
         touched.add(_section_for_offset(sections, off).index)
