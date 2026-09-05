@@ -17,6 +17,7 @@ from unittest.mock import patch
 from mod_editor.core import nfl2k5_dynamic_kickoff as dk
 from mod_editor.core import nfl2k5_kick_rules as kr
 from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest, RETAIL_XBE_SHA256
+from tools import nfl2k5_kickoff_alignment as ka
 
 try:
     import unicorn as uni
@@ -105,6 +106,7 @@ class Machine:
     BALL, BALL_POS = 0x2010000, 0x2010100
     CONTACT = 0x2010200
     CLOCK, GAME, DESC, NODE, OPS = 0x2011000, 0x2012000, 0x2013000, 0x2014000, 0x2014100
+    KICK_BOOK, RECEIVE_BOOK = 0x2015000, 0x2016000
     STACK, STOP, CALLBACK, COUNTER, SCALAR = 0x3028000, 0x3030000, 0x3030010, 0x3030100, 0x3030200
 
     def __init__(self, payload, direction=1, kick_yard=35, phase=2, onside=False,
@@ -141,16 +143,33 @@ class Machine:
             self.put(team + 8, team + 0x100)
             self.put(team + 0x10C, team + 0x200)
             self.f32(team + 0x204, sign)
+        for team, book, kind, xz in (
+            (self.KICK_TEAM, self.KICK_BOOK, 10 if onside else 8, ka.kickoff_xz_2026()),
+            (self.RECEIVE_TEAM, self.RECEIVE_BOOK, 11 if onside else 9, ka.KICK_RETURN_XZ_2026),
+        ):
+            self.put(team + 0xC, team + 0x300)
+            self.put(team + 0x308, book + 0x200)
+            self.put(team + 0x20, book)
+            self.put(book + 0x34, 1)  # formation count, used by E0670
+            self.put(book + 0x44, book + 0x200)
+            self.put(book + 0x204, kind << 8)
+            slots = bytearray(ka.SLOTS_SIZE)
+            for slot in range(11): slots[slot * 14 + 1] = 1  # retail stance
+            self.uc.mem_write(book + 0x21A, ka.with_xz(slots, xz))
         for player, team, slot, human in ((self.KICKER, self.KICK_TEAM, 0, human_kicker),
                                           (self.RETURNER, self.RECEIVE_TEAM, 0, human_returner),
                                           (self.COVERAGE, self.KICK_TEAM, 1, False),
                                           (self.BLOCKER, self.RECEIVE_TEAM, 2, False)):
             self.put(player + 0x1C, 1)
+            self.f32(player + 8, 1)
             self.put(player + 0x38, team)
+            self.put(player + 0x3C, player + 0xF00)
+            self.uc.mem_write(player + 0x2C, bytes([2 if player == self.KICKER else 4 if player == self.RETURNER else 15]))
             self.uc.mem_write(player + 0x2E, bytes([slot]))
             self.put(player + 0xC, player + 0x100)
             self.put(player + 0x100, 0 if human else 0xFFFFFFFF)
             self.put(player + 0x20, player + 0x200)
+            self.put(player + 0x61C, self.NODE)
             self.put(player + 0x10, player + 0x900)
             self.put(player + 0x18, player + 0xB00)
             self.put(player + 0x14, player + 0xC00)
@@ -302,6 +321,165 @@ class RetailExecutionTests(unittest.TestCase):
                     old = m.get(m.COUNTER)
                     m.run(dk.HOOKS["plan"][0], ecx=m.COVERAGE)
                     self.assertEqual(m.get(m.COUNTER), old + 1)
+
+    def test_retail_formation_reader_then_los_clamp_reproduces_and_fixes_coverage(self):
+        # Execute retail type lookup, coordinate decoding, direction transform,
+        # and target clamp. Only the unrelated heading/scene queries are stubs.
+        for direction in (-1, 1):
+            for payload, fixed in ((self.base, False), (self.payload, True)):
+                m = Machine(payload, direction=direction)
+                m.put(dk.PLAY_STATE, 12)
+                m.fpu_stubs[0x187780] = 0
+                m.stub_pops[0x136D40] = 0
+                for slot, (x, z) in enumerate(ka.kickoff_xz_2026()):
+                    with self.subTest(direction=direction, fixed=fixed, slot=slot):
+                        who = m.KICKER if slot == 0 else m.COVERAGE
+                        m.uc.mem_write(who + 0x2E, bytes([slot]))
+                        tee = m.readf(m.CTX + 0x18)
+                        # 154EC0's initial placement uses this type-8 book lookup.
+                        m.run(0x18B210, ecx=who, edx=m.CONTACT, args=(m.SCALAR,))
+                        self.assertAlmostEqual(m.readf(m.CONTACT), direction * x, places=3)
+                        self.assertAlmostEqual(m.readf(m.CONTACT + 8), tee + direction * z, places=3)
+                        # The later selected-play target passes through 183F60.
+                        m.run(0x1840B0, ecx=who, edx=m.CONTACT)
+                        expected = tee + direction * z if fixed or slot == 0 else tee - direction * 94.5
+                        self.assertAlmostEqual(m.readf(m.CONTACT + 8), expected, places=3)
+                        if slot:
+                            self.assertAlmostEqual(m.readf(m.CONTACT), direction * x, places=3)
+                        args = (m.get(m.CONTACT), m.get(m.CONTACT + 8))
+                        m.run(dk.HOOKS["position"][0], ecx=who, args=args)
+                        self.assertAlmostEqual(m.readf(who + 0xB38), expected, places=3)
+                        self.assertEqual(m.flags(), 0, "lineup must work before the launch latch")
+
+    def test_receiving_slots_retain_setup_zone_and_deep_coordinates(self):
+        for direction in (-1, 1):
+            m = Machine(self.payload, direction=direction)
+            m.put(dk.PLAY_STATE, 12)
+            m.stub_pops[0x136D40] = 0
+            for slot, (x, z) in enumerate(ka.KICK_RETURN_XZ_2026):
+                with self.subTest(direction=direction, slot=slot):
+                    who = m.RETURNER if slot < 2 else m.BLOCKER
+                    m.uc.mem_write(who + 0x2E, bytes([slot]))
+                    for reader in (0x18B210, 0x1840B0):
+                        m.run(reader, ecx=who, edx=m.CONTACT,
+                              args=(m.SCALAR,) if reader == 0x18B210 else ())
+                        self.assertAlmostEqual(m.readf(m.CONTACT), direction * x, places=3)
+                        self.assertAlmostEqual(m.readf(m.CONTACT + 8),
+                                               m.readf(m.CTX + 0x18) + direction * z, places=3)
+
+    def test_all_private_books_feed_the_actual_lineup_and_target_readers(self):
+        packs = RETAIL.parent / "vc_53450030"
+        if not packs.is_dir():
+            self.skipTest(f"private extracted PLAY packs required at {packs}; no books are distributed")
+        with ka.recode.OuterImage(packs) as archive:
+            books = ka._load(archive)
+        names = {book.name for book, _refs in books}
+        self.assertEqual(len(names), 36)
+        self.assertTrue({"GEN", "reference", "Editor", "WCO"} <= names)
+        self.assertNotIn("PRACTICE", names)
+        for direction in (-1, 1):
+            m = Machine(self.payload, direction=direction)
+            m.put(dk.PLAY_STATE, 12)
+            m.fpu_stubs[0x187780] = 0
+            m.stub_pops[0x136D40] = 0
+            forms = 0x2020000
+            m.uc.mem_map(forms, 0x10000)
+            for book, refs in books:
+                # Keep every real formation, in its real index order: E0B40
+                # must find types 8/9, including GEN/reference/Editor.
+                m.uc.mem_write(forms, book.body[ka.FORMATION_BASE:ka.FORMATION_BASE + 50 * ka.FORMATION_SIZE])
+                for team, runtime_book, name, xz in (
+                    (m.KICK_TEAM, m.KICK_BOOK, ka.KICKOFF_NAME, ka.kickoff_xz_2026()),
+                    (m.RECEIVE_TEAM, m.RECEIVE_BOOK, ka.KICK_RETURN_NAME, ka.KICK_RETURN_XZ_2026),
+                ):
+                    ref = refs[name]
+                    form = forms + ref.index * ka.FORMATION_SIZE
+                    m.uc.mem_write(form + ka.SLOT_BASE, ka.with_xz(ref.slots, xz))
+                    m.put(runtime_book + 0x34, 50)
+                    m.put(runtime_book + 0x44, forms)
+                    m.put(team + 0x308, form)
+                for name, xz in ((ka.KICKOFF_NAME, ka.kickoff_xz_2026()),
+                                 (ka.KICK_RETURN_NAME, ka.KICK_RETURN_XZ_2026)):
+                    for slot, (x, z) in enumerate(xz):
+                        with self.subTest(book=book.name, formation=name, direction=direction, slot=slot):
+                            who = (m.KICKER if slot == 0 else m.COVERAGE) if name == ka.KICKOFF_NAME else m.BLOCKER
+                            m.uc.mem_write(who + 0x2E, bytes([slot]))
+                            for reader in (0x18B210, 0x1840B0):
+                                m.run(reader, ecx=who, edx=m.CONTACT,
+                                      args=(m.SCALAR,) if reader == 0x18B210 else ())
+                                self.assertAlmostEqual(m.readf(m.CONTACT + 8),
+                                                       m.readf(m.CTX + 0x18) + direction * z, places=3)
+                                if slot or name != ka.KICKOFF_NAME or reader == 0x18B210:
+                                    self.assertAlmostEqual(m.readf(m.CONTACT), direction * x, places=3)
+
+    def test_ready_and_approach_hold_before_launch_without_stalling_lineup(self):
+        for direction in (-1, 1):
+            for event in ("ground", "touch"):
+                m = Machine(self.payload, direction=direction)
+                m.put(m.CTX + 0x1C4, 0)  # last-kicker pointer is not available yet
+                m.put(dk.PLAY_STATE, 12)
+                m.run(0x158C90)  # neither team is ready; keep lining up
+                self.assertEqual(m.get(dk.PLAY_STATE), 12)
+                m.put(m.KICK_TEAM + 0x324, 2)
+                m.put(m.RECEIVE_TEAM + 0x324, 2)
+                m.put(0xE5FC28, m.KICK_TEAM + 0x400)
+                m.put(0xE5FC68, m.RECEIVE_TEAM + 0x400)
+                m.stub_pops[0xB45A0] = 0  # unrelated game-record bookkeeping
+                for who, slots in ((m.COVERAGE, range(1, 11)), (m.BLOCKER, range(2, 11))):
+                    for slot in slots:
+                        with self.subTest(direction=direction, event=event, who=who, slot=slot):
+                            m.uc.mem_write(who + 0x2E, bytes([slot]))
+                            m.put(dk.PLAY_STATE, 12)
+                            old = m.get(m.COUNTER)
+                            m.run(dk.HOOKS["plan"][0], ecx=who)
+                            self.assertEqual(m.get(m.COUNTER), old + 1)
+                            xz = ka.kickoff_xz_2026()[slot] if who == m.COVERAGE else ka.KICK_RETURN_XZ_2026[slot]
+                            args = tuple(struct.unpack("<2I", struct.pack("<2f", direction * xz[0],
+                                         m.readf(m.CTX + 0x18) + direction * xz[1])))
+                            m.run(dk.HOOKS["position"][0], ecx=who, args=args)
+                            m.put(0xE60268, who)
+                            m.run(0x28DFE0)
+                            previous = bytes(m.uc.mem_read(who + 0xB30, 48))
+                            for state in (13, 14):
+                                if state == 13:
+                                    m.run(0x158C90)  # actual readiness queries and state-13 write
+                                else:
+                                    m.run(0xB6F30, stop=0xB6FBD)  # actual state-14 transition
+                                self.assertEqual(m.get(dk.PLAY_STATE), state)
+                                old = m.get(m.COUNTER)
+                                m.run(dk.HOOKS["plan"][0], ecx=who)
+                                m.run(dk.HOOKS["motion"][0], esi=who)
+                                m.uc.mem_write(who + 0xB30, bytes(48))
+                                m.run(dk.HOOKS["position"][0], ecx=who, args=(0, 0))
+                                self.assertEqual(m.get(m.COUNTER), old)
+                                self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 48)), previous)
+                                self.assertEqual(m.flags(), 0)
+                for who, slot in ((m.KICKER, 0), (m.RETURNER, 0), (m.RETURNER, 1)):
+                    m.uc.mem_write(who + 0x2E, bytes([slot]))
+                    old = m.get(m.COUNTER)
+                    m.run(dk.HOOKS["plan"][0], ecx=who)
+                    self.assertEqual(m.get(m.COUNTER), old + 1)
+                m.put(m.CTX + 0x1C4, m.KICKER)
+                m.launch()
+                m.position(0, direction * 3600)
+                m.event(event)
+                for who in (m.COVERAGE, m.BLOCKER):
+                    old = m.get(m.COUNTER)
+                    m.run(dk.HOOKS["plan"][0], ecx=who)
+                    self.assertEqual(m.get(m.COUNTER), old + 1)
+
+    def test_lineup_exception_is_scoped_to_normal_kickoff_coverage(self):
+        for phase, kind, who_name in ((1, 8, "COVERAGE"), (4, 8, "COVERAGE"),
+                                      (2, 10, "COVERAGE"), (2, 8, "KICKER")):
+            outputs = []
+            for payload in (self.base, self.payload):
+                m = Machine(payload, phase=phase, onside=kind == 10)
+                who = getattr(m, who_name)
+                m.f32(m.CONTACT, 1000)
+                m.f32(m.CONTACT + 8, 914.4)  # force the retail clamp to run
+                m.run(0x183F60, ecx=who, edx=m.CONTACT)
+                outputs.append(bytes(m.uc.mem_read(m.CONTACT, 16)))
+            self.assertEqual(outputs[0], outputs[1], (phase, kind, who_name))
 
     def test_first_contact_and_touchback_spots_2024_2025(self):
         for direction in (-1, 1):

@@ -2,7 +2,7 @@
 
 Pair with kick_rules (35-yard tee) and the playbook kickoff_alignment tool.
 No timer releases the hold: ground/player contact latches the first field class.
-See ASTRA_KICKOFF_REPORT.md for evidence limits and WIRING.md for integration.
+See ASTRA_KICKOFF_FIX_REPORT.md for the lineup clamp and pre-launch hold fix.
 
 Runtime storage is ten previously unreferenced bytes on the writable shared
 .rdata/.data page. 0xA69970 and 0xA69974..7F belong to other patches. Settings
@@ -58,6 +58,7 @@ HOOKS = {
     "position": (0x2CC4F0, bytes.fromhex("518b4114d94048")),
     "spot": (0xB65CC, bytes.fromhex("a18002e600")),
     "reset": (0x1C9399, bytes.fromhex("a1a0d95000")),
+    "lineup": (0x183F60, bytes.fromhex("558bec83e4f0")),
 }
 
 
@@ -225,16 +226,38 @@ def _code(settings):
     # bookkeeping completes before the next-play record is constructed.
     label("touch_done"); restore(); replay("touch")
 
-    # EAX=1 only for the 19 coverage/setup players. Kicker and two deep slots
-    # retain their routines; referees/bench actors bypass it.
+    # 183F60 otherwise clamps the formation's +25-yard coverage target back
+    # behind the tee at 184050. This runs BEFORE launch, so ACTIVE is not a
+    # valid guard. Only normal kickoff coverage bypasses the retail clamp.
+    label("lineup")
+    save()
+    b("8b41383b05" + imm(POSSESSION)); j("0f85", "lineup_go")
+    call("aligned_roles"); b("85c0"); j("0f84", "lineup_go")
+    restore(); b("c3")
+    label("lineup_go"); restore(); replay("lineup")
+
+    # State 12 is still lining up; 158C90 advances to 13 only when both teams
+    # are ready. State 14 starts before the animation's 222CA0 ball launch.
+    # Hold through that approach as well as flight, without freezing setup.
     label("held")
-    b("31c0")
-    guard("held_no", live=True)
+    b("a1" + imm(PLAY_STATE) + "83e80d83f801"); j("0f87", "held_no")
     b("f605" + imm(FLAGS) + "07"); j("0f85", "held_no")
+    # EAX=1 only for the 19 coverage/setup slots of a normal kickoff. The
+    # selected kicking formation is available before CTX+1C4 (last kicker).
+    # Onside type 10 and safety phase 1 retain their retail behavior.
+    label("aligned_roles")
+    b("833d" + imm(PHASE) + "02"); j("0f85", "held_no")
     b("83791c01"); j("0f85", "held_no")
-    b("8b15" + imm(CTX) + "8b92c401000085d2"); j("0f84", "held_no")
-    b("39d1"); j("0f84", "held_no")
-    b("8b52388b413839d0"); j("0f84", "held_yes")
+    b("83794800"); j("0f85", "held_no")
+    b("80792e0b"); j("0f83", "held_no")
+    b("8b15" + imm(POSSESSION) + "85d2"); j("0f84", "held_no")
+    b("8b420c85c0"); j("0f84", "held_no")
+    b("8b400885c0"); j("0f84", "held_no")
+    b("8b400425003f00003d00080000"); j("0f85", "held_no")
+    b("8b413839d0"); j("0f85", "held_receiving")
+    b("80792e00"); j("0f84", "held_no")
+    j("e9", "held_yes")
+    label("held_receiving")
     b("3b02"); j("0f85", "held_no")
     b("80792e02"); j("0f82", "held_no")
     label("held_yes"); b("b801000000c3")
