@@ -927,7 +927,9 @@ def build_synthetic_preload_cache(payload: Sequence[Tuple[str, int, Optional[int
     return bytes(out)
 
 
-def build_synthetic_disc(*, tdb_member: Optional[bytes] = None) -> bytes:
+def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
+                         tdb_members: Optional[Sequence[bytes]] = None,
+                         stream_database: Optional[bytes] = None) -> bytes:
     """A tiny ``SLUS-21770``-shaped image carrying two synthetic containers.
 
     ``UNIFORMS.DAT`` is built as a ``COMP`` container whose members are stored
@@ -937,6 +939,13 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None) -> bytes:
     :func:`ea_terf.build_terf` and the builders above; no game data is
     involved, which is what lets the conformance harness run this on a machine
     that owns none of these discs.
+
+    ``tdb_members`` puts several databases in ``DB_TEAMS.DAT`` where
+    ``tdb_member`` puts one, for a lane whose targets are one per member.
+    ``stream_database`` adds ``/DATA/STRMDATA.DB``, which on the retail disc is
+    a bare database with no container around it [M], for a lane that writes
+    the second copy of a record living there.  Both default to absent, so a
+    caller that wants what this built before gets exactly that.
     """
 
     uniform_members = [
@@ -950,10 +959,11 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None) -> bytes:
         chunk="COMP",
         codecs=[ea_terf.CODEC_STORED] * len(uniform_members),
     )
-    team_members = [
-        tdb_member if tdb_member is not None else b"",
-        synthetic_text_member(SYNTHETIC_TEXT_LINES),
-    ]
+    if tdb_members is not None:
+        team_members = list(tdb_members)
+    else:
+        team_members = [tdb_member if tdb_member is not None else b""]
+    team_members.append(synthetic_text_member(SYNTHETIC_TEXT_LINES))
     teams = ea_terf.build_terf([m for m in team_members], chunk="DATA")
     teams_member_one = ea_terf.parse_terf(teams).stored(1)
     # The preload caches carry byte copies of a container's directory, so a
@@ -971,18 +981,23 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None) -> bytes:
         (UNIFORM_CONTAINER, PRELOAD_KIND_HEADER, None, directory),
     ])
     boot = b"BOOT2 = cdrom0:\\%s;1\r\nVER = 1.00\r\nVMODE = NTSC\r\n" % BOOT_FILE.encode("ascii")
+    sub_files = [
+        (UNIFORM_CONTAINER.encode("ascii") + b";1", uniforms),
+        (TEAM_DATABASE_CONTAINER.encode("ascii") + b";1", teams),
+    ]
+    sub_files += [
+        (PRELOAD_CACHES[0].encode("ascii") + b";1", game_cache),
+        (PRELOAD_CACHES[1].encode("ascii") + b";1", fe_cache),
+    ]
+    if stream_database is not None:
+        sub_files.append((STREAM_DATABASE_FILE.encode("ascii") + b";1", stream_database))
     return iso_lib.build_synthetic_iso(
         files=[
             (b"SYSTEM.CNF;1", boot),
             (BOOT_FILE.encode("ascii") + b";1", b"\x7fELF" + bytes(4092)),
         ],
         sub_name=b"DATA",
-        sub_files=[
-            (UNIFORM_CONTAINER.encode("ascii") + b";1", uniforms),
-            (TEAM_DATABASE_CONTAINER.encode("ascii") + b";1", teams),
-            (PRELOAD_CACHES[0].encode("ascii") + b";1", game_cache),
-            (PRELOAD_CACHES[1].encode("ascii") + b";1", fe_cache),
-        ],
+        sub_files=sub_files,
     )
 
 
