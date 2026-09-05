@@ -24,7 +24,6 @@ import shutil
 import stat
 import tempfile
 from typing import Any, Callable, Iterable, Iterator, Sequence
-from uuid import uuid4
 import zipfile
 
 from mod_editor.core.errors import ValidationError
@@ -538,7 +537,7 @@ class TeamKitBundleService:
         requested.parent.mkdir(parents=True, exist_ok=True)
 
         stage = Path(tempfile.mkdtemp(
-            prefix=f".{requested.name}.team-kit-{uuid4().hex}-",
+            prefix=".team-kit-",
             dir=requested.parent,
         ))
         published = False

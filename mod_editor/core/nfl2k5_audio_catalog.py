@@ -39,6 +39,7 @@ import warnings
 import wave
 import zlib
 
+from . import platform_compat
 from .errors import ValidationError
 from .json_stream import (
     file_contains_bytes,
@@ -1501,7 +1502,7 @@ def _atomic_write(path: Path, payload: bytes, *, replace: bool = False) -> Path:
         raise Nfl2k5AudioCatalogError(f"A file already exists there: {path}")
     if path.is_symlink():
         raise Nfl2k5AudioCatalogError(f"Refusing to replace a symbolic link: {path}")
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary = platform_compat.temporary_sibling(path)
     descriptor = os.open(
         temporary,
         os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
@@ -1566,7 +1567,7 @@ def _stream_entry_to_new_file(
     target = parent / requested.name
     if os.path.lexists(target):
         raise Nfl2k5AudioCatalogError(f"A file already exists there: {target}")
-    temporary = parent / f".{target.name}.{os.getpid()}.tmp"
+    temporary = platform_compat.temporary_sibling(target)
     descriptor: int | None = None
     try:
         descriptor = os.open(

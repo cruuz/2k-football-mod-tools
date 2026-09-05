@@ -18,6 +18,7 @@ import stat
 import sys
 from typing import Any
 
+from . import platform_compat
 from .errors import ValidationError
 from .nfl2k5_asset_io import Nfl2k5AssetIO
 from .nfl2k5_extended_visual_catalog import (
@@ -77,7 +78,7 @@ def _atomic_write(path: Path, payload: bytes, *, replace: bool = False) -> Path:
         raise ValidationError(f"A file already exists there: {path}")
     if path.is_symlink():
         raise ValidationError(f"Refusing to replace a symbolic link: {path}")
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary = platform_compat.temporary_sibling(path)
     descriptor = os.open(
         temporary,
         os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),

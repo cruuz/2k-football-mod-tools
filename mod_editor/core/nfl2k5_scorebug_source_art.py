@@ -295,9 +295,8 @@ def _cache_write(name: str, payload: bytes) -> Path | None:
     try:
         folder = cache_dir(create=True)
         destination = folder / name
-        # this process's id in the staging name: two studios indexing the same disc at once
-        # must not half-write each other's file (the rename into place is atomic either way)
-        temporary = folder / f".partial-{os.getpid()}-{name}"
+        # A unique sibling keeps concurrent cache writes separate and paths short.
+        temporary = platform_compat.temporary_sibling(destination)
         temporary.write_bytes(payload)
         os.replace(temporary, destination)
         return destination
@@ -512,7 +511,9 @@ def preview_mockup(source: Path | None) -> Path | None:
         layout.espn_layout(mesh)
         folder = cache_dir(create=True)
         # keep the .png suffix: the renderer picks its image format from the file name
-        temporary = folder / f".partial-{os.getpid()}-{PREVIEW_FILE_NAME}"
+        temporary = platform_compat.temporary_sibling(
+            folder / PREVIEW_FILE_NAME, suffix=".png"
+        )
         layout.preview(mesh, temporary, mark_png=art["art"].get("shield_espn"))
         os.replace(temporary, folder / PREVIEW_FILE_NAME)
     except Exception:  # noqa: BLE001 - a mockup is never worth failing a panel over

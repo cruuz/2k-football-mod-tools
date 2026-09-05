@@ -31,6 +31,7 @@ import tempfile
 from typing import Callable, Iterable, Protocol, Sequence, runtime_checkable
 
 from mod_editor.core import audio_conform
+from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_audio_catalog import (
     AudioReplacementMetadata,
@@ -510,7 +511,7 @@ def _copy_atomic(source: Path, destination: Path, *, replace: bool) -> Path:
         raise ValidationError(f"A file already exists there: {destination}")
     if destination.is_symlink():
         raise ValidationError(f"Refusing to replace a symbolic link: {destination}")
-    temporary = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")
+    temporary = platform_compat.temporary_sibling(destination)
     source_fd = os.open(
         source,
         os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
@@ -572,9 +573,7 @@ def _replace_atomic_bytes(destination: Path, payload: bytes) -> Path:
         raise ValidationError(
             "The audio replacement destination is not a regular private file"
         )
-    temporary = destination.with_name(
-        f".{destination.name}.{os.getpid()}.{hashlib.sha256(payload).hexdigest()[:12]}.tmp"
-    )
+    temporary = platform_compat.temporary_sibling(destination)
     descriptor: int | None = None
     try:
         descriptor = os.open(

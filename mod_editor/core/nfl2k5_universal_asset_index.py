@@ -20,8 +20,8 @@ import stat
 import struct
 import sys
 from typing import Iterator
-from uuid import uuid4
 
+from . import platform_compat
 from .errors import ValidationError
 from .json_stream import (
     file_contains_bytes,
@@ -356,7 +356,7 @@ class Nfl2k5UniversalAssetIndex:
         target.parent.mkdir(parents=True, exist_ok=True)
         if os.path.lexists(target):
             raise ValidationError(f"A file already exists there: {target}")
-        temporary = target.with_name(f".{target.name}.{os.getpid()}.{uuid4().hex}.tmp")
+        temporary = platform_compat.temporary_sibling(target)
         descriptor = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
@@ -418,9 +418,7 @@ class Nfl2k5UniversalAssetIndex:
         )
 
     def _build_database(self) -> None:
-        temporary = self.database_path.with_name(
-            f".{self.database_path.name}.{os.getpid()}.{uuid4().hex}.tmp"
-        )
+        temporary = platform_compat.temporary_sibling(self.database_path)
         if os.path.lexists(temporary):
             raise ValidationError("Could not reserve the universal asset index")
         connection = sqlite3.connect(temporary)

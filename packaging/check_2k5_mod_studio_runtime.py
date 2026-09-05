@@ -97,7 +97,7 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "111cc430b65395a15c17147591f590058eac644806ffb92299f15dabf30d688e",
+        "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
         "37b6774cbdeda2684f4ec009f828b205c55fdbb12aaeeaac9102304ba6032246",
     "mod_editor/studio/audio_annotations.py":
@@ -107,9 +107,9 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/facade.py":
         "9e53ff74c87926bdb54f5329abefb5090e0915a4bdf194db0d570dd4e638aa93",
     "mod_editor/studio/project_archive.py":
-        "613e98767acae90e949ca5d4a7dc28611cc8fee12e7c036b9d2c2583154077ee",
+        "7a3a8db07bc5b67e0833085bd32987336088978b83dc074681af83cfe83c2f1e",
     "mod_editor/studio/session.py":
-        "bc0afff3d6e1f2d53de00dfba8d6015ff530fcf093a1ce00b09df0828d2d583e",
+        "8ad359de6df43093836b26d0d4301f4b108221fb2fde775ebd048da28bf4e679",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(

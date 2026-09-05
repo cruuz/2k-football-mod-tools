@@ -516,7 +516,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
-        "mod_editor/core/nfl2k5_audio_catalog.py": "c4e02e6b1fe7aeceb3da515f4bbb71ce53aa8298203b4db7d650e755f64447d8",
+        "mod_editor/core/nfl2k5_audio_catalog.py": "be1dbafb7077a4aab9c8ce5ff9ba9f0c5da9dd54c86464b4d97304aaf44a4efc",
         "mod_editor/core/nfl2k5_audo_family_labels.py": "b4d699da1a1d58b32a1bbd0e49b62d69c9ae89a2c24d450a26d7b8831e49cef8",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py": "da564ae30a18e9bfc7a3006b2422bceef0d0078d3cb9a919671ade23eda5f146",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py": "664e43a7d2bb7dfcccf328b622b5fe7be3f5510d03919c56fa85149d7d3ffb8d",
@@ -528,10 +528,10 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "49c4391884b2e3ed5a3928ab7b85316c2194213cae2892cae769ea807a2e1259",
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
         "mod_editor/core/nfl2k5_scorebug_unified_adapter.py": "3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd",
-        "mod_editor/core/nfl2k5_source_cache.py": "8c8dff555d422e53cdebfccc7aeec4e10a045bf76fe4a4a9f07a38a30def81c6",
+        "mod_editor/core/nfl2k5_source_cache.py": "db973c02fce5b25fc8ac2fe261023b4c519d94f82b95a878e42af1a5991b4b24",
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
-        "mod_editor/core/nfl2k5_p8_texture_writer.py": "4a519adf657eeb5ecbf8be6a8cba99411cbd0e5843bf55d7bd7e142723498485",
-        "mod_editor/core/nfl2k5_crib.py": "b0d93f0035df7fbdcf23cf83c50bad8ffdc4cfbf3ea1041fb589f6117f4bc6fb",
+        "mod_editor/core/nfl2k5_p8_texture_writer.py": "3b0d59ff7b81ffc71c22f4ba049b6662cc35c623918a01a163c9a614652fdd9f",
+        "mod_editor/core/nfl2k5_crib.py": "01f98c38f1dcf6a6175e017b68794fc16011b437763eb42d8d3810430760fb8c",
         "mod_editor/core/nfl2k5_crib_electronics_targets.py": "6d474769ee594d792d11f112fb3e39da8bd2ae8117bae92231956b4305112e2b",
         "mod_editor/core/nfl2k5_crib_geometry_writer.py": "d1cb53a2e801cfd14c469dc58cf8e433a8045e93e724ed502073a1cb2b8d0d78",
         "mod_editor/core/nfl2k5_crib_scene_texture_writer.py": "4f72f59fab6f116c164a2acafb110829a46eb18dc5abcc5cd2c05978a0f0cdbd",
@@ -540,15 +540,15 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_formation_play_writer.py": "9ee0444d60927941b2e5165d3f413b6844a2bebdee1cc4fe26fdd75a781b436e",
         "mod_editor/core/nfl2k5_play_codec.py": "6102d406bb8738ff78f65ce19fa455f0af2284ad27687b3c9b7de5ce9cebf2d2",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "f77f94c4d926d9fb5de55626bec8106e9c7a9b124e0553b724913922d8d3099f",
-        "mod_editor/core/nfl2k5_universal_asset_index.py": "3bf99afe588f381d4604a883ad92a5bfbb1bb39391bce4acb5b97eda54bc27d7",
+        "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "aea43c39b8101e9507930f6a9014cfebd966189bef1f96c297702bfb62acb7b9",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py": "94c8a6171b7500fc2685205a184a6fa5443b767ac240bf6c89eedf62a3273506",
         "mod_editor/core/nfl2k5_build_service.py": "49b01dac2da660b2c582bee57765fc4abbfdb68a2cd0efe287dbb9097c344cee",
         "mod_editor/core/nfl2k5_stadium_cache.py": "24bc748223ba18aaad0f1c8347fddd9967a2c5a01dd5caaa2e843985ca00349e",
-        "mod_editor/core/nfl2k5_stadium_studio.py": "465449cc23b4490ccf4a4e96ad51d402b9258587d7c584445366b7f4eb1a28cb",
-        "mod_editor/core/nfl2k5_models.py": "e17207d02e8267b11cb822a13e50e5c20db4b5411c89400090125d198f66df23",
+        "mod_editor/core/nfl2k5_stadium_studio.py": "0f1de155ad0686a269ae67f7d12f4c597e2d77c3c95246571c8333415363dd02",
+        "mod_editor/core/nfl2k5_models.py": "4fffbf82d68311ee4aea4026e35952049fc306ce94dc9d5dade0a75b2984502c",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
-        "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
+        "mod_editor/core/platform_compat.py": "6b81b87274b211571d162f43324315a4b10158a30b0e731cb51b52853c1b322f",
         "mod_editor/core/sources.py": "d47ef48a21d0cb4bb47e2b0f5ace029e68c3dc8906caa7d48e19e6dea4341375",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
         "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
@@ -1566,7 +1566,7 @@ class Apf2k8JerseyColorProvider:
     verifier_module = "tools/apf_jersey_family_verify.py"
     verifier_module_sha256 = "96b5b6602cbe9c60f51c02029a6e173ddaedde4fee0a6ff0ec1c278b172cb7af"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
+        "mod_editor/core/platform_compat.py": "6b81b87274b211571d162f43324315a4b10158a30b0e731cb51b52853c1b322f",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
@@ -2091,7 +2091,7 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
     verifier_module = "tools/apf_pants_family_verify.py"
     verifier_module_sha256 = "4a253a09389c62919e921eb6a9771acf319dc0486ac9b22e0c2c5a4bfe8325a8"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
+        "mod_editor/core/platform_compat.py": "6b81b87274b211571d162f43324315a4b10158a30b0e731cb51b52853c1b322f",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
         "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
         "tools/apf_pants_color_transport.py": "658a124fef839e5252dc89dc6fcd4736698cd2b6a6b053c6f9935bbc75e12871",
@@ -2121,7 +2121,7 @@ class Apf2k8HelmetColorProvider(Apf2k8JerseyColorProvider):
     verifier_module = "tools/apf_helmet_family_verify.py"
     verifier_module_sha256 = "a1c07511ddcaacda083a4970555ee3c61c88c188227b853689dd299cb7841a18"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
+        "mod_editor/core/platform_compat.py": "6b81b87274b211571d162f43324315a4b10158a30b0e731cb51b52853c1b322f",
         "tools/apf_helmet_color_transport.py": "86d4fbf1b43b2dfb02b6d3e35c4829ccaf3b0818edf5bab60903595269a933cb",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
@@ -2152,7 +2152,7 @@ class Apf2k8ShoulderColorProvider(Apf2k8JerseyColorProvider):
     verifier_module = "tools/apf_shoulder_family_verify.py"
     verifier_module_sha256 = "9481262b3bcaa112bcb83c74f596bc09c98b6081a5d3c78162ad35599ae2fbd9"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
+        "mod_editor/core/platform_compat.py": "6b81b87274b211571d162f43324315a4b10158a30b0e731cb51b52853c1b322f",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
         "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
         "tools/apf_shoulder_color_transport.py": "ba654154c990fad1b45760cfd325b352def357e5f1030915323591128e0a9b46",

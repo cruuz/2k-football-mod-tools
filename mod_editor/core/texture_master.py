@@ -22,9 +22,9 @@ import os
 from pathlib import Path
 import shutil
 from typing import Any, Mapping
-from uuid import uuid4
 import zipfile
 
+from . import platform_compat
 from .errors import ValidationError
 from .json_stream import read_bounded_regular_file
 
@@ -644,7 +644,7 @@ def save_texture_master_bundle(
     output = _destination(destination)
     _require(shutil.disk_usage(output.parent).free >= expanded,
              "There is not enough free space to save this texture master.")
-    temporary = output.with_name(f".{output.name}.{os.getpid()}.{uuid4().hex}.tmp")
+    temporary = platform_compat.temporary_sibling(output)
     descriptor = os.open(
         temporary,
         os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
