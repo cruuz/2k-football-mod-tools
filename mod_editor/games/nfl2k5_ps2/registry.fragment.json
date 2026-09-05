@@ -1,0 +1,765 @@
+{
+  "capabilities": [
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_audo_patch.py --iso <SLUS-20919.iso> --output <new.iso> --replace <slot-id>=<sound.wav> [--recipe <nfl2k5_ps2_audo_recipe.v1.json>] [--catalog <nfl2k5_ps2_audo_catalog.v1.json>] [--receipt <receipt.json>] [--dry-run]",
+        "module": "tools/nfl2k5_ps2_audo_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/PS2_PHASE2_AUDIO_RESEARCH.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_audo_catalog.v1.json",
+        "reports/gameplay_tuning/nfl2k5_ps2_audo_trial.v1.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "Every slot is bound by an exact, non-overlapping physical span and the encoder fits it to the byte, but the row stays hidden because the in-game cue behind 690 of 844 chunks is unproved and nothing has been heard on a screen. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+      },
+      "id": "nfl2k5ps2.audio.audo_exact_slot_replace",
+      "input_constraints": [
+        "Choose a slot by its catalogue slot id (nfl2k5ps2.audio.audo.o{outer:04d}.c{chunk:04d}) or, for the 154 disc-unique names, by name; raw offsets and filename guessing are never accepted, and the same slot may not be named twice in one run.",
+        "Input must be strict RIFF/WAVE integer PCM, 16-bit, whose chunks tile the file exactly with no metadata chunks, and whose channel count equals the slot's own (806 of 844 slots are mono, 38 stereo). A WAV at another rate is resampled to the slot's declared rate -- one of 11025, 22050, 16000, 14000, 20000, 12000, 15000 or 18000 Hz, per slot.",
+        "Fixed allocation, never longer: frames must fit the slot's own per-channel byte count (max_frames = per_channel_bytes // 16 * 28) and an over-length WAV is refused with the slot's exact capacity in seconds rather than truncated. This writer never grows a slot; all 153 adjacent AUDO pairs inside an entry have gap 0, so there is no inter-chunk slack to borrow.",
+        "The encoded blocks are followed by silent filler to the declared byte count and LOOP_END|LOOP is set on the last real block, so the SPU stops before the filler; the descriptor and the 0x20 wrapper are never rewritten.",
+        "Stereo is written as two contiguous per-channel halves, L then R -- not the channel-major interleave the Xbox row uses. Proved on 38 of 38 stereo chunks by the per-half LOOP_END position.",
+        "A payload that would cross a 1 GiB pack seam is refused. No AUDO does (0 of 844); the guard exists because 2 of the 17 AUSB stream banks do, and AUSB is a separate row.",
+        "The source ISO is opened read-only and re-hashed after the run; the destination is created with O_EXCL so a run cannot overwrite an existing image or land on the image it read, and every refusal leaves no output image behind.",
+        "690 of 844 chunks share a name with another chunk (161 distinct names across 844 chunks; two crowd sounds occupy 340 chunks each). The physical span is exact but the in-game cue is not proved, so a UI must warn that replacing one slot may change an unexpected or duplicate-sounding cue."
+      ],
+      "portme": [
+        "Take a witnessed PenguinScreen2/PCSX2 run of a replaced disc-unique slot before anything here claims runtime-proved; that claim is not made and must not be inferred from the offline receipt.",
+        "Settle runtime selector ownership: 690 of 844 chunks share a name, so for most slots nothing offline says which in-game event plays them. Until that is traced, only the 154 disc-unique names can be attributed at all.",
+        "Build the Qt-free service the studio would call (the research plan's nfl2k5_ps2_audo_fixed_slots.py and ps2_audio_write_service.py do not exist), then the separate PS2 audio window.",
+        "Add the bounded replace_spans path to the ISO writer: replace_files declares 1,073,741,832 bytes to change 6,544, about 164,000x the slot asked for, and costs 166.9 s per sound. The tight claim is currently recovered after the fact by the verifier in another 34.1 s.",
+        "AUSB streaming-bank replacement is the next row, not this one: 17 banks, 53,570 physical ranges, two of them straddling a pack seam, and no LOOP_END convention to lean on."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the encoder, patcher, verifier, catalogue tool and validators; the user's ISO, their WAV and every output image stay with the user. The committed catalogue carries names, offsets, sizes and descriptor fields and deliberately no payload, decoded or PCM digest, so no retail audio can leave through it.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: the bytes are proved and the sound is not. The real-disc trial replaced one uniquely-named mono slot and the independent verifier found 6,080 bytes changed with 0 outside the declared span, 78 of 78 tree entries identical and the boot ELF digest unchanged; ps2_iso9660_verify passed alongside it. Nothing has been on a screen or through a speaker. A runtime witness would be: boot the patched image in PenguinScreen2/PCSX2, trigger the menu event that owns a disc-unique slot, and hear the replacement instead of the retail sound -- which proves ownership for that one slot and for none of the other 843.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "one of 844 catalogued AUDO slot ids, or one of the 154 disc-unique slot names",
+            "name": "slot",
+            "required": true
+          },
+          {
+            "allowed": "strict RIFF PCM16LE matching the slot's channel count, within the slot's frame capacity",
+            "name": "wav",
+            "required": true
+          }
+        ],
+        "notes": "Slots are bound by (outer entry, chunk index), the same identity scheme the Xbox row uses; 682 (entry, chunk) keys are common to both discs, 647 with the same name. The 17 AUSB streaming banks (53,570 physical ranges, 2.07 GiB) are deliberately out of scope and belong to a later row."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image; VC outer pack archive /VC_20919/0. .. 4. holding 0x20-byte resource chunks, AUDO bodies carrying an 8-word sound descriptor and a raw SPU-ADPCM payload",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "844 standalone AUDO slots across 691 outer entries; 8,866,224 payload bytes; 806 mono / 38 stereo; 161 distinct names of which 154 are disc-unique",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Replace any of the 844 standalone AUDO sound slots on a copy of the user's own SLUS-20919 ISO from a strict PCM16 WAV, encoded to PS2 SPU-ADPCM and fitted to the slot's exact byte count. The 0x20 wrapper, the 8-word descriptor, the boot ELF and every other image byte are unchanged, and the image keeps its exact length. Physical slot identity is exact; which in-game event plays a slot is not established offline -- only 154 of 844 chunks carry a disc-unique name.",
+      "surface": "audio",
+      "title": "NFL 2K5 (PS2) exact-slot AUDO sound writer",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_audo.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_unif_color_patch.py --source <SLUS-20919.iso> --destination <new.iso> --recipe <nfl2k5_ps2_unif_color_recipe.v1.json> --catalog <nfl2k5_ps2_unif_color_catalog.v1.json> [--receipt <receipt.json>] [--dry-run]",
+        "module": "tools/nfl2k5_ps2_unif_color_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_unif_color_catalog.v1.json",
+        "reports/gameplay_tuning/nfl2k5_ps2_unif_color_trial.v1.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "All 634 physical uniform sets are independently addressable and the write is a same-allocation 8-byte poke with a derived, per-record offset, but the row stays hidden because no PCSX2 capture has confirmed which material each word tints on this platform. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+      },
+      "id": "nfl2k5ps2.colors.unif_words",
+      "input_constraints": [
+        "Choose one of the 634 catalogued physical uniform selectors; a selector outside that set is refused. HOME, AWAY, alternate and throwback packages are independent records.",
+        "Exact word size, never longer: a colour literal that is not exactly 4 bytes per word is refused. Each edit changes at most the record's own 8-byte span and the untouched word of the pair survives byte-identical.",
+        "The colour offset is derived from the record's own descriptor pointer on the user's image, not assumed: a Unif whose descriptor does not resolve to the proved offset is refused rather than poked at a constant.",
+        "A compressed body is refused rather than recompressed. 0 of 634 Unif bodies are LZ-compressed on the retail disc, so shipping an unexercised refit path would claim more than the evidence supports; the test suite still exercises the refusal against a synthetic compressed chunk.",
+        "The live probe digest must match the pinned catalogue; a recipe authored against a different image is refused before anything is created.",
+        "A no-op is refused: the record already holding those colours is an error, not a silent success.",
+        "The source image is opened read-only and is byte-identical afterwards; the destination is created with O_EXCL and must not already exist, and every refusal leaves no destination behind.",
+        "Ownership of the two words is inherited from the Xbox static executable trace, not re-derived against SLUS_209.19 and not confirmed by any runtime capture on either platform."
+      ],
+      "portme": [
+        "Capture a controlled PenguinScreen2/PCSX2 run that isolates the facemask and turtleneck materials before anything claims runtime-proved; the Xbox row has never had this capture either, so a PS2 witness would make this the better-evidenced of the two.",
+        "Re-derive word ownership against SLUS_209.19 rather than inheriting the Xbox executable trace: Xbox virtual addresses are not PS2 offsets, so the semantic half of the Xbox row does not transfer even though the bytes do.",
+        "Build the Qt-free colour service and the separate PS2 window; nothing in mod_editor/ calls this lane today.",
+        "Split a recipe that touches both packs carrying Unif resources: the ISO writer reads each staged pack into memory, so such a recipe costs about 2 GiB of RAM to change 8 bytes."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the patcher, verifier, catalogue tool and validators plus user-authored colour recipes; the user's ISO and every output image stay with the user. The catalogue carries offsets, lengths and span digests and never the retail colour words -- they are read from the operator's own image at edit time.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not. The real-disc trial rewrote one facemask word as a single 8-byte declared range at image offset 1,069,963,344 inside /VC_20919/0.; the independent verifier decoded all 634 Unif records and compared 1,073,741,816 unchanged bytes inside the replaced pack, ps2_iso9660_verify compared 3,591,340,024 outside it, and the output image kept the source's exact 4,665,081,856 bytes. No emulator was run. A runtime witness would be a controlled PenguinScreen2/PCSX2 capture that isolates the facemask and HI_turtleneck materials on a known uniform set and shows the written tint on them and on nothing else.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "one of 634 catalogued physical HOME/AWAY/alternate/throwback Unif selectors",
+            "name": "uniform_package",
+            "required": true
+          },
+          {
+            "allowed": "a 4-byte packed colour literal",
+            "name": "facemask",
+            "required": false
+          },
+          {
+            "allowed": "a 4-byte packed colour literal",
+            "name": "turtleneck",
+            "required": false
+          }
+        ],
+        "notes": "One recipe entry addresses one Unif record and may set either word or both; the other word is left untouched. There is no separately proved per-uniform visor word, and runtime-visible colour semantics remain unproved on PS2 exactly as on Xbox. The catalogue records selectors, offsets, lengths and the SHA-256 of each 8-byte span and never the retail colour words themselves."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image; Unif colour resources inside the VC outer pack archive /VC_20919/0. .. 4.",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "634 fixed-size Unif packed-colour records, byte-size-identical to the Xbox disc's 634; the colour pair resolves to offset 0x50 on 634 of 634",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Rewrite the two packed colour words of any of the 634 physical HOME/AWAY/alternate/throwback Unif records on a copy of the user's own SLUS-20919 ISO. Word 0 is the facemask/faceshield tint and word 1 the HI_turtleneck tint, mirroring the Xbox row exactly: all 634 Unif resources are byte-size-identical across the two discs and the pair resolves through the descriptor pointer to the Xbox writer's constant offset 0x50 on 634 of 634. Fixed-size transport is offline-proved; which material each word tints on PS2 has never been captured.",
+      "surface": "colors",
+      "title": "NFL 2K5 (PS2) facemask and turtleneck packed colours",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_unif_color.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_text_patch.py --source-iso <SLUS-20919.iso> --destination-iso <new.iso> --recipe <text_recipe.json> [--report <report.json>] [--dry-run]",
+        "module": "tools/nfl2k5_ps2_text_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/PS2_PHASE2_TEXT.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_text_target_catalog.v1.json",
+        "reports/gameplay_tuning/nfl2k5_ps2_text_trial.v1.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "The 6,658 editable strings are each bounded by their own allocation, two independent decoders agree on all 6,873 of them, and a whole-image comparison proves an edit touches nothing else -- but the row stays hidden because no edited label has been seen drawn, and a width-measuring menu could re-flow when one shortens. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+      },
+      "id": "nfl2k5ps2.menus.text_banks",
+      "input_constraints": [
+        "Shorter or equal, never longer: across all 6,873 strings an allocation is exactly len(text) * 2 + 2 bytes, so there is zero slack anywhere on the disc and the character budget is the original string's own length. One code unit longer is refused, and the refusal states the budget.",
+        "Only the 6,658 editable strings may be written. A string is editable only when its whole resource body rebuilds byte-identically from the decoded structure, its allocation is a NUL-terminated UTF-16LE run on a pool-entry boundary, it has room for at least one code unit past its terminator, and its consumer is display copy rather than lookup: 50 SITU scenario selectors and 165 zero-capacity CRED/STRG allocations stay read-only.",
+        "Inline tokens are preserved exactly: dropping, adding or reordering a pipe-delimited marker from the 57-entry token table is refused, because the engine draws a glyph where the marker sits.",
+        "An LZ-compressed bank is refused outright rather than recompressed -- no text bank on the retail disc is compressed (chunk magic 0), so wiring in the refit layer would add the hazard that hung an attract demo without buying anything.",
+        "A bank that straddles two pack files is refused: one bounded ISO9660 file replacement cannot cover it. All five in-scope banks live entirely inside /VC_20919/0.",
+        "A bank this disc does not decode as UTF-16LE is refused rather than guessed at, and two recipe edits may not target the same allocation or overlapping allocations.",
+        "An optional expect_sha256 per edit pins the original string's digest, so a recipe written against a different disc or index is refused before anything is created.",
+        "Aliasing is reported, never hidden: 281 allocations are referenced by more than one lookup record, 279 of them editable and the most-shared editable one by 18 records, so a UI must show 'used by N records' rather than pretending aliases are independent strings.",
+        "The source image is opened read-only and re-hashed; the destination is created with O_EXCL and must not already exist."
+      ],
+      "portme": [
+        "Take a PCSX2/PenguinScreen2 spot check of the trial image before any runtime claim; it would retire most of the remaining risk at once and is the cheapest witness in the lane.",
+        "Re-derive the display-copy safety rule against SLUS_209.19 rather than inheriting the Xbox consumer analysis: if PS2 code reads any of these strings for comparison rather than display, an edit changes behaviour and not just pixels. The read-only SITU selectors are the known case; there is no proof there is not another.",
+        "Watch the width-measuring menus specifically: 45 embedded line feeds hint that at least some of this text is laid out rather than simply drawn, so byte-safe is not the same as visually correct.",
+        "Close the CI coverage gap honestly: the 34-test suite builds synthetic STRG banks only, and CRED, SITU and TRIV are covered only as far as two independent parsers agreeing on the real disc, because synthesising them would mean relaxing the hard-coded record counts that act as safety checks.",
+        "Resolve the four opaque trailer bytes past the small STRG bank's pool: they are preserved verbatim, digested and reported as opaque, because only one of 'opaque' and 'padding' is known to be true. No string allocation overlaps them, so a bounded edit cannot reach them.",
+        "Build the Qt-free text service and the separate PS2 window; the lane is CLI-only today."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the patcher, verifier, catalogue tool and validators plus user-authored text recipes; the user's ISO and every output image stay with the user. Strings are identified by bank, pool index and the SHA-256 of their UTF-16LE bytes, so no decoded retail text appears in the catalogue, the receipts or a shared recipe.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not; nothing has been on a screen. The real-disc trial rewrote two single-reference menu labels -- one same-length, one shorter so the zero-filled tail was exercised -- for 13 changed bytes in 13 one-byte runs, and the independent verifier passed 12 checks including a full byte comparison of both 4,665,081,856-byte images in which the differing set is exactly the recipe's allocations, neither a subset nor a superset; ps2_iso9660_verify compared 79 entries and 3,591,340,024 unchanged bytes. No PCSX2 run. A runtime witness would be a PCSX2 spot check of the trial image showing the edited label drawn, and showing that a menu which lays out from a measured string width does not re-flow when a label shortens.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "a catalogued selector of the form <bank id>:<pool index>, or <bank id>#<pool index>, within the 6,658 editable strings",
+            "name": "string",
+            "required": true
+          },
+          {
+            "allowed": "a replacement no longer than the original's own code-unit count, keeping every inline token in order",
+            "name": "new_text",
+            "required": true
+          },
+          {
+            "allowed": "the SHA-256 of the original string's UTF-16LE bytes, pinning the recipe to a known disc",
+            "name": "expect_sha256",
+            "required": false
+          }
+        ],
+        "notes": "Five banks are in scope -- two STRG, one CRED, one SITU, one TRIV -- and they are the same five the Xbox lane edits. The other 711 of the disc's 716 banks by FourCC are out of scope by kind: 635 NAME banks are player-name-atlas metric tables rather than user text, and the 76 ROST banks belong to the disc-roster row. The catalogue carries names, offsets, allocation sizes, code-unit counts, reference counts, token shapes and SHA-256 digests, and no decoded text."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image; STRG/CRED/SITU/TRIV text banks inside the VC outer pack archive /VC_20919/0., stored uncompressed with NUL-terminated UTF-16LE pools",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "5 fixed-allocation text banks parsing to 6,873 strings, 6,658 editable and 215 read-only; bank stored sizes 160,432 / 6,080 / 29,856 / 29,104 / 242,848 bytes, identical to the Xbox disc's",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Rewrite user-visible display strings inside the five fixed-allocation text banks of a copy of the user's own SLUS-20919 ISO. The banks parse to 6,873 strings, 6,658 editable and 215 read-only -- digit for digit the Xbox numbers for these kinds, from banks with the same resource ids, stored sizes, record counts and descriptor offsets. Strings are NUL-terminated UTF-16LE and no allocation on this disc has spare room, so the budget is the original string's own length. The Xbox row on this surface is read-only because its writable half lives in the executable; the PS2 text banks are on the disc, so this row writes them.",
+      "surface": "menus",
+      "title": "NFL 2K5 (PS2) on-disc menu and display text writer",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_text.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_disc_roster_patch.py --source <SLUS-20919.iso> --destination <new.iso> --recipe <nfl2k5_ps2_disc_roster_recipe.v1.json> --catalog <nfl2k5_ps2_disc_roster_catalog.v1.json> [--receipt <receipt.json>] [--dry-run]",
+        "module": "tools/nfl2k5_ps2_disc_roster_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_disc_roster_catalog.v1.json",
+        "reports/gameplay_tuning/nfl2k5_ps2_disc_roster_trial.v1.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "Names are bounded by their own stored span, jersey is a masked write that preserves every unrelated bit, and the verifier requires the arena's ten table counts and offsets to survive -- but the row stays hidden because no edited player has been seen in game and a loaded save may override the disc seed entirely. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+      },
+      "id": "nfl2k5ps2.players.disc_roster",
+      "input_constraints": [
+        "Fixed allocation, shorter or equal and never longer: a name is written into the exact byte span the stored string occupies, terminator included. 4,197 of 5,094 name slots are writable; the other 897 are bare-terminator placeholders of capacity 2 and are refused.",
+        "Jersey number is a masked write at record +0x20 bits 3..9, range 0..99; every unrelated bit of the word is preserved and simultaneous packed edits compose into one four-byte replacement. All 2,547 decoded values fall in range on this disc.",
+        "A player index outside the pool is refused, and an index that exists only in the boot roster is refused by name when a historic roster is the target -- a historic roster is written from its own arena, never from another's.",
+        "A shared name string is refused. This never fires on stock media (every non-empty PS2 name is singly referenced) but the guard stays, because uniqueness is a property of the image and not of the format.",
+        "An LZ-compressed body is refused rather than recompressed; 0 of 76 ROST bodies are compressed on the retail disc, and the test suite still exercises the refusal against a synthetic compressed chunk.",
+        "The live body digest must match the pinned catalogue, and a no-op -- the record already holding those values -- is refused rather than silently accepted.",
+        "The arena may not move: the verifier requires every one of the ten root tables to keep both its count and its byte offset. Team membership, ratings, position and face/head id are not writes.",
+        "Exactly one ROST object must be labelled as the boot roster or the catalogue refuses to build; targets are identified by that label rather than by outer index.",
+        "The source image is opened read-only and is byte-identical afterwards; the destination is created with O_EXCL and must not already exist, and every refusal leaves no destination behind.",
+        "A loaded roster or franchise save may override this disc seed."
+      ],
+      "portme": [
+        "Witness an edited primary and secondary player in game on PenguinScreen2/PCSX2, from a fresh franchise with no roster save loaded, before anything claims runtime-proved.",
+        "Establish save precedence on PS2 directly: the shipped memory-card roster writer edits the save-side ROST arena, which is a different container from this disc resource, so which one the running game reads is the first thing a witness has to settle.",
+        "Extend beyond jersey and names only as each field is mapped from the PS2 bytes: face shield decodes cleanly at record +0x20 bits 15..16 (2,487 None, 42 Clear, 18 Dark, no record using the reserved value 3) but is not yet offered as a write here; ratings, team membership and depth charts stay read-only.",
+        "Build the Qt-free roster service and the separate PS2 window; the lane is CLI-only today."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the patcher, verifier, catalogue tool and validators plus user-authored roster recipes; the user's ISO and every output image stay with the user. The catalogue carries public roster data with offsets, capacities and digests, and records the packed equipment word and every rating byte as digests only.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not. The real-disc trial made two edits to boot-roster primary player 0 -- an equal-length first name in a 12-byte declared range and a masked jersey write in a 4-byte one -- and the independent verifier decoded all 76 ROST resources, checked both edits, confirmed all ten table counts and offsets unchanged and compared 1,073,741,808 unchanged bytes inside the replaced pack; ps2_iso9660_verify compared 3,591,340,024 outside it and the output kept the source's exact 4,665,081,856 bytes. No emulator was run. A runtime witness would be an edited player seen in game from a fresh franchise started off the patched disc with no roster save loaded -- the save-precedence question has to be controlled for, not assumed away.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boot, or one of the 75 historic 53-man rosters by label",
+            "name": "roster",
+            "required": true
+          },
+          {
+            "allowed": "primary_players or secondary_players",
+            "name": "pool",
+            "required": true
+          },
+          {
+            "allowed": "a player record index within the selected pool (2,479 primary, 68 secondary in the boot roster)",
+            "name": "player",
+            "required": true
+          },
+          {
+            "allowed": "a replacement fitting the slot's own byte span",
+            "name": "first_name",
+            "required": false
+          },
+          {
+            "allowed": "a replacement fitting the slot's own byte span",
+            "name": "last_name",
+            "required": false
+          },
+          {
+            "allowed": "0..99, written as a masked field",
+            "name": "jersey_number",
+            "required": false
+          }
+        ],
+        "notes": "The boot roster is outer entry 5, 593,760 stored bytes, 2,547 player records across ten root tables (2,479 primary players, 68 secondary, plus colleges, stadiums, coaches, team labels, generated names, historic descriptors, teams and the player pointer vector). Name capacity is the exact stored span; the catalogue carries offsets, capacities, reference counts and digests, and records the packed equipment word and every rating byte as digests only."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image; ROST roster resources inside the VC outer pack archive /VC_20919/0., with UTF-16LE name strings behind field-local minus-one-biased relative pointers",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "76 ROST resources, byte-size-identical to the Xbox disc's 76; boot roster at outer entry 5, 593,760 bytes, 2,547 player records, 5,094 name slots of which 4,197 are writable",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Apply fixed-allocation edits to the boot roster and the 75 historic rosters on a copy of the user's own SLUS-20919 ISO: masked jersey number and same-allocation first/last names. All 76 ROST resources are byte-size-identical to the Xbox disc's and the boot roster is outer entry 5 with the Xbox row's exact 2,547 player records. The Xbox row's uniquely-referenced caveat is not binding here -- every non-empty name string on PS2 is referenced exactly once -- but its live caveat is: a loaded roster or franchise save may override the disc seed, which is the likelier path on PS2 because the memory-card writer already ships.",
+      "surface": "players_rosters",
+      "title": "NFL 2K5 (PS2) disc roster editor",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_disc_roster.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_save.py --input <save.psu|save-dir|card.ps2> --set-player-name <index:field=value> --output <edited.psu>",
+        "module": "tools/nfl2k5_ps2_save.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFL2K5_PS2_SAVE_PIPELINE.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "The writer is bounded to fixed-allocation name slots and paired with a deterministic verifier; PS2 save integrity is a recomputable CRC-32, so no signing wall applies."
+      },
+      "id": "nfl2k5ps2.saves.roster_name_writer",
+      "input_constraints": [
+        "Fixed-allocation only: a replacement name must fit the bytes the original occupies; the writer refuses anything longer.",
+        "No input is ever modified. Every output is created exclusively, so a write cannot overwrite an existing file and cannot land on the save or card it read from.",
+        "Names are UTF-16LE within the existing ROST arena; table counts, offsets and arena size never change."
+      ],
+      "portme": [
+        "Capture a PCSX2 reload witness (the VIP ticker string is the cheapest visible one) to move this from offline-proved to runtime-proved.",
+        "Extend beyond names to ratings and franchise fields only as each is mapped from one-variable save pairs."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the writer, verifier and schema; the user's saves and edited output stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline-proved: the independent verifier confirms only declared byte ranges changed, EXTRA matches the payload CRC-32, and the ROST arena is unmoved. In-game reload on PCSX2 or hardware is not claimed here.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "primary player record index",
+            "name": "player",
+            "required": true
+          },
+          {
+            "allowed": "first or last",
+            "name": "field",
+            "required": true
+          },
+          {
+            "allowed": "UTF-16LE string fitting the original slot",
+            "name": "value",
+            "required": true
+          }
+        ],
+        "notes": "Only primary player name slots are exposed. Ratings, contracts, franchise state and every other save field stay read-only until each is independently mapped and verified."
+      },
+      "source_container": {
+        "format": "PS2 memory-card save directory (.psu / card image) holding a VC ROST container",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "BASLUS-20919 roster/franchise saves; 2,479 primary + 68 secondary player records",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PS2 memory-card save"
+      },
+      "summary": "Read a user's PS2 memory-card save, apply fixed-allocation roster name edits inside the ROST arena, reseal the CRC-32 integrity field, and write a .psu importable by PCSX2, mymc and PS2 Save Builder. PS2 saves carry a recomputable CRC-32 rather than the Xbox platform signature, so this writer needs no signing key.",
+      "surface": "saves",
+      "title": "NFL 2K5 (PS2) memory-card save writer",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_save.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_playbook_patch.py patch --iso <SLUS-20919.iso> --recipe <playbook_recipe.json> --output <new.iso> [--report <report.json>] [--workdir <scratch-dir>]",
+        "module": "tools/nfl2k5_ps2_playbook_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/PS2_PHASE2_PLAYBOOKS_RESEARCH.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_playbook_catalog.v1.json",
+        "reports/gameplay_tuning/nfl2k5_ps2_playbook_trial.v1.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "The writer is the Xbox lane's own, unmodified, addressing a fixed 78,768-byte body with enforced 50/270/3,500 capacities, and an independent streaming diff proves an edit touches nothing outside the declared span -- but the row stays hidden because no authored formation has been seen line up, on either platform, and the save-overlay question is open. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+      },
+      "id": "nfl2k5ps2.scripts.director_playbook",
+      "input_constraints": [
+        "Fixed allocation, exact size: every edit stays inside the book's 0x13390 body, the compiled resource is asserted to be exactly 78,768 bytes and the rebuilt pack exactly its original 1,073,741,824 bytes before the ISO writer -- which independently refuses a replacement that does not fit the extent it owns -- is even called. A compile returning the wrong body length is refused before the output exists.",
+        "Capacities are enforced, not negotiated: 270 plays, 50 formations and 3,500 nodes per book. Eight books are already at the 270-play cap and a recipe that adds a play to one is refused with the exact count it would need; a recipe that replaces within them is fine.",
+        "Creations inhabit only proved-empty formation, aux and play slots plus the name pool's verified zero tail; no allocation grows or relocates. Both retail invariants the custom-name path needs -- a zero tail past the last live string and the pool count word at 0x1083C -- hold on 37 of 37 PS2 books.",
+        "A created formation or play is a clone of a donor plus authored slot positions and node chains; the group bits on a formation-to-play menu link stay unproved, so the writer only ever reuses a value the book already uses.",
+        "Every created play must pass the ported retail validator before staging, and the patched book is re-parsed afterwards: the trial's book put all 255 plays through it, the 254 stock ones and the new one.",
+        "One pack per run. Every PLAY resource lives in /VC_20919/0., so this has never bound, but the guard stays rather than being assumed away.",
+        "The PLAY chunks are uncompressed on all 37 books, so there is no decode on read and no recompression on write; a compressed family would need a re-encoder that fits the old size and this writer does not have one.",
+        "An unknown book id or a recipe with the wrong schema is refused, and the source ISO is opened read-only while the destination is created with O_EXCL and must not already exist.",
+        "The memory-card overlay risk is untested on PS2: plays created by the in-game editor may live in save containers that overlay the disc book at load, which would mask a disc edit. That claim is unproven on either platform and belongs in the UI as a note."
+      ],
+      "portme": [
+        "Boot the patched image and confirm the authored formation lines up in game before anything claims runtime-proved. Note that the Xbox row has never had this witness either, so taking it on PS2 would make the PS2 row the better-evidenced of the two -- and it is the cheapest decisive test available for the whole on-disc Phase 2 path.",
+        "Settle the memory-card overlay question on PS2: if in-game-authored plays live in a save container that overlays the disc book at load, a user with an existing save could mask disc edits. The harness for that has never run on either platform.",
+        "Name the remaining raw operands of the pass, zone, man and motion nodes so a designer can label them, and prove the formation-to-play menu link's group bits rather than reusing a value the book already has.",
+        "Build the Qt-free playbook service and the separate PS2 window; the lane is CLI-only today, and the existing play designer and create-play wizard are Xbox-side Qt."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the patcher, verifier, catalogue tool and validators plus user-authored playbook recipes; the user's ISO and every output image stay with the user. Stock names, records, nodes, descriptor words and pointers never enter a shareable recipe or the committed catalogue, which carries counts, ids, locations and headroom only.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not; nothing has been on a screen. The real-disc trial added one formation and one play to a single book, moving it from 39 formations / 254 plays / 2,438 nodes to 40 / 255 / 2,438 for 258 changed bytes in 74 ranges, every one inside the declared 78,768-byte span; a streaming diff of the whole image found nothing else moved, 36 of 37 books stayed byte-identical, the resource and image sizes were unchanged and all 255 plays were accepted by the ported retail validator. That 39-to-40 and 254-to-255 result reproduces the Xbox lane's own figure for the same book. A runtime witness would be booting the patched image in PenguinScreen2/PCSX2 and seeing the authored formation line up -- which would also test whether SLUS_209.19 consumes an edited book the way the executable it was ported from does.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "one of 37 catalogued PLAY books by id or name; the 8 books at the 270-play cap accept replacements but not additions",
+            "name": "book",
+            "required": true
+          },
+          {
+            "allowed": "a created formation cloned from a donor, with 11 authored 14-byte slot records in signed centimetres and an optional custom name",
+            "name": "formation",
+            "required": false
+          },
+          {
+            "allowed": "a created play cloned from a donor, with authored node chains built from the retail opcode vocabulary and an optional custom name",
+            "name": "play",
+            "required": false
+          }
+        ],
+        "notes": "The catalogue reports 37 books, 1,533 formations, 9,251 plays and 91,833 nodes with headroom of 317 formations, 739 plays and 37,667 nodes, and names the 8 books at the play cap -- independently re-derived from the PS2 disc and matching the Xbox list exactly. It carries counts, ids, locations and headroom and no payload. Route copying and play design are the Xbox lane's surface; this row is the PS2 transport for them."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image; little-endian fixed-capacity PLAY and DRCT resources inside the VC outer pack archive /VC_20919/0., stored uncompressed",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "37 fixed-capacity PLAY books of 78,768 stored bytes each (0x13390 body) and 5 DRCT graphs, all byte-size-identical to the Xbox disc's; each book is chunk 0 of its own outer entry at offset 0",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Create bounded formations and plays inside the 37 fixed-capacity PLAY books on a copy of the user's own SLUS-20919 ISO, driving the Xbox lane's own writer and codec unchanged. All 37 PLAY resources and all 5 DRCT graphs are byte-size-identical across the two discs, the PS2 executable carries the same codec tables, and the ported retail validator accepts 9,251 of 9,251 stock PS2 plays. The PS2 side is a caller of the Xbox writer rather than a fork of it, so Xbox playbook fixes reach PS2 for free.",
+      "surface": "scripts_config",
+      "title": "NFL 2K5 (PS2) playbook formation and play writer",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_playbook.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_stadium_position_patch.py --iso <SLUS-20919.iso> --catalog <nfl2k5_ps2_stadium_target_catalog.v1.json> --recipe <nfl2k5_ps2_stadium_position_recipe.v1.json> --output <new.iso> [--report <report.json>]",
+        "module": "tools/nfl2k5_ps2_stadium_position_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/PS2_PHASE2_STADIUMS.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_stadium_target_catalog.v1.json",
+        "reports/gameplay_tuning/nfl2k5_ps2_stadium_trial.v1.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "Edits are bounded to catalogued position lanes, refused before any image exists if the recompressed body will not fit, and independently verified down to the 0x20 wrapper -- but the row stays hidden because nothing has been booted, semantic ownership of the lanes is unestablished, and one edit currently takes tens of minutes. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+      },
+      "id": "nfl2k5ps2.stadiums.position_lanes",
+      "input_constraints": [
+        "Positions only, same count: vertex count comes from the pinned catalogue row rather than the recipe, and a mismatch is refused -- on PS2 the count is a VIF NUM field, so changing it is a topology change.",
+        "Only catalogued position lanes may change. Every other byte is the user's: the V4_16 header block, the V4_5 colour and V2_16 UV unpacks, the DMA tags, the VU1 microprogram invocation and every w component are preserved bit-exact, and the verifier requires the whole 0x20 resource wrapper to be byte-identical.",
+        "Fixed allocation at three nested levels: the ISO extent keeps its length, the rebuilt chunk span is byte-for-byte the size of the old one so no successor chunk moves and no outer entry changes, and the VC-LZ body must fit stored_size with the wrapper's in-place-decode scratch word left at its retail value. Raising that word is what hung an attract demo, so this writer never does.",
+        "A recompression that does not fit is refused before the destination image is created. The retail packer left 0 to 16 spare bytes per scene (median 8), so a retail-identical encoder has no room at all: the writer runs greedy first, falls back to an optimal parse, then expands trailing matches back into literals so the body still fills stored_size exactly.",
+        "Encoder geometry is taken from the source stream rather than assumed -- the scenes use both offset_bits 12 and 13.",
+        "A coordinate that is not an exact binary32 is refused, as is an unauthorised target, a catalogue pin that does not match, and a recipe whose edits span two scenes.",
+        "Aliased lanes are refused: several batch descriptors can point at the same DMA chain, so of 1,041 catalogued targets there are 890 distinct payload spans and 274 targets share a span with another. Each row carries its payload_span_target_count and a recipe editing two aliases of one lane is rejected -- the first real-disc trial run was refused by exactly that check.",
+        "The source ISO is opened read-only and its digest re-checked afterwards; the destination is created with O_EXCL and must not already exist.",
+        "The 8 batches on the trial scene whose VIF command 0x3F is unknown are excluded rather than guessed at; coverage there is 646 of 654 batches."
+      ],
+      "portme": [
+        "Boot the patched image on the rig and look at the stadium before anything claims runtime-proved. Until then the classification cannot honestly exceed what the Xbox equivalent claims, and that row is runtime.status not-tested after far more work.",
+        "Decide the headroom question before shipping: with 0 to 16 spare bytes per scene the optimal-parse encoder is load-bearing rather than a nicety, and its output is a different stream shape than any retail disc ever contained. It decodes correctly offline; nobody has watched a console decode one.",
+        "Catalogue more than one scene: run the tool across all 477 stadium-named SCNEs and check the refusal profile holds. Cheap, and not yet done -- every count in this row is from a single scene.",
+        "Establish semantic ownership for at least a handful of targets so a user can be offered a named piece of stadium rather than a lane path.",
+        "Fix the quadratic fill step before any GUI: on the trial scene the optimal parse leaves about 10,300 bytes to close at a mean match length of 5.46, so roughly 2,600 expansions each re-serialize 961,758 tokens at 1.478 s, and one stadium edit is a tens-of-minutes operation. This is a property of the shared VC-LZ fill helper, which belongs to the Xbox lane and was used exactly as written."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the patcher, verifier, catalogue tool and validators plus user-authored position recipes; the user's ISO and every output image stay with the user. A recipe carries the user's own coordinates and nothing else, and no retail-derived scene bytes or glTF are distributed.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not; nothing has been booted, and every runtime_visibility_proved and hardware_visibility_proved flag in the outputs is false. What is proved offline is the shape/batch/DMA/VIF layout against the retail disc -- corroborated independently by all 23,075 decoded vertices lying inside their own shape's declared bounding sphere, maximum distance-over-radius exactly 1.000000 with 242 of 1,041 lanes past 0.999 -- plus a same-count position edit round-tripping through decode, edit, recompression into the fixed span, ISO9660 write and independent verification. The real-disc trial moved 250 vertices (the five distinct position lanes of one sideline shape, +400 on y) in outer entry 1556 chunk 2: 1,000 decoded bytes changed in 250 one-vertex runs; the recompressed body fit only through the optimal parse, because the retail packer had left 3 spare bytes (10,303 literal-fill bytes, 8 bytes padding, scratch word unchanged); 1,282,669 image bytes changed, all inside the single declared window, with the 0x20 wrapper and the 9-byte VC-LZ header untouched; the lane verifier and the ISO9660 verifier both passed and the source image re-hashed unchanged. A runtime witness would be booting the patched image in PenguinScreen2/PCSX2 and seeing the moved geometry -- which would also be the first time a console decoder has been watched consuming an optimal-parse VC-LZ stream rather than a retail one.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "a catalogued position-lane target of the form <scene>/e{entry}/c{chunk}/s{shape}/b{batch}/l{lane}; aliased targets sharing a payload span may not both appear",
+            "name": "target_id",
+            "required": true
+          },
+          {
+            "allowed": "exact binary32 x/y/z triples, one per existing vertex in the lane; the count must equal the catalogue's",
+            "name": "positions",
+            "required": true
+          }
+        ],
+        "notes": "Targets are position lanes inside stadium SCNE batches, not venues: which lane is which piece of stadium is unestablished, so a name in the file is not a demonstrated correspondence to a thing a player sees. The catalogue was generated for a single scene of 101 shapes, 654 batches and 23,075 vertices; the tool will scan all 477 stadium-named SCNEs but that has not been run to completion. The re-run trial used that catalogue under its pinned digest."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image; VC-LZ-compressed SCNE resources inside the VC outer pack archive /VC_20919/0. .. 4., holding DMA/VIF geometry chains whose position lanes are UNPACK V4_32 runs",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "stadium SCNE position lanes; the shipped catalogue covers one scene of 101 shapes, 654 batches and 23,075 vertices, yielding 1,041 targets over 890 distinct payload spans",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Move existing vertex positions in catalogued stadium SCNE position lanes on a copy of the user's own SLUS-20919 ISO, keeping vertex count and topology identical and recompressing the scene back into the exact stored span it already owns. This was not a port: the PS2 geometry format was established against the retail disc and differs from the Xbox one at every level a geometry writer touches -- 0x70 shape records, no vertex-count field, positions carried as a strided VIF UNPACK V4_32 lane with 12 editable bytes every 16, and topology in a VU1 microprogram rather than a decoded index list.",
+      "surface": "stadiums_fields",
+      "title": "NFL 2K5 (PS2) bounded stadium position editing",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_stadium_position.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_disc_inventory.py --iso <SLUS-20919.iso> --json <report.json> --csv <inventory.csv> [--xbox-inventory <xbox_inventory.csv> --join-csv <name_join.csv>] [--hash-image] [--require-retail]",
+        "module": "tools/nfl2k5_ps2_disc_inventory.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json",
+        "reports/gameplay_tuning/nfl2k5_ps2_xbox_name_join.v1.csv"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Every field shown is read straight off the user's disc by a walk that decodes only the metadata half of each resource chunk and is proved on a synthetic disc plus the retail image (550,746 rows, 0 errors). There is no PS2 disc writer and no GS texture codec, so the viewer browses names, formats, dimensions and Xbox counterparts and exports them; it never offers an edit. The workspace is the PS2 Disc Inventory window (File menu, or --ps2-disc on its own), a separate read-only dialog in the shape of the PS2 save editor rather than a card in the Xbox sidebar; the command line ships alongside it."
+      },
+      "id": "nfl2k5ps2.textures.disc_inventory",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading, never modified, and its size and mtime are re-checked after the walk; every output is created exclusively and may not be the image itself.",
+        "Metadata only: at most system_bytes of each chunk is read or decoded; video_bytes (pixels, audio samples) is never read off the disc, so no output can carry retail payload.",
+        "Identity is checked, not assumed: the boot ELF digest is compared with the pinned SLUS_209.19 and reported (refused with --require-retail); --hash-image additionally compares the whole image with the pinned retail digest. A mod disc still inventories and says so.",
+        "The Xbox counterpart is a name join (name.strip().upper()), not a pixel match: 24,187 of the Xbox disc's 24,285 names occur on the PS2 disc; 1,659 PS2 names have no Xbox counterpart and 98 Xbox names have no PS2 one."
+      ],
+      "portme": [
+        "Emit each texture's PCSX2 replacement-pack file name (GS TEX0 and CLUT hashes computed from the disc bytes) so pack authors can name their dumps; offline-writer-proved only once a texture is witnessed rendering in PenguinScreen2 (milestone M1).",
+        "Ship the PS2 <-> Xbox texture manifest: the 4,297 names that resolve to exactly one Xbox asset first, then the 7,739 fan-out names via the shared (id, chunk) key, which resolves 77% of TSETs.",
+        "Give the browser a virtualized model; 550,746 rows do not fit a plain item model."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the inventory tool, the ISO9660 reader it imports, their self-tests and the names-only PS2 <-> Xbox join; the user's ISO, the per-disc inventory and every payload byte stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness. The Xbox counterpart column is a disc-level name correspondence, not a claim that the two textures render alike.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "0..4 (/VC_20919/0. .. 4.)",
+            "name": "pack",
+            "required": false
+          },
+          {
+            "allowed": "0..4321 outer entry index",
+            "name": "entry_index",
+            "required": false
+          },
+          {
+            "allowed": "chunk FourCC (TXTR, HITX, TSET, SCNE, AUDO, ...) or sub-object role",
+            "name": "fourcc",
+            "required": false
+          },
+          {
+            "allowed": "resource name, matched case-insensitively",
+            "name": "name",
+            "required": false
+          },
+          {
+            "allowed": "both | ps2_only | xbox_only",
+            "name": "xbox_presence",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table; the GUI must not offer byte editing, texture export or pack writing from this row. Sub-object rows (TSET textures, SCNE materials/nodes/shapes/markers) have no on-disc size of their own and show it blank."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image; VC outer pack archive /VC_20919/0. .. 4. (4,635,080,704 bytes as one virtual range, 0x800-aligned entries) holding 0x20-byte resource chunks, optionally VC-LZ compressed",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "4,322 outer entries; 550,746 resource rows (63,866 chunks, 120,779 TXTR objects: 118,531 PSMT8 + 2,248 PSMT4; 12,814 TSETs; 402,834 SCNE table rows); 25,846 distinct names, 24,187 shared with the Xbox disc",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Open a user's SLUS-20919 ISO read-only, verify it against the registry's pinned digests, and inventory the ~550K named resources in /VC_20919 -- 120,779 textures with GS pixel format and dimensions -- together with each name's Xbox counterpart (24,187 shared names, 99.6% of the Xbox disc's). This is the first time the studio admits a PS2 disc; it hands PCSX2 replacement-pack authors the names their GS-hash dumps lack and never reads a pixel or a sample.",
+      "surface": "textures",
+      "title": "NFL 2K5 (PS2) disc resource inventory",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_disc_inventory.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor --ps2-export  |  service: mod_editor/core/ps2_export_service.py plan_export(project, manifest) / run_export(plan, out_dir)",
+        "module": "mod_editor/core/ps2_export_service.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/PS2_M1_PLAN.md",
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "mod_editor/data/nfl2k5-xbox-map.v1.json",
+        "reports/gameplay_tuning/nfl2k5-xbox-map.unresolved.v1.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "The exporter writes only the uniform targets the open Xbox project marks edited, naming each file by the PS2 texture's PCSX2 replacement identity from the shipped manifest (TEX0 and CLUT XXH3-64 hashes computed offline from the stock disc; 4,732 names resolve to exactly one Xbox asset). It never emits an unedited texture, never touches the user's ISO, and publishes into a fresh folder with a receipt. The independent verifier re-derives from folder + receipt + manifest, importing none of the exporter. It is a separate window (File menu, or --ps2-export) in the shape of the PS2 disc inventory and save editor, not a card in the Xbox sidebar."
+      },
+      "id": "nfl2k5ps2.uniforms.replacement_pack_export",
+      "input_constraints": [
+        "Only edited targets are eligible: an uniform target without user-authored PNG bytes in the open project is never written, because an unedited texture would be retail pixels leaving the disc.",
+        "Names come from the shipped manifest only (schema nfl2k5_ps2_to_xbox_texture_map/v1); a target with no manifest row, or an ambiguous one, is reported as skipped with its reason and nothing is written for it.",
+        "The output folder must not already exist and may not be a symlink; files are written to a temporary sibling and published by rename, and the folder contains only textures/SLUS-20919/replacements/*.png plus the receipt.",
+        "Where the PS2 native geometry (TW/TH decoded from the name's bits word) differs in aspect from the user's PNG, the image is resampled to the PS2 aspect and the resample is recorded in the receipt.",
+        "Correct rendering requires PenguinScreen2 with LoadTextureReplacements=true and ClassicTextureNames=true (SLUS-20919 is not a classic-default serial); the receipt carries this warning verbatim from the manifest provenance."
+      ],
+      "portme": [
+        "Witnessed 2026-09-05: HUD, scene and uniform-part textures render from an exported pack on PenguinScreen2 and on three stock upstream PCSX2 builds (see runtime.evidence). The registry binds runtime-proved to a writer with an edit surface; this row is an exporter whose output the emulator applies, so a rule extension (or a companion row) rather than a relabel is the honest route to that class.",
+        "Resolve the TSET fan-out via the shared (id, chunk) key (77% of PS2 TSETs) so more uniform parts gain unique rows; today only names resolving to exactly one Xbox asset are exported.",
+        "Shared era art: the disc shares torso, sleeve, pants and helmet textures across a team's era variants, so no uniform kit maps all 8 mappable components today (the best-covered kit maps 7 of 8); a texture several kits share ships only under its texture id, and the unresolved sidecar names every losing claim with its reason (1,478 names shared by kits, 747 superseded by a logical id, 1,673 unexplained, 473 tex0-only, 288 without an Xbox id, 4 TCC-bit divergences).",
+        "The 1,673 pack identities whose hash does not yet reproduce from disc bytes remain unexplained and are excluded from the manifest until a fix reproduces a real hash.",
+        "Widen beyond uniforms surface by surface following the WP3 staging order (logos_cards, portraits_faces, scorebug_presentation, stadiums_fields field art, crib_assets)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the exporter, the independent verifier, the validators and the hashes-and-names manifest; the user's Xbox disc, their edited PNGs and the exported pack stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json"
+        ],
+        "scope": "Offline-proved exporter, classified extract-only by the registry's own definition: a validated exporter creates a standard local asset (a PCSX2 replacement pack) and no path writes anything back into the game -- the emulator overlays the pack at draw time. The independent verifier confirms the folder holds exactly the receipted files, every name is a canonical PCSX2 replacement name present in the manifest for its claimed Xbox asset, every PNG parses, and no receipted target is unedited. In-game rendering is not claimed here. Witnessed 2026-09-05 on PenguinScreen2 build 8226182a by GS-dump replay of the 2026-09-04 gameplay dump with a 13-file pack exported by this service: the ESPN shield, the scorebug and the kick-meter dial rendered as the exported art (stock reference frame from the same dump for comparison); Uniform parts were then witnessed on two further dumps where players fill the frame: torso, sleeves, pants, gloves and head/hair exported with distinct hues rendered on the players with correct UV mapping against an empty-pack control (coin toss: 46,618 px changed, torso 19,643; QB close-up: 34,785 px, pants 7,144), with an unpacked referee unchanged. Stock upstream PCSX2 (v2.6.0, v2.9.30, merge-base v2.7.469) loaded the same classic-named pack with identical pixel counts. Frames stay on the rig (retail imagery); the report carries hashes and counts only.",
+        "status": "visible-proved"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "an edited uniform target id of the open Xbox project (tset:{entry}:{chunk}:{child}:{name} or p8:{entry}:{name})",
+            "name": "xbox_asset_id",
+            "required": true
+          },
+          {
+            "allowed": "a new, non-existent directory",
+            "name": "out_dir",
+            "required": true
+          }
+        ],
+        "notes": "Targets are chosen by editing them in the Xbox studio, not in this window; the exporter lists the project's edited uniform targets with mapped / unmapped / ambiguous status and exports the mapped ones. It offers no byte editing and no disc writing."
+      },
+      "source_container": {
+        "format": "PCSX2 texture-replacement folder: textures/SLUS-20919/replacements/<tex0hash>-<cluthash>-<bits>.png (64-bit fields %llx unpadded, bits %08x with TCC bit 14 set), plus nfl2k5-ps2-export-receipt.v1.json",
+        "hash_pins": [],
+        "resource": "5,379 manifest rows, one per PS2 replacement filename (12,958 of 15,104 pack identities both-hash proved; 120,779 disc textures scanned), mapping to 5,001 distinct Xbox asset ids: 3,816 p8, 1,394 logical nfl2k5.uniform.* (1,016 target ids across 378 of 634 selectors), 98 tset, 71 crib scene; uniform surface only at this row",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) Xbox XISO as the authoring source; user-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO is NOT required at export time"
+      },
+      "summary": "Export the open Xbox project's edited uniform textures as a PCSX2 replacement pack for the PS2 release, named by hashes computed offline from the stock disc, with an independent verifier.",
+      "surface": "uniforms",
+      "title": "NFL 2K5 PS2 uniform replacement-pack export",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_replacement_pack.sh"
+    }
+  ],
+  "game": {
+    "id": "nfl2k5_ps2",
+    "platform": "PlayStation 2",
+    "public_input": "User supplies a legally obtained USA PS2 ISO (SLUS-20919) whose SHA-256 matches the supported retail image; the tool never bundles game files, BIOS, saves, or emulator binaries.",
+    "retail_identity": {
+      "content_sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+      "executable_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa"
+    },
+    "title": "ESPN NFL 2K5 (USA, PlayStation 2)"
+  },
+  "schema": "vc_mod_capability_registry_fragment/v1",
+  "surfaces": [
+    "audio",
+    "colors",
+    "menus",
+    "players_rosters",
+    "saves",
+    "scripts_config",
+    "stadiums_fields",
+    "textures",
+    "uniforms"
+  ]
+}

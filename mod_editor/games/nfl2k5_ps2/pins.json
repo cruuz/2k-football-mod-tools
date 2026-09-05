@@ -1,0 +1,28 @@
+{
+  "capability_rows": 9,
+  "game_id": "nfl2k5_ps2",
+  "hidden_disc_writers": 6,
+  "lanes_on_contract": 1,
+  "product_modules": 35,
+  "retail_identity": {
+    "content_sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+    "executable_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa"
+  },
+  "save_writer_ids": [
+    "nfl2k5ps2.saves.roster_name_writer"
+  ],
+  "schema": "vc_game_module_pins/v1",
+  "shipped_files": 54,
+  "surfaces": [
+    "audio",
+    "colors",
+    "menus",
+    "players_rosters",
+    "saves",
+    "scripts_config",
+    "stadiums_fields",
+    "textures",
+    "uniforms"
+  ],
+  "windows": 3
+}
