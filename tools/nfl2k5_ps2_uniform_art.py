@@ -62,6 +62,29 @@ def _lane(args: argparse.Namespace) -> lane_module.UniformArtLane:
     return lane_module.UniformArtLane(map_path=getattr(args, "map", None))
 
 
+def _scope(lane: lane_module.UniformArtLane, args: argparse.Namespace):
+    """Which uniform packages the walk has to read, given --team / --selector.
+
+    Reading 634 packages to show one team's kit costs a minute; reading that
+    team's costs a second. The filters still run over the result, so a scope
+    that is too wide is only slow, never wrong.
+    """
+
+    selector = (getattr(args, "selector", "") or "").strip()
+    if selector:
+        return (selector.upper(),)
+    team = (getattr(args, "team", "") or "").strip()
+    if team:
+        found = lane.selectors_for_team(team)
+        if not found:
+            raise Refusal(
+                f"{team!r} is not a team the shipped kit table names; run "
+                f"`catalogue` without --team to see what this disc carries."
+            )
+        return found
+    return ()
+
+
 def _progress(message: str) -> None:
     sys.stderr.write("\r  " + message.ljust(72))
     sys.stderr.flush()
@@ -105,7 +128,8 @@ def _selected(catalogue, args: argparse.Namespace) -> List[Any]:
 
 def do_catalogue(args: argparse.Namespace) -> int:
     lane = _lane(args)
-    catalogue = lane.build_catalogue(Path(args.iso), progress=_progress, jobs=args.jobs)
+    catalogue = lane.build_catalogue(Path(args.iso), progress=_progress, jobs=args.jobs,
+                                     selectors=_scope(lane, args))
     sys.stderr.write("\n")
     document = dict(catalogue.document)
     if args.team or args.selector or args.part or args.packable_only:
@@ -130,7 +154,8 @@ def do_catalogue(args: argparse.Namespace) -> int:
 
 def do_export(args: argparse.Namespace) -> int:
     lane = _lane(args)
-    catalogue = lane.build_catalogue(Path(args.iso), progress=_progress, jobs=args.jobs)
+    catalogue = lane.build_catalogue(Path(args.iso), progress=_progress, jobs=args.jobs,
+                                     selectors=_scope(lane, args))
     sys.stderr.write("\n")
     targets = _selected(catalogue, args)
     if not targets:
@@ -204,7 +229,12 @@ def do_pack(args: argparse.Namespace) -> int:
     recipe = _recipe_from_edits(document, edits_path)
     if args.emulator_target:
         recipe["emulator_target"] = args.emulator_target
-    catalogue = lane.build_catalogue(Path(args.iso), progress=_progress, jobs=args.jobs)
+    # A pack's own target keys say which uniform packages have to be read, so
+    # a one-team pack costs a second rather than the whole disc's minute.
+    scope = sorted({str(row["target"]).split(":", 1)[0].upper()
+                    for row in recipe["edits"]})
+    catalogue = lane.build_catalogue(Path(args.iso), progress=_progress,
+                                     jobs=args.jobs, selectors=scope)
     sys.stderr.write("\n")
     plan = lane.plan(Path(args.iso), recipe, catalogue)
     print(f"plan: {len(plan.target_keys)} texture(s) -> "

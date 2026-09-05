@@ -49,7 +49,7 @@ from __future__ import annotations
 
 import base64
 import binascii
-from dataclasses import dataclass, field as dataclass_field
+from dataclasses import dataclass
 import hashlib
 import json
 import os
@@ -63,7 +63,6 @@ import zlib
 from mod_editor.games.contract import (
     Artifact,
     Catalogue,
-    DeclaredRange,
     Edit,
     Plan,
     Receipt,
@@ -74,7 +73,7 @@ from mod_editor.games.contract import (
 )
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[3]
+ROOT = HERE.parents[2]
 TOOLS = ROOT / "tools"
 if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
@@ -83,7 +82,6 @@ import nfl2k5_ps2_disc_inventory as inventory_lib  # noqa: E402
 import nfl2k5_ps2_replacement_pack_verify as pack_verify  # noqa: E402
 import nfl2k5_ps2_texture_map as texture_map  # noqa: E402
 import nfl2k5_ps2_unif_color_target_catalog as colour_catalog  # noqa: E402
-import ps2_iso9660 as iso_lib  # noqa: E402
 
 LANE_ID = "uniforms.art"
 CAPABILITY_ID = "nfl2k5ps2.uniforms.replacement_pack_export"
@@ -582,14 +580,43 @@ class UniformArtLane:
 
     # -- catalogue -----------------------------------------------------
 
+    def selectors_for_team(self, team: str) -> Tuple[str, ...]:
+        """Every uniform package one team owns, by abbreviation or full name."""
+
+        wanted = (team or "").strip().casefold()
+        if not wanted:
+            return ()
+        kits = load_kits(self._kits_path)
+        return tuple(sorted(
+            selector for selector, row in kits.items()
+            if wanted in (str(row.get("abbreviation", "")).casefold(),
+                          str(row.get("team", "")).casefold())))
+
     def build_catalogue(
         self, source: Path, *, progress: Optional[Callable[[str], None]] = None,
-        jobs: int = 0,
+        jobs: int = 0, selectors: Sequence[str] = (),
     ) -> Catalogue:
+        """Every uniform texture on ``source``, or only the named packages'.
+
+        ``selectors`` narrows the *walk*, not the result: one team's kit is 61
+        textures out of 38,674, and reading the whole disc to show them is a
+        minute a user does not have to spend.
+        """
+
         source = Path(source)
         identity_map = load_identity_map(map_for_source(source, self._map_override))
         kits = load_kits(self._kits_path)
         packs, entries, disc_identity, uniform = uniform_entries(source)
+        if selectors:
+            wanted = {str(value).strip().upper() for value in selectors if str(value).strip()}
+            narrowed = [row for row in uniform if row[1].upper() in wanted]
+            if not narrowed:
+                raise Refusal(
+                    f"{', '.join(sorted(wanted))} names no uniform package on this "
+                    f"disc; a package is two characters, H or A, and a variant "
+                    f"number, e.g. 09H0."
+                )
+            uniform = narrowed
 
         rows: List[dict] = []
         started = time.time()
@@ -623,6 +650,8 @@ class UniformArtLane:
                 "file": self._kits_path.as_posix() if kits else "",
                 "selectors": len(kits),
             },
+            "scope": {"selectors": sorted(row[1] for row in uniform),
+                       "whole_disc": not selectors},
             "summary": self._summary(rows, uniform, kits),
             "targets": rows,
         }

@@ -731,6 +731,15 @@ _state: dict = {}
 
 
 def initialise(iso_path: str, packs, entries) -> None:
+    # A pool worker calls this once; a long-lived process -- the studio walking
+    # one disc after another -- calls it repeatedly, and each call opens the
+    # pack files.  Close the previous archive rather than leaking its handles.
+    previous = _state.get("archive")
+    if previous is not None:
+        try:
+            previous.close()
+        except OSError:
+            pass
     _state["archive"] = inv.VirtualPacks(iso_path, packs)
     _state["entries"] = list(entries)
 
