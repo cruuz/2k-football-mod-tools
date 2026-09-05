@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import errno
 import hashlib
+import os
 from pathlib import Path
 import struct
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 for candidate in (ROOT / "tools", ROOT, ROOT / "tests"):
@@ -175,6 +178,41 @@ class SyntheticImageTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
+
+    def test_invalid_archive_table_closes_image_even_with_retained_traceback(self) -> None:
+        invalid = bytearray(self.fixture.image)
+        struct.pack_into("<I", invalid, self.fixture.pack_extent("0") + 4, 1)  # reserved header word
+        self.fixture.path.write_bytes(invalid)
+        real_open = os.open
+        for writable in (False, True):
+            with self.subTest(writable=writable):
+                opened = []
+
+                def track_open(*args, **kwargs):
+                    fd = real_open(*args, **kwargs)
+                    opened.append(fd)
+                    return fd
+
+                try:
+                    with patch.object(os, "open", side_effect=track_open):
+                        try:
+                            with pr.OuterImage(self.fixture.path, writable=writable):
+                                self.fail("invalid archive was accepted")
+                        except pr.RecodeError as exc:
+                            failure = exc  # keep the failed constructor alive like an error reporter
+                    self.assertIn("implausible outer archive header", str(failure))
+                    self.assertIsNotNone(failure.__traceback__)
+                    self.assertEqual(len(opened), 1)
+                    with self.assertRaises(OSError) as closed:
+                        os.fstat(opened[0])
+                    self.assertEqual(closed.exception.errno, errno.EBADF)
+                    self.assertEqual(self.fixture.path.read_bytes(), invalid)
+                finally:
+                    for fd in opened:
+                        try:
+                            os.close(fd)  # release a leaked fd if the regression fails
+                        except OSError:
+                            pass
 
     def test_books_are_found_inside_the_image_and_the_loose_folder(self) -> None:
         for path in (self.fixture.path, self.fixture.retail_packs):

@@ -254,7 +254,7 @@ class WiringTests(unittest.TestCase):
         source = (
             _REPO_ROOT / "mod_editor" / "gui" / "studio_qt.py"
         ).read_text(encoding="utf-8")
-        self.assertIn('edit_button = QPushButton("Edit…")', source)
+        self.assertIn('edit_button = QPushButton("Edit image here…")', source)
         self.assertIn("actions.addWidget(edit_button)", source)
         self.assertIn("def _edit_visual_asset", source)
 

@@ -30,6 +30,8 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import mod_build, modpack
+from mod_editor.gui.ux_text import XEMU_LINE, Details
+from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 PACK_FILTER = f"2K5 disc patches (*{modpack.EXTENSION});;All files (*)"
@@ -68,6 +70,8 @@ class _Task(QRunnable):
 class SharePanel(QWidget):
     """Create and apply ``.2k5patch`` files (disc images only, always on copies)."""
 
+    disc_written = pyqtSignal(str)   # a disc copy Apply wrote and verified (Play latest can start it)
+
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._facade = facade
@@ -80,47 +84,84 @@ class SharePanel(QWidget):
         self.last_export: dict | None = None
         self.last_check: dict | None = None
         self.last_apply: dict | None = None
+        self._build_pair_owned = False     # a finished Build owns base/patched; the open disc must not replace them
+        self._followed_source = ""         # the last open disc the install form followed
         self._build()
+
+    # ------------------------------------------------------------------ the open-disc hook
+    def follow_source(self, source: Path | str) -> None:
+        """Fill the export "Starting disc" (only while no build owns the pair) and the install "Your disc".
+
+        The install source follows the open disc when it is empty or still holds the previous
+        open disc; a disc the user chose by hand stays.  A changed install source invalidates the
+        old check report.
+        """
+
+        text = str(source)
+        if not self._build_pair_owned and not self.base_field.text().strip():
+            self.base_field.setText(text)
+        current = self.source_field.text().strip()
+        if not current or current == self._followed_source:
+            if current != text:
+                self.source_field.setText(text)
+                self._check_state = None
+                self.check_status.setText("")
+                self.describe_source()
+        self._followed_source = text
+        self._refresh()
 
     # ------------------------------------------------------------------ build
     def _build(self) -> None:
         layout = QVBoxLayout(self)
         intro = QLabel(
-            "Share your work without sharing the game. A patch file (.2k5patch) holds only the bytes that "
-            "differ from the disc image you started from, each pinned to the hash of the bytes it replaces, "
-            "plus your source files (textures, audio, text, layout JSON or a whole studio project) and a "
-            "recipe of the studio operations behind them. Someone with their own copy of the game applies it "
-            "to a COPY of their disc; a disc that is not the same base is refused before anything is written."
+            "Export a mod file (.2k5patch) for someone with a compatible copy of the game. "
+            "It contains changes rather than a full disc."
         )
         intro.setWordWrap(True)
         layout.addWidget(intro)
+        intro_details = Details("How a mod file works")
+        intro_details.add_text(
+            "A mod file holds the bytes that differ from the disc you started from, each pinned to the "
+            "bytes it replaces, plus any source files you choose to include and a description of the "
+            "studio changes it recognises. Someone with their own copy of the game applies it to a COPY "
+            "of their disc; a disc that is not the same starting disc is refused before anything is written.")
+        layout.addWidget(intro_details)
 
-        quick = QGroupBox("Share what you just built (the easy way)")
+        # ---- the easy way: the copy the Build tab just wrote
+        quick = QGroupBox("Export mod file")
         quick_layout = QVBoxLayout(quick)
-        self.quick_hint = QLabel("1. Build your patched copy on the Build tab.  2. Press Export.  3. Send the small .2k5patch file "
-                                 "(never the disc). Friends open Share \u2192 Apply on their own copy of the game.")
+        self.quick_hint = QLabel("Make a disc on the Build tab, then export a .2k5patch to share yourself.")
         self.quick_hint.setWordWrap(True)
         quick_layout.addWidget(self.quick_hint)
-        self.quick_export_button = QPushButton("Export && share the copy I just built")
+        self.quick_target_label = QLabel("")
+        self.quick_target_label.setWordWrap(True)
+        self.quick_target_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.quick_target_label.hide()
+        quick_layout.addWidget(self.quick_target_label)
+        quick_row = QHBoxLayout()
+        self.quick_export_button = QPushButton("Export mod file…")
         self.quick_export_button.setObjectName("primaryButton")
         self.quick_export_button.setEnabled(False)
-        self.quick_export_button.setToolTip("Enabled once the Build tab has written a copy this session; fills in the base, the copy, "
-                                            "a name and a file next to the copy, then exports.")
+        self.quick_export_button.setToolTip("Make a disc on the Build tab first.")
         self.quick_export_button.clicked.connect(self.start_export)
-        quick_layout.addWidget(self.quick_export_button, 0, Qt.AlignLeft)
-        layout.addWidget(quick)
-        create = QGroupBox("Create a patch file from your patched copy (advanced: any base, any copy, bundle source files)")
-        create_layout = QVBoxLayout(create)
-        self.base_field, self.base_button = self._path_row(create_layout, "Base image (what you started from)", self._choose_base)
-        self.patched_field, self.patched_button = self._path_row(create_layout, "Patched copy", self._choose_patched)
+        quick_row.addWidget(self.quick_export_button)
+        self.quick_reason = QLabel("Make a disc on the Build tab first.")
+        self.quick_reason.setObjectName("throwMuted")
+        quick_row.addWidget(self.quick_reason, 1)
+        quick_layout.addLayout(quick_row)
+        # ---- the same export from any two disc files (collapsed; every field stays reachable)
+        self.export_details = Details("Export from existing disc files")
+        create_layout = self.export_details.content
+        self.base_field, self.base_button = self._path_row(create_layout, "Starting disc", self._choose_base)
+        self.patched_field, self.patched_button = self._path_row(create_layout, "Modified disc", self._choose_patched)
         # A patch built on a working copy still applies to retail when every run's expected bytes
         # are the retail bytes. Point this at a retail dump and the pack says so, instead of
         # warning everyone who opens it about a "custom base" that never affected them.
         self.retail_field, self.retail_button = self._path_row(
-            create_layout, "Retail disc image (optional, proves the patch applies to retail)", self._choose_retail)
+            create_layout, "Unmodified reference disc (optional)", self._choose_retail)
         form = QFormLayout()
         self.name_field = QLineEdit()
-        self.name_field.setPlaceholderText("What this patch does, e.g. ESPN scorebug + 80-yard bombs")
+        self.name_field.setPlaceholderText("What this mod does, e.g. ESPN scorebug + 80-yard bombs")
         self.name_field.textChanged.connect(self._refresh)
         form.addRow("Name", self.name_field)
         self.author_field = QLineEdit()
@@ -129,12 +170,12 @@ class SharePanel(QWidget):
         self.version_field.setPlaceholderText("1")
         form.addRow("Version", self.version_field)
         self.description_field = QPlainTextEdit()
-        self.description_field.setPlaceholderText("Optional notes for the people who apply it")
+        self.description_field.setPlaceholderText("Optional notes for the people who install it")
         self.description_field.setMaximumHeight(64)
         form.addRow("Description", self.description_field)
         create_layout.addLayout(form)
 
-        assets_box = QGroupBox("Source files to bundle (so others can see and remix exactly what is in it)")
+        assets_box = QGroupBox("Your source files (optional)")
         assets_layout = QVBoxLayout(assets_box)
         self.assets_list = QListWidget()
         self.assets_list.setMaximumHeight(90)
@@ -148,16 +189,15 @@ class SharePanel(QWidget):
         assets_buttons.addWidget(self.remove_asset_button)
         assets_buttons.addStretch(1)
         assets_layout.addLayout(assets_buttons)
-        self.project_field, self.project_button = self._path_row(assets_layout, "Studio project (.2k5mod, optional)", self._choose_project)
-        assets_note = QLabel("Studio edits the exporter recognises (throw distance, catch/acceleration/draft caves, the ESPN "
-                             "scorebug layout and its textures) are recorded in the recipe automatically.")
+        self.project_field, self.project_button = self._path_row(assets_layout, "Project file (.2k5mod, optional)", self._choose_project)
+        assets_note = QLabel("Recognized changes are described automatically. Optional files help others edit your work.")
         assets_note.setWordWrap(True)
         assets_layout.addWidget(assets_note)
         create_layout.addWidget(assets_box)
 
-        self.out_field, self.out_button = self._path_row(create_layout, "Save patch file as", self._choose_out)
+        self.out_field, self.out_button = self._path_row(create_layout, "Save mod file as", self._choose_out)
         create_actions = QHBoxLayout()
-        self.export_button = QPushButton("Create patch file")
+        self.export_button = QPushButton("Export mod file")
         self.export_button.setEnabled(False)
         self.export_button.clicked.connect(self.start_export)
         create_actions.addWidget(self.export_button)
@@ -166,16 +206,17 @@ class SharePanel(QWidget):
         self.export_status = QLabel("")
         self.export_status.setWordWrap(True)
         create_layout.addWidget(self.export_status)
-        layout.addWidget(create)
+        quick_layout.addWidget(self.export_details)
+        layout.addWidget(quick)
 
-        apply_box = QGroupBox("Apply a patch file to your own disc")
+        apply_box = QGroupBox("Install a friend's mod")
         apply_layout = QVBoxLayout(apply_box)
-        self.pack_field, self.pack_button = self._path_row(apply_layout, "Patch file", self._choose_pack)
-        self.pack_summary = QLabel("Open a patch file to see what it contains.")
+        self.pack_field, self.pack_button = self._path_row(apply_layout, "Mod file (.2k5patch)", self._choose_pack)
+        self.pack_summary = QLabel("Choose a .2k5patch file to see what it does.")
         self.pack_summary.setWordWrap(True)
         self.pack_summary.setTextInteractionFlags(Qt.TextSelectableByMouse)
         apply_layout.addWidget(self.pack_summary)
-        self.source_field, self.source_button = self._path_row(apply_layout, "Your disc image (never modified)", self._choose_source)
+        self.source_field, self.source_button = self._path_row(apply_layout, "Your disc (.iso, never modified)", self._choose_source)
         # Which disc this is decides whether a byte-run patch can ever apply, so say it as soon
         # as the path is known rather than after a check has counted 2,802 mismatching runs.
         self.source_identity = QLabel("")
@@ -185,13 +226,13 @@ class SharePanel(QWidget):
         self.check_status = QLabel("")
         self.check_status.setWordWrap(True)
         apply_layout.addWidget(self.check_status)
-        self.target_field, self.target_button = self._path_row(apply_layout, "Patched copy to create", self._choose_target)
+        self.target_field, self.target_button = self._path_row(apply_layout, "Save disc copy as", self._choose_target)
         apply_actions = QHBoxLayout()
-        self.check_button = QPushButton("Check")
+        self.check_button = QPushButton("Check it fits my disc")
         self.check_button.setEnabled(False)
         self.check_button.clicked.connect(self.start_check)
         apply_actions.addWidget(self.check_button)
-        self.apply_button = QPushButton("Apply to a new copy")
+        self.apply_button = QPushButton("Make disc with this mod")
         self.apply_button.setEnabled(False)
         self.apply_button.clicked.connect(self.start_apply)
         apply_actions.addWidget(self.apply_button)
@@ -248,6 +289,7 @@ class SharePanel(QWidget):
             return
         self.base_field.setText(str(source))
         self.patched_field.setText(str(target))
+        self._build_pair_owned = True
         self.out_field.setText(str(target.with_name(target.name.split(".xiso")[0] + modpack.EXTENSION)))
         plan = receipt.get("plan") if isinstance(receipt.get("plan"), dict) else {}
         if not self.name_field.text().strip():
@@ -255,7 +297,11 @@ class SharePanel(QWidget):
         if not self.version_field.text().strip():
             self.version_field.setText("1")
         self.quick_export_button.setEnabled(True)
-        self.export_status.setText("Ready: press Export to write the patch file next to your copy.")
+        self.quick_export_button.setToolTip("Writes the mod file named below, next to the disc you just made.")
+        self.quick_reason.hide()
+        self.quick_target_label.setText(f"From {source.name} to {target.name}.\nMod file: {self.out_field.text()}")
+        self.quick_target_label.show()
+        self.export_status.setText("Ready: press Export mod file to write the mod file next to your copy.")
         self._refresh()
 
     def set_assets(self, paths: list[Path]) -> None:
@@ -277,7 +323,7 @@ class SharePanel(QWidget):
             self._pack = modpack.load(path)
         except modpack.ModpackError as exc:
             self._pack = None
-            self.pack_summary.setText(f"Not usable: {exc}")
+            self.pack_summary.setText(f"Couldn't open this mod file: {exc}")
             self._refresh()
             return
         self.pack_summary.setText(self.summarize(modpack.inspect(self._pack)))
@@ -291,6 +337,12 @@ class SharePanel(QWidget):
             lines.append(info["description"])
         lines.append(f"{info['runs']} run(s), {_human(info['bytes'])} changed; patch file {_human(info['pack_bytes'])}; "
                      f"created {info['created'] or '?'} with {info['tool'].get('name') or '?'} {info['tool'].get('version') or ''}")
+        if info.get("patch_operations"):
+            labels = {"byte_runs": "Byte changes", "xbe_grow": "SPECIAL executable growth",
+                      "file_replace": "Named file replacement", "file_grow": "Named file growth"}
+            lines.append("Disc operations: " + ", ".join(labels.get(op["name"], op["name"]) for op in info["patch_operations"]))
+        if info.get("result", {}).get("size", base["size"]) != base["size"]:
+            lines.append(f"Disc size: {_human(base['size'])} → {_human(info['result']['size'])}.")
         if base["is_retail"]:
             lines.append("Base: the retail disc image.")
         elif base.get("is_retail_equivalent"):
@@ -315,7 +367,10 @@ class SharePanel(QWidget):
 
         self.last_check = report
         self._check_state = report["state"]
-        self.check_status.setText(f"{report['state'].upper()}: {report['explanation']}")
+        word = {"ready": "Ready to apply", "applied": "Already installed",
+                "mismatch": "Doesn't match this mod's required starting disc"}.get(
+            str(report["state"]), str(report["state"]).replace("_", " ").capitalize())
+        self.check_status.setText(f"{word} — {report['explanation']}")
         self._refresh()
 
     # ------------------------------------------------------------------ choosers
@@ -351,19 +406,19 @@ class SharePanel(QWidget):
 
     def _choose_out(self) -> None:
         suggested = (self.name_field.text().strip() or "my-edits").replace("/", "-") + modpack.EXTENSION
-        chosen, _f = QFileDialog.getSaveFileName(self, "Save the patch file", suggested, PACK_FILTER)
+        chosen, _f = QFileDialog.getSaveFileName(self, "Save the mod file as", suggested, PACK_FILTER)
         if chosen:
             if not chosen.casefold().endswith(modpack.EXTENSION):
                 chosen += modpack.EXTENSION
             self.out_field.setText(chosen)
 
     def _choose_pack(self) -> None:
-        path = self._choose_file(self.pack_field, "Choose a patch file", PACK_FILTER)
+        path = self._choose_file(self.pack_field, "Choose a mod file (.2k5patch)", PACK_FILTER)
         if path is not None:
             self.load_pack(path)
 
     def _choose_source(self) -> None:
-        if self._choose_file(self.source_field, "Choose your own disc image", IMAGE_FILTER) is not None:
+        if self._choose_file(self.source_field, "Choose your game disc (.iso)", IMAGE_FILTER) is not None:
             self._check_state = None
             self.check_status.setText("")
             self.describe_source()
@@ -390,7 +445,7 @@ class SharePanel(QWidget):
         return text
 
     def _choose_target(self) -> None:
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the patched copy",
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?",
                                                  "ESPN NFL 2K5 (patched).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(mod_build.image_target_path(chosen))
@@ -418,8 +473,8 @@ class SharePanel(QWidget):
             failed(message)
             self._refresh()
 
-        task.signals.finished.connect(finish)
-        task.signals.failed.connect(fail)
+        task.signals.finished.connect(bound(self, finish))
+        task.signals.failed.connect(bound(self, fail))
         self._task = task
         self._pool.start(task)
 
@@ -447,7 +502,7 @@ class SharePanel(QWidget):
         }
         overwrite = False
         if out.exists():
-            if not self._confirm("Replace the patch file?", f"{out} already exists. Replace it?"):
+            if not self._confirm("Replace the mod file?", f"{out} already exists. Replace it?"):
                 return
             overwrite = True
         self.export_status.setText("Comparing the two images…")
@@ -470,11 +525,11 @@ class SharePanel(QWidget):
         if receipt["recipe_lines"]:
             text += " Recipe: " + "; ".join(receipt["recipe_lines"]) + "."
         self.export_status.setText(text)
-        self._notify("info", "Patch file written", f"{receipt['pack']}\n\nShare this file, never the disc image.")
+        self._notify("info", "Mod file written", f"{receipt['pack']}\n\nShare this file, never the disc.")
 
     def _export_failed(self, message: str) -> None:
-        self.export_status.setText(f"Failed: {message}")
-        self._notify("error", "Could not create the patch file", message)
+        self.export_status.setText(f"Couldn't export the mod file: {message}")
+        self._notify("error", "Couldn't export the mod file", message)
 
     def start_check(self) -> None:
         if self._pack is None or not self.source_field.text():
@@ -494,7 +549,7 @@ class SharePanel(QWidget):
 
     def _check_failed(self, message: str) -> None:
         self._check_state = None
-        self.check_status.setText(f"Failed: {message}")
+        self.check_status.setText(f"Couldn't check this mod: {message}")
         self._refresh()
 
     def start_apply(self) -> None:
@@ -504,15 +559,15 @@ class SharePanel(QWidget):
         source = Path(self.source_field.text())
         target = Path(self.target_field.text())
         if target.exists() and target.resolve() == source.resolve():
-            self._notify("error", "Same file", "The patched copy must not be your source image.")
+            self._notify("error", "Same file", "Source and output are the same file. Fix: choose a different output file.")
             return
         overwrite = target.exists()
         if not self._confirm(
-            "Apply the patch to a new copy?",
-            f"Patch: {pack.manifest.name}\nSource (untouched): {source}\n"
-            + (f"REPLACING existing copy: {target}" if overwrite else f"New copy: {target}")
-            + f"\n\nThis copies the whole disc image and writes {len(pack.manifest.runs)} verified run(s) "
-              f"({_human(pack.manifest.total_bytes)}) into the copy.\n\nxemu-only: the RSA signature stays stale.",
+            "Make disc with this mod?",
+            f"Mod: {pack.manifest.name}\nSource (unchanged): {source}\n"
+            + (f"Replace existing disc copy: {target}" if overwrite else f"New disc: {target}")
+            + f"\n\nThis copies the whole disc and writes {len(pack.manifest.patch_operations) or len(pack.manifest.runs)} verified change(s) "
+              f"({_human(pack.manifest.total_bytes)}) into the copy.\n\n" + XEMU_LINE,
         ):
             return
         self.apply_status.setText("Copying your disc image and applying the patch…")
@@ -529,13 +584,14 @@ class SharePanel(QWidget):
         result = ("byte-identical to the author's patched image" if target["matches_author_result"]
                   else "every run verified; the rest of the file is your own base"
                   if target["matches_author_result"] is False else "every run verified")
-        self.apply_status.setText(f"Written: {Path(target['path']).name} in {receipt['elapsed_seconds']} s; {result}.")
+        self.apply_status.setText(f"Disc ready: {Path(target['path']).name} in {receipt['elapsed_seconds']} s; {result}.")
         self._check_state = None
-        self._notify("info", "Patched copy written", f"{target['path']}\n\nKeep it xemu-only: the RSA signature cannot be regenerated.")
+        self.disc_written.emit(str(target["path"]))
+        self._notify("info", "Disc ready", f"{target['path']}\n\nOpen it in xemu. " + XEMU_LINE)
 
     def _apply_failed(self, message: str) -> None:
-        self.apply_status.setText(f"Failed: {message}")
-        self._notify("error", "Could not apply the patch", message)
+        self.apply_status.setText(f"Couldn't make the disc: {message}")
+        self._notify("error", "Couldn't make the disc with this mod", message)
 
 
 __all__ = ["SharePanel"]

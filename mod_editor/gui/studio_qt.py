@@ -74,6 +74,8 @@ from mod_editor.core.texture_master import (
     snapshot_texture_master_source,
 )
 from mod_editor.gui import branding
+from mod_editor.gui.ux_text import XEMU_LINE, Details, tab_title  # noqa: F401
+from mod_editor.core import mod_build
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
 from mod_editor.core.capabilities import CapabilityRegistryLoader
@@ -115,6 +117,7 @@ from mod_editor.gui.throw_tuning_panel_qt import ThrowTuningPanel
 from mod_editor.gui.presentation_panel_qt import PresentationPanel
 from mod_editor.gui.share_panel_qt import SharePanel
 from mod_editor.gui.commentary_panel_qt import CommentaryPanel
+from mod_editor.gui.task_delivery import bound
 from mod_editor.gui.sounds_panel_qt import SoundsPanel
 from mod_editor.gui.build_panel_qt import BuildPanel
 from mod_editor.gui.models_panel_qt import ModelsPanel
@@ -160,7 +163,8 @@ PAGE_SCROLL_MIN_HEIGHT = 220
 
 #: Shown on the Build button whenever it is usable.
 BUILD_READY_MESSAGE = (
-    "Create a separate modded XISO. Your original game file is never changed."
+    "Make a separate modded disc from your project edits (art, text, audio). "
+    "Your original game file is never changed."
 )
 
 CHECK_IMAGES_MESSAGE = (
@@ -273,14 +277,44 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
             "Only one long operation runs at a time."
         )
     if not ready:
-        return "Load your NFL 2K5 XISO first — Build needs a source game to copy."
+        return "Open your game disc first (top right). Make disc from project needs a disc to copy."
     if edit_count <= 0:
         return (
-            "Make at least one edit first. Build writes your pending edits to a "
-            "new XISO, so with none there would be nothing to change. Replace a "
-            "PNG, edit a string, or pick a colour, then Build."
+            "Add at least one project edit: Replace a PNG, edit a string, or pick "
+            "a colour. For gameplay patches, use ★ Build & Share."
         )
     return BUILD_READY_MESSAGE
+
+
+def _getting_started_document() -> Path | None:
+    """The packaged Getting Started guide, or None when this build does not carry it."""
+
+    here = Path(__file__).resolve()
+    for candidate in (
+        here.parents[2] / "docs" / "mod_editor" / "2k5_mod_studio_getting_started.md",
+        here.parents[1] / "docs" / "2k5_mod_studio_getting_started.md",
+    ):
+        try:
+            if candidate.is_file():
+                return candidate
+        except OSError:
+            continue
+    return None
+
+
+def _plain_launch_blocker(text: str) -> str:
+    """The facade's launch blocker in the words the footer uses (Set up xemu…, Make a disc)."""
+
+    if not text:
+        return ""
+    lowered = text.casefold()
+    if "not found" in lowered:
+        return "xemu was not found. Install it, or use Set up xemu… to tell the app where it is."
+    if "not one yet" in lowered or "first" in lowered:
+        return "Make a disc first. Play starts the most recently made disc."
+    if "no longer at" in lowered:
+        return text.replace("Build again, then launch.", "Make it again, then play.")
+    return text
 
 
 def _window_icon() -> QIcon | None:
@@ -1102,6 +1136,10 @@ def category_display_title(
 
     if category == ProductCategory.TEAM_IDENTITY:
         return "Text & Team Identity"
+    if category == ProductCategory.ROSTERS_PLAYERS:
+        # display only: the catalog title stays "Rosters & Players"; the page edits names,
+        # numbers and images, and a second page called Rosters confused people (RP-01)
+        return "Names, Numbers & Faces"
     return catalog.section(category).title
 
 
@@ -1205,6 +1243,19 @@ def capability_findings(binding: ProductCapability) -> tuple[str, ...]:
     return tuple(notes)
 
 
+def _status_display(status: ProductStatus) -> str:
+    """The pill text for a capability status: what a player can do here, not a research word."""
+
+    return {
+        "editable": "Editable",
+        "preview": "Preview",
+        "export_only": "Export only",
+        "coming_soon": "Not editable here",
+        "evidence": "Reference",
+        "research": "Reference",
+    }.get(str(status.value), str(status.value).replace("_", " ").capitalize())
+
+
 def _status_color(status: ProductStatus) -> str:
     return {
         ProductStatus.EDITABLE: "#39d98a",
@@ -1279,7 +1330,7 @@ class _PngDropPreview(QFrame):
         self.setObjectName("pngPreview")
         self.setAcceptDrops(True)
         self._replacement_enabled = True
-        self.setMinimumSize(250, 240)
+        self.setMinimumSize(200, 200)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._pixmap: QPixmap | None = None
         layout = QVBoxLayout(self)
@@ -1491,6 +1542,13 @@ class StudioMainWindow(QMainWindow):
         self._commentary_panel: CommentaryPanel | None = None
         self._build_panel: BuildPanel | None = None
         self._star_players_connected = False
+        # E2: the open-disc hook.  A generation counter drops inspection results
+        # of a disc that was superseded by a later open; the roster page loads
+        # lazily on first entry so an edited roster is never reset by navigation.
+        self._source_generation = 0
+        self._source_inspect_pending = False
+        self._roster_prefill_pending = False
+        self._last_prefilled_source: Path | None = None
         self._share_panel: SharePanel | None = None
         self._sounds_panel: SoundsPanel | None = None
         self._menus_panel: MenusPanel | None = None
@@ -1559,19 +1617,19 @@ class StudioMainWindow(QMainWindow):
         """Expose recent files and recovery without adding header clutter."""
 
         file_menu = self.menuBar().addMenu("&File")
-        self._open_source_action = file_menu.addAction("Open NFL 2K5 XISO…")
+        self._open_source_action = file_menu.addAction("Open game disc…")
         self._open_source_action.setShortcut("Ctrl+O")
         self._open_source_action.triggered.connect(self._choose_source)
-        self._open_project_action = file_menu.addAction("Open Project…")
+        self._open_project_action = file_menu.addAction("Open project…")
         self._open_project_action.setShortcut("Ctrl+Shift+O")
         self._open_project_action.triggered.connect(self._choose_project)
-        self._recent_source_menu = file_menu.addMenu("Open Recent XISO")
-        self._recent_project_menu = file_menu.addMenu("Open Recent Project")
+        self._recent_source_menu = file_menu.addMenu("Recent discs")
+        self._recent_project_menu = file_menu.addMenu("Recent projects")
         file_menu.addSeparator()
-        self._save_project_action = file_menu.addAction("Save Project")
+        self._save_project_action = file_menu.addAction("Save project")
         self._save_project_action.setShortcut("Ctrl+S")
         self._save_project_action.triggered.connect(self._save_project)
-        self._save_project_as_action = file_menu.addAction("Save Project As…")
+        self._save_project_as_action = file_menu.addAction("Save project as…")
         self._save_project_as_action.setShortcut("Ctrl+Shift+S")
         self._save_project_as_action.triggered.connect(
             self._choose_save_project_as
@@ -1625,6 +1683,22 @@ class StudioMainWindow(QMainWindow):
 
     def _install_help_menu(self) -> None:
         help_menu = self.menuBar().addMenu("&Help")
+        discord_action = help_menu.addAction("Join the Discord…")
+        discord_action.setToolTip("Opens the community Discord invite in your browser.")
+        discord_action.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
+        )
+        guide = _getting_started_document()
+        guide_action = help_menu.addAction("Getting started guide…")
+        if guide is None:
+            guide_action.setEnabled(False)
+            guide_action.setToolTip("The guide is not included in this build; see the website.")
+        else:
+            guide_action.setToolTip(str(guide))
+            guide_action.triggered.connect(
+                lambda _checked=False, path=guide: QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+            )
+        help_menu.addSeparator()
         check_action = help_menu.addAction("Check for Updates…")
         check_action.triggered.connect(self._check_for_updates_now)
         self._auto_update_action = help_menu.addAction(
@@ -1638,11 +1712,6 @@ class StudioMainWindow(QMainWindow):
             update_ui.set_automatic_checks_enabled
         )
         help_menu.addSeparator()
-        discord_action = help_menu.addAction("Join the Discord…")
-        discord_action.setToolTip("Opens the community Discord invite in your browser.")
-        discord_action.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
-        )
         releases_action = help_menu.addAction("Downloads and release notes…")
         releases_action.triggered.connect(
             lambda: QDesktopServices.openUrl(
@@ -1715,7 +1784,7 @@ class StudioMainWindow(QMainWindow):
                 if owner == "Audio" else "."
             )
             if busy
-            else f"{owner} operation finished • global project actions are available."
+            else f"{owner} finished — project actions are available again."
         )
         self._refresh_recent_menus()
         self._refresh_action_states()
@@ -1880,7 +1949,7 @@ class StudioMainWindow(QMainWindow):
             self._recent_source_menu.clear()
             sources = tuple(getattr(state, "recent_sources", ()))
             if not sources:
-                empty = self._recent_source_menu.addAction("No recent XISOs")
+                empty = self._recent_source_menu.addAction("No recent discs")
                 empty.setEnabled(False)
             for value in sources:
                 path = Path(value)
@@ -2317,39 +2386,34 @@ class StudioMainWindow(QMainWindow):
         roster_item = QListWidgetItem("  ★ Rosters")
         roster_item.setData(Qt.UserRole, "rosters")
         roster_item.setSizeHint(QSize(210, 44))
-        roster_item.setToolTip("Every player on the disc or in an Xbox save: names, position, number, the 27 ratings, "
-                               "appearance and equipment, height/weight/date of birth, college, depth order and the "
-                               "contract. Undo, a diff and a validation pass; your source file is never written.")
+        roster_item.setToolTip("Edit a disc roster or Xbox save: players, ratings, equipment, contracts and depth order.")
         self.navigation.addItem(roster_item)
         models_item = QListWidgetItem("  ★ Models")
         models_item.setData(Qt.UserRole, "models")
         models_item.setSizeHint(QSize(210, 44))
-        models_item.setToolTip("Export any 3D model on the disc (players, helmets, balls, referees, crowds, props, the Crib) "
-                               "as glTF for Blender, and import an edited one back into a copy of your disc.")
+        models_item.setToolTip("Export a 3D model for Blender, check an edited one, and write it into a disc copy.")
         self.navigation.addItem(models_item)
         create_item = QListWidgetItem("  ★ Create a Play")
         create_item.setData(Qt.UserRole, "create_play")
         create_item.setSizeHint(QSize(210, 44))
-        create_item.setToolTip("Step-by-step: pick a playbook, lay out a formation, choose run or pass, hand out jobs, replace outdated plays, build, launch.")
+        create_item.setToolTip("Five steps: pick a playbook, line up a formation, choose run or pass, draw routes, place the play.")
         self.navigation.addItem(create_item)
         build_item = QListWidgetItem("  ★ Build & Share")
         build_item.setData(Qt.UserRole, "build_share")
         build_item.setSizeHint(QSize(210, 44))
-        build_item.setToolTip("Build: one patched copy of your disc with every ticked patch and one receipt. "
-                              "Share: export that copy as a .2k5patch (byte runs + your images/audio + recipe) "
-                              "others apply to their own disc, or apply a pack someone shared.")
+        build_item.setToolTip("Choose patches, make a disc copy, or export and install mod files.")
         self.navigation.addItem(build_item)
         side_layout.addWidget(self.navigation, 1)
 
         safety = QLabel(
-            "ORIGINAL STAYS SAFE\nYour source XISO stays read-only. Every build "
-            "is a new file."
+            "ORIGINAL STAYS SAFE\nKeep your original disc. Check the destination "
+            "before writing a copy."
         )
         safety.setObjectName("safetyCard")
         safety.setWordWrap(True)
         safety.setAccessibleName("Source safety")
         safety.setAccessibleDescription(
-            "The original NFL 2K5 XISO remains read-only and every build uses a new file."
+            "The original game disc is opened read-only; check the destination before writing a copy."
         )
         side_layout.addWidget(safety)
         root_layout.addWidget(sidebar)
@@ -2409,14 +2473,12 @@ class StudioMainWindow(QMainWindow):
                 uniform_tabs = QTabWidget()
                 uniform_tabs.setObjectName("uniformsEquipmentTabs")
                 uniform_tabs.setAccessibleName("Uniforms and equipment workspaces")
-                uniform_tabs.addTab(self._build_uniform_page(section), "Uniform Sets")
+                uniform_tabs.addTab(self._build_uniform_page(section), tab_title("Uniform Sets"))
                 uniform_tabs.addTab(
-                    self._build_colors_page(section), "Colours & Other Tools"
+                    self._build_colors_page(section), tab_title("Colours & Other Tools")
                 )
                 self._bump_panel = BumpPanel(self.facade)
-                uniform_tabs.addTab(self._bump_panel, "Bump Maps")
-                self._save_panel = SavePanel(self.facade)
-                uniform_tabs.addTab(self._save_panel, "Saves & Sliders")
+                uniform_tabs.addTab(self._bump_panel, "Bump Maps (advanced)")
                 # The uniform browser is why people open this page; never let a
                 # newly added tab take the landing position away from it.
                 uniform_tabs.setCurrentIndex(0)
@@ -2442,13 +2504,13 @@ class StudioMainWindow(QMainWindow):
                 roster_tabs = QTabWidget()
                 roster_tabs.setObjectName("rostersPlayersTabs")
                 roster_tabs.setAccessibleName("Rosters and players workspaces")
-                roster_tabs.addTab(self._roster_panel, "Players & Numbers")
-                roster_tabs.addTab(portrait_page, "Portraits & Faces")
+                roster_tabs.addTab(self._roster_panel, tab_title("Names & Numbers"))
+                roster_tabs.addTab(portrait_page, tab_title("Portraits & Faces"))
                 # "Which face is this player?" had no answer in the app: faces
                 # are found by a face_id buried in the roster record and filed
                 # under a number, so the only method was scrolling 1,872
                 # textures hoping a label matched.
-                roster_tabs.addTab(self._build_player_assets_page(), "Player Assets")
+                roster_tabs.addTab(self._build_player_assets_page(), "Find player images")
                 page = roster_tabs
             elif category == ProductCategory.TEAM_IDENTITY:
                 self._text_roster_panel = TextRosterPanel(
@@ -2463,12 +2525,14 @@ class StudioMainWindow(QMainWindow):
                 identity_tabs = QTabWidget()
                 identity_tabs.setObjectName("teamIdentityTabs")
                 identity_tabs.setAccessibleName("Text and team identity workspaces")
-                identity_tabs.addTab(self._text_roster_panel, "Text && Team Identity")
+                identity_tabs.addTab(self._text_roster_panel, "Game Text")
                 self._edge_panel = GameplayPatchesPanel(
-                    self.facade, patches=TEXT_PATCHES, title="Text Patches",
-                    intro="Text patches that change what the game calls things.",
+                    self.facade, patches=TEXT_PATCHES, title="Position names",
+                    intro="Change what the game calls positions and write one copy. "
+                          "For presets and other changes, use ★ Build & Share.",
+                    target_suffix="position names",
                 )
-                identity_tabs.addTab(self._edge_panel, "EDGE Rename")
+                identity_tabs.addTab(self._edge_panel, "Position Names (EDGE)")
                 identity_tabs.setCurrentIndex(0)
                 page = identity_tabs
             elif category == ProductCategory.CRIB:
@@ -2500,7 +2564,7 @@ class StudioMainWindow(QMainWindow):
                 presentation_tabs = QTabWidget()
                 presentation_tabs.setObjectName("presentationTabs")
                 presentation_tabs.setAccessibleName("Presentation workspaces")
-                presentation_tabs.addTab(self._build_visual_page(section, visual_kinds), "Inventory")
+                presentation_tabs.addTab(self._build_visual_page(section, visual_kinds), "Scorebug Images")
                 self._presentation_panel = PresentationPanel(self.facade)
                 presentation_tabs.addTab(self._presentation_panel, "ESPN Scorebug && Ticker")
                 self._commentary_panel = CommentaryPanel(self.facade)
@@ -2551,9 +2615,9 @@ class StudioMainWindow(QMainWindow):
                 audio_tabs = QTabWidget()
                 audio_tabs.setObjectName("audioTabs")
                 audio_tabs.setAccessibleName("Audio workspaces")
-                audio_tabs.addTab(self._audio_panel, "Audio Cues")
+                audio_tabs.addTab(self._audio_panel, tab_title("Music & Sounds"))
                 self._sounds_panel = SoundsPanel(self.facade)
-                audio_tabs.addTab(self._sounds_panel, "Sounds")
+                audio_tabs.addTab(self._sounds_panel, "Replace a Sound")
                 audio_tabs.setCurrentIndex(0)
                 page = audio_tabs
             elif category == ProductCategory.PLAYBOOKS_PLAYS:
@@ -2569,11 +2633,15 @@ class StudioMainWindow(QMainWindow):
                 # sliders, acceleration ramp, franchise draft AI) with their
                 # explanations, written through mod_build.
                 self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
+                # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
+                # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
+                self._save_panel = SavePanel(self.facade)
                 self._gameplay_panel = GameplayPanel(
                     self.facade,
                     capability_page=self._build_capability_page(section),
-                    extra_tabs=((self._throw_tuning_panel, "Throw Distance && Arc"),
-                                (self._gameplay_patches_panel, "Gameplay Patches")),
+                    extra_tabs=((self._gameplay_patches_panel, "Game Fixes"),
+                                (self._throw_tuning_panel, "Throw Distance && Arc"),
+                                (self._save_panel, tab_title("Saves & Sliders"))),
                 )
                 page = self._gameplay_panel
             else:
@@ -2605,7 +2673,7 @@ class StudioMainWindow(QMainWindow):
         layout.setSpacing(8)
         title_box = QVBoxLayout()
         title_box.setSpacing(0)
-        self.page_eyebrow = QLabel("NFL 2K5 • MODDING WORKSPACE")
+        self.page_eyebrow = QLabel("ESPN NFL 2K5 • XBOX")
         self.page_eyebrow.setObjectName("eyebrow")
         self.page_title = QLabel("Getting Started")
         self.page_title.setObjectName("pageTitle")
@@ -2613,37 +2681,38 @@ class StudioMainWindow(QMainWindow):
         title_box.addWidget(self.page_title)
         layout.addLayout(title_box)
         layout.addStretch(1)
-        self.source_pill = QLabel("●  No game loaded")
+        self.source_pill = QLabel("●  No disc open")
         self.source_pill.setObjectName("sourcePill")
         self.source_pill.setAccessibleName("Loaded game status")
         self.source_pill.setToolTip(
-            "Load your own NFL 2K5 XISO to enable previews, replacements, and builds."
+            "The game disc the app is reading. Click Open game disc… to change it."
         )
         self.source_pill.setAccessibleDescription(self.source_pill.toolTip())
-        self.open_project_button = QPushButton("Open Project")
+        self.open_project_button = QPushButton("Open project…")
         self.open_project_button.setObjectName("secondaryButton")
         self.open_project_button.setToolTip(
-            "Apply a retail-free .2k5mod project after loading your own XISO."
+            "Open a .2k5mod project saved earlier: your replacement images, text and "
+            "audio, never game data. Open your game disc first."
         )
         self.open_project_button.setAccessibleName("Open a 2K5 Mod Studio project")
         self.open_project_button.setAccessibleDescription(
             self.open_project_button.toolTip()
         )
         self.open_project_button.clicked.connect(self._choose_project)
-        self.save_project_button = QPushButton("Save")
+        self.save_project_button = QPushButton("Save project")
         self.save_project_button.setObjectName("secondaryButton")
         self.save_project_button.setToolTip(
-            "Save only your replacement files and metadata — never retail game data."
+            "Save the edits in this project as a .2k5mod file. ★ Rosters has separate save buttons."
         )
         self.save_project_button.setAccessibleName("Save the current mod project")
         self.save_project_button.setAccessibleDescription(
             self.save_project_button.toolTip()
         )
         self.save_project_button.clicked.connect(self._save_project)
-        self.open_source_button = QPushButton("Open NFL 2K5 XISO")
+        self.open_source_button = QPushButton("Open game disc…")
         self.open_source_button.setObjectName("openSourceButton")
         self.open_source_button.setToolTip(
-            "Choose your legally dumped NFL 2K5 XISO. The app opens it read-only."
+            "Open your ESPN NFL 2K5 USA Xbox disc file (.iso). The source file is kept unchanged."
         )
         self.open_source_button.setAccessibleName("Open an NFL 2K5 XISO")
         self.open_source_button.setAccessibleDescription(
@@ -2666,8 +2735,8 @@ class StudioMainWindow(QMainWindow):
         hero = QLabel("Make NFL 2K5 yours.")
         hero.setObjectName("heroTitle")
         sub = QLabel(
-            "Load your own game, replace artwork with familiar PNG files, and "
-            "build a fresh XISO ready for xemu — no hex editor required."
+            "Open your Xbox game disc file, choose patches or edit your roster, then "
+            "save a new copy. You can also replace uniforms and artwork."
         )
         sub.setObjectName("heroSubtitle")
         sub.setWordWrap(True)
@@ -2678,10 +2747,10 @@ class StudioMainWindow(QMainWindow):
         steps = QHBoxLayout()
         steps.setSpacing(12)
         for number, title, body in (
-            ("01", "Load your XISO", "Choose your legally dumped USA Xbox copy. It is indexed once and never changed."),
-            ("02", "Pick an asset", "Browse a team, uniform set, and exact component. Every part shows its required size."),
-            ("03", "Drop in a PNG", "Export a template, edit it in GIMP or Photoshop, then Replace or drag it onto the preview."),
-            ("04", "Save, build, play", "Share a retail-free .2k5mod project or create a separate XISO. Your original stays untouched."),
+            ("1", "Open your game", "Use your ESPN NFL 2K5 USA Xbox disc file (.iso), or open an Xbox save on ★ Rosters."),
+            ("2", "Choose your changes", "Start with SOFTDRINK patches, edit players, or replace artwork."),
+            ("3", "Save a copy", "Use the save or build button for that task. Your original is never changed."),
+            ("4", "Play or share", "Open the disc copy in xemu, or export a mod file from Share."),
         ):
             card = QFrame()
             card.setObjectName("stepCard")
@@ -2695,6 +2764,9 @@ class StudioMainWindow(QMainWindow):
             body_label = QLabel(body)
             body_label.setObjectName("cardBody")
             body_label.setWordWrap(True)
+            body_label.setMinimumWidth(120)
+            card.setMinimumWidth(150)
+            card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
             card_layout.addWidget(number_label)
             card_layout.addWidget(title_label)
             card_layout.addWidget(body_label, 1)
@@ -2703,56 +2775,118 @@ class StudioMainWindow(QMainWindow):
 
         start = QFrame()
         start.setObjectName("callout")
-        start_layout = QHBoxLayout(start)
+        # Text on top, the buttons on their own row: four buttons beside a sentence
+        # forced the page wider than a 1366-px window.
+        start_layout = QVBoxLayout(start)
         start_layout.setContentsMargins(20, 15, 20, 15)
         start_layout.setSpacing(10)
         start_text = QVBoxLayout()
         start_text.setSpacing(2)
-        ready = QLabel("Ready for your first uniform edit?")
+        ready = QLabel("Start here")
         ready.setObjectName("cardTitle")
         ready_sub = QLabel(
-            "Open the XISO now, or browse all 634 known uniform sets before loading it."
+            "Open a game disc file for disc edits. To edit a roster save, go to ★ Rosters."
         )
         ready_sub.setObjectName("cardBody")
+        self.welcome_ready = ready
+        self.welcome_ready_sub = ready_sub
         start_text.addWidget(ready)
         start_text.addWidget(ready_sub)
         start_layout.addLayout(start_text)
-        start_layout.addStretch(1)
-        open_button = QPushButton("Choose XISO")
+        start_buttons = QHBoxLayout()
+        start_buttons.setSpacing(10)
+        # One obvious first click, then the two tasks most people came for.  The roster
+        # route stays enabled without a disc: a Finn user opens an Xbox save there.
+        open_button = QPushButton("Open game disc…")
         open_button.setObjectName("primaryButton")
+        open_button.setToolTip("Open your ESPN NFL 2K5 USA Xbox disc file (.iso). The source file is kept unchanged.")
         open_button.clicked.connect(self._choose_source)
-        browse_button = QPushButton("Browse Uniforms")
+        softdrink_button = QPushButton("Start SOFTDRINK Basic  \u2192")
+        softdrink_button.setObjectName("secondaryButton")
+        softdrink_button.setToolTip("★ Build & Share with the Basic preset ticked: the 2004 game with the 2K5 fixes. "
+                                    "Needs an open disc; you can untick anything before Make my disc.")
+        softdrink_button.clicked.connect(lambda: self._go_to_build_share("softdrink_basic"))
+        rosters_button = QPushButton("Edit rosters  \u2192")
+        rosters_button.setObjectName("secondaryButton")
+        rosters_button.setToolTip("★ Rosters: players, ratings, equipment, contracts and depth order, from the open disc or an Xbox save.")
+        rosters_button.clicked.connect(self._go_to_rosters)
+        browse_button = QPushButton("Browse uniforms")
         browse_button.setObjectName("secondaryButton")
         browse_button.clicked.connect(lambda: self.navigation.setCurrentRow(1))
-        softdrink_button = QPushButton("Start with the SOFTDRINK patch  \u2192")
-        softdrink_button.setObjectName("primaryButton")
-        softdrink_button.setToolTip("Build & Share: one click ticks the SOFTDRINK patch (Basic = the 2004 game with the 2K5 fixes, "
-                                    "Advanced = everything modern, Experimental = widescreen and the rough edges), then Build writes a "
-                                    "patched COPY of your disc.")
-        softdrink_button.clicked.connect(self._go_to_build_share)
-        start_layout.addWidget(browse_button)
-        start_layout.addWidget(softdrink_button)
-        start_layout.addWidget(open_button)
+        self.welcome_open_button = open_button
+        self.welcome_task_buttons = (softdrink_button, rosters_button, browse_button)
+        start_buttons.addWidget(open_button)
+        start_buttons.addWidget(softdrink_button)
+        start_buttons.addWidget(rosters_button)
+        start_buttons.addWidget(browse_button)
+        start_buttons.addStretch(1)
+        start_layout.addLayout(start_buttons)
         outer.addWidget(start)
+        discord = QLabel(
+            f'Stuck? <a href="{update_check.COMMUNITY_DISCORD}">Ask on the Discord</a> '
+            "(also under Help ▸ Join the Discord…)."
+        )
+        discord.setObjectName("cardBody")
+        discord.setTextFormat(Qt.RichText)
+        discord.setOpenExternalLinks(True)
+        discord.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        discord.setAccessibleName("Community help link")
+        outer.addWidget(discord)
         outer.addStretch(1)
         return page
 
-    def _go_to_build_share(self) -> None:
-        """Select the ★ Build & Share navigation entry (Getting Started's SOFTDRINK button)."""
+    def _go_to_rosters(self) -> None:
+        """Select ★ Rosters (Getting Started's Edit rosters button); works without a disc."""
+
         for row in range(self.navigation.count()):
-            if self.navigation.item(row).data(Qt.UserRole) == "build_share":
+            if self.navigation.item(row).data(Qt.UserRole) == "rosters":
                 self.navigation.setCurrentRow(row)
                 return
 
+    def _go_to_build_share(self, preset: str | None = None) -> None:
+        """Select ★ Build & Share; ``preset`` ticks a SOFTDRINK preset for a fresh selection.
+
+        Only the Getting Started button asks for a preset.  It is applied after the disc has
+        been inspected, and only when nothing is ticked yet: ordinary navigation and a set of
+        choices the user already customised are left exactly as they are (BS-15).
+        """
+
+        for row in range(self.navigation.count()):
+            if self.navigation.item(row).data(Qt.UserRole) == "build_share":
+                self.navigation.setCurrentRow(row)
+                break
+        if not preset or self._build_panel is None:
+            return
+        if not bool(getattr(self.facade, "source_ready", False)):
+            self._build_panel.preset_note.setText(
+                "Open your game disc first (top right); the Basic preset is ticked once the disc has been read.")
+            self._build_panel.pending_preset = preset
+            return
+        if self._source_inspect_pending:
+            self._build_panel.pending_preset = preset
+            return
+        self._build_panel.apply_preset_if_fresh(preset)
+
     def _build_uniform_page(self, section: ProductCategorySection) -> QWidget:
         page = QWidget()
-        outer = QHBoxLayout(page)
-        outer.setContentsMargins(22, 18, 22, 18)
+        page_layout = QVBoxLayout(page)
+        page_layout.setContentsMargins(22, 14, 22, 18)
+        page_layout.setSpacing(8)
+        uniform_intro = QLabel(
+            "Pick a team and a uniform, click a part, replace its image. Export PNG gives you a template to edit."
+        )
+        uniform_intro.setObjectName("mutedLabel")
+        uniform_intro.setWordWrap(True)
+        page_layout.addWidget(uniform_intro)
+        body = QWidget()
+        page_layout.addWidget(body, 1)
+        outer = QHBoxLayout(body)
+        outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(14)
 
         browser = QFrame()
         browser.setObjectName("panel")
-        browser.setFixedWidth(376)
+        browser.setFixedWidth(356)
         browser_layout = QVBoxLayout(browser)
         browser_layout.setContentsMargins(16, 15, 16, 16)
         browser_layout.setSpacing(9)
@@ -2815,7 +2949,7 @@ class StudioMainWindow(QMainWindow):
         self.uniform_title = QLabel("Choose a uniform set")
         self.uniform_title.setObjectName("panelTitle")
         self.uniform_metadata = QLabel(
-            "39 Team Kit parts • 45 directly linked equipment palettes"
+            "39 editable parts · 45 equipment textures"
         )
         self.uniform_metadata.setObjectName("mutedLabel")
         detail_titles.addWidget(self.uniform_title)
@@ -2838,27 +2972,22 @@ class StudioMainWindow(QMainWindow):
         team_kit_layout = QVBoxLayout(team_kit)
         team_kit_layout.setContentsMargins(13, 10, 13, 11)
         team_kit_layout.setSpacing(7)
-        team_kit_header = QHBoxLayout()
-        team_kit_header.setSpacing(8)
-        team_kit_title = QLabel("Supported Team Kit (39 editable parts)")
+        team_kit_header = QVBoxLayout()
+        team_kit_header.setSpacing(2)
+        team_kit_title = QLabel("Whole kit (39 parts per uniform)")
         team_kit_title.setObjectName("cardTitle")
         self.team_kit_warning = QLabel(
-            "Private working export • may contain retail artwork • do not share it. "
-            "Share the replacement-only .2k5mod project instead."
+            "This export includes game artwork for your own editing. Share your project (.2k5mod) instead."
         )
         self.team_kit_warning.setObjectName("teamKitWarning")
         self.team_kit_warning.setWordWrap(True)
         team_kit_header.addWidget(team_kit_title)
-        team_kit_header.addWidget(self.team_kit_warning, 1)
+        team_kit_header.addWidget(self.team_kit_warning)
         team_kit_layout.addLayout(team_kit_header)
-        team_kit_scope_note = QLabel(
-            "All 45 package-local socks, elbow pads, gloves, long sleeves, "
-            "shoes, and wristbands for the selected set use the same project "
-            "and Build path. Open the linked searchable list below."
+        team_kit_scope_note = (
+            "All 45 socks, elbow pads, gloves, long sleeves, shoes and wristbands of the "
+            "selected uniform use the same project and Make disc from project path."
         )
-        team_kit_scope_note.setObjectName("findingsNote")
-        team_kit_scope_note.setWordWrap(True)
-        team_kit_layout.addWidget(team_kit_scope_note)
 
         equipment_browser_row = QHBoxLayout()
         equipment_browser_row.setSpacing(8)
@@ -2868,8 +2997,9 @@ class StudioMainWindow(QMainWindow):
         equipment_families.setObjectName("mutedLabel")
         equipment_families.setWordWrap(True)
         self.browse_uniform_equipment_button = QPushButton(
-            "Browse 45 Equipment Textures"
+            "Equipment (socks, gloves, shoes…)"
         )
+        self.browse_uniform_equipment_button.setToolTip(team_kit_scope_note)
         self.browse_uniform_equipment_button.setObjectName("secondaryButton")
         self.browse_uniform_equipment_button.setProperty(
             "teamKitAction", "browse-equipment"
@@ -2878,9 +3008,8 @@ class StudioMainWindow(QMainWindow):
             "Browse selected uniform set equipment textures"
         )
         self.browse_uniform_equipment_button.setToolTip(
-            "Open the existing All Textures browser filtered to this physical "
-            "set's 45 equipment textures. Export, Edit, Replace, Revert, project "
-            "save/load, and Build keep using their canonical asset IDs."
+            team_kit_scope_note + " Opens the All Textures browser filtered to this uniform's 45 "
+            "equipment textures; Export, Edit, Replace and Revert work there as usual."
         )
         self.browse_uniform_equipment_button.clicked.connect(
             self._browse_selected_uniform_equipment
@@ -2909,23 +3038,23 @@ class StudioMainWindow(QMainWindow):
         self.team_kit_container.setToolTip(
             "Use an editable folder for GIMP work, or a deterministic ZIP for hand-off."
         )
-        self.team_kit_container.addItem("Editable folder", "folder")
-        self.team_kit_container.addItem("ZIP hand-off", "zip")
-        self.export_team_kit_button = QPushButton("Export Team Kit")
+        self.team_kit_container.addItem("Folder", "folder")
+        self.team_kit_container.addItem("ZIP file", "zip")
+        self.export_team_kit_button = QPushButton("Export whole kit…")
         self.export_team_kit_button.setObjectName("secondaryButton")
         self.export_team_kit_button.setProperty("teamKitAction", "export")
         self.export_team_kit_button.setAccessibleName("Export supported Team Kit")
         self.export_team_kit_button.setToolTip(
             "Export all 39 supported components per selected physical set."
         )
-        self.import_team_kit_button = QPushButton("Import Edited Kit")
+        self.import_team_kit_button = QPushButton("Import edited kit…")
         self.import_team_kit_button.setObjectName("primaryButton")
         self.import_team_kit_button.setProperty("teamKitAction", "import")
         self.import_team_kit_button.setAccessibleName("Import edited Team Kit")
         self.import_team_kit_button.setToolTip(
             "Validate every PNG first, then stage only pixel changes as one Undo action."
         )
-        self.import_digit_sheet_button = QPushButton("Import 0–9 Sheet…")
+        self.import_digit_sheet_button = QPushButton("Import number sheet 0–9…")
         self.import_digit_sheet_button.setObjectName("secondaryButton")
         self.import_digit_sheet_button.setProperty("teamKitAction", "digit-sheet")
         self.import_digit_sheet_button.setAccessibleName(
@@ -2944,10 +3073,14 @@ class StudioMainWindow(QMainWindow):
         team_kit_controls.addWidget(self.team_kit_scope, 2)
         team_kit_controls.addWidget(self.team_kit_container, 1)
         team_kit_controls.addStretch(1)
-        team_kit_controls.addWidget(self.import_digit_sheet_button)
-        team_kit_controls.addWidget(self.export_team_kit_button)
-        team_kit_controls.addWidget(self.import_team_kit_button)
         team_kit_layout.addLayout(team_kit_controls)
+        team_kit_actions = QHBoxLayout()
+        team_kit_actions.setSpacing(8)
+        team_kit_actions.addWidget(self.export_team_kit_button)
+        team_kit_actions.addWidget(self.import_team_kit_button)
+        team_kit_actions.addWidget(self.import_digit_sheet_button)
+        team_kit_actions.addStretch(1)
+        team_kit_layout.addLayout(team_kit_actions)
         detail_layout.addWidget(team_kit)
 
         split = QHBoxLayout()
@@ -3011,23 +3144,24 @@ class StudioMainWindow(QMainWindow):
         panel_layout = QVBoxLayout(panel)
         panel_layout.setContentsMargins(18, 16, 18, 16)
         panel_layout.setSpacing(10)
-        title = QLabel(
-            "Per-Uniform Facemask / Faceshield & Turtleneck Colours"
-        )
+        title = QLabel("Facemask, faceshield and turtleneck colours")
         title.setObjectName("heroTitleSmall")
         blurb = QLabel(
-            "Every physical uniform set owns its own two-word Unif record "
-            "(per-set, not global). Word 0 jointly controls the facemask and "
-            "faceshield; the retail record does not expose a proved, independent "
-            "visor colour — visor type (None/Clear/Dark) is a per-player field "
-            "elsewhere, not a kit tint. Word 1 controls HI_turtleneck. Choose "
-            "the exact team and HOME/AWAY/alternate set before applying a colour. "
-            "Failures stay inline here (no blocking popup on set select)."
+            "Choose a team and uniform. Facemask and faceshield share a colour; turtleneck is "
+            "separate. Add to project keeps the change for your next project build."
         )
         blurb.setObjectName("mutedLabel")
         blurb.setWordWrap(True)
         panel_layout.addWidget(title)
         panel_layout.addWidget(blurb)
+        colours_details = Details("Details")
+        colours_details.add_text(
+            "Every physical uniform set owns its own two-word Unif record (per-set, not global). "
+            "Word 0 jointly controls the facemask and faceshield (there is no independent visor colour); "
+            "the visor type (None / Clear / "
+            "Dark) is a per-player field on Names, Numbers & Faces, not a kit tint. Word 1 controls "
+            "the HI_turtleneck. Failures stay inline here.", object_name="mutedLabel")
+        panel_layout.addWidget(colours_details)
 
         selector_row = QHBoxLayout()
         selector_row.setSpacing(10)
@@ -3058,9 +3192,9 @@ class StudioMainWindow(QMainWindow):
         row.setSpacing(10)
         self.facemask_button = QPushButton("Facemask / faceshield colour…")
         self.facemask_button.setObjectName("secondaryButton")
-        self.turtleneck_button = QPushButton("HI_turtleneck colour…")
+        self.turtleneck_button = QPushButton("Turtleneck colour…")
         self.turtleneck_button.setObjectName("secondaryButton")
-        self.unif_color_apply = QPushButton("Apply to project")
+        self.unif_color_apply = QPushButton("Add to project")
         self.unif_color_revert = QPushButton("Revert")
         self.unif_color_revert.setObjectName("dangerQuietButton")
         row.addWidget(self.facemask_button)
@@ -3398,7 +3532,7 @@ class StudioMainWindow(QMainWindow):
 
         self.player_asset_search = QLineEdit()
         self.player_asset_search.setPlaceholderText(
-            "Search players by name…  (load your XISO first)"
+            "Player name…  (open your game disc first)"
         )
         self.player_asset_search.setClearButtonEnabled(True)
         layout.addWidget(self.player_asset_search)
@@ -3408,7 +3542,7 @@ class StudioMainWindow(QMainWindow):
         layout.addWidget(self.player_asset_list, 1)
 
         self.player_asset_detail = QLabel(
-            "Load your NFL 2K5 XISO, then search for a player."
+            "Open your game disc (top right), then type a player's name."
         )
         self.player_asset_detail.setObjectName("mutedLabel")
         self.player_asset_detail.setWordWrap(True)
@@ -3482,7 +3616,8 @@ class StudioMainWindow(QMainWindow):
         self.player_asset_list.clear()
         if not rows:
             self.player_asset_detail.setText(
-                "Load your NFL 2K5 XISO, then search for a player."
+                "Type a name above." if bool(getattr(self.facade, "source_ready", False))
+                else "Open your game disc (top right), then type a player's name."
             )
             return
         needle = text.strip().casefold()
@@ -3527,8 +3662,8 @@ class StudioMainWindow(QMainWindow):
         title = QLabel(section.title)
         title.setObjectName("heroTitleSmall")
         subtitle = QLabel(
-            "Every known capability stays visible. Status updates unlock editing "
-            "without changing this workspace."
+            "Available tools and limits. Each card says where a tool lives in the app, or plainly "
+            "when it is command-line only; the ids and evidence sit under Details."
         )
         subtitle.setObjectName("heroSubtitle")
         subtitle.setWordWrap(True)
@@ -3545,7 +3680,7 @@ class StudioMainWindow(QMainWindow):
         ):
             if count:
                 counts.addWidget(
-                    _StatusPill(f"{count} {status.value}", _status_color(status))
+                    _StatusPill(f"{count} {_status_display(status).lower()}", _status_color(status))
                 )
         counts.addStretch(1)
         layout.addLayout(counts)
@@ -3603,12 +3738,23 @@ class StudioMainWindow(QMainWindow):
 
         browser = QFrame()
         browser.setObjectName("panel")
-        browser.setFixedWidth(376)
+        browser.setFixedWidth(356)
         browser_layout = QVBoxLayout(browser)
         browser_layout.setContentsMargins(16, 15, 16, 16)
         browser_layout.setSpacing(9)
         heading_row = QHBoxLayout()
         heading = QLabel(section.title)
+        page_intro = {
+            ProductCategory.FIELD_ART_CREATE_TEAM:
+                "Create-a-Team midfield logos, end zones and goalpost pads. Select an image, then "
+                "Replace PNG. For NFL fields, use Stadiums or All Textures.",
+            ProductCategory.TEXTURES:
+                f"Browse {len(assets):,} indexed textures. Select one marked Editable, then Replace PNG. "
+                "Uniforms, fields and the Crib also have their own pages.",
+            ProductCategory.SCOREBUG_PRESENTATION:
+                "The scorebug's own images. Select one marked Editable, then Replace PNG; the one-line "
+                "ESPN bar is the next tab.",
+        }.get(section.category, "")
         heading.setObjectName("panelTitle")
         count_label = QLabel(f"{len(assets):,}")
         count_label.setObjectName("countPill")
@@ -3616,6 +3762,11 @@ class StudioMainWindow(QMainWindow):
         heading_row.addStretch(1)
         heading_row.addWidget(count_label)
         browser_layout.addLayout(heading_row)
+        if page_intro:
+            intro_label = QLabel(page_intro)
+            intro_label.setObjectName("mutedLabel")
+            intro_label.setWordWrap(True)
+            browser_layout.addWidget(intro_label)
         search = QLineEdit()
         _configure_search_field(
             search,
@@ -3671,7 +3822,7 @@ class StudioMainWindow(QMainWindow):
         actions.setSpacing(8)
         export_button = QPushButton("Export PNG")
         export_button.setObjectName("secondaryButton")
-        master_button = QPushButton("Save high-resolution authoring master…")
+        master_button = QPushButton("Save full-size master…")
         master_button.setObjectName("secondaryButton")
         # Never silent-gray at construction: teach Load/import walls.
         master_boot = (
@@ -3688,17 +3839,24 @@ class StudioMainWindow(QMainWindow):
         # Editing in place removes the export/other-program/import round trip,
         # which is where size and alpha get lost. The canvas is the slot's exact
         # size and has no resize control, so what it saves always fits.
-        edit_button = QPushButton("Edit…")
+        edit_button = QPushButton("Edit image here…")
         edit_button.setObjectName("secondaryButton")
         edit_button.clicked.connect(
             lambda _checked=False, category=section.category: self._edit_visual_asset(category)
         )
         actions.addWidget(export_button)
-        actions.addWidget(master_button)
         actions.addWidget(edit_button)
         actions.addWidget(replace_button)
         actions.addWidget(revert_button)
         detail_layout.addLayout(actions)
+        master_row = QHBoxLayout()
+        master_row.setSpacing(8)
+        master_row.addWidget(master_button)
+        master_note = QLabel("Export your original-resolution artwork. The game still uses the fitted image.")
+        master_note.setObjectName("mutedLabel")
+        master_note.setWordWrap(True)
+        master_row.addWidget(master_note, 1)
+        detail_layout.addLayout(master_row)
         outer.addWidget(detail, 1)
 
         state = _VisualBrowserState(
@@ -3897,6 +4055,12 @@ class StudioMainWindow(QMainWindow):
         scenes_layout.setSpacing(8)
         heading_row = QHBoxLayout()
         heading = QLabel("Stadium scenes")
+        stadium_intro = QLabel(
+            "Browse stadium scenes. Select a surface marked Editable, then Replace its image. "
+            "3D exports open in Blender."
+        )
+        stadium_intro.setObjectName("mutedLabel")
+        stadium_intro.setWordWrap(True)
         heading.setObjectName("panelTitle")
         count_label = QLabel("477")
         count_label.setObjectName("countPill")
@@ -3904,6 +4068,7 @@ class StudioMainWindow(QMainWindow):
         heading_row.addStretch(1)
         heading_row.addWidget(count_label)
         scenes_layout.addLayout(heading_row)
+        scenes_layout.addWidget(stadium_intro)
         search_row = QHBoxLayout()
         search_row.setSpacing(8)
         search = QLineEdit()
@@ -3922,7 +4087,7 @@ class StudioMainWindow(QMainWindow):
         # targets, and nothing in this list used to say which. Someone asking
         # whether stadium models work would open scene after scene, watch Import
         # stage nothing, and reasonably conclude they do not.
-        editable_only = QCheckBox("Only scenes with editable geometry")
+        editable_only = QCheckBox("Only scenes with 3D you can change")
         editable_only.setObjectName("filterCheck")
         editable_only.setToolTip(
             "The bounded same-count position writer is pinned to one full "
@@ -3937,7 +4102,7 @@ class StudioMainWindow(QMainWindow):
         scene_list.setObjectName("assetList")
         scene_list.setSpacing(2)
         scenes_layout.addWidget(scene_list, 1)
-        export_scene_button = QPushButton("Export model (glTF)…")
+        export_scene_button = QPushButton("Export 3D model (for Blender)…")
         export_scene_button.setObjectName("secondaryButton")
         export_scene_button.setToolTip(
             "Save the selected stadium as a glTF you can open in Blender. "
@@ -3946,7 +4111,7 @@ class StudioMainWindow(QMainWindow):
             "centimetres the game authors in."
         )
         scenes_layout.addWidget(export_scene_button)
-        import_scene_button = QPushButton("Import edited model…")
+        import_scene_button = QPushButton("Import edited 3D model…")
         import_scene_button.setObjectName("primaryButton")
         import_scene_button.setToolTip(
             "Import the matching glTF after moving vertices in Blender. Vertex "
@@ -3954,7 +4119,7 @@ class StudioMainWindow(QMainWindow):
             "original UV, material, collision, selector, and other stream bytes."
         )
         scenes_layout.addWidget(import_scene_button)
-        apply_textures_button = QPushButton("Apply textures from glTF…")
+        apply_textures_button = QPushButton("Apply images from a 3D file…")
         apply_textures_button.setObjectName("primaryButton")
         apply_textures_button.setToolTip(
             "Apply the textures you edited in Blender back into the game. Export "
@@ -3964,7 +4129,7 @@ class StudioMainWindow(QMainWindow):
         )
         scenes_layout.addWidget(apply_textures_button)
         scenes_note = QLabel(
-            "Models are private glTF exports generated from the user's own game."
+            "3D exports contain game data — keep them to yourself. Import needs the same vertices and faces."
         )
         scenes_note.setObjectName("mutedLabel")
         scenes_note.setWordWrap(True)
@@ -3986,6 +4151,7 @@ class StudioMainWindow(QMainWindow):
         )
         scene_metadata.setObjectName("mutedLabel")
         scene_titles.addWidget(scene_label)
+        scene_metadata.setWordWrap(True)
         scene_titles.addWidget(scene_metadata)
         reset_button = QPushButton("Reset View")
         reset_button.setObjectName("secondaryButton")
@@ -3993,20 +4159,20 @@ class StudioMainWindow(QMainWindow):
         view_title_row.addWidget(reset_button)
         view_layout.addLayout(view_title_row)
         viewport = StadiumViewport()
-        viewport.setMinimumSize(430, 300)
+        viewport.setMinimumSize(360, 300)
         view_layout.addWidget(viewport, 1)
         outer.addWidget(view_panel, 1)
 
         texture_panel = QFrame()
         texture_panel.setObjectName("panel")
-        texture_panel.setFixedWidth(340)
+        texture_panel.setFixedWidth(320)
         texture_layout = QVBoxLayout(texture_panel)
         texture_layout.setContentsMargins(14, 14, 14, 14)
         texture_layout.setSpacing(8)
         texture_heading = QLabel("Surface textures")
         texture_heading.setObjectName("panelTitle")
         texture_layout.addWidget(texture_heading)
-        self._stadium_people_filter = QCheckBox("People & sideline only")
+        self._stadium_people_filter = QCheckBox(tab_title("People & sideline only"))
         self._stadium_people_filter.setObjectName("codeLabel")
         self._stadium_people_filter.setAccessibleName("Filter to people and sideline textures")
         self._stadium_people_filter.setToolTip(
@@ -4018,7 +4184,7 @@ class StudioMainWindow(QMainWindow):
         texture_list.setMaximumHeight(180)
         texture_layout.addWidget(texture_list)
         texture_preview = _PngDropPreview()
-        texture_preview.setMinimumSize(280, 210)
+        texture_preview.setMinimumSize(240, 180)
         texture_layout.addWidget(texture_preview, 1)
         texture_label = QLabel("Click a surface or choose a texture")
         texture_label.setObjectName("codeLabel")
@@ -4105,9 +4271,9 @@ class StudioMainWindow(QMainWindow):
         self._stadium_import_scene_button = import_scene_button
         self._stadium_apply_textures_button = apply_textures_button
         if not bool(getattr(self.facade, "stadium_available", False)):
-            count_label.setText("Load XISO")
+            count_label.setText("Open a disc")
             scene_metadata.setText(
-                "Load your XISO, then open this tab to prepare private stadium assets."
+                "Open your game disc, then open this page to prepare the stadium models."
             )
         return page
 
@@ -4121,7 +4287,7 @@ class StudioMainWindow(QMainWindow):
         title = QLabel(binding.title)
         title.setObjectName("cardTitle")
         title_row.addWidget(title, 1)
-        title_row.addWidget(_StatusPill(binding.status.value, _status_color(binding.status)))
+        title_row.addWidget(_StatusPill(_status_display(binding.status), _status_color(binding.status)))
         layout.addLayout(title_row)
         summary = QLabel(binding.capability.summary)
         summary.setObjectName("cardBody")
@@ -4174,7 +4340,7 @@ class StudioMainWindow(QMainWindow):
         status_box.setSpacing(4)
         self.operation_status = QLabel(
             getattr(self, "_pending_status", None)
-            or "Ready — load a game or browse what’s available"
+            or "Open your game disc to start (top right), or browse what’s available."
         )
         self.operation_status.setObjectName("operationStatus")
         self.operation_status.setTextFormat(Qt.PlainText)
@@ -4203,9 +4369,9 @@ class StudioMainWindow(QMainWindow):
         status_box.addWidget(self.operation_status)
         status_box.addWidget(self.progress_bar)
         layout.addLayout(status_box, 1)
-        self.edit_count = QLabel("No pending edits")
+        self.edit_count = QLabel("No project edits")
         self.edit_count.setObjectName("editCount")
-        self.edit_count.setToolTip("Edits included in the next modded XISO build.")
+        self.edit_count.setToolTip("Art, text and audio edits that go into Make disc from project.")
         self.edit_count.setAccessibleName("Pending edit count")
         self.edit_count.setAccessibleDescription(self.edit_count.toolTip())
         self.undo_button = QPushButton("Undo")
@@ -4221,31 +4387,29 @@ class StudioMainWindow(QMainWindow):
         self.check_images_button.setAccessibleDescription(
             self.check_images_button.toolTip()
         )
-        self.build_button = QPushButton("Build Modded XISO")
+        self.build_button = QPushButton("Make disc from project")
         self.build_button.setObjectName("buildButton")
         self.build_button.setToolTip(BUILD_READY_MESSAGE)
-        self.configure_xemu_button = QPushButton("Configure xemu")
+        self.configure_xemu_button = QPushButton("Set up xemu…")
         self.configure_xemu_button.setObjectName("utilityButton")
         self.configure_xemu_button.setToolTip(
-            "Choose the xemu program to launch builds with. Only needed when "
-            "xemu is not on your PATH or installed as the app.xemu.xemu Flatpak."
+            "Tell the app where xemu is. Only needed if Play latest disc in xemu "
+            "can't find it by itself."
         )
         self.configure_xemu_button.setAccessibleName("Configure the xemu launcher")
         self.configure_xemu_button.setAccessibleDescription(
             self.configure_xemu_button.toolTip()
         )
-        self.launch_button = QPushButton("Launch Latest Build")
+        self.launch_button = QPushButton("Play latest disc in xemu")
         self.launch_button.setObjectName("launchButton")
-        self.launch_button.setToolTip(
-            "Build a modded XISO and set up xemu to enable one-click launch."
-        )
+        self.launch_button.setToolTip("Make a disc first.")
         self.undo_button.setAccessibleName("Undo the most recent project edit")
         self.undo_button.setAccessibleDescription(
             "Undo one replacement, text edit, or other project change."
         )
         self.revert_all_button.setAccessibleName("Revert every project edit")
         self.revert_all_button.setAccessibleDescription(
-            "Remove every pending edit after confirmation; the source XISO is untouched."
+            "Remove every project edit after confirmation; your original disc is untouched."
         )
         self.build_button.setAccessibleName("Build a separate modded XISO")
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
@@ -4257,6 +4421,21 @@ class StudioMainWindow(QMainWindow):
         self.build_button.clicked.connect(self._choose_build_output)
         self.configure_xemu_button.clicked.connect(self._configure_xemu)
         self.launch_button.clicked.connect(self._launch_xemu)
+        # On ★ Build & Share the project controls hide (they are about staged
+        # art/text/audio edits); this caption says where those went instead of
+        # leaving an unexplained gap (X-08).
+        self.build_share_caption = QLabel(
+            "This Build tab uses the changes selected here. Project edits use "
+            "Make disc from project on the editing pages."
+        )
+        self.build_share_caption.setObjectName("buildShareCaption")
+        self.build_share_caption.setToolTip(self.build_share_caption.text())
+        self.build_share_caption.setSizePolicy(
+            QSizePolicy.Ignored, self.build_share_caption.sizePolicy().verticalPolicy()
+        )
+        self.build_share_caption.setMinimumWidth(0)
+        self.build_share_caption.hide()
+        layout.addWidget(self.build_share_caption, 1)
         layout.addWidget(self.edit_count)
         layout.addWidget(self.undo_button)
         layout.addWidget(self.revert_all_button)
@@ -4451,9 +4630,9 @@ class StudioMainWindow(QMainWindow):
         self._selected_asset = asset
         state.title.setText(asset.label)
         route = (
-            "Preview / Export only"
+            "view only (export)"
             if asset.writer_route is VisualWriterRoute.EXPORT_ONLY
-            else "Unified visual/data build"
+            else f"{asset.width}×{asset.height} image"
         )
         state.metadata.setText(
             f"{asset.group} • {asset.width}×{asset.height} • {route}"
@@ -4470,16 +4649,20 @@ class StudioMainWindow(QMainWindow):
                 " This texture now composes with uniforms, portraits, text, audio, "
                 "and editable Crib textures in the same one-click XISO build."
             )
+        # The note says what happens to a picture, not what the slot demands: any common image
+        # file is resized to the slot for you; only a too-detailed one may not fit (FA-03 / AT-03).
         state.help_label.setText(
-            f"{asset.authoring_note or 'Use an exact-size RGBA PNG.'}{route_note}"
+            f"Common image files are resized to {asset.width}×{asset.height} for you. If the image is "
+            f"too detailed to fit, simplify it and try again.{route_note}"
         )
+        state.help_label.setToolTip(asset.authoring_note or "")
         self._refresh_visual_action_states(state)
         if bool(getattr(self.facade, "source_ready", False)):
             self._load_visual_preview(asset, state.preview)
         else:
             state.preview.set_empty(
                 f"{asset.label}\n{asset.width} × {asset.height} RGBA PNG\n\n"
-                "Load your XISO to see the original."
+                "Open your game disc to see this image."
             )
 
     def _load_visual_preview(
@@ -5075,7 +5258,7 @@ class StudioMainWindow(QMainWindow):
         )
         if master_ok:
             master_block = ""
-            master_tip = "Save high-resolution authoring master for this texture."
+            master_tip = "Export your original-resolution artwork for this texture. The game still uses the fitted image."
         elif edit_block:
             master_block = master_tip = edit_block
         else:
@@ -5416,7 +5599,8 @@ class StudioMainWindow(QMainWindow):
         selected_row = -1
         for index, scene in enumerate(rows):
             writable = bool(scene.geometry_targets)
-            label = f"Outer {scene.outer_index} / chunk {scene.chunk_index}"
+            known = str(getattr(scene, "label", "") or getattr(scene, "name", "") or "").strip()
+            label = known or f"Outer {scene.outer_index} / chunk {scene.chunk_index}"
             if writable:
                 label = (
                     f"✎ {label}\n{len(scene.geometry_targets)} editable meshes"
@@ -5440,7 +5624,7 @@ class StudioMainWindow(QMainWindow):
         state.scene_list.blockSignals(False)
         if checkbox is not None:
             checkbox.setText(
-                f"Only scenes with editable geometry ({len(editable)})"
+                f"Only scenes with 3D you can change ({len(editable)})"
             )
         state.count_label.setText(
             f"{len(rows):,} / {len(state.scenes):,}"
@@ -6108,10 +6292,10 @@ class StudioMainWindow(QMainWindow):
         owner = " / ".join(uniform_set.team_names) or f"Asset {uniform_set.asset_code}"
         self.uniform_title.setText(owner)
         self.uniform_metadata.setText(
-            f"{uniform_set.style_label} • {uniform_set.side_name.title()} • "
-            f"set {uniform_set.selector} • 39 editable components • "
-            "45 directly linked equipment palettes"
+            f"{uniform_set.style_label} · {uniform_set.side_name.title()} · "
+            "39 editable parts · 45 equipment textures"
         )
+        self.uniform_metadata.setToolTip(f"Uniform set {uniform_set.selector}")
         self._refresh_team_kit_scope_labels()
         self._populate_components(uniform_set)
         if hasattr(self, "unif_color_set"):
@@ -6255,7 +6439,7 @@ class StudioMainWindow(QMainWindow):
         else:
             self.preview.set_empty(
                 f"{asset.label}\n{asset.width} × {asset.height} RGBA PNG\n\n"
-                "Load your XISO to see the original."
+                "Open your game disc to see this image."
             )
 
     def _load_preview(self, asset: UniformAsset) -> None:
@@ -6279,14 +6463,14 @@ class StudioMainWindow(QMainWindow):
         )
 
     def _choose_source(self, _checked: bool = False) -> None:
-        if self._refuse_while_audio_busy("open another XISO"):
+        if self._refuse_while_audio_busy("open another disc"):
             return
         state = self._workspace_state()
         recent_sources = tuple(getattr(state, "recent_sources", ()))
         initial = Path(recent_sources[0]).parent if recent_sources else Path.home()
         filename, _ = QFileDialog.getOpenFileName(
             self,
-            "Open your NFL 2K5 Xbox XISO",
+            "Open ESPN NFL 2K5 for Xbox (.iso)",
             str(initial),
             "Xbox XISO (*.iso *.xiso);;All files (*)",
         )
@@ -6300,10 +6484,10 @@ class StudioMainWindow(QMainWindow):
         *,
         recovery: RecoveryCandidate | None = None,
     ) -> None:
-        if self._refuse_while_audio_busy("open another XISO"):
+        if self._refuse_while_audio_busy("open another disc"):
             return
         self._continue_after_unsaved(
-            "Opening another XISO",
+            "Opening another disc",
             lambda discarded: self._load_source_path(
                 source,
                 recovery=recovery,
@@ -6318,7 +6502,7 @@ class StudioMainWindow(QMainWindow):
         recovery: RecoveryCandidate | None = None,
         clear_previous_recovery: bool = False,
     ) -> None:
-        if self._refuse_while_audio_busy("open another XISO"):
+        if self._refuse_while_audio_busy("open another disc"):
             return
         if self._audio_panel is not None:
             self._audio_panel.invalidate_preview_for_source_change()
@@ -6330,7 +6514,7 @@ class StudioMainWindow(QMainWindow):
         def success(result: object) -> None:
             self._clear_texture_master_drafts()
             display = str(getattr(self.facade, "source_display_name", "") or source.name)
-            self.source_pill.setText(f"●  Ready • {display}")
+            self.source_pill.setText(f"●  Disc: {display}")
             self.source_pill.setProperty("ready", True)
             self.source_pill.style().unpolish(self.source_pill)
             self.source_pill.style().polish(self.source_pill)
@@ -6358,7 +6542,7 @@ class StudioMainWindow(QMainWindow):
                         f"Game opened, but recent-file state could not update: "
                         f"{str(exc).strip()}"
                     )
-            self._set_status(_result_message(result, "Game indexed — choose an asset to edit."))
+            self._set_status(_result_message(result, "Disc opened — choose a task on the left."))
             self._refresh_edit_state()
 
             def refresh_loaded_source() -> None:
@@ -6376,6 +6560,7 @@ class StudioMainWindow(QMainWindow):
                 if self._crib_panel is not None:
                     self._crib_panel.refresh(keep_selection=False)
                 self._load_selected_unif_colors()
+                self._prefill_panels_from_source(self._active_source_path)
 
             if recovery is not None:
                 if (
@@ -7214,7 +7399,7 @@ class StudioMainWindow(QMainWindow):
         except Exception as exc:  # ValidationError and OS-level refusals
             self._show_error(str(exc))
             return
-        self._set_status(f"xemu set to {command[0]} • Launch is ready after a build.")
+        self._set_status(f"xemu set to {command[0]}. Play latest disc in xemu is ready once a disc has been made.")
         self._refresh_action_states()
 
     def _launch_xemu(self) -> None:
@@ -7272,7 +7457,7 @@ class StudioMainWindow(QMainWindow):
         self._workers.add(worker)
         if blocking:
             self._set_busy(True, label)
-        worker.signals.result.connect(on_success)
+        worker.signals.result.connect(bound(self, on_success))
         # Preview decoding also runs off-thread, but it must not take over the
         # global build/index progress strip or leave it visible after a quick
         # selection change. Blocking user operations own that progress UI.
@@ -7285,7 +7470,7 @@ class StudioMainWindow(QMainWindow):
             # progress at all, so that job showed a single static label for its
             # whole run and read as hung.
             worker.signals.progress.connect(
-                lambda stage, done, total: on_progress(stage, done, total)
+                bound(self, lambda stage, done, total: on_progress(stage, done, total))
             )
 
         def error(message: str) -> None:
@@ -7297,7 +7482,7 @@ class StudioMainWindow(QMainWindow):
             elif self._selected_asset is not None:
                 self.preview.set_empty("Preview unavailable. The asset was not changed.")
 
-        worker.signals.error.connect(error)
+        worker.signals.error.connect(bound(self, error))
 
         def finished() -> None:
             self._workers.discard(worker)
@@ -7305,7 +7490,7 @@ class StudioMainWindow(QMainWindow):
                 self._set_busy(False)
                 self._drain_post_blocking_continuations()
 
-        worker.signals.finished.connect(finished)
+        worker.signals.finished.connect(bound(self, finished))
         self.thread_pool.start(worker)
 
     def _task_progress(self, stage: str, completed: int, total: int) -> None:
@@ -7354,6 +7539,155 @@ class StudioMainWindow(QMainWindow):
 
         if hasattr(self, "edit_count"):
             self._mark_workspace_changed()
+
+    # ------------------------------------------------------------ E2: the open-disc hook
+    def _navigation_key(self, row: int) -> str:
+        item = self.navigation.item(row)
+        return str(item.data(Qt.UserRole) or "") if item is not None else ""
+
+    def _prefill_panels_from_source(self, source: Path | None) -> None:
+        """Feed the disc that was just opened to every page that has its own source field.
+
+        The header said "Disc: …" while eleven pages still said "choose a disc".  Each page
+        is filled through its own existing load / inspect path, off the UI thread where the
+        page already works that way; nothing here writes a file, opens a chooser, or resets a
+        roster somebody has edited.  A later open supersedes an earlier one (generation).
+        """
+
+        if source is None or not bool(getattr(self.facade, "source_ready", False)):
+            return
+        source = Path(source)
+        self._source_generation += 1
+        generation = self._source_generation
+        self._last_prefilled_source = source
+        self._refresh_welcome_state()
+        # 1. one inspection for Build, Game Fixes and Position names
+        self._source_inspect_pending = True
+        for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+            if panel is not None and hasattr(panel, "begin_reading"):
+                panel.begin_reading(source)
+
+        def inspected(state: object) -> None:
+            if generation != self._source_generation:
+                return
+            self._source_inspect_pending = False
+            if not isinstance(state, dict):
+                return
+            for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+                if panel is not None:
+                    panel.apply_state(state)
+            self._describe_source_pill(state)
+            self._refresh_welcome_state()
+
+        def inspect_failed(message: str) -> None:
+            if generation != self._source_generation:
+                return
+            self._source_inspect_pending = False
+            for panel in (self._build_panel, self._gameplay_patches_panel, self._edge_panel):
+                if panel is not None and hasattr(panel, "reading_failed"):
+                    panel.reading_failed(message)
+
+        worker = _BackgroundTask(lambda progress: mod_build.inspect(source))
+        self._workers.add(worker)
+        worker.signals.result.connect(bound(self, inspected))
+        worker.signals.error.connect(bound(self, inspect_failed))
+        worker.signals.finished.connect(bound(self, lambda: self._workers.discard(worker)))
+        self.thread_pool.start(worker)
+        # 2. pages with their own background readers
+        if self._throw_tuning_panel is not None:
+            self._throw_tuning_panel.load_source(source, quiet=True)
+        if self._presentation_panel is not None:
+            self._presentation_panel.load_source(source)
+        if self._commentary_panel is not None:
+            self._commentary_panel.load_source(source)
+        if self._sounds_panel is not None:
+            self._sounds_panel.load_source(source)
+        if self._bump_panel is not None:
+            self._bump_panel.load_source(source)
+        if self._models_panel is not None:
+            self._models_panel.reload()
+        # 3. Share: the export "Starting disc" only while no build owns the pair; the
+        #    install "Your disc" whenever it is empty or still following the last disc
+        if self._share_panel is not None:
+            self._share_panel.follow_source(source)
+        # 4. ★ Rosters: only an empty or auto-filled, unedited session follows the disc,
+        #    and only when the page is entered (an edited roster is never reset)
+        self._roster_prefill_pending = True
+        if self._navigation_key(self.navigation.currentRow()) == "rosters":
+            self._prefill_roster_if_pending()
+        self._refresh_player_assets_hint()
+
+    def _prefill_roster_if_pending(self) -> None:
+        if not self._roster_prefill_pending:
+            return
+        panel = self._roster_editor_panel
+        if panel is None or not bool(getattr(self.facade, "source_ready", False)):
+            return
+        self._roster_prefill_pending = False
+        if panel.document is not None and not (panel.auto_filled and not panel.is_dirty()):
+            display = str(getattr(self.facade, "source_display_name", "") or "the disc")
+            panel.note_other_source(display)
+            return
+        panel.load_from_facade()
+
+    def _describe_source_pill(self, state: Mapping[str, object]) -> None:
+        """Header pill: the disc's name, and only the classification the identity check found."""
+
+        display = str(getattr(self.facade, "source_display_name", "") or "")
+        if not display:
+            return
+        identity = state.get("disc_identity")
+        kind = str(identity.get("kind", "")) if isinstance(identity, Mapping) else ""
+        badge = {"retail-xiso": "original", "retail-raw": "original",
+                 "repack": "repacked", "modified": "modified"}.get(kind, "")
+        self.source_pill.setText(f"●  Disc: {display}" + (f" · {badge}" if badge else ""))
+        line = str(state.get("disc_identity_line") or "")
+        self.source_pill.setToolTip(
+            (line + "\n\n" if line else "")
+            + "The game disc the app is reading. Click Open game disc… to change it."
+        )
+        self.source_pill.setAccessibleDescription(self.source_pill.toolTip())
+
+    def _refresh_welcome_state(self) -> None:
+        """Getting Started says what is open and what to do next (GS-04)."""
+
+        ready_label = getattr(self, "welcome_ready", None)
+        sub_label = getattr(self, "welcome_ready_sub", None)
+        if ready_label is None or sub_label is None:
+            return
+        if bool(getattr(self.facade, "source_ready", False)):
+            display = str(getattr(self.facade, "source_display_name", "") or "your disc")
+            ready_label.setText(f"Disc open: {display}")
+            sub_label.setText("Next: choose SOFTDRINK patches or edit rosters.")
+        else:
+            ready_label.setText("Start here")
+            sub_label.setText("Open a game disc file for disc edits. To edit a roster save, go to ★ Rosters.")
+        for button in getattr(self, "welcome_task_buttons", ()):
+            button.setEnabled(True)
+
+    def _refresh_player_assets_hint(self) -> None:
+        search = getattr(self, "player_asset_search", None)
+        if search is None:
+            return
+        if bool(getattr(self.facade, "source_ready", False)):
+            search.setPlaceholderText("Player name…")
+            if not self.player_asset_list.count():
+                self.player_asset_detail.setText("Type a name above.")
+        else:
+            search.setPlaceholderText("Player name…  (open your game disc first)")
+
+    def _register_external_disc(self, path: str) -> None:
+        """A disc written by ★ Rosters, ★ Models or Share is a disc Play latest can start (M09)."""
+
+        if not path:
+            return
+        try:
+            self.facade.register_external_build(Path(path))
+        except Exception as exc:  # noqa: BLE001 - a missing file only means Play stays blocked
+            self._set_status(str(exc))
+            return
+        self._refresh_action_states()
+        self._set_status(f"Disc ready: {Path(path).name}. Play latest disc in xemu starts this copy.")
 
     def _refresh_specialized_panels(
         self, *, reset: bool, include_crib: bool = True
@@ -7481,9 +7815,9 @@ class StudioMainWindow(QMainWindow):
             if pending and self._workspace_dirty:
                 QTimer.singleShot(0, self._save_recovery_snapshot)
 
-        worker.signals.result.connect(success)
-        worker.signals.error.connect(error)
-        worker.signals.finished.connect(finished)
+        worker.signals.result.connect(bound(self, success))
+        worker.signals.error.connect(bound(self, error))
+        worker.signals.finished.connect(bound(self, finished))
         self.thread_pool.start(worker)
 
     def _clear_recovery_safely(
@@ -7571,8 +7905,8 @@ class StudioMainWindow(QMainWindow):
         body = message if hint is None else f"{message}\n\n{hint}"
         QMessageBox.warning(
             self,
-            "2K5 Mod Studio could not finish that",
-            body + "\n\nNothing was changed in your source XISO.",
+            "Couldn't finish that",
+            body + "\n\nYour original game disc was not changed.",
         )
 
     def _refresh_project_document_state(self) -> None:
@@ -7585,18 +7919,19 @@ class StudioMainWindow(QMainWindow):
             )
             save_target = self._active_project_path.name
             save_tip = (
-                f"Save current changes directly to {save_target}. The project "
-                "contains user replacements and metadata only."
+                f"Save this project's edits to {save_target} (a .2k5mod file: your "
+                "replacements and text, never game data). ★ Rosters has separate save buttons."
             )
         elif self._workspace_dirty:
             self.setWindowTitle("Untitled* — 2K5 Mod Studio")
             save_tip = (
-                "Name this replacement-only edit set as a shareable .2k5mod project."
+                "Save the edits in this project as a .2k5mod file you can reopen or share. "
+                "★ Rosters has separate save buttons."
             )
         else:
             self.setWindowTitle("2K5 Mod Studio")
             save_tip = (
-                "Save only your replacement files and metadata — never retail game data."
+                "Save the edits in this project as a .2k5mod file. ★ Rosters has separate save buttons."
             )
         self.save_project_button.setToolTip(save_tip)
         if self._save_project_action is not None:
@@ -7606,21 +7941,21 @@ class StudioMainWindow(QMainWindow):
         count = int(getattr(self.facade, "modified_count", 0))
         metadata_count = int(getattr(self.facade, "project_metadata_count", 0))
         self.edit_count.setText(
-            f"{count} build edit{'s' if count != 1 else ''} • "
+            f"{count} project edit{'s' if count != 1 else ''} • "
             f"{metadata_count} cue label{'s' if metadata_count != 1 else ''}"
             if count and metadata_count else
             f"{metadata_count} cue label{'s' if metadata_count != 1 else ''} • "
-            "no build edits"
+            "no project edits"
             if metadata_count else
-            "No edits • unsaved"
+            "No project edits • unsaved"
             if count == 0 and self._workspace_dirty else
-            "No pending edits" if count == 0
-            else f"{count} pending edit{'s' if count != 1 else ''}"
+            "No project edits" if count == 0
+            else f"{count} project edit{'s' if count != 1 else ''}"
         )
         ready = bool(getattr(self.facade, "source_ready", False))
         if ready:
             display = str(getattr(self.facade, "source_display_name", "NFL 2K5"))
-            self.source_pill.setText(f"●  Ready • {display}")
+            self.source_pill.setText(f"●  Disc: {display}")
             self.source_pill.setProperty("ready", True)
             self.source_pill.style().unpolish(self.source_pill)
             self.source_pill.style().polish(self.source_pill)
@@ -7774,7 +8109,7 @@ class StudioMainWindow(QMainWindow):
         # checks the staged edits, so with none there is nothing to check.
         self.check_images_button.setEnabled(ready and count > 0 and not global_busy)
         if not ready:
-            check_blocker = "Load your NFL 2K5 XISO first."
+            check_blocker = "Open your game disc first."
         elif count <= 0:
             check_blocker = (
                 "Replace at least one image first — this checks what you have "
@@ -7792,14 +8127,24 @@ class StudioMainWindow(QMainWindow):
         # Never silent-gray: Launch stays clickable and names the one thing
         # that is actually missing, instead of graying out with a message that
         # covers two unrelated causes at once.
-        blocker = str(getattr(self.facade, "xemu_blocker", "") or "")
+        blocker = _plain_launch_blocker(
+            str(getattr(self.facade, "xemu_blocker", "") or "")
+        )
         if not blocker and not bool(getattr(self.facade, "can_launch_xemu", False)):
-            blocker = "Build a modded XISO and set up xemu to enable one-click launch."
+            blocker = "Make a disc first, then use Set up xemu… if xemu is not found."
         if global_busy:
             blocker = blocker or "An operation is running • wait for it to finish."
         self.launch_button.setEnabled(not global_busy)
+        latest = None
+        try:
+            latest = self.facade.last_build_output()
+        except Exception:  # noqa: BLE001 - browse-only facades have no build
+            latest = None
         self.launch_button.setToolTip(
-            blocker or "Launch the latest completed build in xemu."
+            blocker or (
+                f"Open the most recently made disc in xemu: {Path(str(latest)).name}"
+                if latest else "Open the most recently made disc in xemu."
+            )
         )
         self.launch_button.setProperty("disableReason", blocker)
         self.launch_button.setAccessibleDescription(self.launch_button.toolTip())
@@ -7853,16 +8198,13 @@ class StudioMainWindow(QMainWindow):
         title.setStyleSheet("font-size: 28px; font-weight: 700;")
         layout.addWidget(title)
         blurb = QLabel(
-            "Five simple steps: pick a team's playbook, lay out a formation (modern templates, drag to move, "
-            "click to swap or change a position — RB2 instead of the FB, a WR instead of the TE), choose run or "
-            "pass, draw routes by dragging from a player (or click him for a menu of jobs), then replace "
-            "outdated stock plays and build the disc. Every play is checked against the game's own rules "
-            "before it goes in.\n\nLoad your NFL 2K5 disc first (File → Open)."
+            "Five steps: pick a team, line up a formation, choose run or pass, draw supported routes, "
+            "and place the play in the playbook. The editor checks the play's structure."
         )
         blurb.setWordWrap(True)
         blurb.setStyleSheet("font-size: 15px;")
         layout.addWidget(blurb)
-        button = QPushButton("Start the Create a Play wizard")
+        button = QPushButton("Create a play  \u2192")
         button.setStyleSheet("font-size: 20px; font-weight: 600; padding: 14px 26px;")
         button.setMinimumHeight(60)
         button.clicked.connect(self._open_create_play_wizard)
@@ -7882,6 +8224,7 @@ class StudioMainWindow(QMainWindow):
         roster_editor = getattr(self, "_roster_editor_panel", None)
         if roster_editor is not None:
             roster_editor.roster_edits_changed.connect(self._build_panel.set_roster_edits)
+            roster_editor.roster_edits_stale.connect(self._build_panel.mark_roster_edits_stale)
         tabs.addTab(self._build_panel, "Build")
         # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
         # made from a patched copy, applied to somebody else's own disc copy.
@@ -7889,6 +8232,12 @@ class StudioMainWindow(QMainWindow):
         tabs.addTab(self._share_panel, "Share")
         self._build_panel.built.connect(self._share_panel.prefill_from_build)
         self._build_panel.built.connect(self._on_build_tab_built)
+        self._share_panel.disc_written.connect(self._register_external_disc)
+        if roster_editor is not None:
+            roster_editor.disc_written.connect(self._register_external_disc)
+        models_panel = getattr(self, "_models_panel", None)
+        if models_panel is not None:
+            models_panel.disc_written.connect(self._register_external_disc)
         tabs.setCurrentIndex(0)
         return tabs
 
@@ -7908,7 +8257,7 @@ class StudioMainWindow(QMainWindow):
 
     def _open_create_play_wizard(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
-            QMessageBox.information(self, "Create a Play", "Load your NFL 2K5 XISO first (File → Open XISO).")
+            QMessageBox.information(self, "Create a Play", "Open your game disc first (the button at the top right).")
             return
         from mod_editor.gui.create_play_wizard_qt import CreatePlayWizard
 
@@ -7920,6 +8269,9 @@ class StudioMainWindow(QMainWindow):
     def _refresh_entered_page(
         self, row: int, *, refresh_embedded: bool = True
     ) -> None:
+        if self._navigation_key(row) == "rosters":
+            self._prefill_roster_if_pending()
+            return
         if row <= 0 or row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]
@@ -7966,7 +8318,7 @@ class StudioMainWindow(QMainWindow):
             self._set_status(str(exc))
             return
         self._refresh_action_states()
-        self._set_status(f"Built {Path(target).name}. Launch Latest Build starts this copy in xemu.")
+        self._set_status(f"Disc ready: {Path(target).name}. Play latest disc in xemu starts this copy.")
 
     def _refresh_action_bar_for_page(self, row: int) -> None:
         """The bottom bar's texture-project controls make no sense on Build & Share.
@@ -7980,6 +8332,7 @@ class StudioMainWindow(QMainWindow):
         for widget in (self.edit_count, self.undo_button, self.revert_all_button,
                        self.check_images_button, self.build_button):
             widget.setVisible(not on_build_share)
+        self.build_share_caption.setVisible(on_build_share)
 
     def _update_header_title(self, row: int) -> None:
         if row <= 0:
@@ -8015,7 +8368,13 @@ class StudioMainWindow(QMainWindow):
                 background: #0c1220;
                 top: -1px;
             }
-            QTabBar { background: transparent; }
+            /*
+             * The bold weight sits on the bar (the widget's own font), never on the
+             * ::tab subcontrol: Qt sizes each tab with the bar's font and paints it
+             * with the subcontrol's, so a bold subcontrol clipped every multi-word
+             * title on both ends ("Colours & Other Tool", "Structured inspecto").
+             */
+            QTabBar { background: transparent; font-weight: 600; }
             QTabBar::tab {
                 background: #131c30;
                 color: #9fb2cd;
@@ -8025,7 +8384,6 @@ class StudioMainWindow(QMainWindow):
                 border-top-right-radius: 8px;
                 padding: 8px 18px;
                 margin-right: 4px;
-                font-weight: 600;
             }
             QTabBar::tab:selected {
                 background: #0c1220;

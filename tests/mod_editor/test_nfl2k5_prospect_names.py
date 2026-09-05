@@ -418,7 +418,7 @@ class WiringTests(unittest.TestCase):
         try:
             gameplay.apply_state({"path": "default.xbe", "container": "xbe", "prospect_names": "retail"})
             self.assertFalse(gameplay.checks["prospect_names"].isEnabled())
-            self.assertEqual(gameplay.checks["prospect_names"].toolTip(), "Needs a disc image.")
+            self.assertIn("Full disc required", gameplay.checks["prospect_names"].toolTip())
             gameplay.apply_state({"path": "x.iso", "container": "xiso", "prospect_names": "retail"})
             self.assertTrue(gameplay.checks["prospect_names"].isEnabled())
             gameplay.checks["prospect_names"].setChecked(True)

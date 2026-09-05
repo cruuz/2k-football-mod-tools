@@ -53,14 +53,14 @@ from mod_editor.gui.studio_qt import (  # noqa: E402
 class BuildButtonExplainsItselfTests(unittest.TestCase):
     def test_no_loaded_disc_says_to_load_one(self) -> None:
         message = _build_blocker_message(ready=False, edit_count=0, busy=False)
-        self.assertIn("Load your NFL 2K5 XISO", message)
+        self.assertIn("Open your game disc", message)
         self.assertNotEqual(message, BUILD_READY_MESSAGE)
 
     def test_no_edits_says_to_make_one_and_how(self) -> None:
         """The case a modder actually hit: loaded, pressed Build, nothing."""
 
         message = _build_blocker_message(ready=True, edit_count=0, busy=False)
-        self.assertIn("at least one edit", message)
+        self.assertIn("at least one project edit", message)
         # Naming a way to make an edit matters more than naming the rule.
         self.assertTrue(
             any(hint in message for hint in ("Replace a PNG", "edit a string")),

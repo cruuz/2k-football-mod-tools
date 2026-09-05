@@ -26,6 +26,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title, write_caption
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
 
@@ -71,6 +72,14 @@ PATCHES = (
      "curves re-spaced as a scale so a 99 leg reaches 65-69 yards while mid-power kickers gain 2-3. "
      "Kickoff and return formations follow the ball; onside and safety kicks are untouched; the CPU keeps "
      "its retail field-goal range for fourth-down decisions."),
+    ("dynamic_kickoff", "Dynamic kickoff: nobody moves until the ball comes down, landing zone, CPU kicks and touchbacks (disc images only, experimental)",
+     "Retail: on a kickoff everyone sprints at the kick, the ball is kicked wherever the CPU meter lands and a returner brings "
+     "most kicks out. Patch: the 2024/2025 rule. The ten coverage men and nine setup blockers hold still until the ball touches the "
+     "ground or a player (the kicker and the two returners are free); first contact in the landing zone (goal line to the 20) then "
+     "downed in the end zone puts the ball on the 20, a kick straight into the end zone is a touchback to the 35 (30 for the 2024 "
+     "spot), short of the landing zone or out of bounds is the 40; the CPU kicker aims for the landing zone 90 % of the time and the "
+     "CPU returner takes the touchback 90 % of the time. Your own kicks and returns stay in your hands; onside and safety kicks are "
+     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Unwitnessed in game."),
     ("overtime", "Modern overtime: both teams get a possession, 10 minutes with ties, playoffs to a winner",
      "Retail overtime is sudden death for the quarter length: any score ends it, even a first-possession "
      "touchdown, and the regular season ties after one period. Patch (the 2025 NFL rule): each team is "
@@ -148,15 +157,37 @@ PATCHES = (
      "five skill players) with nine pass concepts and two coverage sets (4-3 and Nickel looks) with six coverages. The "
      "engine always fields eleven, so the four linemen of each side stand idle at the sideline by design, and one "
      "parked defender rushes after a 4-second count as the throw timer. Needs a disc image; unwitnessed in game."),
-    ("player_star", "Star decal under the players you tag",
-     "Retail already draws a star at a player's feet and the art is called icon_controller_star: it is a "
-     "world-space decal the game puts under whoever a controller is driving, and one 80-byte routine decides "
-     "who gets one. Patch: that routine is rewritten in place (same 80 bytes, same entry, no cave) so it keeps "
-     "every retail answer and also says yes when the player's roster record carries the studio's star bit, "
-     "refusing once the game's 9-entry star list is full. Tick the players in Text & Rosters (★ Star); with no "
-     "player ticked nothing changes on screen. The same routine gates the on-field name/number indicator, so a "
-     "tagged player gets that too when Player Indicator Text is on. The tags need a disc image and reach "
-     "franchises created from the copy. Unwitnessed in game."),
+    ("player_star", "White star outline under the players you tag",
+     "Retail: the game draws a coloured circle under the player a controller is driving and nothing under anyone else. "
+     "Patch: every player you tag under Names, Numbers & Faces (★ Star) gets a closed white five-point outline at his feet "
+     "whenever he is on the field, whoever is controlling him, in games, practice and franchise, following the same HUD and "
+     "coach-camera visibility as the ordinary circle, which is untouched. The tag is one bit of the roster record; existing "
+     "franchise saves need tags in their own roster. A disc patched with the beta-58 version of this (which never drew) "
+     "is upgraded when rebuilt. Unwitnessed in game."),
+    ("depth_roles", "X / Z / SLOT receivers and nickel / dime corners (disc images only)",
+     "Retail playbooks have no slot receiver: the inside man of a three-wide set is the #1 receiver in 196 formations, "
+     "the #2 in 115, the #3 in 100. Patch: every personnel group is rewritten so the innermost receiver is the third "
+     "receiver on your depth chart (SLOT) with X and Z outside, and nickel / dime sets use your third and fourth "
+     "corners inside (retail already did for 66 of 71 and 36 of 38 sets). Twelve shared groups whose formations "
+     "disagree by more than two yards, bunch sets and special teams keep their retail assignments and are listed in "
+     "the build report. Changes who lines up, not how they play: Advanced. No new depth-chart rows yet. Unwitnessed in game."),
+    ("depth_chart_rows", "SPECIAL tab: role depth charts, X / Z labels (disc images only, experimental)",
+     "Retail: the depth chart lists two receivers (LWR / RWR) and two corners and a four-row Special Teams tab; who plays the "
+     "slot, the nickel or the gadget is whoever the formation happens to pick. Patch: offence and both defences keep their "
+     "eleven rows, with LWR / RWR shown as X / Z, and the Special Teams tab is renamed "
+     "SPECIAL and carries KR, PR, K, P, then SLOT, NICKEL CORNER, DIME CORNER, GADGET, left and right GUNNER, LONG SNAPPER, "
+     "3RD DOWN BACK and POWER BACK. SPECIAL scrolls. These are shared depth lists, so moving a player into one role can "
+     "change another row (right gunner and dime corner share a list). The book pass also lines up those players: the slot "
+     "and nickel / dime men, the punt gunners and long snapper, the 3rd-down back in passing sets and the power back in "
+     "goal-line sets. Needs the one-pool positions and the roles and switches them on when the disc lacks them. This grows "
+     "the executable, so it needs an in-game boot check. Unwitnessed."),
+    ("practice_squad", "Practice squads: 53 active + up to 12 reserves in franchise (experimental)",
+     "Retail: the season gate cuts every franchise roster to 53 and the rest become free agents. Patch: each team keeps up to "
+     "twelve of the players it cuts as team-owned reserves (the same 65-slot roster table; three spare bytes mark the list). "
+     "Reserves stay off the active roster, the depth chart and the team rating, cost no cap space, keep their contract terms, "
+     "and survive saves, team imports and the season rollover. There is no in-game reserve screen or automatic promotion yet; "
+     "a full 53 + 12 roster must release players to draft. Only use saves with reserves on a disc that carries this patch. "
+     "Unwitnessed in game."),
 )
 
 
@@ -185,10 +216,40 @@ class _Task(QRunnable):
 if not mod_build.SEVEN_ON_SEVEN_RELEASED:
     PATCHES = tuple(entry for entry in PATCHES if entry[0] != "seven_on_seven")
 
+# What each toggle is called on screen (the same words as the Build tab), a one-line helper, and
+# the qualifier badge that must stay visible outside Details (E4 / M12).
+LABELS: dict[str, tuple[str, str, str]] = {
+    "catch_slider": ("Fix Catching & Interception sliders", "Catching controls drops; Interception controls picks.", ""),
+    "accel_ramp": ("Gradual player acceleration", "Agility controls how quickly players reach top speed.", ""),
+    "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
+    "returner_fix": ("Fix CPU kick & punt returners", "Changes automatic depth-chart selection.", ""),
+    "progression": ("Change player growth & decline", "Growth over years 1-5, harder decline after years 9-12; more stars and busts.", ""),
+    "team_column": ("Show TEAM in Player Card season stats", "Which team each season was played for.", ""),
+    "kick_rules": ("Modern kick spots & kicking power", "Kickoff: 35 · touchback: 35 · PAT snap: 15.", ""),
+    "dynamic_kickoff": ("Dynamic kickoff rule (2024/2025)", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
+                        "Switches on the modern kick spots and the alignment.", NOT_TESTED),
+    "overtime": ("Modern overtime rules", "Both teams get a possession; regular-season ties remain.", ""),
+    "camera": ("Make Standard camera look like Far", "The Standard preset takes Far's look-at, lens and offset.", ""),
+    "position_row": ("Change position in Edit Player", "In-game: use Depth Chart → Auto afterward.", NOT_TESTED),
+    "probowl_order": ("Pro Bowl Votes: offense, defense, kickers", "The tabs run offence, defence, then K and P.", NOT_TESTED),
+    "penalties": ("Adjusted penalty rates (experimental)", "Estimated rates; includes the Chop Block toggle fix.", NOT_TESTED),
+    "uniform_choice": ("Choose home/away jerseys at any stadium", "Up/down past the last era flips that side's colour.", NOT_TESTED),
+    "kick_laces": ("Laces face the posts on kicks", "On field goals and PATs the held ball is turned so the laces face the posts.", NOT_TESTED),
+    "prospect_names": ("Modern draft-prospect names", "New franchises only; some new surnames are announced by number.", "New franchises only"),
+    "franchise_practice": ("Free Practice inside Franchise", "A Practice row on the Coach's Desk: your first team against itself.", NOT_TESTED),
+    "seven_on_seven": ("7-on-7 practice", "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.", NOT_TESTED),
+    "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white star outline.", NOT_TESTED),
+    "depth_roles": ("X / Z / SLOT receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
+    "depth_chart_rows": ("SPECIAL tab: role depth charts",
+                         "SLOT, nickel, dime, gadget, gunners, long snapper and 3rd-down / power backs on a renamed SPECIAL tab; offence and defence keep eleven rows.", NOT_TESTED),
+    "edge_rename": ("Call defensive ends EDGE", "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.", ""),
+    "scheme_labels": ("Use scheme-specific depth-chart names", "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.", ""),
+}
+
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"prospect_names"}
+NEEDS_IMAGE = {"prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -215,8 +276,9 @@ class GameplayPatchesPanel(QWidget):
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *,
                  patches: tuple[tuple[str, str, str], ...] = PATCHES,
-                 title: str = "Gameplay Patches",
-                 intro: str = "Executable patches that change how the game plays.") -> None:
+                 title: str = "Game Fixes",
+                 intro: str = "Select fixes and write one copy. For presets and other changes, use ★ Build & Share.",
+                 target_suffix: str = "gameplay patched") -> None:
         super().__init__(parent)
         self._facade = facade
         self._pool = QThreadPool(self)
@@ -226,8 +288,32 @@ class GameplayPatchesPanel(QWidget):
         self._patches = tuple(patches)
         self._title = title
         self._intro = intro
+        self._target_suffix = target_suffix
+        self._reading = False
+        self._target_generated = False
         self._build_ui()
         self._refresh()
+
+    # ------------------------------------------------------------- the open-disc hook
+    def begin_reading(self, source: Path | str) -> None:
+        self._reading = True
+        self.source_field.setText(str(source))
+        self.source_status.setText("Reading disc…")
+        self._refresh()
+
+    def reading_failed(self, message: str) -> None:
+        self._reading = False
+        self.source_status.setText(plain_failure("read this disc", message))
+        self._refresh()
+
+    def suggest_target(self) -> None:
+        source = self.source_field.text().strip()
+        if not source or not tt.is_disc_image(source):
+            return
+        if self.target_field.text().strip() and not self._target_generated:
+            return
+        self.target_field.setText(suggest_copy_name(source, suffix=self._target_suffix))
+        self._target_generated = True
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
@@ -236,47 +322,86 @@ class GameplayPatchesPanel(QWidget):
         title = QLabel(self._title)
         title.setObjectName("throwTitle")
         root.addWidget(title)
-        intro = QLabel(self._intro + " Each writes a copy; the source is never "
-                       "touched. xemu-only (the RSA signature stays stale). For a release copy with everything, "
-                       "use Build & Share → Build.")
+        intro = QLabel(self._intro + " The source is never changed. " + XEMU_LINE)
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
         src = QHBoxLayout()
-        src.addWidget(QLabel("Source"))
+        self.source_caption = QLabel("Game disc (.iso)")
+        src.addWidget(self.source_caption)
         self.source_field = QLineEdit()
         self.source_field.setReadOnly(True)
+        self.source_field.setPlaceholderText("Filled in when you open a disc (top right), or choose a disc / default.xbe here")
         src.addWidget(self.source_field, 1)
         self.source_button = QPushButton("Choose…")
         self.source_button.clicked.connect(self._choose_source)
         src.addWidget(self.source_button)
         root.addLayout(src)
-        self.source_status = QLabel("Choose a default.xbe or a disc image to read which patches it already carries.")
+        self.source_status = QLabel("Open your game disc (top right), or choose a disc / default.xbe here, to read which changes it already carries.")
         self.source_status.setObjectName("throwMuted")
         self.source_status.setWordWrap(True)
         root.addWidget(self.source_status)
+        self.setStyleSheet(
+            "QCheckBox { padding: 4px 2px; spacing: 10px; }"
+            "QCheckBox::indicator { width: 20px; height: 20px; border: 2px solid #8a94a6; border-radius: 4px; background: #1b1f27; }"
+            "QCheckBox::indicator:unchecked:hover { border-color: #c9d1de; }"
+            "QCheckBox::indicator:checked { background: #2ecc71; border-color: #2ecc71; "
+            "image: url(:/qt-project.org/styles/commonstyle/images/standardbutton-apply-16.png); }"
+            "QCheckBox::indicator:disabled { border-color: #4a5060; background: #22262e; }"
+            "QCheckBox::indicator:focus { border-color: #6ee7c7; }"
+            "QCheckBox:checked { color: #d8ffe6; font-weight: 600; }"
+            "QCheckBox:disabled { color: #6b7385; }"
+            "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }")
+        self.badges: dict[str, QLabel] = {}
+        self._static_badges: dict[str, str] = {}
+        list_box = QGroupBox("Changes")
+        lb = QVBoxLayout(list_box)
+        lb.setSpacing(8)
         for key, label, explanation in self._patches:
-            box = QGroupBox(label)
-            lay = QVBoxLayout(box)
-            check = QCheckBox("Apply to the copy")
+            short, helper, badge = LABELS.get(key, (label, "", ""))
+            row = QWidget()
+            rl = QVBoxLayout(row)
+            rl.setContentsMargins(0, 0, 0, 2)
+            rl.setSpacing(1)
+            head = QHBoxLayout()
+            head.setSpacing(8)
+            check = QCheckBox(tab_title(short))
+            check.setAccessibleDescription(helper or label)
             check.toggled.connect(lambda _c: self._refresh())
-            lay.addWidget(check)
-            text = QLabel(explanation)
-            text.setObjectName("throwMuted")
-            text.setWordWrap(True)
-            lay.addWidget(text)
-            root.addWidget(box)
+            head.addWidget(check)
+            badge_label = QLabel(badge)
+            badge_label.setObjectName("optionBadge")
+            badge_label.setVisible(bool(badge))
+            head.addWidget(badge_label)
+            head.addStretch(1)
+            rl.addLayout(head)
+            if helper:
+                helper_label = QLabel(helper)
+                helper_label.setObjectName("throwMuted")
+                helper_label.setWordWrap(True)
+                helper_label.setIndent(30)
+                rl.addWidget(helper_label)
+            more = Details("Details")
+            more.add_text(explanation)
+            more.setContentsMargins(30, 0, 0, 0)
+            rl.addWidget(more)
+            lb.addWidget(row)
             self.checks[key] = check
+            self.badges[key] = badge_label
+            self._static_badges[key] = badge
+        root.addWidget(list_box)
         out = QHBoxLayout()
-        out.addWidget(QLabel("Write copy to"))
+        self.target_caption = QLabel("Save disc copy as")
+        out.addWidget(self.target_caption)
         self.target_field = QLineEdit()
         out.addWidget(self.target_field, 1)
         self.target_button = QPushButton("Choose…")
         self.target_button.clicked.connect(self._choose_target)
         out.addWidget(self.target_button)
+        self.target_field.textEdited.connect(lambda _t: self._user_target())
         root.addLayout(out)
         actions = QHBoxLayout()
-        self.write_button = QPushButton("Write patched copy")
+        self.write_button = QPushButton("Make disc with these changes")
         self.write_button.clicked.connect(self._write)
         actions.addWidget(self.write_button)
         actions.addStretch(1)
@@ -286,22 +411,56 @@ class GameplayPatchesPanel(QWidget):
         root.addWidget(self.status_label)
         root.addStretch(1)
 
+    def _user_target(self) -> None:
+        self._target_generated = False
+        self._refresh()
+
     def apply_state(self, state: dict[str, object]) -> None:
         self._state = state
+        self._reading = False
         self.source_field.setText(str(state.get("path", "")))
         is_image = state.get("container") == "xiso"
+        source_caption, target_caption = source_captions(is_image)
+        self.source_caption.setText(source_caption)
+        self.target_caption.setText(target_caption)
+        self.write_button.setText(write_caption(is_image))
         for key, _label, _e in self._patches:
             value = str(state.get(key))
             check = self.checks[key]
             needs_image = key in NEEDS_IMAGE and not is_image
             check.setEnabled(value == "retail" and not needs_image)
             check.setChecked(False)
-            tip = {"applied": "Already applied in this source.",
-                   "foreign": "Bytes at the patch sites are neither retail nor this patch; refusing.",
-                   "partial": "Only one half of this patch is in the source (executable or name pool); refusing.",
+            tip = {"applied": "Already installed on this source.",
+                   "foreign": "Not recognised: the bytes at this change's sites are neither retail nor this patch "
+                              "(changed by another tool), so it can't be added here.",
+                   "partial": "Only one half of this change is on the source (executable or name pool), so it can't be added here.",
+                   "legacy": "An earlier version of this change is on the source (beta 58-60, which never drew the star); build from the retail disc to upgrade it.",
                    "retail": ""}.get(value, "Unknown state.")
-            check.setToolTip("Needs a disc image." if value == "retail" and needs_image else tip)
-        self.source_status.setText("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches) + ".")
+            # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
+            # carry a playbook patch, so inspect says n/a) should say what the user needs instead
+            full_disc = needs_image and value not in ("applied", "foreign", "partial")
+            check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
+            badge = ("Full disc required" if full_disc else
+                     {"applied": "Already installed", "foreign": "Unrecognized source data",
+                      "partial": "Unrecognized source data"}.get(value, self._static_badges.get(key, "")))
+            self.badges[key].setText(badge)
+            self.badges[key].setVisible(bool(badge))
+        row_check = self.checks.get("depth_chart_rows")
+        if row_check is not None and any(state.get(k) == "foreign" for k in ("position_pools", "scheme_labels", "depth_roles")):
+            row_check.setEnabled(False)
+            row_check.setToolTip("Not recognised: something these rows depend on (position groups, scheme names or playbook roles) "
+                                 "is neither retail nor this patch, so they can't be added here.")
+            self.badges["depth_chart_rows"].setText("Unrecognized source data")
+            self.badges["depth_chart_rows"].setVisible(True)
+        applied = [LABELS.get(k, (k, "", ""))[0] for k, _l, _e in self._patches if state.get(k) == "applied"]
+        foreign = [LABELS.get(k, (k, "", ""))[0] for k, _l, _e in self._patches if state.get(k) in ("foreign", "partial")]
+        text = ("Already on this source: " + ", ".join(applied) + "." if applied
+                else "No recognized changes found; everything listed is original.")
+        if foreign:
+            text += " Not recognized (changed by another tool): " + ", ".join(foreign) + "."
+        self.source_status.setText(text)
+        self.source_status.setToolTip("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches))
+        self.suggest_target()
         self._refresh()
 
     def plan(self) -> mod_build.BuildPlan:
@@ -312,36 +471,49 @@ class GameplayPatchesPanel(QWidget):
         for key, check in self.checks.items():
             on = check.isChecked()
             setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
+        if plan.depth_chart_rows:
+            # the rows build on the pools, the scheme labels and the playbook roles: switch on whatever the source lacks
+            state = self._state or {}
+            plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
+            plan.scheme_labels = plan.scheme_labels or state.get("scheme_labels") != "applied"
+            plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
         return plan
 
     def _refresh(self) -> None:
         any_on = any(c.isChecked() for c in self.checks.values())
-        self.write_button.setEnabled(any_on and bool(self.source_field.text()) and bool(self.target_field.text()) and self._task is None)
+        self.write_button.setEnabled(any_on and bool(self.source_field.text()) and bool(self.target_field.text())
+                                     and self._task is None and not self._reading)
 
     def _choose_source(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Choose default.xbe or a disc image", str(Path.home()), SOURCE_FILTER)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
         if not chosen:
             return
         try:
             self.apply_state(mod_build.inspect(Path(chosen)))
         except Exception as exc:  # noqa: BLE001
-            QMessageBox.critical(self, "Could not read the source", str(exc))
+            show_operation_error(self, "read that file", str(exc))
 
     def _choose_target(self) -> None:
         is_image = bool(self.source_field.text()) and tt.is_disc_image(self.source_field.text())
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the patched copy",
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?" if is_image else "Save the patched executable as",
                                                  "ESPN NFL 2K5 (gameplay patched).xiso.iso" if is_image else "default_patched.xbe")
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
             self._refresh()
 
     def _write(self) -> None:
         plan = self.plan()
         if not any(check.isChecked() for check in self.checks.values()):
             return
-        answer = QMessageBox.question(self, "Write a patched copy?",
-                                      f"Source (untouched): {plan.source}\n" + ("REPLACING: " if plan.overwrite else "New copy: ") + plan.target
-                                      + "\n\nxemu-only: the RSA signature stays stale.",
+        is_image = tt.is_disc_image(plan.source)
+        chosen = [LABELS.get(key, (label, "", ""))[0] for key, label, _e in self._patches if self.checks[key].isChecked()]
+        answer = QMessageBox.question(self, "Make disc with these changes?" if is_image else "Save a patched executable?",
+                                      f"Source (unchanged): {plan.source}\n"
+                                      + (f"Replace existing copy: {plan.target}" if plan.overwrite
+                                         else f"New {'disc' if is_image else 'executable'}: {plan.target}")
+                                      + "\n\nChanges: " + ", ".join(chosen)
+                                      + "\n\n" + XEMU_LINE,
                                       QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
@@ -356,7 +528,10 @@ class GameplayPatchesPanel(QWidget):
     def _done(self, receipt: object) -> None:
         self._task = None
         assert isinstance(receipt, dict)
-        self.status_label.setText(f"Written: {Path(str(receipt.get('target'))).name}.")
+        target = Path(str(receipt.get("target")))
+        self.status_label.setText(
+            f"Disc ready: {target.name}. Open it in xemu." if tt.is_disc_image(target)
+            else f"Patched executable saved: {target.name}.")
         try:
             self.apply_state(mod_build.inspect(Path(str(receipt.get("target")))))
         except Exception:  # noqa: BLE001
@@ -365,8 +540,8 @@ class GameplayPatchesPanel(QWidget):
 
     def _failed(self, message: str) -> None:
         self._task = None
-        self.status_label.setText(f"Failed: {message}")
-        QMessageBox.critical(self, "Write failed", message)
+        self.status_label.setText(plain_failure("write the copy", message))
+        show_operation_error(self, "write the copy", message)
         self._refresh()
 
 

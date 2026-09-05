@@ -39,7 +39,7 @@ import hashlib
 import struct
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, Sequence
 
 from .errors import ValidationError
 from . import nfl2k5_play_codec as codec
@@ -417,6 +417,33 @@ def _pool_end(
     for k in range(category_count):
         ends.append(_string_end(body, CATEGORY_BASE + k * CATEGORY_SIZE))
     return max(ends)
+
+
+def compile_personnel_categories(
+    raw_resource: bytes,
+    categories: Mapping[int, Sequence[int]],
+    *,
+    asset_id: str = "book:personnel",
+) -> bytes:
+    """Replace only existing groups' eleven personnel bytes, with no cloning.
+
+    A self-clone through the formation creator also rewrites its auxiliary
+    personnel mask. Category-only passes must preserve that mask, every link,
+    geometry, name, play and node. Both resources go through the real parser.
+    """
+    source = parse_playbook_resource(raw_resource, asset_id=asset_id)
+    replacement = bytearray(raw_resource)
+    for index, codes in categories.items():
+        index = _integer(index, "Personnel group index", maximum=len(source.categories) - 1)
+        checked = _position_codes_from(list(codes))
+        assert checked is not None
+        offset = RESOURCE_HEADER_SIZE + CATEGORY_BASE + index * CATEGORY_SIZE + 5
+        replacement[offset:offset + 11] = bytes(checked)
+    rebuilt = bytes(replacement)
+    reparsed = parse_playbook_resource(rebuilt, asset_id=asset_id)
+    if reparsed != source:
+        raise ValidationError("Personnel compilation changed book structure.")
+    return rebuilt
 
 
 def compile_formation_play_creations(
@@ -828,8 +855,9 @@ def compile_formation_play_creations(
                 "group to inherit. Set one explicitly (0-3) or link into a "
                 "formation that already lists plays."
             )
+        # Bit 15 marks a populated retail link; bits 9-10 select its group.
         struct.pack_into(
-            "<H", replacement, body_off + slot_ofs, (group << 9) | req.play_index
+            "<H", replacement, body_off + slot_ofs, 0x8000 | (group << 9) | req.play_index
         )
         allowed.append(range(body_off + slot_ofs, body_off + slot_ofs + 2))
         applied_links.append(

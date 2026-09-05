@@ -1,155 +1,143 @@
-"""The retail controller star under any player the studio tags (executable patch, xemu-only).
+"""White star outlines at tagged players' feet (USA Xbox executable, xemu).
 
-Retail already draws the star, and the asset is literally called ``icon_controller_star``
-(``.string_`` 0xE6C16C).  ``FUN_000f8e60`` loads it into ``[0xBA28A4]`` (``controller``) and
-``[0xBA28A8]`` (``controller100``); ``FUN_000f8880`` puts an instance of that model at a player's
-feet as a **world-space decal** (it adds x/z into the instance transform at +0x30/+0x38) and colours
-it from the per-user table ``.rdata`` 0x4ED9A0; ``FUN_000f9030`` walks the on-field entity list
-``[0xE60268]`` once a frame and appends the players that get one to a list at **0xBA2824** (0xC bytes
-an entry, byte count at **0xBA2821**); ``FUN_000f9320`` draws them.  The **only** gate on the append
-is ``FUN_00075d40``, an 80-byte leaf at **0x75D40**.  So the whole feature is: make that predicate
-say yes for a tagged player.  Nothing is authored, nothing is drawn by us.
+Beta 58 changed only FUN_00075d40. That is insufficient: FUN_000f9030
+encodes ordinary CPU bodies as controller 8; FUN_000f9320 passes (user == 8)
+in eax; FUN_000f8880 skips the controller model when eax is nonzero. Its
+normal controller model is a circular ring, regardless of the resource name.
 
-**The tag.**  ``FUN_00075d40`` receives the entity in ``ecx``.  ``entity+0x3C`` is the player's
-**0x54 roster record**, proved three ways off retail code: ``FUN_000fa270`` stores ``[entity+0x3C]``
-into the on-field marker queue (0xFA2CB, the entity is the last ``push`` at 0x761D9 in
-``FUN_00075d90``), and the queue's consumers read that object's ``+0x14`` as the name pointer
-(``FUN_000f9d00`` at 0xF9D4C), its ``+0x20`` bits 3..9 as the jersey number (0xF9D25, ``shr 3`` /
-``and 0x7f``) and its ``+0x35`` as the position code (``FUN_000e5fc0``) -- exactly the studio's own
-roster-record fields (``nfl2k5_text_catalog.JERSEY_FIELD`` 0x20 / ``JERSEY_MASK`` 0x3F8 /
-``JERSEY_SHIFT`` 3, ``nfl2k5_team_history`` position ``+0x35``, last name ``+0x14``).  The record's
-relative pointers are absolute at run time: ``FUN_000c0500`` relocates the ROST body in place.
+The fixed pass wraps the frame call at 0x64F21, keeps the retail circles and
+their predicate unchanged, then draws a separate opaque white five-point
+band over a larger near-black outline for every tagged active entity. It reads
+entity+0x3C -> record+0x53 bit 0 directly, independently of controller assignment
+and the nine-entry replay/controller queue. The 22-entity bound is the physical
+array capacity.
 
-So the tag is one bit of the roster record and rides into every franchise created from the patched
-disc for free (a roster/franchise save carries the whole ROST body).  The byte used is **+0x53**.
-Four candidates were checked first and every one of them is live:
+FUN_00061730 -> FUN_000c3c60 copies all 21 dwords of each roster record into
+0xB30C4C/0xB321A0. FUN_001d2620/001d27a0 installs these pointers at entity+0x3C.
+The ROST relocator 0xE5E70 changes pointers only; the padding tag survives.
 
-* **+0x27 bit 0** (the original plan's choice) is contract length: 981 of the 2,479 retail primary
-  records already set it, and the Flying Finn V4 reverse-engineering names +0x0A / +0x24 / +0x26 /
-  +0x27 as a contract block (value, years remaining, type and bonus tier, length).  Bit 0 of +0x26
-  (386 records) and of +0x08, the Player Type flags (155 records), is taken the same way.
-* **+0x23** is not a byte at all: it is bits 24..31 of the **live dword at +0x20**.  ``FUN_000be290``
-  / ``FUN_000e4470`` read an 8-bit field out of bits 22..29 (``mov eax,[x+0x20]; shr eax,0x16; and
-  eax,0xff``), ``FUN_000be2a0`` / ``FUN_000e4480`` write it back, ``FUN_000be2c0`` / ``FUN_000be2f0``
-  read bits 30 and 31, and the game's own record clone copies exactly those masks (0x300000,
-  0x3fc00000, 0x40000000 and bit 31) at 0xC18EA..0xC1926.  Zero on the retail disc, read and written
-  by the engine: unusable.
-* **+0x24 bit 7** is its own one-bit field -- the clone copies it alone (``and ecx,0x80`` at
-  0xC1950) -- and unlike +0x23 it is *set* in retail data (the 2,547 records OR to 0xFF at +0x24).
-
-**+0x53** is the second of the two bytes Bad_AL's NFL2K5Tool documents as "padded by 2 zero bytes"
-at the end of the record.  It is zero in all 2,547 retail records (2,479 primary + 68 secondary),
-and -- the decisive evidence -- the game's own field-by-field player clone (``0xC16CD..0xC1DDB``,
-the create/copy path) names **every** field of the record from +0x00 through +0x51, each at its own
-displacement, and never names +0x52 or +0x53.  The only other displacements it skips are ones a
-wider access already covers (+0x21..+0x23 inside the +0x20 dword, +0x25 inside +0x24, and so on),
-+0x29 (inside the +0x28 word), the +0x2C stream pointer a new record must not inherit, and
-+0x30..+0x33.  Nine byte-sized reads of ``[reg+0x53]`` exist in the whole executable and every one
-of them pairs with +0x52 in an unrelated structure; none is on the roster path.  No studio pass
-writes it either (team history rebuilds the pool and the +0x2C words, the reclassifier writes +0x35,
-prospect names rewrite the name pool), and the whole record is copied verbatim from the disc into
-the runtime buffer.
-
-**The patch** is an in-place rewrite of ``FUN_00075d40``: 80 retail bytes out, 80 new bytes in, no
-cave, no hook, no displaced instruction, the entry address unchanged so both call sites (0x7604A in
-``FUN_00075d90``, 0xF90AA in ``FUN_000f9030``) still land on byte 0.  The rewrite keeps the retail
-predicate exactly and ORs the tag in::
-
-    if (!([0xE5FC50] | [0xE5FC90])) return 0;          // nobody human is playing
-    eax = [0xE5FF80];                                  // game mode, hoisted (a pure read)
-    if (*(int *)e[3] != -1) return 1;                  // a user-controlled body
-    if (*e == 0)              goto tag;
-    if (eax == 0)             return 1;                // practice
-    if ([0xE602B8] == 0x0E)   return 1;                // live play
-    if (*(char *)(e + 0x2C) != 6) return 1;
-  tag:
-    r = *(void **)(e + 0x3C);                          // the 0x54 roster record
-    if (r && (r[0x53] & 1) && *(byte *)0xBA2821 < 9) return 1;
-    return FUN_0017ebd0(e);                            // tail call: the retail user-body test
-
-Retail computes ``FUN_0017ebd0(e) != 0 || rest`` in the other order; the rewrite evaluates ``rest``
-first and only calls when ``rest`` is 0, which is the same value because ``FUN_0017ebd0`` is pure
-(it reads ``[e+0x38]``, calls ``FUN_000f71e0`` -- two loads and a compare -- and compares three
-fields; it writes nothing) and returns exactly 0 or 1, so the tail ``jmp`` is the retail result.
-
-**The clamp is not optional.**  The star list is 0xC bytes an entry at 0xBA2824 with a *byte* count
-at 0xBA2821, and ``FUN_000f9030`` flushes the block ``[0xBA2820, 0xBA2820 + 4 + count*0xC)`` at
-0xF92E3.  With count = 9 that ends exactly at 0xBA2890, the next global (a dword the same routine
-writes at 0xF92D6 and reads at 0xF947C).  A tenth entry overruns it, so the tag path refuses once
-the count has reached 9.  Retail's own answers are never clamped, only ours.
-
-``mov al,1`` is the return-1 tail: ``eax`` holds the game-mode word there, and that word is a 0..8
-enum (the game compares it to 0, 3, 4 and 8 and clamps it to <= 4 at 0x632B0), so its upper 24 bits
-are zero and the function returns exactly 1, as retail does.  Both call sites only ``test eax,eax``.
-
-Side effect, by design: ``FUN_00075d40`` is also the gate on the **on-field indicator** in
-``FUN_00075d90`` (0x7604A), so a tagged player gets the name / number-and-position text as well as
-the star, subject to the user's own "Player Indicator Text" option (``[0xE5FF90]``).
-
-Without tags the patched predicate is byte-for-byte retail behaviour, so it draws nothing; the tags
-themselves are written by ``nfl2k5_player_tags``.  Unwitnessed in game.
+All mutable draw state is stack-local. Five small, pinned, unreferenced code
+spans hold original instructions and immutable geometry. The controller
+material is copied, recolored/untextured and uncullable; the shared material
+is never modified. See tools/player_star/runtime.S and ASTRA_STAR_VIS_REPORT.md.
 """
-
 from __future__ import annotations
 
+import hashlib
 import struct
 from typing import Mapping
 
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
-from .nfl2k5_draft_ai import _Asm
 
 IMAGE_BASE = 0x10000
-
-# --- the predicate that is rewritten in place ----------------------------------------------------
-GATE_VA = 0x00075D40
-GATE_SIZE = 0x50                       # 0x75D40..0x75D8F; the next routine starts at 0x75D90
+GATE_VA = 0x75D40
+GATE_SIZE = 0x50
 RETAIL_GATE = bytes.fromhex(
     "a150fce50085c0568bf17509a190fce50085c074378b460c8338ff75288bcee86c8e100085c0751d833e00741f"
-    "a180ffe500 85c0740f833db802e6000e7406807e2c067407b8010000005ec333c05ec3".replace(" ", ""))
-assert len(RETAIL_GATE) == GATE_SIZE
-
-# the two call sites: both land on byte 0 of the routine, so neither moves
-CALL_SITES = ((0x0007604A, bytes.fromhex("e8f1fcffff")),      # FUN_00075d90: the on-field indicator
-              (0x000F90AA, bytes.fromhex("e891ccf7ff85c0")))  # FUN_000f9030: the star list
-
-# --- retail globals and routines the rewrite keeps using -----------------------------------------
-HUMAN_A_VA = 0x00E5FC50                # user 1 / user 2 objects: both null = nobody is playing
-HUMAN_B_VA = 0x00E5FC90
-GAME_MODE_VA = 0x00E5FF80              # 0/1/2 practice, 3 basic training, 4 exhibition, 5/6/7 franchise, 8 other
-PLAY_STATE_VA = 0x00E602B8             # 0xE = live play
-LIVE_PLAY = 0x0E
-IS_USER_BODY_VA = 0x0017EBD0           # FUN_0017ebd0(ecx = entity) -> 0/1, pure
-RETAIL_IS_USER_BODY_HEAD = bytes.fromhex("568bf18b4e38e8")
-ENTITY_CONTROLLER_OFFSET = 0x0C        # entity+0xC: first dword is -1 on a CPU body
-ENTITY_STATE_OFFSET = 0x2C             # entity+0x2C: byte state (6 = the retail "no star" state)
-ENTITY_RECORD_OFFSET = 0x3C            # entity+0x3C: the 0x54 roster record (proved, see the docstring)
-
-# --- the tag ------------------------------------------------------------------------------------
-TAG_RECORD_OFFSET = 0x53               # the second of the record's two trailing pad bytes
-TAG_BIT = 0x01
+    "a180ffe50085c0740f833db802e6000e7406807e2c067407b8010000005ec333c05ec3")
+# Exact beta-58..60 predicate: recognized for explicit upgrade, never called applied.
+LEGACY_GATE = bytes.fromhex("a150fce5000b0590fce5007442a180ffe5008b510c833aff7533833900741385c0742a833db802e6000e742180792c06751b8b513c85d2740ff64253017409803d2128ba00097205e9438e1000b001c3")
+TAG_RECORD_OFFSET = 0x53
+TAG_BIT = 1
 PLAYER_RECORD_SIZE = 0x54
+ENTITY_RECORD_OFFSET = 0x3C
+ENTITY_LIST_VA = 0xE60268
+ENTITY_LIMIT = 22
+# Compatibility receipt key used by the roster writer; this is now the physical
+# on-field bound, not a quota on tags or on the retail controller queue.
+STAR_LIST_LIMIT = ENTITY_LIMIT
+STAR_COUNT_VA = 0xBA2821
+STAR_LIST_VA = 0xBA2824
+RETAIL_STAR_LIST_LIMIT = 9
+DRAW_CALL_VA = 0x64F21
+RETAIL_DRAW_CALL = bytes.fromhex("e8fa430900")
+RETAIL_DRAW_VA = 0xF9320
+DRAW_READY_VA = 0xBA2818
+DRAW_VISIBLE_VA = 0xBA281C
+MATERIAL_VA = 0xBA28AC
+CALL_SITES = ((0x7604A, bytes.fromhex("e8f1fcffff")),
+              (0xF90AA, bytes.fromhex("e891ccf7ff85c0")))
 
-# --- the star list and its hard bound ------------------------------------------------------------
-STAR_COUNT_VA = 0x00BA2821             # byte count, zeroed each frame at 0xF9085
-STAR_LIST_VA = 0x00BA2824              # 0xC bytes an entry
-STAR_ENTRY_SIZE = 0x0C
-STAR_LIST_END_VA = 0x00BA2890          # the next global; (0xBA2890 - 0xBA2824) / 0xC = 9 entries
-STAR_LIST_LIMIT = (STAR_LIST_END_VA - STAR_LIST_VA) // STAR_ENTRY_SIZE
-assert STAR_LIST_LIMIT == 9
-STAR_APPEND_VA = 0x000F912B            # inc cl ; mov [0xBA2821], cl  (the append's count bump)
-RETAIL_STAR_APPEND = bytes.fromhex("fec1880d2128ba00")
-STAR_FLUSH_VA = 0x000F92E3             # movzx eax,[0xBA2821] ; lea eax,[eax+eax*2] ; lea ecx,[eax*4+4]
-RETAIL_STAR_FLUSH = bytes.fromhex("0fb6052128ba008d04408d0c8504000000")
+CAVE_PINS = {
+    0x372D40: '09f95f5f7227f5cc7ba846861bbd763a001b858ad10411298f5ed517758a4ad8',
+    0x3DDD50: 'f6984ec8423041706c60868d6a059d2544c5e318b59af52a36d93080ebc71642',
+    0x38B0D0: '00967d119728b8827fe63a07f631bffb62f14881b7b5c7be4beffa1c7962f168',
+    0x2C9110: '7931044340b34b9b5424a04e511ced65e483e36a690061be7625c960c73801b8',
+    0x31E650: '27ee7af3ecd76e1ceace682009c4fb62fef554159bbb90f52d5fdc1353c641c4',
+}
 
-# --- context that must be retail on any image we touch --------------------------------------------
-PREV_ROUTINE_VA = 0x00075D30           # the 8-byte routine before the gate plus its 8 alignment nops
-RETAIL_PREV_ROUTINE = bytes.fromhex("c7410800000000c39090909090909090")
-NEXT_ROUTINE_VA = 0x00075D90
-RETAIL_NEXT_ROUTINE_HEAD = bytes.fromhex("558bec83e4f081ec")
+# Exact first working outline, including every padding byte in all five spans.
+# This is upgradeable legacy, never a current installation. Mixed revisions
+# still fail closed. These hashes must not be regenerated with the runtime.
+LEGACY_OUTLINE_PINS = {
+    0x372D40: 'cdaa9cdf8012971b6b593dab7402d7977d11d5b8c86fd5f803bbf73d4eaa035f',
+    0x3DDD50: '6a6dc9e7bce122045d45644fd533d4a9aecf6771f1258321686374834c39c1ad',
+    0x38B0D0: 'b561ed25a4e6559ac950c490b2e3512ffbb90a3f486ff97a3db5630b3de30712',
+    0x2C9110: '38a66c817ae8dc5c52a794cee68539b52287b8ce9b503f2daa98e5078420dc0a',
+    0x31E650: 'b4f9425772ae0095aad09c5b881c807ec661138f5e90d29c64b2b3c25ec58632',
+}
+
+# BEGIN GENERATED RUNTIME
+SYMBOLS = {
+    'frame_done': 0x372DB3,
+    'frame_loop': 0x372D74,
+    'frame_next': 0x372DAD,
+    'frame_return': 0x372DB5,
+    'frame_visible': 0x372D69,
+    'star_draw': 0x3DDD50,
+    'star_frame': 0x372D40,
+    'star_inset': 0x31E650,
+    'star_points': 0x31E654,
+    'star_position': 0x38B0D0,
+    'star_vertex': 0x2C9110,
+    'vertex_outer': 0x2C9135,
+    'vertex_same_point': 0x2C9160,
+}
+
+# (VA, capacity, original generated code or immutable geometry)
+CAVES = (
+    (0x372D40, 118, bytes.fromhex(
+        "e8db65d8ff833d1828ba00007467833d1c28ba0000745ee864faceff85c07409e8cbabd0ff85c0744c56578b356802e6"
+        "006a165f85f6743b837e4800752f8b463c85c07428f64053017422837e0400741cb80000903fba101010ffe8b0af0600"
+        "b80000803f83caffe8a3af06008b76304f75c15f5ec3"
+    )),
+    (0x3DDD50, 83, bytes.fromhex(
+        "5589e553565783e4f081eca00000008b5e048b35ac28ba008d7c2420b920000000f3a58944241889542438c744245000"
+        "00000081a42480000000fffffff0f7d8050000308089442404e932d3faff"
+    )),
+    (0x38B0D0, 83, bytes.fromhex(
+        "d98330010000d88330020000d80d84414e00d95c2410d98338010000d88338020000d80d84414e00d95c24148d442420"
+        "6a00506a0631c9ba01000000e88f21caffbb54e63100bf16000000e9f0dff3ff"
+    )),
+    (0x2C9110, 106, bytes.fromhex(
+        "d903d84c2418d94304d84c2418f7c7010000007410d80d50e63100d9c9d80d50e63100d9c9d8442414d95c2408d84424"
+        "10d91c2489e1e82539d6fff7c701000000740d83c30883ff037505bb54e631004f75ade89838d6ff8d65f45f5e5b5dc3"
+    )),
+    (0x31E650, 84, bytes.fromhex(
+        "e17a143f000000000000d8c2fed0ef411a0a25c29f6dcd42cf7e05c2fa0342426a287c4159ec7d4267bfae4200000000"
+        "00004c4259ec7dc267bfae42fa0342c26a287c419f6dcdc2cf7e05c2fed0efc11a0a25c2"
+    )),
+)
+# END GENERATED RUNTIME
+
+PATCHED_DRAW_CALL = b"\xe8" + struct.pack("<i", SYMBOLS['star_frame'] - DRAW_CALL_VA - 5)
+# Pin both unchanged producer/consumer bodies, not just the former gate.
+CONTEXT_HASHES = (
+    (0xF9030, 735, 'dd1061ca291cf6defecbcbb80f1453051cbe6bfac056b06bb0aa90fd115db9fb'),
+    (0xF9320, 420, '54ebe23ac6eb2065e3a40e36af05673f32e6e40fbd23ee4ba6db751fb50188f5'),
+)
+PINS = (*CALL_SITES,
+        (0x64F18, bytes.fromhex("e823ea010085c07505")),  # replay camera branch before the hook
+        (0x2CA70, bytes.fromhex("ff0584b2a6008b11a17cb2a6008910")),
+        (0x2D2A0, bytes.fromhex("558bec5356578bf9e8b3eeffff")),
+        (0x2CA00, bytes.fromhex("e87bffffff")),
+        (0x61769, bytes.fromhex("e8f2240600")),
+        (0x617A4, bytes.fromhex("e8b7240600")),
+        (0xC3C70, bytes.fromhex("8d7a543bd78b34998bc2")))
 
 
 class PlayerStarError(ValueError):
-    """The player-star patch cannot be applied to this executable."""
+    """Foreign code or an incomplete star patch; no bytes are changed."""
 
 
 def _require(condition: bool, message: str) -> None:
@@ -157,156 +145,107 @@ def _require(condition: bool, message: str) -> None:
         raise PlayerStarError(message)
 
 
-def _code() -> tuple[bytes, dict[str, int]]:
-    """The rewritten ``FUN_00075d40``: 80 bytes, entry at byte 0, no cave, no writes."""
-
-    imm = lambda va: struct.pack("<I", va).hex()  # noqa: E731
-    a = _Asm(GATE_VA)
-    a.label("gate")
-    a.b("a1" + imm(HUMAN_A_VA))                                 # mov eax, [0xE5FC50]
-    a.b("0b05" + imm(HUMAN_B_VA))                               # or  eax, [0xE5FC90]
-    a.j8("74", "done")                                          # je  done            nobody human -> 0 (eax = 0)
-    a.b("a1" + imm(GAME_MODE_VA))                               # mov eax, [0xE5FF80] game mode, hoisted
-    a.b("8b51" + f"{ENTITY_CONTROLLER_OFFSET:02x}")             # mov edx, [ecx+0xc]
-    a.b("833aff")                                               # cmp dword [edx], -1
-    a.j8("75", "one")                                           # jne one             a user-controlled body
-    a.b("8339 00")                                              # cmp dword [ecx], 0
-    a.j8("74", "tag")                                           # je  tag
-    a.b("85c0")                                                 # test eax, eax       game mode 0 = practice
-    a.j8("74", "one")                                           # je  one
-    a.b("833d" + imm(PLAY_STATE_VA) + f"{LIVE_PLAY:02x}")       # cmp dword [0xE602B8], 0xE
-    a.j8("74", "one")                                           # je  one             live play
-    a.b("8079" + f"{ENTITY_STATE_OFFSET:02x}" + "06")           # cmp byte [ecx+0x2c], 6
-    a.j8("75", "one")                                           # jne one
-    a.label("tag")
-    a.b("8b51" + f"{ENTITY_RECORD_OFFSET:02x}")                 # mov edx, [ecx+0x3c] the 0x54 roster record
-    a.b("85d2")                                                 # test edx, edx
-    a.j8("74", "retail")                                        # je  retail          no record: retail answer
-    a.b("f642" + f"{TAG_RECORD_OFFSET:02x}" + f"{TAG_BIT:02x}")  # test byte [edx+0x53], 1
-    a.j8("74", "retail")                                        # je  retail          not tagged
-    a.b("803d" + imm(STAR_COUNT_VA) + f"{STAR_LIST_LIMIT:02x}")  # cmp byte [0xBA2821], 9
-    a.j8("72", "one")                                           # jb  one             tagged and the list has room
-    a.label("retail")
-    a.jmp_abs(IS_USER_BODY_VA)                                  # jmp FUN_0017ebd0    tail call: 0 or 1
-    a.label("one")
-    a.b("b001")                                                 # mov al, 1           (eax = the 0..8 game mode)
-    a.label("done")
-    a.b("c3")                                                   # ret
-    a.label("end")
-    code = a.assemble()
-    return code, {name: GATE_VA + off for name, off in a.labels.items()}
-
-
-PATCHED_GATE, GATE_LABELS = _code()
-assert len(PATCHED_GATE) == GATE_SIZE, f"the rewritten predicate is {len(PATCHED_GATE)} bytes, not {GATE_SIZE}"
-assert PATCHED_GATE != RETAIL_GATE
-
-
-def sites() -> list[tuple[str, int, bytes, bytes]]:
-    """``(label, va, retail bytes, patched bytes)`` -- one site, the routine itself."""
-
-    return [("star_gate", GATE_VA, RETAIL_GATE, PATCHED_GATE)]
-
-
-# context pins: the call sites (unmoved), the tail-called routine, the neighbours of the rewrite and
-# the star list's own append / flush, which the 9-entry clamp is derived from
-PINS = (*CALL_SITES,
-        (IS_USER_BODY_VA, RETAIL_IS_USER_BODY_HEAD),
-        (PREV_ROUTINE_VA, RETAIL_PREV_ROUTINE),
-        (NEXT_ROUTINE_VA, RETAIL_NEXT_ROUTINE_HEAD),
-        (STAR_APPEND_VA, RETAIL_STAR_APPEND),
-        (STAR_FLUSH_VA, RETAIL_STAR_FLUSH))
-
-
-def _header_size(payload: bytes) -> int:
-    return struct.unpack_from("<I", payload, 0x108)[0]
-
-
 def _offset(payload: bytes, va: int) -> int:
-    if IMAGE_BASE <= va < IMAGE_BASE + _header_size(payload):
-        return va - IMAGE_BASE
     for section in _sections(payload):
         if section.virtual_address <= va < section.virtual_address + section.raw_size:
-            return section.raw_offset + (va - section.virtual_address)
-    raise PlayerStarError(f"VA 0x{va:x} is in no section")
+            return section.raw_offset + va - section.virtual_address
+    raise PlayerStarError(f"VA 0x{va:x} is in no file-backed section")
 
 
-def _pins_are_retail(payload: bytes) -> bool:
-    for va, expected in PINS:
-        off = _offset(payload, va)
-        if payload[off: off + len(expected)] != expected:
-            return False
-    return True
+def _read(payload: bytes, va: int, size: int) -> bytes:
+    off = _offset(payload, va)
+    section = _section_for_offset(_sections(payload), off)
+    _require(off + size <= section.raw_offset + section.raw_size, 'site crosses section boundary')
+    result = payload[off:off + size]
+    _require(len(result) == size, 'truncated site')
+    return result
+
+
+def sites() -> list[tuple[str, int, bytes]]:
+    """Complete declared replacement spans, including unchanged cave padding."""
+    return [('controller_gate', GATE_VA, RETAIL_GATE),
+            ('star_frame_call', DRAW_CALL_VA, PATCHED_DRAW_CALL),
+            *((f'star_runtime_{va:x}', va, code + b'\x90' * (size-len(code)))
+              for va, size, code in CAVES)]
 
 
 def status(payload: bytes) -> str:
-    """'retail', 'applied' or 'foreign' (bytes match neither; refuse to touch)."""
+    """retail / legacy (gate-only or thin outline) / applied / foreign.
 
+    Mixed or modified sites are foreign. 'applied' always means the complete
+    bold renderer. The existing star-only legacy arm in the build dispatcher
+    upgrades either recognized earlier revision through apply().
+    """
     try:
-        if not _pins_are_retail(payload):
-            return "foreign"
-        gate = payload[_offset(payload, GATE_VA):][:GATE_SIZE]
-    except (PlayerStarError, ValueError, struct.error):
-        return "foreign"
-    if gate == RETAIL_GATE:
-        return "retail"
-    if gate == PATCHED_GATE:
-        return "applied"
-    return "foreign"
+        if payload[:4] != b'XBEH' or struct.unpack_from('<I', payload, 0x104)[0] != IMAGE_BASE:
+            return 'foreign'
+        if any(_read(payload, va, len(pin)) != pin for va, pin in PINS):
+            return 'foreign'
+        if any(hashlib.sha256(_read(payload, va, size)).hexdigest() != pin
+               for va, size, pin in CONTEXT_HASHES):
+            return 'foreign'
+        gate = _read(payload, GATE_VA, GATE_SIZE)
+        call = _read(payload, DRAW_CALL_VA, 5)
+        if gate == RETAIL_GATE and all(_read(payload, va, len(code)) == code for _, va, code in sites()):
+            return 'applied'
+        if gate == RETAIL_GATE and call == PATCHED_DRAW_CALL and all(
+                hashlib.sha256(_read(payload, va, size)).hexdigest() == LEGACY_OUTLINE_PINS[va]
+                for va, size, _ in CAVES):
+            return 'legacy'
+        if call != RETAIL_DRAW_CALL or any(
+                hashlib.sha256(_read(payload, va, size)).hexdigest() != CAVE_PINS[va]
+                for va, size, _ in CAVES):
+            return 'foreign'
+        if gate == RETAIL_GATE:
+            return 'retail'
+        if gate == LEGACY_GATE:
+            return 'legacy'
+    except (PlayerStarError, ValueError, struct.error, IndexError):
+        pass
+    return 'foreign'
 
 
 def read_settings(payload: bytes) -> dict[str, object]:
-    """What the image's predicate does today."""
-
     state = status(payload)
-    return {"status": state,
-            "tag": f"roster record +0x{TAG_RECORD_OFFSET:02x} bit {TAG_BIT:#04x}" if state == "applied" else "none",
-            "star_list_limit": STAR_LIST_LIMIT if state == "applied" else 0}
+    thin = state == 'legacy' and _read(payload, DRAW_CALL_VA, 5) == PATCHED_DRAW_CALL
+    return {'status': state, 'renderer': 'white_star_outline' if state == 'applied' or thin else 'none',
+            'renderer_revision': ('bold_contrast_v2' if state == 'applied' else
+                                  'thin_v1' if thin else 'gate_only' if state == 'legacy' else 'none'),
+            'tag': 'roster record +0x53 bit 0' if state in ('applied', 'legacy') else 'none',
+            'star_list_limit': ENTITY_LIMIT if state == 'applied' or thin else 0,
+            'retail_controller_capacity': RETAIL_STAR_LIST_LIMIT,
+            'needs_upgrade': state == 'legacy'}
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Return the patched XBE bytes plus a receipt; refuses anything but retail sites."""
-
     state = status(payload)
-    if state == "applied":
-        return payload, {"already_applied": True, "edits": [], "changed_bytes": 0, **read_settings(payload)}
-    _require(state == "retail", f"player-star sites are {state}, not retail; refusing")
+    if state == 'applied':
+        return payload, {'already_applied': True, 'edits': [], 'changed_bytes': 0, **read_settings(payload)}
+    _require(state in ('retail', 'legacy'), f'player-star sites are {state}; refusing')
+    previous_renderer = read_settings(payload)['renderer_revision']
     buf = bytearray(payload)
-    sections_ = _sections(payload)
+    sections = _sections(payload)
     touched: set[int] = set()
     edits = []
-    for label, va, before, after in sites():
+    for label, va, after in sites():
         off = _offset(payload, va)
-        _require(payload[off: off + len(before)] == before, f"{label}: retail bytes missing")
-        buf[off: off + len(after)] = after
-        touched.add(_section_for_offset(sections_, off).index)
-        edits.append({"label": label, "va": f"0x{va:x}", "file_offset": f"0x{off:x}", "bytes": len(after),
-                      "before": before.hex(), "after": after.hex()})
-    for section in sections_:
+        before = payload[off:off+len(after)]
+        if before == after:
+            continue
+        buf[off:off+len(after)] = after
+        touched.add(_section_for_offset(sections, off).index)
+        edits.append({'label': label, 'va': hex(va), 'file_offset': hex(off), 'bytes': len(after),
+                      'before_sha256': hashlib.sha256(before).hexdigest(),
+                      'after_sha256': hashlib.sha256(after).hexdigest()})
+    for section in sections:
         if section.index in touched:
             d = section.header_offset + 36
-            buf[d: d + 20] = section_digest(bytes(buf), section)
+            buf[d:d+20] = section_digest(bytes(buf), section)
     patched = bytes(buf)
-    _require(status(patched) == "applied", "post-apply verification failed")
-    changed = sum(1 for a, b in zip(payload, patched) if a != b)
-    return patched, {
-        "edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched), "status": "applied",
-        "gate_va": f"0x{GATE_VA:x}", "gate_bytes": GATE_SIZE, "in_place": True, "cave": None,
-        "gate_labels": {name: f"0x{va:x}" for name, va in GATE_LABELS.items()},
-        "tag": {"record_offset": f"0x{TAG_RECORD_OFFSET:02x}", "bit": TAG_BIT,
-                "entity_field": f"entity+0x{ENTITY_RECORD_OFFSET:02x}"},
-        "clamp": {"count_va": f"0x{STAR_COUNT_VA:x}", "list_va": f"0x{STAR_LIST_VA:x}",
-                  "entry_bytes": STAR_ENTRY_SIZE, "limit": STAR_LIST_LIMIT,
-                  "collides_with": f"0x{STAR_LIST_END_VA:x}"},
-        "tail_call": f"FUN_0017ebd0 (0x{IS_USER_BODY_VA:x}, pure, returns 0 or 1)",
-        "call_sites": [f"0x{va:x}" for va, _b in CALL_SITES],
-        "side_effect": "the same predicate gates the on-field indicator text in FUN_00075d90",
-    }
-
-
-__all__ = ["CALL_SITES", "ENTITY_RECORD_OFFSET", "GAME_MODE_VA", "GATE_LABELS", "GATE_SIZE", "GATE_VA",
-           "HUMAN_A_VA", "HUMAN_B_VA", "IS_USER_BODY_VA", "LIVE_PLAY", "NEXT_ROUTINE_VA", "PATCHED_GATE",
-           "PINS", "PLAYER_RECORD_SIZE", "PLAY_STATE_VA", "PREV_ROUTINE_VA", "PlayerStarError", "RETAIL_GATE",
-           "STAR_APPEND_VA", "STAR_COUNT_VA", "STAR_ENTRY_SIZE", "STAR_FLUSH_VA", "STAR_LIST_END_VA",
-           "STAR_LIST_LIMIT", "STAR_LIST_VA", "TAG_BIT", "TAG_RECORD_OFFSET", "apply", "read_settings",
-           "sites", "status"]
+    _require(status(patched) == 'applied', 'post-apply verification failed')
+    return patched, {'edits': edits, 'changed_bytes': sum(a != b for a, b in zip(payload, patched)),
+                     'sections_repinned': sorted(touched), 'upgraded_from': state,
+                     'upgraded_renderer': previous_renderer,
+                     'controller_gate_restored': _read(payload, GATE_VA, GATE_SIZE) == LEGACY_GATE,
+                     'caves': [{'va': hex(va), 'bytes': size} for va, size, _ in CAVES],
+                     'runtime_storage': 'stack only', **read_settings(patched)}

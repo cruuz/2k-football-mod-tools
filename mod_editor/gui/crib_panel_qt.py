@@ -21,6 +21,7 @@ from uuid import uuid4
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_crib import CribAsset, CribAssetStatus
+from mod_editor.gui.task_delivery import bound
 
 
 ProgressSink = Callable[[str, int, int], None]
@@ -573,8 +574,8 @@ class CribPanel(QWidget):
         title = QLabel("The Crib")
         title.setObjectName("cribTitle")
         subtitle = QLabel(
-            "Put your own photos on the wall and inspect every collectible, "
-            "room, and object texture."
+            "Put your photos on the Crib wall or change textures marked Editable. "
+            "Select one, then Replace PNG."
         )
         subtitle.setObjectName("cribMuted")
         subtitle.setWordWrap(True)
@@ -663,13 +664,13 @@ class CribPanel(QWidget):
         actions.addWidget(self.replace_button, 1)
         actions.addWidget(self.revert_button)
         detail_layout.addLayout(actions)
-        self.tabs.addTab(preview_tab, "Preview & Edit")
+        self.tabs.addTab(preview_tab, "Preview && Edit")
 
         model_tab = QWidget()
         model_layout = QVBoxLayout(model_tab)
         model_layout.setContentsMargins(18, 16, 18, 16)
         model_layout.setSpacing(12)
-        model_title = QLabel("Electronics model positions")
+        model_title = QLabel("Crib model positions (advanced)")
         model_title.setObjectName("cribDetailTitle")
         model_intro = QLabel(
             "Export a proved scene to glTF, move its existing vertices, then "
@@ -683,10 +684,10 @@ class CribPanel(QWidget):
         self.model_details.setObjectName("cribNote")
         self.model_details.setWordWrap(True)
         model_actions = QHBoxLayout()
-        self.model_export_button = QPushButton("Export glTF")
-        self.model_import_button = QPushButton("Import Edited glTF")
+        self.model_export_button = QPushButton("Export 3D model…")
+        self.model_import_button = QPushButton("Import edited 3D model…")
         self.model_import_button.setObjectName("cribPrimaryButton")
-        self.model_revert_button = QPushButton("Revert Model")
+        self.model_revert_button = QPushButton("Revert")
         model_actions.addWidget(self.model_export_button)
         model_actions.addWidget(self.model_import_button, 1)
         model_actions.addWidget(self.model_revert_button)
@@ -710,7 +711,7 @@ class CribPanel(QWidget):
         findings.setObjectName("cribFindings")
         findings.setOpenExternalLinks(False)
         findings.setHtml(CRIB_FINDINGS_HTML)
-        self.tabs.addTab(findings, "Findings & limits")
+        self.tabs.addTab(findings, "What's possible")
         splitter.addWidget(self.tabs)
         splitter.setStretchFactor(0, 6)
         splitter.setStretchFactor(1, 4)
@@ -989,12 +990,13 @@ class CribPanel(QWidget):
             if asset.material_names
             else ""
         )
-        self.metadata_label.setText(
-            f"{asset.group}\n{asset.width}×{asset.height} · {asset.format_name} · "
-            f"{asset.mip_levels} mip level{'s' if asset.mip_levels != 1 else ''}\n"
+        self.metadata_label.setText(f"{asset.group}\n{asset.width}×{asset.height} image")
+        self.metadata_label.setToolTip(
+            f"{asset.format_name} · {asset.mip_levels} mip level{'s' if asset.mip_levels != 1 else ''}\n"
             f"{location}{materials}\n{asset.selector}"
         )
-        self.note_label.setText(asset.authoring_note)
+        self.note_label.setText(f"Common image files are resized to {asset.width}×{asset.height} for you.")
+        self.note_label.setToolTip(asset.authoring_note)
         self._refresh_controls()
         if not self.host.source_ready:
             self.preview.set_message("Load your NFL 2K5 XISO to prepare this PNG")
@@ -1373,7 +1375,7 @@ class CribPanel(QWidget):
         task = _Task(operation)
         self._tasks.add(task)
         task.signals.progress.connect(self._progress)
-        task.signals.result.connect(on_success)
+        task.signals.result.connect(bound(self, on_success))
         task.signals.error.connect(self.error_raised.emit)
 
         def finished() -> None:
@@ -1388,7 +1390,7 @@ class CribPanel(QWidget):
             else:
                 self._refresh_controls()
 
-        task.signals.finished.connect(finished)
+        task.signals.finished.connect(bound(self, finished))
         try:
             self._pool.start(task)
         except BaseException:

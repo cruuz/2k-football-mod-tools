@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui.task_delivery import bound
 from mod_editor.core.nfl2k5_save_writer import (
     FRANCHISE_DISPLAY_YEAR_BASE,
     SLIDER_LABELS,
@@ -107,14 +108,11 @@ class SavePanel(QWidget):
         root.setContentsMargins(24, 22, 24, 22)
         root.setSpacing(14)
 
-        title = QLabel("Saves & Sliders (experimental)")
+        title = QLabel("Xbox save: sliders && franchise year (experimental)")
         title.setObjectName("bumpTitle")
         subtitle = QLabel(
-            "Gameplay sliders (Settings1 and Franchise1 saves) plus the "
-            "franchise year field, re-signed with the title-static key "
-            "derived from your own default.xbe. Writes always go to a COPY: "
-            "a mutated SAVEGAME.DAT and a fresh 20-byte EXTRA. Put both "
-            "files back into the save container together."
+            "Open SAVEGAME.DAT and the game's default.xbe, then save a signed copy. "
+            "Keep the new SAVEGAME.DAT and EXTRA together when putting the save back."
         )
         subtitle.setObjectName("bumpMuted")
         subtitle.setWordWrap(True)
@@ -122,7 +120,7 @@ class SavePanel(QWidget):
         root.addWidget(subtitle)
 
         xbe_row = QHBoxLayout()
-        xbe_row.addWidget(QLabel("Signing XBE"))
+        xbe_row.addWidget(QLabel("Game executable (default.xbe)"))
         self.xbe_field = QLineEdit()
         self.xbe_field.setReadOnly(True)
         self.xbe_field.setPlaceholderText(
@@ -164,7 +162,7 @@ class SavePanel(QWidget):
         root.addWidget(table_card, 1)
 
         options_row = QHBoxLayout()
-        options_row.addWidget(QLabel("Slider write mode"))
+        options_row.addWidget(QLabel("Slider copies to update (advanced)"))
         self.mode_combo = QComboBox()
         for mode in SLIDER_MODES:
             self.mode_combo.addItem(mode)
@@ -183,11 +181,11 @@ class SavePanel(QWidget):
         root.addLayout(options_row)
 
         out_row = QHBoxLayout()
-        out_row.addWidget(QLabel("Output save"))
+        out_row.addWidget(QLabel("Save the copy as"))
         self.out_field = QLineEdit()
         self.out_field.setReadOnly(True)
         self.out_field.setPlaceholderText(
-            "Choose where to write the mutated SAVEGAME.DAT copy"
+            "Where the new SAVEGAME.DAT copy goes (the original is never written)"
         )
         out_row.addWidget(self.out_field, 1)
         self.out_button = QPushButton("Choose…")
@@ -195,7 +193,7 @@ class SavePanel(QWidget):
         root.addLayout(out_row)
 
         actions = QHBoxLayout()
-        self.apply_button = QPushButton("Apply edits && re-sign copy")
+        self.apply_button = QPushButton("Make a signed save copy…")
         actions.addStretch(1)
         actions.addWidget(self.apply_button)
         root.addLayout(actions)
@@ -258,7 +256,7 @@ class SavePanel(QWidget):
         task = _Task(operation)
         self._tasks.add(task)
         task.signals.progress.connect(self._progress)
-        task.signals.result.connect(on_success)
+        task.signals.result.connect(bound(self, on_success))
         task.signals.error.connect(self._failed)
 
         def finished() -> None:
@@ -269,7 +267,7 @@ class SavePanel(QWidget):
             self.progress_bar.hide()
             self._refresh_controls()
 
-        task.signals.finished.connect(finished)
+        task.signals.finished.connect(bound(self, finished))
         try:
             self._pool.start(task)
         except BaseException:

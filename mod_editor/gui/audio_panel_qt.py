@@ -1132,6 +1132,9 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from mod_editor.gui.ux_text import Details
+from mod_editor.gui.task_delivery import bound
 from mod_editor.gui.audio_waveform_qt import (
     AudioWaveformPreview,
     WaveformCancelled,
@@ -1350,8 +1353,8 @@ if PYQT5_AVAILABLE:
             title = QLabel("Audio")
             title.setObjectName("audioTitle")
             self.subtitle_label = QLabel(
-                "Browse and export every indexed sound; play cues and ranges; "
-                "replace supported standalone and streaming-range WAVs."
+                "Browse indexed audio. Search, Play, Export WAV, or replace a sound marked Editable "
+                "(a longer clip is trimmed to the slot, a shorter one padded)."
             )
             self.subtitle_label.setObjectName("audioMuted")
             self.subtitle_label.setWordWrap(True)
@@ -1428,7 +1431,7 @@ if PYQT5_AVAILABLE:
                 "Export-only never exposes a writer"
             )
             self.meaning_filter = QComboBox()
-            self.meaning_filter.addItem("All meaning confidence (850)", None)
+            self.meaning_filter.addItem("All label confidence (850)", None)
             self.meaning_filter.addItem(
                 "Menu Back route (1)", MENU_BACK_MEANING_STATUS
             )
@@ -1456,7 +1459,8 @@ if PYQT5_AVAILABLE:
                 "whether the exact physical sound is Editable. Available only for "
                 "standalone sounds."
             )
-            self.labeled_only_filter = QCheckBox("Labeled only")
+            self.labeled_only_filter = QCheckBox("My labeled sounds")
+            self.labeled_only_filter.setToolTip("Show sounds you named or annotated in this project.")
             self.labeled_only_filter.setAccessibleName(
                 "Show only audio cues with a custom project label or note"
             )
@@ -1611,7 +1615,7 @@ if PYQT5_AVAILABLE:
                 "Export an audio replacement template"
             )
             self.import_replacement_pack_button = QPushButton(
-                "Preview & import pack…"
+                "Preview && import pack…"
             )
             self.import_replacement_pack_button.setObjectName("audioPrimaryButton")
             self.import_replacement_pack_button.setAccessibleName(
@@ -1623,7 +1627,13 @@ if PYQT5_AVAILABLE:
             replacement_pack_actions.addStretch(1)
             replacement_pack_actions.addWidget(self.import_replacement_pack_button)
             replacement_pack_layout.addLayout(replacement_pack_actions)
-            root.addWidget(replacement_pack)
+            # The template / shortlist tools are for many sounds at once: they stay one click
+            # away under a named, keyboard-operable expander so the landing view is search →
+            # play → replace (AU-03).  The selected count is repeated in the expander title.
+            self.batch_details = Details("Export or import many sounds")
+            self.batch_details.content.setContentsMargins(0, 2, 0, 4)
+            self.batch_details.content.addWidget(replacement_pack)
+            root.addWidget(self.batch_details)
 
             self.shortlist_actions_layout = QGridLayout()
             self.shortlist_actions_layout.setHorizontalSpacing(6)
@@ -1666,6 +1676,7 @@ if PYQT5_AVAILABLE:
             self.shortlist_review_button.setToolTip(_review_boot)
             self.shortlist_review_button.setProperty("disableReason", _review_boot)
             self.shortlist_count_label = QLabel("Selected 0 / 256")
+            self.shortlist_count_label.setAccessibleName("Selected sounds for export")
             self.shortlist_count_label.setObjectName("audioCountPill")
             self.shortlist_count_label.setAccessibleName("Audio shortlist count")
             self.shortlist_count_label.setToolTip(
@@ -1846,7 +1857,7 @@ if PYQT5_AVAILABLE:
             annotation_layout = QVBoxLayout(self.annotation_card)
             annotation_layout.setContentsMargins(12, 11, 12, 11)
             annotation_layout.setSpacing(7)
-            self.annotation_heading = QLabel("Your cue label & notes")
+            self.annotation_heading = QLabel("Your note for this sound")
             self.annotation_heading.setObjectName("audioPackPathHeading")
             self.annotation_help = QLabel(
                 "Project metadata only — searchable and shareable, but never written "
@@ -5865,7 +5876,7 @@ if PYQT5_AVAILABLE:
             task = _Task(operation)
             self._tasks.add(task)
             task.signals.progress.connect(self._progress)
-            task.signals.result.connect(on_success)
+            task.signals.result.connect(bound(self, on_success))
             task.signals.error.connect(on_error or self.error_raised.emit)
 
             def finished() -> None:
@@ -5883,7 +5894,7 @@ if PYQT5_AVAILABLE:
                 if continuation is not None:
                     QTimer.singleShot(0, continuation)
 
-            task.signals.finished.connect(finished)
+            task.signals.finished.connect(bound(self, finished))
             try:
                 self._pool.start(task)
             except BaseException:

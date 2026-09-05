@@ -1,8 +1,7 @@
 """Star tags: one bit of the roster record, written into the ROST resource of a disc-image COPY.
 
-``nfl2k5_player_star`` rewrites the retail predicate that decides who gets the ``icon_controller_star``
-decal so that it also says yes for a player whose **0x54 roster record has byte +0x53 bit 0 set**.
-This module is the writer for that bit.
+``nfl2k5_player_star`` draws a separate white outline under each active player whose
+**0x54 roster record has byte +0x53 bit 0 set**. This module writes that bit.
 
 Where: pack ``vc_53450030/0``, outer entry 5 (``ROST``, 0x20-byte wrapper + 0x90F60 body), the same
 resource ``nfl2k5_team_history`` edits.  The roster object sits at body +0x40; its two player tables
@@ -28,10 +27,8 @@ Because the tag lives in the roster body, it rides into every franchise or roste
 patched disc for free (a save carries the whole ROST body), but a franchise that already exists
 carries its own older copy and will not have it.
 
-The star list the game keeps is 9 entries deep (see ``nfl2k5_player_star.STAR_LIST_LIMIT``), and the
-patched predicate refuses to add a tenth, so tagging more players than that is safe -- the ones past
-the ninth on the field simply do not get a decal that frame.  The writer still warns above that
-count.  Unwitnessed in game.
+Tags do not consume the retail nine-entry controller list. The renderer walks all
+22 physical on-field entities, so there is no roster-wide tagging quota.
 """
 
 from __future__ import annotations
@@ -264,8 +261,6 @@ def apply_body(body: bytes, tags: Sequence[object]) -> tuple[bytes, dict[str, An
     check = parse_body(out)
     _require({(p.pool, p.index) for p in check.tagged} == {(p.pool, p.index) for p in wanted},
              "tag round trip")
-    if len(wanted) > STAR_LIST_LIMIT:
-        log.append(f"{len(wanted)} players tagged; the game draws at most {STAR_LIST_LIMIT} stars at once")
     return out, {"tagged": len(wanted), "requested": len(tags),
                  "players": [{"pool": p.pool, "index": p.index, "name": p.display, "key": p.key} for p in wanted],
                  "star_list_limit": STAR_LIST_LIMIT, "log": log}

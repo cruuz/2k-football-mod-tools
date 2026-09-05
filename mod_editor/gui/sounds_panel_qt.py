@@ -39,6 +39,9 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui.ux_text import XEMU_LINE, Details, plain_failure, show_operation_error, suggest_copy_name
+from mod_editor.gui.task_delivery import bound
+
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 WAV_FILTER = "WAV audio (*.wav);;All files (*)"
 STANDALONE = "audo"
@@ -443,28 +446,32 @@ class SoundsPanel(QWidget):
         # Tests and fixtures pin a different bank list / AUDO catalog; None = the retail pins.
         self.bank_pins = None
         self.audo_records = None
+        self._target_generated = False
         self._build()
 
     # ------------------------------------------------------------------ layout
     def _build(self) -> None:
         layout = QVBoxLayout(self)
         intro = QLabel(
-            "Replace an in-game sound with your own WAV. Covers the three rotating SFX banks (sfx_game: "
-            "hits, pads, ball, snap; sfx_safe: whistles and crowd reactions; QB_at_line: the QB cadence) "
-            "and the 850 standalone cues (crowd chants, PA, menu/UI clicks, music stings). The rule is "
-            "the same as the tools': every sound keeps its byte allocation, your clip is padded with "
-            "silence or fade-trimmed to fit, and a rotating sound is replaced in every sub-bank by "
-            "default so the game cannot rotate back to the old recording. The result is written into a "
-            "COPY of the disc; the source image is never touched."
+            "Replace hits, whistles, crowd sounds, menu clicks or QB cadence with your WAV, then make a "
+            "disc copy. Every sound keeps its length: a longer clip is trimmed, a shorter one is padded "
+            "with silence. These selections apply to the copy made on this page. " + XEMU_LINE
         )
         intro.setWordWrap(True)
         layout.addWidget(intro)
+        intro_details = Details("Details")
+        intro_details.add_text(
+            "Three rotating SFX banks (sfx_game: hits, pads, ball, snap; sfx_safe: whistles and crowd "
+            "reactions; QB_at_line: the QB cadence) and the 850 standalone cues (crowd chants, PA, menu "
+            "clicks, music stings). A rotating sound is replaced in every sub-bank by default so the game "
+            "cannot rotate back to the old recording. The source disc is never touched.")
+        layout.addWidget(intro_details)
 
-        source_box = QGroupBox("1. Disc image to read")
+        source_box = QGroupBox("1. Game disc (.iso)")
         source_layout = QHBoxLayout(source_box)
         self.source_field = QLineEdit()
         self.source_field.setReadOnly(True)
-        self.source_field.setPlaceholderText("Choose an NFL 2K5 disc image (.iso)")
+        self.source_field.setPlaceholderText("Filled in when you open a disc (top right), or choose one here")
         self.source_button = QPushButton("Choose…")
         self.source_button.clicked.connect(self._choose_source)
         source_layout.addWidget(self.source_field, 1)
@@ -474,9 +481,9 @@ class SoundsPanel(QWidget):
         pick_box = QGroupBox("2. Sound to replace")
         pick_layout = QVBoxLayout(pick_box)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Container"))
+        row.addWidget(QLabel("Group"))
         self.container_combo = QComboBox()
-        self.container_combo.setAccessibleName("Sound container")
+        self.container_combo.setAccessibleName("Sound group")
         self._fill_containers(list(DEFAULT_CONTAINERS))
         self.container_combo.currentIndexChanged.connect(lambda _index: self._refill_list())
         row.addWidget(self.container_combo)
@@ -502,7 +509,7 @@ class SoundsPanel(QWidget):
         self.sound_list.itemSelectionChanged.connect(self._sound_picked)
         pick_layout.addWidget(self.sound_list)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Scope"))
+        row.addWidget(QLabel("Replace in"))
         self.scope_combo = QComboBox()
         self.scope_combo.setAccessibleName("Replacement scope")
         self.scope_combo.setToolTip("Every sub-bank (default, the game rotates them each play) or one sub-bank; "
@@ -520,14 +527,14 @@ class SoundsPanel(QWidget):
         pick_layout.addWidget(self.detail_label)
         layout.addWidget(pick_box)
 
-        clip_box = QGroupBox("3. Replacement WAV")
+        clip_box = QGroupBox("3. Your WAV")
         clip_layout = QVBoxLayout(clip_box)
         row = QHBoxLayout()
         self.audio_field = QLineEdit()
-        self.audio_field.setPlaceholderText("PCM16 WAV (mono or stereo; any rate — it is converted to the slot's)")
+        self.audio_field.setPlaceholderText("A .wav file, mono or stereo, any rate (converted to fit the slot)")
         self.audio_field.textChanged.connect(self._clip_changed)
         row.addWidget(self.audio_field, 1)
-        self.audio_button = QPushButton("Choose replacement WAV…")
+        self.audio_button = QPushButton("Choose WAV…")
         self.audio_button.clicked.connect(self._choose_audio)
         row.addWidget(self.audio_button)
         clip_layout.addLayout(row)
@@ -537,36 +544,37 @@ class SoundsPanel(QWidget):
         clip_layout.addWidget(self.fit_label)
         layout.addWidget(clip_box)
 
-        target_box = QGroupBox("4. Copy to write")
+        target_box = QGroupBox("4. Save disc copy as")
         target_layout = QVBoxLayout(target_box)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Write copy to"))
+        row.addWidget(QLabel("File"))
         self.target_field = QLineEdit()
-        self.target_field.setPlaceholderText("Where the modified copy will be written (never the source)")
+        self.target_field.setPlaceholderText("Where the new disc goes (never the source)")
         self.target_field.textChanged.connect(self._refresh)
+        self.target_field.textEdited.connect(lambda _t: setattr(self, "_target_generated", False))
         target_button = QPushButton("Choose…")
         target_button.clicked.connect(self._choose_target)
         row.addWidget(self.target_field, 1)
         row.addWidget(target_button)
         target_layout.addLayout(row)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Retail packs (verifies every span is still retail before writing)"))
+        row.addWidget(QLabel("Original game files folder (checks the slot first; optional for standalone sounds)"))
         self.retail_field = QLineEdit(str(DEFAULT_RETAIL_PACKS) if DEFAULT_RETAIL_PACKS is not None and DEFAULT_RETAIL_PACKS.is_dir() else "")
-        self.retail_field.setToolTip("Extracted retail vc_53450030 folder. Bank spans can only be proven retail "
-                                     "through it; standalone cues are always gated by the catalog hashes.")
+        self.retail_field.setToolTip("An extracted original vc_53450030 folder. Bank sounds can only be checked against "
+                                     "the original through it; standalone sounds are always checked by the catalog hashes.")
         row.addWidget(self.retail_field, 1)
         target_layout.addLayout(row)
         layout.addWidget(target_box)
 
         row = QHBoxLayout()
-        self.write_button = QPushButton("Write sound copy")
+        self.write_button = QPushButton("Make disc with this sound")
         self.write_button.clicked.connect(self._write)
         row.addWidget(self.write_button)
-        self.verify_button = QPushButton("Verify copy")
+        self.verify_button = QPushButton("Check the disc")
         self.verify_button.setToolTip("Re-read the copy and check every payload holds exactly the encoded WAV.")
         self.verify_button.clicked.connect(self._verify)
         row.addWidget(self.verify_button)
-        self.status_label = QLabel("Choose a disc image to begin.")
+        self.status_label = QLabel("Open your game disc (top right), or choose one above, to begin.")
         self.status_label.setWordWrap(True)
         self.status_label.setAccessibleName("Sounds status")
         row.addWidget(self.status_label, 1)
@@ -577,8 +585,10 @@ class SoundsPanel(QWidget):
     def _fill_containers(self, keys: list[str]) -> None:
         self.container_combo.blockSignals(True)
         self.container_combo.clear()
+        names = {"sfx_game": "In-game effects (sfx_game)", "sfx_safe": "Whistles & crowd (sfx_safe)",
+                 "QB_at_line": "QB cadence (QB_at_line)"}
         for key in keys:
-            self.container_combo.addItem(key, key)
+            self.container_combo.addItem(names.get(key, key), key)
             self.container_combo.setItemData(self.container_combo.count() - 1,
                                              CONTAINER_HINTS.get(key, ""), Qt.ToolTipRole)
         self.container_combo.addItem(STANDALONE_LABEL, STANDALONE)
@@ -600,6 +610,9 @@ class SoundsPanel(QWidget):
         self._catalog = catalog
         self._catalog_cache[Path(path)] = catalog
         self.source_field.setText(str(path))
+        if not self.target_field.text().strip() or self._target_generated:
+            self.target_field.setText(suggest_copy_name(path, suffix="sounds"))
+            self._target_generated = True
         current = self.current_container()
         self._fill_containers(list(catalog.banks))
         index = self.container_combo.findData(current)
@@ -768,7 +781,7 @@ class SoundsPanel(QWidget):
 
     # ------------------------------------------------------------------ actions
     def _choose_source(self) -> None:
-        chosen, _f = QFileDialog.getOpenFileName(self, "Choose a disc image", str(Path.home()), IMAGE_FILTER)
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso)", str(Path.home()), IMAGE_FILTER)
         if chosen:
             self.load_source(Path(chosen))
 
@@ -778,10 +791,11 @@ class SoundsPanel(QWidget):
             self.audio_field.setText(chosen)
 
     def _choose_target(self) -> None:
-        chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the copy",
+        chosen, _f = QFileDialog.getSaveFileName(self, "Where should the new disc go?",
                                                  "ESPN NFL 2K5 (sounds).xiso.iso", IMAGE_FILTER)
         if chosen:
             self.target_field.setText(chosen)
+            self._target_generated = False
 
     def _export(self) -> None:
         row = self.current_row()
@@ -814,7 +828,7 @@ class SoundsPanel(QWidget):
         source = self._catalog.source
         target = Path(self.target_field.text().strip())
         if _same_file(source, target):
-            QMessageBox.warning(self, "Same file", "The copy must not be the source.")
+            QMessageBox.warning(self, "Same file", "Source and output are the same file. Fix: choose a different output file.")
             return
         wav = Path(self.audio_field.text().strip())
         retail = Path(self.retail_field.text().strip()) if self.retail_field.text().strip() else None
@@ -831,11 +845,11 @@ class SoundsPanel(QWidget):
             gate = ("retail packs: every span is compared with the retail bytes first" if packs_ok
                     else "NO retail packs folder: the bank spans are written without a retail check")
         answer = QMessageBox.question(
-            self, "Write the sound copy?",
-            f"Source (untouched): {source}\n"
-            + (f"REPLACING existing copy: {target}" if target.exists() else f"New copy: {target}")
-            + f"\n\n{what} will be replaced with {wav.name}.\n{self.fit_label.text()}\n\nGate — {gate}."
-              "\n\nxemu-only: the RSA signature stays stale.",
+            self, "Make disc with this sound?",
+            f"Source (unchanged): {source}\n"
+            + (f"Replace existing disc copy: {target}" if target.exists() else f"New disc: {target}")
+            + f"\n\n{what} will be replaced with {wav.name}.\n{self.fit_label.text()}\n\nCheck before writing — {gate}."
+              "\n\n" + XEMU_LINE,
             QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
         if answer != QMessageBox.Ok:
             return
@@ -889,8 +903,8 @@ class SoundsPanel(QWidget):
             self._busy = False
             failed(message)
 
-        task.signals.finished.connect(finish_done)
-        task.signals.failed.connect(finish_failed)
+        task.signals.finished.connect(bound(self, finish_done))
+        task.signals.failed.connect(bound(self, finish_failed))
         self._task = task
         self._busy = True
         self._refresh()
@@ -913,13 +927,13 @@ class SoundsPanel(QWidget):
             f"Written: {target.name}. {len(rows)} payload(s) replaced. Receipt: "
             f"{Path(str(receipt.get('receipt_path'))).name}"
         )
-        QMessageBox.information(self, "Sound copy written",
-                                f"{target}\n\nKeep it xemu-only: the RSA signature cannot be regenerated.")
+        QMessageBox.information(self, "Disc ready",
+                                f"{target}\n\nOpen it in xemu. " + XEMU_LINE)
         self._refresh()
 
     def _failed(self, message: str) -> None:
-        self.status_label.setText(f"Failed: {message}")
-        QMessageBox.critical(self, "Could not complete", message)
+        self.status_label.setText(plain_failure("finish that", message))
+        show_operation_error(self, "finish that", message)
         self._refresh()
 
 

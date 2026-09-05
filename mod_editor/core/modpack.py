@@ -9,7 +9,7 @@ carries exactly that, and alongside it the creator's own sources so the work
 can be inspected, remixed and rebuilt:
 
 * **byte runs** -- the finished bytes of every changed span, each pinned to the
-  SHA-256 of the bytes it replaces.  Applying uses these and nothing else, and
+  SHA-256 of the bytes it replaces.  Format 1 applies these directly, and
   it refuses on the first run whose bytes are not the expected ones, before
   anything has been written;
 * **assets/** -- the source files behind those bytes (PNG textures, WAV audio,
@@ -27,7 +27,12 @@ bytes of the changed spans -- which is what makes it applicable without the
 studio's source packs.  The two formats therefore keep different extensions; a
 project can be embedded in a patch as one of its assets.
 
-Layout of a pack (all members deflated)::
+Format 1 remains the default for same-size exports. Format 2 carries an ordered
+registry of operations (byte_runs, xbe_grow, file_replace, file_grow), with
+streamed ZIP64 payload members and transactional application. See
+``docs/MODPACK_FORMAT.md`` for its contract and extension API.
+
+Layout of a legacy pack (all members deflated)::
 
     manifest.json        {"format": 1, "kind": "2k5patch", ..., "ops": [...],
                           "assets": [...], "recipe": {...}}
@@ -46,6 +51,7 @@ verified in fixed-size blocks through positional reads and writes.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping, Sequence
+from contextlib import closing
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
@@ -61,7 +67,8 @@ import zipfile
 
 from mod_editor.core import platform_compat
 
-FORMAT = 1
+FORMAT = 2
+MIN_READER_VERSION = 2
 KIND = "2k5patch"
 EXTENSION = ".2k5patch"
 GAME = "nfl2k5-xbox"
@@ -122,6 +129,24 @@ def _no_progress(stage: str, done: int, total: int) -> None:
 
 # --------------------------------------------------------------------------
 # Files
+
+
+def _atomic_replace(part, target) -> None:
+    """os.replace, tolerant of a transient Windows lock on a freshly written file.
+
+    On Windows a virus scanner / indexer can hold a brief lock on the just-created
+    .part file, so an otherwise-correct atomic replace momentarily raises
+    PermissionError (WinError 5). Retry a bounded number of times with a short
+    backoff; a real, persistent permission problem still surfaces after the last try.
+    """
+    for attempt in range(20):
+        try:
+            os.replace(part, target)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.05)
 
 
 def _regular_path(path: Path | str, what: str) -> Path:
@@ -397,9 +422,12 @@ class Manifest:
     assets: tuple[Asset, ...] = ()
     recipe: dict[str, Any] = field(default_factory=dict)
     raw: dict[str, Any] = field(default_factory=dict)
+    patch_operations: tuple[dict[str, Any], ...] = ()
 
     @property
     def total_bytes(self) -> int:
+        if self.patch_operations:
+            return sum(op["payload"]["length"] for op in self.patch_operations)
         return sum(run.length for run in self.runs)
 
     @property
@@ -460,7 +488,15 @@ def parse_manifest(document: Mapping[str, Any]) -> Manifest:
     """Validate a manifest completely; anything questionable is a refusal."""
 
     _require(isinstance(document, Mapping), "manifest is not a JSON object")
-    _require(document.get("format") == FORMAT, f"unsupported patch format {document.get('format')!r} (this build reads format {FORMAT})")
+    format_version = document.get("format")
+    _require(type(format_version) is int and format_version in (1, FORMAT),
+             f"this mod needs a newer Mod Studio: unsupported patch format {format_version!r}")
+    if format_version == FORMAT:
+        from . import modpack_ops
+        reader = _int(document.get("min_reader_version"), "min_reader_version", minimum=2)
+        _require(reader <= modpack_ops.reader_version(), "this mod needs a newer Mod Studio: min_reader_version exceeds this reader")
+        _require(_int(document.get("op_registry_version"), "op_registry_version", minimum=1) <= 1,
+                 "this mod needs a newer Mod Studio: unknown operation registry version")
     _require(document.get("kind") == KIND, "this file is not a 2K5 disc patch")
     _require(document.get("game") == GAME, f"patch is for {document.get('game')!r}, not {GAME}")
 
@@ -489,7 +525,8 @@ def parse_manifest(document: Mapping[str, Any]) -> Manifest:
         "size": _int(result.get("size", base_size), "result.size", minimum=1),
         "sha256": _hex64(result.get("sha256"), "result.sha256", optional=True),
     }
-    _require(result_doc["size"] == base_size, "format 1 patches keep the image size; result.size differs from base.size")
+    if format_version == 1:
+        _require(result_doc["size"] == base_size, "format 1 patches keep the image size; result.size differs from base.size")
 
     payload = document.get("payload")
     _require(isinstance(payload, Mapping), "manifest payload is missing")
@@ -501,36 +538,49 @@ def parse_manifest(document: Mapping[str, Any]) -> Manifest:
     _require(payload_doc["member"] == PAYLOAD_MEMBER, "manifest names an unknown payload member")
     _require(payload_doc["length"] <= MAX_PAYLOAD_BYTES, "payload is larger than a patch may be")
 
-    ops = document.get("ops")
-    _require(isinstance(ops, list) and ops, "manifest has no ops")
-    _require(len(ops) <= MAX_RUNS, f"manifest has more than {MAX_RUNS} ops")
-    runs: list[Run] = []
-    cursor = -1
-    payload_cursor = 0
-    for index, item in enumerate(ops):
-        _require(isinstance(item, Mapping), f"op {index} is not an object")
-        _require(item.get("op") == "replace", f"op {index} is not a replace op")
-        offset = _int(item.get("offset"), f"op {index} offset")
-        length = _int(item.get("length"), f"op {index} length", minimum=1)
-        _require(base_partition + offset + length <= base_size, f"op {index} extends past the base image")
-        _require(offset > cursor, f"op {index} overlaps or precedes the op before it")
-        payload_offset = _int(item.get("payload_offset"), f"op {index} payload_offset")
-        _require(payload_offset == payload_cursor, f"op {index} payload_offset does not follow the op before it")
-        _require(payload_offset + length <= payload_doc["length"], f"op {index} extends past the payload")
-        region = item.get("region")
-        if region is not None:
-            _require(isinstance(region, str) and len(region) <= 260, f"op {index} region is not a short name")
-        runs.append(Run(
-            offset=offset,
-            length=length,
-            expected_sha256=_hex64(item.get("expected_sha256"), f"op {index} expected_sha256") or "",
-            new_sha256=_hex64(item.get("new_sha256"), f"op {index} new_sha256") or "",
-            payload_offset=payload_offset,
-            region=region,
-        ))
-        cursor = offset + length - 1
-        payload_cursor += length
-    _require(payload_cursor == payload_doc["length"], "payload length does not equal the sum of the ops")
+    patch_operations = ()
+    if format_version == FORMAT:
+        from . import modpack_ops
+        patch_operations = modpack_ops.validate(document.get("ops"), base_doc, result_doc)
+        _require(reader >= max(modpack_ops.REGISTRY[op["type"]].min_reader_version for op in patch_operations),
+                 "manifest min_reader_version understates its operation requirements")
+        _require(payload_doc["length"] == 0 and payload_doc["sha256"] == _sha256(b""),
+                 "format 2 uses operation payloads; payload.bin must be empty")
+        runs = [Run(offset=run["offset"], length=run["length"],
+                    expected_sha256=run["expected_sha256"], new_sha256=run["new_sha256"],
+                    payload_offset=run["payload_offset"], region=run.get("region"))
+                for op in patch_operations if op["type"] == 0 for run in op["runs"]]
+    else:
+        ops = document.get("ops")
+        _require(isinstance(ops, list) and ops, "manifest has no ops")
+        _require(len(ops) <= MAX_RUNS, f"manifest has more than {MAX_RUNS} ops")
+        runs: list[Run] = []
+        cursor = -1
+        payload_cursor = 0
+        for index, item in enumerate(ops):
+            _require(isinstance(item, Mapping), f"op {index} is not an object")
+            _require(item.get("op") == "replace", f"op {index} is not a replace op")
+            offset = _int(item.get("offset"), f"op {index} offset")
+            length = _int(item.get("length"), f"op {index} length", minimum=1)
+            _require(base_partition + offset + length <= base_size, f"op {index} extends past the base image")
+            _require(offset > cursor, f"op {index} overlaps or precedes the op before it")
+            payload_offset = _int(item.get("payload_offset"), f"op {index} payload_offset")
+            _require(payload_offset == payload_cursor, f"op {index} payload_offset does not follow the op before it")
+            _require(payload_offset + length <= payload_doc["length"], f"op {index} extends past the payload")
+            region = item.get("region")
+            if region is not None:
+                _require(isinstance(region, str) and len(region) <= 260, f"op {index} region is not a short name")
+            runs.append(Run(
+                offset=offset,
+                length=length,
+                expected_sha256=_hex64(item.get("expected_sha256"), f"op {index} expected_sha256") or "",
+                new_sha256=_hex64(item.get("new_sha256"), f"op {index} new_sha256") or "",
+                payload_offset=payload_offset,
+                region=region,
+            ))
+            cursor = offset + length - 1
+            payload_cursor += length
+        _require(payload_cursor == payload_doc["length"], "payload length does not equal the sum of the ops")
 
     assets_doc = document.get("assets") or []
     _require(isinstance(assets_doc, list), "manifest assets must be a list")
@@ -587,6 +637,7 @@ def parse_manifest(document: Mapping[str, Any]) -> Manifest:
         assets=tuple(assets),
         recipe=dict(recipe),
         raw=dict(document),
+        patch_operations=patch_operations,
     )
 
 
@@ -600,6 +651,32 @@ class Pack:
     manifest: Manifest
     size: int
     _payload: bytes | None = None
+    _blob_streams: dict[str, Any] = field(default_factory=dict, repr=False)
+
+    def close(self) -> None:
+        for stream in self._blob_streams.values():
+            stream.close()
+        self._blob_streams.clear()
+
+    def __del__(self):
+        self.close()
+
+    def blob_size(self, member: str) -> int:
+        with zipfile.ZipFile(self.path) as archive:
+            try:
+                return archive.getinfo(member).file_size
+            except KeyError as exc:
+                raise ModpackError(f"missing operation payload: {member}") from exc
+
+    def read_blob(self, member: str, count: int, offset: int) -> bytes:
+        if member not in self._blob_streams:
+            with zipfile.ZipFile(self.path) as archive:
+                self._blob_streams[member] = archive.open(member)
+        stream = self._blob_streams[member]
+        stream.seek(offset)
+        data = stream.read(count)
+        _require(len(data) == count, f"short operation payload: {member}")
+        return data
 
     def _member(self, name: str, expected_size: int, what: str) -> bytes:
         with zipfile.ZipFile(self.path) as archive:
@@ -623,6 +700,11 @@ class Pack:
         return self._payload
 
     def new_bytes(self, run: Run) -> bytes:
+        if self.manifest.patch_operations:
+            for op in self.manifest.patch_operations:
+                if op["type"] == 0 and run.as_json() in op["runs"]:
+                    return self.read_blob(op["payload"]["member"], run.length, run.payload_offset)
+            raise ModpackError("run is not in this pack")
         data = self.payload()
         return data[run.payload_offset: run.payload_offset + run.length]
 
@@ -646,11 +728,12 @@ def load(pack_path: Path | str) -> Pack:
 
     path = _regular_path(pack_path, "patch file")
     size = os.lstat(path).st_size
-    _require(0 < size <= MAX_PACK_BYTES, f"patch file is {size} bytes; not a 2K5 disc patch")
+    _require(size > 0, "patch file is empty")
     try:
         with zipfile.ZipFile(path) as archive:
             infos = archive.infolist()
             names = {info.filename for info in infos}
+            _require(len(names) == len(infos), "pack contains duplicate ZIP members")
             _require(MANIFEST_MEMBER in names and PAYLOAD_MEMBER in names, "not a 2K5 disc patch (manifest.json / payload.bin missing)")
             _require(not any(info.flag_bits & 1 for info in infos), "the pack contains an encrypted member")
             info = archive.getinfo(MANIFEST_MEMBER)
@@ -666,6 +749,10 @@ def load(pack_path: Path | str) -> Pack:
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ModpackError(f"manifest is not valid JSON: {exc}") from exc
     manifest = parse_manifest(document)
+    if document["format"] == 1:
+        _require(size <= MAX_PACK_BYTES, f"patch file is {size} bytes; not a 2K5 disc patch")
+    for op in manifest.patch_operations:
+        _require(op["payload"]["member"] in names, f"missing operation payload: {op['payload']['member']}")
     for asset in manifest.assets:
         _require(asset.path in names, f"asset listed in the manifest is missing from the pack: {asset.path}")
     return Pack(path=path, manifest=manifest, size=size)
@@ -679,7 +766,9 @@ def inspect(pack: Pack | Path | str) -> dict[str, Any]:
     return {
         "path": str(loaded.path),
         "pack_bytes": loaded.size,
-        "format": FORMAT,
+        "format": manifest.raw.get("format", 1),
+        "min_reader_version": manifest.raw.get("min_reader_version", 1),
+        "patch_operations": list(manifest.patch_operations),
         "name": manifest.name,
         "author": manifest.author,
         "version": manifest.version,
@@ -690,8 +779,8 @@ def inspect(pack: Pack | Path | str) -> dict[str, Any]:
         "result": dict(manifest.result),
         "runs": len(manifest.runs),
         "bytes": manifest.total_bytes,
-        "first_offset": min(run.offset for run in manifest.runs),
-        "last_offset": max(run.offset + run.length for run in manifest.runs),
+        "first_offset": min((run.offset for run in manifest.runs), default=0),
+        "last_offset": max((run.offset + run.length for run in manifest.runs), default=0),
         "regions": manifest.region_summary(),
         "assets": [asset.as_json() for asset in manifest.assets],
         "assets_bytes": sum(asset.size for asset in manifest.assets),
@@ -734,7 +823,7 @@ def extract_assets(pack: Pack | Path | str, directory: Path | str, *, overwrite:
 
 
 # --------------------------------------------------------------------------
-# Recipe recognition (display and rebuild metadata; applying always uses the byte runs)
+# Recipe recognition (display and rebuild metadata; application uses the patch body)
 
 
 def _throw_module():
@@ -826,7 +915,8 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
         return {"detected": detected, "operations": operations, "auto_assets": auto_assets}
     try:
         base_xbe = _pread_exact(base_fd, length, offset, "base default.xbe")
-        patched_xbe = _pread_exact(patched_fd, length, offset, "patched default.xbe")
+        patched_offset, patched_length = tt.image_xbe_extent(patched_fd, os.fstat(patched_fd).st_size)
+        patched_xbe = _pread_exact(patched_fd, patched_length, patched_offset, "patched default.xbe")
     except ModpackError:
         return {"detected": detected, "operations": operations, "auto_assets": auto_assets}
     base_digest, patched_digest = _sha256(base_xbe), _sha256(patched_xbe)
@@ -840,8 +930,10 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
         from mod_editor.core import (nfl2k5_accel_ramp, nfl2k5_camera, nfl2k5_catch_slider, nfl2k5_draft_ai,
                                      nfl2k5_edge_rename, nfl2k5_kick_rules, nfl2k5_modern_positions,
                                      nfl2k5_position_pools, nfl2k5_progression, nfl2k5_returner_fix,
-                                     nfl2k5_season_length, nfl2k5_widescreen, nfl2k5_overtime, nfl2k5_seven_on_seven)
-        for label, module in (("catch_slider", nfl2k5_catch_slider),
+                                     nfl2k5_season_length, nfl2k5_widescreen, nfl2k5_overtime, nfl2k5_seven_on_seven,
+                                     nfl2k5_depth_chart_rows)
+        for label, module in (("depth_chart_rows", nfl2k5_depth_chart_rows),
+                              ("catch_slider", nfl2k5_catch_slider),
                               ("accel_ramp", nfl2k5_accel_ramp),
                               ("draft_ai", nfl2k5_draft_ai),
                               ("returner_fix", nfl2k5_returner_fix),
@@ -938,6 +1030,8 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
 
 def describe_operation(operation: Mapping[str, Any]) -> str:
     op = str(operation.get("op", "?"))
+    if op == "depth_chart_rows":
+        return "SPECIAL depth-chart tab (expanded read-only XBE storage): " + ("on" if operation.get("enabled") else str(operation.get("status", "off")))
     if op == "throw_tuning":
         return (f"Throw Distance & Arc: max deep {operation.get('max_deep_yards')} yd, arc {operation.get('arc')}"
                 + (", realistic flight" if operation.get("realistic_flight") else "")
@@ -1170,6 +1264,147 @@ def retail_equivalence(runs: Sequence[Run], retail_image: Path | str) -> dict[st
     }
 
 
+def _export_modular(base_iso, patched_iso, out_path, meta, *, overwrite, recipe,
+                    retail_image, progress, block, gap, file_operations,
+                    patch_operations, operation_payloads):
+    """Streaming format-2 exporter, including an explicit registry authoring API."""
+    from contextlib import ExitStack
+    from . import modpack_ops as ops
+
+    started = time.monotonic()
+    report = progress or _no_progress
+    base_path = _regular_path(base_iso, "base image")
+    patched_path = _regular_path(patched_iso, "patched image")
+    out = Path(out_path).expanduser()
+    _require(out.suffix.casefold() == EXTENSION, f"the patch file must end in {EXTENSION}")
+    if out.exists():
+        _require(overwrite, f"output already exists: {out}")
+        _require(stat.S_ISREG(os.lstat(out).st_mode), f"output is not a regular file: {out}")
+    part = out.with_name(out.name + ".part")
+    _require(not part.exists(), f"a previous interrupted export left {part.name}; delete it first")
+    with ExitStack() as stack:
+        def open_input(path):
+            fd = _open(path, os.O_RDONLY)
+            stack.callback(os.close, fd)
+            return fd
+        base_fd, patched_fd = open_input(base_path), open_input(patched_path)
+        _require(_identity(base_fd) != _identity(patched_fd), "base and patched are the same file")
+        if out.exists():
+            _require(_identity(open_input(out)) not in (_identity(base_fd), _identity(patched_fd)), "pack output must not alias an input image")
+        size, patched_size = os.fstat(base_fd).st_size, os.fstat(patched_fd).st_size
+        _require(size > 0, "the base image is empty")
+        partition = partition_base(base_fd, size) or 0
+        _require((partition_base(patched_fd, patched_size) or 0) == partition, "game partition moved between inputs")
+        if patch_operations is None:
+            _require(patched_size >= size, "unrecognised image size change: shrinking needs a registered operation")
+            ranges, base_sha, _ = diff_descriptors(base_fd, patched_fd, size, block=block, gap=gap, progress=report)
+            _require(not ranges or ranges[0][0] >= partition, "differences in front of the game partition cannot be shared")
+            operations, payloads = ops.detect(base_fd, patched_fd, size, patched_size, partition, ranges, file_operations)
+        else:
+            operations, payloads = list(patch_operations), {}
+            for member, source in (operation_payloads or {}).items():
+                if isinstance(source, bytes):
+                    payloads[member] = ops.Payload(len(source), ops.literal(source))
+                else:
+                    fd = open_input(_regular_path(source, "operation payload"))
+                    payloads[member] = ops.Payload(os.fstat(fd).st_size,
+                        lambda n, at, fd=fd: _pread_exact(fd, n, at, "operation payload"))
+            base_sha = ops.digest(lambda n, at: _pread_exact(base_fd, n, at, "base image"), size)
+        patched_sha = ops.digest(lambda n, at: _pread_exact(patched_fd, n, at, "patched image"), patched_size)
+        recognised = recognise_recipe(base_fd, patched_fd, size, base_path, patched_path) if recipe else {
+            "detected": {}, "operations": [], "auto_assets": []}
+        staged = _stage_assets(meta.get("assets") or (), recognised["auto_assets"])
+        project_members, project_document = _stage_project(meta.get("project"))
+        staged.extend(project_members)
+        assets = [Asset(path=item.member, kind=item.kind, size=len(item.data), sha256=_sha256(item.data),
+                        role=item.role, source_name=item.source_name) for item in staged]
+        recipe_doc = {"operations": list(recognised["operations"]) + list(meta.get("operations") or []),
+                      "detected": recognised["detected"]}
+        if project_document is not None:
+            recipe_doc["project"] = project_document
+        is_retail = size == RETAIL_XISO_SIZE and base_sha == RETAIL_XISO_SHA256
+        document = {
+            "format": FORMAT, "min_reader_version": MIN_READER_VERSION,
+            "op_registry_version": ops.REGISTRY_VERSION, "kind": KIND, "game": GAME,
+            "name": _text(meta.get("name"), "name", required=True),
+            "author": _text(meta.get("author"), "author"), "version": _text(meta.get("version"), "version"),
+            "description": _text(meta.get("description"), "description"),
+            "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "tool": {"name": "2K5 Mod Studio", "version": _tool_version()},
+            "base": {"size": size, "sha256": base_sha, "partition_base": partition,
+                     "is_retail": is_retail, "is_retail_equivalent": is_retail,
+                     "label": _text(meta.get("base_label"), "base_label") or _base_label(is_retail, is_retail)},
+            "result": {"size": patched_size, "sha256": patched_sha},
+            "payload": {"member": PAYLOAD_MEMBER, "length": 0, "sha256": _sha256(b"")},
+            "ops": operations, "assets": [a.as_json() for a in assets], "recipe": recipe_doc,
+        }
+        ops.validate(operations, document["base"], document["result"])
+        document["min_reader_version"] = max(ops.REGISTRY[op["type"]].min_reader_version for op in operations)
+        manifest = parse_manifest(document)
+        draft = ops.DraftPack(manifest, payloads)
+        _require({op["payload"]["member"] for op in operations} == payloads.keys(), "operation payload members differ from supplied payloads")
+        ops.verify_payloads(draft)
+        report("Verifying composed operations", 0, patched_size)
+        view, _ = ops.plan(draft, base_fd)
+        # This whole-image comparison accounts for every tail/padding byte and
+        # every directory edit, refusing arbitrary appended data at export time.
+        for at in range(0, patched_size, block):
+            count = min(block, patched_size - at)
+            _require(view.read(count, at) == _pread_exact(patched_fd, count, at, "patched image"),
+                     f"unrecognised image change outside the declared operations at 0x{at:x}")
+            report("Verifying composed operations", at + count, patched_size)
+        equivalence = None
+        retail_source = retail_image or meta.get("retail_image")
+        if not is_retail and retail_source:
+            retail_fd = open_input(_regular_path(retail_source, "retail disc image"))
+            state, reason, _, _ = ops.check(draft, retail_fd, report)
+            identity = disc_identity(retail_fd, os.fstat(retail_fd).st_size)
+            equivalent = state == "ready" and identity is not None and identity.can_take_a_byte_run_patch
+            equivalence = {"image": str(retail_source), "equivalent": equivalent, "state": state, "reason": reason}
+            document["base"]["is_retail_equivalent"] = equivalent
+            document["base"]["label"] = _text(meta.get("base_label"), "base_label") or _base_label(False, equivalent)
+        encoded = json.dumps(document, indent=1).encode("utf-8")
+        _require(len(encoded) <= MAX_MANIFEST_BYTES, "the manifest grew past its size limit")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        fd = _open(part, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+        try:
+            with os.fdopen(fd, "wb") as stream:
+                with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9, allowZip64=True) as archive:
+                    archive.writestr(MANIFEST_MEMBER, encoded)
+                    archive.writestr(PAYLOAD_MEMBER, b"")
+                    for member, payload in payloads.items():
+                        h = hashlib.sha256()
+                        with archive.open(member, "w", force_zip64=True) as dest:
+                            for at in range(0, payload.length, block):
+                                data = payload.read(min(block, payload.length - at), at)
+                                h.update(data)
+                                dest.write(data)
+                        expected = next(op["payload"]["sha256"] for op in operations if op["payload"]["member"] == member)
+                        _require(h.hexdigest() == expected, "operation payload changed during export")
+                    for item in staged:
+                        archive.writestr(item.member, item.data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            with closing(load(part)) as loaded:
+                ops.verify_payloads(loaded)
+                for asset in loaded.manifest.assets:
+                    loaded.read_asset(asset.path)
+            # The existing-output alias probe is an input too. Windows cannot
+            # replace it while that descriptor (or a payload stream) is open.
+            stack.close()
+            _atomic_replace(part, out)
+        except BaseException:
+            try:
+                part.unlink()
+            except OSError:
+                pass
+            raise
+    loaded = load(out)
+    info = inspect(loaded)
+    return {**info, "schema": EXPORT_SCHEMA, "pack": str(out), "ops": operations,
+            "retail_equivalence": equivalence, "elapsed_seconds": round(time.monotonic() - started, 3)}
+
+
 def export(
     base_iso: Path | str,
     patched_iso: Path | str,
@@ -1182,6 +1417,10 @@ def export(
     progress: ProgressSink | None = None,
     block: int = BLOCK,
     gap: int = COALESCE_GAP,
+    format_version: int | None = None,
+    file_operations: Sequence[str] = (),
+    patch_operations: Sequence[Mapping[str, Any]] | None = None,
+    operation_payloads: Mapping[str, bytes | Path | str] | None = None,
 ) -> dict[str, Any]:
     """Diff ``patched_iso`` against ``base_iso`` and write a ``.2k5patch``.
 
@@ -1196,8 +1435,25 @@ def export(
     ``recipe.project``).  Studio edits the exporter recognises are added to
     the recipe automatically, with their shipped source textures.
 
+    ``format_version=2`` opts into operation envelopes for a same-size patch.
+    ``file_operations=["disc/path"]`` explicitly exports replacement/growth of
+    named files. SPECIAL growth is detected automatically. Feature authors can
+    supply a complete ``patch_operations`` list and ``operation_payloads``
+    (ZIP member -> bytes or source path); export proves their composed effect
+    against both images. See docs/MODPACK_FORMAT.md.
+
     Both images are opened read-only and never modified.
     """
+
+    _require(format_version in (None, 1, FORMAT), "unsupported export format")
+    base_size = os.lstat(_regular_path(base_iso, "base image")).st_size
+    patched_size = os.lstat(_regular_path(patched_iso, "patched image")).st_size
+    modular = format_version == FORMAT or base_size != patched_size or bool(file_operations) or patch_operations is not None
+    if modular:
+        _require(format_version != 1, "format 1 patches keep the image size and carry byte runs only")
+        return _export_modular(base_iso, patched_iso, out_path, meta, overwrite=overwrite,
+            recipe=recipe, retail_image=retail_image, progress=progress, block=block, gap=gap,
+            file_operations=file_operations, patch_operations=patch_operations, operation_payloads=operation_payloads)
 
     started = time.monotonic()
     report = progress or _no_progress
@@ -1291,7 +1547,7 @@ def export(
         equivalence = retail_equivalence(runs, retail_source)
     is_equivalent = is_retail or bool(equivalence and equivalence["equivalent"])
     manifest: dict[str, Any] = {
-        "format": FORMAT,
+        "format": 1,
         "kind": KIND,
         "game": GAME,
         "name": name,
@@ -1330,7 +1586,7 @@ def export(
                     archive.writestr(item.member, item.data)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(part, out)
+        _atomic_replace(part, out)
     except BaseException:
         try:
             os.unlink(part)
@@ -1406,7 +1662,12 @@ def _check_descriptor(pack: Pack, descriptor: int, size: int, *, hash_image: boo
         if start + run.length > size:
             state = "out_of_range"
         else:
-            state = _classify(_pread_exact(descriptor, run.length, start, f"run {index}"), run)
+            if manifest.patch_operations:
+                from . import modpack_ops
+                digest = modpack_ops.digest(lambda n, at: _pread_exact(descriptor, n, start + at, f"run {index}"), run.length)
+                state = "match" if digest == run.expected_sha256 else "applied" if digest == run.new_sha256 else "mismatch"
+            else:
+                state = _classify(_pread_exact(descriptor, run.length, start, f"run {index}"), run)
         counts[state] += 1
         results.append({"index": index, "file_offset": start, "length": run.length, "region": run.region, "state": state})
         progress("Checking runs", index + 1, len(manifest.runs))
@@ -1418,6 +1679,10 @@ def _check_descriptor(pack: Pack, descriptor: int, size: int, *, hash_image: boo
         overall = "ready"
     else:
         overall = "partial"
+    operation_explanation = None
+    if manifest.patch_operations:
+        from . import modpack_ops
+        overall, operation_explanation, _, _ = modpack_ops.check(pack, descriptor, progress)
     image_sha: str | None = None
     if hash_image:
         digest = hashlib.sha256()
@@ -1442,7 +1707,8 @@ def _check_descriptor(pack: Pack, descriptor: int, size: int, *, hash_image: boo
         "image_matches_base_sha256": None if image_sha is None or manifest.base["sha256"] is None else image_sha == manifest.base["sha256"],
         "image_is_retail": None if image_sha is None else (size == RETAIL_XISO_SIZE and image_sha == RETAIL_XISO_SHA256),
         "identity": identity.as_json() if identity is not None else None,
-        "explanation": explain_state(overall, counts, size == manifest.base["size"], identity=identity),
+        "operations": [{"index": i, "type": op["type"], "name": op["name"]} for i, op in enumerate(manifest.patch_operations)],
+        "explanation": operation_explanation or explain_state(overall, counts, size == manifest.base["size"], identity=identity),
     }
 
 
@@ -1472,12 +1738,13 @@ def check(pack: Pack | Path | str, image: Path | str, *, hash_image: bool = Fals
     """Dry run: which runs match, which are already applied, which mismatch."""
 
     loaded = pack if isinstance(pack, Pack) else load(pack)
-    path = _regular_path(image, "disc image")
-    fd = _open(path, os.O_RDONLY)
-    try:
-        return _check_descriptor(loaded, fd, os.fstat(fd).st_size, hash_image=hash_image, progress=progress or _no_progress)
-    finally:
-        os.close(fd)
+    with closing(loaded):
+        path = _regular_path(image, "disc image")
+        fd = _open(path, os.O_RDONLY)
+        try:
+            return _check_descriptor(loaded, fd, os.fstat(fd).st_size, hash_image=hash_image, progress=progress or _no_progress)
+        finally:
+            os.close(fd)
 
 
 # --------------------------------------------------------------------------
@@ -1488,6 +1755,115 @@ def _verify_written(pack: Pack, descriptor: int, partition: int) -> None:
     for index, run in enumerate(pack.manifest.runs):
         actual = _pread_exact(descriptor, run.length, partition + run.offset, f"written run {index}")
         _require(_sha256(actual) == run.new_sha256, f"run {index} read back differently from what was written")
+
+
+def _verify_source_before_commit(source: Path, size: int, expected_sha256: str) -> None:
+    """Reopen the current path and compare its bytes with the copied source.
+
+    Path stat and descriptor fstat need not expose identical IDs/timestamp
+    precision on Windows. Size plus the copy's SHA-256 works through path
+    aliases and still rejects a replaced or edited source. All descriptors
+    must be closed on return so Windows can atomically replace the image.
+    """
+    from . import modpack_ops as ops
+
+    message = "source changed before the transaction committed; verified output remains in .part"
+    path_before = os.stat(source, follow_symlinks=False)
+    fd = _open(_regular_path(source, "source image"), os.O_RDONLY)
+    try:
+        before = os.fstat(fd)
+        _require(before.st_size == size, message)
+        actual = ops.digest(lambda n, at: _pread_exact(fd, n, at, "source image before commit"), size)
+        after = os.fstat(fd)
+        _require(actual == expected_sha256 and
+                 (before.st_size, before.st_mtime_ns, before.st_ctime_ns) ==
+                 (after.st_size, after.st_mtime_ns, after.st_ctime_ns), message)
+    finally:
+        os.close(fd)
+    # Rehashing takes time: also reject a path replacement during that read.
+    # Compare path stats only with path stats, never with CRT fstat metadata.
+    path_after = os.stat(source, follow_symlinks=False)
+    _require((path_before.st_dev, path_before.st_ino, path_before.st_size,
+              path_before.st_mtime_ns, path_before.st_ctime_ns) ==
+             (path_after.st_dev, path_after.st_ino, path_after.st_size,
+              path_after.st_mtime_ns, path_after.st_ctime_ns), message)
+
+
+def _apply_modular(pack, source_iso, target_iso, *, overwrite, in_place, hash_streams, progress, block):
+    """All format-2 mutations commit by rename after complete verification.
+
+    In-place mode deliberately uses the same transaction: an operation failure
+    cannot leave a user's working copy with half a composed patch applied.
+    """
+    from . import modpack_ops as ops
+    started = time.monotonic()
+    report = progress or _no_progress
+    source = _regular_path(source_iso, "source image")
+    target = source if in_place else Path(target_iso).expanduser()
+    if target.exists():
+        _require(in_place or overwrite, f"target already exists: {target}")
+        _require(stat.S_ISREG(os.lstat(target).st_mode), f"target is not a regular file: {target}")
+    part = target.with_name(target.name + ".part")
+    _require(not part.exists(), f"a previous interrupted apply left {part.name}; delete it first")
+    src = _open(source, os.O_RDONLY)
+    try:
+        source_identity = _identity(src)
+        if target.exists() and not in_place:
+            probe = _open(target, os.O_RDONLY)
+            try:
+                _require(_identity(probe) != source_identity, "the target must not be the source image")
+            finally:
+                os.close(probe)
+        state, reason, projected, _ = ops.check(pack, src, report)
+        _require(state == "ready", reason)
+        size = os.fstat(src).st_size
+        source_stamp = os.fstat(src)
+        source_hash = hashlib.sha256() if hash_streams else None
+        target.parent.mkdir(parents=True, exist_ok=True)
+        dst = _open(part, os.O_RDWR | os.O_CREAT | os.O_EXCL)
+        try:
+            for at in range(0, size, block):
+                chunk = _pread_exact(src, min(block, size - at), at, "source image")
+                if source_hash is not None:
+                    source_hash.update(chunk)
+                _pwrite_all(dst, chunk, at, "output copy")
+                report("Copying image", at + len(chunk), size)
+            current = os.fstat(src)
+            _require((current.st_size, current.st_mtime_ns, current.st_ctime_ns) ==
+                     (source_stamp.st_size, source_stamp.st_mtime_ns, source_stamp.st_ctime_ns),
+                     "source changed during the copy")
+            result_size = ops.execute(pack, dst, report)
+            os.fsync(dst)
+            result_sha = ops.digest(lambda n, at: _pread_exact(dst, n, at, "written image"), result_size) if hash_streams else None
+            source_sha = source_hash.hexdigest() if source_hash is not None else None
+            if source_sha == pack.manifest.base["sha256"] and result_sha is not None:
+                _require(result_sha == pack.manifest.result["sha256"], "written image differs from the author's result")
+        except BaseException:
+            os.close(dst)
+            try:
+                part.unlink()
+            except OSError:
+                pass
+            raise
+        os.close(dst)
+    finally:
+        os.close(src)
+        # Cached ZIP member streams own archive handles, even if an exception
+        # traceback keeps this Pack alive. Release them on success and failure.
+        pack.close()
+    if in_place:
+        _verify_source_before_commit(source, size, source_sha)
+    _atomic_replace(part, target)
+    return {"schema": APPLY_SCHEMA, "mode": "in_place" if in_place else "copy", "pack": str(pack.path),
+            "name": pack.manifest.name, "partition_base": projected.partition,
+            "runs": len(pack.manifest.runs), "bytes": pack.manifest.total_bytes,
+            "operations": len(pack.manifest.patch_operations),
+            "source": {"path": str(source), "size": size, "sha256": source_sha,
+                       "matches_base_sha256": None if source_sha is None else source_sha == pack.manifest.base["sha256"],
+                       "is_retail": None if source_sha is None else size == RETAIL_XISO_SIZE and source_sha == RETAIL_XISO_SHA256},
+            "target": {"path": str(target), "size": result_size, "sha256": result_sha,
+                       "matches_author_result": None if result_sha is None else result_sha == pack.manifest.result["sha256"]},
+            "elapsed_seconds": round(time.monotonic() - started, 3)}
 
 
 def apply(
@@ -1512,7 +1888,7 @@ def apply(
     """
 
     if in_place:
-        _require(target_iso is None or Path(target_iso).expanduser() == Path(source_iso).expanduser(),
+        _require(target_iso is None or Path(target_iso).expanduser().resolve() == Path(source_iso).expanduser().resolve(),
                  "in-place apply patches the source itself; give one path")
         return apply_in_place(pack, source_iso, progress=progress)
     _require(target_iso is not None, "a target path is required unless in_place=True")
@@ -1521,6 +1897,9 @@ def apply(
     report = progress or _no_progress
     loaded = pack if isinstance(pack, Pack) else load(pack)
     manifest = loaded.manifest
+    if manifest.patch_operations:
+        return _apply_modular(loaded, source_iso, target_iso, overwrite=overwrite, in_place=False,
+                              hash_streams=hash_streams, progress=progress, block=block)
     payload = loaded.payload()
     source = _regular_path(source_iso, "source image")
     target = Path(target_iso).expanduser()
@@ -1600,7 +1979,7 @@ def apply(
         os.close(dst)
     finally:
         os.close(src)
-    os.replace(part, target)
+    _atomic_replace(part, target)
 
     source_sha = source_hash.hexdigest() if source_hash else None
     result_sha = result_hash.hexdigest() if result_hash else None
@@ -1636,6 +2015,9 @@ def apply_in_place(pack: Pack | Path | str, image: Path | str, *, progress: Prog
     report = progress or _no_progress
     loaded = pack if isinstance(pack, Pack) else load(pack)
     manifest = loaded.manifest
+    if manifest.patch_operations:
+        return _apply_modular(loaded, image, image, overwrite=True, in_place=True,
+                              hash_streams=True, progress=progress, block=BLOCK)
     payload = loaded.payload()
     path = _regular_path(image, "disc image")
     fd = _open(path, os.O_RDWR)

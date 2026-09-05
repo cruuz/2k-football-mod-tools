@@ -23,7 +23,7 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
 
         self.assertEqual(mod_editor.__version__, "1.0.0rc85")
         self.assertEqual(apf_version, "0.1.0-alpha.84")
-        self.assertEqual(BUILD_RELEASE_TAG, "beta-59")
+        self.assertEqual(BUILD_RELEASE_TAG, "beta-60")
 
     def test_ci_hydrate_tag_is_a_published_beta(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")

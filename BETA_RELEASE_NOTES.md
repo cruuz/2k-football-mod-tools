@@ -1,3 +1,62 @@
+# beta-60 — RC84 / alpha.84
+
+**Date:** 2026-09-04
+
+**2K5 Mod Studio:** `v1.0-RC84`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+The biggest update yet. Part of it was built by GPT-6 Astra under Claude's review; every Astra
+patch went through the same gates as the rest (retail pins, both executable safety gates, real
+image builds), and everything marked experimental is unwitnessed in game.
+
+## New: ★ Rosters does what Flying Finn's editor did
+
+- Opens real Xbox saves and franchise saves and re-signs them on write. Beta 59 only knew the
+  disc layout and refused every genuine save.
+- A Franchise tab: year, user-controlled teams, salary cap and team salaries, the schedule grid,
+  every coach's record and ratings, injured reserve (place = Finn's exact move, activate is the
+  unwitnessed inverse), and a Checks page that says what is proved.
+- Team membership: release, sign, move and swap with Finn's own limits and messages; Check &
+  repair on load; `.PlayerData` export and restore; the game's own create-a-player templates (all
+  28 slots proved); play-by-play and portrait pickers built from the disc's own data.
+- Position names follow the disc's scheme (retail, EDGE, one pool); a retired code is never written.
+
+## New: gameplay patches on the Build tab
+
+- **Dynamic kickoff, the whole 2024/2025 rule** (Experimental): nobody moves until the ball comes
+  down, landing zone, touchback to the 35 (or 30), the CPU kicker aims for the landing zone and the
+  CPU returner takes the touchback most of the time.
+- **X / Z / SLOT receivers and nickel / dime corners** in every playbook (Advanced) and **SLOT /
+  NICKEL CORNER / DIME CORNER rows** on the depth chart (Experimental).
+- **Practice squads**: 53 active plus up to 12 team-owned reserves that survive saves and the
+  season rollover (Experimental; no reserve screen yet).
+- **Career stats from your own CSV**: real per-season counters for the roster's past seasons.
+
+## New: simpler words everywhere
+
+Every page was gone over for someone who has played 2K5 and maybe used Finn's editor: shorter
+labels, the story in tooltips, the open disc pre-filled where it belongs, honest status lines.
+Nothing was removed, only folded away.
+
+## New tools
+
+- `tools/nfl2k5_xemu_saves.py` pulls your saves out of xemu's disk image (read-only).
+- `tools/nfl2k5_cave_oracle.py`, an executable free-space oracle for patch authors, now feeds the
+  two safety gates.
+
+## Fixed
+
+- The Create-a-Play writer's authored menu links were missing the populated-link bit.
+- Release staging no longer leaves files group-writable (a checkout under a permissive umask made
+  the reviewed H7A encoder refuse itself silently); the encoder now says why when it is refused.
+- The overall-rating estimate on ★ Rosters was a flat average for EDGE and LB under one pool.
+
+## Not in this release
+
+7-on-7 practice stays hidden. The in-game checklists for every experimental patch are in the
+build report and the changelog.
+
 # beta-59 — RC83 / alpha.84
 
 **Date:** 2026-09-04

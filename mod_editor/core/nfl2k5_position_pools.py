@@ -43,7 +43,8 @@ package ``SWAP OLB`` (``FUN_00221f10``)    0x5102BC    OLB0<->OLB1 (0xC000BC3E) 
 depth-chart records (``0x5140D8`` table)   see below   pool fields only, the labels stay Phase 1's
 =========================================  ==========  ======================================================
 
-Depth-chart slot records (unit * 11 + slot; ``+0x40`` position enum, ``+0x44`` chain, see
+Depth-chart slot records (unit * retail stride 11 + slot;
+``+0x40`` position enum, ``+0x44`` chain, see
 ``nfl2k5_modern_positions``): 4-3 SAM ``(10, 1) -> (11, 3)``, 4-3 WILL ``(10, 0) -> (11, 1)``, 3-4
 right EDGE ``(10, 1) -> (16, 1)``, 3-4 left EDGE ``(10, 0) -> (16, 0)``, and the two 3-4 end records
 become ``DE`` / LEFT|RIGHT DEFENSIVE END drawing ``(15, 1)`` and ``(15, 3)`` (the #2 and #3 interior
@@ -68,9 +69,10 @@ Code, two optional sites (both on by default):
   four pushes after the 0x1C frame), masks ``ebp`` to bit 0 and jumps back to 0x242B14.  The cave is
   hosted in the dead ``rand``-range helper at 0x2BA840 (21 code bytes + 11 ``nop``; no call, jump or
   pointer reference anywhere in the image, listed as dead in ``FRANCHISE_PROGRESSION_2026-09-03.md``).
-  Every other reader of ``+0x44`` (the swap ``FUN_00242ca0``, the bench move at 0x244434, the seven
-  callers that pass it straight to ``FUN_00242ae0``) tests it as a boolean, so ``3`` still selects the
-  side chain there.  Without the cave the SAM record shows the WILL starter twice and the 3-4 tab shows
+  The swap ``FUN_00242ca0`` and bench move test ``+0x44`` as a boolean, so ``3`` still selects the
+  side chain there. Tier 2 also introduces chain 2: it fixes those tests to use bit 0 and fixes
+  the bench threshold to include the row shift. Getter callers pass the full selector to the
+  cave. Without the cave the SAM record shows the WILL starter twice and the 3-4 tab shows
   the #2 interior lineman twice; the game still fields the right players (that is the playbooks' job).
 
 Team ratings, the sim's unit strengths and the depth-chart row counts (2026-09-03 night, after Noah's
@@ -147,7 +149,10 @@ Composition: ``apply`` requires ``nfl2k5_modern_positions.status(payload) == "ap
 this rewires) and accepts the two 3-4 end records in their retail, EDGE-renamed or Phase-1
 ``three_four_line`` text.  ``nfl2k5_modern_positions`` recognises both pool profiles and
 ``nfl2k5_edge_rename`` accepts the ``DE`` text on those two records, so every module's ``status`` reads
-"applied" on the finished executable.  ``.text``, ``.rdata`` and ``.string_`` digests are recomputed.
+"applied" on the finished executable. Record planning/assertions and ``tab_init_bytes(stride)``
+use retail stride 11 and the active table base, including SPECIAL's thirteen rows.
+``.text``, ``.rdata`` and ``.string_`` digests
+are recomputed. Direct repeated apply still refuses, as before; orchestrators skip applied sites.
 """
 
 from __future__ import annotations
@@ -395,23 +400,26 @@ def chain_index_bytes() -> bytes:
     return bytes(out)
 
 
-def tab_init_bytes() -> bytes:
+def tab_init_bytes(slots_per_unit: int = modern.SLOTS_PER_UNIT,
+                   table_va: int = modern.SLOT_TABLE_VA) -> bytes:
     """The rewritten row-count code of the depth-chart tab init (0x243D50..0x243E0E, 191 bytes):
     same globals, same KR/PR sum over FB HB SS FS CB WR, and ``rows -= record.chain >> 1`` so a
     record that the third-starter cave shifts by one row lists one row fewer (no blank player at
     the bottom).  Falls through into the retail tail at 0x243E0F with esi pushed as retail does."""
 
+    _require(slots_per_unit == modern.SLOTS_PER_UNIT, "unknown slot stride")
+    _require(table_va in (modern.SLOT_TABLE_VA, modern.SPECIAL_TABLE_VA), "unknown slot table")
     a = _Asm(TAB_INIT_VA)
     imm = lambda va: struct.pack("<I", va).hex()  # noqa: E731
     a.b("a1" + imm(DC_UNIT_VA))                     # mov eax,[unit]
-    a.b("6bc00b")                                   # imul eax,eax,0xb
+    a.b(bytes((0x6B, 0xC0, slots_per_unit)).hex())    # imul eax,eax,unit stride
     a.b("03c2")                                     # add eax,edx           ; edx = [slot] (loaded at 0x243D20)
     a.b("8d14c0")                                   # lea edx,[eax+eax*8]   ; record index * 9 (* 8 below = 0x48)
     a.b("56")                                       # push esi
     a.b("57")                                       # push edi
     a.b("8bf1")                                     # mov esi,ecx           ; this (the retail tail wants it)
-    a.b("8b3cd5" + imm(RECORD_CHAIN_VA))            # mov edi,[edx*8+chain]
-    a.b("8b14d5" + imm(RECORD_POSITION_VA))         # mov edx,[edx*8+position]
+    a.b("8b3cd5" + imm(table_va + 0x44))            # mov edi,[edx*8+chain]
+    a.b("8b14d5" + imm(table_va + 0x40))            # mov edx,[edx*8+position]
     a.b("8b0d" + imm(DC_HEADER_DEFAULT_VA))         # mov ecx,[0x5140b0]
     a.b("c705" + imm(DC_PAGE_VA) + "01000000")      # mov dword [page],1
     a.b("890d" + imm(DC_HEADER_VA))                 # mov [header],ecx
@@ -486,7 +494,9 @@ class Site:
         return len(self.after)
 
 
-def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool) -> list[Site]:
+def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool,
+           slots_per_unit: int = modern.SLOTS_PER_UNIT,
+           table_va: int = modern.SLOT_TABLE_VA) -> list[Site]:
     sites: list[Site] = []
 
     def add(label: str, va: int, before: bytes | Sequence[bytes], after: bytes, group: str = "data") -> None:
@@ -505,7 +515,7 @@ def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool) -> lis
     for label, va, slot, old, new in STRING_SITES:
         add(label, va, _utf16(old, slot), _utf16(new, slot))
     for label, unit, slot, old_pool, new_pool in POOL_RECORDS:
-        va = modern.record_va(unit, slot)
+        va = modern.record_va(unit, slot, slots_per_unit, table_va=table_va)
         if label in END_RECORD_TEXT:
             befores_text, after_text = END_RECORD_TEXT[label]
             befores = tuple(modern.slot_text(*t) + struct.pack("<II", *old_pool) for t in befores_text)
@@ -528,7 +538,7 @@ def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool) -> lis
     if depth_chart_third_starter:
         add("row_lookup_hook", ROW_LOOKUP_SITE_VA, RETAIL_ROW_LOOKUP_PROLOGUE, row_lookup_hook_bytes(), "cave")
         add("row_lookup_cave", CAVE_VA, RETAIL_CAVE_HELPER[:CAVE_SIZE], cave_bytes(), "cave")
-        add("tab_init_rows", TAB_INIT_VA, RETAIL_TAB_INIT, tab_init_bytes(), "cave")
+        add("tab_init_rows", TAB_INIT_VA, RETAIL_TAB_INIT, tab_init_bytes(slots_per_unit, table_va), "cave")
     return sites
 
 
@@ -543,8 +553,9 @@ def _site_state(payload: bytes, site: Site) -> str:
 
 
 def _asserted_records_ok(payload: bytes) -> bool:
+    stride = modern.layout_stride(payload)
     for _label, unit, slot, pool in ASSERTED_RECORDS:
-        off = _offset(payload, modern.record_va(unit, slot)) + modern.SLOT_TEXT_BYTES
+        off = _offset(payload, modern.record_va(unit, slot, stride, table_va=modern.layout_table(payload))) + modern.SLOT_TEXT_BYTES
         if struct.unpack_from("<II", payload, off) != pool:
             return False
     return True
@@ -553,7 +564,7 @@ def _asserted_records_ok(payload: bytes) -> bool:
 def site_states(payload: bytes, *, linebacker_penalty_fix: bool = True,
                 depth_chart_third_starter: bool = True) -> dict[str, str]:
     try:
-        sites = _sites(linebacker_penalty_fix, depth_chart_third_starter)
+        sites = _sites(linebacker_penalty_fix, depth_chart_third_starter, modern.layout_stride(payload), modern.layout_table(payload))
         states = {site.label: _site_state(payload, site) for site in sites}
         if not _asserted_records_ok(payload):
             return {label: "foreign" for label in states}
@@ -661,7 +672,7 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
     header = _header_size(payload)
     touched: set[int] = set()
     edits = []
-    for site in _sites(linebacker_penalty_fix, depth_chart_third_starter):
+    for site in _sites(linebacker_penalty_fix, depth_chart_third_starter, modern.layout_stride(payload), modern.layout_table(payload)):
         off = _offset(payload, site.va)
         before = bytes(buf[off: off + site.size])
         buf[off: off + site.size] = site.after

@@ -52,6 +52,22 @@ class SharePanelTests(unittest.TestCase):
         self.panel.deleteLater()
         self.app.processEvents()
 
+    def test_format_two_pack_loads_checks_and_applies_through_share(self) -> None:
+        pack_path = self.tmp / "operations.2k5patch"
+        modpack.export(self.base, self.patched, pack_path, {"name": "Operations"}, format_version=2, recipe=False)
+        self.panel.load_pack(pack_path)
+        self.assertIn("Byte changes", self.panel.pack_summary.text())
+        self.panel.source_field.setText(str(self.base))
+        out = self.tmp / "operations-out.iso"
+        self.panel.target_field.setText(str(out))
+        self.panel.apply_check_report(modpack.check(pack_path, self.base))
+        self.assertTrue(self.panel.apply_button.isEnabled())
+        self.panel.start_apply()
+        wait_for(self.panel, self.app)
+        self.assertEqual(out.read_bytes(), self.patched_bytes)
+        self.panel.apply_check_report(modpack.check(pack_path, self.patched))
+        self.assertFalse(self.panel.apply_button.isEnabled())
+
     def test_buttons_are_gated_on_the_fields(self) -> None:
         panel = self.panel
         self.assertFalse(panel.export_button.isEnabled())
@@ -64,7 +80,7 @@ class SharePanelTests(unittest.TestCase):
         self.assertFalse(panel.check_button.isEnabled())
         self.assertFalse(panel.apply_button.isEnabled())
         panel.load_pack(self.tmp / "does-not-exist.2k5patch")
-        self.assertIn("Not usable", panel.pack_summary.text())
+        self.assertIn("Couldn't open this mod file", panel.pack_summary.text())
         self.assertFalse(panel.check_button.isEnabled())
 
     def test_export_check_and_apply_run_in_the_background_and_round_trip(self) -> None:
@@ -99,7 +115,7 @@ class SharePanelTests(unittest.TestCase):
         self.assertTrue(panel.check_button.isEnabled())
         panel.start_check()
         wait_for(panel, self.app)
-        self.assertTrue(panel.check_status.text().startswith("READY"))
+        self.assertTrue(panel.check_status.text().startswith("Ready to apply"))
         self.assertFalse(panel.apply_button.isEnabled())         # no target yet
         out = self.tmp / "panel-out.xiso.iso"
         panel.target_field.setText(str(out))
@@ -124,13 +140,13 @@ class SharePanelTests(unittest.TestCase):
         panel.target_field.setText(str(self.tmp / "never.xiso.iso"))
         panel.start_check()
         wait_for(panel, self.app)
-        self.assertTrue(panel.check_status.text().startswith("MISMATCH"))
+        self.assertTrue(panel.check_status.text().startswith("Doesn't match"))
         self.assertFalse(panel.apply_button.isEnabled())
         panel.start_apply()                                        # a no-op while not ready
         self.assertFalse(panel.busy)
         self.assertFalse((self.tmp / "never.xiso.iso").exists())
         panel.apply_check_report(modpack.check(pack_path, self.patched))
-        self.assertTrue(panel.check_status.text().startswith("APPLIED"))
+        self.assertTrue(panel.check_status.text().startswith("Already installed"))
         self.assertFalse(panel.apply_button.isEnabled())
 
     def test_studio_offers_the_tab(self) -> None:
