@@ -6,7 +6,10 @@ the written destination, and the writer's report, it re-derives from the bytes
 alone that
 
   1. the two images are the same size, so the trailing slack a community
-     rebuild carries past the declared volume survived byte-for-byte;
+     rebuild carries past the declared volume survived byte-for-byte -- unless
+     the report declares a ``growth`` block, in which case the destination is
+     exactly the length that block names and every byte past the old end of
+     file is inside a declared appended extent;
   2. **outside the declared ranges the two files are byte-identical**, compared
      by streaming the gaps between those ranges rather than by loading 1.6 GB;
   3. every declared range is *explained*: a file extent holds exactly the
@@ -17,7 +20,11 @@ alone that
      move or resize;
   5. the rest of the entry tree is identical -- same paths, same LBAs, same
      ``is_dir``, same lengths -- and the PVD's volume size, block size, root
-     LBA and volume id are unchanged;
+     LBA and volume id are unchanged.  Under a ``growth`` block exactly two
+     things may move: a **relocated file's** extent LBA, to the block the
+     report names past the old end of file, and the PVD's volume space, to
+     cover the appended sectors.  No directory relocates, so the path tables
+     are untouched and every directory record stays where it was;
   6. no untouched file's extent, and no directory's extent, lies inside a range
      the writer wrote, so a de-duplicated image cannot have had a second file
      rewritten behind the report's back;
@@ -654,6 +661,43 @@ def _replacements_from(report: dict) -> list:
     return out
 
 
+_REQUIRED_GROWTH_KEYS = (
+    "append_lba",
+    "appended_sectors",
+    "previous_volume_blocks",
+    "volume_blocks",
+    "previous_file_size",
+    "file_size",
+    "slack_bytes",
+    "volume_space_offset",
+)
+
+
+def _growth_from(report: dict) -> dict:
+    """The report's growth block, checked for shape, or ``{}``.
+
+    A report without one is a bounded write and every original guarantee
+    applies to it unchanged; this function is the only place the two paths
+    diverge.
+    """
+    growth = report.get("growth")
+    if growth is None:
+        return {}
+    _require(isinstance(growth, dict), f"the report's growth block is not a dict: {growth!r}")
+    missing = [key for key in _REQUIRED_GROWTH_KEYS if key not in growth]
+    _require(
+        not missing,
+        f"the report's growth block is missing {missing}; it does not say enough "
+        "to be checked",
+    )
+    _require(
+        int(growth["volume_blocks"]) > int(growth["previous_volume_blocks"]),
+        "the report declares growth but its volume did not grow; a bounded write "
+        "must not carry a growth block",
+    )
+    return growth
+
+
 def verify_replacement(source, destination, report: dict, *, expected=None) -> dict:
     """Prove the destination is the source with only the declared edits.
 
@@ -668,6 +712,7 @@ def verify_replacement(source, destination, report: dict, *, expected=None) -> d
     source, destination = Path(source), Path(destination)
     declared = [_as_declared(item) for item in report.get("declared_ranges", [])]
     replacements = _replacements_from(report)
+    _growth_from(report)   # shape-checked before either image is opened
 
     source_fd, source_volume = open_volume(source)
     try:
@@ -703,13 +748,39 @@ def _verify(
     expected,
 ) -> dict:
     size = source_volume.file_size
+    growth = _growth_from(report)
 
-    # 1. Same size.  This is where truncated slack is caught.
-    _require(
-        destination_volume.file_size == size,
-        f"the destination is {destination_volume.file_size} bytes but the source is "
-        f"{size}; the image's trailing slack must survive byte-for-byte",
-    )
+    # 1. Size.  Bounded: identical, which is where truncated slack is caught.
+    #    Grown: exactly the length the report names, and not a byte more.
+    if growth:
+        _require(
+            size == int(growth["previous_file_size"]),
+            f"the source is {size} bytes but the report's growth block describes a "
+            f"{growth['previous_file_size']}-byte one; this report is not about "
+            "these files",
+        )
+        _require(
+            destination_volume.file_size == int(growth["file_size"]),
+            f"the destination is {destination_volume.file_size} bytes and the report "
+            f"says a grown image is {growth['file_size']}",
+        )
+        _require(
+            destination_volume.file_size > size,
+            "the report declares growth but the destination is no longer than the "
+            "source",
+        )
+        _require(
+            int(growth["append_lba"]) * source_volume.sector_size == size,
+            f"the report appends at LBA {growth['append_lba']}, which is not the "
+            f"first block past the {size}-byte source; a relocated file must land "
+            "after every byte the source had",
+        )
+    else:
+        _require(
+            destination_volume.file_size == size,
+            f"the destination is {destination_volume.file_size} bytes but the source "
+            f"is {size}; the image's trailing slack must survive byte-for-byte",
+        )
 
     # 2. Geometry this tool can address exactly, and one directory tree only.
     for volume in (source_volume, destination_volume):
@@ -732,11 +803,26 @@ def _verify(
             "tool checks one tree, so it cannot prove the other is consistent.",
         )
 
-    # 5. PVD fields and slack are unchanged.
+    # 5. PVD fields and slack are unchanged -- except the two a growth block
+    #    is allowed to move, each to the value it names.
+    moved = {"volume_blocks", "slack_bytes"} if growth else set()
     for field in ("volume_blocks", "block_size", "root_lba", "root_length",
                   "volume_id", "sector_size", "data_offset", "slack_bytes"):
         before = getattr(source_volume, field)
         after = getattr(destination_volume, field)
+        if field in moved:
+            _require(
+                before == int(growth["previous_%s" % field])
+                if ("previous_%s" % field) in growth else True,
+                f"the source's {field} is {before!r} but the report's growth block "
+                f"says {growth.get('previous_%s' % field)!r}",
+            )
+            _require(
+                after == int(growth[field]),
+                f"the destination's {field} is {after!r} and the report's growth "
+                f"block says {growth[field]!r}",
+            )
+            continue
         _require(
             before == after,
             f"the PVD's {field} changed: {before!r} -> {after!r}; a bounded "
@@ -752,6 +838,9 @@ def _verify(
         ("slack_bytes", source_volume.slack_bytes),
         ("file_size", size),
     ):
+        # A report's top-level fields always describe the SOURCE, growth or no
+        # growth; the destination's own numbers are checked against the growth
+        # block above.
         if field in report:
             _require(
                 report[field] == value,
@@ -760,7 +849,16 @@ def _verify(
             )
 
     volume_bytes = source_volume.volume_blocks * source_volume.sector_size
+    grown_bytes = destination_volume.volume_blocks * destination_volume.sector_size
     for rng in declared:
+        if growth and rng.reason.startswith("newextent:"):
+            _require(
+                size <= rng.start and rng.end <= grown_bytes,
+                f"declared range {rng.reason} covers bytes {rng.start}..{rng.end}, "
+                f"which is not inside the appended region "
+                f"({size}..{grown_bytes}); a relocated file lands past the source",
+            )
+            continue
         _require(
             rng.end <= volume_bytes,
             f"declared range {rng.reason} ends at byte {rng.end}, past the declared "
@@ -803,16 +901,36 @@ def _verify(
         )
         destination_by_path[entry.path] = entry
 
+    relocated_paths = {normalize_path(path)
+                       for path in (growth.get("relocated") or [])} if growth else set()
     for before, after in zip(source_entries, destination_entries):
         _require(
             before.path == after.path,
             f"the entry tree changed shape: {before.path} became {after.path}",
         )
-        _require(
-            before.lba == after.lba,
-            f"{before.path} moved from LBA {before.lba} to {after.lba}; a bounded "
-            "replacement never relocates an extent",
-        )
+        if before.path in relocated_paths:
+            _require(
+                not before.is_dir and not after.is_dir,
+                f"{before.path} is a directory and the report says it was relocated; "
+                "relocating a directory would move its records and invalidate the "
+                "path tables",
+            )
+            _require(
+                after.lba >= int(growth["append_lba"]),
+                f"{before.path} was relocated to LBA {after.lba}, which is not past "
+                f"the end of the source image (LBA {growth['append_lba']})",
+            )
+            _require(
+                after.lba != before.lba,
+                f"{before.path} is named as relocated but still sits at LBA "
+                f"{after.lba}",
+            )
+        else:
+            _require(
+                before.lba == after.lba,
+                f"{before.path} moved from LBA {before.lba} to {after.lba}; only a "
+                "file the report names as relocated may move",
+            )
         _require(
             before.is_dir == after.is_dir,
             f"{before.path} changed between file and directory",
@@ -850,6 +968,12 @@ def _verify(
         )
         new_length = int(item["new_length"])
         previous_length = int(item["previous_length"])
+        relocated = path in relocated_paths
+        _require(
+            bool(item.get("relocated")) == relocated,
+            f"{path}: the report's replacement entry and its growth block disagree "
+            "about whether this file moved",
+        )
         _require(
             before.length == previous_length,
             f"{path}: the report says it held {previous_length} bytes but the source "
@@ -860,17 +984,19 @@ def _verify(
             f"{path}: the report says it now holds {new_length} bytes but the "
             f"destination record declares {after.length}",
         )
-        _require(
-            new_length <= previous_length,
-            f"{path}: {new_length} bytes cannot fit the {previous_length}-byte extent "
-            "it claims to occupy",
-        )
+        if not relocated:
+            _require(
+                new_length <= previous_length,
+                f"{path}: {new_length} bytes cannot fit the {previous_length}-byte "
+                "extent it claims to occupy, and the report does not say it moved",
+            )
         _require(
             int(item["lba"]) == after.lba,
             f"{path}: the report claims LBA {item['lba']} but the destination record "
             f"says {after.lba}",
         )
 
+        old_extent_offset = _extent_offset(source_volume, before.lba)
         extent_offset = _extent_offset(destination_volume, after.lba)
         length_field = (
             _extent_offset(destination_volume, after.parent_lba)
@@ -878,9 +1004,11 @@ def _verify(
             + REC_DATA_LENGTH
         )
         _require(
-            int(item["extent_offset"]) == extent_offset,
-            f"{path}: the report puts its extent at byte {item['extent_offset']} but "
-            f"the destination's own record puts it at {extent_offset}",
+            int(item["extent_offset"]) == (old_extent_offset if relocated
+                                           else extent_offset),
+            f"{path}: the report puts its {'abandoned ' if relocated else ''}extent "
+            f"at byte {item['extent_offset']} but the records put it at "
+            f"{old_extent_offset if relocated else extent_offset}",
         )
         _require(
             int(item["length_field_offset"]) == length_field,
@@ -888,8 +1016,39 @@ def _verify(
             f"{item['length_field_offset']} but the destination's own record puts it "
             f"at {length_field}",
         )
-        derived.append(Declared(extent_offset, previous_length, f"extent:{path}"))
+        derived.append(Declared(old_extent_offset, previous_length, f"extent:{path}"))
         derived.append(Declared(length_field, BOTH_ENDIAN_U32, f"dirrec_length:{path}"))
+        if relocated:
+            extent_field = (
+                _extent_offset(destination_volume, after.parent_lba)
+                + after.record_offset
+                + REC_EXTENT
+            )
+            sector = destination_volume.sector_size
+            appended = ((new_length + sector - 1) // sector) * sector
+            derived.append(Declared(extent_field, BOTH_ENDIAN_U32,
+                                    f"dirrec_extent:{path}"))
+            derived.append(Declared(extent_offset, appended, f"newextent:{path}"))
+            field = _pread_exact(destination_fd, extent_field, BOTH_ENDIAN_U32)
+            little = struct.unpack_from("<I", field, 0)[0]
+            big = struct.unpack_from(">I", field, 4)[0]
+            _require(
+                little == big == after.lba,
+                f"{path}: the destination's extent LBA reads LE {little} / BE {big} "
+                f"at byte 0x{extent_field:x}, expected {after.lba} in both halves",
+            )
+            source_field = _pread_exact(source_fd, extent_field, BOTH_ENDIAN_U32)
+            _require(
+                struct.unpack_from("<I", source_field, 0)[0] == before.lba
+                and struct.unpack_from(">I", source_field, 4)[0] == before.lba,
+                f"{path}: the source's extent LBA is not {before.lba} in both halves; "
+                "the source is not the baseline this report describes",
+            )
+            _require_zero(destination_fd, extent_offset + new_length,
+                          appended - new_length,
+                          f"{path}: the pad after its relocated extent")
+            _require_zero(destination_fd, old_extent_offset, previous_length,
+                          f"{path}: the extent it moved out of")
 
         # The 8 both-endian bytes really do say the new length, in both halves,
         # and the source's own copy still says the old one.
@@ -933,12 +1092,13 @@ def _verify(
                 f"{path}: the destination's content is not the bytes the caller "
                 "asked for",
             )
-        _require_zero(
-            destination_fd,
-            extent_offset + new_length,
-            previous_length - new_length,
-            f"{path}: the tail of its extent",
-        )
+        if not relocated:
+            _require_zero(
+                destination_fd,
+                extent_offset + new_length,
+                previous_length - new_length,
+                f"{path}: the tail of its extent",
+            )
 
         # 7. The source still holds what it held; the write never reached back.
         if "previous_sha256" in item:
@@ -954,6 +1114,8 @@ def _verify(
             {
                 "path": path,
                 "lba": after.lba,
+                "relocated": relocated,
+                "previous_lba": before.lba,
                 "extent_offset": extent_offset,
                 "length_field_offset": length_field,
                 "previous_length": previous_length,
@@ -961,6 +1123,41 @@ def _verify(
                 "zero_filled_bytes": previous_length - new_length,
                 "sha256": digest,
             }
+        )
+
+    if growth:
+        volume_space = (PVD_BLOCK * destination_volume.sector_size
+                        + destination_volume.data_offset + PVD_VOLUME_SPACE)
+        _require(
+            int(growth["volume_space_offset"]) == volume_space,
+            f"the report puts the PVD's volume space at byte "
+            f"{growth['volume_space_offset']} and this image puts it at "
+            f"{volume_space}",
+        )
+        derived.append(Declared(volume_space, BOTH_ENDIAN_U32, "pvd_volume_space"))
+        # Every appended byte is inside one of the newextent ranges: the writer
+        # may lengthen the image only by the extents it declared.
+        appended = sorted((rng for rng in derived
+                           if rng.reason.startswith("newextent:")),
+                          key=lambda rng: rng.start)
+        cursor = size
+        for rng in appended:
+            _require(
+                rng.start == cursor,
+                f"the appended region has a {rng.start - cursor}-byte hole before "
+                f"{rng.reason}; every byte past the source's end must belong to a "
+                "relocated file",
+            )
+            cursor = rng.end
+        _require(
+            cursor == destination_volume.file_size,
+            f"the destination ends at byte {destination_volume.file_size} and the "
+            f"declared appended extents end at {cursor}; the tail belongs to nothing",
+        )
+        _require(
+            int(growth["appended_sectors"]) * destination_volume.sector_size
+            == destination_volume.file_size - size,
+            "the growth block's appended-sector count does not match the two files",
         )
 
     # Compare on a normalised reason so a reader that spells a path with ';1'
@@ -977,7 +1174,9 @@ def _verify(
     )
 
     # 6. Nothing else lives inside a range the writer wrote.
-    extent_ranges = [rng for rng in derived if rng.reason.startswith("extent:")]
+    extent_ranges = [rng for rng in derived
+                     if rng.reason.startswith("extent:")
+                     or rng.reason.startswith("newextent:")]
     directories = {}
     for entry in destination_entries:
         if entry.is_dir:
@@ -988,7 +1187,7 @@ def _verify(
         if entry.length == 0:
             continue
         for rng in extent_ranges:
-            if rng.reason == f"extent:{entry.path}":
+            if rng.reason in (f"extent:{entry.path}", f"newextent:{entry.path}"):
                 continue
             _require(
                 not (start < rng.end and rng.start < end),
@@ -1015,14 +1214,25 @@ def _verify(
         )
 
     # 2. Everything else is byte-identical, compared by streaming the gaps.
-    merged = _merge_ranges(declared, size)
-    gaps = _gaps(merged, size)
+    #    Under growth the comparison runs over the source's length -- every
+    #    byte past it was proved above to belong to a declared appended extent.
+    merged = _merge_ranges(declared, destination_volume.file_size)
+    gaps = [gap for gap in _gaps(merged, destination_volume.file_size) if gap[0] < size]
+    gaps = [(start, min(end, size)) for start, end in gaps]
     compared = _compare_gaps(source_fd, destination_fd, gaps)
     slack = source_volume.slack_bytes
-    _require(
-        destination_volume.slack_bytes == slack,
-        f"the trailing slack changed: {slack} -> {destination_volume.slack_bytes}",
-    )
+    if growth:
+        _require(
+            destination_volume.slack_bytes == int(growth["slack_bytes"]),
+            f"the destination's trailing slack is "
+            f"{destination_volume.slack_bytes} and the report says "
+            f"{growth['slack_bytes']}",
+        )
+    else:
+        _require(
+            destination_volume.slack_bytes == slack,
+            f"the trailing slack changed: {slack} -> {destination_volume.slack_bytes}",
+        )
 
     return {
         "schema": SCHEMA,
@@ -1037,6 +1247,9 @@ def _verify(
         "declared_bytes": sum(rng.length for rng in declared),
         "unchanged_bytes_compared": compared,
         "replacements_checked": checked,
+        "grew": bool(growth),
+        "destination_file_size": destination_volume.file_size,
+        "destination_volume_blocks": destination_volume.volume_blocks,
         "result": "PASS",
     }
 
@@ -1155,10 +1368,95 @@ def selftest(tmp: Path | None = None) -> int:
         else:  # pragma: no cover
             raise AssertionError("an over-declared report must fail verification")
 
+        # -- a relocated file, and the ways a grown image can rot -----------
+        grown_content = b"G" * 7000
+        grown = room / "grown.iso"
+        grown_report = writer.replace_files(
+            source, grown, {"/DATA/BAR.BIN": grown_content}, allow_growth=True)
+        grown_json = json.loads(json.dumps(writer.report_to_json(grown_report)))
+        grown_result = verify_replacement(source, grown, grown_json,
+                                          expected={"/DATA/BAR.BIN": grown_content})
+        if grown_result["result"] != "PASS" or not grown_result["grew"]:
+            raise IsoVerifyError(grown_result)
+        moved = next(item for item in grown_json["replacements"]
+                     if item["path"] == "/DATA/BAR.BIN")
+        if not moved["relocated"] or moved["new_lba"] <= moved["previous_lba"]:
+            raise IsoVerifyError("the fixture did not actually relocate anything")
+
+        def grown_rejected(name: str, mutate, why: str, report_override=None) -> None:
+            candidate = room / name
+            candidate.write_bytes(grown.read_bytes())
+            mutate(candidate)
+            try:
+                verify_replacement(source, candidate, report_override or grown_json)
+            except IsoVerifyError:
+                return
+            raise AssertionError(f"{why} must fail verification")
+
+        grown_rejected(
+            "grown-content.iso",
+            lambda path: _corrupt(path, moved["appended_offset"] + 5, b"\x00"),
+            "a corrupted relocated body",
+        )
+        grown_rejected(
+            "grown-pad.iso",
+            lambda path: _corrupt(
+                path, moved["appended_offset"] + moved["new_length"] + 2, b"\x01"),
+            "a non-zero pad after a relocated extent",
+        )
+        grown_rejected(
+            "grown-stale.iso",
+            lambda path: _corrupt(path, moved["extent_offset"] + 4, b"\x7f"),
+            "a stale byte left in the extent the file moved out of",
+        )
+        grown_rejected(
+            "grown-pvd.iso",
+            lambda path: _corrupt(
+                path, grown_json["growth"]["volume_space_offset"],
+                struct.pack("<I", grown_json["growth"]["previous_volume_blocks"])),
+            "a PVD volume space that no longer covers the appended sectors",
+        )
+        grown_rejected(
+            "grown-lba.iso",
+            lambda path: _corrupt(
+                path, moved["extent_field_offset"],
+                struct.pack("<I", moved["previous_lba"])),
+            "a directory record whose two LBA halves disagree",
+        )
+
+        # A grown image described as a bounded write, and a bounded image
+        # described as a grown one: both are the report lying about the files.
+        stripped = {key: value for key, value in grown_json.items() if key != "growth"}
+        try:
+            verify_replacement(source, grown, stripped)
+        except IsoVerifyError:
+            pass
+        else:  # pragma: no cover
+            raise AssertionError("a grown image with no growth block must fail")
+        borrowed = dict(as_json)
+        borrowed["growth"] = grown_json["growth"]
+        try:
+            verify_replacement(source, good, borrowed)
+        except IsoVerifyError:
+            pass
+        else:  # pragma: no cover
+            raise AssertionError("a bounded image with a growth block must fail")
+
+        # A growth block that miscounts its own appended sectors.
+        miscounted = json.loads(json.dumps(grown_json))
+        miscounted["growth"]["appended_sectors"] += 1
+        try:
+            verify_replacement(source, grown, miscounted)
+        except IsoVerifyError:
+            pass
+        else:  # pragma: no cover
+            raise AssertionError("a miscounted growth block must fail verification")
+
     print(
         "PS2_ISO9660_VERIFY_SELFTEST_PASS decoder=independent stream=gaps "
-        "accepts=declared rejects=undeclared,content,tail,endian,truncation,"
-        "under-declared,over-declared"
+        "accepts=declared+relocated rejects=undeclared,content,tail,endian,"
+        "truncation,under-declared,over-declared,relocated-content,relocated-pad,"
+        "stale-extent,pvd,lba,growth-mismatch"
     )
     return 0
 

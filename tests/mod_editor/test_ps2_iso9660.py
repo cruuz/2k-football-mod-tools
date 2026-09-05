@@ -1114,6 +1114,145 @@ class WriterFixedAllocationTests(_IsoTestCase):
         )
 
 
+class WriterGrowthTests(_IsoTestCase):
+    """``allow_growth`` relocates a grown file, and changes nothing else.
+
+    The default is the bounded writer these tests do not touch: the first case
+    below is the one that says so, by writing the same replacement with and
+    without the flag and comparing the two images byte for byte.
+    """
+
+    def grow(self, replacements, *, slack=18432, name="grown.iso", allow_growth=True):
+        source = self.image(name="src.iso", slack=slack)
+        destination = self.work / name
+        report = isowriter.replace_files(source, destination, replacements,
+                                         allow_growth=allow_growth)
+        return source, destination, report
+
+    def test_the_flag_changes_nothing_when_the_replacement_fits(self) -> None:
+        source = self.image(name="src.iso", slack=18432)
+        small = b"fits"
+        bounded = isowriter.replace_files(source, self.work / "a.iso",
+                                          {"/DATA/FOO.BIN": small})
+        flagged = isowriter.replace_files(source, self.work / "b.iso",
+                                          {"/DATA/FOO.BIN": small}, allow_growth=True)
+        self.assertEqual((self.work / "a.iso").read_bytes(),
+                         (self.work / "b.iso").read_bytes())
+        self.assertNotIn("growth", flagged)
+        self.assertEqual({k: v for k, v in bounded.items() if k != "destination"},
+                         {k: v for k, v in flagged.items() if k != "destination"})
+
+    def test_a_grown_file_is_appended_and_its_record_repointed(self) -> None:
+        content = b"G" * 7000
+        source, destination, report = self.grow({"/DATA/BAR.BIN": content})
+        growth = report["growth"]
+        sectors = -(-len(content) // 2048)
+        self.assertEqual(growth["appended_sectors"], sectors)
+        self.assertEqual(destination.stat().st_size,
+                         source.stat().st_size + sectors * 2048)
+        self.assertEqual(growth["slack_bytes"], 0)
+        self.assertEqual(growth["previous_slack_bytes"], 18432)
+
+        image = iso.open_image(destination)
+        entry = iso.find(image, "/DATA/BAR.BIN")
+        self.assertEqual(entry.length, len(content))
+        self.assertEqual(entry.lba, growth["append_lba"])
+        blob = destination.read_bytes()
+        start = entry.lba * 2048
+        self.assertEqual(blob[start:start + len(content)], content)
+        self.assertEqual(blob[start + len(content):start + sectors * 2048],
+                         bytes(sectors * 2048 - len(content)))
+
+    def test_the_extent_it_left_is_zeroed_and_the_source_untouched(self) -> None:
+        before = None
+        content = b"G" * 7000
+        source, destination, report = self.grow({"/DATA/BAR.BIN": content})
+        before = source.read_bytes()
+        moved = report["replacements"][0]
+        after = destination.read_bytes()
+        self.assertTrue(moved["relocated"])
+        self.assertEqual(
+            after[moved["extent_offset"]:
+                  moved["extent_offset"] + moved["previous_length"]],
+            bytes(moved["previous_length"]))
+        self.assertEqual(before, self.image(name="again.iso", slack=18432).read_bytes())
+
+    def test_no_other_file_moves_and_the_slack_bytes_survive(self) -> None:
+        source, destination, _report = self.grow({"/DATA/BAR.BIN": b"G" * 7000})
+        before, after = iso.open_image(source), iso.open_image(destination)
+        by_path = {entry.path: entry for entry in iso.iter_entries(after)}
+        for entry in iso.iter_entries(before):
+            if entry.path == "/DATA/BAR.BIN":
+                continue
+            self.assertEqual(by_path[entry.path].lba, entry.lba, entry.path)
+            self.assertEqual(by_path[entry.path].length, entry.length, entry.path)
+        original = source.read_bytes()
+        grown = destination.read_bytes()
+        self.assertEqual(grown[len(original) - 18432:len(original)],
+                         original[len(original) - 18432:])
+
+    def test_the_independent_verifier_passes_a_grown_image(self) -> None:
+        content = b"G" * 9000
+        source, destination, report = self.grow({"/DATA/BAR.BIN": content})
+        as_json = json.loads(json.dumps(isowriter.report_to_json(report)))
+        verdict = isoverify.verify_replacement(source, destination, as_json,
+                                               expected={"/DATA/BAR.BIN": content})
+        self.assertEqual(verdict["result"], "PASS")
+        self.assertTrue(verdict["grew"])
+        self.assertEqual(verdict["destination_file_size"], destination.stat().st_size)
+
+    def test_two_files_can_grow_at_once_without_overlapping(self) -> None:
+        first, second = b"1" * 5000, b"2" * 3000
+        source, destination, report = self.grow(
+            {"/DATA/BAR.BIN": first, "/DATA/SUB/DEEP.BIN": second})
+        growth = report["growth"]
+        self.assertEqual(sorted(growth["relocated"]),
+                         ["/DATA/BAR.BIN", "/DATA/SUB/DEEP.BIN"])
+        image = iso.open_image(destination)
+        blob = destination.read_bytes()
+        for path, content in (("/DATA/BAR.BIN", first), ("/DATA/SUB/DEEP.BIN", second)):
+            entry = iso.find(image, path)
+            start = entry.lba * 2048
+            self.assertEqual(blob[start:start + len(content)], content, path)
+        as_json = json.loads(json.dumps(isowriter.report_to_json(report)))
+        self.assertEqual(
+            isoverify.verify_replacement(source, destination, as_json)["result"], "PASS")
+
+    def test_growing_without_the_flag_is_refused_naming_the_flag(self) -> None:
+        source = self.image(name="src.iso")
+        with self.assertRaises(isowriter.IsoWriteError) as caught:
+            isowriter.replace_files(source, self.work / "no.iso",
+                                    {"/DATA/BAR.BIN": b"x" * 9000})
+        self.assertIn("allow_growth", str(caught.exception))
+        self.assertFalse((self.work / "no.iso").exists())
+
+    def test_growing_a_directory_is_refused(self) -> None:
+        source = self.image(name="src.iso")
+        with self.assertRaises(isowriter.IsoWriteError):
+            isowriter.replace_files(source, self.work / "no.iso",
+                                    {"/DATA": b"x" * 9000}, allow_growth=True)
+        self.assertFalse((self.work / "no.iso").exists())
+
+    def test_a_dry_run_prices_the_growth_and_writes_nothing(self) -> None:
+        source = self.image(name="src.iso")
+        plan = isowriter.plan_report(source, {"/DATA/BAR.BIN": b"x" * 7000},
+                                     allow_growth=True)
+        self.assertEqual(plan["growth"]["appended_sectors"], 4)
+        self.assertEqual(sorted(rng.reason for rng in plan["declared_ranges"]),
+                         ["dirrec_extent:/DATA/BAR.BIN", "dirrec_length:/DATA/BAR.BIN",
+                          "extent:/DATA/BAR.BIN", "newextent:/DATA/BAR.BIN",
+                          "pvd_volume_space"])
+        self.assertEqual(sorted(path.name for path in self.work.iterdir()), ["src.iso"])
+
+    def test_a_verifier_fed_a_grown_image_as_bounded_fails(self) -> None:
+        content = b"G" * 7000
+        source, destination, report = self.grow({"/DATA/BAR.BIN": content})
+        as_json = json.loads(json.dumps(isowriter.report_to_json(report)))
+        stripped = {key: value for key, value in as_json.items() if key != "growth"}
+        with self.assertRaises(isoverify.IsoVerifyError):
+            isoverify.verify_replacement(source, destination, stripped)
+
+
 class WriterRefusalTests(_IsoTestCase):
     """Every refusal also has to leave no half-written destination behind."""
 

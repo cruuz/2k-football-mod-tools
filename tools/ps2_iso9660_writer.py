@@ -23,11 +23,36 @@ touches is declared in the returned report as a ``ByteRange``, and
 ``ps2_iso9660_verify.py`` re-derives from the two files alone that nothing
 outside those ranges moved.  A report is a claim; the verifier is the evidence.
 
+Growing a file: opt-in, and relocation rather than free-space search
+-------------------------------------------------------------------
+
+``allow_growth=True`` (CLI ``--allow-growth``) admits a replacement bigger
+than the extent its file owns.  It is **off by default and the bounded path
+above is untouched by it**: with the flag absent every guarantee, every
+declared range and every report field is exactly what it was.
+
+What the flag does is narrow.  A grown file is **relocated to the end of the
+volume**, never fitted into a gap: its new extent is appended sector-aligned
+after the last byte of the image, its directory record's extent LBA and data
+length are patched in place, its old extent is zero-filled where it lies, and
+the PVD's volume space grows to cover the appended sectors.  Nothing else
+moves -- no other file's LBA changes, no directory record changes size or
+position, and the path tables stay valid because no *directory* is ever
+relocated.  There is still no free-space search: the space between files
+belongs to whatever wrote the image, and a writer that packed a grown file
+into it would be guessing about slack the mastering tool may be using.
+
+Two consequences are stated rather than hidden.  The image gets **longer**, by
+whole sectors, so it is no longer byte-comparable to the source past the old
+end of file.  And any trailing slack the source carried past its declared
+volume ends up *inside* the new declared volume -- the bytes themselves are
+untouched and still byte-identical, but ``slack_bytes`` becomes zero, and the
+report says so.
+
 Deliberately **not** relaxed, and each refusal says so:
 
-* **Growing a file.**  There is no relocation, no free-space search, no
-  path-table rewrite, no image rebuild.  ``len(new) <= entry.length`` or the
-  call fails.
+* **Growing a directory**, or growing anything without ``allow_growth``.  A
+  directory that grew would move its records and invalidate the path tables.
 * **Raw-CD (2352-byte) images.**  Their 2048-byte payload is interleaved with
   sync/header/EDC/ECC, so one linear write would spill into a sector's error
   correction and a correct write would have to recompute EDC/ECC per sector.
@@ -46,6 +71,8 @@ Deliberately **not** relaxed, and each refusal says so:
 Usage::
 
     ps2_iso9660_writer.py --inspect <image.iso>
+    ps2_iso9660_writer.py --source <in.iso> --destination <out.iso> --allow-growth \\
+        --replace /DATA/BIG.DAT=bigger.dat --report write-report.json
     ps2_iso9660_writer.py --source <in.iso> --destination <out.iso> \\
         --replace /DATA/FOO.BIN=new_foo.bin --report write-report.json
     ps2_iso9660_writer.py --source <in.iso> --dry-run \\
@@ -56,7 +83,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 import os
@@ -99,6 +126,9 @@ FLAG_ASSOCIATED = 0x04
 FLAG_MULTI_EXTENT = 0x80
 
 BOTH_ENDIAN_U32 = 8              # the data-length field: LE u32 then BE u32
+
+# Primary Volume Descriptor field offsets, relative to the PVD block.
+PVD_VOLUME_SPACE = 80            # both-endian u32: the volume's size in blocks
 
 CHUNK = 8 * 1024 * 1024
 ZEROS = bytes(CHUNK)
@@ -161,6 +191,16 @@ class _Plan:
     content: bytes
     content_source: str
     previous_sha256: str
+    #: Where the file moved to, or ``None`` when it stayed inside its extent.
+    new_lba: "int | None" = None
+    #: Byte offset of the appended extent, and how many bytes it occupies
+    #: (the content plus its zero pad to a whole sector).
+    appended_offset: int = 0
+    appended_bytes: int = 0
+
+    @property
+    def relocated(self) -> bool:
+        return self.new_lba is not None
 
     @property
     def new_length(self) -> int:
@@ -168,19 +208,37 @@ class _Plan:
 
     @property
     def zero_filled(self) -> int:
+        """Bytes zeroed inside the file's old extent.
+
+        A relocation zeroes the whole of it: nothing points there any more, and
+        a stale copy of the previous file left lying in the image is exactly
+        the thing that makes one unreproducible.
+        """
+        if self.relocated:
+            return self.previous_length
         return self.previous_length - self.new_length
 
     @property
     def length_field_offset(self) -> int:
         return self.record_offset_abs + REC_DATA_LENGTH
 
+    @property
+    def extent_field_offset(self) -> int:
+        return self.record_offset_abs + REC_EXTENT
+
     def ranges(self) -> list[ByteRange]:
-        return [
+        ranges = [
             ByteRange(self.extent_offset, self.previous_length, f"extent:{self.path}"),
             ByteRange(
                 self.length_field_offset, BOTH_ENDIAN_U32, f"dirrec_length:{self.path}"
             ),
         ]
+        if self.relocated:
+            ranges.append(ByteRange(self.extent_field_offset, BOTH_ENDIAN_U32,
+                                    f"dirrec_extent:{self.path}"))
+            ranges.append(ByteRange(self.appended_offset, self.appended_bytes,
+                                    f"newextent:{self.path}"))
+        return ranges
 
 
 # --------------------------------------------------------------------------
@@ -566,15 +624,22 @@ def _validate_record(record: bytes, entry, offset: int) -> None:
     )
 
 
-def _resolve_content(key: str, value, limit: int) -> tuple:
+_GROWTH_HINT = (
+    "Fixed-allocation writes never relocate a file. Pass allow_growth=True "
+    "(--allow-growth) to append the grown file at the end of the volume instead; "
+    "the image then gets longer, which the report and the verifier both say."
+)
+
+
+def _resolve_content(key: str, value, limit: int, allow_growth: bool = False) -> tuple:
     """Turn a replacement value into bytes, refusing anything ambiguous."""
+    ceiling = MAX_IMAGE_BYTES if allow_growth else limit
     if isinstance(value, (bytes, bytearray, memoryview)):
         data = bytes(value)
         _require(
-            len(data) <= limit,
+            len(data) <= ceiling,
             f"{key}: the replacement is {len(data)} bytes but the file's extent "
-            f"holds {limit}. Fixed-allocation writes never relocate a file; growing "
-            "one needs an image rebuild, which is out of scope for v1.",
+            f"holds {limit}. {_GROWTH_HINT}",
         )
         return data, "<inline bytes>"
     if isinstance(value, str):
@@ -596,10 +661,9 @@ def _resolve_content(key: str, value, limit: int) -> tuple:
             f"{key}: replacement {path} is not a regular file",
         )
         _require(
-            metadata.st_size <= limit,
+            metadata.st_size <= ceiling,
             f"{key}: {path} is {metadata.st_size} bytes but the file's extent holds "
-            f"{limit}. Fixed-allocation writes never relocate a file; growing one "
-            "needs an image rebuild, which is out of scope for v1.",
+            f"{limit}. {_GROWTH_HINT}",
         )
         return path.read_bytes(), str(path)
     raise IsoWriteError(
@@ -620,7 +684,8 @@ def _hash_extent(descriptor: int, offset: int, length: int) -> str:
     return digest.hexdigest()
 
 
-def _plan_one(descriptor: int, image, size: int, key: str, value) -> _Plan:
+def _plan_one(descriptor: int, image, size: int, key: str, value,
+              allow_growth: bool = False) -> _Plan:
     entry = ps2_iso9660.find(image, key)
     _require(
         entry is not None,
@@ -679,7 +744,7 @@ def _plan_one(descriptor: int, image, size: int, key: str, value) -> _Plan:
     )
     _validate_record(record, entry, record_offset_abs)
 
-    content, content_source = _resolve_content(key, value, entry.length)
+    content, content_source = _resolve_content(key, value, entry.length, allow_growth)
     return _Plan(
         path=entry.path,
         requested=key,
@@ -768,6 +833,58 @@ def _check_aliasing(image, plans: list) -> int:
     return len(entries)
 
 
+def _assign_growth(image, size: int, plans: list) -> dict:
+    """Give every over-size replacement an extent past the end of the image.
+
+    Returns the growth block a report carries, or ``{}`` when nothing grew --
+    so a call that was bounded after all produces exactly the report it always
+    did, and ``allow_growth=True`` never changes an image that did not need it.
+
+    Files are relocated in path order rather than in the order the caller
+    named them, so the same request always produces the same image.
+    """
+    grown = sorted((plan for plan in plans if plan.new_length > plan.previous_length),
+                   key=lambda plan: plan.path)
+    if not grown:
+        return {}
+    sector = image.sector_size
+    _require(
+        size % sector == 0,
+        f"the image is {size} bytes, which is not a whole number of {sector}-byte "
+        "sectors, so there is no sector boundary to append a relocated file at. "
+        "Refusing to grow it.",
+    )
+    append_lba = size // sector
+    cursor = append_lba
+    for index, plan in enumerate(grown):
+        sectors = (plan.new_length + sector - 1) // sector
+        offset = cursor * sector + image.data_offset
+        plans[plans.index(plan)] = replace(
+            plan, new_lba=cursor, appended_offset=offset,
+            appended_bytes=sectors * sector,
+        )
+        cursor += sectors
+    _require(
+        cursor <= 0xFFFFFFFF and cursor * sector <= MAX_IMAGE_BYTES,
+        f"the grown image would need {cursor} blocks, past this tool's sanity cap.",
+    )
+    return {
+        "allow_growth": True,
+        "append_lba": append_lba,
+        "appended_sectors": cursor - append_lba,
+        "appended_bytes": (cursor - append_lba) * sector,
+        "previous_volume_blocks": image.volume_blocks,
+        "volume_blocks": cursor,
+        "previous_file_size": size,
+        "file_size": cursor * sector,
+        "previous_slack_bytes": image.slack_bytes,
+        "slack_bytes": 0,
+        "volume_space_offset": PVD_BLOCK * sector + image.data_offset + PVD_VOLUME_SPACE,
+        "relocated": [plan.path for plan in sorted(plans, key=lambda p: p.path)
+                      if plan.relocated],
+    }
+
+
 # --------------------------------------------------------------------------
 # The write itself
 # --------------------------------------------------------------------------
@@ -785,21 +902,34 @@ def _copy_stream(source: Path, descriptor: int) -> int:
     return total
 
 
-def _apply(descriptor: int, plan: _Plan) -> None:
-    """Write the content, zero the rest of the extent, patch the length."""
-    _pwrite_exact(descriptor, plan.extent_offset, plan.content)
-    position = plan.extent_offset + plan.new_length
-    remaining = plan.zero_filled
+def _both_endian(value: int) -> bytes:
+    return struct.pack("<I", value) + struct.pack(">I", value)
+
+
+def _zero_fill(descriptor: int, start: int, length: int) -> None:
+    position = start
+    remaining = length
     while remaining:
         take = min(CHUNK, remaining)
         _pwrite_exact(descriptor, position, ZEROS[:take])
         position += take
         remaining -= take
-    _pwrite_exact(
-        descriptor,
-        plan.length_field_offset,
-        struct.pack("<I", plan.new_length) + struct.pack(">I", plan.new_length),
-    )
+
+
+def _apply(descriptor: int, plan: _Plan) -> None:
+    """Write the content, zero what is left over, patch the record."""
+    if plan.relocated:
+        # The new extent first: if anything below fails the destination is
+        # discarded whole, so the order is about clarity, not about recovery.
+        _pwrite_exact(descriptor, plan.appended_offset, plan.content)
+        _zero_fill(descriptor, plan.appended_offset + plan.new_length,
+                   plan.appended_bytes - plan.new_length)
+        _zero_fill(descriptor, plan.extent_offset, plan.previous_length)
+        _pwrite_exact(descriptor, plan.extent_field_offset, _both_endian(plan.new_lba))
+    else:
+        _pwrite_exact(descriptor, plan.extent_offset, plan.content)
+        _zero_fill(descriptor, plan.extent_offset + plan.new_length, plan.zero_filled)
+    _pwrite_exact(descriptor, plan.length_field_offset, _both_endian(plan.new_length))
 
 
 def _read_back(descriptor: int, plan: _Plan) -> None:
@@ -809,7 +939,7 @@ def _read_back(descriptor: int, plan: _Plan) -> None:
     independent verifier: a short write or a wrong offset should fail here,
     before a caller is handed a report claiming success.
     """
-    position = plan.extent_offset
+    position = plan.appended_offset if plan.relocated else plan.extent_offset
     for start in range(0, plan.new_length, CHUNK):
         expected = plan.content[start : start + CHUNK]
         actual = _pread_exact(descriptor, position + start, len(expected))
@@ -822,19 +952,23 @@ def _read_back(descriptor: int, plan: _Plan) -> None:
                 f"{plan.path}: read-back mismatch at byte "
                 f"0x{position + start + bad:x}; the write did not land"
             )
-    position = plan.extent_offset + plan.new_length
-    remaining = plan.zero_filled
-    while remaining:
-        take = min(CHUNK, remaining)
-        actual = _pread_exact(descriptor, position, take)
-        if actual != ZEROS[:take]:
-            bad = next(index for index, value in enumerate(actual) if value)
+    if plan.relocated:
+        _read_back_zero(descriptor, plan, plan.appended_offset + plan.new_length,
+                        plan.appended_bytes - plan.new_length,
+                        "the pad after its relocated extent")
+        _read_back_zero(descriptor, plan, plan.extent_offset, plan.previous_length,
+                        "its abandoned extent")
+        field = _pread_exact(descriptor, plan.extent_field_offset, BOTH_ENDIAN_U32)
+        little = struct.unpack_from("<I", field, 0)[0]
+        big = struct.unpack_from(">I", field, 4)[0]
+        if not (little == big == plan.new_lba):
             raise IsoWriteError(
-                f"{plan.path}: the zero-filled tail is not zero at byte "
-                f"0x{position + bad:x}; a stale tail would survive"
+                f"{plan.path}: the patched extent LBA reads LE {little} / BE {big}, "
+                f"expected {plan.new_lba} in both halves"
             )
-        position += take
-        remaining -= take
+    else:
+        _read_back_zero(descriptor, plan, plan.extent_offset + plan.new_length,
+                        plan.zero_filled, "the zero-filled tail")
     field = _pread_exact(descriptor, plan.length_field_offset, BOTH_ENDIAN_U32)
     little = struct.unpack_from("<I", field, 0)[0]
     big = struct.unpack_from(">I", field, 4)[0]
@@ -845,7 +979,25 @@ def _read_back(descriptor: int, plan: _Plan) -> None:
         )
 
 
-def replace_files(source, destination, replacements) -> dict:
+def _read_back_zero(descriptor: int, plan: _Plan, start: int, length: int,
+                    what: str) -> None:
+    position = start
+    remaining = length
+    while remaining:
+        take = min(CHUNK, remaining)
+        actual = _pread_exact(descriptor, position, take)
+        if actual != ZEROS[:take]:
+            bad = next(index for index, value in enumerate(actual) if value)
+            raise IsoWriteError(
+                f"{plan.path}: {what} is not zero at byte 0x{position + bad:x}; "
+                "stale bytes would survive"
+            )
+        position += take
+        remaining -= take
+
+
+def replace_files(source, destination, replacements, *,
+                  allow_growth: bool = False) -> dict:
     """Copy *source* to *destination*, replacing files inside their extents.
 
     ``replacements`` maps an ISO path (``/DATA/FOO.BIN``, case-insensitive,
@@ -864,6 +1016,13 @@ def replace_files(source, destination, replacements) -> dict:
     new content plus the zero-filled tail) and one ``dirrec_length:<path>``
     range per patched record (the 8 both-endian length bytes).  Hand that
     report, with both files, to ``ps2_iso9660_verify.verify_replacement``.
+
+    ``allow_growth`` admits a replacement bigger than its extent by relocating
+    that file to the end of the volume; the report then carries a ``growth``
+    block and two more ranges per relocated file (``dirrec_extent:<path>`` and
+    ``newextent:<path>``) plus one ``pvd_volume_space``.  A call that turns the
+    flag on and grows nothing produces exactly the report it would have without
+    it.
     """
     source = Path(source)
     destination = Path(destination)
@@ -893,14 +1052,20 @@ def replace_files(source, destination, replacements) -> dict:
     try:
         descriptors = _check_no_second_tree(read_only, source, size)
         plans = [
-            _plan_one(read_only, image, size, str(key), value)
+            _plan_one(read_only, image, size, str(key), value, allow_growth)
             for key, value in sorted(items, key=lambda pair: str(pair[0]))
         ]
         entry_count = _check_aliasing(image, plans)
     finally:
         os.close(read_only)
 
+    growth = _assign_growth(image, size, plans) if allow_growth else {}
     plans.sort(key=lambda plan: plan.extent_offset)
+    expected_size = growth.get("file_size", size)
+    volume_space_range = []
+    if growth:
+        volume_space_range = [ByteRange(growth["volume_space_offset"], BOTH_ENDIAN_U32,
+                                        "pvd_volume_space")]
 
     reservation = _reserve_new(destination)
     try:
@@ -911,14 +1076,28 @@ def replace_files(source, destination, replacements) -> dict:
         )
         for plan in plans:
             _apply(reservation.descriptor, plan)
+        if growth:
+            _pwrite_exact(reservation.descriptor, growth["volume_space_offset"],
+                          _both_endian(growth["volume_blocks"]))
         os.fsync(reservation.descriptor)
         for plan in plans:
             _read_back(reservation.descriptor, plan)
+        if growth:
+            field = _pread_exact(reservation.descriptor, growth["volume_space_offset"],
+                                 BOTH_ENDIAN_U32)
+            little = struct.unpack_from("<I", field, 0)[0]
+            big = struct.unpack_from(">I", field, 4)[0]
+            _require(
+                little == big == growth["volume_blocks"],
+                f"the patched volume space reads LE {little} / BE {big}, expected "
+                f"{growth['volume_blocks']} in both halves",
+            )
         written = os.fstat(reservation.descriptor).st_size
         _require(
-            written == size,
-            f"the destination is {written} bytes but the source is {size}; the "
-            "image's trailing slack must survive byte-for-byte",
+            written == expected_size,
+            f"the destination is {written} bytes and should be {expected_size}; "
+            + ("the appended extents did not land"
+               if growth else "the image's trailing slack must survive byte-for-byte"),
         )
     except BaseException:
         _abort_reserved(destination, reservation)
@@ -927,10 +1106,10 @@ def replace_files(source, destination, replacements) -> dict:
         os.close(reservation.descriptor)
 
     ranges = sorted(
-        (rng for plan in plans for rng in plan.ranges()),
+        ([rng for plan in plans for rng in plan.ranges()] + volume_space_range),
         key=lambda rng: (rng.start, rng.reason),
     )
-    return {
+    report = {
         "schema": SCHEMA,
         "source": str(source),
         "destination": str(destination),
@@ -950,7 +1129,9 @@ def replace_files(source, destination, replacements) -> dict:
                 "path": plan.path,
                 "requested": plan.requested,
                 "raw_name": plan.raw_name,
-                "lba": plan.lba,
+                # Where the file lives in the DESTINATION: the verifier reads
+                # the record it finds there and compares.
+                "lba": plan.new_lba if plan.relocated else plan.lba,
                 "parent_lba": plan.parent_lba,
                 "record_offset": plan.record_offset,
                 "record_offset_abs": plan.record_offset_abs,
@@ -963,12 +1144,21 @@ def replace_files(source, destination, replacements) -> dict:
                 "content_source": plan.content_source,
                 "sha256": hashlib.sha256(plan.content).hexdigest(),
                 "previous_sha256": plan.previous_sha256,
+                **({"relocated": True, "previous_lba": plan.lba,
+                    "new_lba": plan.new_lba,
+                    "extent_field_offset": plan.extent_field_offset,
+                    "appended_offset": plan.appended_offset,
+                    "appended_bytes": plan.appended_bytes}
+                   if plan.relocated else {}),
             }
             for plan in plans
         ],
         "declared_ranges": ranges,
         "bytes_declared": sum(rng.length for rng in ranges),
     }
+    if growth:
+        report["growth"] = growth
+    return report
 
 
 def report_to_json(report: dict) -> dict:
@@ -981,7 +1171,7 @@ def report_to_json(report: dict) -> dict:
     return out
 
 
-def plan_report(source, replacements) -> dict:
+def plan_report(source, replacements, *, allow_growth: bool = False) -> dict:
     """Validate a replacement set without creating anything (a dry run)."""
     source = Path(source)
     size = _check_source(source)
@@ -991,18 +1181,21 @@ def plan_report(source, replacements) -> dict:
     try:
         descriptors = _check_no_second_tree(read_only, source, size)
         plans = [
-            _plan_one(read_only, image, size, str(key), value)
+            _plan_one(read_only, image, size, str(key), value, allow_growth)
             for key, value in sorted(replacements.items(), key=lambda p: str(p[0]))
         ]
         entry_count = _check_aliasing(image, plans)
     finally:
         os.close(read_only)
+    growth = _assign_growth(image, size, plans) if allow_growth else {}
     plans.sort(key=lambda plan: plan.extent_offset)
+    extra = ([ByteRange(growth["volume_space_offset"], BOTH_ENDIAN_U32,
+                        "pvd_volume_space")] if growth else [])
     ranges = sorted(
-        (rng for plan in plans for rng in plan.ranges()),
+        ([rng for plan in plans for rng in plan.ranges()] + extra),
         key=lambda rng: (rng.start, rng.reason),
     )
-    return {
+    report = {
         "schema": "ps2_iso9660_write_plan/v1",
         "source": str(source),
         "file_size": size,
@@ -1017,11 +1210,19 @@ def plan_report(source, replacements) -> dict:
                 "new_length": plan.new_length,
                 "zero_filled_bytes": plan.zero_filled,
                 "length_field_offset": plan.length_field_offset,
+                **({"relocated": True, "previous_lba": plan.lba,
+                    "new_lba": plan.new_lba,
+                    "appended_offset": plan.appended_offset,
+                    "appended_bytes": plan.appended_bytes}
+                   if plan.relocated else {}),
             }
             for plan in plans
         ],
         "declared_ranges": ranges,
     }
+    if growth:
+        report["growth"] = growth
+    return report
 
 
 def inspect(source) -> dict:
@@ -1278,9 +1479,75 @@ def selftest(tmp: Path | None = None) -> int:
         if len(pair["declared_ranges"]) != 4:
             raise IsoWriteError("two replacements must declare four ranges")
 
+        # -- growth, opt-in ------------------------------------------------
+        #
+        # The flag must not change a write that did not need it: the same
+        # replacement with and without it produces the same image and, apart
+        # from its destination path, the same report.
+        bounded = replace_files(source, room / "flagless.iso", {"/DATA/FOO.BIN": b"fits"})
+        flagged = replace_files(source, room / "flagged.iso", {"/DATA/FOO.BIN": b"fits"},
+                                allow_growth=True)
+        if (room / "flagless.iso").read_bytes() != (room / "flagged.iso").read_bytes():
+            raise IsoWriteError("allow_growth changed a write that fitted anyway")
+        if "growth" in flagged:
+            raise IsoWriteError("a write that grew nothing must carry no growth block")
+        if {key: value for key, value in bounded.items() if key != "destination"} != {
+            key: value for key, value in flagged.items() if key != "destination"
+        }:
+            raise IsoWriteError("allow_growth changed the report of a bounded write")
+
+        grown_content = b"G" * 7000
+        grown = room / "grown.iso"
+        report = replace_files(source, grown, {"/DATA/BAR.BIN": grown_content},
+                               allow_growth=True)
+        growth = report.get("growth")
+        if not growth:
+            raise IsoWriteError("an over-size replacement should have grown the image")
+        if source.read_bytes() != original:
+            raise IsoWriteError("growing the destination modified the source")
+        sectors = -(-len(grown_content) // SECTOR_USER_BYTES)
+        if growth["appended_sectors"] != sectors:
+            raise IsoWriteError(f"expected {sectors} appended sector(s)")
+        if grown.stat().st_size != len(original) + sectors * SECTOR_USER_BYTES:
+            raise IsoWriteError("the grown image is not the length the report claims")
+        reasons = sorted(rng.reason for rng in report["declared_ranges"])
+        if reasons != ["dirrec_extent:/DATA/BAR.BIN", "dirrec_length:/DATA/BAR.BIN",
+                       "extent:/DATA/BAR.BIN", "newextent:/DATA/BAR.BIN",
+                       "pvd_volume_space"]:
+            raise IsoWriteError(f"unexpected declared reasons: {reasons}")
+        patched = grown.read_bytes()
+        moved = report["replacements"][0]
+        if patched[moved["appended_offset"]:
+                   moved["appended_offset"] + len(grown_content)] != grown_content:
+            raise IsoWriteError("the relocated content did not land")
+        if patched[moved["extent_offset"]:
+                   moved["extent_offset"] + moved["previous_length"]].strip(b"\x00"):
+            raise IsoWriteError("the abandoned extent was not zeroed")
+        if patched[growth["volume_space_offset"]:
+                   growth["volume_space_offset"] + 8] != _both_endian(
+                       growth["volume_blocks"]):
+            raise IsoWriteError("the PVD's volume space was not patched")
+        # The source's own bytes, and its slack, survive inside the longer image.
+        for index, pair_of in enumerate(zip(original, patched)):
+            if pair_of[0] != pair_of[1] and not any(
+                rng.start <= index < rng.end for rng in report["declared_ranges"]
+            ):
+                raise IsoWriteError(f"undeclared change at 0x{index:x} in a grown image")
+
+        refused("growdir.iso", {"/DATA": b"x" * 5000}, "growing a directory")
+        try:
+            replace_files(source, room / "nogrow.iso", {"/DATA/BAR.BIN": b"x" * 5000})
+        except IsoWriteError as exc:
+            if "allow_growth" not in str(exc):
+                raise IsoWriteError("the refusal must name the flag that lifts it")
+        else:  # pragma: no cover
+            raise AssertionError("growing without the flag must be refused")
+
     print(
-        "PS2_ISO9660_WRITER_SELFTEST_PASS allocation=fixed slack=preserved "
-        "ranges=extent+dirrec_length refuses=grow,dir,missing,str,dest-exists"
+        "PS2_ISO9660_WRITER_SELFTEST_PASS allocation=fixed-by-default "
+        "growth=opt-in-relocate slack=preserved "
+        "ranges=extent+dirrec_length(+dirrec_extent+newextent+pvd_volume_space) "
+        "refuses=grow-without-flag,grow-dir,dir,missing,str,dest-exists"
     )
     return 0
 
@@ -1301,6 +1568,12 @@ def main(argv=None) -> int:
         help="replace an ISO path with a local file, e.g. /DATA/FOO.BIN=new.bin",
     )
     parser.add_argument("--inspect", type=Path, help="summarise an image and its entries")
+    parser.add_argument(
+        "--allow-growth",
+        action="store_true",
+        help="let an over-size replacement relocate to the end of the volume, "
+             "growing the image; off by default",
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -1330,14 +1603,17 @@ def main(argv=None) -> int:
         replacements[iso_path] = Path(local)
 
     if args.dry_run:
-        print(json.dumps(report_to_json(plan_report(args.source, replacements)), indent=2))
+        print(json.dumps(report_to_json(
+            plan_report(args.source, replacements, allow_growth=args.allow_growth)),
+            indent=2))
         return 0
     if not args.destination:
         parser.error("--destination is required unless --dry-run is given")
     if not replacements:
         parser.error("give at least one --replace, or use --dry-run/--inspect")
 
-    report = replace_files(args.source, args.destination, replacements)
+    report = replace_files(args.source, args.destination, replacements,
+                           allow_growth=args.allow_growth)
     payload = report_to_json(report)
     if args.report:
         # Bytes, not write_text: the line ending has to be LF on every
