@@ -300,6 +300,18 @@ class CaveReferenceTests(unittest.TestCase):
         for r in space.reservations(self.patched):
             self.assertGreaterEqual(int(r["start"], 0), space.CODE_VA)
 
+    def test_playlist_owns_pinned_hooks_and_allocator_children(self):
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
+        self.assertEqual(playlist.status(self.patched), "applied")
+        for row in playlist.reservations(self.patched):
+            start, end = int(row["start"], 0), int(row["end"], 0)
+            if start < 0x14BA000:
+                self.assertEqual(manifest.overlaps(start, end, exclude_owner=playlist.OWNER), [], row)
+        code, data, ro = playlist.sites(self.patched)
+        self.assertEqual({code["kind"], data["kind"], ro["kind"]}, {"code", "data", "read_only"})
+
     def test_momentum_owns_named_children_and_pinned_live_spans_without_new_caves(self) -> None:
         from mod_editor.core import nfl2k5_momentum as momentum
         from mod_editor.core import nfl2k5_xbe_space as space

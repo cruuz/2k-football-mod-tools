@@ -459,10 +459,11 @@ def allocation_evidence(retail: bytes, manifest, *, allocated: bytes | None = No
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_zone_drop as zone_drop
     from . import nfl2k5_roster_storage as roster_storage
     from . import nfl2k5_coverage_slider as coverage, nfl2k5_scramble_tuning as scramble
+    from . import nfl2k5_music_playlist as playlist
     # Match the manifest builder's complete dormant-owner request set. This is
     # an ownership proof only; apply() still allocates exactly its caller's set.
     children = (layout(allocated)["allocations"] if allocated is not None
-                else _allocations(relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS))
+                else _allocations(relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS))
     proof_regions = ([r for r in layout(allocated)["regions"] if not r.get("music")] if allocated is not None
                      else _regions([(a["owner"], a["kind"], a["size"], a["align"]) for a in children if a["kind"] != "read_only"]))
     for region in proof_regions:

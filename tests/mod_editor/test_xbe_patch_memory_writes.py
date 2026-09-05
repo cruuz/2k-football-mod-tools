@@ -123,6 +123,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        if playlist.status(cls.patched) != "applied":
+            raise AssertionError("playlist owner missing from the composed XBE")
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
@@ -148,6 +151,26 @@ class PatchWriteTests(unittest.TestCase):
             else:
                 merged.append([a, b])
         return [(a - 16, b + 16) for a, b in merged]
+
+    def test_playlist_full_code_writes_only_writable_state(self):
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        from mod_editor.core import nfl2k5_music_playlist_code as assembly
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        code, data, ro = playlist.sites(self.patched)
+        image = XbeImage(self.patched)
+        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+        self.assertFalse(image.runtime_writable(ro["va"], ro["size"]))
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        writes = absolute_writes(self.patched, [(code["va"], code["va"] + len(assembly.CODE))])
+        checked = 0
+        for write in writes:
+            if write["target"] is not None:
+                checked += 1
+                self.assertTrue(write["writable"], write)
+                target = int(write["target"], 0)
+                if target >= 0x14BA000:
+                    self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
+        self.assertGreater(checked, 0)
 
     def test_stadium_ids_are_owned_immutable_data(self) -> None:
         from mod_editor.core import nfl2k5_roster_storage as storage

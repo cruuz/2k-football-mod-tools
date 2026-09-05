@@ -111,6 +111,42 @@ class MusicPanelTests(unittest.TestCase):
             self.panel.play(original=False);self.drain()
             self.assertTrue(get.call_args.kwargs['mono']);self.assertEqual(start.call_count,2)
 
+    def test_playlist_opt_in_filters_individual_songs_and_atomic_choices_round_trip(self):
+        import json
+        page = self.panel.playlist_page
+        events = []
+        self.panel.playlist_changed.connect(events.append)
+        self.assertFalse(page.enabled.isChecked())
+        self.assertEqual(len(page.selected().enabled), 66)
+        page.enabled.setChecked(True)
+        page.outtakes.setChecked(False)
+        self.assertEqual(len(page.selected().enabled), 54)
+        page.beds.setChecked(True)
+        self.assertEqual(len(page.selected().enabled), 64)
+        page.select_all(False)
+        self.assertEqual(len(page.selected().enabled), 0)
+        page.list.item(0).setCheckState(Qt.Checked)
+        self.assertEqual(page.selected().enabled, (0,))
+        self.assertIn('will repeat', page.summary.text())
+        value = self.panel.playlist_options()
+        destination = self.root / 'choices.json'
+        with patch('mod_editor.gui.music_panel_qt.QFileDialog.getSaveFileName', return_value=(str(destination), '')):
+            page.save_choices()
+        self.assertEqual(json.loads(destination.read_text()), value)
+        page.select_all(True)
+        with patch('mod_editor.gui.music_panel_qt.QFileDialog.getOpenFileName', return_value=(str(destination), '')):
+            page.open_choices()
+        self.assertEqual(self.panel.playlist_options(), value)
+        self.assertEqual(events[-1], value)
+        # A mismatched authored mask refuses without partially changing the UI.
+        invalid = dict(value, enabled=[2])
+        with self.assertRaises(ValueError):
+            self.panel.set_playlist_options(invalid)
+        self.assertEqual(self.panel.playlist_options(), value)
+        self.assertEqual(self.panel.player.state(), 0)
+        self.panel.set_service(None)
+        self.assertFalse(page.isEnabled())
+
     def test_close_cancels_and_waits_for_worker_before_widget_destruction(self):
         import threading
         entered=threading.Event()

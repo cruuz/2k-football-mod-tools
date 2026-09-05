@@ -1,0 +1,72 @@
+{
+  "backend": {
+    "command": "Python API: nfl2k5_music_playlist.apply(payload, selection=Selection(...))",
+    "module": "mod_editor/core/nfl2k5_music_playlist.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_MUSIC_PLAYLIST_REPORT.md",
+    "reports/music_playlist_contexts.v1.json",
+    "tests/mod_editor/test_nfl2k5_music_playlist.py",
+    "tests/mod_editor/test_nfl2k5_music_playlist_contexts.py",
+    "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "Music tab Playlist page. Default off in all presets. Background disc/HDD playlists are replaced; temporary jukebox previews remain. Individual screen routing and audible output are unwitnessed."
+  },
+  "id": "nfl2k5.music.playlist",
+  "input_constraints": [
+    "Verified USA XBE and validated source AUSB descriptors. Named allocator union must contain code 2048, data 512 and read_only 1024 bytes for nfl2k5_music_playlist.",
+    "Selection has at most 100 unique (bank,index) records. Runtime rejects missing descriptors, invalid indices and empty/reversed ranges before binding/enqueueing.",
+    "Build defaults to 7 menu and 59 jukebox recordings. Outtakes off leaves 54; beds on adds ten. Zero stops and one repeats.",
+    "Rebuild from the supported base for a different installed selection. Publish through the existing image copy transaction. No saved profile, purchase or PA clip mutation."
+  ],
+  "portme": [
+    "Complete every individual screen route and Noah witness row before any all-mode claim.",
+    "Recover the actual drafta player. The two 165C20 callers inspected here request coachambience.",
+    "Witness real stream resume, preview completion, volume, stereo/surround and PA/show coexistence."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Only generated patch code, playlist choices and authored assets are portable. No original song, whole bank or disc is included.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [],
+    "scope": "EXPERIMENTAL / UNWITNESSED. Bounded native instruction tests and byte pins only. No all-modes claim.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "music_shuffle",
+        "allowed": "false or true; defaults false",
+        "required": true
+      },
+      {
+        "name": "music_shuffle_selection",
+        "allowed": "Music Playlist choices schema 1, or default 66-song Selection",
+        "required": false
+      }
+    ],
+    "notes": "The Music page and main Build checkbox share one personal opt-in."
+  },
+  "source_container": {
+    "format": "NFL 2K5 USA XBE plus source AUSB descriptors",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "Pinned music controller hooks and newly allocated RX/RW/RO children",
+    "retail_file": "default.xbe and vc_53450030/0..F"
+  },
+  "summary": "Shuffle 66 original menu and jukebox recordings through the shared background player. Optional spoken outtakes and ten established beds; timed shows retain their music. EXPERIMENTAL / UNWITNESSED.",
+  "surface": "audio",
+  "title": "Shared music shuffle (experimental)",
+  "validation_command": "python3 tests/mod_editor/test_nfl2k5_music_playlist.py"
+}

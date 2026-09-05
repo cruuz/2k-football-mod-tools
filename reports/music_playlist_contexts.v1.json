@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "all_modes_proved": false,
+  "note": "Transition contract tests are not proof that every named screen reaches that contract. No runtime witness.",
+  "contexts": [
+    {
+      "context": "Main menu",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "PROVED bytes: F5B7C -> F6510(1)",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Quick Game setup",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "PROVED mode-1 caller at 64617; exact setup traversal is HYPOTHESIS",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Options",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Franchise desk",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Franchise calendar",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Franchise rosters",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Franchise free agency",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Franchise draft menus",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Season entry",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Tournament entry",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Practice entry",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Crib entry",
+      "policy": "shared",
+      "mode": 3,
+      "routing_evidence": "PROVED mode 3 selects UserList; exact Crib scene association is HYPOTHESIS",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Crib exit",
+      "policy": "shared",
+      "mode": 1,
+      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Jukebox preview",
+      "policy": "preview",
+      "mode": 3,
+      "routing_evidence": "PROVED bytes: explicit disc/HDD selection at 27FF90; bounded empty guard tested",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Game background",
+      "policy": "shared",
+      "mode": 4,
+      "routing_evidence": "PROVED bytes: 6489E -> F6510(4); F64CD profile stop intercepted",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Pause menu",
+      "policy": "modal",
+      "mode": null,
+      "routing_evidence": "PROVED modal helpers 27F6B0/27F6F0 and F65F0/F65E0 thunks; pause screen association HYPOTHESIS",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Replay",
+      "policy": "modal",
+      "mode": null,
+      "routing_evidence": "HYPOTHESIS: replay-to-modal-helper routing not fully recovered",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Loading",
+      "policy": "loading",
+      "mode": 2,
+      "routing_evidence": "PROVED F6510(2) and F5430 loadm scheduler, timing untouched",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Halftime",
+      "policy": "halftime",
+      "mode": null,
+      "routing_evidence": "PROVED D90F0 halftimeaudio entry and D9350 release; shared background gated around both",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Wrap-up",
+      "policy": "wrapup",
+      "mode": 0,
+      "routing_evidence": "PROVED 28F7F0 calls F6510(0); restoration through the existing mode dispatcher",
+      "integrated": true,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Draft presentation",
+      "policy": "unresolved_draft",
+      "mode": null,
+      "routing_evidence": "UNRESOLVED: both recovered 165C20 callers actually request coachambience, not drafta",
+      "integrated": false,
+      "runtime_witnessed": false
+    },
+    {
+      "context": "Stadium manager and PA",
+      "policy": "retail_pa",
+      "mode": null,
+      "routing_evidence": "PROVED 254EB0 resolves crib22 through a separate player; background/PA coexistence unwitnessed",
+      "integrated": false,
+      "runtime_witnessed": false
+    }
+  ]
+}

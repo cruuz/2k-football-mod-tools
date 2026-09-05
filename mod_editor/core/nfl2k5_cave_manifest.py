@@ -78,7 +78,7 @@ class Recorder:
             from . import nfl2k5_xbe_space as space
             allow_append = (owner == "nfl2k5_depth_chart_rows" and storage.state(before) == "retail"
                             and storage.state(after) == "applied")
-            allow_append |= (owner in (space.OWNER, "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning")
+            allow_append |= (owner in (space.OWNER, "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist")
                              and space.status(before) == "retail" and space.status(after) == "applied")
             if owner == 'nfl2k5_music_metadata':
                 from . import nfl2k5_music_metadata as music
@@ -110,7 +110,7 @@ class Recorder:
                            "after_sha256": hashlib.sha256(after).hexdigest(),
                            "changed_bytes": sum(b - a for a, b in runs),
                            "file_runs": [[hex(a), hex(b)] for a, b in runs]})
-        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning"):
+        if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist"):
             from . import nfl2k5_xbe_space as space
             for reservation in space.reservations(after):
                 # The preset and the dormant-owner probe can assign different
@@ -231,7 +231,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_roster_storage as roster_storage
     from . import nfl2k5_coverage_slider as coverage, nfl2k5_scramble_tuning as scramble
     from . import nfl2k5_throw_arc as flight
-    all_requests = relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
+    from . import nfl2k5_music_playlist as playlist
+    all_requests = relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
     if type(synthetic_owner_bytes) is not int or synthetic_owner_bytes < 0:
         raise OracleError("synthetic owner size must be a nonnegative integer")
     probe_requests = (("synthetic_scaleout", "code", synthetic_owner_bytes, space.PAGE),) if synthetic_owner_bytes else ()
@@ -245,7 +246,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
     modules.update({m.__name__: m for m in (tt, pools, season, space, relocated, runtime, scorebug_ingame, music, momentum, defensive_try, zone_drop, roster_storage)})
-    modules.update({m.__name__: m for m in (coverage, scramble, flight)})
+    modules.update({m.__name__: m for m in (coverage, scramble, flight, playlist)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -303,6 +304,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             final, _ = momentum.apply(final, momentum=100, momentum_contact=True)
             final, _ = coverage.apply(final)
             final, _ = scramble.apply(final)
+            final, _ = playlist.apply(final)
             # Flatter flight and the old relocated high-arc band are mutually
             # exclusive. Observe the exact alternative's table span too; this
             # reservation union does not claim both flight modes run together.
@@ -331,11 +333,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             progress(f"Building synthetic {synthetic_owner_bytes}-byte owner on the real disposable disc")
             probe, _ = space.apply(allocation_base, all_requests + probe_requests, scaleout=True)
             for module, kwargs in ((defensive_try, {}), (zone_drop, {}), (relocated, {}),
+                                   (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
                                    (runtime, {}), (momentum, dict(momentum=100, momentum_contact=True)),
                                    (music, dict(song_records=[dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256) for i in range(200)]))):
                 probe, _ = module.apply(probe, **kwargs)
             probe, _ = space.install_code(probe, "synthetic_scaleout", b"\xc3" + b"\x90" * (synthetic_owner_bytes - 1))
-            if any(module.status(probe) != "applied" for module in (space, relocated, runtime, momentum, defensive_try, zone_drop, music)):
+            if any(module.status(probe) != "applied" for module in (space, relocated, runtime, momentum, defensive_try, zone_drop, music, roster_storage, coverage, scramble, playlist)):
                 raise OracleError("synthetic owner does not compose with the complete real owner union")
             descriptor = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
             try:
@@ -367,7 +370,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                 "stack_image_size": XbeImage(final).image_size,
                 "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime music metadata, Momentum, defensive try and zone drop; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER],
+                "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER],
                 "alternative_flight_probe": "flatter flight on retail; final stack keeps the selected existing flight mode",
                 "seven_on_seven_book": book_note,
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,

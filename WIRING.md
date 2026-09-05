@@ -3777,3 +3777,207 @@ new archive-size capability, not a relaxation of `all_p8`. No schema surface
 or patch-address reservation is added. Update count/findings expectations.
 Run the two new standalone suites, music banks, texture masters, both XBE
 gates, the staged import check and the protected full Build transaction tests.
+
+## r62 music playlist: protected integration handoff
+
+**EXPERIMENTAL / UNWITNESSED; every preset leaves this off.** Backend, assembly,
+Music page, three standalone backend suites, both owner unions and manifest
+recorder integration are implemented here. The protected files below are not
+edited. `ASTRA_MUSIC_PLAYLIST_REPORT.md` and
+`reports/music_playlist_contexts.v1.json` distinguish native instruction proofs
+from unresolved individual screen routes. Do not advertise "all modes".
+
+### BuildPlan, source validation, order and receipt
+
+In `mod_editor/core/mod_build.py`, add:
+
+```python
+music_shuffle: bool = False
+music_shuffle_selection: dict | None = None  # MusicPanel.playlist_options(), schema 1
+```
+
+Set `music_shuffle=False` and `music_shuffle_selection=None` explicitly in all
+three Basic / Advanced / Experimental presets (the actual `softdrink_*` keys).
+Applying a preset must not discard personal Music page choices. Reset clears
+the enable flag; retain the choices until the user changes/resets the library.
+Include `music_shuffle` in `wants_xbe_patch`, validation, inspection,
+availability, selected-key forwarding, receipt and plan serialization. Reject
+non-Boolean flags. Keep feature state separate from a selected checkbox.
+
+A selected build needs an image and validated AUSB descriptors. Construct
+`playlist.from_options(plan.music_shuffle_selection)` when provided, otherwise
+`playlist.Selection()` (66 core songs). Validate the source with
+`playlist.validate_source(selected, counts)`, where `counts` is obtained from
+the existing bounded `Nfl2k5AudioDisc` descriptor reader. For a simultaneous
+bank rebuild, validate against that rebuild's planned **final** descriptor
+counts, and validate again on the staged rebuilt image before publication.
+Do not infer descriptor counts from 200 metadata titles. The page supports the
+66 original songs plus ten established background beds. The backend caps
+custom selections at 100 records under this reservation and can address added
+bank indices when their descriptors validate. It does not automatically select
+an entire grown 200-song library.
+
+Add playlist REQUESTS to the **complete** allocator union before any grown
+owner runs; include both dormant installed owners and newly selected owners as
+required by the existing immutable-directory contract. Realize with
+`space.apply(payload, requests, scaleout=True)`. Pass the planned playlist to
+the final grown-owner pass, after the resource/scorebug-dependent passes have
+resolved their extents. The later music bank writer preserves these hooks and
+allocated sections. Never add the playlist request to an already sealed,
+different union; rebuild from its supported base. Combined music/scorebug
+builds must defer playlist allocation along with the other grown owners.
+
+Store `music_shuffle_patch` (exact backend receipt), `music_shuffle_state`
+(`read_settings`), source/result hashes and final enabled records in the Build
+receipt. Use `nfl2k5_depth_chart_storage.write_image_xbe` and the existing staged
+copy/rollback transaction; do not introduce an ISO/pack `read_bytes` path.
+A different installed selection refuses and requires a rebuild from base.
+Unchecked/off preserves an already patched source; it does not uninstall.
+
+### Dispatcher tuple, kwargs and all four status dictionaries
+
+In protected `nfl2k5_throw_tuning.py` import:
+
+```python
+from . import nfl2k5_music_playlist as music_playlist_patch
+```
+
+Extend `_apply_all`, `write_xbe_copy`, `write_image_copy`, their forwarded calls
+and `write_copy`'s accepted forwarded options with:
+
+```python
+music_shuffle: bool = False,
+music_shuffle_selection: music_playlist_patch.Selection | None = None,
+```
+
+The Build layer converts the serialized page document into `Selection` first;
+no Qt import belongs in the dispatcher. Extend `_selected_space_requests`,
+`_xbe_space_adapter` and `_defensive_try_adapter` propagation with the flag and
+`+ (music_playlist_patch.REQUESTS if music_shuffle else ())`. Include the flag
+in the existing grown-allocation and "something selected" predicates. Keep
+that union identical in every early/deferred allocation branch. Add this tuple
+to the final grown-owner dispatcher **after** the allocator adapter:
+
+```python
+(music_shuffle, music_shuffle_selection or music_playlist_patch.Selection(),
+ "music_shuffle_patch", "experimental music playlist"),
+```
+
+`Selection.status` returns foreign for a differently configured installed
+playlist; it must not be treated as an already-applied compatible patch.
+The module's aggregate `status(payload)` validates arbitrary installed choices.
+For standalone expert byte-API replay where choices are deliberately omitted,
+use `music_playlist_patch.apply(payload)` to retain the installed selection.
+
+Add both exact entries to **each** of these four returned status dictionaries:
+`read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy`:
+
+```python
+"music_shuffle": music_playlist_patch.status(payload),
+"music_shuffle_state": music_playlist_patch.read_settings(payload),
+```
+
+Use the actual executable byte variable in each dictionary (original for read,
+final/patched for write); never return input state after a successful write.
+The state includes `all_modes_proved=False` and `runtime_witnessed=False`.
+Preserve existing `music_policy`, `music_unlock`, `music_userlist` and their
+four-dictionary entries; they compose in either order. Shuffle controls the
+shared background while enabled regardless of the older direct-bank policy.
+
+### Music page, Gameplay Patches and Build tab
+
+`mod_editor/gui/music_panel_qt.py` is already edited. It adds a Playlist page,
+`playlist_changed(dict)`, `playlist_options()` and
+`set_playlist_options(dict)`, individual checks, outtake/bed switches, clear/all,
+zero/one-song explanations and atomic Save/Open choices. Source/operation locks
+cover the page. Existing Recordings controls and policy signals retain their
+API. No preview process starts when playlist choices change.
+
+In protected `studio_qt.py`, connect `playlist_changed` to the shared Build
+plan's `music_shuffle` flag and `music_shuffle_selection` document, mark the
+project dirty, and restore via `set_playlist_options` on project/source open.
+Use signal blocking/one controller transaction to avoid a feedback loop when
+Build changes the same option. Persist the document with the project's Build
+settings. The Music page's local choices JSON round-trip works independently;
+the old dedicated `.2k5music` audio-project schema is unchanged. Never silently
+claim its old format now persists these choices. Standalone "Build music copy"
+and "Export .2k5patch" on Recordings retain their fixed-slot scope; route the
+playlist's executable changes through the main Build transaction.
+
+Add a protected Gameplay Patches `PATCHES` row keyed `music_shuffle` with title
+**"Shared music shuffle (experimental)"** and this exact explanation:
+
+> Retail: each screen chooses its own music. Patch: selected menu and jukebox
+> recordings shuffle in the shared menu, Crib and game background player.
+> Loading and shows keep their timed music. Background disc and HDD playlists
+> are replaced. Individual screen coverage is still untested in game.
+
+Add `"music_shuffle"` to `NEEDS_IMAGE` because a build must validate source bank
+counts. Pure backend XBE proofs do not replace that image preflight.
+
+In protected `build_panel_qt.py`, add through `_option`:
+
+```python
+self.music_shuffle_check = self._option(
+    layout, "music_shuffle", "Shuffle songs in menus, Crib and games",
+    "Experimental, not yet tested in game. Uses the Music tab playlist. "
+    "Loading and shows keep their timed music.", badge="EXPERIMENTAL")
+```
+
+Caption: 38 characters, below 60. Add it to all option/state maps, source
+availability, reset, dirty state, summary, preset handling and plan assembly.
+Bind it to the Music page's enable flag; retain its detailed song choices.
+Do not use "Across all modes". Draft presentation routing, individual franchise
+screens, replay routing and played audio remain open witness gates.
+
+### Release allowance, closure, capability and cave manifest
+
+Add exact new runtime allowance lines in protected
+`packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_music_playlist.py
+mod_editor/core/nfl2k5_music_playlist_code.py
+reports/music_playlist_contexts.v1.json
+```
+
+The existing `mod_editor/gui/music_panel_qt.py` allowance stays. Assembly source
+and generator are development reproducibility tools, not runtime dependencies:
+`tools/nfl2k5_music_playlist.S`, `tools/nfl2k5_music_playlist_assemble.py`.
+No scratch artifacts or original game/audio files belong in a release.
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, import the two new core
+modules and the existing Music panel. Verify default 66 / outtakes-off 54 /
+beds-on 76 selections, import the generated template, and instantiate the page
+offscreen without loading game evidence. Preserve runtime closure for:
+
+```text
+mod_editor.core.nfl2k5_xbe_space
+mod_editor.core.nfl2k5_bump_strength
+mod_editor.core.nfl2k5_cave_oracle
+mod_editor.core.nfl2k5_music_policy
+mod_editor.core.nfl2k5_music_catalog
+mod_editor.core.nfl2k5_music_metadata
+mod_editor.core.nfl2k5_music_storage
+mod_editor.core.nfl2k5_depth_chart_storage
+mod_editor.core.platform_compat
+mod_editor.studio.music_service
+```
+
+No GNU assembler, Capstone, Unicorn or private research corpus is needed for
+normal module import or the playlist writer. They are developer proof tools.
+
+Merge the ready registry object in
+`docs/mod_editor/nfl2k5_music_playlist_capability.json` into
+`mod_editor/capabilities/registry.v1.json`: ID `nfl2k5.music.playlist`, existing
+`audio` surface, `offline-writer-proved`, runtime `not-tested`, default false.
+Update registry count/findings expectations during integration. This handoff
+follows the brief's explicit "capability via WIRING" boundary.
+
+The gate union, allocator allocation-evidence default union and manifest
+builder owner/request/wrapper/probe lists are already updated. Regenerate
+protected `data/nfl2k5_cave_reservations.json` only through Claude's coordinated
+`tools/nfl2k5_cave_oracle.py manifest` run after protected integration, then repin
+packaging source hashes using the existing release workflow. The new standalone
+manifest test observes the real writer and validates every hook and full
+RX/RW/RO child without rewriting a disc or the protected manifest.
