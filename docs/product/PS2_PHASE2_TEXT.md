@@ -112,6 +112,15 @@ headroom exists.
   than refusing, so the patcher refuses a compressed bank outright and says why.
   If a disc revision ever compresses one, that refusal is the correct answer
   until the path exists and is proved.
+
+  The repo's compressor was located and deliberately not wired in:
+  `nfl_txtr.compress_vc_lz` is the encoder, and
+  `tools/nfl_vc_lz_fill.py` is the "refit into a fixed compressed span without
+  touching the wrapper" layer above it — the one whose header records that
+  raising the wrapper's in-place decode scratch word hung the attract demo on
+  2026-09-03. Wiring that in for a surface where no bank is compressed would
+  add exactly that hazard and buy nothing. When a compressed surface does need
+  it, those are the two modules to reuse.
 * **No multi-pack handling.** All five banks live entirely inside
   `/VC_20919/0.`, so one bounded ISO9660 file replacement covers any edit. A
   bank that straddled two packs is detected and refused.
