@@ -232,6 +232,32 @@ class IdentityLaneTests(unittest.TestCase):
         self.assertNotIn("Nowhere", text)
         self.assertIn("TDNA", text, "the field names are the point of the document")
 
+    def test_two_teams_of_one_schema_share_one_field_shape(self) -> None:
+        """Thirty-two teams must not carry thirty-two copies of one description."""
+
+        first, second = self.catalogue.targets[0], self.catalogue.targets[1]
+        self.assertIs(first.fields, second.fields)
+
+    def test_a_member_with_another_schema_gets_its_own_shape(self) -> None:
+        """A modified image must not be offered the first member's controls."""
+
+        odd = ea_tdb.recompute_crcs(ea_tdb.build_tdb((
+            (identity_lane.TEAM_TABLE,
+             (("TGID", ea_tdb.FIELD_UINT, 10),
+              ("TDNA", ea_tdb.FIELD_STRING, 9 * 8)),
+             ({"TGID": 11, "TDNA": "SHORT"},)),
+        )))
+        source = self.work / "mixed.iso"
+        source.write_bytes(containers.build_synthetic_disc(
+            tdb_members=[identity_lane.synthetic_team_database(
+                identity_lane.SYNTHETIC_TEAM_IDS[0]), odd],
+            stream_database=identity_lane.synthetic_stream_database()))
+        catalogue = self.lane.build_catalogue(source)
+        full, narrow = catalogue.targets[0], catalogue.targets[1]
+        self.assertEqual([item.key for item in narrow.fields], ["TDNA"])
+        self.assertEqual(narrow.fields[0].maximum, 8)
+        self.assertGreater(len(full.fields), len(narrow.fields))
+
     def test_the_document_names_what_is_measured_but_not_edited(self) -> None:
         for name in ("TCDO", "TCRP", "TGPT", "TCTX"):
             self.assertIn(name, self.catalogue.document["measured_not_edited"])

@@ -296,7 +296,7 @@ in 543 `TEXT` members until the Menus & UI page edits them.
 | `mod_editor/games/_formats/ea_tdb.py` | the TDB reader, writer and the four checksums |
 | `mod_editor/games/_formats/ea_terf.py` | the container reader and same-size member rewrite |
 | `tools/ps2_iso9660_writer.py` / `_verify.py` | the bounded image write, and the independent check of it |
-| `tests/mod_editor/test_madden09_ps2_identity.py` | 62 tests, on synthetic databases only |
+| `tests/mod_editor/test_madden09_ps2_identity.py` | 64 tests, on synthetic databases only |
 | `tools/validate_madden09_ps2_identity.{sh,bat}` | the shipped-tree validators |
 
 Run it without a window:

@@ -414,7 +414,13 @@ class IdentityLane:
         iso_path = f"{containers.DATA_DIRECTORY}/{TEAM_CONTAINER}"
 
         stream = self._stream_rows(image, files, cached, progress=progress)
-        shape: Optional[Tuple[Field, ...]] = None
+        #: One shape per distinct table schema, shared by every team that has
+        #: it.  All 235 members of a retail disc's container declare the same
+        #: 65 fields [M], so this is one entry -- but a member that declares
+        #: something else gets its own shape rather than the first member's,
+        #: which is what stops a modified image from offering a control for a
+        #: field that table has not got.
+        shapes: Dict[Tuple[Any, ...], Tuple[Field, ...]] = {}
         targets: List[Target] = []
         rows: List[Dict[str, Any]] = []
         for member in range(min(len(container), NFL_TEAM_MEMBERS)):
@@ -428,8 +434,11 @@ class IdentityLane:
                 rows.append({"member": member, "note": f"no {TEAM_TABLE} table"})
                 continue
             table = database.table(TEAM_TABLE)
+            signature = tuple((item.name, item.type_id, item.bit_width)
+                              for item in table.fields)
+            shape = shapes.get(signature)
             if shape is None:
-                shape = fields_for(table)
+                shape = shapes.setdefault(signature, fields_for(table))
             if not shape:
                 rows.append({"member": member,
                              "note": f"{TEAM_TABLE} declares none of the identity fields"})
