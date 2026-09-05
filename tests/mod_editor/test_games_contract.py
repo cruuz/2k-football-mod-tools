@@ -188,7 +188,7 @@ class DiscoveryTests(unittest.TestCase):
         (self.root / "_formats").mkdir()
         (self.root / "_formats" / "__init__.py").write_text("", encoding="utf-8", newline="\n")
         report = games.discover(self.root)
-        self.assertEqual(report.game_ids, ("okgame",))
+        self.assertEqual(report.game_ids, ("okgame",), [(item.directory, item.reason) for item in report.refused])
         refused = {item.directory: item for item in report.refused}
         self.assertEqual(set(refused), {"oldgame", "crashgame", "nogame"})
         self.assertIn("vc_game_module/v9", refused["oldgame"].reason)
@@ -205,8 +205,23 @@ class DiscoveryTests(unittest.TestCase):
         write_fake_game(self.root, "twin", GOOD_GAME_SOURCE, _manifest("twin"))
         # ``twin``'s code claims the id ``okgame`` (its manifest says twin).
         report = games.discover(self.root)
-        self.assertEqual(report.game_ids, ("okgame",))
+        self.assertEqual(report.game_ids, ("okgame",), [(item.directory, item.reason) for item in report.refused])
         self.assertTrue(any("manifest says" in item.reason for item in report.refused))
+
+    def test_discovery_works_through_a_symlinked_or_aliased_root(self) -> None:
+        """macOS gives /var/... for /private/var/...; Windows gives short names. Both must load."""
+
+        real = self.root / "real"
+        write_fake_game(real, "okgame", GOOD_GAME_SOURCE, _manifest("okgame"))
+        alias = self.root / "alias"
+        try:
+            os.symlink(real, alias, target_is_directory=True)
+        except (OSError, NotImplementedError) as exc:  # no symlink privilege here
+            self.skipTest(f"cannot create a symlink on this host: {exc}")
+        report = games.discover(alias)
+        self.assertEqual(report.game_ids, ("okgame",), [(item.directory, item.reason) for item in report.refused])
+        self.assertEqual(games.load("okgame", alias).identity.title, "OK Game")
+        self.assertEqual([m.game_id for m in games.manifests(alias)], ["okgame"])
 
     def test_load_names_the_reason_for_a_refused_game(self) -> None:
         write_fake_game(self.root, "oldgame", GOOD_GAME_SOURCE,

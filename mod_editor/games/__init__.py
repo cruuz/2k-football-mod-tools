@@ -29,6 +29,7 @@ from dataclasses import dataclass
 import importlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import sys
 from typing import Any, Iterator, Optional
@@ -104,6 +105,33 @@ class DiscoveryReport:
         return tuple(sorted(item.game_id for item in self.games))
 
 
+def _resolved_root(root: Optional[Path]) -> Path:
+    """The games root as a real path.
+
+    A temporary directory on macOS is ``/var/folders/...`` but resolves to
+    ``/private/var/...``; on Windows a runner's ``C:\\Users\\RUNNER~1`` resolves
+    to ``C:\\Users\\runneradmin``.  A game computes its own directory from
+    ``__file__`` resolved, so every comparison here must start from the
+    resolved root too, or every module is refused as 'not from its own
+    directory' -- which is exactly what happened on the first macOS and
+    Windows CI runs.
+    """
+
+    return Path(root).resolve() if root else GAMES_ROOT
+
+
+def _same_directory(left: Path, right: Path) -> bool:
+    try:
+        if left.resolve() == right.resolve():
+            return True
+    except OSError:
+        pass
+    try:
+        return os.path.samefile(left, right)
+    except OSError:
+        return False
+
+
 def _candidate_directories(root: Path) -> Iterator[Path]:
     """Subdirectories that look like game packages, in sorted order."""
 
@@ -127,7 +155,7 @@ def manifests(root: Optional[Path] = None) -> tuple[GameManifest, ...]:
 
     found: list[GameManifest] = []
     seen: dict[str, str] = {}
-    for directory in _candidate_directories(Path(root) if root else GAMES_ROOT):
+    for directory in _candidate_directories(_resolved_root(root)):
         if not (directory / MANIFEST_NAME).is_file():
             continue
         manifest = load_manifest(directory)
@@ -171,7 +199,7 @@ def discover(root: Optional[Path] = None) -> DiscoveryReport:
     ``game.json`` is not a game and is not reported.
     """
 
-    base = Path(root) if root else GAMES_ROOT
+    base = _resolved_root(root)
     games: list[GameModule] = []
     refused: list[RefusedGame] = []
     seen_ids: dict[str, str] = {}
@@ -191,10 +219,10 @@ def discover(root: Optional[Path] = None) -> DiscoveryReport:
                     f"{manifest.package}.{GAME_ATTRIBUTE} is not a GameModule from "
                     f"{CONTRACT_SCHEMA}."
                 )
-            if game.manifest.root != manifest.root:
+            if not _same_directory(game.manifest.root, directory):
                 raise ContractError(
                     f"{manifest.package}: GAME.manifest was loaded from "
-                    f"{game.manifest.root}, not from its own package directory."
+                    f"{game.manifest.root}, not from its own package directory {directory}."
                 )
             if game.game_id in seen_ids:
                 raise ContractError(

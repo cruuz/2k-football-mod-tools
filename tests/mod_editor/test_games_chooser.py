@@ -49,7 +49,8 @@ class ChooserModelTests(unittest.TestCase):
         self.rows = chooser.chooser_rows(self.report)
 
     def test_rows_show_loadable_first_and_refusals_with_reasons(self) -> None:
-        self.assertEqual([row.game_id for row in self.rows], ["okgame", "crashgame", "oldgame"])
+        self.assertEqual([row.game_id for row in self.rows], ["okgame", "crashgame", "oldgame"],
+                         [row.detail for row in self.rows])
         ok, crash, old = self.rows
         self.assertTrue(ok.loadable)
         self.assertEqual((ok.title, ok.platform, ok.version, ok.contract), ("OK Game", "Test Console", "2.3.4", "vc_game_module/v1"))
@@ -64,6 +65,7 @@ class ChooserModelTests(unittest.TestCase):
 
     def test_windows_needing_the_studio_are_withheld_without_a_session(self) -> None:
         ok = self.rows[0]
+        self.assertTrue(ok.loadable, [row.detail for row in self.rows])
         self.assertEqual([w.window_id for w in chooser.openable_windows(ok, has_studio_session=False)], ["main", "broken"])
         self.assertEqual([w.window_id for w in chooser.openable_windows(ok, has_studio_session=True)], ["main", "broken", "session"])
         self.assertEqual(chooser.openable_windows(self.rows[2], has_studio_session=True), ())
@@ -89,7 +91,7 @@ class ChooserModelTests(unittest.TestCase):
 
         listing = run()
         self.assertEqual(listing.returncode, 0, listing.stderr)
-        self.assertIn("1 game module ready", listing.stdout)
+        self.assertIn("1 game module ready", listing.stdout, listing.stdout + listing.stderr)
         self.assertIn("oldgame", listing.stdout)
         self.assertEqual(run("list").stdout, listing.stdout)
         described = run("show", "okgame")
