@@ -8,9 +8,11 @@ from mod_editor.core import nfl2k5_zone_drop as zone_drop
 from mod_editor.core import nfl2k5_music_metadata as music
 from mod_editor.core import nfl2k5_music_policy as policy
 from mod_editor.core import nfl2k5_roster_storage as roster_storage
+from mod_editor.core import nfl2k5_coverage_slider as coverage
+from mod_editor.core import nfl2k5_scramble_tuning as scramble
 
 REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS
-            + zone_drop.REQUESTS + roster_storage.REQUESTS)
+            + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -21,7 +23,7 @@ def compose(payload, *, reverse=False):
     payload, _ = space.apply(payload, REQUESTS)
     owners = ((defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True)), (zone_drop, {}),
-              (music, dict(song_records=SONGS)), (roster_storage, {}))
+              (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}))
     order = tuple(reversed(owners)) if reverse else owners
     for module, kwargs in order:
         payload, _ = module.apply(payload, **kwargs)

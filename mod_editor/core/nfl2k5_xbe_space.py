@@ -86,10 +86,10 @@ def _allocations(requests):
     # Preserve the already-shipped logo/kickoff/runtime layout when adding the
     # three new owners. Directory order remains canonical and immutable.
     new_owners = {"nfl2k5_defensive_try", "nfl2k5_momentum", "nfl2k5_zone_drop"}
-    # r62 immutable stadium IDs follow all beta-61 owners, keeping their
-    # established addresses stable when the complete union is rebuilt.
-    ordered = sorted(_requests(requests), key=lambda r: (
-        2 if r[0] == "nfl2k5_roster_storage" else int(r[0] in new_owners), r))
+    # r62 owners append after the complete beta-61 union, keeping every
+    # existing owner at its reserved address when the union is rebuilt.
+    r62_owners = {"nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning"}
+    ordered = sorted(_requests(requests), key=lambda r: (2 if r[0] in r62_owners else int(r[0] in new_owners), r))
     for owner, kind, size, align in ordered:
         offset = (cursors[kind] + align - 1) & -align
         if offset // PAGE != (offset + size - 1) // PAGE:

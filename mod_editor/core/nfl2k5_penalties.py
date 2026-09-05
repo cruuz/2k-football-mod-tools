@@ -65,6 +65,7 @@ downfield 0.14. Unwitnessed in game.
 from __future__ import annotations
 
 import json
+import hashlib
 import struct
 from pathlib import Path
 from types import MappingProxyType
@@ -96,6 +97,13 @@ SETTINGS: Mapping[str, int] = MappingProxyType({
 })
 CHOP_BLOCK_TOGGLE_VA = SETTINGS["chop_block"]
 CLIPPING_SLIDER_VA = SETTINGS["clipping"]
+CHOP_BLOCK_HELP = (
+    "EXPERIMENTAL / UNWITNESSED. Retail ignores the Chop Block On/Off setting: "
+    "Clipping above 0 enables chop blocks even with Chop Block Off. Patch: the "
+    "existing Chop Block setting controls its own penalty. The detector already "
+    "exists. This does not change penalty rates, yardage, or the saved setting. "
+    "Practice modes still disable penalties."
+)
 
 # --- the penalty record table (.data) --------------------------------------------------------------
 RECORD_TABLE_VA = 0x00A89950
@@ -334,6 +342,8 @@ def status(payload: bytes, profile: str | Path = DEFAULT_PROFILE) -> str:
         return "foreign"
     if not _pins_are_retail(payload):
         return "foreign"
+    if chop_block_status(payload) == "foreign":
+        return "foreign"
     for _label, va, before, _after in kept:
         try:
             off = rdata.offset_of(payload, va)
@@ -341,25 +351,92 @@ def status(payload: bytes, profile: str | Path = DEFAULT_PROFILE) -> str:
             return "foreign"
         if payload[off: off + len(before)] != before:
             return "foreign"
-    return rdata.status(payload, edit_sites)
+    state = rdata.status(payload, edit_sites)
+    # The independently installed, complete toggle repair is a supported
+    # prerequisite. Arbitrary mixtures inside either group still refuse.
+    if state == "foreign" and chop_block_status(payload) == "applied":
+        rates = [s for s in edit_sites if not s[0].startswith("chop_block_")]
+        if rdata.status(payload, rates) == "retail":
+            return "retail"
+    return state
 
 
 def apply(payload: bytes, profile: str | Path = DEFAULT_PROFILE) -> tuple[bytes, Mapping[str, object]]:
     name, _tables = load_profile(profile)
     state = status(payload, profile)
     if state == "applied":
-        return payload, {"already_applied": True, "edits": [], "changed_bytes": 0, "profile": name}
+        return payload, {"already_applied": True, "edits": [], "changed_bytes": 0, "profile": name,
+                         "experimental": True, "runtime_witnessed": False}
     _require(state == "retail", f"penalty sites are {state}, not retail; refusing")
     try:
-        patched, receipt = rdata.apply(payload, sites(profile), f"Penalties ({name})")
+        edits = sites(profile)
+        if chop_block_status(payload) == "applied":
+            edits = [s for s in edits if not s[0].startswith("chop_block_")]
+        patched, receipt = rdata.apply(payload, edits, f"Penalties ({name})")
     except rdata.RdataSiteError as exc:
         raise PenaltiesError(str(exc)) from exc
     return patched, {**receipt, "profile": name, "estimated": True,
+                     "experimental": True, "runtime_witnessed": False,
                      "tables": describe(profile),
                      "incidental_facemask_yards": {"va": f"0x{FACEMASK_YARDS_VA:x}", "retail_cm": 457.2, "new_cm": 1371.6},
                      "chop_block": {"case_entry_va": f"0x{CASE10_ENTRY_VA:x}", "retail_target": f"0x{RETAIL_CASE10_TARGET:x}",
                                     "stub_va": f"0x{HOST_VA:x}", "stub_bytes": STUB.hex(), "host_size": HOST_SIZE,
                                     "reads": f"0x{CHOP_BLOCK_TOGGLE_VA:x}", "resumes_at": f"0x{STORE_VA:x}"}}
+
+
+def chop_block_sites():
+    """Reuse the beta-61 owner and reservation; never allocate a second stub."""
+    return [("chop_block_case_entry", CASE10_ENTRY_VA, RETAIL_CASE10_ENTRY, PATCHED_CASE10_ENTRY),
+            ("chop_block_stub_host", HOST_VA, RETAIL_HOST, PATCHED_HOST)]
+
+
+# Complete enable pass plus the deterministic detector.
+# The case-10 entry is checked by chop_block_sites; the other entries are pinned.
+CHOP_BLOCK_GUARDS = (
+    (0xb1440, 408, "20b624a2b679fe412f44f8cd7169d109501b9b3c541cd4c8b05a21cb786e71b7"),
+    (0xb2900, 80, "76762db785e18d3d6c34067154a806cabc41d370135443ef117548abfdf3daf6"),
+)
+
+
+def chop_block_status(payload: bytes) -> str:
+    try:
+        for va, size, digest in CHOP_BLOCK_GUARDS:
+            off = rdata.offset_of(payload, va)
+            blob = bytearray(payload[off:off + size])
+            if va <= CASE10_ENTRY_VA < va + size:
+                relative = CASE10_ENTRY_VA - va
+                blob[relative:relative + 4] = RETAIL_CASE10_ENTRY
+            if hashlib.sha256(blob).hexdigest() != digest:
+                return "foreign"
+        return rdata.status(payload, chop_block_sites())
+    except (ValueError, struct.error):
+        return "foreign"
+
+
+def chop_block_evidence(payload: bytes) -> dict:
+    """Static evidence, not a claim that a played flag was witnessed."""
+    state = chop_block_status(payload)
+    return {"status": state, "experimental": True, "runtime_witnessed": False,
+            "retail_toggle_ignored": state != "foreign", "detector_present": state != "foreign",
+            "case_entry_va": hex(CASE10_ENTRY_VA), "clipping_entry_va": hex(CASE10_ENTRY_VA - 4),
+            "retail_shared_target_va": hex(RETAIL_CASE10_TARGET), "toggle_va": hex(CHOP_BLOCK_TOGGLE_VA),
+            "detector_va": "0xb2900", "practice_disables_all_penalties": True,
+            "truth_table": [{"chop_toggle": toggle, "clipping": clipping,
+                              "retail_enabled": clipping > 0, "patch_enabled": bool(toggle)}
+                             for toggle in (0, 1) for clipping in (0.0, 0.5)]}
+
+
+def apply_chop_block(payload: bytes) -> tuple[bytes, dict]:
+    """Repair only the toggle, preserving the selected penalty-rate profile."""
+    state = chop_block_status(payload)
+    _require(state in ("retail", "applied"), "foreign/mixed Chop Block sites; refusing")
+    result, receipt = rdata.apply(payload, chop_block_sites(), "Chop Block toggle")
+    return result, {**receipt, **chop_block_evidence(result),
+                    "owner": "nfl2k5_penalties", "rates_changed": False,
+                    "site_bytes": [{"label": label, "va": hex(va),
+                                    "file_offset": hex(rdata.offset_of(payload, va)),
+                                    "before": before.hex(), "after": after.hex()}
+                                   for label, va, before, after in chop_block_sites()]}
 
 
 __all__ = ["CASE10_ENTRY_VA", "CHOP_BLOCK_TOGGLE_VA", "CLIPPING_SLIDER_VA", "DEFAULT_PROFILE", "ENABLE_JUMP_TABLE_VA",
@@ -369,4 +446,5 @@ __all__ = ["CASE10_ENTRY_VA", "CHOP_BLOCK_TOGGLE_VA", "CLIPPING_SLIDER_VA", "DEF
            "RECORD_NAMES", "RECORD_SIZE", "RECORD_TABLE_VA", "RECORD_YARDS_OFFSET", "RETAIL_CASE10_ENTRY",
            "RETAIL_CASE10_TARGET", "RETAIL_FACEMASK_YARDS", "RETAIL_HOST", "RETAIL_PAIRS", "SETTINGS", "STORE_VA", "STUB",
            "STUB_SIZE", "TABLES", "TABLE_COUNTS", "TABLE_VAS", "apply", "decode_tables", "describe", "kept_tables",
-           "load_profile", "profile_pairs", "record_va", "sites", "status", "validate_profile"]
+           "load_profile", "profile_pairs", "record_va", "sites", "status", "validate_profile",
+           "CHOP_BLOCK_HELP", "apply_chop_block", "chop_block_status", "chop_block_evidence", "chop_block_sites"]

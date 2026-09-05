@@ -1,0 +1,250 @@
+[
+  {
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_coverage_slider.py",
+      "operation": "write",
+      "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_coverage_slider as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+    },
+    "id": "nfl2k5.gameplay.coverage_slider",
+    "input_constraints": [
+      "User-owned pinned USA default.xbe; mixed or foreign lever bytes refuse.",
+      "For grown owners reserve the complete selected request union before any installation; no additional page is allocated by this feature."
+    ],
+    "portme": [
+      "Complete the per-lever Noah witness list in ASTRA_GAMEPLAY_LEVERS_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+      ],
+      "scope": "Pinned byte and bounded helper proofs only. No game/loader witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "coverage_slider",
+          "required": true,
+          "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in"
+        }
+      ],
+      "notes": "See WIRING.md for request union and flight exclusivity."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "two operand repoints and a named 16-byte immutable allocation",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Expand the direct ball-reaction contribution while preserving the float32 neutral point at 50.",
+    "surface": "gameplay_tuning_sliders",
+    "title": "Coverage slider response (experimental, unwitnessed)",
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+  },
+  {
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_scramble_tuning.py",
+      "operation": "write",
+      "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_scramble_tuning as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+    },
+    "id": "nfl2k5.gameplay.scramble_tuning",
+    "input_constraints": [
+      "User-owned pinned USA default.xbe; mixed or foreign lever bytes refuse.",
+      "For grown owners reserve the complete selected request union before any installation; no additional page is allocated by this feature."
+    ],
+    "portme": [
+      "Complete the per-lever Noah witness list in ASTRA_GAMEPLAY_LEVERS_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+      ],
+      "scope": "Pinned byte and bounded helper proofs only. No game/loader witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "scramble_tuning",
+          "required": true,
+          "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in"
+        }
+      ],
+      "notes": "See WIRING.md for request union and flight exclusivity."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "one five-byte call and a named 160-byte selector/table allocation",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Use 65% of the native acceleration curve for live QB carriers with raw Speed <= 60. CPU bailout decisions and top speed are unchanged.",
+    "surface": "gameplay_tuning_sliders",
+    "title": "Slow-QB acceleration (experimental, unwitnessed)",
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+  },
+  {
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_throw_arc.py",
+      "operation": "write",
+      "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_throw_arc as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_throw_arc.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+    },
+    "id": "nfl2k5.gameplay.flatter_deep_ball",
+    "input_constraints": [
+      "User-owned pinned USA default.xbe; mixed or foreign lever bytes refuse.",
+      "Existing fixed spans only; use an original source when changing incompatible flight profiles."
+    ],
+    "portme": [
+      "Complete the per-lever Noah witness list in ASTRA_GAMEPLAY_LEVERS_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+      ],
+      "scope": "Pinned byte and bounded helper proofs only. No game/loader witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "flatter_deep_ball",
+          "required": true,
+          "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in"
+        }
+      ],
+      "notes": "See WIRING.md for request union and flight exclusivity."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "one existing lob-speed ordinate; no new executable hook or allocation",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Increase the deep lob speed knot to 25 yards per second while keeping the chosen distance curve and speeds through 35 yards.",
+    "surface": "gameplay_tuning_sliders",
+    "title": "Flatter deep flight (experimental, unwitnessed)",
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_throw_arc.py"
+  },
+  {
+    "backend": {
+      "module": "mod_editor/core/nfl2k5_penalties.py",
+      "operation": "write",
+      "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_penalties as m; result, receipt = m.apply_chop_block(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+      "tests/mod_editor/test_nfl2k5_penalties.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+    },
+    "id": "nfl2k5.gameplay.chop_block_toggle",
+    "input_constraints": [
+      "User-owned pinned USA default.xbe; mixed or foreign lever bytes refuse.",
+      "Existing fixed spans only; use an original source when changing incompatible flight profiles."
+    ],
+    "portme": [
+      "Complete the per-lever Noah witness list in ASTRA_GAMEPLAY_LEVERS_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+      ],
+      "scope": "Pinned byte and bounded helper proofs only. No game/loader witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "name": "chop_block_toggle",
+          "required": true,
+          "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in"
+        }
+      ],
+      "notes": "Existing penalty profiles already repair Chop Block; this switch is independently selectable."
+    },
+    "source_container": {
+      "format": "XBE in XDVDFS",
+      "hash_pins": [
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+      ],
+      "resource": "existing penalty owner: case-10 pointer and reserved ten-byte stub in a 16-byte host",
+      "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+    },
+    "summary": "Expose the existing toggle repair independently of penalty-rate tuning. Retail shares Clipping enable; the detector exists.",
+    "surface": "gameplay_tuning_sliders",
+    "title": "Repair Chop Block toggle (experimental, unwitnessed)",
+    "validation_command": "python3 tests/mod_editor/test_nfl2k5_penalties.py"
+  }
+]

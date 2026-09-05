@@ -47,10 +47,15 @@ class CaveReferenceTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         from mod_editor.core import nfl2k5_throw_tuning as tt
         cls.retail = XBE.read_bytes()
+        from mod_editor.core import nfl2k5_penalties as penalties, nfl2k5_throw_arc as flight
+        # Standalone toggle composes before the bundled profile; flight preserves 80 yd.
+        seed, _ = penalties.apply_chop_block(cls.retail)
+        seed, _ = tt.plan_patch(seed, tt.curves_for(tt.TuningSettings(80)))
+        seed, _ = flight.apply(seed)
         cls.sec = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
                                           "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
-        cls.patched, _receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True)
+        cls.patched, _receipt = tt._apply_all(seed, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True)
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         cls.patched, _ = pools.apply(cls.patched)

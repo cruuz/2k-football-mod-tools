@@ -3316,3 +3316,252 @@ Source container: version 17 disc ROST or version 0 roster/franchise save,
 field-relative 0x54 records, title's existing signed-save copy writer.
 Portme: Noah's signed-copy reopen and 2026-franchise witness. Registry changes
 should not re-enable the older narrow disc_roster provider's unrelated writes.
+# r62 gameplay levers handoff, 2026-09-05
+
+This section supersedes older coverage/acceleration assumptions for these four
+controls. Implementation and tests are in `ASTRA_GAMEPLAY_LEVERS_REPORT.md`.
+The protected dispatcher, BuildPlan, Gameplay panels, release allowlist, runtime
+checker, and reservation JSON were deliberately left for Claude. The feature's
+own `throw_tuning_panel_qt.py` already offers flatter flight, a numerical preview
+and a flight curve, with a working transactional copy action.
+
+All four new switches are **EXPERIMENTAL / UNWITNESSED** and default False in
+`softdrink_basic`, `softdrink_advanced`, and `softdrink_experimental`. Advanced
+and Experimental already select `penalties="nfl"`, which includes the existing
+Chop Block repair; report its actual applied state even with the new independent
+switch False. No played witness or automatic preset promotion is authorized by
+these implementation proofs.
+
+## Dispatcher and the four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_coverage_slider as coverage_slider_patch
+from . import nfl2k5_scramble_tuning as scramble_tuning_patch
+from . import nfl2k5_throw_arc as flatter_flight_patch
+```
+
+`nfl2k5_throw_arc` has literal pins and defers all access to the dispatcher's
+definitions until call time, so this import does not require a cyclic-import
+workaround. The shared runtime dependency is `nfl2k5_gameplay_lever.py`.
+
+Add Boolean kwargs, default False, to `_apply_all`, `write_xbe_copy`, and
+`write_image_copy`, and forward them through every call, including deferred
+scorebug/grown-XBE passes:
+
+```python
+coverage_slider=False, scramble_tuning=False,
+flatter_deep_ball=False, chop_block_toggle=False
+```
+
+Validate all four with `type(value) is bool` before copying or mutation. Add
+them to both writers' `nothing requested` checks. Add an adapter for the
+existing penalties module's independent entry points:
+
+```python
+class _chop_block_adapter:
+    status = staticmethod(penalties_patch.chop_block_status)
+    apply = staticmethod(penalties_patch.apply_chop_block)
+```
+
+Add these ordinary `_apply_all` tuple entries beside penalties (the complete
+rate profile and the independent repair commute):
+
+```python
+(chop_block_toggle, _chop_block_adapter,
+ "chop_block_toggle_patch", "experimental Chop Block toggle repair"),
+(flatter_deep_ball, flatter_flight_patch,
+ "flatter_deep_ball_patch", "experimental flatter deep flight"),
+```
+
+Add these entries in the **final owner tuple, after allocation**:
+
+```python
+(coverage_slider, coverage_slider_patch,
+ "coverage_slider_patch", "experimental Coverage slider response"),
+(scramble_tuning, scramble_tuning_patch,
+ "scramble_tuning_patch", "experimental slow-QB acceleration"),
+```
+
+Extend `_selected_space_requests`, `_xbe_space_adapter`, the inherited
+`_defensive_try_adapter` construction, and every request-union caller with the
+two new Boolean arguments. Append the selected modules' `REQUESTS` to the
+same initial union used for kickoff, scorebug, Momentum, defensive tries and
+zone drop. Either switch implies the allocator. Extend its `flag` condition
+in the final tuple. Do not call a new owner on an already-grown image that
+was sealed without its request. Do not grow early in the ordinary pass if
+Build still has roster/layout/scorebug work to do. Mirror the existing
+deferred-owner routing and reserve the whole union before the first growth.
+
+The allocator change is already implemented: r62 owners sort after every
+beta-61 owner, preserving its existing named addresses. Requests add 16 and
+160 immutable RX bytes, zero RW bytes, and no page-count change. The full
+union assigns Coverage to `0x014D99A0` and scramble to `0x014D99B0`; these
+addresses are receipts, not constants to hardcode. Smaller unions differ.
+
+Insert the following in **all four status dictionaries**: `read_xbe(payload)`,
+`read_image(payload)`, `write_xbe_copy(result)`, `write_image_copy(after)`.
+Use the variable shown for each function; the snippet uses `payload`:
+
+```python
+"coverage_slider": coverage_slider_patch.status(payload),
+"scramble_tuning": scramble_tuning_patch.status(payload),
+"flatter_deep_ball": flatter_flight_patch.status(payload),
+"chop_block_toggle": penalties_patch.chop_block_status(payload),
+"chop_block_evidence": penalties_patch.chop_block_evidence(payload),
+```
+
+Include full subreceipts on new writes and explicit replay receipts on
+already-applied input. Add these keys to `mod_build.inspect`, availability,
+step summaries and output receipt selection. A foreign flatter-flight status
+on a known high-arc/realistic source means the original source is required
+for this particular option; it does not invalidate unrelated game features.
+
+## Flight ordering and read-back
+
+The flat module's `apply(payload)` changes **only** the speed table. It never
+silently changes the arm-distance settings. Selecting the new option in Build
+sets `throw=True`, uses the existing 80-yard ceiling initially, and clears
+`arc`, `realistic_flight`, and `arc_by_distance`. Later explicit distance
+changes remain independent. The workspace already does this normalization.
+
+Before mutation, reject `flatter_deep_ball` together with a nonzero arc,
+realistic flight, or the relocated high-arc band. Also require the original
+payload's `flatter_flight_patch.status` to be retail or applied: changing an
+unused in-place table under a relocated reader must never be a successful
+no-op. In `_apply_all`, when flat is requested, remove `lobspeed` from `wanted`
+before the ordinary distance pass. Then the flat tuple entry applies the
+pinned speed edit separately, with its exact receipt. Do not overwrite an
+already-flat speed table with a retail speed table during replay.
+
+For replay of matching distance tables, run `plan_patch` only when
+`wanted and _curves_differ(payload, wanted)`. The current
+`or not arc_table` condition forces an unnecessary write and rejects the
+already-matching case. Keep all count/coordinate validation and refusal checks.
+
+On reading a flat source, retain its ceiling and report the flight choice
+separately; do not infer a tall arc from it. The feature module's `read_any`
+already normalizes this for the workspace. The actual speed points are
+`FLAT_LOBSPEED`. Use them for each writer's preview and in Build summaries.
+`arc_table` in read reports is a dictionary with a `state` member, while write
+receipts use a string; do not compare the whole read dictionary with `retail`.
+The workspace now also previews the actual relocated table when that existing
+mode is selected, fixing its old numerical-table mismatch.
+
+## BuildPlan, Gameplay, and Build controls
+
+Add these fields to protected `BuildPlan`, all default False:
+
+```python
+coverage_slider: bool = False
+scramble_tuning: bool = False
+flatter_deep_ball: bool = False
+chop_block_toggle: bool = False
+```
+
+Include them in selection/has-work predicates, preset resets, availability,
+inspect results, persistence/plan serialization, worker kwargs, the early XBE
+pass for flat/Chop, and the final grown-owner pass for Coverage/scramble.
+Extend the scorebug `extra_requests` path and final `_apply_all` call with
+Coverage/scramble; merely forwarding the first writer call is insufficient.
+In every preset, add explicit False values. Preserve the selected existing
+penalty profile. Do not disable the independent Chop checkbox by pretending
+the bundled repair is still retail.
+
+Use these Gameplay Patches `PATCHES` entries. The imported help constants
+already contain both required words **Retail** and **Patch**:
+
+```python
+("coverage_slider", "Coverage slider response (experimental)", coverage_slider_patch.HELP_TEXT),
+("scramble_tuning", "Slow-QB acceleration (experimental)", scramble_tuning_patch.HELP_TEXT),
+("chop_block_toggle", "Repair Chop Block toggle (experimental)", penalties_patch.CHOP_BLOCK_HELP),
+("flatter_deep_ball", "Flatter deep flight (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail deep lobs use 20 yards per second. "
+ "Patch: deep lobs use 25, keeping speeds through 35 yards and the selected "
+ "distance curve. At 80 yards the equal-height preview is 3.20 seconds and "
+ "a 13.7-yard apex. Choose one flight option and start from the original source."),
+```
+
+For the **Gameplay tab explanation**, place `coverage_slider_patch.HELP_TEXT`
+beside Coverage. It explicitly explains 0, 50 and 100. This changes a defender's
+direct ball-reaction contribution; it is not a catch/interception multiplier
+and zero does not remove context-driven reactions. Keep the Human and CPU
+slider settings in their existing settings writer, not the runtime table's
+index order. Add `scramble_tuning_patch.HELP_TEXT` beside its option and
+`penalties_patch.CHOP_BLOCK_HELP` beside the independent toggle repair.
+Replace any remaining claim that retail has no acceleration with the beta-61
+correction. The owned Throw workspace tooltip is already corrected.
+
+`NEEDS_IMAGE`: add `coverage_slider` and `scramble_tuning`, matching the
+existing product policy for grown owners. Do not add `flatter_deep_ball` or
+`chop_block_toggle`; they also work on a bare default.xbe. Their source gating
+must use the relevant status, not unrelated penalty profile state.
+
+Build `_option` captions, each under 60 characters:
+
+| Key | Caption |
+| --- | --- |
+| coverage_slider | Coverage slider response (experimental) |
+| scramble_tuning | Slow-QB acceleration (experimental) |
+| flatter_deep_ball | Flatter deep flight (experimental) |
+| chop_block_toggle | Repair Chop Block toggle (experimental) |
+
+Wire all four checkboxes into `_make_plan`, reset, presets, source status
+gating, selected-change text and source-reload behavior. Attach the same help
+text. No new Studio navigation item is required: the Throw workspace exists
+and its own panel is already changed. No additional GUI panel was edited here.
+
+## Allowlist, runtime closure, capability rows and oracle
+
+Add exactly these new runtime allowlist lines; the edited existing modules
+and panel are already listed:
+
+```text
+mod_editor/core/nfl2k5_gameplay_lever.py
+mod_editor/core/nfl2k5_coverage_slider.py
+mod_editor/core/nfl2k5_scramble_tuning.py
+mod_editor/core/nfl2k5_throw_arc.py
+```
+
+Add explicit runtime-closure imports in the protected staged checker:
+
+```text
+mod_editor.core.nfl2k5_gameplay_lever
+mod_editor.core.nfl2k5_coverage_slider
+mod_editor.core.nfl2k5_scramble_tuning
+mod_editor.core.nfl2k5_throw_arc
+```
+
+Retain existing imports of `nfl2k5_penalties`, `nfl2k5_xbe_space`,
+`nfl2k5_cave_oracle`, `nfl2k5_bump_strength`, `nfl2k5_rdata_sites`,
+`nfl2k5_draft_ai` (the small assembler), `platform_compat`, and the Throw panel.
+No Capstone/Unicorn requirement is added to runtime patch application; only
+instruction tests need them. Include new modules in the gameplay provider
+closure, then regenerate changed source pins in `providers.py` and the
+protected runtime checker using the existing repin workflow after integration.
+Do not make stale fingerprints silently acceptable.
+
+Four schema-valid complete capability objects are delivered in
+`docs/mod_editor/nfl2k5_gameplay_levers_capabilities.json`. Merge by ID into
+`mod_editor/capabilities/registry.v1.json`, preserving experimental runtime
+status and the witness limits. All use the existing
+`gameplay_tuning_sliders` surface. The handoff JSON is review evidence, not an
+additional runtime asset to allowlist.
+
+The manifest **generator** already imports/observes the new modules, appends
+their requests, observes the independent Chop entry point, and records flat
+flight as an alternative data-table probe when the experimental stack uses
+the mutually exclusive high-arc band. Its alternative probe does not change
+the final stack's chosen flight. Claude must regenerate the protected
+`data/nfl2k5_cave_reservations.json` after all branches are integrated, with:
+
+```text
+python3 tools/nfl2k5_cave_oracle.py manifest <retail-default.xbe> --xiso <retail.xiso.iso> --work-dir <writable-disposable-space> --json data/nfl2k5_cave_reservations.json
+```
+
+Both executable gates now include all four levers and the complete existing
+owner union in both orders. The recorder has a focused new test. The on-disk
+manifest remains intentionally unchanged and its source fingerprints will
+remain stale until Claude regenerates it; this is not a passed fresh-manifest
+or staged-release claim.

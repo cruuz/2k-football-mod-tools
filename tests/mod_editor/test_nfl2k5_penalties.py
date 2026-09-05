@@ -372,6 +372,44 @@ class RetailTests(unittest.TestCase):
         # practice (mode < 4) still disables everything, toggle or not
         self.assertEqual(self._enable_pass(self.patched, 3, 1, 0.5)[1:], [0] * (pen.RECORD_COUNT - 1))
 
+    def test_standalone_chop_repair_preserves_rates_and_composes_both_orders(self):
+        alone, receipt = pen.apply_chop_block(self.retail)
+        self.assertEqual(pen.chop_block_status(alone), "applied")
+        self.assertEqual(pen.decode_tables(alone), pen.decode_tables(self.retail))
+        self.assertEqual(pen.apply_chop_block(alone)[0], alone)
+        self.assertEqual(pen.apply_chop_block(alone)[1]["changed_bytes"], 0)
+        self.assertFalse(receipt["rates_changed"])
+        self.assertFalse(receipt["runtime_witnessed"])
+        after, _ = pen.apply(alone)
+        reverse, _ = pen.apply_chop_block(self.patched)
+        self.assertEqual(after, reverse)
+        self.assertEqual(pen.status(after), "applied")
+
+    def test_standalone_chop_rejects_mixed_and_foreign_detector(self):
+        from tests.nfl2k5_gameplay_levers_fixture import replace
+        alone, _ = pen.apply_chop_block(self.retail)
+        for payload in (replace(alone, pen.CASE10_ENTRY_VA, pen.RETAIL_CASE10_ENTRY),
+                        replace(alone, pen.HOST_VA, pen.RETAIL_HOST),
+                        replace(self.retail, 0xB2900, b"\x90")):
+            self.assertEqual(pen.chop_block_status(payload), "foreign")
+            with self.assertRaises(pen.PenaltiesError):
+                pen.apply_chop_block(payload)
+
+    @unittest.skipUnless(HAVE_UNICORN, "unicorn not installed")
+    def test_standalone_chop_truth_matrix_matches_native_enable_pass(self):
+        alone, _ = pen.apply_chop_block(self.retail)
+        evidence = pen.chop_block_evidence(self.retail)
+        self.assertTrue(evidence["retail_toggle_ignored"])
+        self.assertTrue(evidence["detector_present"])
+        for row in evidence["truth_table"]:
+            old = self._enable_pass(self.retail, 4, row["chop_toggle"], row["clipping"])
+            new = self._enable_pass(alone, 4, row["chop_toggle"], row["clipping"])
+            self.assertEqual(bool(old[10]), row["retail_enabled"])
+            self.assertEqual(bool(new[10]), row["patch_enabled"])
+            self.assertEqual(old[:10] + old[11:], new[:10] + new[11:])
+        for mode in range(4):
+            self.assertEqual(self._enable_pass(alone, mode, 1, .5)[1:], [0] * 25)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -46,6 +46,46 @@ class ThrowTuningPanelTests(unittest.TestCase):
         self.assertFalse(self.panel.write_button.isEnabled())
         self.assertFalse(self.panel.target_button.isEnabled())
 
+    def test_flatter_option_selects_eighty_and_updates_table_and_curve(self):
+        self.panel.apply_report(tt.read_xbe(self.source))
+        self.panel.flatter_check.setChecked(True)
+        self.assertEqual(self.panel.ceiling_spin.value(), 80)
+        self.assertEqual(self.panel.preview_rows()[-1].deep_cap_yards, 80)
+        self.assertEqual(self.panel.preview_rows()[-1].hang_seconds, 3.2)
+        self.assertEqual(self.panel.preview_rows()[-1].apex_yards, 13.7)
+        last = len(tt.PREVIEW_ARMS) - 1
+        self.assertEqual(self.panel.preview_table.item(last, 3).text(), "3.20 s")
+        old, new = self.panel.flight_preview.lines
+        self.assertLess(max(y for _, y in new), max(y for _, y in old))
+        self.assertTrue(self.panel.has_changes())
+        self.assertFalse(self.panel.arc_slider.isEnabled())
+        self.assertIn("UNWITNESSED", self.panel.flatter_check.text())
+
+    def test_flight_modes_are_exclusive_and_reset_is_retail(self):
+        self.panel.realistic_check.setChecked(True)
+        self.panel.arc_by_distance_check.setChecked(True)
+        self.panel.flatter_check.setChecked(True)
+        self.assertFalse(self.panel.realistic_check.isChecked())
+        self.assertFalse(self.panel.arc_by_distance_check.isChecked())
+        self.assertEqual(self.panel.arc_spin.value(), 0)
+        self.panel.arc_by_distance_check.setChecked(True)
+        self.assertFalse(self.panel.flatter_check.isChecked())
+        self.assertEqual(self.panel.preview_rows()[-1].hang_seconds, 3.81)
+        self.assertEqual(self.panel.preview_table.item(len(tt.PREVIEW_ARMS) - 1, 3).text(), "3.81 s")
+        self.panel.reset_to_retail()
+        self.assertFalse(self.panel.flatter_check.isChecked())
+        self.assertEqual(self.panel.settings(), tt.TuningSettings())
+
+    def test_flatter_source_round_trips_without_claiming_new_changes(self):
+        from mod_editor.core import nfl2k5_throw_arc as flight
+        target = self.work / "flat.xbe"
+        flight.write_copy(self.source, target)
+        self.panel.apply_report(flight.read_any(target))
+        self.assertTrue(self.panel.flatter_check.isChecked())
+        self.assertFalse(self.panel.has_changes())
+        self.assertIn("flatter flight", self.panel.source_status.text())
+        self.assertEqual(self.panel.preview_rows()[-1].hang_seconds, 3.2)
+
     def test_sliders_and_spins_stay_in_step_and_update_the_preview(self) -> None:
         self.panel.ceiling_slider.setValue(80)
         self.assertEqual(self.panel.ceiling_spin.value(), 80)
