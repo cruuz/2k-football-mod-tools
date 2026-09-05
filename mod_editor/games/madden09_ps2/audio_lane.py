@@ -12,9 +12,11 @@ rungs:
 * :class:`AudioBanksLane` -- the 301 ``BNKl`` banks of ``SOUNDDAT.DAT`` and the
   967 PlayStation-ADPCM sounds inside them.  **Extract only**, and the reason
   is on the page: 134 of those sounds carry loop points (tags ``0x86`` /
-  ``0x87`` / ``0x89``) whose meaning this module has not established, and
-  replacing a looped sound without knowing what the loop tags address is how a
-  sound effect ends up stuttering in a game nobody here has booted.
+  ``0x87``, a frame-aligned start and an end inside the sound [M]) whose
+  handling by the SPU this module has not established, and replacing a looped
+  sound without knowing how the loop is played is how a sound effect ends up
+  stuttering in a game nobody here has booted.  Stereo bank sounds are planar,
+  the second run at the offset tag ``0x89`` carries [M].
 
 **Nothing has been booted.**  The streams lane's classification is
 ``offline-writer-proved``: a destination image is built and an independent
@@ -1311,10 +1313,10 @@ class AudioBanksLane:
 
     NO_WRITER = (
         "A bank sound is not replaced here. 134 of the 967 sounds carry loop points (tags "
-        "0x86, 0x87 and 0x89) whose meaning this module has not established, the PlayStation "
-        "SPU plays a bank sound from parameters no one here has mapped, and no rebuilt "
-        "Madden 09 container has ever been booted. Export the WAV; a writer needs those "
-        "three things first."
+        "0x86 and 0x87: a frame-aligned start and an end inside the sound) whose handling "
+        "by the PlayStation SPU no one here has mapped, 459 sounds declare no sample rate, "
+        "and no rebuilt Madden 09 container has ever been booted. Export the WAV; a writer "
+        "needs those three things first."
     )
 
     def build_catalogue(

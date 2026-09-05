@@ -124,6 +124,18 @@ first sound and garbage for the rest [M].  Each sound's header is a ``PT``
 platform header whose tag ``0x88`` gives the offset of its data inside the
 member [M].
 
+**A stereo bank sound is planar, not frame-interleaved** [M].  Tag ``0x89``
+is present on exactly the 183 stereo sounds of the retail disc and on none of
+the 784 mono ones, and on all 183 it equals ``0x88`` plus half the sound's
+data length: it is the offset of the **second channel's run**.  Two further
+measurements say the same thing: every one of the 183 carries a non-zero VAG
+flag byte in the frame just before that offset and in its last frame -- the
+end of each channel's run -- and decoding the two runs as channels gives a
+left/right correlation that beats the interleaved reading on 181 of 183
+(often exactly 1.0, a mono sound stored twice).  An earlier reading of this
+module had the frames alternating; it decoded each frame correctly and put
+them in the wrong channels.
+
 Bank sounds are **Sony PlayStation ADPCM** (VAG): 962 of 962 sounds whose
 length can be derived carry exactly 0.5714 bytes per sample, which is 16 bytes
 per 28 samples, and the second byte of every 16-byte frame is the VAG flag
@@ -187,7 +199,10 @@ TAG_SAMPLE_COUNT = 0x85
 TAG_LOOP_START = 0x86
 TAG_LOOP_END = 0x87
 TAG_DATA_OFFSET = 0x88
-TAG_LOOP_OFFSET = 0x89
+#: Present on exactly the stereo bank sounds, where it is the offset of the
+#: second channel's run [M]; the older name is kept for callers that used it.
+TAG_SECOND_CHANNEL = 0x89
+TAG_LOOP_OFFSET = TAG_SECOND_CHANNEL
 TAG_END_OFFSET = 0x8A
 TAG_FLAGS = 0x8C
 TAG_CODEC = 0xA0
@@ -227,8 +242,9 @@ TAG_MEANINGS: Mapping[int, str] = {
     TAG_LOOP_START: "loop start sample (banks)",
     TAG_LOOP_END: "loop end sample (banks)",
     TAG_DATA_OFFSET: "offset of this sound's data inside the bank member",
-    TAG_LOOP_OFFSET: "offset of the loop point's data (banks)",
-    TAG_END_OFFSET: "offset past this sound's data (banks)",
+    TAG_SECOND_CHANNEL: "offset of the second channel's data: stereo bank sounds are "
+                        "planar, and this tag is on exactly the stereo ones",
+    TAG_END_OFFSET: "constant 0 on every bank sound of this disc; role not established",
     TAG_FLAGS: "constant 4 on every PT stream; role not established",
     TAG_CODEC: "codec (4 = a ~10:1 speech codec, 10 = EA-XA ADPCM)",
     TAG_PAD: "no value; padding between tags",
@@ -823,23 +839,37 @@ def build_stream(pcm: bytes, *, channels: int, sample_rate: int, big_endian: boo
 # Sony PS ADPCM, and the banks that carry it
 # --------------------------------------------------------------------------
 
-def decode_psx(data: bytes, channels: int) -> bytes:
-    """Interleaved 16-bit PCM from a flat run of 16-byte PS ADPCM frames.
+def decode_psx(data: bytes, channels: int, *,
+               channel_offsets: Optional[Sequence[int]] = None) -> bytes:
+    """Interleaved 16-bit PCM from PS ADPCM frames, one contiguous run per channel.
 
-    Frames alternate between channels [A on this disc: the pairing of even
-    frames with the left channel is not established, though each channel's own
-    samples are proved byte for byte against ffmpeg].
+    A multi-channel sound is **planar**: channel 0's frames, then channel 1's
+    [M] -- on the disc's stereo bank sounds tag ``0x89`` names the second run's
+    offset and it sits at exactly half the data in 183 of 183.  *channel_offsets*
+    gives each run's start inside *data*; when it is absent the data is split
+    into equal runs.  Which run is the left channel is not established [A].
     """
 
     _require(1 <= channels <= 8, f"a sound with {channels} channel(s) is not one this "
                                  f"module reads.")
+    if channel_offsets is None:
+        run = len(data) // channels
+        run -= run % PSX_FRAME_BYTES
+        channel_offsets = [channel * run for channel in range(channels)]
+    _require(len(channel_offsets) == channels,
+             f"{len(channel_offsets)} channel offset(s) were given for {channels} channel(s).")
+    ordered = sorted(int(offset) for offset in channel_offsets)
+    _require(all(0 <= offset <= len(data) for offset in ordered),
+             "a channel run starts outside the sound's data.")
+    bounds = list(zip(ordered, ordered[1:] + [len(data)]))
     planes = [array.array("h") for _ in range(channels)]
     state = [(0, 0) for _ in range(channels)]
-    frames = len(data) // PSX_FRAME_BYTES
     filters = PSX_FILTERS
-    for frame in range(frames):
-        channel = frame % channels
-        base = frame * PSX_FRAME_BYTES
+    frame_plan = []
+    for channel, (start, end) in enumerate(bounds):
+        for base in range(start, end - PSX_FRAME_BYTES + 1, PSX_FRAME_BYTES):
+            frame_plan.append((channel, base))
+    for channel, base in frame_plan:
         control = data[base]
         shift = control & 0x0F
         index = control >> 4
@@ -913,18 +943,20 @@ def encode_psx_frame(target: Sequence[int], current: int, previous: int
 
 
 def encode_psx(pcm: bytes, channels: int) -> bytes:
-    """A flat run of 16-byte PS ADPCM frames for *pcm*, channel-interleaved."""
+    """PS ADPCM frames for *pcm*: one contiguous run per channel, channel 0 first.
+
+    The planar shape the disc's stereo bank sounds have [M]; the second run's
+    offset is ``len(result) // channels``.
+    """
 
     planes = _deinterleave(pcm, channels)
     total = len(planes[0]) - len(planes[0]) % PSX_SAMPLES_PER_FRAME
-    state = [(0, 0) for _ in range(channels)]
     out = bytearray()
-    for start in range(0, total, PSX_SAMPLES_PER_FRAME):
-        for channel in range(channels):
-            current, previous = state[channel]
+    for channel in range(channels):
+        current, previous = 0, 0
+        for start in range(0, total, PSX_SAMPLES_PER_FRAME):
             frame, current, previous = encode_psx_frame(
                 planes[channel][start:start + PSX_SAMPLES_PER_FRAME], current, previous)
-            state[channel] = (current, previous)
             out += frame
     return bytes(out)
 
@@ -1030,7 +1062,25 @@ def decode_bank_sound(data: Any, bank: Bank, sound: BankSound) -> bytes:
              f"nothing to decode.")
     begin = bank.offset + sound.data_offset
     payload = bytes(data[begin:begin + sound.data_length])
-    return decode_psx(payload, sound.channels)
+    offsets: Optional[List[int]] = None
+    second = sound.header.value(TAG_SECOND_CHANNEL)
+    if sound.channels == 2 and second is not None:
+        # The second channel's run starts where tag 0x89 says; on the disc that
+        # is exactly half the data in 183 of 183 stereo sounds [M].  A tag
+        # pointing anywhere else is a sound this module does not understand,
+        # and it is refused rather than decoded into two runs of the wrong
+        # length.
+        relative = int(second) - sound.data_offset
+        _require(0 < relative < sound.data_length and relative % PSX_FRAME_BYTES == 0,
+                 f"sound {sound.index} of this bank puts its second channel at byte "
+                 f"{int(second)}, which is not a frame boundary inside its "
+                 f"{sound.data_length}-byte data at {sound.data_offset}.")
+        offsets = [0, relative]
+    elif sound.channels != 1:
+        _require(second is None,
+                 f"sound {sound.index} of this bank has {sound.channels} channels and one "
+                 f"second-channel offset; this module reads mono and stereo banks.")
+    return decode_psx(payload, sound.channels, channel_offsets=offsets)
 
 
 # --------------------------------------------------------------------------
@@ -1292,6 +1342,9 @@ def synthetic_bank(*, sounds: int = 2, samples: int = 1120, sample_rate: int = 2
             tags += bytes([TAG_CHANNELS, 1, channels])
         tags += bytes([TAG_SAMPLE_RATE, 3]) + int(sample_rate).to_bytes(3, "big")
         tags += bytes([TAG_DATA_OFFSET, 4]) + b"\x00\x00\x00\x00"
+        if channels == 2:
+            # The disc's stereo shape: planar runs, the second one named by 0x89.
+            tags += bytes([TAG_SECOND_CHANNEL, 4]) + b"\x00\x00\x00\x01"
         tags += bytes([TAG_END])
         while (4 + len(tags)) % 4:
             tags += bytes([TAG_PAD])
@@ -1305,10 +1358,16 @@ def synthetic_bank(*, sounds: int = 2, samples: int = 1120, sample_rate: int = 2
         starts.append(cursor)
         cursor += len(body)
     fixed: List[bytes] = []
-    for header, start in zip(headers, starts):
+    for header, start, body in zip(headers, starts, bodies):
         marker = bytes([TAG_DATA_OFFSET, 4]) + b"\x00\x00\x00\x00"
         replacement = bytes([TAG_DATA_OFFSET, 4]) + int(start).to_bytes(4, "big")
-        fixed.append(header.replace(marker, replacement, 1))
+        header = header.replace(marker, replacement, 1)
+        if channels == 2:
+            marker = bytes([TAG_SECOND_CHANNEL, 4]) + b"\x00\x00\x00\x01"
+            replacement = (bytes([TAG_SECOND_CHANNEL, 4])
+                           + int(start + len(body) // 2).to_bytes(4, "big"))
+            header = header.replace(marker, replacement, 1)
+        fixed.append(header)
     out = bytearray(BNKL_MAGIC)
     out += struct.pack("<HH", 5, sounds)
     out += struct.pack("<II", header_size, cursor - header_size)
@@ -1362,6 +1421,7 @@ __all__ = [
     "TAG_MEANINGS",
     "TAG_SAMPLE_COUNT",
     "TAG_SAMPLE_RATE",
+    "TAG_SECOND_CHANNEL",
     "TAG_VERSION",
     "VALUELESS_TAGS",
     "build_stream",

@@ -127,13 +127,28 @@ ranges it declares.  It:
 ## 5. Why the banks stay extract-only
 
 The PS ADPCM encoder exists and round-trips a computed tone at 57 dB, so it is
-not the codec that stops a bank writer.  What stops it is that **134 of the 967
-sounds carry loop points** (tags `0x86`, `0x87`, `0x89`) whose meaning this
-module has not established [M], the PlayStation SPU plays a bank sound from
-parameters nobody here has mapped [A], and no rebuilt Madden 09 container has
-been booted.  Replacing a looped sound without knowing what the loop tags
-address is how a sound effect ends up stuttering in a game nobody here has run.
+not the codec that stops a bank writer.  What stops it is narrower than it was.
+**134 of the 967 sounds carry loop points** (tags `0x86` and `0x87`), and what
+is now measured about them is that `0x86` sits on a frame boundary and `0x87`
+inside the sound on 134 of 134 (`EA_SCHL_FORMAT.md` §7) — consistent with a
+loop start and a loop end in samples and proved no further; `0x89`, once read
+as a third loop tag, is the **second channel's offset** of every stereo sound
+and no loop tag at all (§6 there).  What still stops a writer: which of the
+459 rateless sounds' tags the game reads as a rate [A], how the SPU is handed
+the loop points [A], and that no rebuilt Madden 09 container has been booted.
+A bank writer that kept every sound's byte length, both runs' lengths and the
+loop points' frame alignment would be a bounded write on the streams lane's
+own path; it is not offered until the loop-point semantics have a witness.
 The row says that, and `check_edit` refuses every value with it.
+
+**One correction the measurement forced.**  A stereo bank sound is planar —
+channel 0's frames, then channel 1's, the second run at the offset tag `0x89`
+carries — and the first edition of this lane decoded the two runs as alternating
+frames.  Every frame's arithmetic was right and the channel assignment was
+wrong, so a stereo bank export before the correction had its two channels
+scrambled 28 samples at a time.  The decoder now splits at `0x89`, refuses a
+tag that is not on a frame boundary inside the data, and the synthetic stereo
+bank CI builds carries the tag the disc's do.
 
 ## 6. Classifications, and why each is the honest rung
 
@@ -185,7 +200,8 @@ for every channel count, byte order and version the disc uses.
 |---|---|
 | catalogue, six containers, 11,389 members, 34,046 streams | **13.4 s** [M] |
 | ffmpeg agreement, streams | **289 of 289 byte-identical**, 670,692,008 PCM samples [M] |
-| ffmpeg agreement, bank sounds | **508 of 508 byte-identical**, 33,451,124 PCM samples; the 459 with no declared rate are not compared [M] |
+| ffmpeg agreement, bank sounds | **508 of 508 byte-identical**, 33,451,124 PCM samples; the 459 with no declared rate are not compared [M]. The 51 stereo sounds among them were compared one alternating-frame run at a time, which proved each frame's arithmetic and not the channel split; the split is planar (§5) |
+| stereo bank layout | planar: tag `0x89` on exactly the 183 stereo sounds, equal to the data offset plus half the length on 183 of 183; each run ends in a flagged frame on 183 of 183; planar left/right correlation beats interleaved on 181 of 183 [M] |
 | bank plausibility, 508 sounds | none silent; peak 11,923-32,768 (median 31,175), RMS 2,207-11,170 (median 5,249); 88 sounds touch full scale and the longest saturated run anywhere is 21 samples [M] |
 | encoder round trip, computed tone | EA-XA 54.7-58.3 dB, PS ADPCM 57.7 dB [M] |
 | encoder round trip, 10 s of a real stream decoded and re-encoded | 106.3 dB (BGM, stereo), 97.2 dB (SOUNDDAT version 3), 57.8 dB (SOUNDDAT version 2), and **bit-exact** on a bank sound [M] |
@@ -203,7 +219,9 @@ their properties were recorded.  Nothing from the disc is in this repository.
   is the only thing between the streams lane and `runtime-proved`.
 * **MicroTalk.**  33,751 streams, and no oracle anywhere in reach to check an
   implementation against.
-* **The bank loop tags**, which gate a bank writer.
+* **The bank loop tags' semantics** — start on a frame boundary, end inside
+  the sound, measured on 134 of 134 (§5); how the SPU is handed them is what
+  gates a bank writer.  `0x89` is settled: the second channel's offset.
 * **Names.**  `BGM.DAT` names none of its 47 members, so which track is which is
   not established here [A]; nor is which sound a bank belongs to.
 * **Six EA-XA streams that declare no sample rate**, and **459 bank sounds**

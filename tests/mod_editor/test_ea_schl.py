@@ -235,13 +235,24 @@ class PsxTests(unittest.TestCase):
             ea_schl.decode_psx(bytes([0x90, 0x00]) + bytes(14), 1)
         self.assertIn("filter", str(caught.exception))
 
-    def test_stereo_frames_alternate_between_channels(self) -> None:
-        left = bytes([0x00, 0x00, 0x11]) + bytes(13)
-        right = bytes([0x00, 0x00, 0x22]) + bytes(13)
-        pcm = ea_schl.decode_psx(left + right, 2)
+    def test_stereo_channels_are_planar_runs(self) -> None:
+        # Two frames per channel: channel 0's run first, then channel 1's.  An
+        # interleaved reading would put the second frame of the first run into
+        # the other channel, and the disc's stereo banks are not laid out that
+        # way (tag 0x89 names the second run on all 183 of them).
+        run0 = (bytes([0x00, 0x00, 0x11]) + bytes(13)) + (bytes([0x00, 0x00, 0x33]) + bytes(13))
+        run1 = (bytes([0x00, 0x00, 0x22]) + bytes(13)) + (bytes([0x00, 0x00, 0x44]) + bytes(13))
+        pcm = ea_schl.decode_psx(run0 + run1, 2)
         first_left, first_right = struct.unpack("<2h", pcm[:4])
         self.assertEqual(first_left, 1 << 12)
         self.assertEqual(first_right, 2 << 12)
+        # Sample 28 (the second frame of each run) lands in the same channel.
+        left_28, right_28 = struct.unpack_from("<2h", pcm, 28 * 4)
+        self.assertEqual(left_28, 3 << 12)
+        self.assertEqual(right_28, 4 << 12)
+        # An explicit second-run offset overrides the equal split.
+        again = ea_schl.decode_psx(run0 + run1, 2, channel_offsets=[0, len(run0)])
+        self.assertEqual(again, pcm)
 
     def test_encode_then_decode_stays_above_thirty_decibels(self) -> None:
         for channels in (1, 2):
@@ -273,6 +284,38 @@ class BankTests(unittest.TestCase):
             pcm = ea_schl.decode_bank_sound(blob, bank, sound)
             self.assertEqual(len(pcm), sound.sample_count * 2 * sound.channels)
             self.assertFalse(ea_schl.measure(pcm)["silent"])
+
+    def test_a_stereo_bank_names_its_second_run_and_decodes_it_planar(self) -> None:
+        blob = ea_schl.synthetic_bank(sounds=1, samples=560, sample_rate=32000, channels=2)
+        bank = ea_schl.parse_bank(blob, 0, len(blob))
+        sound = bank.sounds[0]
+        second = sound.header.value(ea_schl.TAG_SECOND_CHANNEL)
+        self.assertEqual(second, sound.data_offset + sound.data_length // 2,
+                         "tag 0x89 is the second channel's offset, half way through the data")
+        pcm = ea_schl.decode_bank_sound(blob, bank, sound)
+        self.assertEqual(len(pcm), 560 * 2 * 2)
+        wanted = ea_schl.synthetic_pcm(560, 2, sample_rate=32000, frequency=220.0)
+        self.assertGreater(float(ea_schl.signal_to_noise(wanted, pcm)), 30.0)
+        # A mono sound carries no second-run tag at all.
+        mono = ea_schl.synthetic_bank(sounds=1, samples=560, sample_rate=32000, channels=1)
+        mono_bank = ea_schl.parse_bank(mono, 0, len(mono))
+        self.assertIsNone(mono_bank.sounds[0].header.value(ea_schl.TAG_SECOND_CHANNEL))
+
+    def test_a_second_run_offset_off_a_frame_boundary_is_refused(self) -> None:
+        blob = bytearray(ea_schl.synthetic_bank(sounds=1, samples=560, sample_rate=32000,
+                                                channels=2))
+        bank = ea_schl.parse_bank(bytes(blob), 0, len(blob))
+        sound = bank.sounds[0]
+        marker = (bytes([ea_schl.TAG_SECOND_CHANNEL, 4])
+                  + int(sound.header.value(ea_schl.TAG_SECOND_CHANNEL)).to_bytes(4, "big"))
+        where = blob.find(marker)
+        self.assertGreater(where, 0)
+        bad = int(sound.header.value(ea_schl.TAG_SECOND_CHANNEL)) + 5
+        blob[where:where + 6] = bytes([ea_schl.TAG_SECOND_CHANNEL, 4]) + bad.to_bytes(4, "big")
+        broken = ea_schl.parse_bank(bytes(blob), 0, len(blob))
+        with self.assertRaises(Refusal) as caught:
+            ea_schl.decode_bank_sound(bytes(blob), broken, broken.sounds[0])
+        self.assertIn("frame boundary", str(caught.exception))
 
     def test_reading_the_offsets_from_the_table_instead_finds_nothing(self) -> None:
         # The rule that had to be measured: an offset is relative to its own

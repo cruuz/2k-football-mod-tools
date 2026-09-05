@@ -230,9 +230,23 @@ The filters `(0,0) (60,0) (115,-52) (98,-55) (122,-60)` are the format's own
 constants [S], and were re-derived here by solving for them against ffmpeg's
 output over 123,088 samples with zero residual error [M].
 
-Stereo frames alternate between channels, one 16-byte frame at a time [M].
-**Which channel is the left one is not established** [A]; each channel's own
-samples are proved (§8).
+**A stereo bank sound is planar: one run of frames per channel, the second
+run's offset in tag `0x89`** [M].  This corrects the first edition of this
+document, which had the frames alternating.  Three measurements on the 183
+stereo bank sounds of the retail disc say planar, and none says interleaved:
+
+| measurement | result |
+|---|---:|
+| sounds carrying tag `0x89` | exactly the 183 stereo ones; 0 of the 784 mono |
+| `0x89 == 0x88 + data length / 2` | **183 of 183** |
+| a non-zero VAG flag byte in the frame just before `0x89`, and in the last frame (each run's end marker) | **183 of 183** |
+| decoding the two runs as channels gives a higher left/right correlation than the interleaved reading | **181 of 183** (often exactly 1.0: a mono sound stored twice) |
+
+Each channel's own samples were already proved against ffmpeg (§8); what the
+interleaved reading got wrong was which frames belonged to which channel, so
+every stereo bank export before this correction carried the two channels
+scrambled 28 samples at a time.  **Which run is the left channel is not
+established** [A].
 
 ---
 
@@ -268,11 +282,24 @@ Measured over the 301 banks [M]:
 | empty slots | 44 |
 | sounds declaring a sample rate (`0x84`) | 508 |
 | sounds carrying loop points (`0x86`) | 134 |
+| stereo sounds, every one carrying the second-run offset `0x89` | 183 |
 
 The 459 sounds with **no** `0x84` are listed and refused rather than exported
 at an invented rate.  Where their rate comes from is **not established** [A],
 and it is not simple inheritance from the first sound of the bank: 41 banks
-hold exactly one sound and that sound has no rate at all [M].
+hold exactly one sound and that sound has no rate at all [M].  Two tags the
+rateless sounds do carry are candidates and nothing more: `0x0E` takes six
+values across the banks (40, 45, 80, 95, 100, 120) and `0x06` six (5, 60, 70,
+75, 80, 95) [M]; neither has been shown to be a rate or a volume.
+
+**The loop tags, measured on the 134 looped sounds** [M]: `0x86` is a
+multiple of 28 on 134 of 134 (a frame boundary), `0x86 <= 0x87` on 134 of
+134, and `0x87 <= 0x85` on 134 of 134 with `0x87 == 0x85` on none — a loop
+start on a frame boundary and a loop end inside the sound, which is what
+"loop start sample" and "loop end sample" would look like and is consistent
+with nothing else this document has seen.  `0x89` is **not** a loop offset:
+it is on every stereo sound and no mono one (§6).  `0x8A` is 0 on every bank
+sound of the disc and its role is not established [A].
 
 ---
 
@@ -294,9 +321,11 @@ means:
   `SCDl` and `SCEl` bytes are passed through untouched.  Not one audio byte is
   changed by that.
 * ffmpeg has no bank reader, so a bank sound is handed to the `vag` demuxer
-  behind a synthesised 48-byte `VAGp` header, and a stereo sound is
-  de-interleaved into its two 16-byte-frame runs first so each channel is
-  checked on its own.
+  behind a synthesised 48-byte `VAGp` header, one channel's run at a time.
+  The first edition of this check split a stereo sound into alternating
+  16-byte frames; the runs are planar (§6), so that check proved each frame's
+  arithmetic and not the channel assignment.  The arithmetic is unchanged by
+  the correction; the assignment is now the one tag `0x89` names.
 
 Results are in §9 of `docs/product/MADDEN09_PS2_AUDIO.md` and in
 `docs/product/measured/madden09_ps2/audio_codec_census.json`.
@@ -309,8 +338,10 @@ Results are in §9 of `docs/product/MADDEN09_PS2_AUDIO.md` and in
   disc — are catalogued and not decoded [M].
 * **What the game does with tags `0x06`, `0x0B`, `0x13`, `0x14` and `0x8C`.**
   Each is constant or opaque here and is recorded, not guessed [A].
-* **Which channel of a stereo bank sound is the left one** [A].
-* **Where a rateless bank sound's rate comes from** [A].
+* **Which run of a planar stereo bank sound is the left one** [A].
+* **Where a rateless bank sound's rate comes from** [A]; `0x0E` and `0x06`
+  are the candidates (§7), neither proved.
+* **What `0x8A` is** — 0 on every bank sound [M].
 * **Whether Madden NFL 09 loads a rebuilt container.**  Nothing in this project
   has been booted.  The writer that uses this format is classified
   `offline-writer-proved` for exactly that reason.
