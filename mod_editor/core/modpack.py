@@ -51,6 +51,7 @@ verified in fixed-size blocks through positional reads and writes.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping, Sequence
+from contextlib import closing
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
@@ -1366,11 +1367,13 @@ def _export_modular(base_iso, patched_iso, out_path, meta, *, overwrite, recipe,
                         archive.writestr(item.member, item.data)
                 stream.flush()
                 os.fsync(stream.fileno())
-            loaded = load(part)
-            ops.verify_payloads(loaded)
-            for asset in loaded.manifest.assets:
-                loaded.read_asset(asset.path)
-            loaded.close()
+            with closing(load(part)) as loaded:
+                ops.verify_payloads(loaded)
+                for asset in loaded.manifest.assets:
+                    loaded.read_asset(asset.path)
+            # The existing-output alias probe is an input too. Windows cannot
+            # replace it while that descriptor (or a payload stream) is open.
+            stack.close()
             os.replace(part, out)
         except BaseException:
             try:
@@ -1717,12 +1720,13 @@ def check(pack: Pack | Path | str, image: Path | str, *, hash_image: bool = Fals
     """Dry run: which runs match, which are already applied, which mismatch."""
 
     loaded = pack if isinstance(pack, Pack) else load(pack)
-    path = _regular_path(image, "disc image")
-    fd = _open(path, os.O_RDONLY)
-    try:
-        return _check_descriptor(loaded, fd, os.fstat(fd).st_size, hash_image=hash_image, progress=progress or _no_progress)
-    finally:
-        os.close(fd)
+    with closing(loaded):
+        path = _regular_path(image, "disc image")
+        fd = _open(path, os.O_RDONLY)
+        try:
+            return _check_descriptor(loaded, fd, os.fstat(fd).st_size, hash_image=hash_image, progress=progress or _no_progress)
+        finally:
+            os.close(fd)
 
 
 # --------------------------------------------------------------------------
@@ -1733,6 +1737,38 @@ def _verify_written(pack: Pack, descriptor: int, partition: int) -> None:
     for index, run in enumerate(pack.manifest.runs):
         actual = _pread_exact(descriptor, run.length, partition + run.offset, f"written run {index}")
         _require(_sha256(actual) == run.new_sha256, f"run {index} read back differently from what was written")
+
+
+def _verify_source_before_commit(source: Path, size: int, expected_sha256: str) -> None:
+    """Reopen the current path and compare its bytes with the copied source.
+
+    Path stat and descriptor fstat need not expose identical IDs/timestamp
+    precision on Windows. Size plus the copy's SHA-256 works through path
+    aliases and still rejects a replaced or edited source. All descriptors
+    must be closed on return so Windows can atomically replace the image.
+    """
+    from . import modpack_ops as ops
+
+    message = "source changed before the transaction committed; verified output remains in .part"
+    path_before = os.stat(source, follow_symlinks=False)
+    fd = _open(_regular_path(source, "source image"), os.O_RDONLY)
+    try:
+        before = os.fstat(fd)
+        _require(before.st_size == size, message)
+        actual = ops.digest(lambda n, at: _pread_exact(fd, n, at, "source image before commit"), size)
+        after = os.fstat(fd)
+        _require(actual == expected_sha256 and
+                 (before.st_size, before.st_mtime_ns, before.st_ctime_ns) ==
+                 (after.st_size, after.st_mtime_ns, after.st_ctime_ns), message)
+    finally:
+        os.close(fd)
+    # Rehashing takes time: also reject a path replacement during that read.
+    # Compare path stats only with path stats, never with CRT fstat metadata.
+    path_after = os.stat(source, follow_symlinks=False)
+    _require((path_before.st_dev, path_before.st_ino, path_before.st_size,
+              path_before.st_mtime_ns, path_before.st_ctime_ns) ==
+             (path_after.st_dev, path_after.st_ino, path_after.st_size,
+              path_after.st_mtime_ns, path_after.st_ctime_ns), message)
 
 
 def _apply_modular(pack, source_iso, target_iso, *, overwrite, in_place, hash_streams, progress, block):
@@ -1792,13 +1828,13 @@ def _apply_modular(pack, source_iso, target_iso, *, overwrite, in_place, hash_st
                 pass
             raise
         os.close(dst)
-        if in_place:
-            current = os.stat(source, follow_symlinks=False)
-            _require((current.st_dev, current.st_ino, current.st_size, current.st_mtime_ns, current.st_ctime_ns) ==
-                     (source_stamp.st_dev, source_stamp.st_ino, source_stamp.st_size, source_stamp.st_mtime_ns, source_stamp.st_ctime_ns),
-                     "source changed before the transaction committed; verified output remains in .part")
     finally:
         os.close(src)
+        # Cached ZIP member streams own archive handles, even if an exception
+        # traceback keeps this Pack alive. Release them on success and failure.
+        pack.close()
+    if in_place:
+        _verify_source_before_commit(source, size, source_sha)
     os.replace(part, target)
     return {"schema": APPLY_SCHEMA, "mode": "in_place" if in_place else "copy", "pack": str(pack.path),
             "name": pack.manifest.name, "partition_base": projected.partition,
@@ -1834,7 +1870,7 @@ def apply(
     """
 
     if in_place:
-        _require(target_iso is None or Path(target_iso).expanduser() == Path(source_iso).expanduser(),
+        _require(target_iso is None or Path(target_iso).expanduser().resolve() == Path(source_iso).expanduser().resolve(),
                  "in-place apply patches the source itself; give one path")
         return apply_in_place(pack, source_iso, progress=progress)
     _require(target_iso is not None, "a target path is required unless in_place=True")

@@ -7,6 +7,7 @@ data is read, so this runs on a bare CI runner.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 import io
 import json
 import os
@@ -18,6 +19,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -41,6 +43,61 @@ EDITS = (
     (700000, 1000),     # a "texture chunk"
     (1048570, 6),       # runs to the very last byte
 )
+
+
+@contextmanager
+def windows_file_locks():
+    """Emulate Windows replace/unlink denial for real open descriptors/ZIP streams.
+
+    Linux permits these operations on open files. Track the actual handles so
+    the same failure paths are exercised locally, including retained tracebacks.
+    """
+    descriptors, streams = {}, []
+    real_open, real_close, real_fdopen = os.open, os.close, os.fdopen
+    real_zip_open, real_replace, real_unlink = zipfile.ZipFile.open, os.replace, os.unlink
+
+    def opened(path, flags, *args, **kwargs):
+        fd = real_open(path, flags, *args, **kwargs)
+        descriptors[fd] = Path(path).resolve()
+        return fd
+
+    def closed(fd):
+        real_close(fd)
+        descriptors.pop(fd, None)
+
+    def fdopened(fd, *args, **kwargs):
+        stream = real_fdopen(fd, *args, **kwargs)
+        streams.append((descriptors.pop(fd), stream))
+        return stream
+
+    def zip_opened(archive, *args, **kwargs):
+        stream = real_zip_open(archive, *args, **kwargs)
+        if isinstance(archive.filename, (str, os.PathLike)):
+            streams.append((Path(archive.filename).resolve(), stream))
+        return stream
+
+    def open_paths():
+        return list(descriptors.values()) + [path for path, stream in streams if not stream.closed]
+
+    def require_closed(*paths):
+        for path in paths:
+            if Path(path).resolve() in open_paths():
+                error = PermissionError(13, "simulated WinError 5: file is open", str(path))
+                error.winerror = 5
+                raise error
+
+    def replace(source, target):
+        require_closed(source, target)
+        return real_replace(source, target)
+
+    def unlink(path, *args, **kwargs):
+        require_closed(path)
+        return real_unlink(path, *args, **kwargs)
+
+    with patch.object(os, "open", opened), patch.object(os, "close", closed), \
+            patch.object(os, "fdopen", fdopened), patch.object(zipfile.ZipFile, "open", zip_opened), \
+            patch.object(os, "replace", replace), patch.object(os, "unlink", unlink):
+        yield open_paths
 
 
 def make_pair(directory: Path, size: int = 1 << 20, seed: int = 7) -> tuple[Path, Path, bytes, bytes]:
@@ -547,6 +604,172 @@ class ModularPackTests(unittest.TestCase):
             modpack.apply(pack, self.base, out, block=SMALL_BLOCK)
             self.assertEqual(out.read_bytes(), self.patched_bytes)
 
+    def test_windows_lock_reproduction_rejects_open_source_and_target(self):
+        replacement = self.tmp / "replacement.iso"
+        replacement.write_bytes(self.patched_bytes)
+        with windows_file_locks() as open_paths:
+            for path in (replacement, self.base):
+                fd = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+                try:
+                    with self.assertRaises(PermissionError) as caught:
+                        os.replace(replacement, self.base)
+                    self.assertEqual(caught.exception.winerror, 5)
+                    self.assertEqual(self.base.read_bytes(), self.base_bytes)
+                finally:
+                    os.close(fd)
+            self.assertEqual(open_paths(), [])
+            os.replace(replacement, self.base)
+        self.assertEqual(self.base.read_bytes(), self.patched_bytes)
+
+    def test_export_and_apply_close_handles_before_replacing_existing_files(self):
+        out = self.tmp / "existing.iso"
+        out.write_bytes(b"keep until commit")
+        with windows_file_locks() as open_paths:
+            replace = os.replace
+
+            def commit(source, target):
+                self.assertEqual(open_paths(), [], "all transaction handles must close before commit")
+                return replace(source, target)
+
+            with patch.object(os, "replace", side_effect=commit):
+                for _ in range(2):
+                    modpack.export(self.base, self.patched, self.pack, {"name": "portable"},
+                                   format_version=2, recipe=False, overwrite=True)
+                loaded = modpack.load(self.pack)
+                self.assertEqual(modpack.check(loaded, self.base)["state"], "ready")
+                self.assertEqual(open_paths(), [])
+                modpack.apply(loaded, self.base, out, overwrite=True)
+                self.assertEqual(out.read_bytes(), self.patched_bytes)
+                modpack.apply_in_place(loaded, self.base)
+                self.assertEqual(open_paths(), [])
+        self.assertEqual(self.base.read_bytes(), self.patched_bytes)
+
+    def test_in_place_accepts_equivalent_path_spellings(self):
+        modpack.export(self.base, self.patched, self.pack, {"name": "portable"},
+                       format_version=2, recipe=False)
+        child = self.tmp / "child"
+        child.mkdir()
+        alias = child / ".." / self.base.name
+        modpack.apply(self.pack, alias, self.base.resolve(), in_place=True)
+        self.assertEqual(self.base.read_bytes(), self.patched_bytes)
+
+    def test_locked_commit_keeps_existing_image_and_verified_part(self):
+        modpack.export(self.base, self.patched, self.pack, {"name": "portable"},
+                       format_version=2, recipe=False)
+        out = self.tmp / "existing.iso"
+        for in_place in (False, True):
+            with self.subTest(in_place=in_place):
+                target = self.base if in_place else out
+                if not in_place:
+                    out.write_bytes(b"keep until commit")
+                before = target.read_bytes()
+                with windows_file_locks() as open_paths:
+                    fd = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+                    try:
+                        with self.assertRaises(PermissionError):
+                            if in_place:
+                                modpack.apply_in_place(self.pack, self.base)
+                            else:
+                                modpack.apply(self.pack, self.base, out, overwrite=True)
+                        self.assertEqual(open_paths(), [target.resolve()])
+                    finally:
+                        os.close(fd)
+                self.assertEqual(target.read_bytes(), before)
+                part = target.with_name(target.name + ".part")
+                self.assertEqual(part.read_bytes(), self.patched_bytes)
+                part.unlink()
+
+    def test_payload_failure_releases_streams_even_with_a_retained_traceback(self):
+        modpack.export(self.base, self.patched, self.pack, {"name": "portable"},
+                       format_version=2, recipe=False)
+        self.mutate_manifest(lambda d: d["ops"][0]["payload"].update(sha256="0" * 64))
+        out = self.tmp / "existing.iso"
+        out.write_bytes(b"keep until commit")
+        failures = []
+        with windows_file_locks() as open_paths:
+            for action in (lambda: modpack.check(self.pack, self.base),
+                           lambda: modpack.apply(self.pack, self.base, out, overwrite=True),
+                           lambda: modpack.apply_in_place(self.pack, self.base)):
+                try:
+                    action()
+                except modpack.ModpackError as exc:
+                    failures.append(exc)  # GUI/error reporters may retain this frame.
+                else:
+                    self.fail("tampered payload was accepted")
+                self.assertEqual(open_paths(), [])
+                self.assertEqual(self.base.read_bytes(), self.base_bytes)
+                self.assertEqual(out.read_bytes(), b"keep until commit")
+                self.assertEqual(list(self.tmp.glob("*.part")), [])
+        self.assertEqual(len(failures), 3)
+
+    def test_source_guard_accepts_different_path_and_descriptor_metadata(self):
+        modpack.export(self.base, self.patched, self.pack, {"name": "portable"},
+                       format_version=2, recipe=False)
+        real_stat = os.stat
+
+        def windows_stat(path, *args, **kwargs):
+            info = real_stat(path, *args, **kwargs)
+            if Path(path) == self.base:
+                # Windows path stat and CRT fstat can expose different file IDs
+                # and timestamp precision for the very same unchanged file.
+                values = list(info)
+                values[1] += 1
+                values[9] = int(info.st_ctime)
+                return os.stat_result(values)
+            return info
+
+        with patch.object(os, "stat", side_effect=windows_stat):
+            modpack.apply_in_place(self.pack, self.base)
+        self.assertEqual(self.base.read_bytes(), self.patched_bytes)
+
+    def test_changed_source_is_refused_before_commit_even_with_unchanged_size(self):
+        modpack.export(self.base, self.patched, self.pack, {"name": "portable"},
+                       format_version=2, recipe=False)
+        stamp = self.base.stat()
+        changed = bytearray(self.base_bytes)
+        changed[2000] ^= 0xFF  # outside every patch run
+
+        def change_source(stage, done, total):
+            if stage == "Applying operations" and done == total:
+                self.base.write_bytes(changed)
+                os.utime(self.base, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+
+        with windows_file_locks() as open_paths:
+            with self.assertRaisesRegex(modpack.ModpackError, "source changed before"):
+                modpack.apply_in_place(self.pack, self.base, progress=change_source)
+            self.assertEqual(open_paths(), [])
+        self.assertEqual(self.base.read_bytes(), changed)
+        self.assertEqual(self.base.with_name(self.base.name + ".part").read_bytes(), self.patched_bytes)
+
+    def test_source_replaced_during_final_verification_is_refused(self):
+        modpack.export(self.base, self.patched, self.pack, {"name": "portable"},
+                       format_version=2, recipe=False)
+        replacement = self.tmp / "replacement.iso"
+        changed = bytes([self.base_bytes[0] ^ 0xFF]) + self.base_bytes[1:]
+        replacement.write_bytes(changed)
+        verifying = None
+        real_read, real_close = modpack._pread_exact, os.close
+
+        def read(fd, length, at, what):
+            nonlocal verifying
+            if what == "source image before commit":
+                verifying = fd
+            return real_read(fd, length, at, what)
+
+        def close(fd):
+            nonlocal verifying
+            real_close(fd)
+            if fd == verifying:
+                verifying = None
+                # Close first so this real replacement also works on Windows.
+                os.replace(replacement, self.base)
+
+        with patch.object(modpack, "_pread_exact", side_effect=read), patch.object(os, "close", side_effect=close):
+            with self.assertRaisesRegex(modpack.ModpackError, "source changed before"):
+                modpack.apply_in_place(self.pack, self.base)
+        self.assertEqual(self.base.read_bytes(), changed)
+        self.assertEqual(self.base.with_name(self.base.name + ".part").read_bytes(), self.patched_bytes)
+
     def test_registering_a_handler_requires_no_format_or_dispatcher_change(self):
         from mod_editor.core import modpack_ops as ops
         class FutureRuns(ops.ByteRuns):
@@ -662,9 +885,10 @@ class ModularPackTests(unittest.TestCase):
             if what == "byte_runs" and data == b"C" * 16:
                 raise OSError("injected write failure")
             return original_write(fd, data, at, what)
-        with patch.object(modpack, "_pwrite_all", side_effect=fail_second):
+        with windows_file_locks() as open_paths, patch.object(modpack, "_pwrite_all", side_effect=fail_second):
             with self.assertRaisesRegex(OSError, "injected"):
                 modpack.apply_in_place(self.pack, self.base)
+            self.assertEqual(open_paths(), [])
         self.assertEqual(self.base.read_bytes(), bytes(128))
         self.assertFalse(self.base.with_name(self.base.name + ".part").exists())
         modpack.apply_in_place(self.pack, self.base)

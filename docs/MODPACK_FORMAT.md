@@ -130,7 +130,19 @@ It requires room for another image and replaces the path's inode; other hard lin
 keep their original bytes. Write failure leaves the existing image unchanged.
 Format 1 retains its original direct in-place writer. Both paths use binary file
 descriptors on Windows. Inputs must remain stable during a build/export/apply;
-source identity, size, and timestamps are rechecked across transactional copies.
+size and descriptor timestamps are rechecked across transactional copies.
+Before an in-place commit, the current source path is reopened and its size and
+SHA-256 must match the bytes copied into the transaction. This avoids comparing
+path-stat metadata with descriptor metadata, which can differ on Windows.
+Path metadata is compared with path metadata before and after this read to
+detect a replacement during verification.
+This final check adds one streamed source read. All image descriptors and cached
+pack payload streams are closed before `os.replace`, including the existing-pack
+alias probe during export. `check()` and format-2 apply release cached payload
+streams on failure too; a supplied `Pack` remains reusable and reopens them lazily.
+An operation or write failure deletes the incomplete `.part`; a source change
+detected at the final check or a failed atomic replacement preserves the fully
+verified `.part` and leaves the destination untouched by the transaction.
 
 ## Authoring and extending
 

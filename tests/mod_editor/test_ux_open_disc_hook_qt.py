@@ -88,7 +88,7 @@ class OpenDiscHookTests(unittest.TestCase):
         self.assertFalse(build.build_button.isEnabled())
         self._wait_for_inspection()
         for panel in (build, self.window._gameplay_patches_panel, self.window._edge_panel):
-            self.assertEqual(panel.source_field.text(), str(self.xbe))
+            self.assertEqual(Path(panel.source_field.text()).resolve(), self.xbe.resolve())
             self.assertEqual(panel.source_caption.text(), "Game executable (default.xbe)")
             self.assertEqual(panel.target_caption.text(), "Save executable copy as")
             # a bare executable gets no invented copy name: only disc copies are suggested
@@ -101,7 +101,7 @@ class OpenDiscHookTests(unittest.TestCase):
         while not throw.source_field.text() and time.time() < deadline:
             self.app.processEvents()
             time.sleep(0.02)
-        self.assertEqual(throw.source_field.text(), str(self.xbe))
+        self.assertEqual(Path(throw.source_field.text()).resolve(), self.xbe.resolve())
 
     def test_start_softdrink_basic_waits_for_the_inspection_and_only_ticks_a_fresh_selection(self) -> None:
         build = self.window._build_panel
@@ -131,7 +131,7 @@ class OpenDiscHookTests(unittest.TestCase):
         self.window._prefill_panels_from_source(other)
         self.assertGreater(self.window._source_generation, first)
         self._wait_for_inspection()
-        self.assertEqual(build.source_field.text(), str(other))
+        self.assertEqual(Path(build.source_field.text()).resolve(), other.resolve())
 
     def test_the_roster_page_follows_the_disc_lazily_and_never_resets_an_edited_roster(self) -> None:
         panel = self.window._roster_editor_panel
@@ -184,6 +184,7 @@ class CopyNameTests(unittest.TestCase):
             source = Path(tmp) / "ESPN NFL 2K5 (USA).xiso.iso"
             source.write_bytes(b"\0")
             first = suggest_copy_name(source)
+            self.assertEqual(Path(first).resolve().parent, source.resolve().parent)
             self.assertEqual(Path(first).name, "ESPN NFL 2K5 (USA) (modded).xiso.iso")
             Path(first).write_bytes(b"\0")
             self.assertEqual(Path(suggest_copy_name(source)).name, "ESPN NFL 2K5 (USA) (modded 2).xiso.iso")
