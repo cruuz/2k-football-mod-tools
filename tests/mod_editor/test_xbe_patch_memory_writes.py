@@ -104,6 +104,8 @@ class PatchWriteTests(unittest.TestCase):
         cls.patched, _ = rows.apply(cls.patched)
         from mod_editor.core import nfl2k5_depth_locks as locks
         cls.patched, _ = locks.apply(cls.patched)
+        from mod_editor.core import nfl2k5_practice_reserves as practice_reserves
+        cls.patched, _ = practice_reserves.apply(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 

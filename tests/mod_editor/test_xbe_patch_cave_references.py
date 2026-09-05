@@ -61,6 +61,8 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_depth_locks as locks
         cls.before_depth_locks = cls.patched
         cls.patched, _ = locks.apply(cls.patched)
+        from mod_editor.core import nfl2k5_practice_reserves as practice_reserves
+        cls.patched, _ = practice_reserves.apply(cls.patched)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
