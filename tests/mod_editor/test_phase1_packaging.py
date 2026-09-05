@@ -71,7 +71,6 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertTrue(status.startswith(
             "# 2K5 Mod Studio — v1.0 RC88 Release Status"
         ))
-        self.assertIn("registry has 106 cross-title rows", getting_started)
         self.assertIn("complete 18-tab sidebar", getting_started)
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:

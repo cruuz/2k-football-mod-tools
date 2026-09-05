@@ -37,9 +37,11 @@
 >
 > **What is left on this plan.** (1) §5's upstream edits still happen once per game through
 > `tools/registry_add_rows.py`: the canonical registry, the release allowlist, the runtime gate's
-> module list and the thirteen count pins. That tool appends where it should replace — three
-> stale count assertions and a broken getting-started paragraph were the evidence — so it wants a
-> fix before a third game uses it. (2) §8.3's collision is still live: NFL 2K5's
+> module list and the thirteen count pins. The tool replaces exactly one match and refuses
+> otherwise; the duplicated count assertions and the broken getting-started paragraph that RC88's
+> integration had to collapse came from merging six branches that each carried their own count,
+> not from the tool. One real defect was fixed on the way: it wrote the NFL 2K5 row count as a
+> literal (32) and now reads it off the registry (45 after Beta 61). (2) §8.3's collision is still live: NFL 2K5's
 > `allowlist_patterns` of `*ps2*` claim paths inside the Madden 09 package, and the fix belongs to
 > that game's manifest and a frozen test. (3) §10's ten questions for the upstream author are
 > unanswered, and none of them blocked this module. (4) The two proved games are both PlayStation
