@@ -1,0 +1,171 @@
+{
+  "bytes_changed": {
+    "note": "UTF-16LE means a replaced ASCII character usually leaves its zero high byte alone, so 13 changed bytes appear as 13 one-byte runs rather than two contiguous spans.",
+    "ranges": [
+      {
+        "length": 1,
+        "offset": 44562978
+      },
+      {
+        "length": 1,
+        "offset": 44562980
+      },
+      {
+        "length": 1,
+        "offset": 44562982
+      },
+      {
+        "length": 1,
+        "offset": 44562984
+      },
+      {
+        "length": 1,
+        "offset": 44587712
+      },
+      {
+        "length": 1,
+        "offset": 44587714
+      },
+      {
+        "length": 1,
+        "offset": 44587716
+      },
+      {
+        "length": 1,
+        "offset": 44587718
+      },
+      {
+        "length": 1,
+        "offset": 44587720
+      },
+      {
+        "length": 1,
+        "offset": 44587722
+      },
+      {
+        "length": 1,
+        "offset": 44587724
+      },
+      {
+        "length": 1,
+        "offset": 44587726
+      },
+      {
+        "length": 1,
+        "offset": 44587728
+      }
+    ],
+    "total": 13
+  },
+  "edits": [
+    {
+      "allocation_bytes": 10,
+      "bank_id": "nfl2k5.ps2.text-bank.strg.24.65",
+      "bank_kind": "STRG",
+      "case": "same length: the tightest case, since this pool has zero spare bytes",
+      "changed_byte_count": 4,
+      "iso_byte_offset": 44562978,
+      "original_code_units": 4,
+      "original_text_sha256": "a1ddc78120a6beb37d6e9ad9d5a5dd805520a1c778d839e998302c611ea968cb",
+      "pack_iso_path": "/VC_20919/0.",
+      "pack_offset": 14582306,
+      "pool_index": 905,
+      "reference_count": 1,
+      "replacement_code_units": 4,
+      "replacement_text_sha256": "4ec2438ade2d9c50ece4ce2f975f98da23d76a32ab7251f89dbb536a09319c84",
+      "role": "a franchise training-regimen menu label, single reference, no inline tokens"
+    },
+    {
+      "allocation_bytes": 20,
+      "bank_id": "nfl2k5.ps2.text-bank.strg.24.65",
+      "bank_kind": "STRG",
+      "case": "shorter: the tail of the allocation is zero-filled",
+      "changed_byte_count": 9,
+      "iso_byte_offset": 44587712,
+      "original_code_units": 9,
+      "original_text_sha256": "be935eea00ee403d01b6beb4d2486a20fc010a4dad6ad7c5f0ef8e044728fa49",
+      "pack_iso_path": "/VC_20919/0.",
+      "pack_offset": 14607040,
+      "pool_index": 1105,
+      "reference_count": 1,
+      "replacement_code_units": 8,
+      "replacement_text_sha256": "1daa6ef2c82b0e2cb4164376195437696db71f9004eed06e8cfd3ea8c6a13e53",
+      "role": "a franchise training-regimen menu label, single reference, no inline tokens"
+    }
+  ],
+  "iso_writer": {
+    "declared_bytes": 1073741832,
+    "declared_ranges": [
+      {
+        "length": 8,
+        "reason": "dirrec_length:/VC_20919/0.",
+        "start": 536682
+      },
+      {
+        "length": 1073741824,
+        "reason": "extent:/VC_20919/0.",
+        "start": 29980672
+      }
+    ],
+    "note": "The writer replaces whole files, so it declares the entire 1 GiB /VC_20919/0. extent plus the 8 both-endian length bytes of its directory record. That is why the ISO-level verifier alone is not sufficient evidence for a text edit: inside a declared extent it cannot distinguish an intended byte from a stray one. The text verifier's whole-image comparison is what closes that gap.",
+    "schema": "ps2_iso9660_write/v1"
+  },
+  "not_done": {
+    "emulator": "No PCSX2 run. This trial proves the bytes; it does not prove the label renders. That needs a screen and is the runtime lane's to do."
+  },
+  "output_image": {
+    "committed_to_the_repository": false,
+    "same_size_as_source": true,
+    "sha256": "278fe57323086a8c4c79c17217e8f5e95d9e4dbea10674c2d3307339a340e583",
+    "size": 4665081856
+  },
+  "recipe": {
+    "edit_count": 2,
+    "note": "PS2 Phase 2 text trial. Two franchise training-regimen menu labels in the main STRG bank: one replaced with a same-length string (the tightest case, zero spare bytes), one with a shorter string so the zero-filled tail is exercised on a real disc."
+  },
+  "schema": "nfl2k5_ps2_text_trial/v1",
+  "source_image": {
+    "modified": false,
+    "opened_read_only": true,
+    "serial": "SLUS-20919",
+    "sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+    "size": 4665081856,
+    "volume_id": "50137"
+  },
+  "verdicts": {
+    "nfl2k5_ps2_text_verify": {
+      "changed_bytes": 13,
+      "checks": {
+        "allocation_boundaries_unchanged": true,
+        "chunk_headers_unchanged": true,
+        "differences_exactly_the_edited_allocations": true,
+        "images_same_size": true,
+        "independent_of_patcher_and_catalog": true,
+        "inline_tokens_preserved": true,
+        "iso9660_verifier_passed": true,
+        "outer_entry_table_unchanged": true,
+        "pack_extents_unchanged": true,
+        "record_tables_unchanged": true,
+        "replacements_terminated_and_zero_filled": true,
+        "untouched_strings_byte_identical": true
+      },
+      "edits_located": 2,
+      "patch_report_agreement": {
+        "agrees": true,
+        "edit_count": 2
+      },
+      "result": "pass",
+      "schema": "nfl2k5_ps2_text_verify/v1"
+    },
+    "ps2_iso9660_verify": {
+      "declared_bytes": 1073741832,
+      "entries_compared": 79,
+      "result": "PASS",
+      "schema": "ps2_iso9660_verify/v1",
+      "slack_bytes": 0,
+      "unchanged_bytes_compared": 3591340024,
+      "volume_blocks": 2277872
+    }
+  },
+  "what_this_is": "One real-disc trial of bounded on-disc text editing for ESPN NFL 2K5 on PlayStation 2. Two user-visible menu labels were rewritten inside the bytes they already owned, on a COPY of the user's own disc image. No disc bytes and no decoded retail text appear here: strings are identified by bank, pool index and SHA-256 of their UTF-16LE bytes."
+}

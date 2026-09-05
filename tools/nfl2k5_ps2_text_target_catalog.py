@@ -1160,7 +1160,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print("ERROR: %s" % exc, file=sys.stderr)
         return 1
     if args.output:
-        with open(args.output, "w", encoding="utf-8") as stream:
+        with open(args.output, "w", encoding="utf-8", newline="\n") as stream:
             stream.write(dump_catalog(catalog))
     if args.summary or not args.output:
         print(json.dumps(catalog["summary"], indent=2, sort_keys=True))
