@@ -2,6 +2,13 @@
 
 ## v1.0 RC84 — ★ Rosters does what Finn's did (real saves, Franchise tab, membership, templates), dynamic kickoff, slot / nickel / dime, practice squads, career stats, simpler words everywhere (2026-09-04)
 
+- **Fixed before release: the dynamic kickoff's coverage men lined up beside the kicker.** Noah's first play of the
+  pre-release disc showed the ten coverage players standing at the kicking 35 with the kicker instead of on the receiving
+  40. The playbook data was right; a retail pre-snap clamp (0x183F60, called from the selected-play target routine)
+  replaced every coverage man's downfield target with the tee minus his stance clearance. A six-byte hook now bypasses
+  that clamp for the ten on-field coverage slots of a normal kickoff only, and the hold starts at the engine's ready
+  state rather than at the ball launch, so nobody drifts between line-up and the kick. Proved by bounded execution of
+  the real coordinate readers against all 36 books in both directions; still unwitnessed in game until Noah's next play.
 - **Simpler words everywhere.** A usability pass over every page for someone who has played 2K5 and maybe used
   Flying Finn's editor but never a mod studio: one set of names (Open game disc…, Open project… / Save project,
   Game disc (.iso) / Save disc copy as, Make my disc, Make disc from project, Make disc with these changes, Save disc
