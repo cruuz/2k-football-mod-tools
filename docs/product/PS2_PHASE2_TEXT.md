@@ -172,6 +172,32 @@ the ISO-level verifier cannot supply it — the writer replaces whole *files*, s
 it declares the entire 1 GiB pack extent as written and cannot distinguish a
 stray byte inside it from an intended one.
 
+### The two decoders were checked against each other
+
+An independent verifier is only worth what its independence buys, so the two
+decoders were run over all five real banks and their derived allocation layouts
+compared — spans, texts, record counts, descriptor and pool offsets:
+
+| bank | allocations | spans agree | texts agree | header agrees |
+|---|---:|---|---|---|
+| `STRG` (main) | 1,106 | yes | yes | yes |
+| `STRG` (small) | 9 | yes | yes | yes |
+| `CRED` | 771 | yes | yes | yes |
+| `SITU` | 150 | yes | yes | yes |
+| `TRIV` | 4,837 | yes | yes | yes |
+
+All 6,873 allocations, all four kinds, no disagreement.
+
+**Where the offline suite stops, stated plainly.** The 34-test suite builds
+synthetic `STRG` banks only. `CRED`, `SITU` and `TRIV` differ from `STRG` in
+their record stride, descriptor offset and pointer-field layout, and those
+paths are exercised by the catalog run and the cross-check above — against the
+real disc, not in CI. Building synthetic banks for the other three would mean
+relaxing the hard-coded record counts (619 / 25 / 691) that currently act as
+safety checks, so the coverage gap was accepted rather than bought with a
+weaker refusal. A reader should know CI proves `STRG` end to end and the other
+three only as far as "they decode identically under two independent parsers".
+
 **Cost.** Because the ISO writer replaces whole files, one run streams the 1 GiB
 pack to a temporary file, patches a handful of bytes, then copies the 4.3 GiB
 image: ~5.5 GiB of I/O to change 13 bytes, about 7½ minutes here. That is the
