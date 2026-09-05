@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import contextlib
+from collections import Counter
+import hashlib
 import importlib.util
 import io
 import os
@@ -11,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import sysconfig
+import tarfile
 import tempfile
 import time
 import unittest
@@ -122,7 +125,300 @@ class OutputTests(unittest.TestCase):
         self.assertIn("PASS  good.py  (? tests)", output.getvalue())
 
 
+class ClassificationTests(unittest.TestCase):
+    # Short original log excerpts, with temp names changed to exercise portability.
+    LINK_FAILURE = r'''......F
+======================================================================
+FAIL: test_recovery_refuses_aliases_and_invalid_hashes (__main__.WorkspaceStateStoreTests.test_recovery_refuses_aliases_and_invalid_hashes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "Z:\repo\tests\mod_editor\test_workspace_recovery.py", line 91, in test_recovery_refuses_aliases_and_invalid_hashes
+    with self.assertRaisesRegex(ValidationError, "not a regular private file"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValidationError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.367s
+
+FAILED (failures=1)
+'''
+
+    def test_classification_is_complete_and_report_table_agrees(self):
+        rows = runner.CLASSIFICATIONS["files"]
+        self.assertEqual(len(rows), 73)
+        self.assertEqual(len({r["name"] for r in rows}), 73)
+        self.assertEqual(Counter(r["category"] for r in rows), {
+            "LEAN CHECKOUT": 27, "WINE GAP": 44, "RUNNER BUG": 1, "UNKNOWN": 1})
+        report = (ROOT / "ASTRA_WIN_LOCAL_CI_REPORT.md").read_text()
+        table = dict(re.findall(r"^\| `(test_\w+\.py)` \| ([A-Z ]+) \|", report, re.M))
+        self.assertEqual(table, {r["name"]: r["category"] for r in rows})
+        for row in rows:
+            with self.subTest(name=row["name"]):
+                self.assertTrue(row["evidence"])
+                self.assertTrue(all(e["line"] > 0 and e["signature"] for e in row["evidence"]))
+                if row["category"] == "WINE GAP":
+                    self.assertTrue(row["wine_signatures"])
+                for rule in row["wine_signatures"]:
+                    self.assertIn(rule["gap"], runner.CLASSIFICATIONS["gap_reasons"])
+                    self.assertNotIn("WinError 5", str(rule))
+                    if "headers" in rule:
+                        self.assertTrue(rule["statement"])
+                        self.assertTrue(rule["terminal"])
+
+    def test_only_observed_case_statement_and_exception_skip(self):
+        name = "test_workspace_recovery.py"
+        output = self.LINK_FAILURE
+        reason = runner.wine_gap_reason(name, 1, output)
+        self.assertTrue(reason.startswith("Wine gap: "))
+        for other_name, rc, changed in (
+            ("test_modpack.py", 1, output),
+            (name, 0, output), (name, 124, output), (name, -11, output),
+            (name, 1, output.replace("ValidationError not raised", "ValidationError: real regression")),
+            (name, 1, output.replace("test_recovery_refuses_aliases_and_invalid_hashes", "test_new_regression")),
+            (name, 1, output.replace('"not a regular private file"', '"new assertion"')),
+            (name, 1, output.replace("failures=1", "failures=2")),
+            (name, 1, output.replace("FAILED (failures=1)", "")),
+            (name, 1, output + "TIMED OUT after 420s"),
+        ):
+            with self.subTest(name=other_name, rc=rc, changed=changed[-80:]):
+                self.assertIsNone(runner.wine_gap_reason(other_name, rc, changed))
+        result = runner.Result(name, 1, output, reason)
+        self.assertEqual(runner.summary([result]), "SUMMARY: files=1 passed=0 failed=0 skipped=1 tests=0")
+        printed = io.StringIO()
+        with contextlib.redirect_stdout(printed):
+            runner.report_result(result)
+        self.assertIn(f"SKIP {name} (Wine gap: ", printed.getvalue())
+
+    def test_known_gap_never_hides_a_second_failure(self):
+        extra = '''ERROR: test_new (__main__.WorkspaceStateStoreTests.test_new)
+Traceback (most recent call last):
+PermissionError: [WinError 5] Access denied: 'base.iso.part' -> 'base.iso'
+'''
+        output = self.LINK_FAILURE.replace("Ran 7 tests", extra + "Ran 8 tests")
+        output = output.replace("FAILED (failures=1)", "FAILED (failures=1, errors=1)")
+        self.assertIsNone(runner.wine_gap_reason("test_workspace_recovery.py", 1, output))
+        output = output.replace("PermissionError: [WinError 5] Access denied: 'base.iso.part' -> 'base.iso'",
+                                "FileNotFoundError: missing reports/assets/catalog.json")
+        self.assertIsNone(runner.wine_gap_reason("test_workspace_recovery.py", 1, output))
+
+    def test_temp_diagnostics_allow_new_profile_but_keep_artifact(self):
+        old = r"FileNotFoundError: [WinError 2] File not found: 'C:\\users\\noah\\Temp\\tmpabcdefgh\\alias.iso'"
+        new = r"FileNotFoundError: [WinError 2] File not found: 'C:\\users\\someone\\AppData\\Local\\Temp\\winci\\tmp01234567\\alias.iso'"
+        self.assertEqual(runner.normalize_diagnostic(old), runner.normalize_diagnostic(new))
+        self.assertNotEqual(runner.normalize_diagnostic(old), runner.normalize_diagnostic(new.replace("alias.iso", "source.iso")))
+        self.assertEqual(runner.normalize_diagnostic(old), runner.normalize_diagnostic(new.replace("tmp01234567", "private-source-cache-01234567")))
+        self.assertEqual(runner.normalize_diagnostic("Z:/tmp/winci-green/tests/fixtures/nfl2k5_player_star_thin_v1.json"),
+                         runner.normalize_diagnostic("Z:/home/user/other checkout/tests/fixtures/nfl2k5_player_star_thin_v1.json"))
+
+    def test_copyfile_crash_preserves_an_unreported_earlier_failure(self):
+        def crash(name, case, progress):
+            return (progress + 'wine: Call from 00006FFFFFC7D3B8 to unimplemented function KERNEL32.dll.CopyFile2, aborting\n'
+                    'Windows fatal exception: code 0x80000100\n'
+                    f'  File "Z:\\repo\\tests\\mod_editor\\{name}", line 96 in {case}\n')
+        stage = crash("test_stage_release.py", "test_refuses_destination_below_symlinked_parent", "....")
+        self.assertIn("CopyFile2", runner.wine_gap_reason("test_stage_release.py", 1, stage))
+        self.assertIsNone(runner.wine_gap_reason("test_stage_release.py", 1, stage.replace("CopyFile2", "OtherFunction")))
+        core = crash("test_core.py", "test_extracted_directory_copy_is_manifest_verified", "F..")
+        self.assertIsNone(runner.wine_gap_reason("test_core.py", 1, core))
+
+    def test_import_gap_is_specific_to_tkinter_and_its_importing_files(self):
+        output = ('Traceback (most recent call last):\n'
+                  '  File "Z:\\repo\\mod_editor\\gui\\tkinter_app.py", line 9, in <module>\n'
+                  '    import tkinter as tk\nModuleNotFoundError: No module named \'tkinter\'\n')
+        for name in ("test_gui.py", "test_nfl_audio.py"):
+            self.assertIn("tkinter", runner.wine_gap_reason(name, 1, output))
+            self.assertIsNone(runner.wine_gap_reason(name, 1, output.replace("tkinter", "mod_editor")))
+        self.assertIsNone(runner.wine_gap_reason("test_core.py", 1, output))
+
+
+class HydrationTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix="winci hydration ")
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.repo = self.root / "repo"
+        self.source = self.root / "sibling"
+        self.repo.mkdir()
+        self.source.mkdir()
+
+    def write(self, root, relative, content=b"evidence"):
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+        return path
+
+    def test_sibling_merges_only_the_four_trees_and_preserves_existing_paths(self):
+        expected = []
+        for tree in runner.HYDRATION_TREES:
+            relative = tree + "/nested/input.json"
+            self.write(self.source, relative)
+            expected.append(relative)
+        self.write(self.source, "mod_editor/core/product.py")
+        self.write(self.source, "reports/existing.json", b"replacement")
+        self.write(self.repo, "reports/existing.json", b"user edit")
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(runner.hydrate_from(self.repo, self.source), expected)
+            self.assertEqual(runner.hydrate_from(self.repo, self.source), [])
+        self.assertEqual((self.repo / "reports/existing.json").read_bytes(), b"user edit")
+        self.assertFalse((self.repo / "mod_editor/core/product.py").exists())
+        self.assertIn("HYDRATED_LOCAL_INPUTS files=4", output.getvalue())
+        for relative in expected:
+            self.assertIn(f"HYDRATE + {relative}", output.getvalue())
+
+    @unittest.skipUnless(shutil.which("git"), "git is absent")
+    def test_tracked_files_including_deleted_paths_cannot_be_hydrated(self):
+        subprocess.run(["git", "init", "-q", str(self.repo)], check=True)
+        self.write(self.repo, "reports/kept.json", b"tracked edit")
+        deleted = self.write(self.repo, "reports/deleted.json")
+        self.write(self.repo, "reports/staged-deletion.json")
+        subprocess.run(["git", "-C", str(self.repo), "add", "--", "reports/kept.json", "reports/deleted.json", "reports/staged-deletion.json"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "-c", "user.name=Runner Test", "-c", "user.email=runner@example.invalid",
+                        "commit", "-q", "-m", "fixture", "--", "reports/kept.json", "reports/deleted.json", "reports/staged-deletion.json"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "rm", "-q", "--", "reports/staged-deletion.json"], check=True)
+        deleted.unlink()
+        for relative in ("reports/kept.json", "reports/deleted.json", "reports/staged-deletion.json", "reports/added.json"):
+            self.write(self.source, relative)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(runner.hydrate_from(self.repo, self.source), ["reports/added.json"])
+        self.assertFalse(deleted.exists())
+        self.assertFalse((self.repo / "reports/staged-deletion.json").exists())
+        self.assertEqual((self.repo / "reports/kept.json").read_bytes(), b"tracked edit")
+
+    @unittest.skipUnless(os.name == "posix", "host symlink fixtures require POSIX")
+    def test_neither_source_nor_destination_symlinks_are_followed(self):
+        outside = self.root / "outside"
+        outside.mkdir()
+        self.write(outside, "private.json")
+        self.write(self.source, "reports/normal.json")
+        self.write(self.source, "reports/dangling.json")
+        self.write(self.source, "tools/vendor/input.exe")
+        (self.source / "reports/link.json").symlink_to(outside / "private.json")
+        (self.source / "reports/linked-dir").symlink_to(outside, target_is_directory=True)
+        (self.repo / "reports").mkdir()
+        (self.repo / "reports/dangling.json").symlink_to(outside / "missing.json")
+        (self.repo / "tools").symlink_to(outside, target_is_directory=True)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(runner.hydrate_from(self.repo, self.source), ["reports/normal.json"])
+        self.assertTrue((self.repo / "reports/dangling.json").is_symlink())
+        self.assertFalse((outside / "missing.json").exists())
+        self.assertFalse((outside / "vendor").exists())
+        self.assertFalse((self.repo / "reports/link.json").exists())
+
+    def test_same_or_nested_source_and_missing_source_are_rejected(self):
+        for source in (self.repo, self.root, self.repo / "nested"):
+            source.mkdir(exist_ok=True)
+            with self.assertRaises(ValueError):
+                runner.hydrate_from(self.repo, source)
+        with self.assertRaises(FileNotFoundError):
+            runner.hydrate_from(self.repo, self.root / "missing")
+
+    def archives(self, members=None):
+        pins = {}
+        for index, name in enumerate(runner.RELEASE_ARCHIVES):
+            path = self.root / name
+            entries = members if members is not None else [
+                (f"release/reports/from-{index}.json", b"json", tarfile.REGTYPE),
+                ("release/mod_editor/core/existing.py", b"release source", tarfile.REGTYPE)]
+            with tarfile.open(path, "w:gz") as bundle:
+                for relative, data, kind in entries:
+                    info = tarfile.TarInfo(relative)
+                    info.type = kind
+                    info.mode = 0o755
+                    info.size = len(data) if kind == tarfile.REGTYPE else 0
+                    info.linkname = "outside" if kind == tarfile.SYMTYPE else ""
+                    bundle.addfile(info, io.BytesIO(data) if kind == tarfile.REGTYPE else None)
+            pins[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+        return pins
+
+    def test_release_pins_and_gh_command_match_ci(self):
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text()
+        for name, pin in runner.RELEASE_ARCHIVES.items():
+            self.assertIn(name, workflow)
+            self.assertIn(pin, workflow)
+        self.assertIn(f"gh release download {runner.RELEASE_TAG}", workflow)
+        with patch.object(runner.subprocess, "run") as command, patch.object(runner, "hydrate_archives", return_value=[]) as hydrate:
+            runner.hydrate_release(self.repo, self.root)
+        argv = command.call_args.args[0]
+        self.assertEqual(argv[:6], ["gh", "release", "download", "beta-50", "--repo", runner.RELEASE_REPO])
+        self.assertEqual(argv[6:-2], [v for name in runner.RELEASE_ARCHIVES for v in ("--pattern", name)])
+        self.assertEqual(hydrate.call_args.args[0], self.repo)
+
+    def test_both_archive_hashes_are_verified_before_any_copy(self):
+        pins = self.archives()
+        pins[next(reversed(pins))] = "0" * 64
+        with patch.object(runner, "RELEASE_ARCHIVES", pins), self.assertRaisesRegex(ValueError, "hash mismatch"):
+            runner.hydrate_archives(self.repo, self.root)
+        self.assertEqual(list(self.repo.iterdir()), [])
+
+    def test_release_merges_absent_paths_preserving_source_and_modes(self):
+        self.write(self.repo, "mod_editor/core/existing.py", b"local edit")
+        pins = self.archives()
+        with patch.object(runner, "RELEASE_ARCHIVES", pins), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(runner.hydrate_archives(self.repo, self.root), ["reports/from-0.json", "reports/from-1.json"])
+        self.assertEqual((self.repo / "mod_editor/core/existing.py").read_bytes(), b"local edit")
+        if os.name == "posix":
+            self.assertEqual((self.repo / "reports/from-0.json").stat().st_mode & 0o777, 0o755)
+
+    def test_release_rejects_traversal_and_nonregular_members(self):
+        for name, kind in (("/absolute/escape", tarfile.REGTYPE), ("release/../escape", tarfile.REGTYPE),
+                           ("release/.git/config", tarfile.REGTYPE), ("release/C:/escape", tarfile.REGTYPE),
+                           ("release/reports/link", tarfile.SYMTYPE), ("release/reports/fifo", tarfile.FIFOTYPE)):
+            with self.subTest(name=name):
+                pins = self.archives([(name, b"unsafe", kind)])
+                with patch.object(runner, "RELEASE_ARCHIVES", pins), self.assertRaises(ValueError):
+                    runner.hydrate_archives(self.repo, self.root)
+        self.assertEqual(list(self.repo.iterdir()), [])
+
+    def test_hydration_options_are_explicit_and_mutually_exclusive(self):
+        self.assertEqual(runner.argument_parser().parse_args(["--hydrate-from", "sibling"]).hydrate_from, Path("sibling"))
+        self.assertTrue(runner.argument_parser().parse_args(["--hydrate-release"]).hydrate_release)
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            runner.argument_parser().parse_args(["--hydrate-from", "sibling", "--hydrate-release"])
+
+
 class PathTests(unittest.TestCase):
+    def test_temp_probe_creates_a_directory_under_local_app_data(self):
+        with tempfile.TemporaryDirectory() as temp:
+            profile = Path(temp) / "profile with spaces"
+            output = subprocess.check_output([sys.executable, "-c", runner.TEMP_PROBE],
+                                             env=dict(os.environ, LOCALAPPDATA=str(profile)), text=True)
+            self.assertEqual(Path(output.strip()), (profile / "Temp/winci").resolve())
+            self.assertTrue(Path(output.strip()).is_dir())
+
+    @unittest.skipUnless(sys.platform == "linux", "runner orchestration uses Linux locks")
+    def test_main_supplies_profile_temp_and_hydrates_before_running_files(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "tests/mod_editor").mkdir(parents=True)
+            (root / "tests/mod_editor/test_fixture.py").write_text("")
+            events = []
+            def check(command, env, *args):
+                if command[-1] == runner.TEMP_PROBE:
+                    return r"C:\users\test\AppData\Local\Temp\winci"
+                if command[-1] == runner.OS_PROBE:
+                    self.assertEqual(env["TEMP"], env["TMP"])
+                    self.assertIn(r"AppData\Local\Temp\winci", env["TMP"])
+                return "probe OK"
+            def hydrate(repo, source):
+                events.append("hydrate")
+            def run_file(test, repo, repo_windows, runtime, env, *args):
+                events.append("test")
+                self.assertEqual(env["TEMP"], r"C:\users\test\AppData\Local\Temp\winci")
+                self.assertEqual(env["TMP"], env["TEMP"])
+                return runner.Result(test.name, output="Ran 1 test\nOK\n")
+            with patch.object(runner.shutil, "which", return_value="command"), \
+                 patch.object(runner, "checked", side_effect=check), \
+                 patch.object(runner, "hydrate_from", side_effect=hydrate), \
+                 patch.object(runner, "ensure_runtime", return_value=root / "runtime"), \
+                 patch.object(runner, "ensure_prefix"), patch.object(runner, "prove_imports"), \
+                 patch.object(runner, "windows_path", return_value=r"Z:\fixture"), \
+                 patch.object(runner, "run_file", side_effect=run_file), \
+                 contextlib.redirect_stdout(io.StringIO()):
+                rc = runner.main(["--repo", str(root), "--work", str(root / "work"),
+                                  "--hydrate-from", str(root / "sibling"), "-j", "2"])
+            self.assertEqual(rc, 0)
+            self.assertEqual(events, ["hydrate", "test"])
+
     def test_environment_clears_display_and_isolated_pythonpath(self):
         with patch.dict(os.environ, {"DISPLAY": ":99", "WAYLAND_DISPLAY": "socket", "PYTHONPATH": "wrong", "PYTHONHOME": "wrong"}):
             isolated = runner.wine_environment(Path("/tmp/prefix"))
@@ -227,6 +523,7 @@ class ProcessTests(unittest.TestCase):
             pidfile = root / "test.pid"
             pidfile.write_text("77")
             parent, killer = Mock(), Mock()
+            parent.stdout = io.BytesIO(b"child output\n")
             killer.wait.return_value = 0
             env = {"WINEPREFIX": str(root / "dedicated")}
             with patch.object(runner.subprocess, "Popen", side_effect=[parent, killer]) as popen, \
@@ -244,6 +541,7 @@ class ProcessTests(unittest.TestCase):
             pidfile = root / "test.pid"
             pidfile.write_text("77")
             parent, killer = Mock(), Mock()
+            parent.stdout = io.BytesIO(b"child output\n")
             killer.wait.side_effect = subprocess.TimeoutExpired("taskkill", 30)
             with patch.object(runner.subprocess, "Popen", side_effect=[parent, killer]), \
                  patch.object(runner, "kill_group") as kill, \

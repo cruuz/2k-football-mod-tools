@@ -33,6 +33,8 @@ python3 packaging/windows/local_windows_ci.py
 python3 packaging/windows/local_windows_ci.py --only test_modpack.py
 python3 packaging/windows/local_windows_ci.py --only 'test_apf_*' --only test_modpack.py -j 2
 python3 packaging/windows/local_windows_ci.py --changed
+python3 packaging/windows/local_windows_ci.py --hydrate-from ~/2k-worktrees/beta-53 -j 2
+python3 packaging/windows/local_windows_ci.py --hydrate-release -j 2
 ```
 
 The first run calls the installer's unchanged `build_runtime`, downloading its
@@ -51,34 +53,70 @@ module's filename stem. It never fetches. Combine it with `--only` to intersect
 the selections. Unmatched `--only` patterns are errors. This is a text-based
 selection heuristic, so run the full matrix before relying on coverage.
 
+Lean checkouts need the gitignored catalog inputs. `--hydrate-from DIR` copies
+regular files from `reports/`, `mod_editor/assets/`, `tools/vendor/` and
+`docs/research/` in a separate sibling checkout. It fills only absent paths,
+preserving existing files, tracked deletions and symlinks; source symlinks are
+not followed. Every copied path and each tree's copied count are printed. Missing source trees are
+reported, so a partial sibling is not mistaken for complete hydration.
+
+Alternatively, `--hydrate-release` uses `gh release download` for CI's exact
+two beta-50 archives from `cruuz/2k-football-mod-tools`, verifies both SHA-256
+pins before copying, and fills absent archive paths with the same top-level
+directory stripping as CI. It also protects tracked deletions and refuses
+unsafe paths/nonregular archive members. Downloads are temporary; `gh` must
+already be authenticated. The two hydration options are mutually exclusive.
+For a snapshot without `.git`, existing paths are protected but there is no
+index of tracked deletions. Neither option changes the source checkout.
+
 Each file has a 420-second timeout (`--timeout SECS` overrides it), a full log
 at `WORK/logs/test_name.py.log`, and the same PASS/FAIL and SUMMARY accounting
 as CI. All selected files run even after failures; `--keep-going` explicitly
 requests this default. File skips follow CI's exact lean-checkout evidence
-rule. Setup failures exit 2 without a success summary; test failures exit 1.
+rule and the observed Wine gaps documented in the report. Wine skips happen
+after execution: every failure must match its reviewed filename, test case,
+statement and exception signature. Logs with additional failures, missing
+catalogs or timeouts remain failed. Skips print `SKIP name (Wine gap: reason)`
+and count as skipped files, with their original logs retained. Setup failures
+exit 2 without a success summary; test failures exit 1.
 Timeouts print `TIMED OUT`, target the recorded Windows PID and descendants
 with `taskkill /T /F`, and kill the Unix launcher's process group. The runner
 never kills a shared Wine server. A prefix must be empty or owned by this
 runner; `--prefix DIR` chooses a separate one. Cache/prefix locks prevent
 overlapping invocations from corrupting state or logs.
 
-Use the default `-j 1` until the matrix has been validated on this machine.
-Its 32 logical CPUs and 31 GiB RAM suggest `-j 2` as a conservative experiment,
-but no parallel Wine setting has yet been demonstrated safe here. Qt windows
+The default is `-j 1`. The beta-60 lean matrix completed at `-j 2` in
+**20.3 minutes for 301 files**: 216 passed, 73 failed and 12 skipped (3,376
+tests), versus GitHub's approximately 20–30 minutes per job. No failure log
+shows cross-file prefix contention, so no speculative serialization was added.
+The report classifies all 73 failures and records the limits of this comparison.
+Qt windows
 run offscreen, without DISPLAY or desktop/audio integration. `--os-check`
 checks the actual Qt platform, prints Windows interpreter facts and the
 pre-normalization CRT environment values, and proves normal versus isolated
 child imports. The runner uses a private runtime copy for Python path setup;
 the cached installer runtime and installer build output are unchanged.
+The runner sets Windows `TEMP` and `TMP` to `LOCALAPPDATA/Temp/winci`, matching
+the private-profile placement that real Windows cache tests require.
+
+After hydration, the TEMP fix and precise skips, the conditional projection
+for that 301-file tree is 256 passed, 44 skipped and 1 unresolved failure if
+the original 12 evidence-skipped files are enabled and pass. If those 12 stay
+skipped, it is 244 passed, 56 skipped and 1 unresolved failure. This branch
+adds one runner test file. These are forecasts pending a Wine rerun; new
+failures may appear when hydration enables more coverage. `test_core.py`
+retains its unreported failure before the CopyFile2 crash.
 
 Wine can expose Windows CPython branches, binary I/O and Windows handle
 sharing behavior. It does not certify native Windows filesystem, GUI, shell,
 installer or driver behavior, nor the CI Python 3.11 matrix. The hosted job
 also installs current dependencies, whereas this runner intentionally uses the
-installer pins. No Wine acceptance run completed in the implementation session:
-the execution sandbox killed Wine with SIGSYS before Python started. See
+installer pins, whose embeddable runtime lacks Tkinter. Claude's external
+acceptance run confirmed Windows imports and Qt offscreen, reproduced the
+beta-60 WinError 5 on RED, and passed GREEN. This follow-up was validated with
+pure tests and the supplied logs because Wine cannot run in its sandbox. See
 [`ASTRA_WIN_LOCAL_CI_REPORT.md`](../ASTRA_WIN_LOCAL_CI_REPORT.md) for exact
-blocked RED/GREEN/full-matrix attempts and remaining validation.
+acceptance results, the per-file classification and remaining validation.
 
 ## Application icons
 
