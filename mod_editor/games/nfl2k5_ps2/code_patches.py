@@ -103,12 +103,36 @@ def _sha256(data: bytes) -> str:
 # The host's catalogue, read as the host stores it
 # --------------------------------------------------------------------------
 
-def _literal(tree: ast.Module, name: str, path: Path) -> Any:
+def _value(node: ast.AST, source: str) -> Any:
+    """A literal's value; for any other expression, its source text.
+
+    The host's catalogue is mostly literals, but since Beta 61 an entry may
+    quote another module's constant for its on-screen words (``tt.some_patch
+    .UI_TEXT``).  That is still the host's catalogue, read as the host stores
+    it: the entry's key and title are literals, and the expression's own text
+    stands in for the words this reader will not import Qt to resolve.
+    """
+
+    if isinstance(node, ast.Tuple):
+        return tuple(_value(item, source) for item in node.elts)
+    if isinstance(node, ast.List):
+        return [_value(item, source) for item in node.elts]
+    if isinstance(node, ast.Dict):
+        return {_value(key, source): _value(value, source) for key, value in zip(node.keys, node.values)}
+    try:
+        return ast.literal_eval(node)
+    except ValueError:
+        return ast.get_source_segment(source, node) or type(node).__name__
+
+
+def _literal(tree: ast.Module, name: str, path: Path, source: str = "") -> Any:
     for node in tree.body:
         if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == name for t in node.targets):
             try:
                 return ast.literal_eval(node.value)
             except ValueError:
+                if source and isinstance(node.value, (ast.Tuple, ast.List, ast.Dict)):
+                    return _value(node.value, source)
                 continue
     raise Refusal(f"{path} no longer defines a literal {name}; the host's patch catalogue moved.")
 
@@ -119,10 +143,11 @@ def host_patches(repo_root: Path = _ROOT) -> tuple[CodePatch, ...]:
     path = repo_root / HOST_CATALOGUE
     if not path.is_file():
         raise Refusal(f"The host's patch catalogue {HOST_CATALOGUE} is not in this tree.")
-    tree = ast.parse(path.read_text(encoding="utf-8"))
-    code_rows = _literal(tree, "PATCHES", path)
-    text_rows = _literal(tree, "TEXT_PATCHES", path)
-    string_toggles = _literal(tree, "STRING_TOGGLES", path)
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    code_rows = _literal(tree, "PATCHES", path, source)
+    text_rows = _literal(tree, "TEXT_PATCHES", path, source)
+    string_toggles = _literal(tree, "STRING_TOGGLES", path, source)
     executable_sha256 = None
     pin_path = repo_root / HOST_PIN_MODULE
     if pin_path.is_file():
