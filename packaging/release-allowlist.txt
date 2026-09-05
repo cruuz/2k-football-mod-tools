@@ -396,3 +396,12 @@ tools/nfl2k5_ps2_audo_patch.py
 tools/nfl2k5_ps2_audo_verify.py
 tools/validate_nfl2k5_ps2_audo.sh
 tools/validate_nfl2k5_ps2_audo.bat
+# Phase 2 (PS2): bounded stadium geometry editing for SLUS-20919 — the target
+# catalogue, the same-count position writer, the independent verifier and their
+# validators. The ISO9660 writer/verifier ship with them because the writer
+# produces its new image through them.
+tools/nfl2k5_ps2_stadium_target_catalog.py
+tools/nfl2k5_ps2_stadium_position_patch.py
+tools/nfl2k5_ps2_stadium_position_verify.py
+tools/validate_nfl2k5_ps2_stadium_position.sh
+tools/validate_nfl2k5_ps2_stadium_position.bat
