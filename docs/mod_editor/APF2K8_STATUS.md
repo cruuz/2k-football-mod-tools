@@ -747,7 +747,7 @@ document the token-preserving positive route. Jersey numbers remain read-only
 in that on-disc project transport; the separate Save Players raw-save lane now
 uses the exact APFe packed field with independent byte verification.
 
-The current capability registry contains 79 records globally and 37 APF
+The current capability registry contains 84 records globally and 37 APF
 records. The APF product surface resolves to 19 Editable, 8 Preview,
 3 Export-only, 4 Proof, and 3 Research cards, with zero Coming Soon cards.
 Every exposed card binds to a real desktop handler or an explicit, evidence-

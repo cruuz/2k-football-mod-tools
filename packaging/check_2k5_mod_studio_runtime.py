@@ -1819,6 +1819,16 @@ def main() -> int:
         "mod_editor.games.nfl2k5_ps2.code_patches",
         "mod_editor.games.nfl2k5_ps2.uniform_art",
         "mod_editor.games.nfl2k5_ps2.disc_lanes",
+        "mod_editor.games.madden09_ps2",
+        "mod_editor.games.madden09_ps2.containers",
+        "mod_editor.games.madden09_ps2.disc_identity",
+        "mod_editor.games.madden09_ps2.inventory_lane",
+        "mod_editor.games.madden09_ps2.mmap_art",
+        "mod_editor.games.madden09_ps2.uniform_art",
+        "mod_editor.games.madden09_ps2.team_data",
+        "mod_editor.games.madden09_ps2.text_lane",
+        "mod_editor.games.madden09_ps2.code_patches",
+        "mod_editor.games._formats.ea_tdb",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1867,7 +1877,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 79,
+    require(len(registry.capabilities) == 84,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -2274,7 +2284,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=79 sections=12 nfl2k5_capabilities=32 "
+        "registry=84 sections=12 nfl2k5_capabilities=32 "
         "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

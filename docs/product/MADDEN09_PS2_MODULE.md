@@ -157,7 +157,7 @@ new and shared: `mod_editor/games/_formats/ea_tdb.py`.
 60,537 field definitions
 ```
 
-Whole-disc walk: **about 24 seconds** [M].
+Whole-disc walk: **about nineteen seconds** [M].
 
 The catalogue carries **field names, not field values**. A field name is the
 schema and is identical on every disc; a record's contents are the user's game

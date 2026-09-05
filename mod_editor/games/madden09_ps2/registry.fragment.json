@@ -2,79 +2,423 @@
   "capabilities": [
     {
       "backend": {
-        "command": "python3 -m mod_editor.games.madden09_ps2.example_lane --source <in.slot> --destination <new.slot> --recipe <recipe.json> [--receipt <receipt.json>]",
-        "module": "mod_editor/games/madden09_ps2/example_lane.py",
-        "operation": "write"
+        "command": null,
+        "module": null,
+        "operation": "none"
       },
-      "classification": "offline-writer-proved",
+      "classification": "unknown",
       "evidence": [
-        "tests/mod_editor/test_madden09_ps2_module.py"
+        "docs/product/PS2_CODE_PATCH_PIPELINE.md",
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
         "default_enabled": false,
         "expose": false,
-        "mode": "edit",
-        "reason": "PLACEHOLDER: the scaffold's example lane over a synthetic slot file. Delete or replace it before the first real row; it never enters the canonical registry."
+        "mode": "deferred",
+        "reason": "Not drawn. The Gameplay page of the PS2 Madden 09 Studio states that this lane is classified unknown and repeats this sentence instead of offering a control: no site in the SLUS-21770 boot ELF has been located for any of the six proposed patches, so there is nothing a user could turn on. The pipeline around a translation is complete and tested; the translation is the missing half."
       },
-      "id": "madden09_ps2.menus.example_slots",
+      "id": "madden09ps2.gameplay.executable_patches",
       "input_constraints": [
-        "Exact allocation, never longer: a slot holds 32 ASCII characters; longer text is refused before anything is written.",
-        "The source is opened read-only; the destination must not exist; every refusal leaves no destination behind."
+        "Nothing is mapped: every translation is refused by name, so this row claims no gameplay change at all.",
+        "A plan resolves every word against the user's own boot ELF -- the address must be file-backed and the original word must match -- or it refuses and writes nothing.",
+        "Delivery is a pnach beside the image, never a write into it: build refuses the source as its destination and refuses an existing destination.",
+        "The pnach names the CRC of the ELF it was derived from, and verify fails when the file names another CRC, declares an address the receipt does not, or writes a different word.",
+        "Retail-free: the catalogue is subject names and the ELF facts read from the user's own image at run time. No address, offset or code byte from any executable is stored here."
       ],
       "portme": [
-        "Replace with the game's real lanes; this row documents the shape only."
+        "Locate one site and fill in a single TRANSLATIONS entry; nothing else in the lane changes, which is what the synthetic-ELF proof exists to guarantee.",
+        "Promoting this row above unknown needs a patch witnessed running in an emulator, which needs the rig; the synthetic proof covers the emitter and the verifier only.",
+        "On-disc ELF patching through the fixed-allocation ISO9660 writer is a second delivery and is deliberately not built."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
-        "mod_payload": "user-authored-inputs-and-recipes",
-        "rule": "Ship the lane, its validators and user-authored recipes; sources and outputs stay with the user.",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Synthetic only: a placeholder format no game uses.",
-        "status": "not-tested"
+        "scope": "Not applicable: no translation exists, so nothing has been applied in an emulator or on hardware. The synthetic-ELF proof covers the pnach emitter and verifier only.",
+        "status": "not-applicable"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "slot:<index> from the catalogue",
-            "name": "slot",
+            "allowed": "one of the six proposed patch ids",
+            "name": "patch",
             "required": true
           },
           {
-            "allowed": "up to 32 printable ASCII characters",
-            "name": "text",
-            "required": true
+            "allowed": "a mapping of the patch's parameter names to values; refused while the patch is unmapped",
+            "name": "parameters",
+            "required": false
+          },
+          {
+            "allowed": "hand-authored rows of address, original and replacement, each eight hex digits",
+            "name": "mips",
+            "required": false
           }
         ],
-        "notes": "One recipe entry rewrites one slot inside its own 32-byte allocation."
+        "notes": "Deferred: the GUI must not expose this row. The studio's Gameplay page states the classification and this reason and offers no control; the command line is how a maintainer proves a translation."
       },
       "source_container": {
-        "format": "Synthetic SLOT file: header plus fixed 32-byte text slots.",
-        "hash_pins": [],
-        "resource": "N text slots, each 32 bytes",
-        "retail_file": "None: a synthetic example for Madden NFL 09 (USA, PlayStation 2) (PlayStation 2)."
+        "format": "ELF boot executable inside an ISO9660 DVD image; 32-bit MIPS R5900 words at EE addresses",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "the SLUS-21770 boot ELF, retail (PCSX2 CRC 38014255) or Deluxe (084562FF); six proposed patches, zero translated",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
       },
-      "summary": "PLACEHOLDER example lane for Madden NFL 09 (USA, PlayStation 2): rewrite 32-character text slots of a synthetic slot file inside their allocation, with an independent verifier.",
+      "summary": "The whole PCSX2 pnach pipeline for the SLUS-21770 boot ELF, proved end to end on a synthetic ELF, with no translation mapped and every one refused by name. The catalogue is six subject areas the owner's Madden 09 static-analysis work has opened, each carrying the plain statement that no word has been located for it. A recipe may carry hand-authored address/original/replacement words while a translation is being proved: planning checks every original against the user's own ELF, the emitted pnach names that ELF's own PCSX2 CRC, and verify re-reads both independently and fails a tampered file. No retail address or code byte is in the repository.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Madden 09 (PS2) executable patches (pnach-first, nothing mapped)",
+      "validation_command": "bash tools/validate_madden09_ps2_code_patches.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.text_lane --source <SLUS-21770.iso> [--out <report.json>] [--preview CONTAINER:INDEX]",
+        "module": "mod_editor/games/madden09_ps2/text_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/EA_TERF_FORMAT.md",
+        "docs/product/MADDEN09_PS2_MODULE.md"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Menus & UI page of the PS2 Madden 09 Studio as a table and no editor. The counts come from the shared TERF reader; a preview is an explicit read of the user's own image rather than anything the catalogue kept. No text writer is offered: rebuilding a bank needs an LZH1 encoder that exists nowhere public, and the disc keeps packed copies of some members in GAME.QKL and FE.QKL that an edit would have to match."
+      },
+      "id": "madden09ps2.menus.text_members",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
+        "The catalogue is counts, lengths and digests. Not one string from the game reaches it, which a test asserts by searching the serialised document for the fixture's own strings.",
+        "A preview reads the member from the source the caller hands it, elides a string longer than 120 characters, and writes nothing anywhere.",
+        "Strings are decoded latin-1, never utf-8: EA stores 8-bit characters, and a decoder that raised on them would refuse banks that are perfectly readable.",
+        "Bounded: a container over 96 MB is left unread, and at most 4,000 members are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "A text writer needs an LZH1 encoder (so an edited bank fits its slot) and has to keep the GAME.QKL and FE.QKL preload copies consistent; neither is done.",
+        "Group the story generator's banks by their role so a user can find the one they mean without opening each in turn.",
+        "Offer a search across banks, which needs an index the catalogue deliberately does not carry -- it would be payload."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "a /DATA file name, e.g. STRYTEXT.DAT",
+            "name": "container",
+            "required": false
+          },
+          {
+            "allowed": "0..memberCount-1 within one container",
+            "name": "member",
+            "required": false
+          },
+          {
+            "allowed": "an integer count, for filtering by bank size",
+            "name": "strings",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI may show a preview, which re-reads the user's own disc each time; it must not offer an edit, and the catalogue it filters carries no string to leak."
+      },
+      "source_container": {
+        "format": "TEXT members inside EA TERF containers: NUL-separated printable strings, identified after decompression from a 32-byte printable head",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "TEXT members across the disc's /DATA containers, most of them the story generator's template banks",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Find every TEXT member on a user's SLUS-21770 disc -- a member whose decompressed bytes are printable NUL-separated strings -- and measure it: which container, which member, how many strings, the longest and mean length, the printable ratio and the SHA-256 of the decompressed bytes. The catalogue carries those numbers and no string at all, because a catalogue is a file that can be shipped; the strings themselves are read from the user's own image on demand and never stored.",
       "surface": "menus",
-      "title": "Madden NFL 09 (USA, PlayStation 2) example slot text (placeholder)",
-      "validation_command": "bash mod_editor/games/madden09_ps2/validate_example.sh"
+      "title": "Madden 09 (PS2) text banks",
+      "validation_command": "bash tools/validate_madden09_ps2_text.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.team_data --source <SLUS-21770.iso> [--out <report.json>] [--selftest]",
+        "module": "mod_editor/games/madden09_ps2/team_data.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/EA_TERF_FORMAT.md",
+        "docs/product/MADDEN09_PS2_MODULE.md"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 Madden 09 Studio as a table and no editor. The EA TDB reader is proved by round-tripping every field type through a synthetic database, including signed values and fields that straddle byte boundaries, and it read all 355 databases on the retail disc. Writers are not offered: an edited member cannot be re-packed to its slot without an LZH1 encoder, and no rebuilt Madden 09 disc has been booted."
+      },
+      "id": "madden09ps2.players.team_databases",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
+        "Schema only: table names, record counts, strides, index counts and field names, types and bit widths. No record is decoded and no field value reaches a catalogue.",
+        "Named containers only: DB_TEAMS.DAT, TEMPLATE.DAT, GAMEDATA.DAT and the bare STRMDATA.DB, so a 415 MB speech container is never opened looking for a database.",
+        "The four CRC sites EA stores in a TDB header are reported as integers and never checked or recomputed; this lane only reads.",
+        "One database this reader cannot open becomes a note on its own row, so a single malformed member never empties a catalogue of the other 354."
+      ],
+      "portme": [
+        "Decode records, not just schema, once there is somewhere honest to show them; the reader can already unpack every field type.",
+        "Add the big-endian PS3 variant of the same format so a Madden 12 PS3 module reuses this reader; only the multi-byte integers and the four-character name order differ.",
+        "A TDB writer waits on two things that are not this lane's to fix: an LZH1 encoder so an edited member can be re-packed to its slot, and one rebuilt disc booted in an emulator."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator. That the schema read here matches what the game loads is not claimed -- it would need a rebuilt disc booted, which has not been done.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "DB_TEAMS.DAT | TEMPLATE.DAT | GAMEDATA.DAT | STRMDATA.DB",
+            "name": "container",
+            "required": false
+          },
+          {
+            "allowed": "0..memberCount-1; blank for the bare database",
+            "name": "member",
+            "required": false
+          },
+          {
+            "allowed": "a four-character table name, e.g. TEAM or PLAY",
+            "name": "table",
+            "required": false
+          },
+          {
+            "allowed": "a four-character field name, matched case-insensitively",
+            "name": "field",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only schema table. The GUI must not offer a record edit, a database export or a container rebuild from this row; no Madden 09 TDB writer exists and none is claimed."
+      },
+      "source_container": {
+        "format": "EA TDB v8: a 24-byte header, an 8-byte-per-table directory whose offsets are relative to the directory's end, a 40-byte table header, a 16-byte-per-field directory, then tightly bit-packed little-endian records",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "355 databases, 2,151 tables, 354,812 records, 60,537 fields",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Read every EA TDB v8 database on a user's SLUS-21770 disc and say what its schema is: the tables, how many records each holds against its capacity, the record stride in bytes and bits, and every field's name, type and bit width. Measured on the retail disc: 355 databases (235 in DB_TEAMS.DAT, 104 in GAMEDATA.DAT, 15 in TEMPLATE.DAT and the bare /DATA/STRMDATA.DB), 2,151 tables, 354,812 records and 60,537 fields. Field names are the schema and are the same on every disc; a record's contents are the user's game data and are never read into a catalogue.",
+      "surface": "players_rosters",
+      "title": "Madden 09 (PS2) team and roster databases",
+      "validation_command": "bash tools/validate_madden09_ps2_team_data.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.inventory_lane --source <SLUS-21770.iso> [--out <report.json>] [--selftest]",
+        "module": "mod_editor/games/madden09_ps2/inventory_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/EA_TERF_FORMAT.md",
+        "docs/product/MADDEN09_PS2_MODULE.md"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the All Textures page of the PS2 Madden 09 Studio as a table and no editor: every column is read straight off the user's disc by the shared TERF reader, which is proved on synthetic containers at every alignment and walked the retail image with zero layout violations. There is no Madden 09 container writer, so the page lists and never offers an edit."
+      },
+      "id": "madden09ps2.textures.container_inventory",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract rather than quietly doing nothing.",
+        "Bounded: a container over 96 MB is listed with its size and left unread, so the disc's six speech and music containers (124-415 MB) never enter memory.",
+        "Metadata only: offsets, sizes, codec ids and format labels. A member's bytes are read only to classify its first 32 bytes and are never stored or emitted.",
+        "Honest about the Deluxe disc: six of its containers are recorded short in ISO9660, so the extent is re-read to the length the container itself declares; a member that genuinely falls outside the bytes read is still refused.",
+        "Format sampling is declared: the first 256 members of each container are decompressed to classify them, and every row says how many it sampled so nobody reads the histogram as the whole container."
+      ],
+      "portme": [
+        "Classify every member rather than the first 256 per container once the LZH1 decoder is fast enough to make it free; the sample is a speed decision, not a format limit.",
+        "Join the MMAP rows to the uniform, face and tattoo lanes so one table can say which team a texture belongs to.",
+        "Give the member table a virtualized model: 36,195 rows do not fit a plain item model, which is why the lane caps its target list at 4,000 today."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "a /DATA file name, e.g. UNIFORMS.DAT",
+            "name": "container",
+            "required": false
+          },
+          {
+            "allowed": "0..memberCount-1 within one container",
+            "name": "member",
+            "required": false
+          },
+          {
+            "allowed": "NONE (stored) | RLE1 | LZH1 | an unimplemented id, by name",
+            "name": "codec",
+            "required": false
+          },
+          {
+            "allowed": "MMAP | SMF | DMF | TDB | TEXT | TERF | SCHl | BNKl | FNTS | SEVT | SKL1 | ELF | empty | unclassified | unsupported codec | unreadable",
+            "name": "format",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer a byte edit, a member export or a container rebuild from this row; export is the uniform-art row's job and no writer exists."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image holding EA TERF containers under /DATA: a TERF header, a DIR1 member directory, an optional COMP codec table and a DATA payload chunk, at 4-, 16-, 64- or 2048-byte member alignment",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "101 containers under the read limit; 36,195 members; codecs 0 (stored, 31,926) and 5 (LZH1, 4,269) only",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Open a user's SLUS-21770 ISO read-only, name it retail or Deluxe by its boot-ELF digest, and walk every EA TERF container under /DATA: the chunk chain, the member-data alignment, each member's offset, stored size, codec and unpacked size, and -- after decompression, because a packed member's stored magic means nothing -- what format its bytes carry. Measured on the retail disc: 101 containers under the 96 MB read limit, 36,195 members, 4,901 MMAP textures, 1,288 TEXT banks, 626 SMF geometry, 354 TDB databases, 500 nested TERF, 300 DMF, 167 SCHl audio and 764 the format table does not claim. Nothing is written and no member payload is read into a catalogue.",
+      "surface": "textures",
+      "title": "Madden 09 (PS2) /DATA container inventory",
+      "validation_command": "bash tools/validate_madden09_ps2_inventory.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.uniform_art --source <SLUS-21770.iso> [--out <catalogue.json>] [--export <NEW dir> --limit N]",
+        "module": "mod_editor/games/madden09_ps2/uniform_art.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/EA_TERF_FORMAT.md",
+        "docs/product/MADDEN09_PS2_MODULE.md"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 Madden 09 Studio with preview, Export PNG and a checked Import PNG, and with Write PCSX2 pack refused by name: a replacement filename needs a GS dump of this game and none exists. Export is the value today. The independent verifier re-decodes every exported texture from the user's own disc by key -- not through the catalogue that produced the receipt -- and fails on a tampered file or an undeclared one."
+      },
+      "id": "madden09ps2.uniforms.mmap_export",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified; the export is a NEW folder that must not already exist, and the source may not be named as the destination.",
+        "The catalogue carries dimensions, formats, counts and file names -- never a pixel. Pixels are decoded when a texture is previewed or exported, straight from the user's own image.",
+        "An import is checked, never silently resized: a PNG must be exactly the texture's size or an exact whole-number multiple of it, 8-bit, non-interlaced, RGB or RGBA. Anything else is refused naming the size that was wanted.",
+        "A same-size PNG is indexed against the texture's OWN palette and the result reported: a Madden 09 texture rides its own CLUT, so a colour that palette does not carry cannot be introduced, and the user is told how many pixels landed exactly.",
+        "replacement_identity returns None: naming a PCSX2 replacement file needs the GS TEX0 and CLUT hashes the emulator computes at draw time, which need a GS dump of Madden 09 that nobody has captured. The pack step refuses with that sentence rather than writing a name that would never match.",
+        "Version-1 MMAP members store their pixels under EA codec 4 (IPU1), which nothing here decodes; all 1,188 of them are refused by name rather than exported wrong."
+      ],
+      "portme": [
+        "Capture a GS dump of Madden 09 on the rig, derive the PCSX2 replacement names from it, and this lane becomes a pack writer with no change to its decoder.",
+        "Join the uniform members to teams. UNIFORMS.DAT names none of its 455 members or their images, so which team a member belongs to is not established; the executable's own tables are the place to look.",
+        "Decode IPU1 so the 1,188 memory-card front-end textures can be exported too.",
+        "Writing a texture back into the container needs an LZH1 encoder and one rebuilt disc booted; neither exists, and until they do this stays extract-only."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter creates local PNGs and no path writes anything into the game or the emulator, so there is no runtime behaviour to witness. That PCSX2 would render these textures identically is NOT claimed -- no GS dump of Madden 09 exists, which is the same gap that stops the pack writer. The evidence for the decode is that the exported PNGs are recognisable art when looked at, not that the game draws them.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of the texture's size or an exact multiple",
+            "name": "png",
+            "required": false
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "Export writes one PNG per selected texture plus a HOW-TO that states what cannot be done with them yet. The GUI must not offer a write back to the disc or a PCSX2 pack from this row: neither exists."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers: a 40-byte section directory, then image, surface (16 bytes: u16 w, u16 h, u32 format, u32 size, u32 offset), palette and name tables; pixel layouts 0 (4-bit indexed) and 1 (8-bit indexed); surface codecs 0 (stored), 3 (LZM1) and 4 (IPU1, not decoded)",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "UNIFORMS.DAT, PLYRFACE.DAT, COACFACE.DAT and TATTOOS.DAT: 1,780 texture members carrying 7,616 images, 7,082 of them decodable",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Decode the MMAP textures on a user's SLUS-21770 disc and export them as PNGs. An MMAP member is a table-of-tables -- an image table, a surface table of mip levels, a palette table and a name table -- whose pixels are 4- or 8-bit indexed, sometimes packed again under EA codec LZM1 inside a member the container already unpacked, with 256-entry CLUTs in the PS2 GS's CSM1 interleave. Measured on the retail disc's four art containers: 1,780 texture members, 7,616 images, 7,082 decodable; across ten containers 11,039 of 12,779 images decode and every refusal falls in three named groups. The decode is proved by looking at the result -- recognisable jersey sheets, legible number fonts and human faces, not plausible noise. Nothing is written to the disc.",
+      "surface": "uniforms",
+      "title": "Madden 09 (PS2) uniform, face and tattoo textures to PNG",
+      "validation_command": "bash tools/validate_madden09_ps2_uniform_art.sh"
     }
   ],
   "game": {
     "id": "madden09_ps2",
     "platform": "PlayStation 2",
-    "public_input": "FILL IN: what the user supplies for Madden NFL 09 (USA, PlayStation 2) (their own legally obtained image or save); the tool never bundles game files.",
+    "public_input": "User supplies a legally obtained USA PS2 ISO (SLUS-21770) -- the retail disc or the community's Madden NFL 09 Deluxe rebuild, told apart by boot-ELF digest; the tool never bundles game files, BIOS, saves, or emulator binaries.",
     "retail_identity": {
-      "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-      "executable_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+      "content_sha256": "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+      "executable_sha256": "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c"
     },
     "title": "Madden NFL 09 (USA, PlayStation 2)"
   },
   "schema": "vc_mod_capability_registry_fragment/v1",
   "surfaces": [
-    "menus"
+    "gameplay_tuning_sliders",
+    "menus",
+    "players_rosters",
+    "textures",
+    "uniforms"
   ]
 }

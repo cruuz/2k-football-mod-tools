@@ -1,18 +1,22 @@
 {
-  "capability_rows": 1,
+  "capability_rows": 5,
   "game_id": "madden09_ps2",
-  "hidden_disc_writers": 1,
-  "lanes_on_contract": 1,
-  "product_modules": 2,
+  "hidden_disc_writers": 0,
+  "lanes_on_contract": 5,
+  "product_modules": 12,
   "retail_identity": {
-    "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-    "executable_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    "content_sha256": "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+    "executable_sha256": "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c"
   },
   "save_writer_ids": [],
   "schema": "vc_game_module_pins/v1",
-  "shipped_files": 9,
+  "shipped_files": 25,
   "surfaces": [
-    "menus"
+    "gameplay_tuning_sliders",
+    "menus",
+    "players_rosters",
+    "textures",
+    "uniforms"
   ],
   "windows": 1
 }

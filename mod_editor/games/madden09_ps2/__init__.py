@@ -61,7 +61,7 @@ from .disc_identity import Madden09DiscIdentifier
 from .inventory_lane import InventoryLane
 from .team_data import TeamDataLane
 from .text_lane import TextLane
-# uniform art lane joins here
+from .uniform_art import UniformArtLane
 
 HERE = Path(__file__).resolve().parent
 GAME_ID = "madden09_ps2"
@@ -129,7 +129,7 @@ def _registered(capability_id: str) -> bool:
 
 _CANDIDATES = (
     InventoryLane(),
-
+    UniformArtLane(),
     TeamDataLane(),
     TextLane(),
     Madden09CodePatchLane(IDENTITY),

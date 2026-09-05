@@ -29,6 +29,8 @@ from typing import Any, Callable, Dict, Iterator, List, Optional, Sequence, Tupl
 from mod_editor.games._formats import ea_terf
 from mod_editor.games.contract import Refusal
 
+from . import mmap_art
+
 _ROOT = Path(__file__).resolve().parents[3]
 _TOOLS = _ROOT / "tools"
 if str(_TOOLS) not in sys.path:
@@ -388,6 +390,19 @@ def load_container(
     )
 
 
+def member_uncached(container: ea_terf.TerfContainer, index: int) -> bytes:
+    """One member, whole, without putting it in the container's cache.
+
+    :meth:`TerfContainer.member` caches what it unpacks, which is right for a
+    lane that comes back to the same member -- and wrong for one walking a
+    455-member container whose members unpack to 350 KB each, where the cache
+    is a 160 MB pile nobody reads twice.  Asking for exactly the declared size
+    returns the whole member and skips the cache.
+    """
+
+    return container.member(index, max_output=container.members[index].decompressed_size)
+
+
 def members_of_format(
     container: ea_terf.TerfContainer,
     wanted: str,
@@ -439,40 +454,114 @@ def members_of_format(
 SYNTHETIC_CONTAINERS = (UNIFORM_CONTAINER, TEAM_DATABASE_CONTAINER)
 
 
-def synthetic_mmap(width: int, height: int, *, version: int = 2, seed: int = 0) -> bytes:
-    """An ``MMAP`` member built from the header's own rules, not from a disc.
+def synthetic_palette(entries: int = 256) -> List[Tuple[int, int, int, int]]:
+    """A CLUT of *entries* colours, computed rather than sampled.
 
-    The 40-byte wrapper is laid out exactly as
-    :func:`ea_terf.parse_mmap_header` reads it, followed by the dimensions and
-    a palette-plus-indices body: a 256-entry RGBA CLUT and one index byte per
-    pixel.  The pixel bytes are a deterministic ramp of *seed*, so a decode
-    that gets the stride wrong is visibly wrong and no game data is involved.
+    Every channel is a different stride so a decode that swaps or shifts
+    palette entries produces obviously wrong colours instead of a subtle
+    shift.  Alpha is PS2's 0..128 scale.
+    """
+
+    return [((index * 5) & 0xFF, (index * 9) & 0xFF, (index * 17) & 0xFF,
+             0x80 if index % 4 else 0x40)
+            for index in range(entries)]
+
+
+def synthetic_indices(width: int, height: int, *, seed: int = 0, bits: int = 8) -> bytes:
+    """Index bytes for a *width* x *height* surface: a deterministic ramp.
+
+    A wrong stride turns this into a visible diagonal, which is the point:
+    a fixture whose failure mode is invisible proves nothing.
+    """
+
+    modulus = 256 if bits == 8 else 16
+    values = [(seed + x * 7 + y * 13) % modulus
+              for y in range(height) for x in range(width)]
+    if bits == 8:
+        return bytes(values)
+    packed = bytearray(len(values) // 2)
+    for position in range(0, len(values) - 1, 2):
+        packed[position // 2] = values[position] | (values[position + 1] << 4)
+    return bytes(packed)
+
+
+def synthetic_mmap(width: int, height: int, *, version: int = 2, seed: int = 0,
+                   bits: int = 8, mips: int = 1, palette_only_extra: bool = False) -> bytes:
+    """An ``MMAP`` member built from the format's own rules, not from a disc.
+
+    ``MMAP`` is a table-of-tables -- an image table, a surface table (one row
+    per mip level), a palette table and a name table, each addressed by an
+    offset in the 40-byte header -- and this builds all of it.  See
+    :mod:`.mmap_art` for the layout and the evidence behind it.
+
+    *mips* adds halved levels after the base one, and *palette_only_extra*
+    appends the second image entry the real containers carry: a row with no
+    surfaces whose job is to hold an alternate CLUT for the first image.  Both
+    exist so a lane's handling of them is exercised without a game.
     """
 
     import struct
 
-    indices = bytes((seed + x * 7 + y * 13) & 0xFF
-                    for y in range(height) for x in range(width))
-    clut = bytearray()
-    for entry in range(256):
-        clut += bytes(((entry * 5) & 0xFF, (entry * 9) & 0xFF, (entry * 17) & 0xFF, 0x80))
-    body = struct.pack("<HHHHI", width, height, 0, 0, width * height)
-    body += bytes(0x40 - ea_terf.MMAP_HEADER_SIZE - len(body))
+    header_size = mmap_art.HEADER_SIZE
+    levels = []
+    level_width, level_height = width, height
+    for level in range(max(1, mips)):
+        levels.append((level_width, level_height,
+                       synthetic_indices(level_width, level_height,
+                                         seed=seed + level, bits=bits)))
+        level_width = max(1, level_width // 2)
+        level_height = max(1, level_height // 2)
+
+    # A 256-entry CLUT is stored in the GS's CSM1 interleave, and undoing it is
+    # an involution -- so storing the de-interleaved form makes the decoder
+    # hand back exactly the palette this function names.
+    wanted = synthetic_palette(256 if bits == 8 else 16)
+    stored = mmap_art.deinterleave_csm1(wanted) if len(wanted) == 256 else list(wanted)
+    clut = b"".join(bytes(entry) for entry in stored)
+
+    image_count = 2 if palette_only_extra else 1
+    palette_count = 2 if palette_only_extra else 1
+    surface_offset = header_size
+    image_offset = surface_offset + mmap_art.SURFACE_STRIDE * len(levels)
+    palette_offset = image_offset + mmap_art.IMAGE_STRIDE * image_count
+    name_offset = palette_offset + mmap_art.PALETTE_STRIDE * palette_count
+    data_offset = name_offset + mmap_art.NAME_STRIDE * image_count
+
+    surfaces = bytearray()
+    cursor = data_offset
+    layout = (mmap_art.PIXELS_INDEXED_8 if bits == 8 else mmap_art.PIXELS_INDEXED_4)
+    for level_w, level_h, pixels in levels:
+        surfaces += struct.pack("<HHIII", level_w, level_h, layout, len(pixels), cursor)
+        cursor += len(pixels)
+    palettes = bytearray()
+    palette_cursor = cursor
+    for _ in range(palette_count):
+        palettes += struct.pack("<HHII", 0, mmap_art.PALETTE_RGBA8888,
+                                len(clut), palette_cursor)
+        palette_cursor += len(clut)
+
+    images = bytearray()
+    images += struct.pack("<HHII", 1, len(levels), 0, 0)
+    if palette_only_extra:
+        images += struct.pack("<HHII", 1, 0, 0, 1)
+    names = b"".join(name.ljust(mmap_art.NAME_STRIDE, b"\x00")
+                     for name in ([b"SYNTH"] + ([b"SYNTHALT"] if palette_only_extra else [])))
+
     payload = bytearray()
-    payload += ea_terf.MMAP_MAGIC
+    payload += mmap_art.MMAP_MAGIC
     payload += struct.pack("<I", version)
     payload += bytes((0x00, 0x01, 0x02, 0x03))
-    payload += struct.pack("<HH", 1, 1)
-    payload += struct.pack("<I", 0)
-    payload += struct.pack("<I", width * height + len(clut))
-    payload += struct.pack("<I", ea_terf.MMAP_HEADER_SIZE)
-    payload += struct.pack("<III", width * height,
-                           width * height + 64,
-                           width * height + len(clut))
-    assert len(payload) == ea_terf.MMAP_HEADER_SIZE
-    payload += body
-    payload += bytes(clut)
-    payload += indices
+    payload += struct.pack("<HH", image_count, len(levels))
+    payload += struct.pack("<IIIIII", palette_count, image_offset, surface_offset,
+                           palette_offset, name_offset, 0)
+    assert len(payload) == header_size, len(payload)
+    payload += surfaces
+    payload += images
+    payload += palettes
+    payload += names
+    for _level_w, _level_h, pixels in levels:
+        payload += pixels
+    payload += clut * palette_count
     return bytes(payload)
 
 
@@ -572,9 +661,12 @@ __all__ = [
     "data_files",
     "describe_container",
     "load_container",
+    "member_uncached",
     "members_of_format",
     "open_disc",
     "read_file",
+    "synthetic_indices",
     "synthetic_mmap",
+    "synthetic_palette",
     "synthetic_text_member",
 ]

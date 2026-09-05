@@ -17,9 +17,12 @@ DEFAULT_SCHEMA = Path(__file__).with_name("registry.schema.json")
 
 SCHEMA_ID = "vc_mod_capability_registry/v1"
 SCHEMA_DOCUMENT_ID = "urn:vc-mod-capability-registry:v1"
-GAMES = ("apf2k8_xbox360", "nfl2k5_ps2", "nfl2k5_xbox")
+GAMES = ("apf2k8_xbox360", "madden09_ps2", "nfl2k5_ps2", "nfl2k5_xbox")
 # The two long-established games; nfl2k5_ps2 joins a surface's coverage rule
 # only when that surface actually ships a PS2 capability row.
+# The games every GAMES-wide surface rule was written for; a newer game
+# covers only the surfaces its own rows declare below.
+_ESTABLISHED_GAMES = ("apf2k8_xbox360", "nfl2k5_ps2", "nfl2k5_xbox")
 _LEGACY_GAMES = ("apf2k8_xbox360", "nfl2k5_xbox")
 SURFACES = (
     "audio",
@@ -49,20 +52,20 @@ SURFACE_GAMES["crib_assets"] = ("nfl2k5_xbox",)
 # The texture lane is NFL 2K5 only: APF 2K8 keeps its own field-art and
 # uniform writers and has no equivalent corpus mapped. The PS2 release joins
 # it with the read-only disc inventory (nfl2k5ps2.textures.disc_inventory).
-SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox")
+SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox") + ("madden09_ps2",)
 # PS2 staged surfaces (each must carry at least one nfl2k5_ps2 row):
-SURFACE_GAMES["saves"] = GAMES
+SURFACE_GAMES["saves"] = _ESTABLISHED_GAMES
 # PS2 Phase 2 on-disc writers (each surface carries an nfl2k5ps2.* row):
-SURFACE_GAMES["uniforms"] = GAMES
+SURFACE_GAMES["uniforms"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 # PS2 Phase 2 on-disc writers (each surface carries an nfl2k5ps2.* row):
-SURFACE_GAMES["audio"] = GAMES
-SURFACE_GAMES["colors"] = GAMES
-SURFACE_GAMES["menus"] = GAMES
-SURFACE_GAMES["players_rosters"] = GAMES
-SURFACE_GAMES["scripts_config"] = GAMES
-SURFACE_GAMES["stadiums_fields"] = GAMES
+SURFACE_GAMES["audio"] = _ESTABLISHED_GAMES
+SURFACE_GAMES["colors"] = _ESTABLISHED_GAMES
+SURFACE_GAMES["menus"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
+SURFACE_GAMES["players_rosters"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
+SURFACE_GAMES["scripts_config"] = _ESTABLISHED_GAMES
+SURFACE_GAMES["stadiums_fields"] = _ESTABLISHED_GAMES
 # nfl2k5_ps2 rows join these surfaces' coverage rule:
-SURFACE_GAMES["gameplay_tuning_sliders"] = GAMES
+SURFACE_GAMES["gameplay_tuning_sliders"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 CLASSIFICATIONS = (
     "extract-only",
     "offline-writer-proved",
@@ -188,7 +191,7 @@ def validate_data(data: Any, *, check_files: bool = True) -> dict[str, Any]:
     _require(all(isinstance(value, str) and value for value in definitions.values()), "classification_definitions: empty definition")
 
     games = root["games"]
-    _require(isinstance(games, list) and len(games) == 3, "games: expected exactly three entries")
+    _require(isinstance(games, list) and len(games) == 4, "games: expected exactly four entries")
     _require([game.get("id") for game in games] == list(GAMES), "games: IDs/order must be canonical")
     for index, game in enumerate(games):
         where = f"games[{index}]"
@@ -307,7 +310,7 @@ def validate_data(data: Any, *, check_files: bool = True) -> dict[str, Any]:
     expected_coverage = {
         (game, surface)
         for surface in SURFACES
-        for game in SURFACE_GAMES.get(surface, GAMES)
+        for game in SURFACE_GAMES.get(surface, _ESTABLISHED_GAMES)
     }
     _require(coverage == expected_coverage, f"capabilities: incomplete game/surface coverage: missing={sorted(expected_coverage - coverage)}")
     return root
