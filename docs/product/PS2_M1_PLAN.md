@@ -99,7 +99,12 @@ Productize the hop1 research (`docs/research/hop1/gscommon.py`, `hop1_v5.py`,
 1. Decode TEX0 → PSM, TW, TH, TBW, CBP, CSM; `bits = PSM | TW<<6 | TH<<10 |
    TCC<<14`. Disc TEX0 has TCC=1 on every texture; **emit bit 14 set** — that is
    the convention the shipped pack uses and pcsx2-VR's classic-TCC alias path
-   accepts.
+   accepts. Measured since: v1.7.5606 dropped TCC from the names PCSX2 dumps
+   **and, in the same commit, made every parse path ignore bit 14**, so a
+   bit-14 name has loaded on every build there has ever been — three stock
+   builds (v2.7.469, v2.6.0, v2.9.30) loaded the classic-named pack with
+   identical pixel counts. There is nothing to alias and nothing to rename.
+   The **hash** is the thing that moved: see WP4.
 2. Level-0 pixel hash: XXH3-64, seed 0, over the GS block image.
    - `mips == 1`: linear rows → `columnTable8` 16×16 block swizzle (PSMT4 uses
      `columnTable4`, low nibble first).
@@ -197,6 +202,24 @@ Rules, each enforced and each tested:
 - One Xbox asset may map to several PCSX2 names (mip variants, set fan-out
   resolved to multiple identities). Write all of them; the receipt lists the
   fan-out.
+- **The break is the hash, not the name.** **v1.7.4034** (PR #8015,
+  2023-02-09) changed `HashTexture` to hash only the texels of the *clamped
+  draw region* instead of the whole power-of-two texture. From that build on,
+  including every 2.x release, a texture the game draws clamped has a different
+  identity from the one computed offline here, and **no offline fix exists** —
+  the clamp region is a runtime fact, not something a filename can be renamed
+  into. PenguinScreen2's `ClassicTextureNames=true` restores whole-texture
+  hashing (plus the flag and a crop at injection). Measured across the 60 rig
+  dumps: 1,017 classic-only names covering **584 distinct identities**, all
+  palettized 1024×1024 PSMT8H/PSMT8, and **none of them in this manifest** —
+  every manifest identity observed is unclamped, so a stock 1.7.4034+ build
+  looks up every name this exporter writes.
+- **The export records who it is for.** `run_export(..., emulator_target=)`
+  takes `penguinscreen2_classic`, `pcsx2_modern` or `pcsx2_legacy`. It changes
+  no file — the pack is the same bytes under the same names for all three —
+  and writes `emulator_target` plus an `instructions` block (`settings` and
+  `lines`) into the receipt, so the verifier can hold a pack to the emulator it
+  claims to be for.
 - **Geometry.** PCSX2 accepts any replacement size and scales, but aspect
   matters. 2,521 shared names differ in geometry between platforms. Read the
   PS2 native `(TW, TH)` from the manifest's `bits` and, where the aspect
@@ -218,7 +241,11 @@ service:
    appears in the manifest for the receipt's claimed `xbox_asset_id`.
 3. Every PNG has a valid IHDR; recorded sha256 matches.
 4. The receipt's provenance equals the manifest's.
-5. **No receipt entry names a target the project marks unedited** — this needs
+5. The receipt names one of the three emulator targets, its `instructions`
+   name every setting that target needs and none it does not have (a stock
+   PCSX2 has no Classic Texture Names), and the steps still state the fact that
+   makes them right.
+6. **No receipt entry names a target the project marks unedited** — this needs
    the project file as a third input; when absent, the verifier says so and
    downgrades its verdict rather than passing silently.
 
@@ -239,9 +266,42 @@ unedited target and assert it fails.
 
 `mod_editor/gui/ps2_export_dialog_qt.py`, opened from *File → Export PS2
 replacement pack…* in `studio_qt.py` and from `--ps2-export`. Shows the plan
-(target, status, PCSX2 name count), output chooser, Export, receipt view with
-the PenguinScreen2 instructions. Pool-thread the write. Mirror
-`ps2_disc_dialog_qt.py`.
+(target, status, PCSX2 name count), the *Where will you use this pack?*
+question below it, output chooser, Export, receipt view with that emulator's
+instructions. Pool-thread the write. Mirror `ps2_disc_dialog_qt.py`.
+
+#### Emulator target and its explanation
+
+This is a contract, not a preference, and it is checked:
+
+- The window offers **exactly three** targets — PenguinScreen2 with Classic
+  Texture Names (recommended), PCSX2 1.7.4034+ including 2.x, PCSX2 before
+  1.7.4034 — and **no default is selected**. Export stays disabled until one is
+  chosen (`ps2_export_action_state(..., target_chosen=...)` takes it as a
+  required argument, so no caller inherits a default by omission).
+- **The files are identical for every answer.** The group's tooltip says so;
+  the answer is recorded in the receipt and tailors the instructions.
+- Each answer carries a **hover tooltip** and an **accessible description**
+  with the same words, and the group carries the reason the question exists.
+- The text is built from one constant, `EMULATOR_TARGET_CHOICES` in
+  `mod_editor/gui/ps2_export_dialog_qt.py` (with `TARGET_GROUP_TOOLTIP`).
+  Nothing else states it.
+- **The required facts are the list in that module's
+  `TARGET_EXPLANATION_REQUIRED_FACTS`,** not sentences repeated here. Each
+  entry is a literal that must still appear in the hover text taken together,
+  and it covers: the build that changed how a texture is identified and what it
+  changed to; the build that dropped the TCC flag and why that never broke
+  loading; the setting that restores the original hashing and the fork that has
+  it; the builds each answer targets; the setting they all need; and **the
+  measurement** — 584 clamped identities across the 60 dumps, none of them in
+  this manifest, three stock builds loading the pack — so a tooltip cannot
+  drift away from what was observed.
+- `check_target_explanation()` builds the window offscreen and proves all of
+  the above; `tools/validate_nfl2k5_ps2_replacement_pack.sh` (and the `.bat`)
+  run it and print `NFL2K5_PS2_EXPORT_TARGET_EXPLANATION_PASS`, and the dialog
+  tests run the same entry point. Where PyQt5 is absent the validator step
+  prints `..._SKIPPED pyqt5=absent`: it inspects widgets, and a build with no
+  GUI has no tooltips to check.
 
 ⚠ Touching `studio_qt.py` changes its sha256 and **refuses
 `RC29_AUDIO_ANNOTATION_RUNTIME_PINS`**. Re-pin in the same commit, and audit
@@ -378,6 +438,13 @@ disambiguation and WP7's first-try success.
 
 ## 6. Hard rules carried into M1
 
+- **Never guess which emulator the pack is for.** The files are the same for
+  all three, but the instructions are not, and a user told to turn on a setting
+  their build does not have will hunt for it until they give up. The window
+  asks, the receipt records the answer, and the verifier holds the pack to it.
+- **Never claim a rename can undo the 1.7.4034 hash change.** The clamped draw
+  region is a runtime fact. The only fix is PenguinScreen2's Classic Texture
+  Names; the honest thing to say about stock PCSX2 is what was measured.
 - **Never emit an unedited texture.** That is retail pixels leaving the disc.
   The service refuses, the verifier checks, and the tests prove both — and
   the guarantee starts *upstream* of the exporter: the canonical input is the
