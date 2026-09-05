@@ -1709,6 +1709,7 @@ def main() -> int:
         "nfl2k5_ps2_replacement_pack_verify",
         "nfl2k5_ps2_replacement_pack_audit",
         "nfl2k5_ps2_replacement_pack_kit",
+        "nfl2k5_ps2_uniform_art",
         "ea_terf_inspect",
         "nfl2k5_ps2_texture_map",
         "xxh3",
@@ -1814,6 +1815,7 @@ def main() -> int:
         "mod_editor.games._formats.ea_terf",
         "mod_editor.games.nfl2k5_ps2",
         "mod_editor.games.nfl2k5_ps2.code_patches",
+        "mod_editor.games.nfl2k5_ps2.uniform_art",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
