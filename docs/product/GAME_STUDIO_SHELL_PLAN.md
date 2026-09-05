@@ -5,6 +5,24 @@
 > window" delivery unit (§8). Everything else in that plan stands. RC87 is Madden NFL 09 (PS2)
 > as a second title on this shell, working off its disc — not the memory-card save tooling.
 
+> **Status, 2026-09-05 (RC88) — the shell has a second game with every page answered.**
+> Madden NFL 09 (PS2) now fills **eleven of the fourteen pages with fourteen registry
+> rows** — eleven write, two export, one inspects — while The Crib and Saves state a
+> reason and Build & Share stays the shell's own page. Work packages A1, A2, C, D, E,
+> F1 and F are done; the shell drew all fourteen pages for a module that writes lanes
+> and no UI, which is the thing this plan set out to prove. `docs/product/
+> MADDEN09_PS2_MODULE.md` §3 is the page-by-page account and §10 answers the shipping
+> standard.
+>
+> **What is left on this plan.** (1) The classic hand-written PS2 NFL 2K5 disc window
+> is still reachable, because its Playbooks tab drives the Formation and Play
+> Designers and the shell's Playbooks page cannot yet; it goes when the designers
+> reach that page. (2) RC86's acceptance line "`Select other games…` lists `PS2 NFL
+> 2K5 Studio` alone" is superseded by the two-studio list; §8 of the Madden 09
+> document records the three frozen-file fixes a second game forced and who owns
+> each. (3) Nothing on this shell has been booted: every Madden 09 writer is
+> `offline-writer-proved`, and no page here carries a runtime witness.
+
 ## 0. The owner's decisions, verbatim in effect
 
 1. **One studio per game.** The chooser ("Select other games…") lists *studios*, not windows.

@@ -26,6 +26,25 @@
 > choice changed by the owner's decision to Madden NFL 09 (PS2), disc-based, on that shell (RC87). Everything else here
 > stands: the contract, discovery, fragments, pins, conformance, `_formats/`, the freeze fallback and §10's questions.
 
+> **Status, 2026-09-05 (RC88) — the second module is feature-shaped, and the shared layer is
+> what carried it.** Madden NFL 09 (PS2) has an answer on **all fourteen of the shell's pages** —
+> a lane on eleven of them (fourteen registry rows), a stated reason on The Crib and Saves, and
+> the shell's own Build & Share — and it did it without editing a core file: every
+> lane is written against the contract, and the four shared format packages under `_formats/`
+> (`ea_terf`, `ea_tdb`, `ea_schl`, plus `ps2_disc` / `ps2_elf`) are what a Madden 08, Madden 12
+> or NCAA Football 09 module inherits next. The registry now holds **106 rows across four
+> game/platform targets**. `docs/product/MADDEN09_PS2_MODULE.md` is the module's own account.
+>
+> **What is left on this plan.** (1) §5's upstream edits still happen once per game through
+> `tools/registry_add_rows.py`: the canonical registry, the release allowlist, the runtime gate's
+> module list and the thirteen count pins. That tool appends where it should replace — three
+> stale count assertions and a broken getting-started paragraph were the evidence — so it wants a
+> fix before a third game uses it. (2) §8.3's collision is still live: NFL 2K5's
+> `allowlist_patterns` of `*ps2*` claim paths inside the Madden 09 package, and the fix belongs to
+> that game's manifest and a frozen test. (3) §10's ten questions for the upstream author are
+> unanswered, and none of them blocked this module. (4) The two proved games are both PlayStation
+> 2 discs; MVP Baseball, ESPN NBA 2K5 and the PS3 titles remain untried on this contract.
+
 ## 0. The ask, and the answer in one paragraph
 
 The owner wants game support for **Madden NFL** (04/08/09/12 PS2; 12/25 PS3), **NCAA Football**
