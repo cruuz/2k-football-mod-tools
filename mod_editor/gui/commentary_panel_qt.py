@@ -205,9 +205,8 @@ class CommentaryPanel(QWidget):
         clip_layout.addWidget(self.gain_field)
         self.loudnorm_check = QCheckBox("Match game loudness")
         self.loudnorm_check.setChecked(True)
-        self.loudnorm_check.setToolTip("Retail speech is hard-normalised to -14.3 dBFS RMS with peaks at "
-                                       "0 dBFS; home recordings are usually 10-20 dB quieter. This applies "
-                                       "gain plus a look-ahead limiter so your line sits at the game's level.")
+        self.loudnorm_check.setToolTip("Makes your clip as loud as the game's own lines (the game's speech sits at "
+                                       "-14.3 dBFS RMS; home recordings are usually 10-20 dB quieter).")
         clip_layout.addWidget(self.loudnorm_check)
         layout.addWidget(clip_box)
 

@@ -1155,10 +1155,12 @@ class PlaybooksPanel(QWidget):
         self.book_title.setText(book.book_name)
         categories = ", ".join(category.name for category in book.categories)
         self.book_meta.setText(
-            f"Outer entry {book.outer_index} · {len(book.formations):,} formations · "
-            f"{len(book.plays):,} plays · {len(book.chains):,} exact chains · "
-            f"{book.node_count:,} nodes\n{book.asset_id}\n"
+            f"{len(book.formations):,} formations · {len(book.plays):,} plays\n"
             f"Categories: {categories or 'none declared'}"
+        )
+        self.book_meta.setToolTip(
+            f"Outer entry {book.outer_index} · {len(book.chains):,} exact chains · "
+            f"{book.node_count:,} nodes · {book.asset_id}"
         )
         for formation in book.formations:
             formation_label = format_play_name_with_warnings(formation.name)
@@ -1292,10 +1294,12 @@ class PlaybooksPanel(QWidget):
             return
         play = linked.play
         self.play_meta.setText(
-            f"Play {play.index} · family {play.family_id} ({play.family_label}) · "
-            f"full flags/ID word 0x{play.flags_or_id:08x} · formation link "
-            f"{linked.link_index} / group {linked.group} / packed "
-            f"0x{linked.packed_value:04x}. Slot roles remain unknown."
+            f"Play {play.index} · {play.family_label} · menu link {linked.link_index}, "
+            f"audible group {linked.group}. Slot roles remain unknown."
+        )
+        self.play_meta.setToolTip(
+            f"family {play.family_id} · full flags/ID word 0x{play.flags_or_id:08x} · "
+            f"packed link 0x{linked.packed_value:04x}"
         )
         self.assignment_table.blockSignals(True)
         self.assignment_table.clearContents()

@@ -216,8 +216,9 @@ class MenusPanel(QWidget):
         title = QLabel("Menus & UI")
         title.setObjectName("menuInspectionTitle")
         subtitle = QLabel(
-            "Inspect the owned Main Menu state, all seven named transitions, "
-            "layout reachability, and the exact research gaps that still block editing."
+            "Reference for the main menu. Layout editing is not available here; All Raw Resources "
+            "can inspect and export game files. For current editing tools, use Game Fixes, "
+            "Saves & Sliders or ★ Rosters."
         )
         subtitle.setObjectName("menuInspectionMuted")
         subtitle.setWordWrap(True)
@@ -238,9 +239,10 @@ class MenusPanel(QWidget):
         header.addWidget(self.export_csv_button)
         root.addLayout(header)
 
-        boundary = QLabel(
-            "READ-ONLY NAMED INSPECTOR  •  State and transition ownership is mapped. "
-            "Menu replacement remains disabled until layout/render/write semantics are bounded."
+        boundary = QLabel("Read-only reference.")
+        boundary.setToolTip(
+            "State and transition ownership is mapped. Menu replacement stays off until the "
+            "layout, render and write behaviour is understood well enough to change safely."
         )
         boundary.setObjectName("menuInspectionBoundary")
         boundary.setWordWrap(True)
@@ -248,10 +250,10 @@ class MenusPanel(QWidget):
 
         self.tabs = QTabWidget()
         self.named_page = self._build_named_page()
-        self.tabs.addTab(self.named_page, "Named Main Menu")
-        self.tabs.addTab(raw_fallback, "All Raw Resources")
+        self.tabs.addTab(self.named_page, "Main Menu (reference)")
+        self.tabs.addTab(raw_fallback, "All Raw Resources (advanced)")
         if capability_page is not None:
-            self.tabs.addTab(capability_page, "Capabilities && Limits")
+            self.tabs.addTab(capability_page, "What's possible")
         root.addWidget(self.tabs, 1)
 
         self.status_label = QLabel("Loading named Main Menu findings…")
@@ -288,7 +290,7 @@ class MenusPanel(QWidget):
         layout.addWidget(self.state_summary)
         self.transition_table = QTableWidget(0, 6)
         self.transition_table.setHorizontalHeaderLabels(
-            ("#", "Menu row", "Initially visible", "Activation", "Destination", "Proof")
+            ("#", "Menu row", "Initially visible", "How it opens", "Destination", "Confirmed?")
         )
         self._configure_table(self.transition_table, 1)
         layout.addWidget(self.transition_table, 3)
@@ -297,7 +299,7 @@ class MenusPanel(QWidget):
         layout_panel = QWidget()
         layout_box = QVBoxLayout(layout_panel)
         layout_box.setContentsMargins(0, 0, 0, 0)
-        layout_box.addWidget(QLabel("Owned layout relationships"))
+        layout_box.addWidget(QLabel("Layout links"))
         self.layout_table = QTableWidget(0, 4)
         self.layout_table.setHorizontalHeaderLabels(
             ("Layout", "Relationship", "Archive", "Status")
@@ -309,7 +311,7 @@ class MenusPanel(QWidget):
         blocker_panel = QWidget()
         blocker_box = QVBoxLayout(blocker_panel)
         blocker_box.setContentsMargins(0, 0, 0, 0)
-        blocker_box.addWidget(QLabel("Actionable limitations"))
+        blocker_box.addWidget(QLabel("Why editing is off"))
         self.blocker_browser = QTextBrowser()
         self.blocker_browser.setOpenExternalLinks(False)
         blocker_box.addWidget(self.blocker_browser)

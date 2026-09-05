@@ -219,7 +219,7 @@ class ProductInspectionOffscreenTests(unittest.TestCase):
             self.assertEqual(menus.layout_table.rowCount(), 2)
             self.assertIs(menus.tabs.widget(1), raw)
             self.assertIs(menus.tabs.widget(2), menu_capability)
-            self.assertEqual(menus.tabs.tabText(2), "Capabilities && Limits")
+            self.assertEqual(menus.tabs.tabText(2), "What's possible")
             self.assertIn("cold-boot reachability: unproved", menus.state_summary.text())
             transition_even = menus.transition_table.item(0, 1)
             transition_odd = menus.transition_table.item(1, 1)

@@ -285,6 +285,22 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
     return BUILD_READY_MESSAGE
 
 
+def _getting_started_document() -> Path | None:
+    """The packaged Getting Started guide, or None when this build does not carry it."""
+
+    here = Path(__file__).resolve()
+    for candidate in (
+        here.parents[2] / "docs" / "mod_editor" / "2k5_mod_studio_getting_started.md",
+        here.parents[1] / "docs" / "2k5_mod_studio_getting_started.md",
+    ):
+        try:
+            if candidate.is_file():
+                return candidate
+        except OSError:
+            continue
+    return None
+
+
 def _plain_launch_blocker(text: str) -> str:
     """The facade's launch blocker in the words the footer uses (Set up xemu…, Make a disc)."""
 
@@ -1226,6 +1242,19 @@ def capability_findings(binding: ProductCapability) -> tuple[str, ...]:
     return tuple(notes)
 
 
+def _status_display(status: ProductStatus) -> str:
+    """The pill text for a capability status: what a player can do here, not a research word."""
+
+    return {
+        "editable": "Editable",
+        "preview": "Preview",
+        "export_only": "Export only",
+        "coming_soon": "Not editable here",
+        "evidence": "Reference",
+        "research": "Reference",
+    }.get(str(status.value), str(status.value).replace("_", " ").capitalize())
+
+
 def _status_color(status: ProductStatus) -> str:
     return {
         ProductStatus.EDITABLE: "#39d98a",
@@ -1618,6 +1647,22 @@ class StudioMainWindow(QMainWindow):
 
     def _install_help_menu(self) -> None:
         help_menu = self.menuBar().addMenu("&Help")
+        discord_action = help_menu.addAction("Join the Discord…")
+        discord_action.setToolTip("Opens the community Discord invite in your browser.")
+        discord_action.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
+        )
+        guide = _getting_started_document()
+        guide_action = help_menu.addAction("Getting started guide…")
+        if guide is None:
+            guide_action.setEnabled(False)
+            guide_action.setToolTip("The guide is not included in this build; see the website.")
+        else:
+            guide_action.setToolTip(str(guide))
+            guide_action.triggered.connect(
+                lambda _checked=False, path=guide: QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+            )
+        help_menu.addSeparator()
         check_action = help_menu.addAction("Check for Updates…")
         check_action.triggered.connect(self._check_for_updates_now)
         self._auto_update_action = help_menu.addAction(
@@ -1631,11 +1676,6 @@ class StudioMainWindow(QMainWindow):
             update_ui.set_automatic_checks_enabled
         )
         help_menu.addSeparator()
-        discord_action = help_menu.addAction("Join the Discord…")
-        discord_action.setToolTip("Opens the community Discord invite in your browser.")
-        discord_action.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
-        )
         releases_action = help_menu.addAction("Downloads and release notes…")
         releases_action.triggered.connect(
             lambda: QDesktopServices.openUrl(
@@ -2481,7 +2521,7 @@ class StudioMainWindow(QMainWindow):
         layout.setSpacing(8)
         title_box = QVBoxLayout()
         title_box.setSpacing(0)
-        self.page_eyebrow = QLabel("NFL 2K5 • MODDING WORKSPACE")
+        self.page_eyebrow = QLabel("ESPN NFL 2K5 • XBOX")
         self.page_eyebrow.setObjectName("eyebrow")
         self.page_title = QLabel("Getting Started")
         self.page_title.setObjectName("pageTitle")
@@ -3470,8 +3510,8 @@ class StudioMainWindow(QMainWindow):
         title = QLabel(section.title)
         title.setObjectName("heroTitleSmall")
         subtitle = QLabel(
-            "Every known capability stays visible. Status updates unlock editing "
-            "without changing this workspace."
+            "Available tools and limits. Each card says where a tool lives in the app, or plainly "
+            "when it is command-line only; the ids and evidence sit under Details."
         )
         subtitle.setObjectName("heroSubtitle")
         subtitle.setWordWrap(True)
@@ -3488,7 +3528,7 @@ class StudioMainWindow(QMainWindow):
         ):
             if count:
                 counts.addWidget(
-                    _StatusPill(f"{count} {status.value}", _status_color(status))
+                    _StatusPill(f"{count} {_status_display(status).lower()}", _status_color(status))
                 )
         counts.addStretch(1)
         layout.addLayout(counts)
@@ -3630,7 +3670,7 @@ class StudioMainWindow(QMainWindow):
         actions.setSpacing(8)
         export_button = QPushButton("Export PNG")
         export_button.setObjectName("secondaryButton")
-        master_button = QPushButton("Save high-resolution authoring master…")
+        master_button = QPushButton("Save full-size master…")
         master_button.setObjectName("secondaryButton")
         # Never silent-gray at construction: teach Load/import walls.
         master_boot = (
@@ -3647,17 +3687,24 @@ class StudioMainWindow(QMainWindow):
         # Editing in place removes the export/other-program/import round trip,
         # which is where size and alpha get lost. The canvas is the slot's exact
         # size and has no resize control, so what it saves always fits.
-        edit_button = QPushButton("Edit…")
+        edit_button = QPushButton("Edit image here…")
         edit_button.setObjectName("secondaryButton")
         edit_button.clicked.connect(
             lambda _checked=False, category=section.category: self._edit_visual_asset(category)
         )
         actions.addWidget(export_button)
-        actions.addWidget(master_button)
         actions.addWidget(edit_button)
         actions.addWidget(replace_button)
         actions.addWidget(revert_button)
         detail_layout.addLayout(actions)
+        master_row = QHBoxLayout()
+        master_row.setSpacing(8)
+        master_row.addWidget(master_button)
+        master_note = QLabel("Export your original-resolution artwork. The game still uses the fitted image.")
+        master_note.setObjectName("mutedLabel")
+        master_note.setWordWrap(True)
+        master_row.addWidget(master_note, 1)
+        detail_layout.addLayout(master_row)
         outer.addWidget(detail, 1)
 
         state = _VisualBrowserState(
@@ -3888,7 +3935,7 @@ class StudioMainWindow(QMainWindow):
         # targets, and nothing in this list used to say which. Someone asking
         # whether stadium models work would open scene after scene, watch Import
         # stage nothing, and reasonably conclude they do not.
-        editable_only = QCheckBox("Only scenes with editable geometry")
+        editable_only = QCheckBox("Only scenes with 3D you can change")
         editable_only.setObjectName("filterCheck")
         editable_only.setToolTip(
             "The bounded same-count position writer is pinned to one full "
@@ -3903,7 +3950,7 @@ class StudioMainWindow(QMainWindow):
         scene_list.setObjectName("assetList")
         scene_list.setSpacing(2)
         scenes_layout.addWidget(scene_list, 1)
-        export_scene_button = QPushButton("Export model (glTF)…")
+        export_scene_button = QPushButton("Export 3D model (for Blender)…")
         export_scene_button.setObjectName("secondaryButton")
         export_scene_button.setToolTip(
             "Save the selected stadium as a glTF you can open in Blender. "
@@ -3912,7 +3959,7 @@ class StudioMainWindow(QMainWindow):
             "centimetres the game authors in."
         )
         scenes_layout.addWidget(export_scene_button)
-        import_scene_button = QPushButton("Import edited model…")
+        import_scene_button = QPushButton("Import edited 3D model…")
         import_scene_button.setObjectName("primaryButton")
         import_scene_button.setToolTip(
             "Import the matching glTF after moving vertices in Blender. Vertex "
@@ -3920,7 +3967,7 @@ class StudioMainWindow(QMainWindow):
             "original UV, material, collision, selector, and other stream bytes."
         )
         scenes_layout.addWidget(import_scene_button)
-        apply_textures_button = QPushButton("Apply textures from glTF…")
+        apply_textures_button = QPushButton("Apply images from a 3D file…")
         apply_textures_button.setObjectName("primaryButton")
         apply_textures_button.setToolTip(
             "Apply the textures you edited in Blender back into the game. Export "
@@ -3930,7 +3977,7 @@ class StudioMainWindow(QMainWindow):
         )
         scenes_layout.addWidget(apply_textures_button)
         scenes_note = QLabel(
-            "Models are private glTF exports generated from the user's own game."
+            "3D exports contain game data — keep them to yourself. Import needs the same vertices and faces."
         )
         scenes_note.setObjectName("mutedLabel")
         scenes_note.setWordWrap(True)
@@ -3952,6 +3999,7 @@ class StudioMainWindow(QMainWindow):
         )
         scene_metadata.setObjectName("mutedLabel")
         scene_titles.addWidget(scene_label)
+        scene_metadata.setWordWrap(True)
         scene_titles.addWidget(scene_metadata)
         reset_button = QPushButton("Reset View")
         reset_button.setObjectName("secondaryButton")
@@ -4071,9 +4119,9 @@ class StudioMainWindow(QMainWindow):
         self._stadium_import_scene_button = import_scene_button
         self._stadium_apply_textures_button = apply_textures_button
         if not bool(getattr(self.facade, "stadium_available", False)):
-            count_label.setText("Load XISO")
+            count_label.setText("Open a disc")
             scene_metadata.setText(
-                "Load your XISO, then open this tab to prepare private stadium assets."
+                "Open your game disc, then open this page to prepare the stadium models."
             )
         return page
 
@@ -4087,7 +4135,7 @@ class StudioMainWindow(QMainWindow):
         title = QLabel(binding.title)
         title.setObjectName("cardTitle")
         title_row.addWidget(title, 1)
-        title_row.addWidget(_StatusPill(binding.status.value, _status_color(binding.status)))
+        title_row.addWidget(_StatusPill(_status_display(binding.status), _status_color(binding.status)))
         layout.addLayout(title_row)
         summary = QLabel(binding.capability.summary)
         summary.setObjectName("cardBody")
@@ -5058,7 +5106,7 @@ class StudioMainWindow(QMainWindow):
         )
         if master_ok:
             master_block = ""
-            master_tip = "Save high-resolution authoring master for this texture."
+            master_tip = "Export your original-resolution artwork for this texture. The game still uses the fitted image."
         elif edit_block:
             master_block = master_tip = edit_block
         else:
@@ -5399,7 +5447,8 @@ class StudioMainWindow(QMainWindow):
         selected_row = -1
         for index, scene in enumerate(rows):
             writable = bool(scene.geometry_targets)
-            label = f"Outer {scene.outer_index} / chunk {scene.chunk_index}"
+            known = str(getattr(scene, "label", "") or getattr(scene, "name", "") or "").strip()
+            label = known or f"Outer {scene.outer_index} / chunk {scene.chunk_index}"
             if writable:
                 label = (
                     f"✎ {label}\n{len(scene.geometry_targets)} editable meshes"
@@ -5423,7 +5472,7 @@ class StudioMainWindow(QMainWindow):
         state.scene_list.blockSignals(False)
         if checkbox is not None:
             checkbox.setText(
-                f"Only scenes with editable geometry ({len(editable)})"
+                f"Only scenes with 3D you can change ({len(editable)})"
             )
         state.count_label.setText(
             f"{len(rows):,} / {len(state.scenes):,}"

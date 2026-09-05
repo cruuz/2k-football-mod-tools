@@ -107,14 +107,11 @@ class SavePanel(QWidget):
         root.setContentsMargins(24, 22, 24, 22)
         root.setSpacing(14)
 
-        title = QLabel("Saves & Sliders (experimental)")
+        title = QLabel("Xbox save: sliders && franchise year (experimental)")
         title.setObjectName("bumpTitle")
         subtitle = QLabel(
-            "Gameplay sliders (Settings1 and Franchise1 saves) plus the "
-            "franchise year field, re-signed with the title-static key "
-            "derived from your own default.xbe. Writes always go to a COPY: "
-            "a mutated SAVEGAME.DAT and a fresh 20-byte EXTRA. Put both "
-            "files back into the save container together."
+            "Open SAVEGAME.DAT and the game's default.xbe, then save a signed copy. "
+            "Keep the new SAVEGAME.DAT and EXTRA together when putting the save back."
         )
         subtitle.setObjectName("bumpMuted")
         subtitle.setWordWrap(True)
@@ -164,7 +161,7 @@ class SavePanel(QWidget):
         root.addWidget(table_card, 1)
 
         options_row = QHBoxLayout()
-        options_row.addWidget(QLabel("Slider write mode"))
+        options_row.addWidget(QLabel("Slider copies to update (advanced)"))
         self.mode_combo = QComboBox()
         for mode in SLIDER_MODES:
             self.mode_combo.addItem(mode)

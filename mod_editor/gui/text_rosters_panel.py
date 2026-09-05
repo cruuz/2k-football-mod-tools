@@ -1066,7 +1066,8 @@ class TextRosterPanel(QWidget):
 
         self.text_summary = QLabel("0 strings indexed")
         self.text_summary.setObjectName("textPanelSummary")
-        self.anniversary_note = QLabel(ESPN_25TH_COMING_SOON_NOTE)
+        self.anniversary_note = QLabel("Some entries are view only (marked ‘View only’); each selected entry says why.")
+        self.anniversary_note.setToolTip(ESPN_25TH_COMING_SOON_NOTE)
         self.anniversary_note.setObjectName("textPanelCallout")
         self.anniversary_note.setWordWrap(True)
         layout.addWidget(self.text_summary)

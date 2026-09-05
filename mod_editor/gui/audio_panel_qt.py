@@ -1430,7 +1430,7 @@ if PYQT5_AVAILABLE:
                 "Export-only never exposes a writer"
             )
             self.meaning_filter = QComboBox()
-            self.meaning_filter.addItem("All meaning confidence (850)", None)
+            self.meaning_filter.addItem("All label confidence (850)", None)
             self.meaning_filter.addItem(
                 "Menu Back route (1)", MENU_BACK_MEANING_STATUS
             )
@@ -1458,7 +1458,8 @@ if PYQT5_AVAILABLE:
                 "whether the exact physical sound is Editable. Available only for "
                 "standalone sounds."
             )
-            self.labeled_only_filter = QCheckBox("Labeled only")
+            self.labeled_only_filter = QCheckBox("My labeled sounds")
+            self.labeled_only_filter.setToolTip("Show sounds you named or annotated in this project.")
             self.labeled_only_filter.setAccessibleName(
                 "Show only audio cues with a custom project label or note"
             )
@@ -1855,7 +1856,7 @@ if PYQT5_AVAILABLE:
             annotation_layout = QVBoxLayout(self.annotation_card)
             annotation_layout.setContentsMargins(12, 11, 12, 11)
             annotation_layout.setSpacing(7)
-            self.annotation_heading = QLabel("Your cue label & notes")
+            self.annotation_heading = QLabel("Your note for this sound")
             self.annotation_heading.setObjectName("audioPackPathHeading")
             self.annotation_help = QLabel(
                 "Project metadata only — searchable and shareable, but never written "

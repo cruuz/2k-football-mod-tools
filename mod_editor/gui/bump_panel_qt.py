@@ -173,15 +173,12 @@ class BumpPanel(QWidget):
         root.setSpacing(14)
 
         header = QVBoxLayout()
-        title = QLabel("Jersey Bump Maps")
+        title = QLabel("Jersey bump maps (advanced)")
         title.setObjectName("bumpTitle")
         subtitle = QLabel(
-            "Per-uniform tangent-space bump maps (bump_jersey, bump_pants, "
-            "bump_sleeve, bump_sock). Export the retail art, author a PNG at "
-            "the slot's exact size (or start from the marked authoring "
-            "template), and write it into a copy of the disc image at the "
-            "same footprint. Bump strength (the per-material detail scale in "
-            "default.xbe) is edited in the section below."
+            "Export a bump map, edit its PNG, then update an existing working disc copy. "
+            "Bump maps give jerseys, pants, sleeves and socks their fabric texture; this page "
+            "never creates a disc, it writes into a copy you choose."
         )
         subtitle.setObjectName("bumpMuted")
         subtitle.setWordWrap(True)
@@ -301,7 +298,7 @@ class BumpPanel(QWidget):
         root.addWidget(self.status_label)
 
     def _build_strength_section(self) -> QGroupBox:
-        box = QGroupBox("Bump strength (default.xbe detail scale)")
+        box = QGroupBox("Bump strength (default.xbe)")
         layout = QVBoxLayout(box)
 
         note = QLabel(
