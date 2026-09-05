@@ -416,6 +416,13 @@ class BuildPanel(QWidget):
                                                          "terms, and survive saves, team imports and the season rollover. There is no in-game reserve "
                                                          "screen or automatic promotion yet; a full 53 + 12 roster must release players to draft. Only use "
                                                          "saves with reserves on a disc that carries this patch. Experimental.")
+        self.depth_locks_check = self._option(f, "depth_locks", "Depth chart locks (LT/RT, LG/RG, KR/PR)",
+                                              "Your depth chart moves and returner picks stay put through the weekly auto-depth.",
+                                              badge=NOT_TESTED,
+                                              details="The weekly auto-depth ranks tackles and guards by rating, so the better RT slides to LT, and it "
+                                                      "rewrites KR and PR every week. With this patch, moving a player on the depth chart or confirming a "
+                                                      "returner locks that choice in the player's record and the weekly sort keeps it; unlock from the "
+                                                      "Rosters tab. Works with the retail rows or the SPECIAL tab. Experimental.")
         self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice",
                                                  "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.",
                                                  badge=NOT_TESTED, needs_image=True)
@@ -694,7 +701,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -716,7 +723,7 @@ class BuildPanel(QWidget):
             ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"),
             ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"),
-            ("practice_squad", "practice squads"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
+            ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
             ("player_tags", "star tags"),
             ("roster_edits", "roster edits"), ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"),
             ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
@@ -784,6 +791,7 @@ class BuildPanel(QWidget):
         gate(self.kick_laces_check, "kick_laces")
         gate(self.franchise_practice_check, "franchise_practice")
         gate(self.practice_squad_check, "practice_squad")
+        gate(self.depth_locks_check, "depth_locks")
         gate(self.seven_on_seven_check, "seven_on_seven", needs_image=True)
         gate(self.player_star_check, "player_star")
         gate(self.edge_check, "edge_rename")
@@ -886,7 +894,7 @@ class BuildPanel(QWidget):
             "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
             "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check,
             "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
-            "practice_squad": self.practice_squad_check,
+            "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }

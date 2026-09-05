@@ -1741,6 +1741,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_special_roles",
         "mod_editor.core.nfl2k5_practice_squad",
         "mod_editor.core.nfl2k5_practice_squad_runtime",
+        "mod_editor.core.nfl2k5_practice_reserves",
+        "mod_editor.core.nfl2k5_depth_locks",
         "mod_editor.core.nfl2k5_playoff_picture",
         "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_career_stats",

@@ -188,6 +188,10 @@ PATCHES = (
      "and survive saves, team imports and the season rollover. There is no in-game reserve screen or automatic promotion yet; "
      "a full 53 + 12 roster must release players to draft. Only use saves with reserves on a disc that carries this patch. "
      "Unwitnessed in game."),
+    ("depth_locks", "Depth chart locks: tackles, guards and returners stay where you put them (experimental)",
+     "Retail: the weekly auto-depth ranks tackles and guards by rating, so the better RT slides over to LT, and it rewrites "
+     "KR and PR every week. Patch: moving a player on the depth chart, or confirming a returner, locks that choice in the "
+     "player's record and the weekly sort keeps it. Unlock from the Rosters tab. No new screen or button. Unwitnessed in game."),
 )
 
 
