@@ -264,20 +264,50 @@ the watched commit.
 
 This is the step that makes it M1.
 
-1. **Pin the emulator.** Record the PenguinScreen2 commit in the manifest
-   provenance (WP1 leaves a placeholder; fill it here). Confirm its replacement
-   loader accepts names with bit 14 set (the classic-TCC alias path) — read
-   `GSTextureReplacements.cpp` on that commit; do not assume.
+**Resolved by read-only rig inspection (2026-09-04) — the witness is fully
+automatable, no gameplay required.**
+
+1. **The emulator pin is `penguinscreen2-dev @ 8226182aabe19640c6e676331678612f257356dd`**
+   (branch `pcsx2-vr-classic-dump`, clean; `~/pcsx2-VR` on the rig symlinks to
+   it). It is **not** the dev-box `f5f473479d` (248 commits apart). A second,
+   dirty build `~/penguinscreen2-mb @ 91f53a51` also exists and was used by
+   runs since 08-15 — do not pin to it; the commit is absent from the dev-box
+   repo. The six filename format strings (`GSTextureReplacements.cpp:35-40`)
+   are byte-identical across all three, so hashing and naming are unaffected.
+   **Bit-14 names load** — `ReloadReplacementMap` (`:449-456`) always inserts the
+   canonical stripped key and additionally the verbatim alias when
+   `ClassicTextureNames=true`. ⚠ With classic **off**, a bit-14 name aliases onto
+   the TCC=0 variant's key (ISS-042, `GSTextureCache.cpp:7110-7117`) → wrong
+   art. **`ClassicTextureNames=true` is required**, and `SLUS-20919` is *not* in
+   `s_classic_default_serials` (`VMManager.cpp:743-749`, only M09/NCAA09/M12) —
+   set it explicitly.
 2. **Rig safety.** Run the shared-headset live-session check as its own command
    and read the result before launching anything (hard rule H-2). Never chain a
-   launch behind it.
-3. Export the demo team's edited kit (WP1 chose a fully-mappable team). Copy
-   `textures/SLUS-20919/replacements/` into PenguinScreen2's texture root
-   (`~/.config/PenguinScreen2/textures/SLUS-20919/replacements/` — note it may be
-   a symlink to the PCSX2 pack; write to the resolved target or a fresh
-   sibling, never into the community pack).
-4. Enable *Load Textures*, boot the stock disc, play/sim to a snap where that
-   kit is on screen. Screenshot.
+   launch behind it. Dump replay uses the GPU; the rule applies.
+3. **Stage the pack privately.**
+   `~/.config/PenguinScreen2/textures/SLUS-20919/replacements` is a **symlink**
+   to the 18,476-file community pack. Never write into it. Create a private dir,
+   point the link at it for the run, restore the link afterwards.
+4. **Witness by GS-dump replay, not gameplay.** Dump replay applies texture
+   replacements: `GSDumpReplayer.cpp:155-171` → `VMManager.cpp:1128-1131` sets
+   `s_disc_serial` from the dump → `GSTextureReplacements.cpp:274-276, 404-408`
+   → `GSTextureCache.cpp:6984`; empirically confirmed on the rig (`frames-on`
+   ≠ `frames-off`). **The dump embeds the serial** — no flag needed. Reuse the
+   existing harness, passing the dump explicitly (its default glob picks the
+   wrong snaps dir):
+   ```
+   ~/classicdump-validate-fixed.sh ~/penguinscreen2-dev \
+     "$HOME/.config/PenguinScreen2/snaps/ESPN - NFL 2K5_SLUS-20919_<stamp>.gs.zst"
+   ```
+   Core command inside it: `"$GSRUNNER" -renderer Vulkan -surfaceless -loop 1
+   -noshadercache -ini <ini> -dumpdir <frames> -logfile <log> -- <dump>`.
+   ⚠ The per-game `SLUS-20919_42F9D5AF.ini` sets `LoadTextureReplacements=false`
+   and **overrides `-ini`** — reuse the harness's sed + EXIT-trap neutralisation.
+   Set **both** `LoadTextureReplacements=true` and `ClassicTextureNames=true`.
+   Render the same dump with the pack linked (on) and unlinked (off); the
+   edited kit must differ between the two frames and match the user's art.
+   Choose a dump that shows the demo team WP1 selected (60 dumps inventoried in
+   `wp7_prep.json`: the 2026-09-04 session is DET@DAL and DEN@SF).
 5. Write `reports/runtime/nfl2k5_ps2_uniform_runtime.v1.json`: emulator
    commit, disc identity, pack receipt sha256, the PCSX2 names observed,
    screenshot sha256 + dimensions, observer, timestamp, verdict. **The
