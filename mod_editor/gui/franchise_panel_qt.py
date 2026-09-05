@@ -141,8 +141,11 @@ class IrPickerDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(f"Place on injured reserve — {team_label}")
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Choose the player.  His team's pointer list is compacted and its count "
-                                "drops by one, exactly Finn's move; the game recomputes the team salary."))
+        hint = QLabel("Choose the player. He leaves the team's list the way Finn's editor does it; "
+                      "the game recomputes the team salary. Not yet tested in-game.")
+        hint.setWordWrap(True)
+        hint.setToolTip("His team's pointer list is compacted and its count drops by one, exactly Finn's move.")
+        layout.addWidget(hint)
         self.list = QListWidget()
         for index, text in rows:
             item = QListWidgetItem(text)
@@ -281,6 +284,10 @@ class FranchisePanel(QWidget):
         cap_row.addWidget(self.cap_spin)
         self.cap_raw_label = QLabel("")
         cap_row.addWidget(self.cap_raw_label, 1)
+        self.cap_note = QLabel("Not yet tested in-game")
+        self.cap_note.setObjectName("optionBadge")
+        self.cap_note.setToolTip("Changing the cap writes the save's cap field; nobody has watched the game accept it yet.")
+        cap_row.addWidget(self.cap_note)
         form.addRow("Salary cap", cap_row)
         box.addLayout(form)
 
@@ -292,7 +299,8 @@ class FranchisePanel(QWidget):
         self.control_list.itemChanged.connect(self._control_changed)
         control_layout.addWidget(self.control_list)
         lists.addWidget(control_box, 1)
-        salary_box = QGroupBox("Team salary against the cap (read-only; the game recomputes it)")
+        salary_box = QGroupBox("Team salary against the cap (read-only)")
+        salary_box.setToolTip("The game recomputes every team's salary itself; this table only reads it.")
         salary_layout = QVBoxLayout(salary_box)
         self.salary_table = QTableWidget(0, 4)
         self.salary_table.setHorizontalHeaderLabels(["Team", "Salary", "Cap space", "Note"])
@@ -370,6 +378,11 @@ class FranchisePanel(QWidget):
         buttons.addWidget(self.apply_game_button)
         buttons.addWidget(self.swap_button)
         buttons.addWidget(self.allow_played_check)
+        schedule_note = QLabel("Not yet tested in-game")
+        schedule_note.setObjectName("optionBadge")
+        schedule_note.setToolTip("Schedule edits write the save's grid cells (scores stay read-only); "
+                                 "nobody has watched the game accept them yet.")
+        buttons.addWidget(schedule_note)
         buttons.addStretch(1)
         grid.addLayout(buttons, 2, 0, 1, 4)
         box.addWidget(editor)
@@ -388,6 +401,9 @@ class FranchisePanel(QWidget):
         area.setWidgetResizable(True)
         host = QWidget()
         box = QVBoxLayout(host)
+        coach_note = QLabel("Coach edits: not yet tested in-game. Names and info lines are read-only (pooled text).")
+        coach_note.setWordWrap(True)
+        box.addWidget(coach_note)
         self.coach_name_label = QLabel("")
         font = self.coach_name_label.font()
         font.setPointSizeF(font.pointSizeF() + 3)
@@ -453,12 +469,16 @@ class FranchisePanel(QWidget):
         top.addWidget(self.ir_team_combo)
         self.place_ir_button = QPushButton("Place on IR…")
         self.place_ir_button.clicked.connect(self._place_ir_clicked)
-        self.activate_ir_button = QPushButton("Activate (unwitnessed in game)")
+        self.activate_ir_button = QPushButton("Activate")
         self.activate_ir_button.setToolTip("The inverse of Finn's move: the player rejoins the end of the team's "
                                            "list and the slot is cleared. Nobody has watched the game accept it yet.")
         self.activate_ir_button.clicked.connect(self._activate_ir_clicked)
         top.addWidget(self.place_ir_button)
         top.addWidget(self.activate_ir_button)
+        activate_note = QLabel("Not yet tested in-game")
+        activate_note.setObjectName("optionBadge")
+        activate_note.setToolTip(self.activate_ir_button.toolTip())
+        top.addWidget(activate_note)
         top.addStretch(1)
         box.addLayout(top)
         self.ir_table = QTableWidget(fs.IR_SLOTS, 3)
@@ -468,11 +488,11 @@ class FranchisePanel(QWidget):
         self.ir_table.setSelectionMode(QAbstractItemView.SingleSelection)
         self.ir_table.verticalHeader().setVisible(False)
         box.addWidget(self.ir_table)
-        note = QLabel("Placing a player is Finn's move byte for byte: his team's pointer list is compacted, the "
-                      "count byte drops by one, the player is marked injured reserve and the first free of the "
-                      "team's five slots takes him. The game recomputes the team salary (IR still counts against "
-                      "the cap). A free agent cannot go on injured reserve, nor can a draft prospect.")
+        note = QLabel("Place on IR moves the player the way Finn's editor does; the game recomputes the team "
+                      "salary (IR still counts against the cap). A free agent or a draft prospect cannot go on IR.")
         note.setWordWrap(True)
+        note.setToolTip("Byte for byte Finn's move: the team's pointer list is compacted, the count byte drops by one, "
+                        "the player is marked injured reserve and the first free of the team's five slots takes him.")
         box.addWidget(note)
         league = QGroupBox("Everyone on injured reserve")
         league_layout = QVBoxLayout(league)
