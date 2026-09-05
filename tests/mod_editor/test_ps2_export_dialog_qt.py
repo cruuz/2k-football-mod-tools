@@ -586,5 +586,74 @@ class DialogTests(unittest.TestCase):
             dialog.done(0)
 
 
+@unittest.skipIf(dialog_module is None, "PyQt5 is not installed")
+class EntryPointTests(unittest.TestCase):
+    """``--ps2-export`` and the studio's File-menu entry reach this window.
+
+    Both are wiring, so both are tested by standing in for the parts that would
+    open a window or run an event loop.  Without this, a renamed handler or a
+    dropped branch would only be found by launching the app by hand.
+    """
+
+    def setUp(self) -> None:
+        self._temp = tempfile.TemporaryDirectory(prefix="ps2-export-entry-")
+        self.root = Path(self._temp.name)
+        self.project = write_project(self.root)
+
+    def tearDown(self) -> None:
+        self._temp.cleanup()
+
+    def _run_main(self, argv):
+        """Call ``mod_editor.__main__.main`` with the window and loop stubbed."""
+
+        from PyQt5.QtWidgets import QApplication
+
+        import mod_editor.__main__ as entry
+
+        built = []
+
+        class FakeDialog:
+            def __init__(self, project=None, **kwargs):
+                built.append(project)
+
+            def show(self):
+                pass
+
+        real_exec = QApplication.exec_
+        QApplication.exec_ = lambda self: 0
+        sys.modules["mod_editor.gui.ps2_export_dialog_qt"].Ps2ExportDialog, real_dialog = (
+            FakeDialog,
+            sys.modules["mod_editor.gui.ps2_export_dialog_qt"].Ps2ExportDialog,
+        )
+        try:
+            code = entry.main(argv)
+        finally:
+            QApplication.exec_ = real_exec
+            sys.modules["mod_editor.gui.ps2_export_dialog_qt"].Ps2ExportDialog = real_dialog
+        return code, built
+
+    def test_the_flag_opens_the_window_on_the_given_project(self) -> None:
+        code, built = self._run_main(["--ps2-export", str(self.project)])
+        self.assertEqual(code, 0)
+        self.assertEqual(built, [self.project])
+
+    def test_the_flag_without_a_path_opens_the_chooser(self) -> None:
+        # "--ps2-export with no path" must stay distinguishable from the flag
+        # being absent, or the studio would open instead.
+        code, built = self._run_main(["--ps2-export"])
+        self.assertEqual(code, 0)
+        self.assertEqual(built, [None])
+
+    def test_the_studio_offers_the_entry_and_a_handler_for_it(self) -> None:
+        from mod_editor.gui import studio_qt
+
+        window = studio_qt.StudioMainWindow
+        self.assertTrue(callable(getattr(window, "_open_ps2_export", None)))
+        source = Path(studio_qt.__file__).read_text(encoding="utf-8")
+        self.assertIn('"Export PS2 replacement pack…"', source)
+        self.assertIn("self._ps2_export_action.triggered.connect", source)
+        self.assertIn("from .ps2_export_dialog_qt import Ps2ExportDialog", source)
+
+
 if __name__ == "__main__":
     unittest.main()

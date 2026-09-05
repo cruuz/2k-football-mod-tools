@@ -1518,6 +1518,7 @@ class StudioMainWindow(QMainWindow):
         self._save_project_as_action: QAction | None = None
         self._ps2_save_action: QAction | None = None
         self._ps2_disc_action: QAction | None = None
+        self._ps2_export_action: QAction | None = None
 
         self.setWindowTitle("2K5 Mod Studio")
         icon = _window_icon()
@@ -1589,6 +1590,15 @@ class StudioMainWindow(QMainWindow):
             "separate from the Xbox game image you have open."
         )
         self._ps2_disc_action.triggered.connect(self._open_ps2_disc_inventory)
+        self._ps2_export_action = file_menu.addAction(
+            "Export PS2 replacement pack…"
+        )
+        self._ps2_export_action.setToolTip(
+            "Write the uniform art you have edited as a folder of PCSX2 "
+            "texture replacements for the PlayStation 2 release. Only edited "
+            "targets are written; your Xbox project is not changed."
+        )
+        self._ps2_export_action.triggered.connect(self._open_ps2_export)
         file_menu.addSeparator()
         quit_action = file_menu.addAction("Quit")
         quit_action.setShortcut("Ctrl+Q")
@@ -2090,6 +2100,36 @@ class StudioMainWindow(QMainWindow):
         dialog.deleteLater()
         self._set_status(
             "PS2 Disc Inventory closed • your Xbox project was not changed."
+        )
+
+    def _open_ps2_export(self, _checked: bool = False) -> None:
+        """Open the PCSX2 replacement-pack exporter on the open session.
+
+        The exporter is handed this window's facade, not its private edit map:
+        it reads only what a session publishes, and reports plainly when that
+        is not enough to plan an export -- in which case saving a .2k5mod and
+        choosing it in the window is the route.  It writes a new folder of the
+        user's own PNGs and nothing else; no disc is read and no project is
+        changed.
+        """
+
+        if self._refuse_while_audio_busy("export a PS2 replacement pack"):
+            return
+        try:
+            from .ps2_export_dialog_qt import Ps2ExportDialog
+        except Exception as exc:  # pragma: no cover - defensive import guard
+            QMessageBox.warning(
+                self,
+                "PS2 replacement-pack export is unavailable",
+                f"The PS2 exporter could not be loaded: {str(exc).strip()}\n\n"
+                "Nothing was changed.",
+            )
+            return
+        dialog = Ps2ExportDialog(self.facade, parent=self)
+        dialog.exec_()
+        dialog.deleteLater()
+        self._set_status(
+            "PS2 replacement-pack export closed • your Xbox project was not changed."
         )
 
     def _recover_candidate(self, candidate: RecoveryCandidate) -> None:

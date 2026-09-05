@@ -64,6 +64,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     action.add_argument(
+        "--ps2-export",
+        nargs="?",
+        const="",
+        default=None,
+        metavar="PROJECT.2k5mod",
+        help=(
+            "open only the PlayStation 2 replacement-pack exporter, without "
+            "the rest of the studio; give a saved .2k5mod project to plan it "
+            "straight away, or omit it and choose one in the window"
+        ),
+    )
+    action.add_argument(
         "--check-registry",
         action="store_true",
         help="validate the capability registry without opening a display",
@@ -517,6 +529,20 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         application = QApplication.instance() or QApplication(sys.argv[:1])
         dialog = Ps2DiscInventoryDialog()
+        dialog.show()
+        return application.exec_()
+    if args.ps2_export is not None:
+        # Same shape again: the exporter works from a saved .2k5mod project and
+        # the shipped texture map, so it needs none of the studio's Xbox-derived
+        # startup inputs.  The empty string is "--ps2-export with no path" --
+        # distinct from the flag being absent, which is None -- and opens the
+        # window on its project chooser.
+        from PyQt5.QtWidgets import QApplication
+
+        from .gui.ps2_export_dialog_qt import Ps2ExportDialog
+
+        application = QApplication.instance() or QApplication(sys.argv[:1])
+        dialog = Ps2ExportDialog(Path(args.ps2_export) if args.ps2_export else None)
         dialog.show()
         return application.exec_()
 
