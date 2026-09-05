@@ -267,7 +267,10 @@ class TextLaneTests(_Fixture):
 class ColourLaneTests(_Fixture):
     def test_targets_decode_the_selector_and_read_current_words_from_the_disc(self) -> None:
         home = self.service.target("colors", "18H0")
-        self.assertIn("package 18 · home · variant 0", home.label)
+        # With the reviewed Xbox catalogues present the label resolves the team;
+        # without them it falls back to the decoded selector parts.
+        self.assertTrue("package 18 · home · variant 0" in home.label
+                        or home.label.startswith("18H0"), home.label)
         words = self.service.lane("colors").read_current_words(self.iso, self.service.catalogue("colors"))
         self.assertEqual(words["18H0"], (FACEMASK, TURTLENECK))
 
@@ -619,7 +622,11 @@ class RegistryTests(unittest.TestCase):
         for lane in lanes.lanes_in_order():
             rules = lanes.registry_rules(lane.id)
             self.assertTrue(rules, lane.id)
-            self.assertTrue(lanes.registry_scope(lane.id).startswith("Offline only"), lane.id)
+            scope = lanes.registry_scope(lane.id)
+            # Every lane is proved offline; audio is additionally runtime-proved
+            # for exactly one recorded slot (menu-appear_01, heard on a cold boot).
+            self.assertTrue(scope.startswith("Offline only")
+                            or scope.startswith("Runtime-proved for exactly one recorded selector"), lane.id)
             self.assertTrue(lane.caveats and lane.time_note and lane.summary)
 
     def test_no_caveat_claims_a_screen_or_a_speaker(self) -> None:

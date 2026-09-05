@@ -66,7 +66,7 @@ class Ps2RegistryTests(unittest.TestCase):
             self.assertEqual(capability.raw["gui"]["mode"], "edit")
             self.assertIs(capability.raw["gui"]["expose"], True)
 
-    def test_disc_writers_are_proved_offline_but_hidden(self) -> None:
+    def test_disc_writers_are_proved_offline_and_surface_in_the_disc_studio(self) -> None:
         # The six on-disc PS2 writers (text, playbooks, colours, roster, stadium
         # positions, AUDO sounds) are bounded writers with independent verifiers
         # and a real-disc trial each, so they are offline-writer-proved -- and
@@ -82,9 +82,12 @@ class Ps2RegistryTests(unittest.TestCase):
         heard = {"nfl2k5ps2.audio.audo_exact_slot_replace"}
         for capability in disc_writers:
             self.assertEqual(capability.raw["gui"]["mode"], "edit")
-            self.assertIs(capability.raw["gui"]["expose"], False)
-            self.assertIs(capability.raw["gui"]["default_enabled"], False)
-            self.assertTrue(capability.raw["gui"]["reason"].strip())
+            # Each is a tab of the PS2 Disc Studio; stadium is off by default
+            # because its steps take tens of minutes and one scene is proved.
+            self.assertIs(capability.raw["gui"]["expose"], True)
+            self.assertIs(capability.raw["gui"]["default_enabled"],
+                          capability.raw["id"] != "nfl2k5ps2.stadiums.position_lanes")
+            self.assertIn("PS2 Disc Studio", capability.raw["gui"]["reason"])
             self.assertTrue(capability.raw["validation_command"])
             if capability.raw["id"] in heard:
                 # One AUDO slot was heard on a cold boot (menu-appear_01); the

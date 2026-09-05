@@ -35,9 +35,9 @@
   torso, sleeves, pants, gloves, head/hair — witnessed on two player-filling dumps against an empty-pack control; the
   same classic-named pack also loaded on three stock upstream PCSX2 builds). Evidence: hashes-only report at
   `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`; frames stay on the rig.
-- Six new `nfl2k5_ps2` capability rows, all `offline-writer-proved` and CLI-only for now
-  (hidden from the studio sidebar; each will surface as a separate PS2 window like the save
-  and disc windows): `nfl2k5ps2.menus.text_banks` (display text inside its own allocation —
+- Six new `nfl2k5_ps2` capability rows, all `offline-writer-proved` and each a tab of the new
+  **PS2 Disc Studio** (File ▸ PS2 Disc Studio…, or `--ps2-disc-studio`), the separate PS2 window that
+  follows the save editor and Disc Inventory: `nfl2k5ps2.menus.text_banks` (display text inside its own allocation —
   shorter or equal, never longer; 6,658 editable strings), `nfl2k5ps2.scripts.director_playbook`
   (formations and plays inside the 37 fixed-capacity books, the Xbox writer unchanged),
   `nfl2k5ps2.colors.unif_words` (the facemask and turtleneck words of 634 uniform records),

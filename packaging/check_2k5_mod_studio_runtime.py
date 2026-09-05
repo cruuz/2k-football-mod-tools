@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
     "mod_editor/gui/studio_qt.py":
-        "b417c5e29207231b129d1c0a12eb7a4daabe03712b9a7fdbb6373cf02095434a",
+        "d6af0b74c9266df6ae551e7ea47c7961dc934eda61a5412edef45181e5602cc5",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1701,6 +1701,11 @@ def main() -> int:
         "ps2_iso9660",
         "mod_editor.core.ps2_export_service",
         "mod_editor.gui.ps2_export_dialog_qt",
+        "mod_editor.core.ps2_disc_studio_lanes",
+        "mod_editor.core.ps2_disc_studio_service",
+        "mod_editor.core.ps2_disc_studio_worker",
+        "mod_editor.gui.ps2_disc_studio_qt",
+        "mod_editor.gui.ps2_disc_studio_tabs_qt",
         "nfl2k5_ps2_replacement_pack_verify",
         "nfl2k5_ps2_replacement_pack_audit",
         "nfl2k5_ps2_replacement_pack_kit",

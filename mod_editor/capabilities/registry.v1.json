@@ -5086,10 +5086,10 @@
       ],
       "game": "nfl2k5_ps2",
       "gui": {
-        "default_enabled": false,
-        "expose": false,
+        "default_enabled": true,
+        "expose": true,
         "mode": "edit",
-        "reason": "Every slot is bound by an exact, non-overlapping physical span and the encoder fits it to the byte, but the row stays hidden because the in-game cue behind 690 of 844 chunks is unproved and nothing has been heard on a screen. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+        "reason": "Surfaces as the Audio tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; one slot (menu-appear_01) heard on a cold boot; every other slot's in-game cue is unproved."
       },
       "id": "nfl2k5ps2.audio.audo_exact_slot_replace",
       "input_constraints": [
@@ -5100,7 +5100,8 @@
         "Stereo is written as two contiguous per-channel halves, L then R -- not the channel-major interleave the Xbox row uses. Proved on 38 of 38 stereo chunks by the per-half LOOP_END position.",
         "A payload that would cross a 1 GiB pack seam is refused. No AUDO does (0 of 844); the guard exists because 2 of the 17 AUSB stream banks do, and AUSB is a separate row.",
         "The source ISO is opened read-only and re-hashed after the run; the destination is created with O_EXCL so a run cannot overwrite an existing image or land on the image it read, and every refusal leaves no output image behind.",
-        "690 of 844 chunks share a name with another chunk (161 distinct names across 844 chunks; two crowd sounds occupy 340 chunks each). The physical span is exact but the in-game cue is not proved, so a UI must warn that replacing one slot may change an unexpected or duplicate-sounding cue."
+        "690 of 844 chunks share a name with another chunk (161 distinct names across 844 chunks; two crowd sounds occupy 340 chunks each). The physical span is exact but the in-game cue is not proved, so a UI must warn that replacing one slot may change an unexpected or duplicate-sounding cue.",
+        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Extend the runtime proof beyond menu-appear_01: a headless button seam in PenguinScreen2 (or a person at the controls) would let crowd loops and in-game cues be heard; each newly heard slot widens the recorded context, nothing more.",
@@ -5166,10 +5167,10 @@
       ],
       "game": "nfl2k5_ps2",
       "gui": {
-        "default_enabled": false,
-        "expose": false,
+        "default_enabled": true,
+        "expose": true,
         "mode": "edit",
-        "reason": "All 634 physical uniform sets are independently addressable and the write is a same-allocation 8-byte poke with a derived, per-record offset, but the row stays hidden because no PCSX2 capture has confirmed which material each word tints on this platform. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+        "reason": "Surfaces as the Colours tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.colors.unif_words",
       "input_constraints": [
@@ -5180,7 +5181,8 @@
         "The live probe digest must match the pinned catalogue; a recipe authored against a different image is refused before anything is created.",
         "A no-op is refused: the record already holding those colours is an error, not a silent success.",
         "The source image is opened read-only and is byte-identical afterwards; the destination is created with O_EXCL and must not already exist, and every refusal leaves no destination behind.",
-        "Ownership of the two words is inherited from the Xbox static executable trace, not re-derived against SLUS_209.19 and not confirmed by any runtime capture on either platform."
+        "Ownership of the two words is inherited from the Xbox static executable trace, not re-derived against SLUS_209.19 and not confirmed by any runtime capture on either platform.",
+        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Runtime witness attempted 2026-09-05 and not reached: a cold boot renders in-engine football from baked intro assets (frame byte-identical to stock with every one of the 634 facemask/turtleneck pairs set to magenta changed), no attract demo auto-starts, save-state boots are non-deterministic, and the fork has no headless button seam; a witness needs either that seam or a person reaching gameplay in PenguinScreen2 with the patched image (rebuilds from the committed recipe in ~20 s on the rig).",
@@ -5249,10 +5251,10 @@
       ],
       "game": "nfl2k5_ps2",
       "gui": {
-        "default_enabled": false,
-        "expose": false,
+        "default_enabled": true,
+        "expose": true,
         "mode": "edit",
-        "reason": "The 6,658 editable strings are each bounded by their own allocation, two independent decoders agree on all 6,873 of them, and a whole-image comparison proves an edit touches nothing else -- but the row stays hidden because no edited label has been seen drawn, and a width-measuring menu could re-flow when one shortens. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+        "reason": "Surfaces as the Text tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.menus.text_banks",
       "input_constraints": [
@@ -5265,7 +5267,8 @@
         "A bank this disc does not decode as UTF-16LE is refused rather than guessed at, and two recipe edits may not target the same allocation or overlapping allocations.",
         "An optional expect_sha256 per edit pins the original string's digest, so a recipe written against a different disc or index is refused before anything is created.",
         "Aliasing is reported, never hidden: 281 allocations are referenced by more than one lookup record, 279 of them editable and the most-shared editable one by 18 records, so a UI must show 'used by N records' rather than pretending aliases are independent strings.",
-        "The source image is opened read-only and re-hashed; the destination is created with O_EXCL and must not already exist."
+        "The source image is opened read-only and re-hashed; the destination is created with O_EXCL and must not already exist.",
+        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Take a PCSX2/PenguinScreen2 spot check of the trial image before any runtime claim; it would retire most of the remaining risk at once and is the cheapest witness in the lane.",
@@ -5335,10 +5338,10 @@
       ],
       "game": "nfl2k5_ps2",
       "gui": {
-        "default_enabled": false,
-        "expose": false,
+        "default_enabled": true,
+        "expose": true,
         "mode": "edit",
-        "reason": "Names are bounded by their own stored span, jersey is a masked write that preserves every unrelated bit, and the verifier requires the arena's ten table counts and offsets to survive -- but the row stays hidden because no edited player has been seen in game and a loaded save may override the disc seed entirely. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+        "reason": "Surfaces as the Roster tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.players.disc_roster",
       "input_constraints": [
@@ -5351,7 +5354,8 @@
         "The arena may not move: the verifier requires every one of the ten root tables to keep both its count and its byte offset. Team membership, ratings, position and face/head id are not writes.",
         "Exactly one ROST object must be labelled as the boot roster or the catalogue refuses to build; targets are identified by that label rather than by outer index.",
         "The source image is opened read-only and is byte-identical afterwards; the destination is created with O_EXCL and must not already exist, and every refusal leaves no destination behind.",
-        "A loaded roster or franchise save may override this disc seed."
+        "A loaded roster or franchise save may override this disc seed.",
+        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Runtime witness attempted 2026-09-05 and not reached: a cold boot renders in-engine football from baked intro assets (frame byte-identical to stock with every one of 2,462 jersey numbers set to 7 changed), no attract demo auto-starts, save-state boots are non-deterministic, and the fork has no headless button seam; a witness needs either that seam or a person reaching gameplay in PenguinScreen2 with the patched image (rebuilds from the committed recipe in ~20 s on the rig).",
@@ -5508,10 +5512,10 @@
       ],
       "game": "nfl2k5_ps2",
       "gui": {
-        "default_enabled": false,
-        "expose": false,
+        "default_enabled": true,
+        "expose": true,
         "mode": "edit",
-        "reason": "The writer is the Xbox lane's own, unmodified, addressing a fixed 78,768-byte body with enforced 50/270/3,500 capacities, and an independent streaming diff proves an edit touches nothing outside the declared span -- but the row stays hidden because no authored formation has been seen line up, on either platform, and the save-overlay question is open. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+        "reason": "Surfaces as the Playbooks tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested."
       },
       "id": "nfl2k5ps2.scripts.director_playbook",
       "input_constraints": [
@@ -5523,7 +5527,8 @@
         "One pack per run. Every PLAY resource lives in /VC_20919/0., so this has never bound, but the guard stays rather than being assumed away.",
         "The PLAY chunks are uncompressed on all 37 books, so there is no decode on read and no recompression on write; a compressed family would need a re-encoder that fits the old size and this writer does not have one.",
         "An unknown book id or a recipe with the wrong schema is refused, and the source ISO is opened read-only while the destination is created with O_EXCL and must not already exist.",
-        "The memory-card overlay risk is untested on PS2: plays created by the in-game editor may live in save containers that overlay the disc book at load, which would mask a disc edit. That claim is unproven on either platform and belongs in the UI as a note."
+        "The memory-card overlay risk is untested on PS2: plays created by the in-game editor may live in save containers that overlay the disc book at load, which would mask a disc edit. That claim is unproven on either platform and belongs in the UI as a note.",
+        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Runtime witness not attempted 2026-09-05: the play-call menu exists only in RAM-resident save states, which boot non-deterministically frame-to-frame; a witness needs a headless button seam or a person reaching the menu in PenguinScreen2.",
@@ -5593,9 +5598,9 @@
       "game": "nfl2k5_ps2",
       "gui": {
         "default_enabled": false,
-        "expose": false,
+        "expose": true,
         "mode": "edit",
-        "reason": "Edits are bounded to catalogued position lanes, refused before any image exists if the recompressed body will not fit, and independently verified down to the 0x20 wrapper -- but the row stays hidden because nothing has been booted, semantic ownership of the lanes is unestablished, and one edit currently takes tens of minutes. Nothing in mod_editor/ is wired to it: there is no Qt-free service and no dialog, so the capability is reachable only from the command line today. When it does surface it will be a separate PS2 window off the File menu, following the shipped PS2 save editor and PS2 Disc Inventory windows, not a card in the Xbox sidebar -- product_catalog.py builds the sidebar per game and a nfl2k5_ps2 row never reaches it."
+        "reason": "Surfaces as the Stadium tab of the PS2 Disc Studio (File \u25b8 PS2 Disc Studio\u2026, or --ps2-disc-studio), the separate PS2 window that follows the save editor and the Disc Inventory: targets come from this lane's catalogue tool run over the user's own disc, the budget is on screen, refusals are inline, the patcher's dry run happens before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing on a screen yet \u2014 runtime stays not-tested. Off by default: catalogue and build steps take tens of minutes and only one scene is proved."
       },
       "id": "nfl2k5ps2.stadiums.position_lanes",
       "input_constraints": [
@@ -5607,7 +5612,8 @@
         "A coordinate that is not an exact binary32 is refused, as is an unauthorised target, a catalogue pin that does not match, and a recipe whose edits span two scenes.",
         "Aliased lanes are refused: several batch descriptors can point at the same DMA chain, so of 1,041 catalogued targets there are 890 distinct payload spans and 274 targets share a span with another. Each row carries its payload_span_target_count and a recipe editing two aliases of one lane is rejected -- the first real-disc trial run was refused by exactly that check.",
         "The source ISO is opened read-only and its digest re-checked afterwards; the destination is created with O_EXCL and must not already exist.",
-        "The 8 batches on the trial scene whose VIF command 0x3F is unknown are excluded rather than guessed at; coverage there is 646 of 654 batches."
+        "The 8 batches on the trial scene whose VIF command 0x3F is unknown are excluded rather than guessed at; coverage there is 646 of 654 batches.",
+        "In the PS2 Disc Studio this lane is one tab: every refusal above is shown inline or at Check before an image exists, and the build writes a new image only after the lane's independent verifier passes."
       ],
       "portme": [
         "Runtime witness not attempted 2026-09-05: one scene is catalogued and the only input-free stadium shot (the cold-boot intro) proved insensitive to the other disc lanes; a witness needs the scene the game actually loads for a reachable screen and either a headless button seam or a person at the controls.",
