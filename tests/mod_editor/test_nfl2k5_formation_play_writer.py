@@ -3,6 +3,12 @@
 Offline (needs private cache at ~/.cache/2k5-mod-studio); proves the
 Studio → canonical → backend pack-0 path without needing a full XISO or xemu.
 """
+import sys
+from pathlib import Path as _Path
+for _entry in (_Path(__file__).resolve().parents[2], _Path(__file__).resolve().parents[2] / "tools"):
+    if str(_entry) not in sys.path:
+        sys.path.insert(0, str(_entry))
+
 import pathlib
 import unittest
 
@@ -104,12 +110,13 @@ class FormationPlayPackIntegrationTests(unittest.TestCase):
         asset_id = "nfl2k5.resource.o0308.c0000.k504c4159"
         source = parse_playbook_resource(_read_atl_span(), asset_id=asset_id)
         donor = next(
-            f.index for f in source.formations if len(f.play_links) < 36
+            f.index for f in source.formations if 0 < len(f.play_links) < 36
         )
+        play_donor = source.formations[donor].play_links[0].play_index
         repl, _, report, _, _ = w.build_unified_formation_play_import(
             INDEX, INVENTORY, asset_id,
             formation_requests=[{"asset_id": asset_id, "donor_formation_index": donor}],
-            play_requests=[{"asset_id": asset_id, "donor_play_index": 0}],
+            play_requests=[{"asset_id": asset_id, "donor_play_index": play_donor}],
             link_requests=[{"asset_id": asset_id, "formation_index": 39, "play_index": 254}],
         )
         self.assertEqual(report["links"], [[39, 254, report["links"][0][2], report["links"][0][3]]])

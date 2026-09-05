@@ -22,6 +22,7 @@ coordinates are signed centimetres (91.44 cm = 1 yard).  X is lateral (positive
 from __future__ import annotations
 
 import struct
+import math
 from dataclasses import dataclass, field
 from typing import Iterable, Mapping, Sequence
 
@@ -82,7 +83,7 @@ OPCODE_NAMES: dict[int, str] = {
 # Lateral lane table (retail 0x520fe8), centimetres, index 0..15; 17 = none.
 LANE_TABLE_CM: tuple[float, ...] = (
     -685.8, -533.4, -457.2, -381.0, -304.8, -228.6, -152.4, -76.2, 0.0, 76.2,
-    152.4, 228.6, 304.8, 381.0, 457.2, 533.4,
+    152.4, 228.6, 304.8, 381.0, 457.2, 533.4, 685.8,
 )
 LANE_NONE = 17
 # Named spot tables (retail 0xaabb30 / 0xaabb3c) used by Block Leg type 9.
@@ -122,11 +123,11 @@ START_ROLES: dict[int, str] = {2: "Snapper", 3: "Blocker / receiver", 4: "Ball h
 # Category position codes: low 5 bits = kind, high 3 bits = variant (side / depth-chart ordinal).
 # Verified against the stock personnel groups (Ace = two kind-8 tight on the line,
 # 5 Wide = five kind-9, Nickel/Dime = three/four kind-18): 8 is TE, 9 is WR,
-# 14 MLB, 15 OLB, 16 SS, 18 CB.
+# 14 MLB, 15 OLB, 16 FS, 17 SS, 18 CB (retail 0x5101F0).
 POSITION_KINDS: dict[int, str] = {
     0: "QB", 1: "P", 2: "K", 3: "H", 4: "KR", 5: "T", 6: "C", 7: "G", 8: "TE",
     9: "WR", 10: "HB", 11: "FB", 12: "DE", 13: "DT", 14: "MLB", 15: "OLB",
-    16: "SS", 17: "FS", 18: "CB",
+    16: "FS", 17: "SS", 18: "CB",
 }
 OFFENSIVE_LINE_KINDS = frozenset({5, 6, 7})
 ELIGIBLE_KINDS = frozenset({0, 8, 9, 10, 11, 1, 2, 3, 4})
@@ -159,7 +160,7 @@ def _int(key: str, bits: int, label: str, choices: Mapping[int, str] | None = No
 X = OperandSpec("x", "x_ft", 8, "X offset (ft, + = right)")
 Y = OperandSpec("y", "y_ft", 8, "Y offset (ft, + = downfield)")
 T = OperandSpec("time", "time", 6, "Delay (s)")
-LANE = OperandSpec("lane", "lane", 5, "Lane (0-15, 17 = none)")
+LANE = OperandSpec("lane", "lane", 5, "Lane (0-16, 17 = none)")
 SLOT = OperandSpec("slot", "slot", 4, "Target slot (0-10)")
 ANGLE = OperandSpec("angle", "angle", 5, "Angle (°)")
 
@@ -839,7 +840,18 @@ class FormationRecord:
         self.slots[slot].z = [zi, zi, zi]
 
     def recompute_mirrors(self, position_codes: Sequence[int] | None = None) -> None:
-        """Pair slots whose base coordinates mirror across the centre line."""
+        """Keep defensive role partners; pair offensive geometry by position.
+
+        Retail defense intentionally pairs unlike kinds (OLB/MLB and FS/SS)
+        and unequal depths. Recomputing those from geometry loses its personnel
+        semantics, so native defensive donors retain their reciprocal topology.
+        """
+        if 4 <= self.type_code <= 7:
+            for s, slot in enumerate(self.slots):
+                partner = slot.mirror_partner
+                if partner != NO_MIRROR and (not 0 <= partner < SLOT_COUNT or self.slots[partner].mirror_partner != s):
+                    raise ValueError("Defense donor has a nonreciprocal mirror partner")
+            return
         used = set()
         for s, slot in enumerate(self.slots):
             slot.mirror_partner = NO_MIRROR
@@ -887,6 +899,11 @@ def formation_legality(slots: Sequence[FormationSlot], position_codes: Sequence[
         for s, slot in enumerate(slots):
             if slot.z[0] < 0:
                 issues.append(f"{position_label(position_codes[s])} (slot {s}) is across the line of scrimmage")
+            if abs(slot.x[0]) > 2400:
+                issues.append(f"slot {s} is out of bounds")
+            for t in range(s):
+                if abs(slot.x[0] - slots[t].x[0]) < 40 and abs(slot.z[0] - slots[t].z[0]) < 40:
+                    issues.append(f"slots {t} and {s} overlap")
         return issues
     on_line = [s for s, slot in enumerate(slots) if abs(slot.z[0]) <= 15]
     backfield = [s for s, slot in enumerate(slots) if slot.z[0] < -15]
@@ -1008,7 +1025,7 @@ def play_art(nodes: Sequence[Node], start_xy: tuple[float, float], side: int = 1
             segs.append(ArtSegment([(x, y), (x, y - 182.88)], style="man", end_marker="man"))
         elif op in (0x0B, 0x0C):
             lane = int(v[1])
-            lx = LANE_TABLE_CM[lane] if 0 <= lane < 16 else x
+            lx = LANE_TABLE_CM[lane] if 0 <= lane < len(LANE_TABLE_CM) else x
             segs.append(ArtSegment([(x, y), (lx, y - 213.36)], style="dashed" if op == 0x0C else "solid", end_marker="arrow"))
             x, y = lx, y - 213.36
         elif op in (0x0A, 0x10):
@@ -1042,3 +1059,40 @@ __all__ = [
     "build_descriptor", "decode_operands", "encode_operands", "entry_flags", "formation_legality",
     "play_art", "position_label", "validate_play",
 ]
+
+
+def validate_defense_operands(chain: Sequence) -> None:
+    """Authoring guard before the bit-packing encoder can mask/wrap a value.
+
+    This is deliberately narrower than decoding retail bytes. Receiver selectors
+    are opponents; only Man operand 5 names a friendly exchange partner.
+    """
+    for op, values in chain:
+        if op not in (0x01, 0x0B, 0x0D, 0x0E, 0x18, 0x1B):
+            raise ValueError(f"Opcode {op:#04x} is not an established defensive building block")
+        specs = OPERAND_SCHEMAS[op]
+        if len(values) != len(specs):
+            raise ValueError(f"Defense opcode {op:#04x} needs {len(specs)} operands")
+        for spec, value in zip(specs, values):
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise ValueError("Defense operands must be finite numbers")
+            if spec.kind == "x_ft":
+                lo, hi = -128 * FT_CM, 127 * FT_CM
+            elif spec.kind == "y_ft":
+                lo, hi = -64 * FT_CM, 191 * FT_CM
+            elif spec.kind == "time":
+                lo, hi = 0, 6.3
+            else:
+                lo, hi = 0, (1 << spec.bits) - 1
+                if int(value) != value:
+                    raise ValueError(f"{spec.label} must be an integer")
+            if not lo - 1e-6 <= value <= hi + 1e-6:
+                raise ValueError(f"{spec.label} is outside its encoded range")
+            if spec.kind == "lane" and value > 17:
+                raise ValueError("Rush lanes are 0 through 16, or 17 for none")
+        if op == 0x0B and values[0] > 5:
+            raise ValueError("Use a retail rush mode (0 through 5)")
+        if op == 0x0D and any(values[k] > 14 for k in (2, 3, 4)):
+            raise ValueError("Zone selectors and boundary modes are 0 through 14")
+        if op == 0x0E and (values[3] > 14 or values[5] > 10):
+            raise ValueError("Man target must be 0 through 14; exchange partner must be a slot 0 through 10")

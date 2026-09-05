@@ -1,5 +1,11 @@
 """Offscreen drive of the Create a Play wizard against the real facade (private cache + retail XISO required)."""
 import os
+import sys
+from pathlib import Path as _Path
+for _entry in (_Path(__file__).resolve().parents[2], _Path(__file__).resolve().parents[2] / "tools"):
+    if str(_entry) not in sys.path:
+        sys.path.insert(0, str(_entry))
+
 import pathlib
 import unittest
 
@@ -13,6 +19,9 @@ CACHE = pathlib.Path("/home/noah/.cache/2k5-mod-studio/7b4b493b9492ecfb353ae97c7
 class CreatePlayWizardTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from mod_editor.core.nfl2k5_uniform_catalog import DEFAULT_REPORT
+        if not DEFAULT_REPORT.is_file():
+            raise unittest.SkipTest("private uniform catalog report missing; facade requires it")
         from PyQt5.QtWidgets import QApplication, QMessageBox
         cls.app = QApplication.instance() or QApplication([])
         cls.warnings: list[str] = []

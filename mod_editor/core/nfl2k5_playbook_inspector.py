@@ -537,3 +537,18 @@ __all__ = [
     "corpus_counts",
     "parse_playbook_resource",
 ]
+
+
+def inspect_defense(resource: bytes, *, asset_id: str = "defense-inspect") -> dict:
+    """Read back native personnel namespaces and effective front/coverage pairs.
+
+    An authored Spy is deliberately indistinguishable from a shallow zone in
+    PLAY bytes. Its versioned play/slot intent must be read from the project or
+    compiler receipt, never guessed from geometry or a play name.
+    """
+    from . import nfl2k5_play_library as lib
+    book = parse_playbook_resource(resource, asset_id=asset_id)
+    body = resource[RESOURCE_HEADER_SIZE:]
+    formations = [f for f in lib.defense_formations(book, body) if lib.defense_pairs(book, body, f)]
+    return dict(evidence=lib.DEFENSE_EVIDENCE, formations=lib.defense_menu_audit(book, body, formations),
+                spy_runtime_available=False)

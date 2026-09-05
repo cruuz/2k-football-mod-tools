@@ -772,6 +772,10 @@ class PlaybooksPanel(QWidget):
             "pull request."
         )
         create_row.addWidget(self.install_pack_button)
+        self.modern_defense_button = QPushButton("SOFTDRINK modern defense")
+        self.modern_defense_button.setToolTip("Export the EXPERIMENTAL / UNWITNESSED defense pack for this book, then review it in Install Playbook Pack.")
+        self.modern_defense_button.clicked.connect(self._modern_defense_pack)
+        create_row.addWidget(self.modern_defense_button)
         create_row.addWidget(self.export_pack_button)
         create_row.addStretch(1)
         inspector_layout.addLayout(create_row)
@@ -1864,6 +1868,39 @@ class PlaybooksPanel(QWidget):
             self.progress_label.setText(str(getattr(value, "message", value)))
             self._refresh_after_task = True
 
+        if linked.play.family_id == 1:
+            from mod_editor.core import nfl2k5_playbook_pack as pk
+            from mod_editor.core import nfl2k5_play_library as lib
+            donor_index = payload.get("donor_play_index", linked.play.index)
+            donor = book.plays[donor_index]
+            fi = designed["donor"] if use_designed else int(formation_index)
+            assignments = pk._freeze_chains(payload["assignments"])
+            front, _ = lib.defense_donors(book, body, fi)
+            effective = [chain if chain is not None else lib.decoded_chains(body, donor_index)[slot]
+                         for slot, chain in enumerate(assignments)]
+            # Installing via the existing pack path persists versioned intent in
+            # ordinary project rows, without needing a new facade argument.
+            formation_rows = ()
+            target = fi if payload["link"] else None
+            if use_designed:
+                # The same formation request selector deduplicates in the session.
+                info = lib.defense_personnel(book, body, fi)
+                formation_rows = (pk.PackFormation("defense-formation", designed["name"],
+                    tuple(tuple(p) for p in designed["positions"]), tuple(info['codes']),
+                    pk.PackDonor(fi, book.formations[fi].name), category_index=designed['category_index']),)
+                target = "defense-formation" if payload["link"] else None
+            play = pk.PackPlay("defense-play", payload["custom_name"] or donor.name, "defense", assignments,
+                pk.PackDonor(donor_index, donor.name, donor.flags_or_id, lib.defense_signature(body, donor_index)),
+                donor.flags_or_id, link_formation=target, link_group=3,
+                defense_formation=book.formations[fi].name, front_index=front,
+                component=lib.defense_component(effective), spy_slots=tuple(payload['spy_intent']['slots']))
+            pack = pk.PlaybookPack(pk.PackBook(book.book_name, "Designed defense", "unknown", "1.0.0", "CC0-1.0",
+                notes=lib.DEFENSE_EVIDENCE + ". " + lib.SPY_NOTICE),
+                pk.PackBase(pk.book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
+                formation_rows, (play,), pk.DEFENSE_SCHEMA)
+            self._run(lambda progress: self.host.install_playbook_pack(pack, (book.book_name,), progress), ready)
+            return
+
         self._run(
             lambda progress: self.host.create_authored_play(
                 book.asset_id, linked.play.index, payload["custom_name"], payload["assignments"],
@@ -1871,6 +1908,28 @@ class PlaybooksPanel(QWidget):
             ),
             ready,
         )
+
+    def _modern_defense_pack(self) -> None:
+        from mod_editor.core import nfl2k5_playbook_pack as pk
+        from mod_editor.gui.playbook_pack_dialog_qt import PlaybookPackInstallDialog
+        book = self._selected_book()
+        if book is None:
+            return
+        destination, _ = QFileDialog.getSaveFileName(self, "Save SOFTDRINK modern defense pack",
+            "softdrink_modern_defense.2k5book", "Playbook pack (*.2k5book)")
+        if not destination:
+            return
+        try:
+            body = self.host.playbook_raw_body(book.asset_id)
+            pack = pk.modern_defense_pack(book, body, book.book_name)
+            report = pk.check_pack(pack, book, body)
+            if not report.ok:
+                raise ValueError("; ".join(report.errors))
+            path = pk.save_pack(pack, destination)
+            dialog = PlaybookPackInstallDialog(self.host, path, self)
+            dialog.exec_()
+        except Exception as exc:
+            QMessageBox.warning(self, "Modern defense", str(exc))
 
     def _install_playbook_pack(self) -> None:
         from mod_editor.gui.playbook_pack_dialog_qt import (

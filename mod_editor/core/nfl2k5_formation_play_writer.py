@@ -172,14 +172,17 @@ class PlayCreateRequest:
     assignments: tuple[tuple[tuple[int, tuple[float, ...]], ...] | None, ...] | None = None
     replace_index: int | None = None
     play_flags: int | None = None   # header word (+4); None keeps the donor's
+    spy_slots: tuple[int, ...] = ()
 
     @property
     def selector(self) -> str:
         base = f"play-create:{self.asset_id}:donor{self.donor_play_index}"
-        if self.assignments is not None or self.replace_index is not None or self.play_flags is not None:
+        if self.assignments is not None or self.replace_index is not None or self.play_flags is not None or self.spy_slots:
             payload: list[object] = [self.assignments, self.custom_name, self.replace_index]
             if self.play_flags is not None:
                 payload.append(self.play_flags)
+            if self.spy_slots:
+                payload.append(list(self.spy_slots))
             base += ":" + _payload_tag(payload)
         return base
 
@@ -196,6 +199,8 @@ class PlayCreateRequest:
             row["replace_index"] = self.replace_index
         if self.play_flags is not None:
             row["play_flags"] = self.play_flags
+        if self.spy_slots:
+            row["spy_intent"] = {"schema": "nfl2k5_spy_intent/v1", "slots": list(self.spy_slots)}
         return row
 
 
@@ -348,7 +353,7 @@ def formation_request_from_mapping(value: Mapping[str, object]) -> FormationCrea
 def play_request_from_mapping(value: Mapping[str, object]) -> PlayCreateRequest:
     if value.get("kind") == PROVIDER_KIND_PLAY:
         value = {k: v for k, v in value.items() if k != "kind"}
-    fields = {"asset_id", "donor_play_index", "custom_name", "assignments", "replace_index", "play_flags"}
+    fields = {"asset_id", "donor_play_index", "custom_name", "assignments", "replace_index", "play_flags", "spy_intent"}
     if not set(value) <= fields or not {"asset_id", "donor_play_index"} <= set(value):
         raise ValidationError("A play create has unsupported fields.")
     asset_id = value.get("asset_id")
@@ -367,6 +372,7 @@ def play_request_from_mapping(value: Mapping[str, object]) -> PlayCreateRequest:
         _assignments_from(value.get("assignments")),
         replace,
         play_flags,
+        spy_slots_from(value.get("spy_intent")),
     )
 
 
@@ -695,6 +701,16 @@ def compile_formation_play_creations(
     authored_formations: list[dict[str, Any]] = []
     authored_plays: list[dict[str, Any]] = []
 
+    from . import nfl2k5_play_library as lib
+    for req in norm_formations:
+        rec = lib.formation_record(body, req.donor_formation_index)
+        if 4 <= rec.type_code <= 7:
+            info = lib.defense_personnel(source, body, req.donor_formation_index)
+            if req.category_index is not None and req.category_index != info['category_index']:
+                raise ValidationError("Defense personnel changes need a matching formation donor and package permutation")
+            if req.category_positions is not None and list(req.category_positions) != info['codes']:
+                raise ValidationError("Defense cannot overwrite a shared category row; choose a native personnel donor")
+
     # Personnel groups written by designed formations (an unused / replaced group
     # gets the designer's eleven position codes; the record's name stays).
     written_categories: dict[int, tuple[int, ...]] = {}
@@ -730,7 +746,8 @@ def compile_formation_play_creations(
                 )
             word = struct.unpack_from("<I", replacement, body_off + dst_aux + 0x48)[0]
             struct.pack_into("<I", replacement, body_off + dst_aux + 0x48, (word & ~0x3F) | req.category_index)
-            struct.pack_into("<I", replacement, body_off + dst_aux + 0x4C, 1 << req.category_index)
+            if req.category_index != (word & 0x3F):
+                struct.pack_into("<I", replacement, body_off + dst_aux + 0x4C, 1 << req.category_index)
         cat_index = struct.unpack_from("<I", replacement, body_off + dst_aux + 0x48)[0] & 0x3F
         poscodes = category_positions.get(cat_index)
         if req.slot_positions is not None:
@@ -782,6 +799,11 @@ def compile_formation_play_creations(
         for slot_index, chain in enumerate(req.assignments):
             if chain is None:
                 continue
+            if (play_flags >> 6) & 7 == 1:
+                try:
+                    codec.validate_defense_operands(chain)
+                except ValueError as exc:
+                    raise ValidationError(str(exc)) from exc
             nodes = []
             for op, vals in chain:
                 specs = codec.OPERAND_SCHEMAS.get(op, ())
@@ -956,7 +978,7 @@ def compile_formation_play_creations(
                     RESOURCE_HEADER_SIZE + FORMATION_BASE + (dst + 1) * FORMATION_SIZE]
         )
         for slot_index, (x_cm, z_cm) in enumerate(req.slot_positions):
-            if rec.slots[slot_index].x[0] != int(round(x_cm)) or rec.slots[slot_index].z[0] != int(round(z_cm)):
+            if rec.slots[slot_index].x != [int(round(x_cm))] * 3 or rec.slots[slot_index].z != [int(round(z_cm))] * 3:
                 raise ValidationError("Authored formation position did not survive reparse.")
 
     for link in applied_links:
@@ -969,8 +991,50 @@ def compile_formation_play_creations(
         ):
             raise ValidationError("Compiled menu link did not survive reparse.")
 
+    defense_targets = {p for p in new_play_indices if reparsed.plays[p].family_id == 1}
+    affected = {f.index for f in reparsed.formations
+                if any(l.play_index in defense_targets for l in f.play_links)}
+    affected |= {i for i in new_formation_indices
+                 if 4 <= lib.formation_record(rebuilt[RESOURCE_HEADER_SIZE:], i).type_code <= 7}
+    try:
+        defense_audit = lib.defense_menu_audit(reparsed, rebuilt[RESOURCE_HEADER_SIZE:], sorted(affected))
+    except ValueError as exc:
+        raise ValidationError(str(exc)) from exc
+    spy_lookup = []
+    for req, pi in zip(norm_plays, new_play_indices):
+        for slot in req.spy_slots:
+            if reparsed.plays[pi].family_id != 1:
+                raise ValidationError("Spy intent requires a defensive play")
+            chain = lib.decoded_chains(rebuilt[RESOURCE_HEADER_SIZE:], pi)[slot]
+            if ([op for op, _ in chain] != [0x1B, 0x0D] or abs(chain[1][1][0]) > .001
+                    or not 3 * codec.YD_CM - .001 <= chain[1][1][1] <= 5 * codec.YD_CM + .001):
+                raise ValidationError("Spy intent requires the centered 3-5 yard shallow-zone fallback")
+            menus = [row for row in defense_audit if any(l.play_index == pi for l in reparsed.formations[row['formation_index']].play_links)]
+            if not menus or any(row['codes'][slot] & 31 != lib.MLB for row in menus):
+                raise ValidationError("Spy intent requires an MLB in every linked formation")
+            encoded = [codec.Node(op, 0, list(v)) for op, v in chain]
+            codec.assign_node_flags(encoded)
+            encoded = [n.to_bytes() for n in encoded]
+            descriptor = lib.play_chains(rebuilt[RESOURCE_HEADER_SIZE:], pi)[1][slot][0]
+            donor_matches = []
+            for candidate in source.plays:
+                if candidate.family_id != 1:
+                    continue
+                d, nodes = lib.play_chains(body, candidate.index)[1][slot]
+                if (len(nodes) == 2 and [n[0] for n in nodes] == [0x1B, 0x0D]
+                        and 0 <= codec.Node.from_bytes(nodes[1]).operands[1] < 15 * codec.YD_CM
+                        and nodes[0] == encoded[0] and nodes[1][:6] == encoded[1][:6]
+                        and d == descriptor):
+                    donor_matches.append(candidate.index)
+            if not donor_matches:
+                raise ValidationError("Spy must preserve a legal shallow-zone donor's descriptor, start and other operands")
+            spy_lookup.append(dict(play_index=pi, slot=slot, intent="spy", runtime_available=False,
+                                   zone_donor_play_index=donor_matches[0]))
+
     report: dict[str, Any] = {
         "schema": REPORT_SCHEMA,
+        "defense_menus": defense_audit,
+        "spy_intent": {"schema": lib.SPY_INTENT_SCHEMA, "records": spy_lookup},
         "asset_id": asset_id,
         "source_sha256": _sha256(raw_resource),
         "replacement_sha256": _sha256(rebuilt),
@@ -1089,3 +1153,17 @@ __all__ = [
     "play_request_from_mapping",
     "link_request_from_mapping",
 ]
+
+
+def spy_slots_from(value: object) -> tuple[int, ...]:
+    """Versioned authoring intent. It never writes a runtime flag into a node."""
+    if value is None:
+        return ()
+    if not isinstance(value, Mapping) or set(value) != {"schema", "slots"} or value['schema'] != "nfl2k5_spy_intent/v1":
+        raise ValidationError("Unsupported spy intent schema")
+    slots = value['slots']
+    if not isinstance(slots, (tuple, list)) or any(type(s) is not int or not 0 <= s < 11 for s in slots):
+        raise ValidationError("Spy intent slots must be integers 0 through 10")
+    if len(set(slots)) != len(slots):
+        raise ValidationError("Spy intent has duplicate slots")
+    return tuple(sorted(slots))

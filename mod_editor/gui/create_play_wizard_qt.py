@@ -84,16 +84,15 @@ def with_read_order(chain: list, order: "tuple[int, ...] | list[int]", *, allow_
     return out
 
 
-#: Menu selection groups.  Every populated retail formation carries exactly one
-#: link in each of groups 0, 1 and 2 (938 formations, no exceptions) -- the three
-#: audible slots, the same structure proved in APF's SPLB.  Group 3 exists in the
-#: format and is what the tutorial book uses.
+#: Offensive menus use groups 0, 1 and 2 for the three audible slots.
+#: All 5,013 observed retail defensive links use group 3; it also appears
+#: in tutorial menus. Do not label defensive group 3 as tutorial-only.
 AUDIBLE_GROUPS: tuple[tuple[str, object], ...] = (
     ("Inherit from the formation", None),
     ("Audible 1 (group 0)", 0),
     ("Audible 2 (group 1)", 1),
     ("Audible 3 (group 2)", 2),
-    ("Group 3 (tutorial books)", 3),
+    ("Group 3 (defense and tutorials)", 3),
 )
 
 
@@ -121,7 +120,9 @@ class DesignedPlay:
     chains: list[lib.Chain]
     donor_play_index: int
     replace_index: int | None = None
-    play_flags: int | None = None   # header class word (0x6000 pass / 0x8000 run) from a stock play of the same shape
+    play_flags: int | None = None   # same-shape retail donor
+    spy_slots: tuple[int, ...] = ()
+    front_index: int | None = None
 
 
 class CreatePlayWizard(QWizard):
@@ -149,8 +150,17 @@ class CreatePlayWizard(QWizard):
             self.addPage(page)
         self.setButtonText(QWizard.FinishButton, "Close")
 
+    @property
+    def is_defense(self) -> bool:
+        return self.page_team.family.currentData() == "defense"
+
     # -- helpers
     def load_book(self, book: Nfl2k5Playbook) -> None:
+        if self.book is not None and (self.book.asset_id != book.asset_id or any(
+                (p.play_type == "defense") != self.is_defense for f in self.designed for p in f.plays)):
+            self.designed.clear()
+            self.current = None
+            self.page_formation.positions = []
         self.book = book
         self.body = self.host.playbook_raw_body(book.asset_id)
         self._reference_cache.clear()
@@ -182,6 +192,10 @@ class TeamPage(QWizardPage):
         self.setTitle("Step 1 — Whose playbook are we changing?")
         self.setSubTitle("Pick the team you'll play as. Your new formations and plays go into that team's playbook.")
         layout = QVBoxLayout(self)
+        self.family = QComboBox()
+        self.family.addItem("Offense", "offense")
+        self.family.addItem("Defense EXPERIMENTAL / UNWITNESSED", "defense")
+        layout.addWidget(self.family)
         self.list = QListWidget()
         self.list.setStyleSheet(HUGE)
         self.list.setSpacing(4)
@@ -336,6 +350,9 @@ class FormationPage(QWizardPage):
         self.flip = QPushButton("Flip left ↔ right")
         self.flip.clicked.connect(self._flip)
         right.addWidget(self.flip)
+        self.mug_button = QPushButton("Double A look EXPERIMENTAL")
+        self.mug_button.clicked.connect(self._double_a)
+        right.addWidget(self.mug_button)
         right.addWidget(QLabel("<b>NFL alignment check</b>"))
         self.legal = QListWidget()
         self.legal.setMaximumHeight(140)
@@ -360,9 +377,24 @@ class FormationPage(QWizardPage):
         book, body = self.wiz.book, self.wiz.body
         assert book is not None and body is not None
         self.stock.clear()
-        for idx in lib.offense_formations(book, body):
+        self.scene.offense = not self.wiz.is_defense
+        self.templates.setVisible(not self.wiz.is_defense)
+        self.mug_button.setVisible(self.wiz.is_defense)
+        self.allow_illegal.setVisible(not self.wiz.is_defense)
+        self.setSubTitle("Defense: choose native personnel with a stock donor, then move any of eleven players. "
+                         + lib.DEFENSE_EVIDENCE if self.wiz.is_defense else "Start from a template or a stock formation.")
+        for idx in (lib.defense_formations(book, body) if self.wiz.is_defense else lib.offense_formations(book, body)):
             self.stock.addItem(book.formations[idx].name, idx)
-        if not self.positions:
+        if self.wiz.is_defense:
+            preferred = next((n for n in range(self.stock.count()) if self.stock.itemText(n) == "Nickel"), 0)
+            if self.stock.count():
+                previous = self.stock.findData(self.donor_index)
+                if not self.positions or not self.kinds or self.kinds[0] < 12 or previous < 0:
+                    self._use_stock(preferred)
+                    previous = preferred
+                self.stock.setCurrentIndex(previous)
+            return
+        if not self.positions or (self.kinds and self.kinds[0] >= 12):
             self._use_template(list(lib.FORMATION_TEMPLATES)[0])
             self.templates.setCurrentRow(0)
 
@@ -384,7 +416,7 @@ class FormationPage(QWizardPage):
         self._show_personnel()
 
     def _show_personnel(self) -> None:
-        text = ", ".join(self.labels[6:]) + "   —   " + self.note
+        text = ", ".join(self.labels if self.wiz.is_defense else self.labels[6:]) + "   -   " + self.note
         if self.warnings:
             text += "\n⚠ " + " ".join(self.warnings)
         self.personnel.setText(text)
@@ -442,6 +474,10 @@ class FormationPage(QWizardPage):
         self.labels = [codec.position_label(c) for c in self.codes]
         self.category_positions = None
         self.note = f"stock group “{self.wiz.book.categories[self.category_index].name}”"
+        if self.wiz.is_defense:
+            info = lib.defense_personnel(self.wiz.book, self.wiz.body, idx)
+            self.note = (f"Native personnel row {info['category_index']}, CPU category {info['category_code']}. "
+                         f"Shared by {len(info['category_users'])} formation(s); kept unchanged.")
         self.warnings = []
         self.positions = [[float(s.x[0]), float(s.z[0])] for s in rec.slots]
         self.name_edit.setText(f"{self.wiz.book.formations[idx].name} v2"[:40])
@@ -465,7 +501,7 @@ class FormationPage(QWizardPage):
         self.sel_label.setText(f"{self.labels[slot]}  (slot {slot})")
         self.x_spin.setValue(self.positions[slot][0] / YD)
         self.z_spin.setValue(self.positions[slot][1] / YD)
-        skill = slot in lib.SKILL_SLOTS
+        skill = slot in lib.SKILL_SLOTS and not self.wiz.is_defense
         self.pos_combo.setEnabled(skill)
         if skill:
             row = next((k for k in range(self.pos_combo.count()) if self.pos_combo.itemData(k) == self.kinds[slot]), 0)
@@ -501,9 +537,17 @@ class FormationPage(QWizardPage):
             p[0] = -p[0]
         self._refresh()
 
+    def _double_a(self) -> None:
+        try:
+            self.positions = [list(p) for p in lib.double_a_positions(self.wiz.book, self.wiz.body, self.donor_index)]
+            self.name_edit.setText("SD Double A EXPERIMENTAL")
+            self._refresh()
+        except ValueError as exc:
+            QMessageBox.warning(self, "Double A", str(exc))
+
     def _legality(self) -> None:
         slots = [codec.FormationSlot(0, codec.NO_MIRROR, 3, [int(round(x))] * 3, [int(round(z))] * 3) for x, z in self.positions]
-        self._issues = codec.formation_legality(slots, self.codes, True)
+        self._issues = codec.formation_legality(slots, self.codes, not self.wiz.is_defense)
         self.legal.clear()
         if not self._issues:
             it = QListWidgetItem("Legal ✔")
@@ -516,7 +560,7 @@ class FormationPage(QWizardPage):
         self.completeChanged.emit()
 
     def isComplete(self) -> bool:
-        return bool(self.positions) and (not self._issues or self.allow_illegal.isChecked())
+        return bool(self.positions) and (not self._issues or (not self.wiz.is_defense and self.allow_illegal.isChecked()))
 
     def validatePage(self) -> bool:
         name = self.name_edit.text().strip() or "Custom"
@@ -602,6 +646,14 @@ class PlayTypePage(QWizardPage):
         self.reverse_to = QComboBox()
         rl.addRow("Reverse to", self.reverse_to)
         right.addWidget(self.run_box)
+        self.defense_box = QGroupBox("Defense EXPERIMENTAL / UNWITNESSED")
+        dl = QVBoxLayout(self.defense_box)
+        self.coverages = QComboBox()
+        dl.addWidget(self.coverages)
+        self.defense_note = QLabel("Spot coverages, retail exchanges and replacement pressures. " + lib.SPY_NOTICE)
+        self.defense_note.setWordWrap(True)
+        dl.addWidget(self.defense_note)
+        right.addWidget(self.defense_box)
         self.fake_box = QGroupBox("Play action")
         fl = QFormLayout(self.fake_box)
         self.fake_to = QComboBox()
@@ -691,6 +743,17 @@ class PlayTypePage(QWizardPage):
     def initializePage(self) -> None:
         cur = self.wiz.current
         assert cur is not None
+        self.setTitle("Step 3 - Choose coverage or pressure" if self.wiz.is_defense else "Step 3 - Run or pass?")
+        for rb in self.radios.values():
+            rb.setVisible(not self.wiz.is_defense)
+        self.coverages.clear()
+        if self.wiz.is_defense:
+            for preset in lib.DEFENSE_PRESETS:
+                try:
+                    lib.make_defense_design(self.wiz.book, self.wiz.body, cur.donor_formation_index, preset)
+                except ValueError:
+                    continue
+                self.coverages.addItem(preset)
         for combo in (self.carrier, self.reverse_to, self.fake_to):
             combo.clear()
         for s in range(11):
@@ -703,12 +766,15 @@ class PlayTypePage(QWizardPage):
         self._refresh_options()
 
     def play_type(self) -> str:
+        if self.wiz.is_defense:
+            return "defense"
         return next(k for k, rb in self.radios.items() if rb.isChecked())
 
     def _refresh_options(self, *_a: object) -> None:
         if not hasattr(self, "fake_box"):
             return
         t = self.play_type()
+        self.defense_box.setVisible(t == "defense")
         self.concept_box.setVisible(t in ("pass", "pa_pass"))
         self.run_box.setVisible(t in ("run", "keeper", "sneak", "reverse"))
         self.fake_box.setVisible(t == "pa_pass")
@@ -722,6 +788,8 @@ class PlayTypePage(QWizardPage):
         cur = self.wiz.current
         assert cur is not None
         t = self.play_type()
+        if t == "defense":
+            return lib.PlaySpec("", "defense", list(cur.positions), list(cur.kinds), {}), self.coverages.currentText()
         concept = self.concepts.currentItem().data(Qt.UserRole) if self.concepts.currentItem() else "4 Verts"
         scheme = self.schemes.currentItem().data(Qt.UserRole) if self.schemes.currentItem() else "Inside Zone"
         sch = lib.RUN_SCHEMES.get(scheme, {})
@@ -845,6 +913,9 @@ class AssignPage(QWizardPage):
         self.jobs.setStyleSheet(BIG)
         self.jobs.itemClicked.connect(lambda item: self._menu_for(item.data(Qt.UserRole)))
         side.addWidget(self.jobs, 1)
+        self.mirror_preview = QCheckBox("Mirror defense preview")
+        self.mirror_preview.toggled.connect(lambda _checked: self._refresh() if self.spec is not None else None)
+        side.addWidget(self.mirror_preview)
         self.status = QLabel("")
         self.status.setWordWrap(True)
         side.addWidget(self.status)
@@ -857,6 +928,7 @@ class AssignPage(QWizardPage):
                       "Next ➜ adds this play and goes to Finalize. Use “Back” twice to lay out another formation.")
         hint.setWordWrap(True)
         side.addWidget(hint)
+        self.defense_design: lib.DefenseDesign | None = None
         self.spec: lib.PlaySpec | None = None
         self.label = ""
         self.scheme: str | None = None
@@ -866,6 +938,16 @@ class AssignPage(QWizardPage):
 
     def initializePage(self) -> None:
         self.spec, self.label = self.wiz.page_type.build_spec()
+        self.defense_design = None
+        self.mirror_preview.setVisible(self.spec.play_type == "defense")
+        if self.spec.play_type == "defense":
+            self.defense_design = lib.make_defense_design(self.wiz.book, self.wiz.body,
+                                                         self.wiz.current.donor_formation_index, self.label)
+            if self.label == "Double A Show EXPERIMENTAL":
+                self.wiz.current.positions = lib.double_a_positions(self.wiz.book, self.wiz.body, self.wiz.current.donor_formation_index)
+                self.wiz.current.name = "SD Double A EXPERIMENTAL"
+            self.scene.offense = False
+            self.setSubTitle("Click any of eleven defenders for man, zone, rush, paired exchange or Spy. " + lib.SPY_NOTICE)
         self.scheme = self.label if self.spec.play_type == "run" else None
         self.concept = self.label if self.spec.play_type in ("pass", "pa_pass") else None
         self._raw = {}
@@ -876,11 +958,16 @@ class AssignPage(QWizardPage):
         self._refresh()
 
     def _chains(self) -> list[lib.Chain]:
+        if self.defense_design is not None:
+            return self.defense_design.chains
         return lib.build_chains(self.spec, self.scheme)
 
     def _refresh(self) -> None:
         cur = self.wiz.current
         chains = self._chains()
+        if self.defense_design is not None:
+            self._refresh_defense()
+            return
         self.scene.clear_art()
         faint = QColor(255, 138, 101, 110)
         for s, pts in self._raw.items():
@@ -1017,7 +1104,37 @@ class AssignPage(QWizardPage):
         self._refresh()
 
     # -- menu
+    def _refresh_defense(self) -> None:
+        from mod_editor.gui.play_designer_qt import draw_defense_design
+        design = self.defense_design
+        mirrored = self.mirror_preview.isChecked()
+        for slot, (x, z) in enumerate(self.wiz.current.positions):
+            self.scene.tokens[slot].setPos(to_scene(-x if mirrored else x, z))
+        draw_defense_design(self.scene, design, self.wiz.current.positions, mirrored=mirrored)
+        self.jobs.clear()
+        active = lib.defense_active(design.chains)
+        for slot, chain in enumerate(design.effective()):
+            mark = "Spy intent" if slot in design.spy_slots else ("coverage override" if slot in active else "inherited front")
+            self.jobs.addItem(f"{self.wiz.current.labels[slot]}: {mark}, " + " / ".join(codec.OPCODE_NAMES[op] for op, _ in chain[1:]))
+            self.jobs.item(slot).setData(Qt.UserRole, slot)
+        self._error = lib.validate_chains(design.play_flags, lib.play_chains(self.wiz.body, design.donor_play_index)[1], design.chains)
+        count = lib.defense_counts(design.effective())
+        nodes = sum(len(c) for c in design.chains)
+        remaining = 3500 - self.wiz.book.node_count
+        if nodes > remaining:
+            self._error = "The cloned nodes do not fit the remaining pool"
+        text = (f"{lib.DEFENSE_EVIDENCE}. {len(count['rushers'])} rushers, {len(count['deep'])} deep defenders. "
+                f"Front: {self.wiz.book.plays[design.front_index].name}. "
+                f"Cloned nodes {nodes} / {remaining} free; pool {nodes * 8} bytes. ")
+        self.status.setText(text + (self._error or "Structure check passed. ") + "\n" + lib.SPY_NOTICE)
+        self.completeChanged.emit()
+
     def _menu_for(self, slot: int) -> None:
+        if self.defense_design is not None:
+            from mod_editor.gui.play_designer_qt import edit_defense_assignment
+            edit_defense_assignment(self, self.defense_design, self.wiz.book, self.wiz.body, slot)
+            self._refresh()
+            return
         cur = self.wiz.current
         kind = self.spec.kinds[slot]
         menu = QMenu(self)
@@ -1101,6 +1218,12 @@ class AssignPage(QWizardPage):
 
     def _commit(self) -> None:
         cur = self.wiz.current
+        if self.defense_design is not None:
+            design = self.defense_design
+            cur.plays.append(DesignedPlay(self.name_edit.text().strip() or self.label, "defense", self.label,
+                                          design.chains, design.donor_play_index, play_flags=design.play_flags,
+                                          spy_slots=tuple(sorted(design.spy_slots)), front_index=design.front_index))
+            return
         donor, flags = self.wiz.reference_play(self.spec.play_type, self.scheme)
         cur.plays.append(DesignedPlay(
             name=self.name_edit.text().strip() or self.label, play_type=self.spec.play_type,
@@ -1189,7 +1312,7 @@ class FinalizePage(QWizardPage):
             self.table.setItem(r, 0, QTableWidgetItem("Formation"))
             self.table.setItem(r, 1, QTableWidgetItem(f.name + (f"   ({f.personnel_note})" if f.personnel_note else "")))
             combo = QComboBox()
-            suggestions = [(i, why) for i, why in lib.suggest_formations_to_replace(book, body, f.category_index) if i not in used_f]
+            suggestions = [] if self.wiz.is_defense else [(i, why) for i, why in lib.suggest_formations_to_replace(book, body, f.category_index) if i not in used_f]
             for i, why in suggestions[:8]:
                 combo.addItem(f"Replace “{book.formations[i].name}”", ("formation", i, why))
             combo.addItem("Add as a new formation", ("formation", None, "keeps every stock formation"))
@@ -1207,7 +1330,7 @@ class FinalizePage(QWizardPage):
                 self.table.setItem(r, 1, QTableWidgetItem(p.name))
                 pc = QComboBox()
                 # plays are suggested from the donor formation's menu (the plays the new formation inherits)
-                psugg = [(i, why) for i, why in lib.suggest_plays_to_replace(book, f.donor_formation_index) if i not in used_p]
+                psugg = ([(p.donor_play_index, "same defensive donor; all linked menus checked")] if p.play_type == "defense" and p.donor_play_index not in used_p else []) if self.wiz.is_defense else [(i, why) for i, why in lib.suggest_plays_to_replace(book, f.donor_formation_index) if i not in used_p]
                 for i, why in psugg[:8]:
                     pc.addItem(f"Replace “{book.plays[i].name}”", ("play", i, why))
                 pc.addItem("Add as a new play", ("play", None, "keeps every stock play"))
@@ -1222,6 +1345,10 @@ class FinalizePage(QWizardPage):
         self.table.resizeColumnsToContents()
         self.status.setText(f"{len(self.wiz.designed)} formation(s), {sum(len(f.plays) for f in self.wiz.designed)} play(s) designed. "
                             "Replacing keeps the playbook the same size; adding grows it (50 formations / 270 plays max).")
+        if self.wiz.is_defense:
+            for _, combo in self._choices:
+                combo.currentIndexChanged.connect(lambda _i: self._defense_preview())
+            self._defense_preview()
 
     def _add_read_order(self, row: int, play: "DesignedPlay", formation: "DesignedFormation") -> None:
         """Four 1-5 spin boxes over the QB's Dropback node (pass plays only)."""
@@ -1257,7 +1384,7 @@ class FinalizePage(QWizardPage):
 
     def _add_audible_group(self, row: int, play: "DesignedPlay") -> None:
         combo = QComboBox()
-        for label, value in AUDIBLE_GROUPS:
+        for label, value in (("Defense menu (group 3)", 3),) if play.play_type == "defense" else AUDIBLE_GROUPS:
             combo.addItem(label, value)
         combo.setToolTip(
             "Which of the formation's three audible slots lists this play. Every populated "
@@ -1267,6 +1394,9 @@ class FinalizePage(QWizardPage):
         self._groups[row] = (play, combo)
 
     def _apply(self) -> None:
+        if self.wiz.is_defense:
+            self._apply_defense()
+            return
         book = self.wiz.book
         host = self.wiz.host
         staged = 0
@@ -1312,6 +1442,55 @@ class FinalizePage(QWizardPage):
         self.status.setText(f"✔ Staged {staged} item(s). Now Build the disc (about two minutes), then Launch.")
         self.build.setEnabled(True)
         self.apply.setEnabled(False)
+
+    def _defense_pack(self):
+        from mod_editor.core import nfl2k5_playbook_pack as pk
+        book, body = self.wiz.book, self.wiz.body
+        formations, plays = [], []
+        current = None
+        for obj, combo in self._choices:
+            _, target, _ = combo.currentData()
+            if isinstance(obj, DesignedFormation):
+                current = f"defense-f{len(formations)}"
+                formations.append(pk.PackFormation(current, obj.name, tuple(obj.positions), tuple(obj.codes),
+                    pk.PackDonor(obj.donor_formation_index, book.formations[obj.donor_formation_index].name),
+                    target, book.formations[target].name if target is not None else "", obj.category_index))
+            else:
+                donor = book.plays[obj.donor_play_index]
+                formation = formations[-1]
+                plays.append(pk.PackPlay(f"defense-p{len(plays)}", obj.name, "defense", pk._freeze_chains(obj.chains),
+                    pk.PackDonor(donor.index, donor.name, donor.flags_or_id, lib.defense_signature(body, donor.index)),
+                    donor.flags_or_id, target, book.plays[target].name if target is not None else "", obj.concept_or_scheme,
+                    current, 3, formation.donor.name, obj.front_index, lib.defense_component(obj.chains), obj.spy_slots))
+        return pk.PlaybookPack(pk.PackBook(book.book_name, "Custom defense", "unknown", "1.0.0", "CC0-1.0",
+                               notes=lib.DEFENSE_EVIDENCE + ". " + lib.SPY_NOTICE),
+                              pk.PackBase(pk.book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
+                              tuple(formations), tuple(plays), pk.DEFENSE_SCHEMA)
+
+    def _defense_preview(self):
+        from mod_editor.core import nfl2k5_playbook_pack as pk
+        try:
+            pack = self._defense_pack()
+            report = pk.check_pack(pack, self.wiz.book, self.wiz.body)
+            self.apply.setEnabled(report.ok)
+            totals = report.totals
+            self.status.setText(f"{lib.DEFENSE_EVIDENCE}. Cloned nodes {totals['cloned_nodes']}; "
+                f"node pool {totals['node_pool_bytes']} bytes, names {totals['name_pool_bytes']} bytes. "
+                f"Total nodes {totals['nodes']}/3500. " + ("; ".join(report.errors) if not report.ok else "All affected menus checked."))
+        except Exception as exc:
+            self.apply.setEnabled(False)
+            self.status.setText(str(exc))
+
+    def _apply_defense(self):
+        try:
+            pack = self._defense_pack()
+            self.wiz.host.install_playbook_pack(pack, (self.wiz.book.book_name,), _quiet)
+        except Exception as exc:
+            QMessageBox.warning(self, "Defense", str(exc))
+            return
+        self.status.setText("Defense staged with versioned Spy intent. " + lib.DEFENSE_EVIDENCE)
+        self.apply.setEnabled(False)
+        self.build.setEnabled(True)
 
     def _build(self) -> None:
         preferred = Path.home() / "2K5 Mod Studio Builds"

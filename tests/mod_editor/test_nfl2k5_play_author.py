@@ -5,6 +5,12 @@ authored formation (Pistol from Ace) and an authored play (rewritten receiver
 routes and a shotgun QB chain) compile, reparse, keep byte ownership, and pass
 the ported retail play validator.
 """
+import sys
+from pathlib import Path as _Path
+for _entry in (_Path(__file__).resolve().parents[2], _Path(__file__).resolve().parents[2] / "tools"):
+    if str(_entry) not in sys.path:
+        sys.path.insert(0, str(_entry))
+
 import pathlib
 import struct
 import unittest
@@ -184,12 +190,11 @@ class PlayAuthorIntegrationTests(unittest.TestCase):
         """A pass staged under a run-class header (bits 12-15 = 0x8000) is played as a run:
         icons vanish at the snap and the QB cannot throw.  The wizard must take its donor and
         header flags from a stock play of the same shape."""
-        raw = pathlib.Path(INDEX).open("rb")
-        raw.seek(106803200)
-        book = insp.parse_playbook_resource(raw.read(0x20 + insp.BODY_SIZE), asset_id=ATL)
-        body = w_body = None
-        raw.seek(106803200 + 0x20)
-        body = raw.read(insp.BODY_SIZE)
+        with pathlib.Path(INDEX).open("rb") as raw:
+            raw.seek(106803200)
+            resource = raw.read(0x20 + insp.BODY_SIZE)
+        book = insp.parse_playbook_resource(resource, asset_id=ATL)
+        body = resource[0x20:]
         first_offense = next(p.index for p in book.plays if p.family_id == 0)
         self.assertEqual(lib.play_class_label(lib.play_chains(body, first_offense)[0]), "run",
                          "ATL's first offensive play is a run — that is the old donor bug")

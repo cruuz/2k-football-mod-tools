@@ -1302,3 +1302,46 @@ python3 tools/nfl2k5_cave_oracle.py manifest \
 `space-proof <retail.xbe> --manifest <manifest.json>` prints the bounded fresh
 allocation proof. An optional `--json <path>` records it. Generated ownership
 permits the established boot-logo/kickoff children, and refuses other overlaps.
+
+---
+
+# Beta 61 defense integration handoff
+
+This job edits only its listed modules, their tests, its pack and deliverables. No XBE bytes, allocator, release list, registry, build panel, facade, project loader or dispatcher were changed. All new calls are **EXPERIMENTAL / UNWITNESSED**. No true runtime spy ships.
+
+## Required integration fixes
+
+1. **Create-only project reload:** `mod_editor/studio/project_archive.py`, `load_project_archive`, the empty-content check around line 991 must also include:
+
+   ```python
+   and not loaded_creates
+   and not loaded_links
+   ```
+
+   Those lists already exist and are validated above the check. Saving currently includes them, but loading considers a project containing only playbook creations/links empty and rejects it. This is an existing bug affecting offensive packs too. `test_create_only_project_reload_pending_project_archive_wiring` in `tests/mod_editor/test_nfl2k5_defense_play_qt.py` is an expected failure until these predicates are added; remove its `@unittest.expectedFailure` after integration. The companion tests prove Spy survives the actual saved `.2k5mod` manifest, request parsing, `.2k5book` reload and recompilation. Do not put a fake audio/visual edit into a project to bypass the guard.
+
+2. **Build ordering with position pools:** `mod_editor/core/mod_build.py` currently runs `plan.playbook_packs` after `plan.position_pools`. Its comment explicitly assumes packs only edit offense. Defense recipes now require one of 48 proved native personnel/package fingerprints and correctly refuse pooled/foreign category layouts. On a native source, compile the defense packs **before** `nfl2k5_playbook_position_recode.apply` changes the defensive category bytes. Keep the later depth-role pass last and give it the existing `allow_custom=True` handling. Preserve offensive pack ordering relative to other offensive writers; partition by `pack.schema == DEFENSE_SCHEMA` if needed. Do not remove the fingerprint guard to make a pooled source work. Rebuilding from an already pooled disc needs a separately proved inverse translation and source-table fingerprint, which this data-only job does not supply.
+
+   The tested composition is the actual Modern Gun Core pack followed by defense on all 32 native team books, in memory. The full XBE/ROST/position-pool build stack was not run or claimed.
+
+3. **Packaging:** append this exact new line to `packaging/release-allowlist.txt`:
+
+   ```text
+   data/playbooks/softdrink_modern_defense.2k5book
+   ```
+
+   The changed core/GUI/CLI modules are already allowlisted. The Playbooks panel can generate a pack directly from a native book, so it works in the checkout even before packaging the seed.
+
+## Build and Share surface contract
+
+- **Dispatcher `_apply_all` tuple, kwarg and four status dictionaries:** no new tuple, kwarg, or key in any of the four XBE status dictionaries. This feature has no XBE status/apply routine. Keep `nfl2k5_throw_tuning.py` unchanged. A PLAY recipe cannot truthfully report an XBE patch as applied.
+- **`BuildPlan`:** reuse `playbook_packs: tuple[str, ...] = ()`; no new Boolean field is necessary. Basic and Advanced must not automatically enable this unwitnessed pack. Experimental may offer it for explicit selection after the ordering fix, through the existing pack list. The distributed seed targets the 32 team books plus GEN and reference (34); WCO, Editor and PRACTICE are supported explicit validation/retarget targets.
+- **Build tab:** existing Add Playbook Pack accepts this v2 file. If a bundled shortcut is wanted, `_option` caption is `SOFTDRINK modern defense (experimental)` (38 characters); selecting it adds the seed path to `playbook_packs`, without a separate XBE flag. Deduplicate against the user's selected paths.
+- **Gameplay Patches `PATCHES` / `NEEDS_IMAGE`:** no runtime entry is required. If exposing a data-pack card there, use exactly: `Retail: stock defensive calls. Patch: experimental spot coverages and replacement pressures from retail playbook data. Spy is a shallow middle zone; a true spy needs the runtime patch (not yet shipped).` Add its UI key `modern_defense` to `NEEDS_IMAGE`, route it to the existing pack list, and never claim a runtime spy patch is installed.
+- **Share:** the existing Export Playbook Pack preserves `spy_intent` and emits schema `nfl2k5_playbook_pack/v2`. The existing Install path already calls the request mapper and persists the new intent field. No facade argument is required: both defensive GUI paths stage through `install_playbook_pack`. Older importers reject v2 instead of silently losing intent. Custom defensive scripts refuse automatic cross-book guesses; built-in core presets rebuild with each target's own front, coverage header, personnel and package mapping.
+- **Runtime closure:** in `packaging/check_2k5_mod_studio_runtime.py`, ensure imports for `mod_editor.core.nfl2k5_play_library`, `mod_editor.core.nfl2k5_play_codec`, `mod_editor.core.nfl2k5_formation_play_writer`, `mod_editor.core.nfl2k5_playbook_inspector`, `mod_editor.core.nfl2k5_playbook_pack`, `mod_editor.gui.create_play_wizard_qt`, `mod_editor.gui.play_designer_qt`, `mod_editor.gui.playbook_pack_dialog_qt`, and CLI `nfl2k5_playbook_pack`. Existing dynamic `nfl2k5_playbook_position_recode` / `nfl_outer` readers remain required. Check that the bundled seed parses as v2; no new dependency or module is introduced.
+- **Capability registry:** extend `nfl2k5.scripts.director_playbook` in `mod_editor/capabilities/registry.v1.json` with defense v2 recipes and native personnel fingerprint constraints. Classification remains `offline-writer-proved`. Evidence: `tests/mod_editor/test_nfl2k5_defense_play.py`, `tests/mod_editor/test_nfl2k5_defense_play_qt.py`, `ASTRA_DEFENSE_PLAY_REPORT.md`. GUI reason must say EXPERIMENTAL / UNWITNESSED and use the exact Spy notice. Do not advertise match-quarters or Palms. No runtime spy capability entry yet.
+
+## Future runtime Spy lookup
+
+`PlayCreateRequest.spy_slots` is serialized as `spy_intent = {"schema": "nfl2k5_spy_intent/v1", "slots": [5]}` per authored play. It is part of the selector hash. After final index assignment, the compiler receipt emits `spy_intent.records` containing `play_index`, `slot`, `intent="spy"`, `runtime_available=false`, and a matching `zone_donor_play_index`. The containing receipt identifies the book/asset and source/replacement SHA-256. This is authoring intent, not a PLAY opcode or XBE flag. A later allocator-backed patch must consume the lookup and implement its own identity/lifecycle contract. PLAY bytes alone cannot recover intent; an ordinary shallow zone is deliberately identical.

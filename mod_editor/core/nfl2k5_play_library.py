@@ -10,6 +10,7 @@ which stock formations / plays are the most outdated candidates to replace.
 from __future__ import annotations
 
 import math
+import hashlib
 
 import struct
 from dataclasses import dataclass, field
@@ -24,7 +25,7 @@ from .nfl2k5_playbook_inspector import (
 
 YD = codec.YD_CM
 QB, P, K, H, KR, T, C, G, TE, WR, HB, FB = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
-DE, DT, OLB, MLB, CB, FS, SS = 12, 13, 14, 15, 16, 17, 18
+DE, DT, MLB, OLB, FS, SS, CB = 12, 13, 14, 15, 16, 17, 18
 OL_KINDS = {T, C, G}
 BACK_KINDS = {HB, FB}
 RECEIVER_KINDS = {WR, TE, HB, FB}
@@ -1024,3 +1025,422 @@ __all__ = [
     "PersonnelPlan", "SKILL_CHOICES", "SKILL_SLOTS", "ranked_codes", "resolve_personnel", "donor_for_personnel",
     "is_offense_category", "back_count", "quantize_drawn_route", "drawn_run_path", "lane_for_x",
 ]
+
+
+# Defense authoring v1. Byte structure is proved; new football combinations
+# remain EXPERIMENTAL / UNWITNESSED. No runtime spy opcode is invented here.
+DEFENSE_EVIDENCE = "EXPERIMENTAL / UNWITNESSED"
+SPY_NOTICE = "shallow middle zone; a true spy needs the runtime patch (not yet shipped)"
+SPY_INTENT_SCHEMA = "nfl2k5_spy_intent/v1"
+DEFENSE_PRESETS = (
+    "Cover 0", "Cover 1", "Cover 2 Man", "Cover 2 Hard", "Cover 2 Soft",
+    "Cover 3", "Cover 4 Quarters (spot)", "Cover 6 Split Field",
+    "Fire 3 Replacement (5 rush)", "Replacement 3 (4 rush)",
+    "Tampa 2 Drop EXPERIMENTAL", "Double A Show EXPERIMENTAL", "Stock Exchange",
+)
+MODERN_DEFENSE_PRESETS = DEFENSE_PRESETS[:10]
+
+
+def defense_formations(book: Nfl2k5Playbook, body: bytes) -> list[int]:
+    return [f.index for f in book.formations if 4 <= formation_record(body, f.index).type_code <= 7]
+
+
+def defense_personnel(book: Nfl2k5Playbook, body: bytes, formation_index: int) -> dict:
+    """Keep row index, CPU category code and package permutation distinct.
+
+    Category personnel already names assignment slots. The package permutation
+    is separate retail substitution metadata, never a second slot permutation.
+    Only native defense kinds are accepted; recoded personnel needs an explicit
+    translation by the caller, rather than silently applying ordinal rules.
+    """
+    rec = formation_record(body, formation_index)
+    if not 4 <= rec.type_code <= 7:
+        raise ValueError("Choose a defensive formation donor")
+    cat = formation_category(body, formation_index)
+    codes = category_positions(body, cat)
+    if len(codes) != 11 or any(not 12 <= (c & 31) <= 18 for c in codes):
+        raise ValueError("Defense requires native personnel codes; this recoded group needs a verified translation")
+    if sorted(rec.package_map) != list(range(11)) or rec.eligible != b"\xff" * 5:
+        raise ValueError("Defense donor must retain its package permutation and FF eligible bytes")
+    schema_fingerprint = hashlib.sha256(bytes([rec.type_code, body[CATEGORY_BASE + cat * CATEGORY_SIZE + 4] & 63])
+                                        + bytes(codes) + rec.package_map + rec.eligible).hexdigest()
+    if book.book_name not in RETAIL_DEFENSE_PERSONNEL_FINGERPRINTS.get(schema_fingerprint, ()):
+        raise ValueError("Unrecognized or recoded defense personnel/package fingerprint; native donors are required")
+    aux = FORMATION_AUX_BASE + formation_index * FORMATION_AUX_SIZE
+    users = [f.index for f in book.formations if formation_category(body, f.index) == cat]
+    return dict(category_index=cat, category_code=body[CATEGORY_BASE + cat * CATEGORY_SIZE + 4] & 63,
+                membership_mask=struct.unpack_from('<I', body, aux + 0x4C)[0],
+                codes=codes, package_map=list(rec.package_map), category_users=users,
+                personnel_fingerprint=schema_fingerprint,
+                labels=[codec.position_label(c) for c in codes])
+
+
+def decoded_chains(body: bytes, play_index: int) -> list[Chain]:
+    return [[(n.op, list(n.operands)) for n in map(codec.Node.from_bytes, nodes)]
+            for _, nodes in play_chains(body, play_index)[1]]
+
+
+def defense_active(chains: Sequence[Chain]) -> set[int]:
+    return {s for s, chain in enumerate(chains) if chain and codec.entry_flags(chain[-1][0]) & 0x2000}
+
+
+def defense_component(chains: Sequence[Chain]) -> str:
+    active = defense_active(chains)
+    return "front" if not active.intersection({9, 10}) else ("full" if len(active) == 11 else "coverage")
+
+
+def defense_signature(body: bytes, play_index: int) -> str:
+    """Versioned donor shape includes header, active slots and every opcode."""
+    flags, raw = play_chains(body, play_index)
+    if (flags >> 6) & 7 != 1:
+        raise ValueError("Donor is not defense")
+    return 'defense/v1:' + f'{flags:08x}:' + ','.join(
+        f'{int(bool(d & 0x10000))}-' + '.'.join(f'{n[0]:02x}' for n in ns) for d, ns in raw)
+
+
+def defense_pairs(book: Nfl2k5Playbook, body: bytes, formation_index: int) -> list[tuple[int, int]]:
+    """Retail split-call union (coverage overrides overlapping front slots)."""
+    ftype = formation_record(body, formation_index).type_code
+    entries = [(p.index, decoded_chains(body, p.index)) for p in book.plays_for_formation(formation_index)
+               if p.family_id == 1 and (p.flags_or_id & 63) in (ftype, 14)]
+    fronts = [(p, defense_active(c)) for p, c in entries if defense_component(c) in ("front", "full")]
+    covers = [(p, defense_active(c)) for p, c in entries if defense_component(c) == "coverage"]
+    return [(f, c) for f, fa in fronts for c, ca in covers if len(fa | ca) == 11]
+
+
+def effective_defense(front: Sequence[Chain], coverage: Sequence[Chain]) -> list[Chain]:
+    active = defense_active(coverage)
+    return [[(op, list(v)) for op, v in (coverage[s] if s in active else front[s])] for s in range(11)]
+
+
+def defense_counts(chains: Sequence[Chain]) -> dict:
+    rush = []
+    deep = []
+    for s in sorted(defense_active(chains)):
+        action = next(((op, v) for op, v in chains[s] if op in (0x0B, 0x0D, 0x0E)), None)
+        if action and action[0] == 0x0B:
+            rush.append(s)
+        if action and action[0] == 0x0D and action[1][1] >= 15 * YD - .001:
+            deep.append(s)
+    return dict(rushers=rush, deep=deep, active=sorted(defense_active(chains)))
+
+
+def defense_donors(book: Nfl2k5Playbook, body: bytes, formation_index: int) -> tuple[int, int]:
+    pairs = defense_pairs(book, body, formation_index)
+    if not pairs:
+        raise ValueError("This formation has no compatible front and partial coverage")
+    # Favor a four-rusher front and a simple seven-player zone coverage.
+    def rank(pair):
+        front, cover = (decoded_chains(body, p) for p in pair)
+        count = defense_counts(effective_defense(front, cover))
+        return (abs(len(defense_active(front)) - 4),
+                abs(len(defense_active(cover)) - 7),
+                -sum(any(op == 0x0D for op, _ in c) for c in cover),
+                abs(len(count['rushers']) - 4), pair)
+    return min(pairs, key=rank)
+
+
+def defense_slot_donor(book: Nfl2k5Playbook, body: bytes, formation_index: int,
+                       slot: int, opcode: int, *, shallow: bool = False) -> tuple[int, Chain]:
+    """Same formation/slot donor. No receiver or teammate is silently retargeted."""
+    ftype = formation_record(body, formation_index).type_code
+    candidates = []
+    # Menu first, then same-type book entries: all retain the same assignment slot.
+    menu = {p.index for p in book.plays_for_formation(formation_index)}
+    for p in book.plays:
+        if p.family_id != 1 or (p.flags_or_id & 63) not in (ftype, 14):
+            continue
+        chain = decoded_chains(body, p.index)[slot]
+        if [op for op, _ in chain] != [0x1B, opcode]:
+            continue
+        if shallow and not 0 <= chain[1][1][1] < 15 * YD:
+            continue
+        candidates.append((p.index not in menu, p.index, chain))
+    if not candidates:
+        raise ValueError(f"No legal same-slot donor for slot {slot} and action {opcode:#04x}")
+    _, index, chain = min(candidates, key=lambda x: x[:2])
+    return index, chain
+
+
+def spy_fallback(book: Nfl2k5Playbook, body: bytes, formation_index: int,
+                 slot: int, depth_yd: float = 4) -> tuple[int, Chain]:
+    personnel = defense_personnel(book, body, formation_index)
+    if (personnel['codes'][slot] & 31) != MLB:
+        raise ValueError("Spy fallback requires an MLB personnel slot with a legal shallow-zone donor")
+    if not math.isfinite(depth_yd) or not 3 <= depth_yd <= 5:
+        raise ValueError("Spy fallback depth must be 3 through 5 yards")
+    donor, chain = defense_slot_donor(book, body, formation_index, slot, 0x0D, shallow=True)
+    chain[1][1][:2] = [0, depth_yd * YD]
+    return donor, chain
+
+
+@dataclass
+class DefenseDesign:
+    formation_index: int
+    front_index: int
+    donor_play_index: int
+    play_flags: int
+    chains: list[Chain]
+    front_chains: list[Chain]
+    spy_slots: set[int] = field(default_factory=set)
+    preset: str = "Cover 3"
+
+    def effective(self) -> list[Chain]:
+        return effective_defense(self.front_chains, self.chains)
+
+    def set_assignment(self, book, body, slot, choice, *, x_yd=0, depth_yd=8,
+                       lane=8, delay=0, target=0, cushion_yd=3) -> None:
+        if not 0 <= slot < 11:
+            raise ValueError("Choose a defender slot 0 through 10")
+        if choice == "inherited":
+            self.chains[slot] = decoded_chains(body, self.donor_play_index)[slot]
+        elif choice == "spy":
+            _, self.chains[slot] = spy_fallback(book, body, self.formation_index, slot, depth_yd)
+        elif choice in ("zone", "man", "rush"):
+            op = {"zone": 0x0D, "man": 0x0E, "rush": 0x0B}[choice]
+            _, chain = defense_slot_donor(book, body, self.formation_index, slot, op)
+            if choice == "zone":
+                chain[1][1][:2] = [x_yd * YD, depth_yd * YD]
+            elif choice == "man":
+                chain[1][1][1] = cushion_yd * YD
+                chain[1][1][3] = target
+            else:
+                chain[1][1][1:] = [lane, delay]
+            codec.validate_defense_operands(chain)
+            self.chains[slot] = chain
+        elif choice == "exchange":
+            # Copy the complete donor script, including both ends of each exchange.
+            candidates = [p for p in book.plays_for_formation(self.formation_index)
+                          if p.family_id == 1 and any(
+                              op == 0x0E and v[7] for c in decoded_chains(body, p.index) for op, v in c)]
+            if not candidates:
+                raise ValueError("This formation has no retail paired exchange script")
+            p = candidates[0]
+            self.donor_play_index, self.play_flags = p.index, p.flags_or_id
+            self.chains = decoded_chains(body, p.index)
+            self.spy_slots.clear()
+        else:
+            raise ValueError(f"Unknown defensive assignment {choice}")
+        self.spy_slots.discard(slot)
+        if choice == "spy":
+            self.spy_slots.add(slot)
+
+
+def make_defense_design(book: Nfl2k5Playbook, body: bytes, formation_index: int,
+                        preset: str = "Cover 3") -> DefenseDesign:
+    """Compose spot coverages from retail start/man/zone/rush donors.
+
+    Ordinary calls retain a seven-slot coverage mask. A dropped lineman is an
+    explicit coverage override. Target-specific front/personnel is never recoded.
+    """
+    if preset not in DEFENSE_PRESETS:
+        raise ValueError(f"Unknown defense preset {preset}")
+    info = defense_personnel(book, body, formation_index)
+    front, donor = defense_donors(book, body, formation_index)
+    flags = book.plays[donor].flags_or_id
+    design = DefenseDesign(formation_index, front, donor, flags,
+                           decoded_chains(body, donor), decoded_chains(body, front), preset=preset)
+    if preset == "Stock Exchange":
+        design.set_assignment(book, body, 5, "exchange")
+        return design
+    # Stock base formations use slots 7/8 as safeties and 9/10 as outside CBs.
+    # Refuse a foreign shape rather than inferring from a title or category number.
+    kinds = [c & 31 for c in info['codes']]
+    if not all(kinds[s] in (FS, SS) for s in (7, 8)) or any(kinds[s] != CB for s in (9, 10)):
+        raise ValueError("Coverage presets need the retail two-safety / outside-corner slot shape")
+    front_slots = defense_active(design.front_chains)
+    if front_slots not in (set(range(4)), {1, 2, 3}):
+        raise ValueError("Coverage presets need a retail base front")
+    active = set(range(11)) - front_slots
+    rush = set()
+    deep: dict[int, tuple[float, float, int]] = {}
+    man = preset in ("Cover 0", "Cover 1", "Cover 2 Man", "Double A Show EXPERIMENTAL")
+    if preset == "Cover 0":
+        rush = {4, 6}
+    elif preset == "Cover 1":
+        rush = {4}
+        deep = {7: (0, 18, 8)}
+    elif preset in ("Cover 2 Man", "Cover 2 Hard", "Cover 2 Soft", "Tampa 2 Drop EXPERIMENTAL", "Double A Show EXPERIMENTAL"):
+        deep = {7: (12, 18, 11), 8: (-12, 18, 11)}
+        if preset == "Tampa 2 Drop EXPERIMENTAL":
+            mlbs = [s for s in (4, 5, 6) if kinds[s] == MLB]
+            if not mlbs:
+                raise ValueError("Tampa drop needs an MLB donor; choose a formation with one")
+            deep[mlbs[0]] = (0, 18, 8)
+    elif preset == "Cover 4 Quarters (spot)":
+        deep = {7: (6, 18, 8), 8: (-7, 18, 8), 9: (15, 18, 9), 10: (-15, 18, 10)}
+    elif preset == "Cover 6 Split Field":
+        deep = {7: (12, 18, 11), 8: (-6, 18, 10), 10: (-18, 18, 10)}
+    else:
+        deep = {7: (0, 18, 8), 9: (16, 18, 9), 10: (-16, 18, 10)}
+        if "Replacement" in preset:
+            # Drop a true DL, never the odd-front OLB in slot 0.
+            dropped = next(s for s in (2, 3, 1) if kinds[s] in (DE, DT))
+            active.add(dropped)
+            rush = {4, 6} if preset.startswith("Fire") else {5}
+    if 0 not in front_slots:
+        rush.add(0)  # odd-front coverage owns the fourth rusher
+    for s in sorted(active):
+        if s in rush:
+            try:
+                _, chain = defense_slot_donor(book, body, formation_index, s, 0x0B)
+            except ValueError:
+                # Tutorial books lack LB rush recipes. A retail start plus the
+                # established mode-2 lane action has no slot references.
+                start = design.chains[s][0]
+                chain = [(0x1B, list(start[1]) if start[0] == 0x1B else [0, 0, 0, 0, 17, 0]),
+                         (0x0B, [2, 9 if s == 4 else 7, 0])]
+        elif man and s not in deep:
+            try:
+                _, chain = defense_slot_donor(book, body, formation_index, s, 0x0E)
+            except ValueError:
+                # The small practice book only supplies man actions for its five
+                # receivers. Reuse its LB action with automatic target selection.
+                _, chain = defense_slot_donor(book, body, formation_index, 5, 0x0E)
+                chain[1][1][3] = 0
+        else:
+            # DL dropping recipes are scarce in some books. Use its own Start
+            # and the MLB's zone action, leaving selectors/flags conservative.
+            try:
+                _, chain = defense_slot_donor(book, body, formation_index, s, 0x0D)
+            except ValueError:
+                if s >= 4:
+                    raise
+                start = design.front_chains[s][0]
+                _, zone = defense_slot_donor(book, body, formation_index, 5, 0x0D)
+                chain = [(start[0], list(start[1])), (0x0D, list(zone[1][1]))]
+            if s in deep:
+                x, y, mode = deep[s]
+            else:
+                x = {4: 10, 5: 0, 6: -10, 8: -12, 9: 16, 10: -16}.get(s, 0)
+                y = 0 if preset == "Cover 2 Hard" and s in (9, 10) else 8
+                mode = 5 if x >= 12 else (6 if x <= -12 else 4)
+            chain[1][1][:2] = [x * YD, y * YD]
+            chain[1][1][4:] = [mode, 0, 0]
+        if preset == "Double A Show EXPERIMENTAL" and s in [slot for slot in (4, 5, 6) if kinds[slot] in (MLB, OLB)][:2]:
+            # Neutral retail Start leaves the experimental formation's A-gap
+            # positions in control, instead of the man donor's four-yard walkout.
+            chain[0] = (0x1B, [0, 0, 0, 0, 17, 0])
+        codec.validate_defense_operands(chain)
+        design.chains[s] = chain
+    # Copy inactive placeholders from the front's complementary coverage donor.
+    for s in set(range(11)) - active:
+        if s in defense_active(design.chains):
+            # A retail inactive slot is two Start nodes; no action-ending bit.
+            design.chains[s] = [(0x01, [1, 3, 0, 0, 0, 0]), (0x01, [0, 0, 0, .1, 0, 0])]
+    desired = defense_counts(design.effective())
+    choices = [p for p in book.plays_for_formation(formation_index)
+               if p.family_id == 1 and (p.flags_or_id & 63) == (flags & 63)
+               and defense_component(decoded_chains(body, p.index)) == "coverage"]
+    def shape_score(p):
+        effective = effective_defense(design.front_chains, decoded_chains(body, p.index))
+        count = defense_counts(effective)
+        has_man = any(op == 0x0E for c in effective for op, _ in c)
+        return (has_man != man, abs(len(count['deep']) - len(desired['deep'])),
+                abs(len(count['rushers']) - len(desired['rushers'])), p.index)
+    selected = min(choices, key=shape_score)
+    design.donor_play_index, design.play_flags = selected.index, selected.flags_or_id
+    flags, donor = selected.flags_or_id, selected.index
+    error = validate_chains(flags, play_chains(body, donor)[1], design.chains)
+    if error:
+        raise ValueError(error)
+    return design
+
+
+def double_a_positions(book: Nfl2k5Playbook, body: bytes, formation_index: int) -> list[tuple[int, int]]:
+    info = defense_personnel(book, body, formation_index)
+    lbs = [s for s, c in enumerate(info['codes']) if c & 31 in (MLB, OLB) and s >= 4]
+    if len(lbs) < 2:
+        raise ValueError("Double A needs two linebackers in this formation")
+    positions = [(s.x[0], s.z[0]) for s in formation_record(body, formation_index).slots]
+    for slot, x in zip(lbs[:2], (-76, 76)):
+        positions[slot] = (x, 91)
+    return positions
+
+
+def defense_menu_audit(book: Nfl2k5Playbook, body: bytes, formation_indices: Sequence[int]) -> list[dict]:
+    """Prove category reachability and every permitted component union locally."""
+    rows = []
+    for fi in sorted(set(formation_indices)):
+        info = defense_personnel(book, body, fi)
+        pairs = defense_pairs(book, body, fi)
+        if not pairs:
+            raise ValueError(f"{book.formations[fi].name} has no complete front / coverage pair")
+        if not info['membership_mask'] & (1 << info['category_index']):
+            raise ValueError("Formation is absent from its personnel category menu")
+        rows.append(dict(formation_index=fi, formation=book.formations[fi].name, **info,
+                         pairs=[dict(front=f, coverage=c,
+                                     **defense_counts(effective_defense(decoded_chains(body, f), decoded_chains(body, c))))
+                                for f, c in pairs]))
+    return rows
+
+
+def mirror_defense_design(design: DefenseDesign, order: Sequence[int] = tuple(range(11))) -> DefenseDesign:
+    """Retail operand mirroring plus explicit friendly-slot/intent permutation.
+
+    Opponent selectors remain in their own namespace; the retail resolver handles
+    mirrored geometric receiver order. A second mirror restores encoded values.
+    """
+    from .nfl2k5_playbook_pack import permute_assignments
+    def mirrored(chains):
+        moved = permute_assignments(chains, order)
+        return [[(op, codec.decode_operands(op, int.from_bytes(codec.Node(op, 0, list(v)).to_bytes()[4:], 'little'), mirror=True))
+                 for op, v in c] for c in moved]
+    return DefenseDesign(design.formation_index, design.front_index, design.donor_play_index,
+                         design.play_flags, mirrored(design.chains), mirrored(design.front_chains),
+                         {order.index(s) for s in design.spy_slots}, design.preset)
+
+
+# SHA-256 only, no retail payload. Census: all 37 retail books, formation type,
+# CPU category code, eleven native personnel bytes, package permutation, FF eligibles.
+# This permits offense-only pack composition while rejecting recoded defense.
+RETAIL_DEFENSE_PERSONNEL_FINGERPRINTS = {
+    "02a771ad32a1afac7c9050e20c12f98a0a4c74ba2dfe7bc6a66d0dbac5a1e924": frozenset(('DET', 'GEN')),
+    "0bc3e5179d02d8a4ea2ee7adb97d874bb343c779fd1b607d48c07646db368508": frozenset(('PRACTICE',)),
+    "0cd4da4e22244a819514bcde19cdf4de178433f5d73d657c9f097068fd1586ee": frozenset(('BUF', 'CLE', 'DAL', 'GB', 'HOU', 'MIN', 'PHI', 'PRACTICE', 'SEA', 'WAS', 'reference')),
+    "11a35d836b2691507c424700a8f3cac8a15b4770fb52d9024985f6608bbeb1a6": frozenset(('CLE',)),
+    "14395506ea0072275a34d4476a86e3e239c3242e76431f99077ce8a0bb510c7e": frozenset(('PHI', 'STL', 'WCO')),
+    "1787c0e34a38a5b7a91ea56a0bd910891ff31c4507db87227c9af692eca66df7": frozenset(('PRACTICE',)),
+    "18cab6988ab58c87620c96ad2320e9f2b0042e9503e20b92ad1531fefb40e9a4": frozenset(('OAK',)),
+    "198a38de19d28b9579ad6e1577ae3d296614498b0fb91448032381ef023abf6b": frozenset(('ATL',)),
+    "1d327b424ddc2e986f51249377a0290f9867cf962f1c9b3a8d46ed061a8281e5": frozenset(('SF',)),
+    "1ee299c10bfb150f99656f0576b790c390586d8cf8222e12abdc5f835d775113": frozenset(('GB', 'NO')),
+    "1fd179dd292e3a0a752307e1c7bc7cf259a4e43eaf183c279ca0d66893d27cb6": frozenset(('MIA',)),
+    "20efe725b7732a1833b76aceefb00ac3ce2ffc4a2fc3bb5efc34141b0f5560a0": frozenset(('BAL', 'BUF', 'HOU', 'NE', 'TEN')),
+    "2db312b7cbd3495eed22ca14237d4de82c028ff762965ad67cf6d338e4a8fc99": frozenset(('CLE', 'DAL', 'NE', 'NYG', 'NYJ', 'SD')),
+    "339775aa71f723c6a55a32c8db542af64a0dc9f6d9a90aff864d030946befe4d": frozenset(('CAR', 'CHI', 'SEA', 'TEN', 'WAS', 'reference')),
+    "3974e8585ed263116bc40bd062b54ef9df5932e6840a39494875818c2f16fc06": frozenset(('BUF',)),
+    "3acf79f71d2f0ee14ccf2d02a4a6bf9344c5f834b38231951af7d6d1aa4e883d": frozenset(('JAX',)),
+    "3de980412e4a23816fb1f3133812bc05dc93c65958dc049558baf1a89a487f9c": frozenset(('reference',)),
+    "3f9b40e181ded619bf603fb22b20a7ded4a2568e76a83fa52c32f8490ab3c76c": frozenset(('BAL',)),
+    "3fc391a34b47f9d0af40e97dbb087f72b4ce4c274cadcb9f49c7591c4ef1d91f": frozenset(('ARZ', 'ATL', 'CAR', 'CHI', 'CIN', 'DEN', 'DET', 'GEN', 'IND', 'JAX', 'KC', 'MIA', 'NE', 'NO', 'NYG', 'NYJ', 'PIT', 'SF', 'STL', 'TB', 'TEN', 'WCO', 'reference')),
+    "4559bf3bbe8c0354c3e1f3bbb235ec3e40aacb1e7c3e3a20eb5abbfaaf669406": frozenset(('BAL', 'BUF', 'DEN', 'MIN', 'SF')),
+    "50453ad8755ba190589f427c2d119a9e9ac5c1959e2c5cf5de3c393afcb5a767": frozenset(('ARZ', 'ATL', 'BUF', 'CAR', 'CHI', 'CIN', 'DAL', 'DEN', 'DET', 'GB', 'GEN', 'IND', 'JAX', 'KC', 'MIN', 'NO', 'NYG', 'NYJ', 'OAK', 'SEA', 'SF', 'STL', 'TB', 'TEN', 'WAS', 'WCO', 'reference')),
+    "566c9309e0f9295c67ad20fdc5f5ceeb8a98810a4614a9963f25980aaf68f4f1": frozenset(('CIN', 'DEN')),
+    "56d5a70b41db70891ddc3cfcca31495a00ba1439d3fffb1b9fc8b68e515b3a63": frozenset(('DAL', 'MIN', 'NYJ', 'OAK', 'SD')),
+    "6d6443ca5e379e47f4a23fc912ed55aac4c310fdd579ea36e1be7727c5cd92a2": frozenset(('MIA',)),
+    "7a8dadc4eae536b87fe7fd44156fe3b04fd2a937fcbb65477fc46d535fdeb85f": frozenset(('MIA',)),
+    "83ef6bdfb9fe6ce9d46c412b7d21209499638ba88a1fed0fa9cda2e00ea78960": frozenset(('TEN',)),
+    "8b6381375c541e5abeac8f6579a39c5158882bc37db92f03fad2aa79ca9b841b": frozenset(('PHI',)),
+    "9218ed1ddcb2f950993ed8260fcf9187272b03caf29b9a244e8d389a2750acdc": frozenset(('Editor',)),
+    "96caee5fff95ec551a3789789d7da06da5872e2cd952df07abeb22d5207f390d": frozenset(('IND',)),
+    "9724afb2b6ec2c15aba7a89400d65b2f7367a98f02fd1a7074e48b26ff3d446b": frozenset(('PIT', 'SD')),
+    "99867c7a9296db5f68ff79bc4151a1598e20feae29d49ba0796b3e39f0ec2be5": frozenset(('HOU',)),
+    "a107326229e36bf59268aedb8670336755f2f809a1151e821a79eb5ce2ec6a81": frozenset(('CLE', 'IND', 'KC', 'MIN', 'NO', 'NYG', 'NYJ', 'PHI', 'SEA', 'STL', 'TB', 'WAS', 'WCO', 'reference')),
+    "a2f503043c1cf39e5372008605242e5fb930ed289a6363f23e50a1f83d9332cd": frozenset(('OAK',)),
+    "a976cc180918b9f6701ed7765a67ea3fe0b86db373d3f151513d0e19b6e48415": frozenset(('NE',)),
+    "b29098cfd95e9a3392ac66d340538dfccfbb88514406bd820c2bc41e8ecc0b8d": frozenset(('BAL', 'SD')),
+    "b43021ebbdc05fbae67eb6c4197b76306cb0af7cf3570e2e1092192bd87f0811": frozenset(('PIT', 'TB')),
+    "b452b816321d579ac8da8a8bea1fdf151527daae7ac5b1f7c83d1f86d2188eb0": frozenset(('ARZ', 'ATL', 'BUF', 'CAR', 'CHI', 'DAL', 'DET', 'GB', 'GEN', 'JAX', 'MIA', 'OAK')),
+    "b9c31f4f155f44ff28a4f18fe5d0cfad4aa751b118742e5fe51ebcee5d3aead2": frozenset(('PRACTICE',)),
+    "bc94e904f6b9a4de4a0e14ebe8562d1fb670c388451f0f9dbdb260c6b58284a2": frozenset(('SD',)),
+    "cb7bf16c1f9ede5072620541feee8dac20d8d1a848d76f46785f3eaa0c49ee16": frozenset(('CIN',)),
+    "d5e339236bae85a694fbf09c06baef5bd12f4a2db0446313ce32f4af426348bc": frozenset(('ARZ', 'ATL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 'DET', 'Editor', 'GB', 'GEN', 'IND', 'JAX', 'KC', 'MIA', 'MIN', 'NO', 'NYG', 'NYJ', 'OAK', 'PHI', 'PRACTICE', 'SEA', 'SF', 'STL', 'TB', 'TEN', 'WAS', 'WCO', 'reference')),
+    "df08c569baa760e0472d496983e49bcba14c45abdbf9356435c519a39c09665b": frozenset(('BAL', 'GEN', 'HOU', 'NE', 'PIT', 'WCO', 'reference')),
+    "e3e4e5d32d30e8a6e52adc74ce788f3955319f62fbf3023286c0f8f5bd264fb9": frozenset(('HOU', 'PIT')),
+    "e89a3f0c8c473346f9f41a26b0b8b1aa9ae647050d86ffda55ff383d5f363787": frozenset(('ARZ',)),
+    "f5ad6fe40ff2596523124cb7bc6930c8ad1699d455432ddea8276b0d4c2c9a71": frozenset(('Editor',)),
+    "f69b414fff1ee0516dfdc156d842ec278e0e67cf2411d14b50c920e081a0ee5c": frozenset(('GEN', 'WCO')),
+    "fb66f60e58933a973e49b7077a7ac42fdd0223d56b85b8e7019309a9262fe51d": frozenset(('KC',)),
+    "fd2430de039ebc2bba65b57434e0b9c35054a9b7c9547dbb4da7341d5fb4be48": frozenset(('ARZ', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 'DET', 'GB', 'HOU', 'IND', 'JAX', 'KC', 'MIN', 'NE', 'NO', 'NYG', 'NYJ', 'OAK', 'PHI', 'PIT', 'SD', 'SEA', 'SF', 'STL', 'TB', 'TEN', 'WAS')),
+}
