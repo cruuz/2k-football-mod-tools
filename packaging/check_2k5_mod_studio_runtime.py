@@ -1809,9 +1809,14 @@ def main() -> int:
             and not option.formations and packs.check_pack(option).ok, "bundled option pack contract changed")
     music = modules["mod_editor.core.nfl2k5_music_build"]
     music._banks_module()
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PyQt5.QtWidgets import QApplication
+    qt_app = QApplication.instance() or QApplication([])
     panel = modules["mod_editor.gui.music_panel_qt"].MusicPanel()
     require(panel.service is None and not panel.operation_in_progress, "empty Music panel is not idle")
     panel.close()
+    panel.deleteLater()
+    qt_app.processEvents()
     runtime = modules["mod_editor.core.nfl2k5_scorebug_runtime"]
     require(bool(runtime.REQUESTS) and runtime.status(b"bad") == "foreign", "runtime scorebug gate changed")
     art = modules["mod_editor.core.nfl2k5_scorebug_resources"]
@@ -1883,11 +1888,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 76,
+    require(len(registry.capabilities) == 80,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 38,
+    require(len(product_catalog.capabilities) == 42,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2290,8 +2295,8 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=76 sections=12 nfl2k5_capabilities=38 "
-        "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
+        "registry=80 sections=12 nfl2k5_capabilities=42 "
+        "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
         "text_read_only=3272 roster_numbers=6522 "

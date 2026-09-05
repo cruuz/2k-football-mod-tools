@@ -110,6 +110,11 @@ class Recorder:
         if owner in ("nfl2k5_xbe_space", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata"):
             from . import nfl2k5_xbe_space as space
             for reservation in space.reservations(after):
+                # The preset and the dormant-owner probe can assign different
+                # offsets within the same owned pages. Keep their byte writes
+                # covered here; publish named children from the final layout.
+                if reservation["basis"].startswith("named "):
+                    continue
                 self.reserve(int(reservation["start"], 0), reservation["size"],
                              reservation["owner"], reservation["basis"])
         if not runs:
@@ -181,6 +186,10 @@ class Recorder:
             self.reserve(getattr(uniform, name), 4, "nfl2k5_uniform_choice", "runtime dword: " + name)
         self.reserve(playoffs.LAST7_VA, 4, "nfl2k5_playoffs14", "runtime saved seed dword: LAST7_VA")
         self.reserve(logo._fields(final)[0], logo.LOGO_SIZE, "nfl2k5_boot_logo", "complete relocated loader bitmap")
+        from . import nfl2k5_xbe_space as space
+        for reservation in space.reservations(final):
+            self.reserve(int(reservation["start"], 0), reservation["size"],
+                         reservation["owner"], reservation["basis"])
         # Preserve the whole shared host, including alignment padding between owners.
         self.reserve(0xB4A60, 16, "nfl2k5_penalties", "shared host allocation including stub padding")
         self.reserve(0xB4A70, 32, "nfl2k5_prospect_names", "shared host allocation")

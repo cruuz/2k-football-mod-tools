@@ -246,7 +246,7 @@ class ModStudioPackagingTests(unittest.TestCase):
                 release_gate.audit_release(root, allowlist)
 
     def test_reviewed_metadata_files_match_exact_contract_and_have_no_payload(self) -> None:
-        self.assertEqual(len(release_gate.REVIEWED_METADATA), 22)
+        self.assertEqual(len(release_gate.REVIEWED_METADATA), 23)
         self.assertEqual(
             sum(path.startswith("reports/assets/")
                 for path in release_gate.REVIEWED_METADATA),
@@ -451,7 +451,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=76 sections=12 nfl2k5_capabilities=38", runtime_probe)
+        self.assertIn("registry=80 sections=12 nfl2k5_capabilities=42", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)
@@ -463,7 +463,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn(
             '"apf2k8.scorebug_presentation.digital_font"', runtime_probe
         )
-        self.assertIn("reports=16 reviewed_metadata=22", runtime_probe)
+        self.assertIn("reports=16 reviewed_metadata=23", runtime_probe)
         self.assertIn("Nfl2k5StadiumCacheCoordinator", runtime_probe)
         self.assertIn("build_scorebug_texture_import", runtime_probe)
 

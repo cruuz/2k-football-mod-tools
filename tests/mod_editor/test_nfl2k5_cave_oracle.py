@@ -389,7 +389,7 @@ class CaveOracleTests(unittest.TestCase):
         for start in (0xA69970, 0xA69974, 0xA69978, 0xA6997C, 0x10A10, 0x10CD0):
             assert oracle.assess(start, 1, kind="data")["verdict"] == "reserved"
         assert manifest.document["section_digests_verified"]
-        assert "scorebug" in manifest.document["image_steps"]
+        assert "scorebug_runtime" in manifest.document["image_steps"]
         assert "season_2026" in manifest.document["image_steps"]
 
     def test_legacy_projection_reproduces_gate_targets_and_negative_caves(self):

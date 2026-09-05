@@ -278,7 +278,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as relocated
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
-        self.assertEqual(space.allocation_evidence(self.retail, manifest)["encoded_references"], [])
+        self.assertEqual(space.allocation_evidence(self.retail, manifest, allocated=self.patched)["encoded_references"], [])
         self.assertEqual(relocated.status(self.patched), "applied")
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         self.assertEqual(runtime.status(self.patched), "applied")
