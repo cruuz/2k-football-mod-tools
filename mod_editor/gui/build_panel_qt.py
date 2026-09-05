@@ -408,6 +408,14 @@ class BuildPanel(QWidget):
         self.franchise_practice_check = self._option(f, "franchise_practice", "Free Practice inside Franchise",
                                                      "A Practice row on the Coach's Desk: your first team against itself, no stats or injuries.",
                                                      badge=NOT_TESTED)
+        self.practice_squad_check = self._option(f, "practice_squad", "Practice squads (53 + 12 reserves)",
+                                                 "Each team keeps up to 12 cut players as reserves in Franchise; no reserve screen yet.",
+                                                 badge=NOT_TESTED,
+                                                 details="The CPU's 65-to-53 season cut keeps up to twelve players per team as reserves that stay off "
+                                                         "the active roster, the depth chart and the team rating, cost no cap space, keep their contract "
+                                                         "terms, and survive saves, team imports and the season rollover. There is no in-game reserve "
+                                                         "screen or automatic promotion yet; a full 53 + 12 roster must release players to draft. Only use "
+                                                         "saves with reserves on a disc that carries this patch. Experimental.")
         self.seven_on_seven_check = self._option(f, "seven_on_seven", "7-on-7 practice",
                                                  "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.",
                                                  badge=NOT_TESTED, needs_image=True)
@@ -686,7 +694,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -708,7 +716,8 @@ class BuildPanel(QWidget):
             ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"),
             ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"),
-            ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"), ("player_tags", "star tags"),
+            ("practice_squad", "practice squads"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
+            ("player_tags", "star tags"),
             ("roster_edits", "roster edits"), ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"),
             ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
             ("camera", "camera"), ("widescreen", "widescreen"), ("scorebug", "ESPN scorebug"))
@@ -774,6 +783,7 @@ class BuildPanel(QWidget):
         gate(self.uniform_choice_check, "uniform_choice")
         gate(self.kick_laces_check, "kick_laces")
         gate(self.franchise_practice_check, "franchise_practice")
+        gate(self.practice_squad_check, "practice_squad")
         gate(self.seven_on_seven_check, "seven_on_seven", needs_image=True)
         gate(self.player_star_check, "player_star")
         gate(self.edge_check, "edge_rename")
@@ -820,27 +830,7 @@ class BuildPanel(QWidget):
         """Tick the preset's toggles (only those the source can still take); returns what was skipped."""
 
         values = mod_build.PRESETS[name]
-        boxes = {
-            "throw": self.throw_check, "catch_slider": self.catch_check, "accel_ramp": self.accel_check,
-            "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check,
-            "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "scheme_labels": self.scheme_labels_check,
-            "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
-            "position_pools": self.position_pools_check,
-            "depth_roles": self.depth_roles_check,
-            "depth_chart_rows": self.depth_chart_rows_check,
-            "kickoff_alignment": self.kickoff_alignment_check,
-            "dynamic_kickoff": self.dynamic_kickoff_check,
-            "season_2026": self.season_check, "widescreen": self.widescreen_check, "overtime": self.overtime_check,
-            "team_column": self.team_column_check, "team_history": self.team_history_check, "career_stats": self.career_stats_check,
-            "prospect_names": self.prospect_names_check,
-            "seven_on_seven": self.seven_on_seven_check, "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
-            "penalties": self.penalties_check,
-            "uniform_choice": self.uniform_choice_check,
-            "kick_laces": self.kick_laces_check,
-            "franchise_practice": self.franchise_practice_check,
-            "player_star": self.player_star_check,
-            "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
-        }
+        boxes = self._boxes()
         applied, skipped = [], []
         if "max_deep_yards" in values:
             self.ceiling_spin.setValue(int(round(float(values["max_deep_yards"]))))
@@ -896,6 +886,7 @@ class BuildPanel(QWidget):
             "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
             "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check,
             "kick_laces": self.kick_laces_check, "franchise_practice": self.franchise_practice_check,
+            "practice_squad": self.practice_squad_check,
             "player_star": self.player_star_check, "roster_edits": self.roster_edits_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
@@ -949,6 +940,7 @@ class BuildPanel(QWidget):
             uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
             kick_laces=self.kick_laces_check.isChecked(),
             franchise_practice=self.franchise_practice_check.isChecked(),
+            practice_squad=self.practice_squad_check.isChecked(),
             player_star=self.player_star_check.isChecked(), player_tags=list(self.star_players),
             team_history=((self.team_history_field.text().strip() or "retail") if self.team_history_check.isChecked() else ""),
             career_stats=(self.career_stats_field.text().strip() if self.career_stats_check.isChecked() else ""),
@@ -970,8 +962,8 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
-                    or p.kickoff_alignment or p.dynamic_kickoff or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary
-                    or p.playbook_packs)
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.prospect_names or p.player_star or p.player_tags or p.roster_edits
+                    or p.commentary or p.playbook_packs)
 
     def selected_labels(self) -> list[str]:
         """The short names of every ticked change, in page order."""

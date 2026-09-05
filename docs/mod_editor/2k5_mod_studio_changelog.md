@@ -2,6 +2,33 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **Practice squads in franchise: 53 active plus up to 12 reserves (Experimental).** Built by GPT-6 Astra: when the
+  CPU's season gate cuts a 65-man roster to 53, each team now keeps up to twelve of the players it cut as team-owned
+  reserves, in the same 65-slot roster table the game already carries through the off-season (three spare bytes mark
+  the list; every pointer keeps the game's own relative encoding, so saves, team exports and the season rollover carry
+  them). Reserves stay off the active roster, the depth chart and the team rating, cost no cap space and keep their
+  contract terms; a full 53 + 12 roster has to release players to draft. Promote and demote run as transactions in the
+  executable (eight small caves, none on a live function; the first draft shared a cave with the dynamic kickoff and was
+  moved). The requested sixteen-player tail was disproved: those bytes hold live cap and statistics data. No in-game
+  reserve screen yet and no automatic promotion; only use reserve-bearing saves on a disc that carries the patch.
+  Unwitnessed in game.
+- **Franchise tab on ★ Rosters (Beta 60).** A franchise save now gets a second page beside the roster — the
+  part of Flying Finn's editor the studio did not have — and both pages write ONE re-signed copy, roster edits
+  first. **Overview**: the season year (the game's `2004 + field` rule shown beside it), stage and week
+  read-only, the user-controlled teams as a checkable list, the salary cap in $M with the raw $1000-unit value,
+  and every team's salary against the cap. **Schedule**: the 22 × 17 grid week by week — away, home, date,
+  kick-off, played, score — with Finn's Edit Game (team pickers, date, time) and Swap Home/Away; a played cell
+  is refused with the reason unless you tick *Allow editing played games*; scores stay read-only because the
+  quarter-score side order is a hypothesis. **Coaches**: one record per team — names and the three info lines
+  (pooled strings, read-only), seasons, W / L / T, winning seasons, Super Bowls, playoff and Super Bowl W / L,
+  photo and body ids, the run % playcalling split, the 23 ratings and the ten Back Field tendencies on the
+  player cards' bars. **Injured Reserve**: the five slots per team, *Place on IR…* from the team's rostered
+  players (Finn's move byte for byte: pointer list compacted, count byte down one, player marked, slot filled)
+  and *Activate*, labelled unwitnessed; a free agent or a prospect is refused in Finn's words. **Checks**: the
+  layout map by PROVED / HYPOTHESIS / OPAQUE, what the page may edit, every franchise edit since load in plain
+  words and the byte ranges it touched. Undo / Redo per action, a dirty marker, and every write goes through
+  the core module's writers — no offset lives in the page. Reproduces Finn's IR save byte for byte through the
+  UI path; the year rule and the IR move are the witnessed parts, everything else is unwitnessed in game.
 - **SLOT, NICKEL CORNER and DIME CORNER rows on the depth chart, X / Z labels (Experimental).** The executable
   follow-up to the playbook roles, built by GPT-6 Astra: the depth-chart table is re-laid at thirteen rows per unit
   instead of eleven (the nine surviving stride multiplies and the row-count callback rewritten in place, the table

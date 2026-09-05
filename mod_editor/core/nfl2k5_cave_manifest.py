@@ -223,7 +223,13 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
             extra, _ = tt._apply_all(preset_xbe, None, catch_slider=False, seven_on_seven=True)
             build._write_xbe_bytes(target, extra)
             progress("Applying dormant seven-on-seven playbook to disposable image")
-            seven_book.apply(target)
+            try:
+                seven_book.apply(target)
+                book_note = "applied"
+            except Exception as exc:  # noqa: BLE001 - the book writer wants a retail practice book; the depth-roles
+                # pass (ADVANCED+) rewrites its personnel bytes first. The book carries no XBE bytes, so the
+                # reservation picture is complete without it; record the refusal instead of failing the manifest.
+                book_note = f"refused: {exc}"
             final = build._xbe_bytes(target)
             if final != extra:
                 raise OracleError("seven-on-seven book writer unexpectedly changed XBE bytes")
@@ -245,6 +251,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None) 
                 "model": "observed experimental disc build plus dormant seven-on-seven; exact diffs union declared capacity/runtime storage",
                 "preset": "softdrink_experimental", "preset_values": preset,
                 "extra_owners": ["nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book"],
+                "seven_on_seven_book": book_note,
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,
                 "preset_xbe_sha256": hashlib.sha256(preset_xbe).hexdigest(),
                 "stack_xbe_sha256": hashlib.sha256(final).hexdigest(),

@@ -1737,6 +1737,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_kick_laces",
         "mod_editor.core.nfl2k5_dynamic_kickoff",
         "mod_editor.core.nfl2k5_depth_chart_rows",
+        "mod_editor.core.nfl2k5_practice_squad",
+        "mod_editor.core.nfl2k5_practice_squad_runtime",
         "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_career_stats",
         "mod_editor.core.nfl2k5_save_rost",
@@ -1750,6 +1752,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_roster_records",
         "mod_editor.gui.models_panel_qt",
         "mod_editor.gui.roster_editor_panel_qt",
+        "mod_editor.gui.franchise_panel_qt",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
     )

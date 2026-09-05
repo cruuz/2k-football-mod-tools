@@ -606,6 +606,13 @@ class FranchiseSave:
         _require(count <= rr.TEAM_SLOTS, f"team {team} declares {count} players")
         return count, [self.rel(base + 4 * slot) for slot in range(rr.TEAM_SLOTS)]
 
+    def team_player_indices(self, team: int) -> list[int]:
+        """Primary-pool indices of the players on ``team``'s pointer list, in depth order (the IR picker)."""
+
+        _require(0 <= team < self.league_team_count, f"team {team} is not an NFL team in this arena")
+        count, slots = self._team_slots(team)
+        return [self.player_index(offset) for offset in slots[:count] if offset is not None]
+
     def _write_team_slot(self, team: int, slot: int, target: int | None) -> None:
         field = self.team_offset(team) + 4 * slot
         struct.pack_into("<i", self.buffer, field, 0 if target is None else target - field + 1)

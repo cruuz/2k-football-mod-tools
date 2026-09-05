@@ -166,7 +166,11 @@ class SyntheticTests(unittest.TestCase):
         victim_offset = slots[0]
         victim = save.player_index(victim_offset)
         self.assertEqual(save.injured_reserve(), [])
+        self.assertEqual(save.team_player_indices(team), [save.player_index(offset) for offset in slots[:count]])
         entry = save.place_on_injured_reserve(team, victim)
+        self.assertEqual(save.team_player_indices(team), [save.player_index(offset) for offset in slots[1:count]])
+        with self.assertRaises(fs.FranchiseSaveError):
+            save.team_player_indices(31)
         self.assertEqual((entry.team, entry.slot, entry.player_index), (team, 0, victim))
         self.assertEqual(entry.name, save.player_name(victim))
         new_count, new_slots = save._team_slots(team)

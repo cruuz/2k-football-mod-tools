@@ -4,10 +4,18 @@
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
+- **Practice squads, 53 + 12 (Experimental).** Team-owned reserves kept by the season cut, surviving saves and the
+  rollover; no reserve screen yet. Astra-built, gate-proved, unwitnessed.
 - **SLOT / NICKEL / DIME depth-chart rows, X / Z labels (Experimental).** Thirteen-row depth chart on top of
   the one-pool positions and the playbook roles. Astra Tier 2, gate-proved, unwitnessed.
 - **Franchise saves decoded** (season block + front office: cap, IR, schedule grid, coaches, seeds, user control);
   read-only franchise card in ★ Rosters; xemu HDD save extractor. Finn's IR move reproduced byte for byte.
+- **Franchise tab on ★ Rosters.** Overview (year with the `2004 + field` rule, stage / week, user-controlled
+  teams, salary cap in $M + raw, team salaries vs the cap), Schedule (22 × 17 grid, Edit Game, Swap Home/Away,
+  played cells refused unless allowed), Coaches (record numbers, 23 ratings, 10 tendencies on the player-card
+  bars), Injured Reserve (Finn's place move byte for byte; activate labelled unwitnessed), Checks (PROVED /
+  HYPOTHESIS / OPAQUE map + the edits in words). Roster and franchise edits land in one re-signed copy, roster
+  first. Unwitnessed in game except the year rule and the IR move; cap edit is the first in-game check.
 - **Dynamic kickoff behaviour (Experimental).** Hold until first contact, landing zone, CPU aim and CPU touchbacks
   as an executable patch on top of the beta-58 spots and line-up. Astra-built, gate-proved, unwitnessed.
 - **X / Z / SLOT and nickel / dime roles in every playbook (Advanced).** The third receiver and the third /

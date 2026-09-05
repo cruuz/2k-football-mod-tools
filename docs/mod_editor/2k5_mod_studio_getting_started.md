@@ -1154,6 +1154,29 @@ back by name and play-by-play index, so a community backup restores here.
 In a build, the roster-edits step runs **last** of the roster passes, so the star tags, the real team
 history, the modern prospect names and the one-pool positions all survive it. Unwitnessed in game.
 
+**Franchise saves (Beta 60).** Open a franchise save and the page grows a second tab, **Franchise**,
+beside **Roster** — the half of Finn's editor the studio lacked, in our words. **Overview** has the
+season year (the game stores `year − 2004`; the rule is printed next to the box), the stage and week
+read-only, a checkable list of the user-controlled teams, the salary cap in millions with the raw
+$1000-unit value the game keeps, and every team's salary against the cap. **Schedule** shows the
+22 × 17 grid week by week (away, home, date, kick-off, played, score); pick a game, change the teams,
+date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
+refused with the reason unless you tick **Allow editing played games**; its score stays read-only
+because which side the quarter bytes belong to is still a hypothesis. **Coaches** lists every coach
+record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls, playoff and Super
+Bowl records, the photo and body ids, the run % playcalling split, then the 23 ratings and the ten
+Back Field tendencies on the same bars as the player cards; names and the three info lines are pooled
+strings and stay read-only. **Injured Reserve** shows each team's five slots; **Place on IR…** picks
+one of the team's rostered players and does exactly Finn's move (his own save is reproduced byte for
+byte), and **Activate** is the inverse, labelled unwitnessed because nobody has watched the game accept
+it; a free agent or a draft prospect is refused in Finn's words. **Checks** prints the file map by
+PROVED / HYPOTHESIS / OPAQUE, what the page may edit, and every franchise edit since load in plain words
+with the byte ranges it touched. Each tab undoes per action and the header counts the unwritten edits.
+**Write a copy…** writes one re-signed copy carrying the roster edits first and the franchise edits on
+top, so the two never fight over the arena. In game, check the salary cap edit first (the cap projection
+is the game's own arithmetic), then a moved user team, then a schedule change; everything but the year
+rule and the IR move is unwitnessed.
+
 ## ★ Models — every model out to Blender and back
 
 1. Load your XISO, open **★ Models** (below the categories) and press **List the models**.

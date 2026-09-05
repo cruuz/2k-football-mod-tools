@@ -96,7 +96,7 @@ class PatchWriteTests(unittest.TestCase):
         cls.table = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
                                           "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
-        cls.patched, cls.receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True)
+        cls.patched, cls.receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True, practice_squad=True)
         # Pools and Tier 2 run after the shared XBE pass in mod_build.
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
