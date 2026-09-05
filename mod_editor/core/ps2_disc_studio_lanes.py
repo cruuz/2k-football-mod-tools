@@ -266,6 +266,10 @@ class Lane:
     def receipt_summary(self, receipt: dict) -> str:
         return "written"
 
+    def recipe_for_receipt(self, recipe: dict) -> dict:
+        """The recipe as a receipt may carry it: the user's values and selectors only."""
+        return recipe
+
     # -- helpers shared by the subclasses -----------------------------
 
     def _refuse(self, message: str, stage: str = "") -> LaneRefusal:
@@ -1313,6 +1317,14 @@ class StadiumLane(Lane):
                        f"stadium verifier: {report.get('verdict', '?')} · {decoded.get('changed_bytes', 0):,} decoded bytes "
                        f"changed in {decoded.get('changed_ranges', 0)} ranges, every one inside a declared lane · "
                        f"wrapper identical: {report.get('chunk', {}).get('wrapper_identical')}", report)
+
+    def recipe_for_receipt(self, recipe):
+        # The positions are the disc's own coordinates plus the user's offset;
+        # a receipt records what was moved and by how many vertices, not where.
+        return {"schema": recipe.get("schema"), "catalog": recipe.get("catalog"),
+                "edits": [{"target_id": edit.get("target_id"),
+                           "vertex_count": len(edit.get("positions") or [])}
+                          for edit in recipe.get("edits", [])]}
 
     def receipt_summary(self, receipt):
         compression = receipt.get("compression", {})
