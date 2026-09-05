@@ -56,7 +56,6 @@
     "*spu_adpcm*"
   ],
   "page_notes": {
-    "uniforms": "The disc's uniform textures are GS-format TEX0 with their own CLUTs; they can be read and swapped in PCSX2 through a replacement pack, and that lane is being written. Writing art back into the disc is a later rung.",
     "field_art": "Field and create-team art live in the same GS texture packs as the uniforms, so this page arrives with the uniform art lane, not before it.",
     "presentation": "The scorebug and the broadcast overlays are drawn by the executable, not by a data file this toolchain can find; nothing on this disc has been mapped to them.",
     "crib": "ESPN NFL 2K5's Crib assets have not been located on the PlayStation 2 disc yet.",
