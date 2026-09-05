@@ -1709,6 +1709,7 @@ def main() -> int:
         "nfl2k5_ps2_replacement_pack_verify",
         "nfl2k5_ps2_replacement_pack_audit",
         "nfl2k5_ps2_replacement_pack_kit",
+        "ea_terf_inspect",
         "nfl2k5_ps2_texture_map",
         "xxh3",
         "nfl2k5_ps2_text_patch",
@@ -1810,6 +1811,7 @@ def main() -> int:
         "mod_editor.games.scaffold",
         "mod_editor.games._formats.ps2_disc",
         "mod_editor.games._formats.ps2_elf",
+        "mod_editor.games._formats.ea_terf",
         "mod_editor.games.nfl2k5_ps2",
         "mod_editor.games.nfl2k5_ps2.code_patches",
     )
