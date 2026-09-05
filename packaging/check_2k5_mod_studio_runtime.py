@@ -1828,6 +1828,7 @@ def main() -> int:
         "mod_editor.games.madden09_ps2.text_lane",
         "mod_editor.games.madden09_ps2.code_patches",
         "mod_editor.games._formats.ea_tdb",
+        "mod_editor.games.madden09_ps2.identity_lane",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1876,7 +1877,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 85,
+    require(len(registry.capabilities) == 86,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")

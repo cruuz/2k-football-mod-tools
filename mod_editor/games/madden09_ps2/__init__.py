@@ -28,6 +28,10 @@ What is on the contract today, and what each rung rests on:
 * **text** (:mod:`.text_lane`, ``read-only-mapped``) -- the disc's ``TEXT``
   banks, counted and measured; the strings are read from the user's own image
   on demand and never stored.
+* **team identity** (:mod:`.identity_lane`) -- the 32 NFL teams' names,
+  abbreviations and two colours, written into every copy of the ``TEAM`` row
+  the disc's own databases agree on: the ``DB_TEAMS.DAT`` member and the
+  matching row of the bare ``STRMDATA.DB``.
 * **executable patches** (:mod:`.code_patches`, ``unknown``) -- the whole
   pnach pipeline, proved on a synthetic ELF, with **no translation mapped**.
   The studio draws no editor for it; its page states the classification and
@@ -63,6 +67,7 @@ from mod_editor.games.contract import (
 from . import containers
 from .code_patches import Madden09CodePatchLane
 from .disc_identity import Madden09DiscIdentifier
+from .identity_lane import IdentityLane
 from .inventory_lane import InventoryLane
 from .team_data import TeamDataLane
 from .text_lane import TextLane
@@ -138,6 +143,7 @@ _CANDIDATES = (
     UniformDiscArtWriteLane(),
     TeamDataLane(),
     TextLane(),
+    IdentityLane(),
     Madden09CodePatchLane(IDENTITY),
 )
 LANES = tuple(lane for lane in _CANDIDATES if _registered(lane.capability_id))

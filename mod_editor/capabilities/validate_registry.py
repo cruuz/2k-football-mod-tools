@@ -59,7 +59,7 @@ SURFACE_GAMES["saves"] = _ESTABLISHED_GAMES
 SURFACE_GAMES["uniforms"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 # PS2 Phase 2 on-disc writers (each surface carries an nfl2k5ps2.* row):
 SURFACE_GAMES["audio"] = _ESTABLISHED_GAMES
-SURFACE_GAMES["colors"] = _ESTABLISHED_GAMES
+SURFACE_GAMES["colors"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["menus"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["players_rosters"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["scripts_config"] = _ESTABLISHED_GAMES

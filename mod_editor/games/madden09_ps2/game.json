@@ -14,8 +14,6 @@
   "pins": "pins.json",
   "product_modules": [
     "ps2_iso9660",
-    "ps2_iso9660_writer",
-    "ps2_iso9660_verify",
     "mod_editor.games._formats.ea_terf",
     "mod_editor.games._formats.ea_tdb",
     "mod_editor.games.madden09_ps2",
@@ -27,7 +25,10 @@
     "mod_editor.games.madden09_ps2.team_data",
     "mod_editor.games.madden09_ps2.text_lane",
     "mod_editor.games.madden09_ps2.code_patches",
-    "madden09_ps2_texture_identities"
+    "ps2_iso9660_writer",
+    "ps2_iso9660_verify",
+    "madden09_ps2_texture_identities",
+    "mod_editor.games.madden09_ps2.identity_lane"
   ],
   "tool_modules": [],
   "allowlist_patterns": [
@@ -38,7 +39,6 @@
     "mod_editor/games/_formats/ea_tdb.py"
   ],
   "page_notes": {
-    "identity": "Team names and colours live in the DB_TEAMS.DAT databases, which the Names, Numbers & Faces page already lists table by table; a separate identity editor waits on a database writer, and there is none until a rebuilt container has been booted.",
     "field_art": "FIELDART.DAT holds 642 SMF geometry members and 73 MMAP textures: the textures read through the same decoder as the uniforms, the geometry is not decoded anywhere here, and neither has an editor yet.",
     "stadiums": "STADIUMS.DAT holds 651 SMF geometry members and 434 MMAP textures, so the textures are readable and the geometry is not decoded; both are listed by the All Textures page and neither has an editor.",
     "presentation": "The scorebug and the broadcast overlays are drawn by the executable rather than by a data file, and nothing on this disc has been mapped to them.",

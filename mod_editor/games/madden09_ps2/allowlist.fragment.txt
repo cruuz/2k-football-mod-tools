@@ -30,3 +30,6 @@ tools/validate_madden09_ps2_uniform_art.bat
 tools/validate_madden09_ps2_uniform_art.sh
 tools/validate_madden09_ps2_uniform_disc_art.bat
 tools/validate_madden09_ps2_uniform_disc_art.sh
+mod_editor/games/madden09_ps2/identity_lane.py
+tools/validate_madden09_ps2_identity.bat
+tools/validate_madden09_ps2_identity.sh

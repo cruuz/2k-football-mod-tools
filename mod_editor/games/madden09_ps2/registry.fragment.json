@@ -87,6 +87,90 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.games.madden09_ps2.identity_lane --source <SLUS-21770.iso> --recipe <edits.json> --destination <new.iso> [--out <catalogue.json>] [--report <receipt.json>] [--dry-run]",
+        "module": "mod_editor/games/madden09_ps2/identity_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MADDEN09_PS2_IDENTITY.md",
+        "docs/product/EA_TERF_FORMAT.md",
+        "docs/product/evidence/madden09_ps2/identity_blast_radius.json"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaces on the Text & Team Identity page of the PS2 Madden 09 Studio as an editor, one target per NFL team -- 32 on the retail image. Each offers the four names the record carries, the two colours as colour pickers, and the city id; the four fields whose meaning is only a hypothesis are read and deliberately not drawn. Budgets are on screen (a name's is its field's bytes less the terminator: 16, 17, 6 and 16 characters), refusals are inline, a dry run resolves every edit before any image exists, the build writes a NEW image, and the lane's independent verifier gives the verdict. Bytes proven; nothing has been seen in-game -- no rebuilt Madden 09 disc has been booted in an emulator, so no claim is made about what the game draws on a team-select screen."
+      },
+      "id": "madden09ps2.identity.team_records",
+      "input_constraints": [
+        "One target is a team, not a record: a rename is written into every copy of the TEAM row the disc's own databases agree on -- the DB_TEAMS.DAT member and the row of the bare STRMDATA.DB whose TGID matches -- in one recipe, so the two cannot be left disagreeing. STRMDATA.DB's rows are not in TGID order, so the second copy is resolved by reading the field and never by arithmetic.",
+        "A copy that does not already agree is left alone and the receipt says which field made it differ; a guess dressed as consistency is not written. On the retail disc all 32 teams' two copies agree, so 64 rows are written for 32 edited teams.",
+        "TEMPLATE.DAT member 1 carries a third copy of all 32 teams, byte-identical, and is NOT written: TEMPLATE.DAT is named in the FE.QKL preload cache, which carries a copy of at least some of what it names. The list is read off the user's own image rather than a table written down here, and DB_TEAMS.DAT and STRMDATA.DB are named in neither cache.",
+        "Eleven fields, named: TDNA (17 bytes), TLNA (18), TSNA (7) and TMNC (17) as latin-1 text NUL-padded to the field, one byte short of the width so the terminator survives; TBCR/TBCG/TBCB and TB2R/TB2G/TB2B as two colours of three one-byte channels, with a colour word's alpha dropped and said to be dropped; CYID as an 8-bit index. TCDO, TCRP, TGPT and TCTX were read and are not offered -- the owner's research records them as a hypothesis, and a hypothesis does not belong in an editor.",
+        "Fixed allocation, twice over: a TDB field owns a fixed run of bits in a fixed-stride record, so a record edit cannot change a length, and the ISO writer replaces a file only inside the extent it already owns. All four CRC-32/MPEG-2 checksum sites are recomputed on every write and re-derived from the destination's own bytes by the verifier, which imports none of the writer and fails on a byte changed outside the declared ranges, on a record changed behind the receipt's back, on a stale checksum, and on a name that does not pad out its own field."
+      ],
+      "portme": [
+        "Real-disc trial: DB_TEAMS.DAT member 0's team -- its abbreviation and its primary colour -- wrote both copies (the member's TEAM record 0 and STRMDATA.DB's TEAM record 106, matched by TGID and not by position), declared 7,746,536 bytes in four ranges, and the verifier passed with 8 values read back, 2 databases re-parsed, 470 checksum slots correct and 1,649,593,368 unchanged bytes compared across 197 entries of two 1,657,339,904-byte images.",
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the renamed abbreviation on the Team Select screen and the recoloured helmet and jersey in its preview.",
+        "Not offered yet: the team's stadium and city NAME, which live in STAD and CITY tables in TEMPLATE.DAT only -- a preload-cached container -- so a full relocation spans two files and two schemas this row does not attempt; the 202 historical squads and the free-agent pool in DB_TEAMS.DAT members 32..234; and the team names spelled as prose in the story banks, which the Menus & UI page's text lane edits string by string."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not; nothing has been on a screen. The real-disc trial changed one team's abbreviation and primary colour and wrote both of the disc's agreeing copies -- DB_TEAMS.DAT member 0's TEAM record 0 and STRMDATA.DB's TEAM record 106 -- declaring 7,746,536 bytes in four ranges (each file's whole extent and its directory record's 8-byte length field). The independent verifier passed: every edited value read back from the destination, all 470 checksum slots of the two edited databases correct, every byte of each database that differed inside a declared field span or a checksum slot, every written name padded out to its own field, and ps2_iso9660_verify comparing 197 entries and 1,649,593,368 unchanged bytes of the two 1,657,339,904-byte images. Two adversarial flips on that same destination were both refused: one byte outside every declared range, and one inside a declared ISO range. No PCSX2 run. A runtime witness would be a boot showing the renamed abbreviation on Team Select and the recoloured jersey preview.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "DB_TEAMS.DAT; the second copy in STRMDATA.DB is resolved by the lane and never named by a user",
+            "name": "container",
+            "required": false
+          },
+          {
+            "allowed": "0..31, the 32 NFL teams; members 32..234 are historical squads and the free-agent pool and are not offered",
+            "name": "member",
+            "required": false
+          },
+          {
+            "allowed": "0; every DB_TEAMS.DAT member carries exactly one TEAM row",
+            "name": "record",
+            "required": false
+          },
+          {
+            "allowed": "TDNA, TLNA, TSNA, TMNC, primary, secondary, CYID",
+            "name": "field",
+            "required": false
+          }
+        ],
+        "notes": "A team target is spelled team:<container>#<member>:<record> and carries the values it offers, read from the user's own image. The GUI must not offer TCDO, TCRP, TGPT, TCTX, TGID, CGID, DGID, LGID, TORD or DISN, a record to be added or removed, or an edit to a file a preload cache names; each is refused by the lane with the reason."
+      },
+      "source_container": {
+        "format": "EA TDB v8 TEAM table: 65 fields, a 116-byte bit-packed little-endian record, identical in all 235 DB_TEAMS.DAT members and in the bare STRMDATA.DB",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "32 NFL teams; 3 copies of each team's identity on the disc, of which 2 are written; TEAM is 65 fields / 116 bytes in 235 DB_TEAMS.DAT members and in STRMDATA.DB's 234 rows; 543 of the disc's 14,748 TEXT members also spell a team's name and are not touched",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Edit the 32 NFL teams' identity on a user's SLUS-21770 disc -- nickname, city, abbreviation, short name, city id and the two team colours -- in every copy the disc's own databases agree on. Measured on the retail disc: each team's identity is written three times, in its /DATA/DB_TEAMS.DAT member's TEAM row, in the /DATA/STRMDATA.DB row whose TGID matches (its rows are not in TGID order, so the row is found by reading the field), and in TEMPLATE.DAT member 1, which is not written because FE.QKL carries a copy of it. One recipe writes the two writable copies together, so a rename cannot leave them disagreeing. TEAM is 65 fields / a 116-byte record everywhere it appears here; a record edit changes no length, so the member, the container, the bare database and the image all keep their exact size, and the four CRC-32/MPEG-2 checksums EA stores are recomputed on every write. Nothing has been booted.",
+      "surface": "colors",
+      "title": "Madden 09 (PS2) team names and colours",
+      "validation_command": "bash tools/validate_madden09_ps2_identity.sh"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.games.madden09_ps2.text_lane --source <SLUS-21770.iso> --recipe <edits.json> --destination <new.iso> [--out <catalogue.json>] [--report <receipt.json>] [--dry-run] [--preview CONTAINER:INDEX:OFFSET]",
         "module": "mod_editor/games/madden09_ps2/text_lane.py",
         "operation": "write"
@@ -519,6 +603,7 @@
   },
   "schema": "vc_mod_capability_registry_fragment/v1",
   "surfaces": [
+    "colors",
     "gameplay_tuning_sliders",
     "menus",
     "players_rosters",
