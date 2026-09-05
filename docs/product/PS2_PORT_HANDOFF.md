@@ -115,6 +115,326 @@ the disc inventory follows it exactly (**File → PS2 Disc Inventory…**,
 surface the save editor has had since Beta 53. Revisit only if PS2 grows enough
 rows to deserve its own sidebar, which is a product decision, not a 5b task.
 
+## Capability triage (WP3, 2026-09-04)
+
+**This section decides what the PS2 lane is allowed to claim, row by row.** It
+is the prerequisite of 5a's successor rows — it fixes the `SURFACE_GAMES`
+staging that every future PS2 registry commit hard-codes — and it is the
+evidence base for Phase 2. Nothing here changes the Xbox lane.
+
+### Method and evidence base
+
+Every disc fact below is **measured**, not assumed, from the two committed
+inventories:
+
+- `docs/research/inventories/inventory_ps2.tsv.gz` — 550,746 rows
+- `docs/research/inventories/inventory_xbox.tsv.gz` — 569,990 rows
+
+(columns `pack entry_index name name_key fourcc size width height format
+extra`). ⚠ **Both live under gitignored `docs/research/` (`.gitignore:27`), so
+no registry row may cite them as `evidence`.** The committed stand-in is the
+name-join `.csv` and the evidence JSON that landed with commit 4
+(`reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json`); a Phase-2 row
+that needs a count from the table below must re-derive it there. Code facts are
+from reading the named files on this branch. Where a conclusion is an inference
+rather than a reading, it says so inline.
+
+**Recount of the name join, for confidence:** 25,846 distinct PS2 `name_key`s,
+24,285 Xbox, **24,187 shared, 98 Xbox-only, 1,659 PS2-only** — reproduces the
+"Confirmed decisions" figures exactly (a raw `sort -u` yields 24,188/25,847/
+24,286 because both files carry one empty key). Of the 98 Xbox-only keys, **19
+are filesystem entries, not resources** (`/DEFAULT.XBE`, `/UPDATE.XBE`,
+`/VC_53450030/0..F`), leaving 79 real Xbox-only resources: 52 TXTR (all
+`BUMP_*`, `DETAIL_NORMAL`, `SPECULARMAP`, `DIFFUSEMAP`, `CROWDBASE`,
+`AN48..57`, `HN48..57` — Xbox pixel-shader maps with no GS analogue), 15 `MANU`
+(`XB-1..XB-15`, the Xbox manual), 6 `AUDO` (crowd front/rear surround
+variants), 2 `MRKS`, and one each of `XDSP`, `LAYT`/`MRKS` `ONLINE_SIGN_IN`,
+`SCNE` `DETAIL_LAYER`, `SCNE_MATERIAL` `FOOTBALL_SHADER`, `SCNE_NODE`/
+`SCNE_SHAPE` `LOD6`. **Nothing a registry row edits is Xbox-only.**
+
+#### New measurement: cross-disc resource parity by fourcc
+
+This is the load-bearing new evidence and it was not previously in this
+document. For each fourcc, comparing container rows (`role=chunk`/`object`) by
+`(name_key, size)` and `(name_key, decoded size)`:
+
+| fourcc | PS2 | Xbox | same name multiset | same raw size | same decoded size |
+|---|---|---|---|---|---|
+| `PLAY` (playbooks) | 37 | 37 | yes | **37** | **37** |
+| `DRCT` (director graphs) | 5 | 5 | yes | **5** | **5** |
+| `ROST` (rosters) | 76 | 76 | yes | **76** | **76** |
+| `Unif` (uniform colour words) | 634 | 634 | yes | **634** | **634** |
+| `STRG` / `SITU` / `CRED` / `TRIV` (the proved text domain) | 2/1/1/1 | 2/1/1/1 | yes | **all** | **all** |
+| `NAME` | 635 | 635 | yes | 635 | 635 |
+| `LAYT` (menu layouts) | 85 | 86 | no (Xbox-only `ONLINE_SIGN_IN`) | 85 | 85 |
+| `SMCD` / `CWDS` / `MMCD` / `SHAP` / `Fldd` / `Cuts` / `Hilt` | 4559/4420/639/1251/477/198/97 | identical | yes | all | all |
+| `AUSB` (streaming-bank descriptors) | 17 | 17 | yes | **17** | **17** |
+| `AUDO` (standalone sounds) | 844 | 850 | no | **136** | **24** |
+| `SCNE` (`role=chunk`) | **4,139** | **4,616** | no | 312 | 2,402 |
+| `TSET` | 12,814 | 10,774 | no | 332 | 3,402 |
+| `TXTR` | 120,779 (120,772 `TXTR` + 7 `HITX`) | 140,766 | no | — | — |
+
+Read that table as the triage's spine. **Every non-pixel, non-audio gameplay
+container on the PS2 disc is byte-size-identical to its Xbox twin** — all 37
+playbooks, all 5 director graphs, all 76 rosters, all 634 uniform colour
+resources, the entire text domain. Only three families diverge, and they
+diverge for the obvious reason: textures and scenes are GS-format, and audio is
+a different ADPCM.
+
+⚠ **Identical size is not identical content.** It is very strong evidence of a
+shared record layout (same counts, same allocations, same little-endian
+wrapper), and it is what makes "port" a defensible verdict below — but it is an
+**inference**, and every Phase-2 row must confirm the layout against the real
+PS2 bytes before it claims anything past `read-only-mapped`.
+
+Two further measurements used below:
+
+- **Audio is codec-divergent, wrapper-identical.** AUDO wrapper header sizes
+  distribute identically (708/98/24/14 at `sys=`128/160/192/224 on PS2 vs
+  708/98/30/14 on Xbox), and `menu-back_01` occupies the same 3,344 bytes on
+  both discs — but carries 3,216 payload bytes on PS2 against 3,204 on Xbox.
+  Same slot, different codec.
+- **VC-LZ is shared.** 38,739 PS2 rows are `lz=1`, and the shipped
+  `tools/nfl2k5_ps2_disc_inventory.py:220-279` already implements a VC-LZ
+  prefix decoder plus a small encoder for its self-test. The compression layer
+  is not a Phase-2 unknown.
+
+### Route definitions
+
+- **(a) PCSX2 texture replacement** — the asset resolves to a TXTR / TSET / P8
+  target that PenguinScreen2 overlays at draw time.
+- **(b) memory-card save** — served by the shipped PS2 save editor
+  (`nfl2k5ps2.saves.roster_name_writer`, `tools/nfl2k5_ps2_save.py`).
+- **(c) on-disc write — Phase 2** — anything PCSX2 cannot overlay: SCNE
+  geometry, text/menu strings, playbook/formation data, `AUDO`/`AUSB` audio,
+  on-disc roster and uniform data.
+- **(d) not applicable** — no PS2 analogue. For executable rows the ground is
+  `docs/README_full.md:1979-1980`: mapping needs "the exact PS2 ELF and
+  controlled same-revision saves; **Xbox addresses are not PS2 offsets**." The
+  PS2 boot ELF is `SLUS_209.19` (MIPS R5900); the Xbox target is
+  `default.xbe` (x86). No address in any XBE-derived row transfers.
+
+`status` vocabulary: `shipped` · `M1` · `stage N` (the post-M1 texture-lane
+order in the next section) · `P2-port` · `P2-port (gated)` · `P2-research` ·
+`P2-blocked` · `n/a`.
+
+### The matrix — 32 `nfl2k5_xbox` rows + the 2 existing `nfl2k5_ps2` rows
+
+| id | surface | Xbox class | what it edits | route | status | reason |
+|---|---|---|---|---|---|---|
+| `nfl2k5.audio.audo_wav` | audio | extract-only | browse/export 850 AUDO as WAV, 17 AUSB descriptors, 53,571 IMA ranges | (c) | P2-blocked | PS2 has 844 AUDO + the same 17 AUSB descriptors at identical sizes, but only 136/844 AUDO share a raw size and 24 a decoded size. Even *export* needs a PS2 decoder, and there is none: `grep -rilE "spu.?adpcm|\bVAGp?\b|sony adpcm"` over `tools/ mod_editor/ src/ include/` returns **0 files**. |
+| `nfl2k5.audio.ausb_fixed_range_wav` | audio | offline-writer-proved | 53,570 fixed ranges in 16 external banks | (c) | P2-blocked | descriptors port for free (17/17 byte-size-identical; PS2 carries 17 non-video unstructured pack blobs to match). The codec does not: `mod_editor/core/nfl2k5_ausb_fixed_slots.py` hard-codes `IMA_INDEX_TABLE`, `IMA_STEP_TABLE`, `SAMPLE_RATE = 22_050`, `BLOCK_FRAMES = 64`, `CHANNEL_BLOCK_BYTES = 36` — Xbox IMA block geometry. |
+| `nfl2k5.audio.fixed_audo_wav` | audio | offline-writer-proved | 849 non-Menu-Back standalone AUDO slots | (c) | P2-blocked | same; `mod_editor/core/nfl2k5_audo_fixed_slots.py` encodes strict PCM16 to Xbox IMA. |
+| `nfl2k5.audio.menu_back_wav` | audio | offline-writer-proved | one 3,204-byte `menu-back_01` payload | (c) | P2-blocked | the PS2 twin exists (pack 0 / entry 3 / chunk 99, 3,344 bytes, 3,216 payload) — the single cleanest proof that the slot ports and the codec does not. |
+| `nfl2k5.catching_drops.behavior` | catching_drops | unsafe/deferred | ROST attributes + untraced XBE catch/drop code | (d) | n/a | deferred even on Xbox; the unsolved half is `default.xbe` code. |
+| `nfl2k5.colors.unif_words` | colors | offline-writer-proved | 2 packed colour words (facemask, HI_turtleneck) in each of 634 `Unif` | (c) | **P2-port** | all 634 `Unif` resources byte-size-identical on both discs. Not a texture, so PCSX2 cannot overlay it. Once the on-disc writer lands this is a same-allocation word poke — **the cheapest Phase-2 win in the registry, and the plan's Phase-2 table does not list it.** |
+| `nfl2k5.cpu_ai_draft.logic` | cpu_ai_draft | read-only-mapped | 17-float table at XBE VA `0x00589588`, owner `0x0036EE70..0x0036F095` | (d) | n/a | pure XBE address space. |
+| `nfl2k5.crib.assets` | crib_assets | offline-writer-proved | 498 Crib P8 TXTRs **+** 10 bounded meshes across 7 SCNEs | **(a) + (c)** | stage 6 / P2-research | `cribdata` is byte-identical in size (108,816) and id (`0xc61a9833`); 72 CRIB-named rows on each disc. The textures overlay; the 10 mesh edits are SCNE geometry and follow the models verdict. **The PS2 row must be scoped to textures and say so.** |
+| `nfl2k5.cross_title_model_conversion.to_apf` | cross_title_model_conversion | read-only-mapped | NFL LE SCNE/SHAP → APF BE SCNE/IFF/H7A | (d) | n/a | both endpoints are non-PS2 (Xbox NFL, Xbox 360 APF). |
+| `nfl2k5.franchise_restoration_cross_title.port` | franchise_restoration_cross_title | unsafe/deferred | cross-title executable/UI/ROST/schedule/playbook/save translation | (d) | n/a | deferred on Xbox; executable integration. |
+| `nfl2k5.gameplay_tuning_sliders.rating_view` | gameplay_tuning_sliders | read-only-mapped | 21 XBE slider globals, FATX `Settings1`/`Franchise1`, 2,547 ROST players, 204 UI bindings | **(d) + (b)** | n/a / shipped | the slider globals are XBE VAs and the observed values come from a FATX Xbox-HDD image; neither exists on PS2. The PS2 counterpart of the save half is the memory-card lane the shipped row already owns. |
+| `nfl2k5.logos.team_select_cards` | logos_cards | offline-writer-proved | 1,902 `unif_*`/`helm_*` raw fixed-slot P8 TXTR cards | **(a)** | stage 2 | `UNIF_*` = 637 distinct names on **both** discs, `HELM_*` = 634 on both. Standalone P8 TXTR, no TSET fan-out. |
+| `nfl2k5.menus.layouts` | menus | read-only-mapped | LAYO/LAYT corpus, XBE main-menu ownership, 7 fixed UTF-16LE label slots | **(c) + (d)** | P2-port (inspect only) | 85 of 86 LAYT resources exist on PS2 and every shared one is byte-size-identical → the layout *inventory* ports. The label slots and menu ownership are XBE-resident → no PS2 analogue. Menu *art* is textures and reaches PS2 through route (a) instead. |
+| `nfl2k5.mode_state_routing.state_graph` | mode_state_routing | read-only-mapped | XBE compiled state tables, transitions, constructors | (d) | n/a | pure XBE address space. |
+| `nfl2k5.models.scne_gltf` | models_shap_scne | offline-writer-proved | glTF export of 4,616 SCNE + same-topology vertex import | (c) | **P2-research** | PS2 has **4,139** SCNE chunks, not 4,616, and only 312 share a raw size. Table strides are decoded (`tools/nfl2k5_ps2_disc_inventory.py:127-131`: texture `0x38`, material `0x60` name `+0x58`, node `0x60`, shape `0x70`, marker `0x40` — reconfirmed here from consecutive `rec=` deltas in the inventory), but **no code anywhere reads a PS2 shape's vertex payload**: `walk_scne` (`:515-560`) reads counts, relative pointers and names only, and `grep -niE "\bVIF\b|\bGIF\b|vertex|FLOAT3"` over that tool returns nothing. |
+| `nfl2k5.models.scne_same_count_position` | models_shap_scne | offline-writer-proved | 75 catalog-pinned FLOAT3 targets, scene 2648, `vc_53450030/0` vol 9 | (c) | **P2-research** | `tools/nfl_stadium_catalog_position_patch.py` imports `nfl_outer`, `nfl_scne_inventory`, `nfl_txtr` and is bound to `reports/specs/nfl2k5_stadium_static_target_catalog.v1.json` — Xbox outer/chunk/scene ids in an Xbox volume-9 layout. PS2's archive is `/VC_20919/0..4` as one 4,635,080,704-byte virtual range. The catalog must be re-derived and the FLOAT3 lane re-proved. |
+| `nfl2k5.models.scne_same_footprint_geometry` | models_shap_scne | runtime-proved | 4 FLOAT3 + 4 native QUADS ids, `s42nd.iff`, witnessed in xemu | (c) | **P2-research** | as above, plus the runtime witness is an xemu proof; a PS2 row would have to earn its own PenguinScreen2 witness. |
+| `nfl2k5.models.scne_upper_deck_source_subset` | models_shap_scne | offline-writer-proved | shrink `upper_deck` to 8 or 4 synchronized records | (c) | **P2-research** | as above; a changed-count edit needs strictly more format knowledge than the same-count one. |
+| `nfl2k5.players.disc_roster` | players_rosters | offline-writer-proved | outer-5 main ROST, 2,547 records: masked jersey, faceshield type, names | **(c)**, partly served by (b) | P2-port | **all 76 ROST resources byte-size-identical on both discs.** The shipped PS2 save writer already edits names in the save-side ROST arena (2,479 primary + 68 secondary), and the Xbox row's own caveat — "loaded saves may override the disc seed" — is precisely why the save route was the right first PS2 roster lane. The disc-side seed is the Phase-2 half. |
+| `nfl2k5.portraits_faces.live_textures` | portraits_faces | offline-writer-proved | 1,872 `f####`/`h####`/`n####` DXT1 TXTR | **(a)** | stage 3 | `^F[0-9]{4}$` = 624 distinct names on **both** discs (h/n likewise). PS2 stores them PSMT8 rather than DXT1, which is irrelevant: the replacement is an RGBA PNG. |
+| `nfl2k5.portraits_faces.roster_portraits` | portraits_faces | offline-writer-proved | 4,303 numeric PORTRAIT TXTR slots | **(a)** | stage 3 | `^[0-9]+$` = 4,313 distinct names on **both** discs. |
+| `nfl2k5.saves.dashboard` | saves | read-only-mapped | FATX `E:/UDATA/53450030` containers, 21-field `Settings1`/`Franchise1` | (d) | n/a | FATX Xbox-HDD containers with a platform signature. PS2 saves are `BASLUS-20919*` memory-card directories with a recomputable CRC-32 — different substrate, already covered by the shipped PS2 row. |
+| `nfl2k5ps2.saves.roster_name_writer` | saves | offline-writer-proved | `BASLUS-20919` memory-card ROST names, CRC-32 reseal | **(b)** | **shipped** | the reference (b) row. |
+| `nfl2k5.schedules_franchise.database` | schedules_franchise | read-only-mapped | XBE fantasy-draft owner, cap validator, Super Bowl selector, 720,044-byte `Franchise1` | (d) | n/a | its own summary states "all mutation and PCSX2/PS2 patching remain disabled". The XBE halves have no PS2 addresses; a PS2 franchise-save lane would be new research, not a port of this row. |
+| `nfl2k5.scorebug_presentation.inventory` | scorebug_presentation | offline-writer-proved | `score_buga` / `shield_espn` / `digital_font` P8 TXTR spans | **(a)** | stage 4 | all three names occur exactly once on the PS2 disc. |
+| `nfl2k5.scorebug_presentation.score_buga_runtime` | scorebug_presentation | runtime-proved | one 64×64 P8 TXTR, xemu-witnessed | **(a)** | stage 4 | route is clean; a PS2 row starts at `offline-writer-proved` and needs its own PenguinScreen2 witness before it may claim `runtime-proved`. |
+| `nfl2k5.scorebug_presentation.shield_espn_runtime` | scorebug_presentation | runtime-proved | one P8 TXTR, xemu-witnessed | **(a)** | stage 4 | same. |
+| `nfl2k5.scripts.director_playbook` | scripts_config | offline-writer-proved | 5 DRCT graphs + 37 fixed-capacity PLAY books: route copy, bounded formation/play creation, play design | (c) | **P2-port (gated)** | **all 37 PLAY and all 5 DRCT resources are byte-size-identical across the discs, raw and decoded.** But `mod_editor/core/nfl2k5_play_codec.py` says in its own docstring that it is "a port of the retail `default.xbe` consumers … addresses are Xbox virtual addresses" — opcode table `0x521078`, formation reader `FUN_0017fe60`, validators `FUN_001a9840`/`001a91a0`/`001a96b0`/`001a8fb0`. The *format* almost certainly ports; the *semantics* were recovered from the XBE. **Gate: re-run `validate_play` over the PS2 PLAY bodies and require the same 9,251-play acceptance.** That is an offline check, not new reverse engineering. |
+| `nfl2k5.stadiums.create_team_field_art` | stadiums_fields | offline-writer-proved | 126 `ct{logo}{weather}.iff` packages × 9 P8 textures | **(a)** | stage 5 | field art is drawn from textures PenguinScreen2 overlays. |
+| `nfl2k5.stadiums.geometry` | stadiums_fields | offline-writer-proved | pinned Stadium SCNE glTF round-trip, same-count position import | (c) | **P2-research** | identical to the models rows: strides known, vertex payload undecoded. |
+| `nfl2k5.textures.all_p8` | textures | offline-writer-proved | 11,395 standalone TXTR + 28,530 package-local P8 palettes + 4,080 A1R5G5B5 strips | **(a)** | M1 substrate | this is the lane the M1 manifest builds. PS2 side: 120,779 TXTR (118,531 PSMT8 + 2,248 PSMT4) and 12,814 TSETs. Caveat measured here: **2,702 of 11,504 shared TXTR names have no dimension in common** across platforms (consistent with the plan's 2,521 per-identity figure), so the exporter must resample to PS2 aspect. |
+| `nfl2k5ps2.textures.disc_inventory` | textures | read-only-mapped | read-only walk of `/VC_20919`, 550,746 rows, Xbox name join | **(a)** substrate | **shipped** | the reference (a) row and the source of every disc measurement above. |
+| `nfl2k5.uniforms.all_visual` | uniforms | offline-writer-proved | one composed XISO build: visual + text + roster + portrait + Crib + Stadium + equipment palettes + Menu Back + 849 AUDO slots | **(a) + (c)** | not portable as one row | this row is a *composition* over the others. Its PS2 successor **must not be a single row**: the texture classes belong to the M1 export lane; text, roster, Stadium and audio each wait for their own Phase-2 gate. Copying this row's scope onto PS2 would claim four unproved surfaces at once. |
+| `nfl2k5.uniforms.detroit_away_runtime` | uniforms | runtime-proved | `09A0.IFF` chunk 1 `jersey00` + `jersey00_mud`, VC-LZ TSET span | **(a)** | **M1** | `JERSEY*` = 35 distinct names on PS2 vs 34 on Xbox; uniform TSET children are identity-clean (0 of 7,274 cross team or era). This is the row M1's successor mirrors. |
+
+### Route counts
+
+Of the **32 `nfl2k5_xbox` rows**: **9 pure (a)** · **0 pure (b)** · **11 pure
+(c)** · **7 pure (d)** · **5 split** —
+
+| row | split | why |
+|---|---|---|
+| `nfl2k5.crib.assets` | a + c | 498 textures overlay; 10 bounded meshes do not |
+| `nfl2k5.uniforms.all_visual` | a + c | a composition over four other surfaces |
+| `nfl2k5.players.disc_roster` | c, partly served by b | the disc ROST is (c); the save-side ROST is already shipped as (b) |
+| `nfl2k5.menus.layouts` | c + d | 85 LAYT resources are (c); the XBE label slots and menu ownership are (d) |
+| `nfl2k5.gameplay_tuning_sliders.rating_view` | b + d | XBE globals and FATX saves are (d); the PS2 equivalent is the shipped memory-card lane |
+
+Plus the 2 existing `nfl2k5_ps2` rows: one route-(a) substrate
+(`textures.disc_inventory`) and one route-(b) writer
+(`saves.roster_name_writer`).
+
+Counting split rows on every route they touch, the 34 rows touch route (a) 12
+times, (b) 3, (c) 15, (d) 9 — 39 touches over 34 rows.
+
+### `SURFACE_GAMES` staging order
+
+`validate_registry.py:47-54` makes `SURFACE_GAMES` a **coverage requirement**,
+not a permission list: `validate_data` (`:296-301`) demands that every
+`(game, surface)` pair it names has at least one row. Widening a surface
+without landing the row in the same commit fails CI. Today: `saves` = `GAMES`,
+`textures` = `("nfl2k5_ps2", "nfl2k5_xbox")`, `crib_assets` =
+`("nfl2k5_xbox",)`, everything else `_LEGACY_GAMES`.
+
+**Texture-lane order (route (a)), after M1:**
+
+| # | surface | tuple after | evidence needed first | honest starting class |
+|---|---|---|---|---|
+| 1 | `uniforms` (M1) | `GAMES` | the manifest rows for uniform TSET children; export service + independent verifier | `offline-writer-proved`, → `runtime-proved` at WP7 |
+| 2 | `logos_cards` | `GAMES` | `UNIF_*`/`HELM_*` present in the shipped manifest with **both** hashes reproduced | `offline-writer-proved` |
+| 3 | `portraits_faces` | `GAMES` | the numeric-slot and `f/h/n####` families in the manifest, **plus a policy for the `p8:` fan-out** (2,099 of the 7,739 fanned-out PNGs are all-`p8`); ship only unique rows | `offline-writer-proved` |
+| 4 | `scorebug_presentation` | `GAMES` | three named targets in the manifest | `offline-writer-proved`; **best candidate for the second PenguinScreen2 witness** — smallest surface, and the Xbox side already has two `runtime-proved` rows to mirror |
+| 5 | `stadiums_fields` | `GAMES` | the 126 `ct*` packages in the manifest. **Scope the PS2 row to field art only** — the geometry row on this surface is (c) | `offline-writer-proved` |
+| 6 | `crib_assets` | `("nfl2k5_ps2", "nfl2k5_xbox")` | the `nfl2k5.crib.scene.c{chunk}.t{idx}` namespace join; 1,768 of the fan-out is all-scene, so this one needs the disambiguation work done | `offline-writer-proved` |
+
+`crib_assets` is the only widening that does **not** become `GAMES` — it has no
+APF row (verified: of the 21 surfaces, only `textures` and `crib_assets` lack
+one).
+
+**Phase-2 order (route (c)), which is *not* the plan's order:**
+
+| # | surface | tuple after | evidence needed first | honest starting class |
+|---|---|---|---|---|
+| 7 | `colors` | `GAMES` | ISO9660 writer landed; confirm the two `Unif` colour-word offsets against PS2 bytes | `read-only-mapped` on day one (inspect all 634 sets), `offline-writer-proved` after the poke is proved |
+| 8 | `players_rosters` | `GAMES` | confirm the disc ROST record layout against the PS2 disc copy (the save arena is a different container from the disc resource) | `read-only-mapped` first |
+| 9 | `scripts_config` | `GAMES` | **re-run `validate_play` over the PS2 PLAY bodies**; require full acceptance before any claim | `read-only-mapped` (the inspector) immediately after that check; `offline-writer-proved` once the route writer is bound to the PS2 pack |
+| 10 | `menus` | `GAMES` | nothing beyond the landed inventory — 85 LAYT already enumerated | `read-only-mapped` **only**; the writable half of the Xbox row is XBE-resident |
+| 11 | `models_shap_scne` (+ the geometry half of `stadiums_fields`) | `GAMES` | a PS2 shape vertex-payload decoder — does not exist | `read-only-mapped` is available today (4,139 scenes and their tables are already enumerated); `offline-writer-proved` needs the new decoder |
+| 12 | `audio` | `GAMES` | an SPU-ADPCM decoder, then an encoder | **do not stage until a decoder exists** — even `extract-only` is unreachable without one |
+
+**Never staged (7 surfaces stay `_LEGACY_GAMES`):** `catching_drops`,
+`cpu_ai_draft`, `cross_title_model_conversion`,
+`franchise_restoration_cross_title`, `gameplay_tuning_sliders`,
+`mode_state_routing`, `schedules_franchise`.
+
+That accounts for all 21 surfaces: 2 already carry PS2, 12 are stageable, 7
+never are.
+
+### Phase 2 reachability, checked against the tooling that exists today
+
+**Stadiums / geometry — verdict: NEW RESEARCH, not a port.**
+Ports cleanly: the SCNE *table* layer (strides in
+`tools/nfl2k5_ps2_disc_inventory.py:127-131`, reconfirmed from the inventory's
+`rec=` deltas), VC-LZ (`:220-279`), and the bounded-edit discipline itself.
+Xbox-specific: `tools/nfl_stadium_catalog_position_patch.py` assumes the
+`vc_53450030` volume-9 layout, `nfl_outer`'s XISO archive model, and a pinned
+75-target catalog of Xbox outer/chunk/scene ids; `nfl_stadium_group36_geometry_patch.py`
+additionally assumes an XDVDFS transport span and an xemu witness.
+**Specific unknown: the byte layout of a PS2 shape's vertex/position payload.**
+`walk_scne` reads counts, relative pointers and names and stops; nothing in the
+repo touches PS2 vertex data. The inventory also shows PS2 has 4,139 SCNE to
+Xbox's 4,616 with only 312 same-size, so the scene graph itself is
+re-authored per platform. **The plan's "port rather than research" framing for
+stadiums is the one claim my evidence contradicts** — see below.
+
+**Text / menus — verdict: PORT (the strongest Phase-2 candidate).**
+Ports: `mod_editor/core/nfl2k5_safe_text_banks.py` (STRG pool allocations, the
+four display-text pointers in each of 25 SITU records, CRED's two pointers per
+event, TRIV's seven) and `tools/string_table_inventory.py`, whose docstring
+already notes that "NFL 2K5 stores a little-endian body behind the common
+resource wrapper" — and PS2 is little-endian too, so the endian split that
+separates NFL from APF does not reappear here. All four container types exist
+on PS2 at identical sizes; `NAME` (635) and `LAYT` (85 of 86) likewise.
+Xbox-specific: the seven direct UTF-16LE label slots in `nfl2k5.menus.layouts`
+live in the XBE, and the archive plumbing (`nfl_outer`, `nfl_scene_probe`)
+assumes the XISO. **Specific unknown: that PS2 strings are also UTF-16LE with
+the same pointer encoding.** Identical allocation sizes make this very likely
+but it is an inference, not a reading — confirm before claiming
+`offline-writer-proved`. The plan's "716 disc banks ≠ one ROST arena" caution
+stands; the shipped surface is 20,074 editable of 23,346 (grep `20,074` in
+`docs/mod_editor/2k5_mod_studio_getting_started.md` — line numbers drift daily).
+
+**Playbooks / formations — verdict: PORT, gated on one offline check.**
+Ports: `nfl2k5_playbook_inspector.py`, `nfl2k5_playbook_route_writer.py`,
+`nfl2k5_formation_play_writer.py`, `nfl2k5_playbook_pack.py`,
+`nfl2k5_seven_on_seven_book.py`, `tools/nfl2k5_playbook_position_recode.py`,
+and the GUI (`play_designer_qt.py`, `create_play_wizard_qt.py`) — all of which
+address a **fixed `0x13390` PLAY body** that is byte-size-identical on the PS2
+disc across all 37 books, with all 5 DRCT graphs likewise.
+Xbox-specific: `mod_editor/core/nfl2k5_play_codec.py` in full. Its docstring is
+explicit — "a port of the retail `default.xbe` consumers … addresses are Xbox
+virtual addresses" — covering the 29-entry opcode table at `0x521078`, the
+formation reader `FUN_0017fe60`, and four validator functions.
+**Specific unknown: whether the PS2 build's opcode table and validator agree
+with the XBE-derived port.** The check is cheap and offline: run
+`validate_play` over the PS2 disc's own PLAY bodies and require the same
+acceptance the Xbox corpus gets. If it passes, this surface is a port. If it
+does not, it becomes MIPS reverse engineering of `SLUS_209.19` and should be
+re-ranked below text. **Do this check before promising the surface.**
+
+**Audio — verdict: BLOCKED.**
+Ports: the descriptor/ownership layer only — `nfl2k5_audio_catalog.py` and the
+slot-geometry half of `nfl2k5_ausb_fixed_slots.py` land for free, since all 17
+AUSB descriptors are byte-size-identical and the PS2 disc carries 17 non-video
+unstructured pack blobs to hold them.
+Xbox-specific: every codec constant, and the whole of `nfl2k5_audo_fixed_slots.py`'s
+PCM16 → Xbox IMA encoder.
+**Specific unknown: the PS2 payload codec itself.** The repo has no SPU-ADPCM
+or VAG code of any kind (0 files match), and the AUDO evidence says the payload
+differs even where the slot does not (`menu-back_01`: same 3,344-byte
+allocation, 3,216 vs 3,204 payload bytes; only 24 of 844 AUDO share a decoded
+size). pcsx2-VR's `SPU2` tree is a *reference decoder in another repo*, not an
+in-repo dependency. **Audio stays last, and stays unbudgeted.**
+
+### What the next registry commits need
+
+Every widening below is a `SURFACE_GAMES` edit in
+`mod_editor/capabilities/validate_registry.py` **landed in the same commit as
+the row it admits**, plus the standing 13-count-pin cycle (`71→72` for M1's
+row, and one further increment per PS2 row after it) and the
+`EXPECTED_COVERED_CAPABILITIES` / `EXPECTED_UNIQUE_VALIDATORS` pins.
+
+| surface | from | to | schema edit? |
+|---|---|---|---|
+| `uniforms` | `_LEGACY_GAMES` | `GAMES` | no |
+| `logos_cards` | `_LEGACY_GAMES` | `GAMES` | no |
+| `portraits_faces` | `_LEGACY_GAMES` | `GAMES` | no |
+| `scorebug_presentation` | `_LEGACY_GAMES` | `GAMES` | no |
+| `stadiums_fields` | `_LEGACY_GAMES` | `GAMES` | no |
+| `crib_assets` | `("nfl2k5_xbox",)` | `("nfl2k5_ps2", "nfl2k5_xbox")` | no |
+| `colors` · `players_rosters` · `scripts_config` · `menus` · `models_shap_scne` · `audio` | `_LEGACY_GAMES` | `GAMES` | no |
+
+**No schema edit is required for any of these.** All 21 surfaces and the
+`nfl2k5_ps2` game id are already in `mod_editor/capabilities/registry.schema.json`'s
+enums (verified). Only a genuinely *new* surface would need the schema, and
+that carries the 6-edit version-truth cost 5a paid.
+
+Prefer `SURFACE_GAMES["<surface>"] = GAMES` for all but `crib_assets`, matching
+the existing `saves` line, and keep the tuple alphabetically sorted as `GAMES`
+already is.
+
+### Where this contradicts the plan
+
+1. **Stadiums are not "a port".** `Phase 2 → Reachability` calls stadiums the
+   best-prepared surface at 4–6 d because "the PS2 SCNE layout fell out of the
+   inventory work for free". The *table* layout did; the **vertex payload did
+   not**, and that is the thing the writer edits. Re-rank stadiums below text
+   and playbooks, and re-budget it as research.
+2. **Text and playbooks are better-prepared than stadiums.** Both have their
+   entire container corpus byte-size-identical on PS2 (STRG/SITU/CRED/TRIV; 37
+   PLAY + 5 DRCT). Suggested revised order: **text → playbooks → colors →
+   rosters → stadiums → audio.**
+3. **`colors` and `players_rosters` are missing from the Phase-2 table
+   entirely**, and both are cheaper than everything currently listed:
+   634 identical `Unif` resources and 76 identical `ROST` resources.
+4. **Audio's "844 AUDO + 17 AUSB on the PS2 disc" is right, and its estimate is
+   the honest one** — but note the descriptors port for free, so the 8–12 d is
+   codec work alone, not container work.
+5. **The "not covered" row in "How the PS2 lane works"** ("audio, geometry,
+   text, menus, playbooks") should gain a footnote: the *containers* for text,
+   playbooks, rosters and uniform colours are all present and identically
+   allocated on the PS2 disc. What is missing is the write path, not the data.
+
 ## Landing order — 5 commits
 
 Branch from **`upstream/main`**, not `cc7bb92`. Commit the two `/tmp` worktrees
