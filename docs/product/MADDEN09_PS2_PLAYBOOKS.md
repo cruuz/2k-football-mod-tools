@@ -161,11 +161,13 @@ own** [M]. Three places were looked at and none holds one:
   fields all belong to a formation, a set, a group or a play;
 * **beside the books** — `GAMEDATA.DAT`'s only `TEXT` member is a 64-byte
   `Xbe8…` blob, and its eight `MMAP` members are UI screens;
-* **elsewhere on the image** — the strings that look like book names
-  (`Balanced`, `West Coast`, `Run Heavy`, `Pass Defense`, …) are the AI
-  *coaching-philosophy* and gameplan tables in the boot ELF and the story
-  generator, not a per-book list; `DB_TEAMS.DAT`'s `TEAM` table carries no
-  playbook column.
+* **elsewhere on the image** — a raw scan finds two short string tables whose
+  entries read like book names, and neither is one: both are the AI
+  *coaching-philosophy* and gameplan lists, one in the boot ELF beside the
+  team/coach text and one in the story generator's bank, and they run to nine
+  and thirteen entries rather than 102. `DB_TEAMS.DAT`'s `TEAM` table carries
+  no playbook column either — its 65 fields are ids, colours and team
+  ratings.
 
 So a book is described by what it holds — its formation, set and play counts —
 and the row targets inside it carry the names the file does have, read from the
