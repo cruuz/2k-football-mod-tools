@@ -628,7 +628,7 @@ class StarColumnTests(unittest.TestCase):
 
         panel = BuildPanel(None)
         try:
-            self.assertIn("none ticked", panel.star_players_label.text())
+            self.assertIn("none selected", panel.star_players_label.text())
             self.assertEqual(panel.plan().player_tags, [])
             panel.set_star_players(["88", "5"], ["Michael Vick", "Calvin Pace"])
             self.assertEqual(panel.star_players, ["88", "5"])
