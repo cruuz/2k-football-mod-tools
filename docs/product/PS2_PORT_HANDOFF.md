@@ -211,6 +211,18 @@ it anyway; a stock validator would reject the file.)
 - `630c4cc` (upstream PR #5) is **byte-identical** to the base tree —
   `git diff cc7bb92 630c4cc` is empty — so the fork's PS2 history is fully
   upstream already.
+- **⚠ Dict-shaped runtime pins — found the hard way on the first CI run.**
+  `check_2k5_mod_studio_runtime.py` holds `RC29_AUDIO_ANNOTATION_RUNTIME_PINS`,
+  a dict of `"path": "<sha256>"` for seven files including
+  `mod_editor/gui/studio_qt.py`. **Any edit to a pinned file refuses CI's
+  runtime closure** — 5b's File-menu entry did exactly that, after the
+  retail-free release gate itself had already passed (300 files, `retail=false`,
+  `undeclared=false`). `repin.py` does **not** see these: it handles only the
+  `<name>_sha256` attribute shape, so "repin.py has nothing to re-pin" was true
+  and useless. And `require()` stops at the **first** mismatch, so one green
+  re-pin proves nothing about the next pin. **Before every push, audit every
+  `*_PINS` dict in both runtime checkers against current sha256s** (a ten-line
+  loop; the 2026-09-04 audit found exactly one mismatch, fixed in `8688b63`).
 
 **Follow the separate-workspace pattern** (`ps2_save_dialog_qt.py` +
 Qt-free service). Do **not** retrofit `GameId` gating into
