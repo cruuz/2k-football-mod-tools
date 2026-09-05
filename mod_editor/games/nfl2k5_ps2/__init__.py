@@ -20,10 +20,18 @@ What is on the contract today:
 
 The other eight registry rows stay exactly where they are; the fragment beside
 this file carries all nine so the registry-merge proof covers the whole game.
+
+A lane joins ``GAME.lanes`` when its registry row is in the fragment: the
+executable-patch lane (``code_patches.py``) is complete as an interface and
+proved on a synthetic ELF, but its row (``nfl2k5ps2.gameplay.executable_patches``,
+classification ``unknown``) is a proposal until the maintainer applies it, so
+until then it is reachable as :data:`CODE_PATCH_LANE` and covered by its own
+tests rather than listed as a capability the module claims.
 """
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import sys
 from typing import Any, Callable, Mapping, Optional, Sequence
@@ -306,14 +314,46 @@ WINDOWS = (
     ),
 )
 
+def _code_patch_lane():
+    """The executable-patch lane: interface complete, every translation refused today.
+
+    Imported lazily so ``python -m mod_editor.games.nfl2k5_ps2.code_patches``
+    does not import the module twice (once through this package, once as
+    ``__main__``); ``CODE_PATCH_LANE`` is a module attribute resolved on demand.
+    """
+
+    from .code_patches import CAPABILITY_ID, Ps2CodePatchLane
+
+    return Ps2CodePatchLane(IDENTITY), CAPABILITY_ID
+
+
+def __getattr__(name: str):
+    if name == "CODE_PATCH_LANE":
+        return _code_patch_lane()[0]
+    raise AttributeError(name)
+
+
+def _registered(capability_id: str) -> bool:
+    """Whether the registry fragment beside this file carries ``capability_id``."""
+
+    try:
+        document = json.loads((HERE / "registry.fragment.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return any(row.get("id") == capability_id for row in document.get("capabilities", []))
+
+
+CODE_PATCH_CAPABILITY_ID = "nfl2k5ps2.gameplay.executable_patches"
+LANES = (UnifColourLane(),) + ((_code_patch_lane()[0],) if _registered(CODE_PATCH_CAPABILITY_ID) else ())
+
 GAME = GameModule(
     contract=CONTRACT_SCHEMA,
     identity=IDENTITY,
     identifier=Ps2DiscIdentifier(IDENTITY),
-    lanes=(UnifColourLane(),),
+    lanes=LANES,
     windows=WINDOWS,
     manifest=load_manifest(HERE),
     package=__name__,
 )
 
-__all__ = ["GAME", "GAME_ID", "IDENTITY", "SERIAL", "UnifColourLane", "WINDOWS"]
+__all__ = ["CODE_PATCH_CAPABILITY_ID", "CODE_PATCH_LANE", "GAME", "GAME_ID", "IDENTITY", "LANES", "SERIAL", "UnifColourLane", "WINDOWS"]
