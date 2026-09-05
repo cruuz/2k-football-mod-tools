@@ -461,6 +461,8 @@ mod_editor/games/_formats/ps2_disc/__init__.py
 mod_editor/games/_formats/ps2_elf/__init__.py
 mod_editor/games/chooser.py
 mod_editor/games/chooser_qt.py
+mod_editor/games/studio_qt.py
+mod_editor/games/lane_cli.py
 mod_editor/games/conformance.py
 mod_editor/games/contract.py
 mod_editor/games/fragments.py

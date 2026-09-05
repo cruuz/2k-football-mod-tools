@@ -1803,6 +1803,8 @@ def main() -> int:
         "mod_editor.games.conformance",
         "mod_editor.games.chooser",
         "mod_editor.games.chooser_qt",
+        "mod_editor.games.studio_qt",
+        "mod_editor.games.lane_cli",
         "mod_editor.games.pins",
         "mod_editor.games.fragments",
         "mod_editor.games.scaffold",
