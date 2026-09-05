@@ -40,3 +40,8 @@ docs/product/measured/madden09_ps2/playbook-databases.json
 mod_editor/games/madden09_ps2/playbooks_lane.py
 tools/validate_madden09_ps2_playbooks.bat
 tools/validate_madden09_ps2_playbooks.sh
+mod_editor/games/madden09_ps2/art_pages.py
+tools/validate_madden09_ps2_art_pages.bat
+tools/validate_madden09_ps2_art_pages.sh
+docs/product/measured/madden09_ps2/art-page-texture-identities.json
+docs/product/measured/madden09_ps2/art-page-textures.json

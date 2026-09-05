@@ -63,9 +63,12 @@ SURFACE_GAMES["audio"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["menus"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["players_rosters"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 SURFACE_GAMES["scripts_config"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
-SURFACE_GAMES["stadiums_fields"] = _ESTABLISHED_GAMES
+SURFACE_GAMES["stadiums_fields"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 # nfl2k5_ps2 rows join these surfaces' coverage rule:
 SURFACE_GAMES["gameplay_tuning_sliders"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
+# madden09_ps2 covers these surfaces (one row each):
+SURFACE_GAMES["scorebug_presentation"] = _LEGACY_GAMES + ("madden09_ps2",)
+SURFACE_GAMES["portraits_faces"] = _LEGACY_GAMES + ("madden09_ps2",)
 CLASSIFICATIONS = (
     "extract-only",
     "offline-writer-proved",
