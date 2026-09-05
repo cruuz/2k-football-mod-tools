@@ -203,6 +203,139 @@ is necessary. Populate the registry entry with:
 Regenerate the cave manifest only as part of the final integrated stack's
 normal source-digest refresh. Guardian route B allocates no executable cave
 or writable XBE storage and must not acquire a fabricated cave reservation.
+# SPECIAL tab r61b handoff, 2026-09-05
+
+Implemented and tested in this worktree: Noah's exact 13-row order, complete
+third player names, 25-pixel row pitch, and a 57-pixel label column. This is
+EXPERIMENTAL/UNWITNESSED. See `ASTRA_SPECIAL_TAB_REPORT.md` for native draw
+evidence, previews and the witness list. The protected files below were not
+edited. The earlier depth-lock handoff remains below this section.
+
+## Existing dispatcher and build wiring
+
+Keep the existing `nfl2k5_depth_chart_rows` module import and the
+`depth_chart_rows: bool = False` keyword in `_apply_all`, `write_xbe_copy`, and
+`write_image_copy` in `mod_editor/core/nfl2k5_throw_tuning.py`. Keep forwarding
+that keyword from both writers. The existing `_apply_all` tuple is:
+
+```python
+(depth_chart_rows, depth_chart_rows_patch, "depth_chart_rows_patch", "SPECIAL tab")
+```
+
+Keep the four status dictionary entries, each using the matching final bytes:
+
+```python
+# read_xbe and read_image
+"depth_chart_rows": depth_chart_rows_patch.status(payload),
+# write_xbe_copy
+"depth_chart_rows": depth_chart_rows_patch.status(result),
+# write_image_copy
+"depth_chart_rows": depth_chart_rows_patch.status(after),
+```
+
+These hooks already exist. No new switch or extra layout pass is needed.
+The same `apply` now owns both descriptor edits and reports them. Keep the
+existing grown-XBE writer and verification; its checks now cover the new layout.
+
+In `mod_editor/core/mod_build.py`, retain `BuildPlan.depth_chart_rows = False`,
+availability, source status, serialization, and receipts. Presets remain:
+
+| Preset | position_pools | depth_roles | depth_chart_rows |
+| --- | --- | --- | --- |
+| basic | false | false | false |
+| advanced | true | true | false |
+| experimental | true | true | true |
+
+Keep the existing disc-only dependency checks, pools before rows, and the
+depth-roles PLAY pass after the other book writers. Keep the existing call
+`tt._apply_all(..., catch_slider=False, arc_table=False, depth_chart_rows=True)`
+and `_write_xbe_bytes` read-back. Correct the obsolete BuildPlan comment about
+stride 13 and rows on offense/defense: indexing is always `unit * 11 + slot`,
+counts are 11/11/11/13, and the extra records belong only to SPECIAL. Change
+progress text to `Adding the 13 SPECIAL depth-chart rows`; replace user-facing
+`X / Z / SLOT` references with `X / Z / SLWR` in build messages and details.
+Do not rename compatibility role keys in saved recipes or PLAY logic.
+
+Depth locks needed one unprotected compatibility correction to pass the
+required composed gates: detect expanded rows by table address `0xEE3000`,
+not by stride 13. Diagnostic callers should use
+`locks.sites(11, special_rows=True)` for expanded rows; `locks.apply` detects
+this itself. Its existing flag integration is still the separate handoff below.
+
+## Protected UI text and the Rosters preview
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, replace the
+`PATCHES[depth_chart_rows]` title with:
+
+`SPECIAL: 13 rows and complete player names (experimental)`
+
+Use this description verbatim, including Retail and Patch:
+
+> Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR,
+> PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with
+> names beside all available player numbers. Offense and defense keep eleven
+> rows and show X / Z receiver labels. Row spacing is three pixels tighter on
+> all depth-chart tabs; the font stays the same. Role labels have more room.
+> These roles share player lists, so changing one can change another. Requires
+> one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.
+
+Keep `depth_chart_rows` in `NEEDS_IMAGE` and keep the `NOT_TESTED` badge.
+Update its presentation-card subtitle to `All 13 SPECIAL roles on one screen,
+with complete player names; offense and defense keep eleven rows.` Remove
+the obsolete `SPECIAL scrolls` claim. Update the neighboring depth-roles
+display text from SLOT to SLWR without changing the book algorithm.
+
+In `mod_editor/gui/build_panel_qt.py`, use that same title for the
+`_option(..., "depth_chart_rows", ...)` caption (57 characters, below 60),
+the same description for details, and `NOT_TESTED`, `needs_image=True`.
+Replace the current details claiming 13 rows per unit and extra rows on both
+defenses. Keep the dependency auto-selection and image gating.
+
+No existing SPECIAL row preview was found in the protected/other GUI panels.
+The unprotected slot-text helper now provides the source for any Rosters
+preview: `nfl2k5_modern_positions.read_depth_chart_units(xbe)["SPECIAL"]`.
+Render its records in returned order, using `abbreviation` and `long_name`,
+instead of copying a label list. It returns four rows for retail and thirteen
+for an expanded table. Keep `read_units` for existing defensive-only consumers.
+Use LS/LGUN/RGUN/NCB/DCB/SLWR/GAD/3DRB/PWRB in role tooltips. RGUN and DCB
+remain two views of the same CB side chain. No new GUI panel is requested.
+
+## Packaging, manifest and capability closure
+
+These allowlist lines already exist; retain them unchanged:
+
+```text
+mod_editor/core/nfl2k5_depth_chart_rows.py
+mod_editor/core/nfl2k5_depth_chart_storage.py
+mod_editor/core/nfl2k5_modern_positions.py
+```
+
+`packaging/check_2k5_mod_studio_runtime.py` already imports rows and storage in
+its runtime closure list (currently lines 1739-1740). Modern positions is an
+existing runtime dependency; its new helper adds no import dependency. Keep
+those imports. The earlier lock handoff additionally needs allowlist entry
+`mod_editor/core/nfl2k5_depth_locks.py` and closure import
+`mod_editor.core.nfl2k5_depth_locks` when its flag is wired. Do not package the
+private preview generator, test harness, Unicorn, Pillow, or retail assets.
+No new user-facing capability/surface was added, so no registry entry is needed.
+
+Claude must regenerate `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after final wiring, using the command
+below in the earlier handoff. Preserve source-drift checks. The rows receipt
+adds these existing descriptor ownership spans, not cave allocations:
+
+| Owner | Half-open VA span | Section | Actual field change |
+| --- | --- | --- | --- |
+| depth_chart_rows / summary_row_spacing | 0xAA3744..0xAA3774 | .data | float at 0xAA376C: 4 to 1 |
+| depth_chart_rows / summary_label_width | 0x5322D0..0x5322D4 | .rdata | float: 50 to 57 |
+
+Keep the existing 46-record table reservation at `0xEE3000` in the grown
+final `.XTLID`; no new cave, runtime global, section or resource is added.
+Both source modules' hashes changed, including depth locks' composition fix.
+Passing the composed gates does not replace manifest regeneration. No
+protected artifact was regenerated in this task.
+
+---
 
 # Depth locks handoff — 2026-09-05
 
