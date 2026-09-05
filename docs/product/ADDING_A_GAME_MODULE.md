@@ -204,3 +204,35 @@ what is being asked for when that is the truth.
 - [ ] the example lane and its row are gone
 - [ ] no game data: hashes, offsets, lengths, names only
 - [ ] `python -m mod_editor.games pins --check` untouched (game files are not frozen)
+
+## When a module is finished — the shipping standard
+
+A game module ships when it is **feature complete**, not when its first lanes work. The owner's rule
+(2026-09-06): the standard set by the first two modules is the standard for every module after them.
+"Complete" means all of the following, and the module's document states each one with its evidence:
+
+1. **Every page has its answer.** Each of the shell's fourteen pages either carries a lane at the
+   highest rung the disc's format permits, or states a *measured* reason the disc cannot support it
+   (a format with no data on the disc, a concept the game does not have). "Not built yet" is not a
+   reason; it is a gap.
+2. **Every writer is proved twice.** Offline: an independent verifier that imports none of the writer
+   re-derives the edit from the built image and checks every byte outside the declared ranges
+   (`offline-writer-proved`). In game: the edit seen on screen or heard, on the rig, with the boot
+   recorded as evidence (`runtime-proved`). A writer that has only the first is shipped as such and
+   says so; the module is not complete until the second exists for every writer the format permits.
+3. **Art round-trips.** Textures decode to PNG, edited PNGs encode back, the encoder round-trips real
+   members byte for byte where the format allows, and the PCSX2 replacement identities exist (from a
+   captured texture dump) so the pack route names its files. Both the disc route and the pack route.
+4. **Rosters, team data and text** have writers with the four database CRCs proved against the disc's
+   own databases before any write is offered.
+5. **Audio, stadiums, playbooks and gameplay patches** have lanes at the rung their formats permit,
+   with the encoder or writer built when the format is documented, and a measured statement when it
+   is not. The executable-patch lane carries at least the translations the community already ships,
+   verified against the boot executable.
+6. **Validators run in a shipped tree** on Linux and on a real cmd.exe; the portable build's smoke
+   passes on Windows; the module's registry rows carry evidence paths that exist.
+7. **Nothing is claimed above its proof.** `unknown` rows stay hidden; `extract-only` never becomes
+   `runtime-proved`; a module doc lists what still needs a boot.
+
+A pull request that adds a module lists this checklist with a yes, a no with the reason, or a
+measured "not applicable" for every line.
