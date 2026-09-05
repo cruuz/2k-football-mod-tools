@@ -605,6 +605,19 @@ class FranchiseSave:
     def team_salary(self, team: int) -> int:
         return self.u32(self.team_offset(team) + TEAM_SALARY)
 
+    def team_stadium(self, team: int):
+        """Current stadium record identity, including the 15 added picker choices.
+
+        Read the composed buffer, avoiding the lazily cached roster document.
+        The +114 field still uses the ordinary retail save relocation.
+        """
+        from . import nfl2k5_roster_storage as storage
+        try:
+            stadiums = storage.read_stadiums(self.buffer, root=ARENA_ROOT, end=ARENA_END)
+            return storage.team_stadium(self.buffer, self.team_offset(team), stadiums)
+        except storage.RosterStorageError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
+
     def team_salaries(self) -> list[int]:
         return [self.team_salary(team) for team in range(self.league_team_count)]
 

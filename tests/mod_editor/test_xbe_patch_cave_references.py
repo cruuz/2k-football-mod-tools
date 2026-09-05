@@ -72,6 +72,9 @@ class CaveReferenceTests(unittest.TestCase):
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False))
+        from mod_editor.core import nfl2k5_roster_storage as roster_storage
+        if roster_storage.status(cls.patched) != "applied":
+            raise AssertionError("stadium-list owner missing from the composed XBE")
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -127,6 +130,18 @@ class CaveReferenceTests(unittest.TestCase):
             else:
                 merged.append([a, b])
         return [(a, b) for a, b in merged if b - a >= CAVE_MIN]
+
+    def test_stadium_patch_changes_only_existing_instruction_operands(self) -> None:
+        from mod_editor.core import nfl2k5_roster_storage as storage
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for va, old, new in storage.sites(storage.site(self.patched)["va"]):
+            before, after = list(md.disasm(old, va)), list(md.disasm(new, va))
+            self.assertEqual(len(before), 1)
+            self.assertEqual(len(after), 1)
+            self.assertEqual((before[0].id, before[0].size), (after[0].id, after[0].size))
+            self.assertEqual(image.read(va, len(new)), new)
 
     def test_no_cave_overlaps_referenced_retail_code(self) -> None:
         caves = self._caves()

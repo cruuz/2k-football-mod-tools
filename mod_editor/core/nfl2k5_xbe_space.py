@@ -86,7 +86,10 @@ def _allocations(requests):
     # Preserve the already-shipped logo/kickoff/runtime layout when adding the
     # three new owners. Directory order remains canonical and immutable.
     new_owners = {"nfl2k5_defensive_try", "nfl2k5_momentum", "nfl2k5_zone_drop"}
-    ordered = sorted(_requests(requests), key=lambda r: (r[0] in new_owners, r))
+    # r62 immutable stadium IDs follow all beta-61 owners, keeping their
+    # established addresses stable when the complete union is rebuilt.
+    ordered = sorted(_requests(requests), key=lambda r: (
+        2 if r[0] == "nfl2k5_roster_storage" else int(r[0] in new_owners), r))
     for owner, kind, size, align in ordered:
         offset = (cursors[kind] + align - 1) & -align
         if offset // PAGE != (offset + size - 1) // PAGE:
@@ -432,10 +435,11 @@ def allocation_evidence(retail: bytes, manifest, *, allocated: bytes | None = No
     from . import nfl2k5_dynamic_kickoff_relocated as relocated
     from . import nfl2k5_momentum as momentum, nfl2k5_defensive_try as defensive_try
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_zone_drop as zone_drop
+    from . import nfl2k5_roster_storage as roster_storage
     # Match the manifest builder's complete dormant-owner request set. This is
     # an ownership proof only; apply() still allocates exactly its caller's set.
     children = (layout(allocated)["allocations"] if allocated is not None
-                else _allocations(relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS))
+                else _allocations(relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS))
     proof_regions = _regions([(a["owner"], a["kind"], a["size"], a["align"]) for a in children if a["kind"] != "read_only"])
     for region in proof_regions:
         r = dict(start=hex(region["va"]), end=hex(region["va"] + PAGE))

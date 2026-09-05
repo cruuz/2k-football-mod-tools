@@ -1,3 +1,185 @@
+# r62 storage growth handoff, 2026-09-05
+
+Backend: `mod_editor/core/nfl2k5_roster_storage.py`, owner
+`nfl2k5_roster_storage`, option **`all_stadiums`**. This addition precedes and
+preserves earlier handoffs. The implemented primitive offers the 82 existing
+stadiums in Create a Team. It does not enlarge team records, create more teams
+or support 16/17 reserves. See `ASTRA_STORAGE_GROWTH_REPORT.md` for the design
+and census. Label the option **EXPERIMENTAL / UNWITNESSED**.
+
+## BuildPlan, presets and build ordering (protected)
+
+In `mod_editor/core/mod_build.py`, add `all_stadiums: bool = False` beside
+`zone_drop_cap`. Explicitly add `"all_stadiums": False` to **each** of
+`softdrink_basic`, `softdrink_advanced`, `softdrink_experimental`; none enables
+it. Preset selection clears previous manual opt-in. Include the flag in plan
+validation (exact bool), recipe loading, `wants_xbe_patch`, availability,
+inspection, selection checks, status/receipt maps and Studio plan forwarding.
+Availability requires `nfl2k5_roster_storage` and `nfl2k5_xbe_space`.
+Normalize selection to `xbe_space=True` and use the existing grown-feature
+image-only preflight. This option alone does not enable another gameplay patch.
+
+The initial `replace(plan, ... xbe_space=False, ...)` near line 831 must include
+`all_stadiums=False`. All early executable passes must keep the flag false.
+At the final growth pass near lines 1137-1146:
+
+1. Pass `all_stadiums=plan.all_stadiums` into `_selected_space_requests` for
+   the scorebug resource installer's `extra_requests`. This is necessary even
+   if its own runtime owner is already selected.
+2. Include `or plan.all_stadiums` in the final executable-pass condition.
+3. Forward `all_stadiums=plan.all_stadiums` to the final `_apply_all` call and
+   retain its `all_stadiums_patch` receipt plus `all_stadiums` installed status.
+
+The source ROST must retain all 82 retail stadium records. An older save with
+those records needs no conversion; the existing +0x114 pointer is serialized.
+Do not label a patch receipt as proof that custom or truncated stadium tables
+are compatible. No PLAY/ROST archive edit is needed for this option.
+
+## Dispatcher, allocation union and four status dictionaries (protected)
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`:
+
+```python
+from . import nfl2k5_roster_storage as roster_storage_patch
+```
+
+Add keyword `all_stadiums: bool = False` to `_apply_all`, `write_xbe_copy` and
+`write_image_copy`, all their forwarding calls and their nonempty-selection
+checks. Validate its type alongside `defensive_try` and `zone_drop_cap`.
+Append the argument at the end of existing helper signatures to retain
+positional compatibility. Extend the existing union helper as follows:
+
+```python
+def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0,
+                             defensive_try=False, zone_drop_cap=False,
+                             all_stadiums=False):
+    return ((kickoff_relocated_patch.REQUESTS if with_kickoff else ())
+            + (scorebug_runtime_patch.REQUESTS if runtime else ())
+            + (momentum_patch.REQUESTS if momentum > 0 else ())
+            + (defensive_try_patch.REQUESTS if defensive_try else ())
+            + (zone_drop_patch.REQUESTS if zone_drop_cap else ())
+            + (roster_storage_patch.REQUESTS if all_stadiums else ()))
+```
+
+Add `all_stadiums=False` to `_xbe_space_adapter.__init__`, and forward it
+to that helper. In the final `_apply_all` owners tuple, forward the flag to
+**both** `_defensive_try_adapter` and `_xbe_space_adapter`. The defensive
+adapter inherits the union constructor and can be the first allocator caller.
+Extend the allocator tuple's condition with `or all_stadiums`. After the
+allocator tuple, add this tuple alongside the other final owners:
+
+```python
+(all_stadiums, roster_storage_patch,
+ "all_stadiums_patch", "all 82 Create a Team stadiums (experimental)"),
+```
+
+Keep the existing loop's apply-on-applied behavior, so replay validates the
+entire seal. The complete union is mandatory before first growth; an existing
+allocation without this owner refuses and requires a clean rebuild. The
+allocator now orders this owner after all beta-61 owners without changing
+their addresses. It adds 82 immutable bytes and no RW bytes or new pages.
+
+`write_image_copy` has a separate scorebug-runtime lane near lines 1496 and
+1568-1577. Defer `all_stadiums` there with the other grown flags in its early
+call (`all_stadiums=all_stadiums and not scorebug_runtime`), forward the real
+flag to the resource writer's `extra_requests`, then forward it to the final
+post-resource `_apply_all`. Otherwise the runtime lane seals an incomplete
+union and a later stadium installation must refuse.
+
+The four public return dictionaries must contain these exact projections:
+
+| Dictionary | New entry |
+| --- | --- |
+| `read_xbe` | `"all_stadiums": roster_storage_patch.status(payload)` |
+| `read_image` | `"all_stadiums": roster_storage_patch.status(payload)` |
+| `write_xbe_copy` | `"all_stadiums": roster_storage_patch.status(result)` |
+| `write_image_copy` | `"all_stadiums": roster_storage_patch.status(after)` |
+
+Use the actual byte variable in each function. This stack already centralizes
+grown projections in `_grown_status_fields`: adding the projection there is
+appropriate if all four returns continue to call it. Preserve receipt fields
+`experimental`, `runtime_witnessed`, `save_layout_changed`, `reserve_limit`,
+`team_slots`, exact hashes/changed-byte counts and allocation reservations.
+
+## Gameplay Patches, Build tab and Reserves (protected GUI)
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add `"all_stadiums"` to
+`NEEDS_IMAGE` and use this PATCHES row (also update any short-label map):
+
+```python
+("all_stadiums", "All 82 Create a Team stadiums (experimental)",
+ "Retail: Create a Team offers 67 stadiums. Patch: Offers all 82 existing "
+ "stadiums. EXPERIMENTAL / UNWITNESSED. Added previews and game loading need "
+ "testing. Team and reserve limits stay the same."),
+```
+
+In `mod_editor/gui/build_panel_qt.py`, add:
+
+```python
+self.all_stadiums_check = self._option(
+    gameplay_layout, "all_stadiums",
+    "All 82 Create a Team stadiums (experimental)",
+    roster_storage_patch.UI_TEXT)
+```
+
+Use its current gameplay layout variable. The caption is 44 characters,
+below 60. Wire checkbox load/reset/enable state and image eligibility. In
+`studio_qt.py`, forward the boolean with default false into BuildPlan and any
+Gameplay-to-Build bridge. No additional tab or GUI panel is required.
+
+**Reserves must stay at 12.** The stadium option is not evidence of wider
+player storage. Do not use `xbe_space`, `all_stadiums` or a save metadata byte
+alone to raise the Reserves control. A future 16/17 patch needs its own exact
+XBE status, compatible versioned save schema and eligibility predicate before
+its UI limit can change. The existing Reserves panel is outside this job's
+GUI ownership, and no edit to it is requested for the delivered primitive.
+
+## Allowlist, closure, capability and manifest (protected)
+
+Add these exact release-allowlist paths:
+
+```text
+mod_editor/core/nfl2k5_roster_storage.py
+docs/mod_editor/nfl2k5_roster_storage_capability.json
+docs/mod_editor/nfl2k5_roster_storage_census.json
+ASTRA_STORAGE_GROWTH_REPORT.md
+```
+
+The audit CLI `tools/nfl2k5_roster_storage_audit.py` and standalone tests are
+developer evidence tools; they need not enter the end-user runtime closure.
+Keep the already allowlisted roster/save/franchise/practice-squad codecs,
+allocator, bump-strength digest helper, boot-logo and depth-chart-storage
+helpers. Add `mod_editor.core.nfl2k5_roster_storage` to the import probe in
+`packaging/check_2k5_mod_studio_runtime.py`. Its codec helpers import only the
+standard library. Patch operations additionally import existing `nfl2k5_xbe_space`,
+`nfl2k5_bump_strength` and `nfl2k5_cave_oracle`, with their existing closure.
+Capstone remains test/audit-only; Unicorn is unused by this job.
+Regenerate applicable provider closure hashes with the existing packaging
+tools after wiring, without dropping any required transitive import.
+
+Merge `docs/mod_editor/nfl2k5_roster_storage_capability.json` using the existing
+registry serializer/validator. ID is `nfl2k5.stadiums_fields.all_stadiums`,
+existing surface `stadiums_fields`, classification `offline-writer-proved`,
+runtime `not-tested`, all presets off. The validation command is the new
+standalone storage test. Do not advertise more created teams or larger reserves.
+
+The unprotected manifest recorder and both gate compositions already include
+the new owner. The protected `data/nfl2k5_cave_reservations.json` was untouched.
+Claude must regenerate it **after** the protected code and closure edits:
+
+```sh
+python3 tools/nfl2k5_cave_oracle.py manifest \
+  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  --work-dir .scratch --json data/nfl2k5_cave_reservations.json
+```
+
+Retain the source-drift guard. Run both XBE gates, the new storage suite, the
+three existing codec suites and `test_rosters_reserves_abilities.py`, then the
+existing packaging/runtime closure gates. The supplied standalone tests skip
+precisely for missing retail evidence or Capstone and do not read whole packs
+or disc images into RAM. No release-tag/updater/CI changes are requested.
+
 # Defensive try handoff, 2026-09-05
 
 The new backend is `mod_editor/core/nfl2k5_defensive_try.py`, owner

@@ -115,6 +115,9 @@ class PatchWriteTests(unittest.TestCase):
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False))
+        from mod_editor.core import nfl2k5_roster_storage as roster_storage
+        if roster_storage.status(cls.patched) != "applied":
+            raise AssertionError("stadium-list owner missing from the composed XBE")
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
@@ -140,6 +143,16 @@ class PatchWriteTests(unittest.TestCase):
             else:
                 merged.append([a, b])
         return [(a - 16, b + 16) for a, b in merged]
+
+    def test_stadium_ids_are_owned_immutable_data(self) -> None:
+        from mod_editor.core import nfl2k5_roster_storage as storage
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        allocation = storage.site(self.patched)
+        self.assertEqual(image.read(allocation["va"], 82), storage.STADIUM_IDS)
+        self.assertFalse(image.runtime_writable(allocation["va"], 82))
+        self.assertNotEqual(image.section(allocation["va"]).name, ".text")
+        self.assertTrue(image.section(allocation["va"]).flags & 2)
 
     def test_every_absolute_write_in_changed_code_targets_writable_memory(self) -> None:
         offenders = []

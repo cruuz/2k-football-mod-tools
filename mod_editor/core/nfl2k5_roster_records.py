@@ -1271,6 +1271,7 @@ class TeamRecord:
     scheme: int = 0
     clean_parse: bool = True                               # count byte == pointers we could resolve
     repaired: bool = False                                 # a repair rewrote the count / the whole list
+    stadium_index: int | None = None                       # record ordinal, not the stadium's asset ID
 
     @property
     def reordered(self) -> bool:
@@ -1439,6 +1440,14 @@ class RosterDocument:
                 college_strings.append(target)
                 self.colleges.append(read_utf16z(b, target)[0])
         self.college_record_index = {offset: i for i, offset in enumerate(self.college_offsets)}
+        from . import nfl2k5_roster_storage as storage
+        arena_end = len(b)
+        if base >= 0x20 and b[base - 0x20:base - 0x1C] == b"ROST":
+            arena_end = base + self.u32(base - 0x1C)
+        try:
+            self.stadiums = storage.read_stadiums(b, root=root, end=arena_end)
+        except storage.RosterStorageError as exc:
+            raise RosterRecordError(str(exc)) from exc
         # teams
         self.teams: list[TeamRecord] = []
         team_count = self.u32(ob + TEAM_COUNT_FIELD)
@@ -1457,12 +1466,17 @@ class RosterDocument:
                 slots.append(target)
                 self.by_offset[target].teams.append(index)
             coach = self.rel(offset + TEAM_COACH)
+            try:
+                stadium = storage.team_stadium(b, offset, self.stadiums)
+            except storage.RosterStorageError as exc:
+                raise RosterRecordError(f"team {index}: {exc}") from exc
             team = TeamRecord(index=index, offset=offset,
                               nickname=self._string_at(offset + TEAM_NICKNAME),
                               abbreviation=self._string_at(offset + TEAM_ABBREVIATION),
                               city=self._string_at(offset + TEAM_CITY),
                               player_count=count, slots=slots, original_slots=tuple(slots),
                               coach_offset=coach,
+                              stadium_index=stadium.index if stadium else None,
                               scheme=struct.unpack_from("<H", b, offset + TEAM_SCHEME_WORD)[0],
                               clean_parse=(count == len(slots) and count <= TEAM_SLOTS))
             self.teams.append(team)

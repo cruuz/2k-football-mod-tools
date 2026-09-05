@@ -20,6 +20,7 @@ import struct
 from typing import Mapping
 
 from . import nfl2k5_roster_records as records
+from . import nfl2k5_roster_storage as storage
 
 
 class SaveRostError(ValueError):
@@ -89,6 +90,7 @@ class Team:
     asset_id: int
     abbreviation: str
     player_offsets: tuple[int, ...]
+    stadium_index: int | None = None
 
 
 class SaveRost:
@@ -169,6 +171,11 @@ class SaveRost:
         for left, right in zip(occupied, occupied[1:]):
             _require(left[1] <= right[0], f'overlapping {left[2]}/{right[2]} tables')
 
+        try:
+            self.stadiums = storage.read_stadiums(self.original, root=root, end=self.layout.end)
+        except storage.RosterStorageError as exc:
+            raise SaveRostError(str(exc)) from exc
+
         colleges = self.tables['colleges']
         college_records = set()
         if colleges.offset is not None:
@@ -207,8 +214,13 @@ class SaveRost:
                     slots.append(target)
             for field in (0x104, 0x108, 0x10C, 0x138, 0x13C):
                 self.string(off + field)
+            try:
+                stadium = storage.team_stadium(self.original, off, self.stadiums)
+            except storage.RosterStorageError as exc:
+                raise SaveRostError(f'team {index}: {exc}') from exc
             self.teams.append(Team(index, off, struct.unpack_from('<H', self.original, off + 0x118)[0],
-                                   self.string(off + 0x108), tuple(slots)))
+                                   self.string(off + 0x108), tuple(slots),
+                                   stadium.index if stadium else None))
         agents = self.tables['free_agents']
         if agents.offset is not None:
             for i in range(agents.count):
