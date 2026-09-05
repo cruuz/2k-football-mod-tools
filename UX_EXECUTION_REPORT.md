@@ -70,9 +70,32 @@ only page still wider than a 1366-px window is Stadiums (three fixed panes; ~100
 
 ## Validation (E8)
 
-See the "Test results" section at the end (filled from the whole-suite run) and the per-file list.
-`python3 packaging/repin.py --apply`: 2 pin updates on the first run (studio_qt + runtime allowlist), re-run
-before the final commit.
+**Named files** (the proposal's and the review's list, one consolidated run after the merge): shell layout,
+accessibility, capability visibility, explainable build, build panel, share, roster panel + franchise card +
+Franchise tab, throw, models, gameplay patches, sounds, commentary, uniform export, player assets, playbooks
+panel + pack UI, create-play wizard, inspection panels, refusal wording, product catalog, and the three new
+UX test files — **249 passed, 16 skipped, 0 failed** (3 min 06 s).
+
+**Whole `tests/mod_editor`**: run once as a single pytest process it stalled at ~15 % for more than 35 min
+(the untouched base commit stalled at the same place in an earlier run, so it is not this branch); it was
+then run **file by file with a 15-minute cap** (298 files): **3,325 passed, 135 skipped, 15 failed in 5 files,
+4 files collected no tests** (`test_nfl2k5_bump_strength`, `_bump_texture_writer`, `_save_writer`,
+`_throw_tuning` need retail fixtures). The five failing files, each with its cause:
+
+| File | Cause | Action |
+|---|---|---|
+| `test_2k5_audio_operation_integration` (1) | the source-release fence counted two post-release tasks; the open-disc hook queues a third (the read-only inspection), after release like the other two | test updated to 3; behaviour unchanged |
+| `test_nfl2k5_player_star` (1) | pinned "none ticked" in the star label; the label now reads "none selected" + the Names, Numbers & Faces route (M06) | test updated |
+| `test_nfl2k5_prospect_names` (1) | pinned the tooltip "Needs a disc image."; it now says "Full disc required (not a bare default.xbe)." | test updated |
+| `test_provider_integrity` (1), `test_providers` (11) | `ProviderError: … evidence child must not be a symlink` — this worktree's `reports/assets` is the read-only symlink the render setup uses; the untouched base commit fails the same way here | not caused by the pass; passes in a checkout with a real `reports/assets` |
+
+`python3 packaging/repin.py --apply`: 2 pin updates on the first run (the studio module's runtime pin and
+the allowlist entry), 0 on the re-runs after the last edits.
+
+**Renders**: all 17 rows and every tab rendered offscreen with no disc at 1366×768 (only Stadiums keeps a
+horizontal scroll, ~100 px), and the four named pages with the retail disc open at 1366×768 and 1600×1000
+(`after_*.png` beside the audit's `before_*.png`). Build & Share shows no horizontal page scroll at either
+size, with or without the disc.
 
 ## Left for Claude
 
