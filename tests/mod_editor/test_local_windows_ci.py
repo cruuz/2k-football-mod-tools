@@ -613,7 +613,8 @@ class PathTests(unittest.TestCase):
             self.assertEqual(Path(normal.strip()), root / "repo/mod_editor/__init__.py")
             env.pop("PYTHONPATH")
             isolated = subprocess.check_output([sys.executable, "-I", "-S", "-c", code], cwd=root / "stage", env=env, text=True)
-            self.assertEqual(Path(isolated.strip()), root / "stage/mod_editor/__init__.py")
+            # macOS keeps temp dirs behind the /var -> /private/var symlink: compare resolved paths
+        self.assertEqual(Path(isolated.strip()).resolve(), (root / "stage/mod_editor/__init__.py").resolve())
 
     def test_startup_restores_script_directory(self):
         with tempfile.TemporaryDirectory() as temp:
