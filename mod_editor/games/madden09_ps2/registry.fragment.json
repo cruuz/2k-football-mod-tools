@@ -2,56 +2,63 @@
   "capabilities": [
     {
       "backend": {
-        "command": null,
-        "module": null,
-        "operation": "none"
+        "command": "python3 -m mod_editor.games.madden09_ps2.code_patches --source <SLUS-21770.iso> --recipe <recipe.json> --destination <NEW out.pnach>",
+        "module": "mod_editor/games/madden09_ps2/code_patches.py",
+        "operation": "write"
       },
-      "classification": "unknown",
+      "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_CODE_PATCH_PIPELINE.md",
-        "docs/product/MADDEN09_PS2_MODULE.md"
+        "docs/product/MADDEN09_PS2_CODE_PATCHES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
+        "docs/product/PS2_CODE_PATCH_PIPELINE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
-        "default_enabled": false,
-        "expose": false,
-        "mode": "deferred",
-        "reason": "Not drawn. The Gameplay page of the PS2 Madden 09 Studio states that this lane is classified unknown and repeats this sentence instead of offering a control: no site in the SLUS-21770 boot ELF has been located for any of the six proposed patches, so there is nothing a user could turn on. The pipeline around a translation is complete and tested; the translation is the missing half."
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaces on the Gameplay page of the PS2 Madden 09 Studio as four spin controls -- formations, sets, plays per book, plays per set -- each floored at the cap this executable already enforces and ceilinged at 65534, the largest a 16-bit sltiu immediate can carry. A cap left at its floor writes no word. Beside the controls the page repeats the lane's own sentence about what the patch does not do: these are the editor's checks only, the shipped tables are packed exactly full, and nothing has been booted. The other six catalogue rows are subject areas with no located site: their controls are drawn read-only rather than offering a switch that could only refuse, and translation refuses each by name."
       },
       "id": "madden09ps2.gameplay.executable_patches",
       "input_constraints": [
-        "Nothing is mapped: every translation is refused by name, so this row claims no gameplay change at all.",
-        "A plan resolves every word against the user's own boot ELF -- the address must be file-backed and the original word must match -- or it refuses and writes nothing.",
-        "Delivery is a pnach beside the image, never a write into it: build refuses the source as its destination and refuses an existing destination.",
-        "The pnach names the CRC of the ELF it was derived from, and verify fails when the file names another CRC, declares an address the receipt does not, or writes a different word.",
-        "Retail-free: the catalogue is subject names and the ELF facts read from the user's own image at run time. No address, offset or code byte from any executable is stored here."
+        "Five 32-bit words at fixed EE addresses, and only each sltiu instruction's 16-bit immediate changes; the opcode and both register fields are carried through from the word the executable already holds.",
+        "Every original word is read from the user's own boot ELF three times over -- when the catalogue is built, again when the plan is made, and a third time by the independent verifier -- and any mismatch refuses before anything is written.",
+        "A cap below the one this executable already enforces is refused, because books the disc ships already hold more rows than the editor's cap and shrinking the check would strand them; a cap above 65534 is refused because its immediate would not fit.",
+        "Delivery is a pnach beside the image by default; the on-disc route writes the same words into SLUS_217.70 on a NEW image through the shared fixed-allocation ISO9660 writer, which is safe only because a word replacement never changes the executable's length.",
+        "The six other catalogue rows carry no address, offset or code byte at all: no site has been located for any of them and translation refuses each by name.",
+        "Retail-free apart from the translation table itself -- five addresses and five words, which are the deliverable exactly as they would be in a hand-written pnach. Everything else is read from the user's own image at run time."
       ],
       "portme": [
-        "Locate one site and fill in a single TRANSLATIONS entry; nothing else in the lane changes, which is what the synthetic-ELF proof exists to guarantee.",
-        "Promoting this row above unknown needs a patch witnessed running in an emulator, which needs the rig; the synthetic proof covers the emitter and the verifier only.",
-        "On-disc ELF patching through the fixed-allocation ISO9660 writer is a second delivery and is deliberately not built."
+        "Raising the editor caps is the first of two layers. The second -- the database library's own per-table capacity -- is not shipped: table_set_capacity at 0x0082A6A0 is a subroutine, not an immediate, five of its six callers hand it the capacity they just read out of the table object, and the header loader fills that from each table's on-disc max_records. Adding it needs new code at a hook site the owner's research records as located but not pinned, and new code cannot be verified without a boot.",
+        "Promoting this row to runtime-proved needs the patch witnessed in an emulator: open the create-a-playbook editor on a shipped 20-set book and try to add a 21st set. Nothing here has been booted.",
+        "Locate a site for one of the six proposed patches and fill in a single TRANSLATIONS entry with its test; nothing else in the lane changes, which is what the synthetic-ELF proof exists to guarantee."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
-        "mod_payload": "metadata-only",
-        "rule": "Ship the lane, the shared EA TERF and EA TDB readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared PS2 boot-ELF and ISO9660 readers and writer it uses, their self-tests and the synthetic sources CI proves them on, plus user-authored cap recipes and the emitted pnach text. The user's ISO, the executable inside it and any patched image stay with the user.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Not applicable: no translation exists, so nothing has been applied in an emulator or on hardware. The synthetic-ELF proof covers the pnach emitter and verifier only.",
-        "status": "not-applicable"
+        "scope": "Offline only: words proven, nothing seen. The five original words were read out of both the retail (PCSX2 CRC 38014255) and the Deluxe (084562FF) executables and decoded independently; the two editions hold the same word at all five addresses, and the nine words in which those two executables differ are all elsewhere. The emitted pnach and the on-disc image were both verified by re-reading the user's own ELF, and the disc route additionally proves that every byte of the new image outside the five declared four-byte ranges is identical to the source. No emulator was run and no frame was rendered. The runtime witness this row is waiting for is the create-a-playbook editor accepting a 21st set on a shipped 20-set book -- which is expected to fail until the library-capacity layer exists, and that expectation is itself untested.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "one of the six proposed patch ids",
+            "allowed": "playbook_editor_caps, or one of the six proposed patch ids",
             "name": "patch",
             "required": true
           },
           {
-            "allowed": "a mapping of the patch's parameter names to values; refused while the patch is unmapped",
+            "allowed": "formations_cap, sets_cap, plays_cap and plays_per_set_cap, each a whole number from the cap this executable enforces up to 65534",
             "name": "parameters",
+            "required": false
+          },
+          {
+            "allowed": "pnach (the default) or disc",
+            "name": "deliver",
             "required": false
           },
           {
@@ -60,7 +67,7 @@
             "required": false
           }
         ],
-        "notes": "Deferred: the GUI must not expose this row. The studio's Gameplay page states the classification and this reason and offers no control; the command line is how a maintainer proves a translation."
+        "notes": "The translated patch takes four caps and writes one word per cap actually raised: PBFM from formations_cap, PBST and SETL together from sets_cap because the editor tests all three in one conjunction, PBPL from plays_cap, and the per-set play check from plays_per_set_cap. A cap left at its shipped value writes nothing, and a recipe that raises none of them is refused."
       },
       "source_container": {
         "format": "ELF boot executable inside an ISO9660 DVD image; 32-bit MIPS R5900 words at EE addresses",
@@ -70,12 +77,12 @@
           "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
           "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
         ],
-        "resource": "the SLUS-21770 boot ELF, retail (PCSX2 CRC 38014255) or Deluxe (084562FF); six proposed patches, zero translated",
+        "resource": "the SLUS-21770 boot ELF, retail (PCSX2 CRC 38014255) or Deluxe (084562FF); seven catalogue rows, one translated to five words",
         "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
       },
-      "summary": "The whole PCSX2 pnach pipeline for the SLUS-21770 boot ELF, proved end to end on a synthetic ELF, with no translation mapped and every one refused by name. The catalogue is six subject areas the owner's Madden 09 static-analysis work has opened, each carrying the plain statement that no word has been located for it. A recipe may carry hand-authored address/original/replacement words while a translation is being proved: planning checks every original against the user's own ELF, the emitted pnach names that ELF's own PCSX2 CRC, and verify re-reads both independently and fails a tampered file. No retail address or code byte is in the repository.",
+      "summary": "The PCSX2 pnach pipeline for the SLUS-21770 boot ELF, carrying one real translation: the five sltiu immediates that bound the in-game create-a-playbook editor -- formations, sets, the set list, plays per book, and the per-set play check Madden 2004 never had. Each word was re-read and re-decoded against both this title's executables before being written into the lane, and PCSX2's bundled patch archive was measured to carry no file for either CRC, so the owner's static research is the only source of translations for this title. Delivery is a pnach by default or the same words written into the executable on a NEW image. The other six catalogue rows are subject areas with no located site and are refused by name. Editor-side layer only; nothing has been booted.",
       "surface": "gameplay_tuning_sliders",
-      "title": "Madden 09 (PS2) executable patches (pnach-first, nothing mapped)",
+      "title": "Madden 09 (PS2) executable patches: the playbook editor's capacity checks",
       "validation_command": "bash tools/validate_madden09_ps2_code_patches.sh"
     },
     {
