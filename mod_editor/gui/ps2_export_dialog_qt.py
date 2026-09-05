@@ -104,21 +104,22 @@ class Ps2ExportActionState:
 
 def ps2_export_action_state(
     *,
-    manifest_ready: bool,
+    plan_ready: bool,
     busy: bool,
     mapped_count: int,
     exported: bool,
 ) -> Ps2ExportActionState:
     """Compute button gating without consulting any widget.
 
-    Export needs a manifest and at least one *mapped* target: a plan whose every
-    entry is skipped would publish a folder holding nothing but a receipt, which
-    is a confusing way to say "none of your edits are in the map yet".
+    Export needs a plan -- which means a manifest loaded and a project read --
+    and at least one *mapped* target: a plan whose every entry is skipped would
+    publish a folder holding nothing but a receipt, which is a confusing way to
+    say "none of your edits are in the map yet".
     """
 
     return Ps2ExportActionState(
         can_choose_project=not busy,
-        can_export=bool(manifest_ready and not busy and mapped_count > 0),
+        can_export=bool(plan_ready and not busy and mapped_count > 0),
         can_verify=bool(exported and not busy),
     )
 
@@ -846,7 +847,7 @@ class Ps2ExportDialog(QDialog):
     def _refresh_controls(self) -> None:
         plan = self._plan
         state = ps2_export_action_state(
-            manifest_ready=plan is not None,
+            plan_ready=plan is not None,
             busy=self._busy,
             mapped_count=len(getattr(plan, "mapped", ())) if plan else 0,
             exported=self._receipt is not None,

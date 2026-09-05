@@ -156,9 +156,9 @@ def write_project(directory: Path, name: str = "kit.2k5mod") -> Path:
 
 @unittest.skipIf(dialog_module is None, "PyQt5 is not installed")
 class ViewModelTests(unittest.TestCase):
-    def test_nothing_is_offered_without_a_manifest(self) -> None:
+    def test_nothing_is_offered_without_a_plan(self) -> None:
         state = dialog_module.ps2_export_action_state(
-            manifest_ready=False, busy=False, mapped_count=3, exported=False
+            plan_ready=False, busy=False, mapped_count=3, exported=False
         )
         self.assertTrue(state.can_choose_project)
         self.assertFalse(state.can_export)
@@ -166,7 +166,7 @@ class ViewModelTests(unittest.TestCase):
 
     def test_a_busy_dialog_offers_nothing(self) -> None:
         state = dialog_module.ps2_export_action_state(
-            manifest_ready=True, busy=True, mapped_count=3, exported=True
+            plan_ready=True, busy=True, mapped_count=3, exported=True
         )
         self.assertEqual(
             (state.can_choose_project, state.can_export, state.can_verify),
@@ -175,20 +175,20 @@ class ViewModelTests(unittest.TestCase):
 
     def test_exporting_needs_at_least_one_mapped_target(self) -> None:
         none_mapped = dialog_module.ps2_export_action_state(
-            manifest_ready=True, busy=False, mapped_count=0, exported=False
+            plan_ready=True, busy=False, mapped_count=0, exported=False
         )
         some = dialog_module.ps2_export_action_state(
-            manifest_ready=True, busy=False, mapped_count=1, exported=False
+            plan_ready=True, busy=False, mapped_count=1, exported=False
         )
         self.assertFalse(none_mapped.can_export)
         self.assertTrue(some.can_export)
 
     def test_verifying_needs_a_pack_to_have_been_written(self) -> None:
         before = dialog_module.ps2_export_action_state(
-            manifest_ready=True, busy=False, mapped_count=1, exported=False
+            plan_ready=True, busy=False, mapped_count=1, exported=False
         )
         after = dialog_module.ps2_export_action_state(
-            manifest_ready=True, busy=False, mapped_count=1, exported=True
+            plan_ready=True, busy=False, mapped_count=1, exported=True
         )
         self.assertFalse(before.can_verify)
         self.assertTrue(after.can_verify)
