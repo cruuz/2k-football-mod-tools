@@ -13,7 +13,8 @@
 - **Six PS2 on-disc writers**, all CLI-only and offline-writer-proved: display text, playbooks,
   uniform colours, the disc roster, stadium positions and one-shot AUDO sounds. Each writes a NEW
   image through the fixed-allocation ISO9660 writer and ships an independent verifier; each was
-  proven once on the real disc. Nothing has been on a screen or heard.
+  proven once on the real disc. One AUDO slot has been heard on a cold boot (that row is runtime-proved
+  for that selector only); nothing else has been on a screen or heard.
 
 ## Beta 60 (unreleased) — NFL 2K5 (PS2): the disc, read by name
 

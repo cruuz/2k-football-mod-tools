@@ -5077,7 +5077,7 @@
         "module": "tools/nfl2k5_ps2_audo_patch.py",
         "operation": "write"
       },
-      "classification": "offline-writer-proved",
+      "classification": "runtime-proved",
       "evidence": [
         "docs/product/PS2_PHASE2_AUDIO_RESEARCH.md",
         "docs/product/PS2_PORT_HANDOFF.md",
@@ -5103,7 +5103,7 @@
         "690 of 844 chunks share a name with another chunk (161 distinct names across 844 chunks; two crowd sounds occupy 340 chunks each). The physical span is exact but the in-game cue is not proved, so a UI must warn that replacing one slot may change an unexpected or duplicate-sounding cue."
       ],
       "portme": [
-        "Take a witnessed PenguinScreen2/PCSX2 run of a replaced disc-unique slot before anything here claims runtime-proved; that claim is not made and must not be inferred from the offline receipt.",
+        "Extend the runtime proof beyond menu-appear_01: a headless button seam in PenguinScreen2 (or a person at the controls) would let crowd loops and in-game cues be heard; each newly heard slot widens the recorded context, nothing more.",
         "Settle runtime selector ownership: 690 of 844 chunks share a name, so for most slots nothing offline says which in-game event plays them. Until that is traced, only the 154 disc-unique names can be attributed at all.",
         "Build the Qt-free service the studio would call (the research plan's nfl2k5_ps2_audo_fixed_slots.py and ps2_audio_write_service.py do not exist), then the separate PS2 audio window.",
         "Add the bounded replace_spans path to the ISO writer: replace_files declares 1,073,741,832 bytes to change 6,544, about 164,000x the slot asked for, and costs 166.9 s per sound. The tight claim is currently recovered after the fact by the verifier in another 34.1 s.",
@@ -5116,9 +5116,11 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "Offline only: the bytes are proved and the sound is not. The real-disc trial replaced one uniquely-named mono slot and the independent verifier found 6,080 bytes changed with 0 outside the declared span, 78 of 78 tree entries identical and the boot ELF digest unchanged; ps2_iso9660_verify passed alongside it. Nothing has been on a screen or through a speaker. A runtime witness would be: boot the patched image in PenguinScreen2/PCSX2, trigger the menu event that owns a disc-unique slot, and hear the replacement instead of the retail sound -- which proves ownership for that one slot and for none of the other 843.",
-        "status": "not-tested"
+        "evidence": [
+          "reports/gameplay_tuning/nfl2k5_ps2_ondisc_witness.v1.json"
+        ],
+        "scope": "Runtime-proved for exactly one recorded selector and context, and no further: slot nfl2k5ps2.audio.audo.o0009.c0033 (menu-appear_01, mono 16 kHz) replaced with a 1600 Hz tone on a copy of the disc and HEARD on PenguinScreen2 build 8226182a during a cold boot to the title screen (audio captured from the emulator; at t=17.15 s the 1600 Hz band held 98.7% of spectral energy against a stock maximum of 5.8%; verifier pass, 0 bytes outside the declared spans). Every other slot remains offline-proved: the patcher and verifier are the same, but which in-game event plays a given chunk is unproved for the 690 chunks that share a name, and no other slot has been heard.",
+        "status": "visible-proved"
       },
       "selectors": {
         "fields": [
@@ -5181,6 +5183,7 @@
         "Ownership of the two words is inherited from the Xbox static executable trace, not re-derived against SLUS_209.19 and not confirmed by any runtime capture on either platform."
       ],
       "portme": [
+        "Runtime witness attempted 2026-09-05 and not reached: a cold boot renders in-engine football from baked intro assets (frame byte-identical to stock with every one of the 634 facemask/turtleneck pairs set to magenta changed), no attract demo auto-starts, save-state boots are non-deterministic, and the fork has no headless button seam; a witness needs either that seam or a person reaching gameplay in PenguinScreen2 with the patched image (rebuilds from the committed recipe in ~20 s on the rig).",
         "Capture a controlled PenguinScreen2/PCSX2 run that isolates the facemask and turtleneck materials before anything claims runtime-proved; the Xbox row has never had this capture either, so a PS2 witness would make this the better-evidenced of the two.",
         "Re-derive word ownership against SLUS_209.19 rather than inheriting the Xbox executable trace: Xbox virtual addresses are not PS2 offsets, so the semantic half of the Xbox row does not transfer even though the bytes do.",
         "Build the Qt-free colour service and the separate PS2 window; nothing in mod_editor/ calls this lane today.",
@@ -5254,6 +5257,7 @@
       "id": "nfl2k5ps2.menus.text_banks",
       "input_constraints": [
         "Shorter or equal, never longer: across all 6,873 strings an allocation is exactly len(text) * 2 + 2 bytes, so there is zero slack anywhere on the disc and the character budget is the original string's own length. One code unit longer is refused, and the refusal states the budget.",
+        "Scope is the five banks and nothing else: franchise, credits, situation and trivia text. The in-game HUD and play-call strings (CHOOSE PACKAGE, COACH'S PICK, penalty banners) are in none of the disc's 716 text banks \u2014 measured on six save-state screens, 0 of 6,873 catalogued strings \u2014 so this row cannot change them.",
         "Only the 6,658 editable strings may be written. A string is editable only when its whole resource body rebuilds byte-identically from the decoded structure, its allocation is a NUL-terminated UTF-16LE run on a pool-entry boundary, it has room for at least one code unit past its terminator, and its consumer is display copy rather than lookup: 50 SITU scenario selectors and 165 zero-capacity CRED/STRG allocations stay read-only.",
         "Inline tokens are preserved exactly: dropping, adding or reordering a pipe-delimited marker from the 57-entry token table is refused, because the engine draws a glyph where the marker sits.",
         "An LZ-compressed bank is refused outright rather than recompressed -- no text bank on the retail disc is compressed (chunk magic 0), so wiring in the refit layer would add the hazard that hung an attract demo without buying anything.",
@@ -5350,6 +5354,7 @@
         "A loaded roster or franchise save may override this disc seed."
       ],
       "portme": [
+        "Runtime witness attempted 2026-09-05 and not reached: a cold boot renders in-engine football from baked intro assets (frame byte-identical to stock with every one of 2,462 jersey numbers set to 7 changed), no attract demo auto-starts, save-state boots are non-deterministic, and the fork has no headless button seam; a witness needs either that seam or a person reaching gameplay in PenguinScreen2 with the patched image (rebuilds from the committed recipe in ~20 s on the rig).",
         "Witness an edited primary and secondary player in game on PenguinScreen2/PCSX2, from a fresh franchise with no roster save loaded, before anything claims runtime-proved.",
         "Establish save precedence on PS2 directly: the shipped memory-card roster writer edits the save-side ROST arena, which is a different container from this disc resource, so which one the running game reads is the first thing a witness has to settle.",
         "Extend beyond jersey and names only as each field is mapped from the PS2 bytes: face shield decodes cleanly at record +0x20 bits 15..16 (2,487 None, 42 Clear, 18 Dark, no record using the reserved value 3) but is not yet offered as a write here; ratings, team membership and depth charts stay read-only.",
@@ -5521,6 +5526,7 @@
         "The memory-card overlay risk is untested on PS2: plays created by the in-game editor may live in save containers that overlay the disc book at load, which would mask a disc edit. That claim is unproven on either platform and belongs in the UI as a note."
       ],
       "portme": [
+        "Runtime witness not attempted 2026-09-05: the play-call menu exists only in RAM-resident save states, which boot non-deterministically frame-to-frame; a witness needs a headless button seam or a person reaching the menu in PenguinScreen2.",
         "Boot the patched image and confirm the authored formation lines up in game before anything claims runtime-proved. Note that the Xbox row has never had this witness either, so taking it on PS2 would make the PS2 row the better-evidenced of the two -- and it is the cheapest decisive test available for the whole on-disc Phase 2 path.",
         "Settle the memory-card overlay question on PS2: if in-game-authored plays live in a save container that overlays the disc book at load, a user with an existing save could mask disc edits. The harness for that has never run on either platform.",
         "Name the remaining raw operands of the pass, zone, man and motion nodes so a designer can label them, and prove the formation-to-play menu link's group bits rather than reusing a value the book already has.",
@@ -5604,6 +5610,7 @@
         "The 8 batches on the trial scene whose VIF command 0x3F is unknown are excluded rather than guessed at; coverage there is 646 of 654 batches."
       ],
       "portme": [
+        "Runtime witness not attempted 2026-09-05: one scene is catalogued and the only input-free stadium shot (the cold-boot intro) proved insensitive to the other disc lanes; a witness needs the scene the game actually loads for a reachable screen and either a headless button seam or a person at the controls.",
         "Boot the patched image on the rig and look at the stadium before anything claims runtime-proved. Until then the classification cannot honestly exceed what the Xbox equivalent claims, and that row is runtime.status not-tested after far more work.",
         "Decide the headroom question before shipping: with 0 to 16 spare bytes per scene the optimal-parse encoder is load-bearing rather than a nicety, and its output is a different stream shape than any retail disc ever contained. It decodes correctly offline; nobody has watched a console decode one.",
         "Catalogue more than one scene: run the tool across all 477 stadium-named SCNEs and check the refusal profile holds. Cheap, and not yet done -- every count in this row is from a single scene.",

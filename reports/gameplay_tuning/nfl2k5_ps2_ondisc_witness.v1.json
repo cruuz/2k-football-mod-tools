@@ -1,0 +1,129 @@
+{
+  "blocking_constraint": {
+    "no_headless_button_injection": "penguinscreen2-mb exposes PCSX2_VR_PADLOOK_SEQ / PCSX2_VR_PADSTICK, but VR/PadLook.cpp shows both drive ONLY the right-stick RX byte (0..255). There is no button (Start/X/Circle) seam. Menus therefore cannot be navigated headlessly, which is what gates four of the six lanes.",
+    "one_dump_per_boot": "VMManager.cpp:2949 latches s_dump_fired, so the seam fires exactly once per boot; 'frames' is the multi-frame count of that single dump. One boot per vsync target."
+  },
+  "date": "2026-09-05",
+  "images_built": {
+    "all 4665081856 bytes = exact stock size": true,
+    "p-allaudio.iso": "all 844 slots -> 3000 Hz",
+    "p-audio.iso": "3 named slots -> tones",
+    "p-color.iso": "634 Unif -> magenta",
+    "p-groupcode.iso": "844 slots, 20-frequency group code",
+    "p-roster.iso": "2462 jerseys -> 7",
+    "p-unique.iso": "slots 0-42, unique frequency each",
+    "patched.iso": "COMBINED audio+colour+roster (the single briefed image)"
+  },
+  "lanes": {
+    "audio": {
+      "how_found": "All 844 AUDO slots replaced with a 3000 Hz burst -> a single burst heard at t=17.3s. Then a 20-frequency group code (200 Hz apart) -> group 0 (slots 0-42) at 800 Hz. Then a UNIQUE frequency per slot (700..4900 Hz, 100 Hz apart) -> 1600 Hz = index 9 = menu-appear_01.",
+      "measurement": {
+        "method": "pw-record of the PipeWire sink monitor over the boot window; 0.10 s Hann windows, 50% overlap, +-40 Hz band",
+        "patched_best_window": {
+          "band_hz": 1600,
+          "rms": 0.8104,
+          "share_of_spectral_energy": 0.9869,
+          "t_s": 17.15
+        },
+        "patched_burst_span_s": [
+          17.1,
+          17.25
+        ],
+        "stock_same_band_max_share": 0.0583,
+        "stock_windows_above_0.25_share": 0
+      },
+      "slot": "nfl2k5ps2.audio.audo.o0009.c0033 = menu-appear_01 (outer entry 9, chunk 33, mono, 16000 Hz)",
+      "status": "WITNESSED",
+      "verifier": "nfl2k5_ps2_audo_verify.py verdict=pass, changed_outside_declared_spans=0"
+    },
+    "colors": {
+      "status": "NOT WITNESSED",
+      "verifier": "NFL2K5_PS2_UNIF_COLOR_VERIFY_PASS edits=634 unif_records=634 unchanged_bytes=2147478576",
+      "what_it_would_take": "A real game screen: kickoff/gameplay reached from a cold boot, which needs Start + menu navigation. No headless button seam exists (see blocking_constraint).",
+      "what_was_built": "All 634 Unif packages (317 HOME + 317 AWAY), facemask AND turtleneck -> #FF00FF magenta",
+      "why_not": "The only input-free screen that draws a helmet is the in-engine intro montage at v4800. Booting the combined patched image there produced a GS dump byte-identical to the stock boot (md5 91f363c7160cf73cc45e25f0185999f6 both) and a PIXEL-IDENTICAL frame (full-frame ImageChops diff bbox = None, 0 magenta pixels in 640x480). The intro cinematic evidently draws its own baked model/material set, not the gameplay Unif colour packages."
+    },
+    "playbook": {
+      "status": "NOT ATTEMPTED",
+      "what_it_would_take": "Button injection: cold boot, Start, navigate to a game, open the play-call menu.",
+      "why": "As the brief predicted. The play-call menu IS on screen in states 04/05/06 ('CHOOSE PACKAGE', Pro/Ace/Kings, 'DOUBLES'), but the playbook is already RAM-resident in a save state, and state boots were measured nondeterministic, so neither a positive nor a negative result would have been attributable."
+    },
+    "roster": {
+      "status": "NOT WITNESSED",
+      "verifier": "NFL2K5_PS2_DISC_ROSTER_VERIFY_PASS edits=2462 names=0 packed=2462 rost=76 outer=5 unchanged_bytes=1073731976",
+      "what_it_would_take": "Same as colours.",
+      "what_was_built": "Every primary player's jersey number -> 7 (2462 edits; 17 already wore 7 and were skipped because the writer refuses no-op writes)",
+      "why_not": "Same frame as colours: the v4800 intro shows jersey numbers 11 and 94 but the patched boot's frame is pixel-identical to stock, so the intro's numbers are not read from the boot roster."
+    },
+    "stadium": {
+      "status": "NOT ATTEMPTED",
+      "what_it_would_take": "Button injection to reach a real game, then catalogue the specific stadium scene and move a large lane.",
+      "why": "Only ONE scene is catalogued (outer entry 1556, chunk 2: 101 shapes, 654 batches, 1041 position lanes). The one input-free scene that renders a stadium is the v4800 Metrodome shot, and that frame proved insensitive to BOTH other disc lanes, so a stadium edit could not have been attributed there either. Cataloguing the remaining 476 scenes to find the Metrodome would have bought a measurement the vehicle cannot make."
+    },
+    "text": {
+      "evidence": "All 6873 catalogued strings were decoded from the operator's own ISO and every one matched its catalogue text_sha256 (0 mismatches), so the inventory is complete and trustworthy.",
+      "status": "NOT WITNESSED",
+      "what_it_would_take": "Button injection to reach the franchise front office.",
+      "why_not": "The four editable banks are STRG 24.65 (1105 franchise/front-office/training labels), STRG 190.1 (8 milestone help blurbs), CRED (608 credits), SITU (100 ESPN-Classic scenario prose), TRIV (4837 trivia). None is drawn by the boot logos, the intro, or the title screen. The in-game HUD strings that ARE on screen in the save states - 'CHOOSE PACKAGE', 'LAST PLAY', 'COACH\\'S PICK', 'PAGE 1', '5 yard penalty San Francisco' - are in NO text bank: searched all 6873, zero hits. They live in the ELF or in textures."
+    }
+  },
+  "rig_workspace": "rig, private work dir (frames, audio captures and images stay there; images deleted, rebuildable from the recipes in ~20 s)",
+  "schema": "nfl2k5_ps2_ondisc_witness/v1",
+  "summary": {
+    "not_witnessed": [
+      "colours: 634 Unif facemask/turtleneck words -> magenta, verifier pass, but the cold-boot in-engine football (v4800) renders from baked intro assets: GS dump and frame byte-identical to stock",
+      "roster: 2,462 jerseys -> 7, verifier pass, same pixel-identical frame; the intro's numbers are not read from the boot roster",
+      "text: the four editable bank kinds (franchise, credits, situations, trivia) are not drawn on any input-free screen; the HUD and play-call strings seen in the six save states are in none of the 716 banks (0 of 6,873 strings)",
+      "stadium: not attempted \u2014 one scene catalogued and the only input-free stadium shot proved insensitive to the other disc lanes",
+      "playbooks: not attempted \u2014 the play-call menu exists only in RAM-resident, non-deterministic save states"
+    ],
+    "what_a_witness_needs": [
+      "a headless button/press-at-vsync seam in PenguinScreen2, or",
+      "a person booting the patched image in PenguinScreen2 and reaching gameplay/menus (the combined image rebuilds from the committed recipes in ~20 s on the rig)"
+    ],
+    "why": [
+      "no attract demo auto-starts (title screen static from v7200 to v18000)",
+      "save-state boots are non-deterministic frame-to-frame, so stock-vs-patched diffs from a state are meaningless; cold boots are frame-deterministic",
+      "the fork exposes no headless button seam (only the right-stick byte), so menus cannot be reached without a person or an emulator change"
+    ],
+    "witnessed": [
+      "audio: slot nfl2k5ps2.audio.audo.o0009.c0033 (menu-appear_01) heard on cold boot at t=17.15 s \u2014 98.7% of spectral energy in the 1600 Hz band vs a stock maximum of 5.8%; verifier pass, 0 bytes changed outside the declared spans"
+    ]
+  },
+  "vehicle": {
+    "chosen": "COLD BOOT, no save state (-statefile omitted) - every resource loads from the disc under test",
+    "cold_boot_determinism": {
+      "note": "The .gs.zst container is not byte-stable across boots, but the RENDERED FRAMES are.",
+      "v4800_frame00002_md5_both_boots": "9b6a3fbf6dfca2b6bad658bb9a4b5d65",
+      "v4800_frame00003_md5_both_boots": "28bb717dc0338a58fabc13857a1cc3df",
+      "verdict": "frame-DETERMINISTIC across two independent stock cold boots"
+    },
+    "screens_reachable_without_input": {
+      "v1800": "Visual Concepts logo",
+      "v2400": "black transition",
+      "v3000": "ESPN 'Worldwide Leader' 3D logo",
+      "v3600": "crowd, foam fingers",
+      "v4200": "microphone cluster",
+      "v4800": "IN-ENGINE FOOTBALL: Vikings #11 vs Packers #94 in the Metrodome - helmets, facemasks, jersey numbers, stadium",
+      "v7200+": "TITLE SCREEN, static; v7200/v14400/v18000 all 487764 bytes - NO attract demo auto-starts"
+    },
+    "state_boot_determinism": {
+      "state01": {
+        "stock": "9d4f37beef402d165ea583cfc134602a",
+        "stock_rerun": "39cc93ac4e3c5a2a378013bff5715531",
+        "verdict": "NONDETERMINISTIC"
+      },
+      "state04": {
+        "stock": "c09ffef5efb8d6080c6a01fce92a8bd0",
+        "stock_rerun": "68d1db30524f235f77203e28e1647d67",
+        "verdict": "NONDETERMINISTIC"
+      },
+      "state06": {
+        "stock": "c1ac24ac8d94133f9f65d9e3ef56be23",
+        "stock_rerun": "c75bfbfa060b4903de8d85295add52eb",
+        "verdict": "NONDETERMINISTIC"
+      }
+    },
+    "why_not_states": "All six banked states are mid-game; RAM already holds the stock resources. Measured additionally: save-state boots are NONDETERMINISTIC - the stock state-01/04/06 dumps did not reproduce on a second stock boot, so no stock-vs-patched pixel diff from a state can mean anything."
+  }
+}

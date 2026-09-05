@@ -50,7 +50,7 @@
   changes, refusal before anything is created. Each lane ships an independent verifier that
   re-derives its claims from the two images plus a whole-image byte comparison, `.sh`/`.bat`
   validators and synthetic tests; the ISO9660 writer and verifier ship with them.
-- Each lane was proven on the real disc once, offline — nothing has been on a screen or heard:
+- Each lane was proven on the real disc once, offline. One AUDO slot (menu-appear_01) was then heard on a cold boot in PenguinScreen2 — that row is runtime-proved for that one selector; nothing else has been on a screen or heard:
   text 13 bytes in 13 runs; playbook 258 bytes in 74 ranges; colours 8 bytes; roster 16 bytes
   in two ranges; stadium 1,282,669 bytes inside one declared window after an optimal-parse
   refit into a chunk with 3 spare bytes; audio 6,080 bytes with none outside the slot.

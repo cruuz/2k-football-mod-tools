@@ -79,14 +79,22 @@ class Ps2RegistryTests(unittest.TestCase):
             and c.surface != "saves"
         ]
         self.assertEqual(len(disc_writers), 6)
+        heard = {"nfl2k5ps2.audio.audo_exact_slot_replace"}
         for capability in disc_writers:
-            self.assertEqual(capability.classification.value, "offline-writer-proved")
             self.assertEqual(capability.raw["gui"]["mode"], "edit")
             self.assertIs(capability.raw["gui"]["expose"], False)
             self.assertIs(capability.raw["gui"]["default_enabled"], False)
             self.assertTrue(capability.raw["gui"]["reason"].strip())
-            self.assertEqual(capability.raw["runtime"]["status"], "not-tested")
             self.assertTrue(capability.raw["validation_command"])
+            if capability.raw["id"] in heard:
+                # One AUDO slot was heard on a cold boot (menu-appear_01); the
+                # row is runtime-proved for that recorded selector only.
+                self.assertEqual(capability.classification.value, "runtime-proved")
+                self.assertEqual(capability.raw["runtime"]["status"], "visible-proved")
+                self.assertTrue(capability.raw["runtime"]["evidence"])
+            else:
+                self.assertEqual(capability.classification.value, "offline-writer-proved")
+                self.assertEqual(capability.raw["runtime"]["status"], "not-tested")
 
 
 class Ps2SaveWriterTests(unittest.TestCase):
