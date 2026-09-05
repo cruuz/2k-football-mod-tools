@@ -9,6 +9,11 @@
 > the pack's uniform-part textures were not attributable at 640×480 and are not claimed). Report:
 > `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`. Open: a witness of a
 > uniform part on a near-camera player; `runtime-proved` needs a rule extension for exporters.
+> **Stock PCSX2 (measured 2026-09-05):** three stock upstream builds (merge-base v2.7.469, v2.6.0, v2.9.30) loaded the
+> classic-named pack unchanged: bit 14 has been ignored on parse since v1.7.5606. The break older packs hit is
+> v1.7.4034 (region-only hashing): region-clamped textures get different names that no offline rename recovers;
+> unclamped textures load everywhere; PenguinScreen2's Classic Texture Names restores whole-texture hashing. The
+> share of region-clamped identities in the manifest is being measured; the report carries the version table.
 
 
 **M1 is the first thing a modder can actually use.** A user edits a uniform in

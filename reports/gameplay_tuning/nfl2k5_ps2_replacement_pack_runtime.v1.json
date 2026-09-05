@@ -176,5 +176,524 @@
     "iso": "not read; the dump embeds the serial",
     "replacements_link": "swapped to the private kit for the run and restored to the community pack on exit (verified)"
   },
-  "schema": "nfl2k5_ps2_replacement_pack_runtime_witness/v1"
+  "schema": "nfl2k5_ps2_replacement_pack_runtime_witness/v1",
+  "stock_pcsx2": {
+    "answer": "Yes for every texture in this pack: three stock upstream pcsx2-gsrunner builds rendered the classic-only 13-file kit with the same pixel counts as the fork. Bit 14 (the TCC flag) is ignored on parse since v1.7.5606, whose commit dropped it from names and added RemoveUnusedBits() atomically; before it bit 14 was a real TCC field, so classic names have loaded on every upstream build. The community's 'old packs only load on 1.7' experience comes from v1.7.4034 (PR #8015, 2023-02-09), which hashes only the clamped draw region: region-clamped textures get different hashes, which no offline renaming recovers; unclamped textures still load. PenguinScreen2's classic mode restores whole-texture hashing, so whole packs load there.",
+    "baselines": {
+      "fork_classic_true": "1213/3477/6037",
+      "stock_no_pack": "0/0/93"
+    },
+    "isolation": "private XDG_CONFIG_HOME per run; no rig profile, symlink or gamesettings touched",
+    "measurements": {
+      "rows": [
+        {
+          "binary_sha256": "df4ba7efcf094e0fffcdc4f3240254aeacac3eef26b57006a29847c16fd9234d",
+          "built": true,
+          "commit": "92914cee40381e7f1fb7d0b5648390555366f56c",
+          "counts": {
+            "cyan": 3477,
+            "magenta": 1211,
+            "orange": 6010
+          },
+          "date": "2026-07-12",
+          "frame_sha256": "208bc91981c8d077afbe4d25b202c38245fbc0fe7d2991f775dfa57e2fcf6605",
+          "label": "mergebase",
+          "measured": true,
+          "note": "fork's upstream merge-base; measured as R1 in the main witness run",
+          "run": "R1 of the main witness run (stock binary + classic-only 13-file kit)",
+          "tag": "(untagged; git describe v2.7.469)",
+          "verdict": "LOADS CLASSIC NAMES"
+        },
+        {
+          "build_status": "NOT BUILDABLE (upstream limitation, not a rig toolchain failure)",
+          "built": false,
+          "commit": "4e3d28f03f567e19bd0e6666842631c9df36c6a9",
+          "date": "2024-07-13",
+          "label": "v2.0.0",
+          "reasons": [
+            "top-level CMakeLists.txt never adds the pcsx2-gsrunner subdirectory; the ENABLE_GSRUNNER option did not exist until e292c0986f (first tag v2.1.57, 2024-08-04)",
+            "pcsx2-gsrunner/CMakeLists.txt is internally inconsistent: `add_executable(pcsx2-gsrunnner)` (three n's) vs `target_sources(pcsx2-gsrunner ...)` (two n's) - adding the subdirectory by hand still fails to configure",
+            "gsrunner had no GNU/Linux platform implementation until edf686752a (2025-10-08, first tag v2.5.208); it was a Windows-only tool in the 2.0-2.5 era",
+            "(SDL2 >= 2.30.4 was also required and the rig had 2.30.0; this was RESOLVED by building SDL2 2.30.9 into a private prefix, so it is NOT the blocker)"
+          ],
+          "tag": "v2.0.0"
+        },
+        {
+          "build_status": "configure OK, COMPILE FAILED",
+          "built": false,
+          "date": "2024-08-04",
+          "label": "v2.1.57",
+          "reasons": [
+            "first tag with an ENABLE_GSRUNNER CMake option",
+            "VKShaderCache.cpp uses the pre-2024.1 shaderc API (`shaderc_compilation_status_to_string`, 7-arg call); the rig's shaderc is newer"
+          ],
+          "tag": "v2.1.57"
+        },
+        {
+          "build_status": "configure OK, compile OK, LINK FAILED",
+          "built": false,
+          "commit": "e4af1c424451c6b65c5c387404315cef77e9901b",
+          "label": "v2.4.0",
+          "reasons": [
+            "undefined GSRunner::CreatePlatformWindow / GetPlatformWindowInfo / PumpPlatformMessages / DestroyPlatformWindow / StopPlatformMessagePump",
+            "gsrunner's platform layer was Windows-only until edf686752a (v2.5.208)"
+          ],
+          "tag": "v2.4.0"
+        },
+        {
+          "binary_sha256": "2975e412a9fd3d3703d9d6e6ae532b4270d046ce1268947172b77da8b255b2a3",
+          "build_status": "BUILT",
+          "built": true,
+          "commit": "96284205a112ae7e74a8fffa15cb3d867cd0b32f",
+          "conditions": "R1 conditions: classic-only 13-file kit, private XDG_CONFIG_HOME, same 09-04 GS dump",
+          "counts": {
+            "cyan": 3477,
+            "magenta": 1211,
+            "orange": 6010
+          },
+          "crops": {
+            "kick_dial": "v2.6.0-kick_dial-x3.png",
+            "shield_scorebug": "v2.6.0-shield_scorebug-x3.png"
+          },
+          "frame_sha256": "1c99dcab025137216cf1139ba2249b48aced360b8ffceaa15002cd42e44a025a",
+          "label": "v2.6.0",
+          "measured": true,
+          "note": "earliest release-series tag whose gsrunner builds on Linux (Linux support landed edf686752a, first tag v2.5.208)",
+          "tag": "v2.6.0",
+          "verdict": "LOADS CLASSIC NAMES"
+        },
+        {
+          "binary_sha256": "c12946bbdef6099b4bab4a1b1624cde4dea088fa2d5e006fcae3a4a2bdc471e6",
+          "built": true,
+          "commit": "ca0145e6aab44231f8cca6fb53a2915ca205ab8d",
+          "conditions": "R1 conditions: classic-only 13-file kit, private XDG_CONFIG_HOME, same 09-04 GS dump",
+          "counts": {
+            "cyan": 3477,
+            "magenta": 1211,
+            "orange": 6010
+          },
+          "crops": {
+            "kick_dial": "v2.9.30-kick_dial-x3.png",
+            "shield_scorebug": "v2.9.30-shield_scorebug-x3.png"
+          },
+          "frame_sha256": "208bc91981c8d077afbe4d25b202c38245fbc0fe7d2991f775dfa57e2fcf6605",
+          "label": "v2.9.30",
+          "measured": true,
+          "note": "newest upstream release tag in the clone",
+          "tag": "v2.9.30",
+          "verdict": "LOADS CLASSIC NAMES"
+        }
+      ],
+      "summary": {
+        "baselines": {
+          "fork_classic_proven": {
+            "cyan": 3477,
+            "magenta": 1213,
+            "orange": 6037
+          },
+          "no_pack_stock": {
+            "cyan": 0,
+            "magenta": 0,
+            "orange": 93
+          }
+        },
+        "earliest_tag_with_linux_gsrunner": "v2.5.208 (edf686752a, 2025-10-08, 'GSRunner: Support GNU/Linux')",
+        "measured": [
+          "mergebase",
+          "v2.6.0",
+          "v2.9.30"
+        ],
+        "not_buildable": [
+          "v2.0.0",
+          "v2.1.57",
+          "v2.4.0"
+        ],
+        "result": "ALL THREE built binaries - the fork's upstream merge-base (92914cee40), v2.6.0 and v2.9.30 - load the classic TCC-bearing names, with IDENTICAL pixel counts 1211/3477/6010 vs the no-pack baseline 0/0/93. v2.9.30's frame is byte-identical to the merge-base run (208bc919...); v2.6.0's differs in hash (1c99dcab...) but is pixel-identical on all three measured colours, i.e. an unrelated inter-version rendering nuance, not a replacement difference.",
+        "v2_0_0_note": "gsrunner was Windows-only for the whole 2.0-2.5 era and v2.0.0's own CMake glue is broken, so v2.0.0 cannot be measured by headless replay on Linux. The source-level answer is definitive anyway: v2.0.0 contains 4fef86a635, so it normalizes bit 14 exactly like every measured build."
+      }
+    },
+    "naming_history": {
+      "clone": "/home/pacarey/pcsx2-upstream-92914cee40 (full history, not shallow, 5671 tags)",
+      "date": "2026-09-05",
+      "q1_when_did_upstream_normalize_bit14": {
+        "commits": [
+          {
+            "author": "Connor McLaughlin",
+            "date": "2022-02-24 10:18:49 +0000",
+            "first_tag": "v1.7.2389",
+            "note": "TextureName had `u32 TEX0_TCC : 1;` at bit 14, set from hash.TEX0.TCC and read back into key.TEX0.TCC. Bit 14 was SIGNIFICANT and native, so classic (TCC-bearing) names matched.",
+            "on_master": true,
+            "role": "introduced the replacement system; TCC was a REAL name field",
+            "sha": "5a25cc171dd4ff6da59a09763342a55986624d54",
+            "short": "5a25cc171d",
+            "subject": "GS: Add texture dumping and replacement system"
+          },
+          {
+            "author": "Stenzek",
+            "changes": [
+              "`u32 TEX0_TCC : 1;` -> `u32 unused0 : 1; // was TCC` (bit 14)",
+              "added `RemoveUnusedBits()` { unused0 = 0; }",
+              "called it on ALL SIX ParseReplacementName() sscanf paths",
+              "removed `name.TEX0_TCC = hash.TEX0.TCC;` and `key.TEX0.TCC = tn.TEX0_TCC;`",
+              "region filename encoding `-r%llx-` (raw bits) -> `-r%ux%u-` (WxH), with OLD_REGION parse-only fallbacks kept"
+            ],
+            "date": "2024-03-10 18:26:14 +1000",
+            "first_tag": "v1.7.5606",
+            "on_master": true,
+            "role": "dropped TCC from the name AND added the normalization, in ONE commit",
+            "sha": "4fef86a63563eeab0c045925d304f119fb1031a3",
+            "short": "4fef86a635",
+            "subject": "GS/HW: Reduce duplicates in hash cache"
+          }
+        ],
+        "dates": {
+          "v1.7.5606": "2024-03-10",
+          "v2.0.0": "2024-07-13"
+        },
+        "every_release_from_v2_0_0_normalizes": true,
+        "key_finding": "The SAME commit (4fef86a635, v1.7.5606) both REMOVED TCC from the name and ADDED the parse-time normalization that zeroes bit 14. The two changes shipped atomically.",
+        "method": "git log -S'RemoveUnusedBits' / -S'TEX0_TCC' -- pcsx2/GS/Renderers/HW/GSTextureReplacements.cpp",
+        "release_containment_check": {
+          "v1.7.5605": "does NOT contain 4fef86a (bit14 still real TCC)",
+          "v1.7.5606": "contains",
+          "v2.0.0": "contains",
+          "v2.1.0": "contains",
+          "v2.2.0": "contains",
+          "v2.5.0": "contains",
+          "v2.7.0": "contains",
+          "v2.9.30": "contains",
+          "v2.9.9": "contains"
+        },
+        "version_window_where_classic_bit14_names_FAILED_to_load": "NONE - no such window exists",
+        "why": [
+          "v1.7.2389 .. v1.7.5605: bit 14 WAS TCC, a real and significant name field. A classic TCC-bearing name was the NATIVE format and matched.",
+          "v1.7.5606 onward: bit 14 is `unused0` and RemoveUnusedBits() zeroes it on every parse path, so a classic name and its modern twin collapse to the SAME key and both match.",
+          "There is therefore no released upstream version that rejects a classic name on account of bit 14."
+        ]
+      },
+      "q2_is_the_rename_the_whole_story": {
+        "answer": "NO. The rename (bit 14) is the SMALLER of two independent breaks, and it is the only one upstream forgives.",
+        "bottom_line": "Renaming a pack's bit 14 is necessary for NOTHING on stock (upstream already normalizes it) and sufficient for only the unclamped/TCC=1 class. For region-clamped art the classic filename embeds a full-pow2-extent pixel hash that stock PCSX2 never computes - no rename can fix that, because the hash, not the name decoration, is different. That class needs the fork.",
+        "fork_vs_upstream_diff": {
+          "differences": [
+            {
+              "changes_hash": true,
+              "code": "pcsx2/GS/Renderers/HW/GSTextureCache.cpp:7009-7013",
+              "explanation": "passes an EMPTY SourceRegion to HashCacheKey::Create, so HashTextureLevel() hashes the full 2^TW x 2^TH extent instead of the region extent. This changes TEX0Hash - the FIRST hash component of the filename. Stock PCSX2 computes only the region-extent hash and therefore never produces, and never looks up, the classic full-extent name.",
+              "n": 1,
+              "name": "Full pow2-canvas pixel hash (region cleared)",
+              "snippet": "if (region.HasEither()) { classic_key = HashCacheKey::Create(TEX0, TEXA, (dump||replace||!paltex)?clut:nullptr, lod, SourceRegion{}); }",
+              "verdict": "CLASS OF TEXTURES STOCK CAN NEVER LOOK UP: every region-clamped texture."
+            },
+            {
+              "changes_hash": false,
+              "changes_name_shape": true,
+              "code": "pcsx2/GS/Renderers/HW/GSTextureCache.cpp:7020,7031 (DumpTexture(..., SourceRegion{}, ...))",
+              "explanation": "the classic name is emitted with NO -rWxH- suffix, i.e. the plain <tex0>-<clut>-<bits>.png pre-4034 shape. Upstream still PARSES that shape (region=0), but a parsed-legacy name can never equal a runtime key whose region is non-empty - the L2 identity mismatch. Compounds with #1 rather than being separable from it.",
+              "n": 2,
+              "name": "Region identity cleared from the name"
+            },
+            {
+              "changes_hash": false,
+              "code": "pcsx2/GS/Renderers/HW/GSTextureReplacements.cpp:180-181 (`if (GSConfig.ClassicTextureNames) name.unused0 = hash.TEX0.TCC;`) with the carrier at GSTextureCache.cpp:7014 (`classic_key.TEX0.TCC = TEX0.TCC;`)",
+              "explanation": "TEX0.TCC sits OUTSIDE HashCacheKey::Create()'s mask (ret.TEX0.U64 = TEX0.U64 & 0x00000003FFF00000ULL, i.e. PSM/TW/TH only), so it never enters the hash. This is a pure +/-0x4000 rename - and it is exactly the difference upstream's RemoveUnusedBits() erases.",
+              "n": 3,
+              "name": "TCC restored into name bit 14",
+              "verdict": "THE ONLY DIFFERENCE STOCK PCSX2 FORGIVES. This is why our 13-texture witness kit loaded on stock."
+            },
+            {
+              "changes_hash": false,
+              "code": "pcsx2/GS/Renderers/HW/GSTextureReplacements.cpp:547,558-573,598,631; header GSTextureReplacements.h:51-52 adds (force_sync, classic_region, base_width, base_height)",
+              "explanation": "pre-4034 pack art is FULL-CANVAS but the modern engine samples region-clamped sources with region-local UVs. The fork maps the region rect into the replacement's (upscaled) pixel space and injects only that sub-rect. Stock has NO such path, so even if a full-canvas classic file were somehow matched, stock would render the whole atlas (the 'many numbers on jerseys' artifact).",
+              "n": 4,
+              "name": "Region crop at injection (rendering, not naming)"
+            }
+          ],
+          "explicitly_NOT_a_difference": {
+            "clut_palette_handling": "the fork's classic Create() call uses `(dump || replace || !paltex) ? clut : nullptr` - which is character-for-character the SAME expression upstream uses at GSTextureCache.cpp:6956. CLUTHash handling is therefore identical; it is NOT a fork deviation. Checked explicitly to avoid overclaiming."
+          },
+          "files": {
+            "GSTextureCache.cpp": "+260",
+            "GSTextureCache.h": "+28",
+            "GSTextureReplacements.cpp": "+265",
+            "GSTextureReplacements.h": "+14"
+          },
+          "range": "92914cee40 (upstream merge-base) .. 8226182a (fork HEAD)"
+        },
+        "two_breaks_from_fork_investigation_doc": {
+          "break_1": {
+            "class_hit": "every region-clamped texture - i.e. most art in the clamp-heavy 2K/NCAA sports engines",
+            "commits": [
+              "b9b47e3ec",
+              "7d08a54ad (the behaviour change)",
+              "8a0a8f718"
+            ],
+            "effect": "introduced SourceRegion: when CLAMP is REGION_CLAMP/REGION_REPEAT (or the clamp rect is smaller than 2^TW x 2^TH) the TC source is sized to the REGION instead of the full pow2 extent. HashTexture() then hashes only the region texels, so the PIXEL HASH VALUE ITSELF changes for identical art.",
+            "merged": "2023-02-09",
+            "pr": "#8015 'GS/HW: Optimize TC source size based on CLAMP'",
+            "severity": "TOTAL - the old hash is never computed again, so the old filename is never looked up",
+            "tag": "v1.7.4034"
+          },
+          "break_2": {
+            "class_hit": "UNCLAMPED, TCC=1 textures (the community's jersey-number class)",
+            "commit": "4fef86a63",
+            "date": "2024-03-10",
+            "effect": "TCC dropped from the packed bits; every TCC=1 texture's trailing -%08x drops by exactly 0x4000",
+            "severity": "COSMETIC - pure constant rename, and upstream normalizes it away on parse anyway",
+            "tag": "v1.7.5606"
+          },
+          "source": "~/penguinscreen2-dev/docs/research/classic-dump-investigation.md (read-only)"
+        }
+      },
+      "title": "Upstream PCSX2 texture-replacement naming history, and what the fork's classic mode really changes",
+      "versions_measured": {
+        "rows": [
+          {
+            "binary_sha256": "df4ba7efcf094e0fffcdc4f3240254aeacac3eef26b57006a29847c16fd9234d",
+            "built": true,
+            "commit": "92914cee40381e7f1fb7d0b5648390555366f56c",
+            "counts": {
+              "cyan": 3477,
+              "magenta": 1211,
+              "orange": 6010
+            },
+            "date": "2026-07-12",
+            "frame_sha256": "208bc91981c8d077afbe4d25b202c38245fbc0fe7d2991f775dfa57e2fcf6605",
+            "label": "mergebase",
+            "measured": true,
+            "note": "fork's upstream merge-base; measured as R1 in the main witness run",
+            "run": "R1 of the main witness run (stock binary + classic-only 13-file kit)",
+            "tag": "(untagged; git describe v2.7.469)",
+            "verdict": "LOADS CLASSIC NAMES"
+          },
+          {
+            "build_status": "NOT BUILDABLE (upstream limitation, not a rig toolchain failure)",
+            "built": false,
+            "commit": "4e3d28f03f567e19bd0e6666842631c9df36c6a9",
+            "date": "2024-07-13",
+            "label": "v2.0.0",
+            "reasons": [
+              "top-level CMakeLists.txt never adds the pcsx2-gsrunner subdirectory; the ENABLE_GSRUNNER option did not exist until e292c0986f (first tag v2.1.57, 2024-08-04)",
+              "pcsx2-gsrunner/CMakeLists.txt is internally inconsistent: `add_executable(pcsx2-gsrunnner)` (three n's) vs `target_sources(pcsx2-gsrunner ...)` (two n's) - adding the subdirectory by hand still fails to configure",
+              "gsrunner had no GNU/Linux platform implementation until edf686752a (2025-10-08, first tag v2.5.208); it was a Windows-only tool in the 2.0-2.5 era",
+              "(SDL2 >= 2.30.4 was also required and the rig had 2.30.0; this was RESOLVED by building SDL2 2.30.9 into a private prefix, so it is NOT the blocker)"
+            ],
+            "tag": "v2.0.0"
+          },
+          {
+            "build_status": "configure OK, COMPILE FAILED",
+            "built": false,
+            "date": "2024-08-04",
+            "label": "v2.1.57",
+            "reasons": [
+              "first tag with an ENABLE_GSRUNNER CMake option",
+              "VKShaderCache.cpp uses the pre-2024.1 shaderc API (`shaderc_compilation_status_to_string`, 7-arg call); the rig's shaderc is newer"
+            ],
+            "tag": "v2.1.57"
+          },
+          {
+            "build_status": "configure OK, compile OK, LINK FAILED",
+            "built": false,
+            "commit": "e4af1c424451c6b65c5c387404315cef77e9901b",
+            "label": "v2.4.0",
+            "reasons": [
+              "undefined GSRunner::CreatePlatformWindow / GetPlatformWindowInfo / PumpPlatformMessages / DestroyPlatformWindow / StopPlatformMessagePump",
+              "gsrunner's platform layer was Windows-only until edf686752a (v2.5.208)"
+            ],
+            "tag": "v2.4.0"
+          },
+          {
+            "binary_sha256": "2975e412a9fd3d3703d9d6e6ae532b4270d046ce1268947172b77da8b255b2a3",
+            "build_status": "BUILT",
+            "built": true,
+            "commit": "96284205a112ae7e74a8fffa15cb3d867cd0b32f",
+            "conditions": "R1 conditions: classic-only 13-file kit, private XDG_CONFIG_HOME, same 09-04 GS dump",
+            "counts": {
+              "cyan": 3477,
+              "magenta": 1211,
+              "orange": 6010
+            },
+            "crops": {
+              "kick_dial": "v2.6.0-kick_dial-x3.png",
+              "shield_scorebug": "v2.6.0-shield_scorebug-x3.png"
+            },
+            "frame_sha256": "1c99dcab025137216cf1139ba2249b48aced360b8ffceaa15002cd42e44a025a",
+            "label": "v2.6.0",
+            "measured": true,
+            "note": "earliest release-series tag whose gsrunner builds on Linux (Linux support landed edf686752a, first tag v2.5.208)",
+            "tag": "v2.6.0",
+            "verdict": "LOADS CLASSIC NAMES"
+          },
+          {
+            "binary_sha256": "c12946bbdef6099b4bab4a1b1624cde4dea088fa2d5e006fcae3a4a2bdc471e6",
+            "built": true,
+            "commit": "ca0145e6aab44231f8cca6fb53a2915ca205ab8d",
+            "conditions": "R1 conditions: classic-only 13-file kit, private XDG_CONFIG_HOME, same 09-04 GS dump",
+            "counts": {
+              "cyan": 3477,
+              "magenta": 1211,
+              "orange": 6010
+            },
+            "crops": {
+              "kick_dial": "v2.9.30-kick_dial-x3.png",
+              "shield_scorebug": "v2.9.30-shield_scorebug-x3.png"
+            },
+            "frame_sha256": "208bc91981c8d077afbe4d25b202c38245fbc0fe7d2991f775dfa57e2fcf6605",
+            "label": "v2.9.30",
+            "measured": true,
+            "note": "newest upstream release tag in the clone",
+            "tag": "v2.9.30",
+            "verdict": "LOADS CLASSIC NAMES"
+          }
+        ],
+        "summary": {
+          "baselines": {
+            "fork_classic_proven": {
+              "cyan": 3477,
+              "magenta": 1213,
+              "orange": 6037
+            },
+            "no_pack_stock": {
+              "cyan": 0,
+              "magenta": 0,
+              "orange": 93
+            }
+          },
+          "earliest_tag_with_linux_gsrunner": "v2.5.208 (edf686752a, 2025-10-08, 'GSRunner: Support GNU/Linux')",
+          "measured": [
+            "mergebase",
+            "v2.6.0",
+            "v2.9.30"
+          ],
+          "not_buildable": [
+            "v2.0.0",
+            "v2.1.57",
+            "v2.4.0"
+          ],
+          "result": "ALL THREE built binaries - the fork's upstream merge-base (92914cee40), v2.6.0 and v2.9.30 - load the classic TCC-bearing names, with IDENTICAL pixel counts 1211/3477/6010 vs the no-pack baseline 0/0/93. v2.9.30's frame is byte-identical to the merge-base run (208bc919...); v2.6.0's differs in hash (1c99dcab...) but is pixel-identical on all three measured colours, i.e. an unrelated inter-version rendering nuance, not a replacement difference.",
+          "v2_0_0_note": "gsrunner was Windows-only for the whole 2.0-2.5 era and v2.0.0's own CMake glue is broken, so v2.0.0 cannot be measured by headless replay on Linux. The source-level answer is definitive anyway: v2.0.0 contains 4fef86a635, so it normalizes bit 14 exactly like every measured build."
+        }
+      },
+      "why_our_witness_kit_loaded_on_stock": "all 13 kit files are the plain <tex0>-<clut>-<bits>.png shape with NO -r region suffix, and all 13 had bit 14 set - i.e. the kit is entirely the UNCLAMPED, TCC=1 class, precisely the class where the rename is the whole story and upstream's RemoveUnusedBits() erases it. The result does NOT generalize to region-clamped art, which this dump's kit does not contain."
+    },
+    "not_generalized": "the 13 identities are unclamped, non-region-suffixed textures; how many manifest identities are region-clamped in practice is being measured across the rig's 60 dumps",
+    "question": "Does the classic-named pack load on stock upstream PCSX2 (no ClassicTextureNames)?",
+    "witness_detail": {
+      "artifacts": {
+        "crops": [
+          "r0-shield_scorebug-x3.png",
+          "r0-kick_dial-x3.png",
+          "r1-shield_scorebug-x3.png",
+          "r1-kick_dial-x3.png",
+          "r2-shield_scorebug-x3.png",
+          "r2-kick_dial-x3.png",
+          "r3-shield_scorebug-x3.png",
+          "r3-kick_dial-x3.png"
+        ],
+        "crops_dir": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/wp7/stock",
+        "measurements": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/wp7/stock/measurements.json",
+        "rig_run_tree": "/home/pacarey/wp7-stock-witness/{r0,r1,r2,r3}/",
+        "witness_json": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/wp7/stock/stock_pcsx2_witness.json"
+      },
+      "caveats": [
+        "Single GS dump, single scene (ESPN NFL 2K5 SLUS-20919); 13 textures exercised.",
+        "All 13 kit names are the plain <tex0>-<clut>-<bits>.png shape with NO region suffix. Names carrying a region suffix were not exercised.",
+        "Conclusion is pinned to upstream 92914cee40 (v2.7.469 lineage). RemoveUnusedBits() is long-standing but a future upstream change could alter it.",
+        "LoadTextureReplacementsAsync=true was kept to match the proven fork route; results were deterministic and reproducible across runs.",
+        "Frames are retail imagery: hashes + counts recorded here, 3x crops kept in the scratchpad only. Never committed."
+      ],
+      "config_isolation": {
+        "both_brandings_populated": true,
+        "fork_DataRoot": "<run>/xdg/PenguinScreen2",
+        "method": "private XDG_CONFIG_HOME per run",
+        "rig_mutations": "NONE - no symlink swap, no gamesettings edit, no profile touched",
+        "side_effect_of_isolation": "a private DataRoot has no gamesettings/SLUS-20919_*.ini, so the per-game override that historically defeated this harness cannot apply; each run's -ini governs.",
+        "stock_DataRoot": "<run>/xdg/PCSX2",
+        "why": "upstream EmuFolders::SetDataDirectory uses $XDG_CONFIG_HOME/PCSX2 when absolute; gsrunner -ini only reads [EmuCore/GS] and cannot set Folders, so the texture dir must be moved via DataRoot."
+      },
+      "date": "2026-09-05",
+      "fork": {
+        "binary": "/home/pacarey/penguinscreen2-dev/build/bin/pcsx2-gsrunner",
+        "checkout": "/home/pacarey/penguinscreen2-dev",
+        "commit": "8226182aabe19640c6e676331678612f257356dd",
+        "upstream_merge_base": "92914cee40381e7f1fb7d0b5648390555366f56c"
+      },
+      "gs_dump": "/home/pacarey/.config/PenguinScreen2/snaps/ESPN - NFL 2K5_SLUS-20919_20260904141150.gs.zst",
+      "h2_safety": {
+        "checks": "standalone `pgrep -x pcsx2-qt; pgrep -x mupen64plus; pgrep -f \"[q]emu-system-i386\"` read before each run",
+        "incident": "at 03:18 a live `pcsx2-qt --vr -batch -nogui -datapath ~/wp7b-20260905-031757/qt-data` (PID 153027) was detected with wivrn-server up. All GPU work was HELD until it exited; no gsrunner was launched during that window.",
+        "runs_launched_only_after_a_clean_check": true
+      },
+      "mechanism": {
+        "bits_layout": "TEX0_PSM:6 | TEX0_TW:4 | TEX0_TH:4 | unused0:1 (bit14, 'was TCC') | TEXA_TA0:8 | TEXA_AEM:1 | TEXA_TA1:8",
+        "consequence": "upstream's LOADER is backward compatible with classic TCC-bearing names; ClassicTextureNames in the fork governs DUMP naming, not load matching.",
+        "file": "pcsx2/GS/Renderers/HW/GSTextureReplacements.cpp",
+        "finding": "TextureName::RemoveUnusedBits() sets unused0=0 and is called on EVERY one of the six ParseReplacementName() sscanf paths (lines 204,212,222,232,246,254). Upstream therefore NORMALISES the TCC bit away when parsing a replacement filename, so a classic name (bit14 set) and its modern twin (bit14 clear) collapse to the SAME lookup key."
+      },
+      "reference_counts": {
+        "fork_classic_pack_proven": {
+          "cyan": 3477,
+          "magenta": 1213,
+          "orange": 6037
+        },
+        "stock_no_pack": {
+          "cyan": 0,
+          "magenta": 0,
+          "orange": 93
+        }
+      },
+      "rig": "pacarey@192.168.68.85",
+      "title": "WP7 stock-PCSX2 witness: do classic-named 2K5 replacement packs load on upstream?",
+      "twin_kit": {
+        "classic_count": 13,
+        "dir": "/home/pacarey/wp7-kit-twins-20260905-031659/textures/SLUS-20919/replacements",
+        "distinct_bits_words": [
+          "00005554",
+          "00005993",
+          "000059d3",
+          "00005dd3"
+        ],
+        "every_pair_differs_by_bit14_only": true,
+        "source_classic_kit": "/home/pacarey/wp7-kit-20260905-023014/textures/SLUS-20919/replacements",
+        "total_files": 26,
+        "twin_bits_words": [
+          "00001554",
+          "00001993",
+          "000019d3",
+          "00001dd3"
+        ],
+        "twins_made": 13,
+        "xor_value": "00004000"
+      },
+      "upstream": {
+        "ClassicTextureNames_hits_in_tree": 0,
+        "author": "lightningterror",
+        "binary": "/home/pacarey/pcsx2-upstream-92914cee40/build/bin/pcsx2-gsrunner",
+        "binary_bytes": 30651088,
+        "binary_sha256": "df4ba7efcf094e0fffcdc4f3240254aeacac3eef26b57006a29847c16fd9234d",
+        "build_note": "target pcsx2-gsrunner alone does not stage bin/resources; gsrunner aborts with 'Resources directory is missing'. Fixed with a symlink build/bin/resources -> <src>/bin/resources INSIDE the private build tree only.",
+        "checkout": "/home/pacarey/pcsx2-upstream-92914cee40",
+        "cmake": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_PREFIX_PATH=/home/pacarey/deps -DENABLE_GSRUNNER=ON -DENABLE_QT_UI=OFF -DUSE_VULKAN=ON -DENABLE_TESTS=OFF -DENABLE_SETCAP=OFF -DUSE_LINKED_FFMPEG=OFF -DUSE_SYSTEM_LIBS=OFF -DX11_API=ON -DWAYLAND_API=ON -DPACKAGE_MODE=OFF ; ninja pcsx2-gsrunner",
+        "commit": "92914cee40381e7f1fb7d0b5648390555366f56c",
+        "commit_date": "2026-07-12 21:43:59 +0200",
+        "git_describe": "v2.7.469",
+        "is_ancestor_of_PCSX2_master": true,
+        "repo": "https://github.com/PCSX2/pcsx2.git",
+        "subject": "GS: Bump shader cache version.",
+        "worktree_clean": true
+      },
+      "verdicts": {
+        "detail": {
+          "a": "R1 (stock + 13 classic-only names) rendered OUR art 1211/3477/6010 vs the no-pack baseline R0 0/0/93. Stock upstream DOES load the classic-named pack.",
+          "b": "R2 (stock + classic+twins) rendered OUR art and its frame is BYTE-IDENTICAL to R1 (sha256 208bc919...). Twins load, but add nothing on stock because both names normalise to the same key.",
+          "r1_r3_delta": "R1/R2 1211/3477/6010 vs R3 1213/3477/6037: the fork logs 'Classic Dump: HW mipmapping suppressed while pre-4034 replacements are loaded (ISS-042 cause #1)'. Stock does not suppress mipmapping, so filtering differs by a few dozen pixels. Same replacement art in both.",
+          "r3": "Fork + twins + ClassicTextureNames=true rendered 1213/3477/6037, matching the proven fork reference exactly. Twins are harmless to the fork."
+        },
+        "hypothesis_a_classic_pack_fails_on_stock": "FALSIFIED",
+        "hypothesis_b_twin_pack_loads_on_stock": "CONFIRMED",
+        "practical_implication": "The project does NOT need to rename its packs to modern twins for stock PCSX2 compatibility at this commit - classic names already load. Twin names are a safe, zero-cost belt-and-braces measure that works on both stock and fork.",
+        "r3_twins_do_not_break_fork": "CONFIRMED"
+      }
+    }
+  }
 }
