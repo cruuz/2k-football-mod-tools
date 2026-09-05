@@ -26,3 +26,5 @@ tools/validate_madden09_ps2_text.bat
 tools/validate_madden09_ps2_text.sh
 tools/validate_madden09_ps2_uniform_art.bat
 tools/validate_madden09_ps2_uniform_art.sh
+tools/validate_madden09_ps2_uniform_disc_art.bat
+tools/validate_madden09_ps2_uniform_disc_art.sh

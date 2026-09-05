@@ -14,6 +14,8 @@
   "pins": "pins.json",
   "product_modules": [
     "ps2_iso9660",
+    "ps2_iso9660_writer",
+    "ps2_iso9660_verify",
     "mod_editor.games._formats.ea_terf",
     "mod_editor.games._formats.ea_tdb",
     "mod_editor.games.madden09_ps2",

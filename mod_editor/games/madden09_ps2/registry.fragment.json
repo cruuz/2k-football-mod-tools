@@ -344,6 +344,90 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.games lane madden09_ps2 uniforms.disc_art_writer build --source <SLUS-21770.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/madden09_ps2/uniform_art.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/EA_TERF_FORMAT.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
+        "tools/validate_madden09_ps2_uniform_disc_art.sh",
+        "tools/ps2_iso9660_writer.py",
+        "tools/ps2_iso9660_verify.py"
+      ],
+      "game": "madden09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 Madden 09 Studio beside the export row: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page repeats the row's own sentence -- no rebuilt Madden 09 container has ever been booted -- so the user is told what the offline proof does and does not cover before they build anything."
+      },
+      "id": "madden09ps2.uniforms.disc_art_writer",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "A PNG must be exactly the texture's own size, 8-bit, non-interlaced, RGB or RGBA. A whole-number multiple can be exported and looked at but not written back, and the refusal names the size that was wanted.",
+        "A texture rides its own CLUT: the PNG is indexed against the palette the member already carries, so a colour that palette does not hold cannot be introduced. The receipt says how many pixels landed exactly and the worst channel any pixel moved by.",
+        "An unchanged pixel keeps the index byte the file used. 420 of the disc's 1,780 MMAP members carry a CLUT with a duplicate colour, so indexing from pixels alone has more than one right answer; keeping the original index is what makes a rewrite touch only what the artist touched.",
+        "Fixed allocation by default: the rebuilt container goes back inside the extent it already owns whenever it fits, and the image keeps its length. Only when it does not fit is the ISO writer's opt-in growth used, and the receipt then names the appended sectors.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, every untouched member of the container is compared byte for byte, and each rewritten texture is decoded out of the NEW image and measured against the PNG the user handed in.",
+        "Retail-free: no decoded pixel, member byte or palette entry from any game is in this repository. CI proves the whole path on a synthetic disc."
+      ],
+      "portme": [
+        "Boot a rebuilt container in PCSX2 and see the game load it. That is the only thing between this row and runtime-proved, and it needs the rig.",
+        "Capture a GS dump of Madden 09 so replacement_identity can name a PCSX2 file; the pack route stays refused until then, and it is a different row.",
+        "IPU1: the 1,188 version-1 members of UIS_MCFL.DAT are refused by name at both ends, read and write.",
+        "Mip levels below the largest keep the art they had. A caller that wants them rebuilt passes them itself through mmap_art.encode; no filter is chosen here."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF reader and writer, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. Every step is proved against the user's own bytes -- the member decodes back to the pixels that were given, the container keeps the layout rules the retail discs follow, every untouched member is byte-identical, and the image-level verifier re-derives every declared byte from the two files -- and NO rebuilt Madden 09 container has ever been booted in an emulator or on hardware. That the game loads the result is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer a PCSX2 pack from this row: replacement_identity still returns None, because that needs a GS dump of this game and none exists."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels, lays the member out again (header, surface table, pixels, palette table, palettes, name table, image table, each 16-byte aligned), re-packs the member under LZH1 or stored, and replaces the container inside its own ISO9660 extent.",
+        "hash_pins": [
+          "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+          "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+          "d1cb5459c589d0dc28c9296c29940eaca161af152ea0b3c9825c012e7588a515",
+          "d331c5e40104317768a0ff100476082b2dd499d1758b9a04ba0e0efe4bc1be20"
+        ],
+        "resource": "UNIFORMS.DAT, PLYRFACE.DAT, COACFACE.DAT and TATTOOS.DAT: 1,780 MMAP members, every one of which encode(decode(member)) reproduces byte for byte",
+        "retail_file": "User-owned Madden NFL 09 (USA) PlayStation 2 ISO, SLUS-21770 NTSC-U; the community's Madden NFL 09 Deluxe rebuild of the same disc is also recognised and reported as such."
+      },
+      "summary": "Write an edited PNG back into a Madden 09 disc's MMAP textures, producing a NEW image. Three encoders had to exist first and all three are proved offline: an LZH1 encoder (codec 5, no public encoder existed) whose output every LZH1 member of the disc's art containers decodes back from byte for byte under two independent decoders, and which comes out at about EA's own size; an MMAP member writer that lays out a member's tables and offsets afresh and reproduces all 1,780 members of the four art containers byte for byte from their own decoded pixels; and an opt-in relocation mode in the ISO9660 writer for the case where a rebuilt container will not fit the extent it owns. Fixed allocation is still the default and the ordinary outcome. The receipt names the codec chosen per member, the pixels that landed exactly, and whether the image grew. NOT booted: no rebuilt Madden 09 container has been loaded by the game, and nothing here claims otherwise.",
+      "surface": "uniforms",
+      "title": "Madden 09 (PS2) uniform, face and tattoo textures written back to the disc",
+      "validation_command": "bash tools/validate_madden09_ps2_uniform_disc_art.sh"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.games.madden09_ps2.uniform_art --source <SLUS-21770.iso> [--out <catalogue.json>] [--export <NEW dir> --limit N]",
         "module": "mod_editor/games/madden09_ps2/uniform_art.py",
         "operation": "export"

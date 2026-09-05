@@ -49,6 +49,7 @@ import zlib
 from mod_editor.games.contract import (
     Artifact,
     Catalogue,
+    DeclaredRange,
     Edit,
     EncodedArt,
     Field,
@@ -59,6 +60,8 @@ from mod_editor.games.contract import (
     Verdict,
     require,
 )
+
+from mod_editor.games._formats import ea_terf
 
 from . import containers, mmap_art
 
@@ -717,6 +720,570 @@ class UniformArtLane:
                      note="conformance: export this texture as it is"),)
 
 
+# ==========================================================================
+# The disc writer
+# ==========================================================================
+
+DISC_CAPABILITY_ID = "madden09ps2.uniforms.disc_art_writer"
+DISC_LANE_ID = "uniforms.disc_art_writer"
+DISC_RECIPE_SCHEMA = "madden09_ps2_uniform_disc_art_recipe/v1"
+DISC_WRITE_SCHEMA = "madden09_ps2_uniform_disc_art_write/v1"
+
+
+def _iso_writer():
+    """``tools/ps2_iso9660_writer``, imported late.
+
+    A game package may import Qt, the core and its tools only inside a
+    function; ``containers`` has already put ``tools/`` on the path.
+    """
+
+    import ps2_iso9660_writer
+
+    return ps2_iso9660_writer
+
+
+def _iso_verifier():
+    import ps2_iso9660_verify
+
+    return ps2_iso9660_verify
+
+
+class UniformDiscArtWriteLane(UniformArtLane):
+    """Edited PNGs, back into the ``MMAP`` members of a NEW disc image.
+
+    The export lane above catalogues and decodes; this one is the other
+    direction, and it is a separate row because it earns a different rung.  It
+    shares the catalogue, the decoder and the PNG reader -- pointing two lanes
+    at one decode is the whole reason the decoder is its own module -- and
+    replaces the three steps that write.
+
+    **What it does, in the order it does it.**
+
+    1. Each edited PNG is indexed against the texture's own CLUT, keeping the
+       index the file already used wherever a pixel is unchanged, and the
+       member is laid out again by :func:`mmap_art.encode`.
+    2. The member goes back into its ``TERF`` container through
+       :func:`ea_terf.rewrite_member`.  :func:`ea_terf.plan_member_rewrite`
+       chooses the codec first -- ``LZH1`` when it is smaller, stored when it
+       is not -- and the receipt names which, because a member that no longer
+       fits its aligned slot is the thing that decides whether the image can
+       stay the length it was.
+    3. The rebuilt container replaces the one on the disc through
+       ``tools/ps2_iso9660_writer``, **inside its existing extent whenever it
+       fits**.  Only when it does not is ``allow_growth`` used, and then the
+       receipt says the image grew and by how many sectors.
+
+    **What it does not claim.**  ``offline-writer-proved`` is the whole of it:
+    every step is proved against the user's own bytes by a verifier that
+    rebuilds the answer from the two images, and **no rebuilt Madden 09
+    container has ever been booted**.  Nothing here says the game loads the
+    result; the receipt says so too.
+    """
+
+    lane_id = DISC_LANE_ID
+    capability_id = DISC_CAPABILITY_ID
+    surface = "uniforms"
+    page = "uniforms"
+    title = "Write uniform, face and tattoo textures back to a new disc image"
+    classification = "offline-writer-proved"
+    recipe_schema = DISC_RECIPE_SCHEMA
+    validators = (
+        "tools/validate_madden09_ps2_uniform_disc_art.sh",
+        "tools/validate_madden09_ps2_uniform_disc_art.bat",
+    )
+    #: The image keeps its length whenever the rebuilt container fits its
+    #: extent, which is the ordinary case -- our ``LZH1`` streams come out at
+    #: about EA's size.  It is not guaranteed, so the honest answer is False
+    #: and the receipt carries the number.
+    fixed_allocation = False
+
+    NOT_BOOTED = (
+        "No rebuilt Madden 09 container has been booted. Every step here is proved against "
+        "your own bytes offline -- the member decodes back to the pixels you gave it, the "
+        "container follows the layout rules the retail discs follow, and every byte outside "
+        "the declared ranges is unchanged -- but whether the game loads the result is not "
+        "something this tool can find out."
+    )
+
+    # -- targets -------------------------------------------------------
+
+    @staticmethod
+    def _target(row: Mapping[str, Any], structure: str) -> Target:
+        detail = [f"{row['width']}x{row['height']}", row["layout"]]
+        if row["mips"] > 1:
+            detail.append(f"{row['mips']} mip levels")
+        if row["palettes"] > 1:
+            detail.append(f"{row['palettes']} palettes")
+        if row["name"]:
+            detail.append(row["name"])
+        return Target(
+            key=_key(row["container"], row["member"], row["image"]),
+            label=f"{row['group']} · member {row['member']} · image {row['image']}"
+                  + (f" ({row['name']})" if row["name"] else ""),
+            detail=" · ".join(detail),
+            budget=(f"Writes this texture into a NEW copy of your image. The member is "
+                    f"re-packed and the receipt names the codec it chose; your own image is "
+                    f"opened read-only."),
+            searchable=f"{row['container']} {row['group']} {row['member']} {row['name']}",
+            raw=dict(row, structure=structure),
+            fields=(
+                Field("png", "png", "Replacement PNG",
+                      f"A {row['width']}x{row['height']} 8-bit non-interlaced PNG. It is "
+                      f"indexed against this texture's own palette -- a colour that palette "
+                      f"does not carry cannot be introduced -- and the receipt says how many "
+                      f"pixels landed exactly."),
+                Field("group", "note", "Group", "Which container this texture came from.",
+                      read_only=True),
+                Field("dimensions", "note", "Size", "Width by height of the largest mip level.",
+                      read_only=True),
+                Field("layout", "note", "Pixel layout",
+                      "How the disc stores this texture's pixels.", read_only=True),
+                Field("structure", "note", "What the file says",
+                      "How this container organises its textures, and what it does not say.",
+                      read_only=True),
+            ),
+        )
+
+    # -- recipe --------------------------------------------------------
+
+    def check_edit(self, target: Target, values: Mapping[str, Any]) -> Optional[str]:
+        problem = super().check_edit(target, values)
+        if problem is not None:
+            return problem
+        if not values.get("png"):
+            return (f"{target.key}: this lane writes a texture, so it needs a PNG. Export the "
+                    f"texture, edit it, and give the file back here.")
+        width = int(target.raw.get("width") or 0)
+        height = int(target.raw.get("height") or 0)
+        try:
+            got_width, got_height, _rgba = read_rgba_png(Path(str(values["png"])).read_bytes())
+        except (OSError, Refusal) as exc:
+            return f"{target.key}: {exc}"
+        if (got_width, got_height) != (width, height):
+            return (f"{target.key}: that PNG is {got_width}x{got_height} and this texture is "
+                    f"{width}x{height}. A texture is written at its own size; a whole-number "
+                    f"multiple can be exported and looked at but not written back.")
+        return None
+
+    def compose_recipe(self, edits: Sequence[Edit]) -> Mapping[str, Any]:
+        rows = []
+        for edit in edits:
+            path = edit.values.get("png")
+            require(bool(path),
+                    f"{edit.target_key}: this lane writes a texture and no PNG was given.")
+            row: Dict[str, Any] = {"texture": edit.target_key, "png": str(path)}
+            if edit.note:
+                row["note"] = edit.note
+            rows.append(row)
+        return {"schema": DISC_RECIPE_SCHEMA, "textures": rows}
+
+    def _entries(self, recipe: Mapping[str, Any]) -> List[Dict[str, Any]]:
+        require(isinstance(recipe, Mapping) and recipe.get("schema") == DISC_RECIPE_SCHEMA,
+                f"recipe schema is "
+                f"{recipe.get('schema') if isinstance(recipe, Mapping) else recipe!r}, "
+                f"expected {DISC_RECIPE_SCHEMA}")
+        rows = recipe.get("textures")
+        require(isinstance(rows, list) and rows,
+                "a recipe must carry a non-empty 'textures' list; choose at least one texture "
+                "to write")
+        seen: set = set()
+        out = []
+        for number, row in enumerate(rows):
+            require(isinstance(row, Mapping) and isinstance(row.get("texture"), str)
+                    and row["texture"],
+                    f"texture {number} must name the texture it writes")
+            require(set(row) <= {"texture", "png", "note"},
+                    f"texture {number} carries unknown keys")
+            require(isinstance(row.get("png"), str) and row["png"],
+                    f"{row.get('texture')}: this lane writes a texture and no PNG was given.")
+            require(row["texture"] not in seen,
+                    f"{row['texture']} appears twice; one texture is written once")
+            seen.add(row["texture"])
+            out.append(dict(row))
+        return out
+
+    # -- the composition both plan and build run -----------------------
+
+    def _compose(self, source: Path, recipe: Mapping[str, Any],
+                 catalogue: Optional[Catalogue]) -> Dict[str, Any]:
+        """Rebuild every container an edit touches, and price the result.
+
+        Done in full by ``plan`` as well as by ``build``: a dry run that does
+        not encode cannot say whether the member still fits, and "it probably
+        fits" is not a plan.
+        """
+
+        entries = self._entries(recipe)
+        disc = containers.open_disc(Path(source))
+        present = {entry.name: entry for entry in containers.data_files(disc)}
+        by_member: Dict[Tuple[str, int], Dict[int, Dict[str, Any]]] = {}
+        order: List[str] = []
+        for entry in entries:
+            if catalogue is not None:
+                catalogue.target(entry["texture"])       # the catalogue's own refusal
+            container_name, member, image_index = self.parse_key(entry["texture"])
+            require(any(container_name == name for name, _group, _note in ART_CONTAINERS),
+                    f"{entry['texture']}: {container_name} is not one of the art containers "
+                    f"this lane writes "
+                    f"({', '.join(name for name, _g, _n in ART_CONTAINERS)}).")
+            require(container_name in present,
+                    f"{entry['texture']}: {container_name} is not on this image.")
+            slot = by_member.setdefault((container_name, member), {})
+            require(image_index not in slot,
+                    f"{entry['texture']} appears twice; one texture is written once")
+            slot[image_index] = entry
+            if container_name not in order:
+                order.append(container_name)
+
+        rebuilt: Dict[str, bytes] = {}
+        rows: List[Dict[str, Any]] = []
+        member_notes: List[Dict[str, Any]] = []
+        for container_name in order:
+            data_file = present[container_name]
+            blob = containers.read_file(disc, data_file)
+            container = ea_terf.parse_terf(blob, allow_size_mismatch=True)
+            for (name, member), images in sorted(by_member.items()):
+                if name != container_name:
+                    continue
+                payload = container.member(member)
+                require(payload.startswith(mmap_art.MMAP_MAGIC),
+                        f"{name} member {member} is not an MMAP texture, so there is nothing "
+                        f"to write into it.")
+                texture = mmap_art.parse(payload)
+                levels: Dict[Tuple[int, int], bytes] = {}
+                for image_index, entry in sorted(images.items()):
+                    image = texture.image(image_index)
+                    reason = texture.undecodable_reason(image)
+                    require(reason is None,
+                            f"{entry['texture']} cannot be written: it is {reason}.")
+                    surface = texture.surfaces[image.first_surface]
+                    png = Path(entry["png"]).read_bytes()
+                    width, height, rgba = read_rgba_png(png)
+                    require((width, height) == (surface.width, surface.height),
+                            f"{entry['texture']}: that PNG is {width}x{height} and this "
+                            f"texture is {surface.width}x{surface.height}. A texture is "
+                            f"written at its own size.")
+                    levels[(image_index, 0)] = rgba
+                    palette = mmap_art.read_palette(payload, texture.palettes[
+                        image.first_palette])
+                    _indices, exact = mmap_art.index_rgba(
+                        rgba, width, height, palette,
+                        original=mmap_art.unpack_indices(
+                            mmap_art.surface_pixels(payload, surface), surface))
+                    rows.append({
+                        "texture": entry["texture"],
+                        "container": name,
+                        "member": member,
+                        "image": image_index,
+                        "width": width,
+                        "height": height,
+                        "png": entry["png"],
+                        "png_sha256": _sha256(png),
+                        "palette_entries": len(palette),
+                        "exact_pixels": exact,
+                        "total_pixels": width * height,
+                        "max_channel_error": self._max_error(rgba, palette),
+                        **({"note": entry["note"]} if entry.get("note") else {}),
+                    })
+                new_member = mmap_art.encode(payload, levels=levels, texture=texture)
+                plan = ea_terf.plan_member_rewrite(blob, member, new_member)
+                blob = ea_terf.rewrite_member(blob, member, new_member, codec=plan.codec)
+                container = ea_terf.parse_terf(blob, allow_size_mismatch=True)
+                member_notes.append({
+                    "container": name, "member": member,
+                    "images": sorted(images), **plan.as_dict()})
+            violations = container.layout_violations()
+            if violations:
+                raise Refusal(
+                    f"the rebuilt {container_name} broke the container's own layout rules "
+                    f"({violations[0]}); nothing was written.")
+            rebuilt[container_name] = blob
+            existing = int(data_file.recorded_length)
+            rows_for = [row for row in rows if row["container"] == container_name]
+            member_notes.append({
+                "container": container_name, "member": None,
+                "note": (f"{len(rows_for)} texture(s) rewritten; the container is "
+                         f"{len(blob):,} bytes against the {existing:,} its directory record "
+                         f"declares."),
+                "container_bytes": len(blob),
+                "recorded_bytes": existing,
+                "grows_the_image": len(blob) > existing,
+            })
+        grows = [name for name, blob in rebuilt.items()
+                 if len(blob) > int(present[name].recorded_length)]
+        return {
+            "containers": rebuilt,
+            "textures": rows,
+            "members": member_notes,
+            "grows": grows,
+            "paths": {name: present[name].path for name in rebuilt},
+        }
+
+    @staticmethod
+    def _max_error(rgba: bytes, entries: Sequence[Tuple[int, int, int, int]]) -> int:
+        """The worst channel a pixel can move by, riding this CLUT.
+
+        Reported rather than refused: a Madden 09 texture carries its own
+        palette, so a colour it does not hold has to land on the nearest one it
+        does, and a number is more use than a warning.
+        """
+
+        drawn = [(red, green, blue, mmap_art._scale_alpha(alpha))
+                 for red, green, blue, alpha in entries]
+        cache: Dict[Tuple[int, int, int, int], int] = {}
+        worst = 0
+        for position in range(0, len(rgba), 4):
+            pixel = (rgba[position], rgba[position + 1], rgba[position + 2],
+                     rgba[position + 3])
+            found = cache.get(pixel)
+            if found is None:
+                best = min(drawn, key=lambda entry: sum(
+                    (entry[channel] - pixel[channel]) ** 2 for channel in range(4)))
+                found = cache[pixel] = max(abs(best[channel] - pixel[channel])
+                                           for channel in range(4))
+            if found > worst:
+                worst = found
+        return worst
+
+    # -- plan / build / verify -----------------------------------------
+
+    def plan(self, source: Path, recipe: Mapping[str, Any], catalogue: Catalogue) -> Plan:
+        composed = self._compose(Path(source), recipe, catalogue)
+        writer = _iso_writer()
+        replacements = {composed["paths"][name]: blob
+                        for name, blob in composed["containers"].items()}
+        report = writer.plan_report(Path(source), replacements,
+                                    allow_growth=bool(composed["grows"]))
+        ranges = tuple(DeclaredRange(item.start, item.length, item.reason)
+                       for item in report["declared_ranges"])
+        return Plan(self.lane_id, tuple(row["texture"] for row in composed["textures"]),
+                    ranges, {
+                        "schema": DISC_RECIPE_SCHEMA,
+                        "textures": [{k: v for k, v in row.items() if k != "png_sha256"}
+                                     for row in composed["textures"]],
+                        "members": composed["members"],
+                        "grows_the_image": bool(composed["grows"]),
+                        "growth": report.get("growth"),
+                        "declared_bytes": sum(item.length for item in ranges),
+                        "identity_note": self.NO_IDENTITY,
+                        "runtime_note": self.NOT_BOOTED,
+                    })
+
+    def build(self, source: Path, destination: Path, recipe: Mapping[str, Any],
+              catalogue: Catalogue, *, work_dir: Optional[Path] = None) -> Receipt:
+        import os
+
+        source, destination = Path(source), Path(destination)
+        require(destination.resolve() != source.resolve(),
+                f"{destination} is the source image; a build always writes a NEW image.")
+        require(not os.path.lexists(destination),
+                f"destination {destination} already exists; refusing to overwrite")
+        composed = self._compose(source, recipe, catalogue)
+        writer = _iso_writer()
+        replacements = {composed["paths"][name]: blob
+                        for name, blob in composed["containers"].items()}
+        report = writer.replace_files(source, destination, replacements,
+                                      allow_growth=bool(composed["grows"]))
+        json_report = writer.report_to_json(report)
+        ranges = tuple(DeclaredRange(item["start"], item["length"], item["reason"])
+                       for item in json_report["declared_ranges"])
+        document = {
+            "schema": DISC_WRITE_SCHEMA,
+            "source": str(source),
+            "destination": str(destination),
+            "textures": composed["textures"],
+            "members": composed["members"],
+            "containers": [
+                {"name": name, "path": composed["paths"][name], "bytes": len(blob),
+                 "sha256": _sha256(blob)}
+                for name, blob in sorted(composed["containers"].items())
+            ],
+            "grew_the_image": bool(json_report.get("growth")),
+            "iso_report": json_report,
+            "identity_note": self.NO_IDENTITY,
+            "runtime_note": self.NOT_BOOTED,
+        }
+        return Receipt(DISC_WRITE_SCHEMA, self.lane_id, str(source), str(destination),
+                       ranges, document)
+
+    def verify(self, source: Path, destination: Path, receipt: Receipt) -> Verdict:
+        """Rebuild the answer from the two images; import nothing that wrote them.
+
+        Three separate things are checked and none of them trusts the build:
+        the image-level edit through ``tools/ps2_iso9660_verify`` (its own
+        ISO9660 decoder, not the reader's), the container-level edit by
+        comparing every member of the two containers, and the texture itself by
+        decoding it out of the destination and measuring it against the PNG the
+        user handed in.
+        """
+
+        source, destination = Path(source), Path(destination)
+        document = receipt.document
+        try:
+            report = document["iso_report"]
+        except (TypeError, KeyError):
+            return Verdict(False, "Verification failed: the receipt carries no write report.")
+        try:
+            outcome = _iso_verifier().verify_replacement(source, destination, report)
+        except Exception as exc:                            # noqa: BLE001
+            return Verdict(False, f"Verification failed at the image level: {exc}")
+        if outcome.get("result") != "PASS":
+            return Verdict(False, f"Verification failed at the image level: {outcome}")
+
+        edited: Dict[str, List[Mapping[str, Any]]] = {}
+        for row in document.get("textures", ()):
+            edited.setdefault(str(row["container"]), []).append(row)
+        if not edited:
+            return Verdict(False, "Verification failed: the receipt declares no textures.")
+
+        before_disc = containers.open_disc(source)
+        after_disc = containers.open_disc(destination)
+        before_files = {entry.name: entry for entry in containers.data_files(before_disc)}
+        after_files = {entry.name: entry for entry in containers.data_files(after_disc)}
+        members_checked = 0
+        textures_checked = 0
+        for container_name, rows in sorted(edited.items()):
+            if container_name not in after_files:
+                return Verdict(False, f"Verification failed: {container_name} is not on the "
+                                      f"destination image.")
+            before = ea_terf.parse_terf(
+                containers.read_file(before_disc, before_files[container_name]),
+                allow_size_mismatch=True)
+            after_blob = containers.read_file(after_disc, after_files[container_name])
+            after = ea_terf.parse_terf(after_blob, allow_size_mismatch=True)
+            violations = after.layout_violations()
+            if violations:
+                return Verdict(False, f"Verification failed: the rebuilt {container_name} "
+                                      f"breaks the container's layout rules ({violations[0]}).")
+            if after.member_count != before.member_count:
+                return Verdict(False, f"Verification failed: {container_name} went from "
+                                      f"{before.member_count} member(s) to "
+                                      f"{after.member_count}.")
+            touched = {int(row["member"]) for row in rows}
+            for index in range(before.member_count):
+                if index in touched:
+                    continue
+                if before.stored(index) != after.stored(index):
+                    return Verdict(False, f"Verification failed: {container_name} member "
+                                          f"{index} changed and no edit named it.")
+                members_checked += 1
+            for row in rows:
+                verdict = self._check_one_texture(before, after, row)
+                if verdict is not None:
+                    return verdict
+                textures_checked += 1
+        return Verdict(
+            True,
+            f"{textures_checked} texture(s) decode from the NEW image as the PNG(s) you gave, "
+            f"{members_checked} untouched member(s) are byte-identical, every container "
+            f"follows its layout rules, and the image-level verifier re-derived every declared "
+            f"byte. {self.NOT_BOOTED}",
+            {"result": "PASS", "textures": textures_checked,
+             "untouched_members": members_checked,
+             "image": outcome, "runtime_note": self.NOT_BOOTED},
+        )
+
+    @staticmethod
+    def _check_one_texture(before: "ea_terf.TerfContainer", after: "ea_terf.TerfContainer",
+                           row: Mapping[str, Any]) -> Optional[Verdict]:
+        """One rewritten texture, measured against the PNG rather than the build."""
+
+        member = int(row["member"])
+        image_index = int(row["image"])
+        key = str(row["texture"])
+        try:
+            png = Path(str(row["png"])).read_bytes()
+        except OSError as exc:
+            return Verdict(False, f"Verification failed: {key}'s PNG {row['png']} could not "
+                                  f"be read back ({exc}).")
+        if _sha256(png) != row.get("png_sha256"):
+            return Verdict(False, f"Verification failed: {key}'s PNG is not the file the "
+                                  f"receipt recorded.")
+        wanted_width, wanted_height, wanted = read_rgba_png(png)
+        payload = after.member(member)
+        texture = mmap_art.parse(payload)
+        width, height, drawn = mmap_art.decode_rgba(payload, image=image_index,
+                                                    texture=texture)
+        if (width, height) != (wanted_width, wanted_height):
+            return Verdict(False, f"Verification failed: {key} is {width}x{height} on the new "
+                                  f"image and the PNG is {wanted_width}x{wanted_height}.")
+        entry = texture.image(image_index)
+        clut = {(red, green, blue, mmap_art._scale_alpha(alpha)) for red, green, blue, alpha
+                in mmap_art.read_palette(payload, texture.palettes[entry.first_palette])}
+        exact = 0
+        worst = 0
+        for position in range(0, len(drawn), 4):
+            pixel = (drawn[position], drawn[position + 1], drawn[position + 2],
+                     drawn[position + 3])
+            if pixel not in clut:
+                return Verdict(False, f"Verification failed: {key} draws a colour at pixel "
+                                      f"{position // 4} that is not in its own palette.")
+            target = (wanted[position], wanted[position + 1], wanted[position + 2],
+                      wanted[position + 3])
+            if pixel == target:
+                exact += 1
+                continue
+            worst = max(worst, max(abs(pixel[channel] - target[channel])
+                                   for channel in range(4)))
+        if exact != int(row.get("exact_pixels", -1)):
+            return Verdict(False, f"Verification failed: {key} matches its PNG at {exact:,} "
+                                  f"pixel(s) and the receipt claims "
+                                  f"{row.get('exact_pixels')}.")
+        if worst > int(row.get("max_channel_error", 0)):
+            return Verdict(False, f"Verification failed: {key} moves a channel by {worst} and "
+                                  f"the receipt claims at most "
+                                  f"{row.get('max_channel_error')}.")
+        # Every other image in the same member must be untouched.
+        source_payload = before.member(member)
+        source_texture = mmap_art.parse(source_payload)
+        for other in source_texture.images:
+            if other.index == image_index or source_texture.undecodable_reason(other):
+                continue
+            if (mmap_art.decode_rgba(source_payload, image=other.index,
+                                     texture=source_texture)
+                    != mmap_art.decode_rgba(payload, image=other.index, texture=texture)):
+                return Verdict(False, f"Verification failed: image {other.index} of "
+                                      f"{row['container']} member {member} changed and no edit "
+                                      f"named it.")
+        return None
+
+    # -- what CI proves it on ------------------------------------------
+
+    def synthetic_source(self, work_dir: Path) -> Path:
+        """The synthetic disc, and beside it the PNG the conformance edit uses.
+
+        A writer's conformance edit has to name a file, and ``synthetic_source``
+        is the only hook the harness hands a working directory -- so the PNG is
+        written here, from the synthetic disc's own first texture, flipped top
+        to bottom.  Every pixel of a flip is a colour the texture's palette
+        already holds, so the edit is exactly representable and the check that
+        it landed is about the write rather than about quantisation.
+        """
+
+        work_dir = Path(work_dir)
+        path = work_dir / "madden09-ps2-disc-art-synthetic.iso"
+        path.write_bytes(containers.build_synthetic_disc())
+        catalogue = self.build_catalogue(path)
+        target = catalogue.targets[0]
+        width, height, rgba = read_rgba_png(self.decode_png(path, target))
+        stride = width * 4
+        flipped = b"".join(rgba[row * stride:(row + 1) * stride]
+                           for row in range(height - 1, -1, -1))
+        self._conformance_png = work_dir / "conformance-edit.png"
+        self._conformance_png.write_bytes(write_rgba_png(flipped, width, height))
+        self._conformance_target = target.key
+        return path
+
+    def conformance_edits(self, catalogue: Catalogue) -> tuple:
+        png = getattr(self, "_conformance_png", None)
+        require(png is not None and Path(png).is_file(),
+                "conformance_edits needs the PNG synthetic_source writes; call "
+                "synthetic_source first.")
+        key = getattr(self, "_conformance_target", catalogue.targets[0].key)
+        return (Edit(key, {"png": str(png)},
+                     note="conformance: write this texture back, flipped"),)
+
+
 def _main(argv: Optional[Sequence[str]] = None) -> int:
     """``python -m mod_editor.games.madden09_ps2.uniform_art --source DISC.iso``."""
 
@@ -759,9 +1326,10 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 __all__ = ["ART_CONTAINERS", "CAPABILITY_ID", "CATALOGUE_COST_NOTE", "CATALOG_SCHEMA",
+           "DISC_CAPABILITY_ID", "DISC_LANE_ID", "DISC_RECIPE_SCHEMA", "DISC_WRITE_SCHEMA",
            "LANE_ID", "MAX_TARGETS",
-           "PNG_SIGNATURE", "RECIPE_SCHEMA", "UniformArtLane", "WRITE_SCHEMA",
-           "read_rgba_png", "write_rgba_png"]
+           "PNG_SIGNATURE", "RECIPE_SCHEMA", "UniformArtLane", "UniformDiscArtWriteLane",
+           "WRITE_SCHEMA", "read_rgba_png", "write_rgba_png"]
 
 
 if __name__ == "__main__":

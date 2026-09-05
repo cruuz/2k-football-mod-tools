@@ -19,6 +19,9 @@ What is on the contract today, and what each rung rests on:
   (``docs/product/EA_TERF_FORMAT.md``).
 * **uniform art** (:mod:`.uniform_art`) -- the ``MMAP`` textures of
   ``UNIFORMS.DAT``, ``PLYRFACE.DAT``, ``COACFACE.DAT`` and ``TATTOOS.DAT``.
+  Two rows, because they earn two different rungs: an ``extract-only``
+  exporter, and an ``offline-writer-proved`` writer that puts an edited PNG
+  back into a **new** disc image.
 * **team data** (:mod:`.team_data`, ``read-only-mapped``) -- the EA TDB
   databases inside ``DB_TEAMS.DAT``, ``TEMPLATE.DAT`` and ``GAMEDATA.DAT``,
   and the bare ``STRMDATA.DB``, catalogued table by table.  **Readers only.**
@@ -30,12 +33,14 @@ What is on the contract today, and what each rung rests on:
   The studio draws no editor for it; its page states the classification and
   the registry's reason.
 
-**No writer is claimed.**  Nothing in this module writes to a disc image.  The
-one thing that would let a writer earn its rung -- rebuilding a container,
-booting the disc, and seeing the game load it -- has not been done, and the
-container writer itself cannot shrink an ``LZH1`` member back down because no
-encoder for that codec exists anywhere public.  Both facts are in
-``docs/product/MADDEN09_PS2_MODULE.md``, and neither is worked around here.
+**One writer, and what it does not claim.**  The uniform-art writer produces a
+new disc image and is filed ``offline-writer-proved``: the member decodes back
+to the pixels it was given, the container keeps the layout rules the retail
+discs follow, every untouched member is byte-identical, and an independent
+verifier re-derives every changed byte of the image from the two files.  **No
+rebuilt Madden 09 container has ever been booted**, so nothing here says the
+game loads the result, and no other lane in this module writes anything at all.
+``docs/product/MADDEN09_PS2_MODULE.md`` carries both halves.
 
 Retail-free: this package carries names, offsets, lengths, counts and digests.
 No member payload, no decoded pixel and no string from the game is in it.
@@ -61,7 +66,7 @@ from .disc_identity import Madden09DiscIdentifier
 from .inventory_lane import InventoryLane
 from .team_data import TeamDataLane
 from .text_lane import TextLane
-from .uniform_art import UniformArtLane
+from .uniform_art import UniformArtLane, UniformDiscArtWriteLane
 
 HERE = Path(__file__).resolve().parent
 GAME_ID = "madden09_ps2"
@@ -130,6 +135,7 @@ def _registered(capability_id: str) -> bool:
 _CANDIDATES = (
     InventoryLane(),
     UniformArtLane(),
+    UniformDiscArtWriteLane(),
     TeamDataLane(),
     TextLane(),
     Madden09CodePatchLane(IDENTITY),
