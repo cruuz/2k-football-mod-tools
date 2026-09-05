@@ -335,10 +335,11 @@ tools/validate_nfl2k5_ps2_playbook.bat
 # Phase 2 (PS2): bounded on-disc text editing for ESPN NFL 2K5 (SLUS-20919).
 # The catalog derives which strings are provably safe; the patcher writes a new
 # ISO through the bounded ISO9660 writer; the verifier re-derives the result.
-# NOTE for the integration commit: tools/ps2_iso9660_writer.py and
-# tools/ps2_iso9660_verify.py are runtime dependencies of the patcher and
-# verifier and must be allowlisted alongside them (they are shared with the
-# stadium lane, so they are not appended here to avoid a duplicate entry).
+# PS2 ISO9660 writer and verifier: runtime dependencies of every Phase 2 disc
+# patcher (text, playbooks, colors, rosters, stadiums, audio) and of their
+# validators. Shipped once, here.
+tools/ps2_iso9660_writer.py
+tools/ps2_iso9660_verify.py
 docs/product/PS2_PHASE2_TEXT.md
 reports/gameplay_tuning/nfl2k5_ps2_text_target_catalog.v1.json
 reports/gameplay_tuning/nfl2k5_ps2_text_trial.v1.json

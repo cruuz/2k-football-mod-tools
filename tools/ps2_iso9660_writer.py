@@ -1340,7 +1340,10 @@ def main(argv=None) -> int:
     report = replace_files(args.source, args.destination, replacements)
     payload = report_to_json(report)
     if args.report:
-        args.report.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        # Bytes, not write_text: the line ending has to be LF on every
+        # platform because this report is hashed and size-checked, and
+        # write_text's newline= argument is 3.10 and later only.
+        args.report.write_bytes(json.dumps(payload, indent=2).encode("utf-8"))
     print(json.dumps(payload, indent=2))
     print(
         f"# now prove it: ps2_iso9660_verify.py --source {args.source} "
