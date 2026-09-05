@@ -636,5 +636,38 @@ class BufferViewTests(unittest.TestCase):
                     mapped.close()
 
 
+class TrailingEmptyMemberTests(unittest.TestCase):
+    """The Deluxe disc's under-counted trailing empty member: tolerated only when the caller accepts a size mismatch."""
+
+    def _cut_before_the_empty_member(self) -> bytes:
+        container = ea_terf.build_terf([b"payload" * 8, b""], chunk="DATA")
+        parsed = ea_terf.parse_terf(container)
+        start = parsed.data_offset + parsed.members[1].offset
+        self.assertEqual(parsed.members[1].stored_size, 0)
+        return container[:start - 8]   # member 0 is whole; the empty member 1 starts 8 bytes past the end
+
+    def test_empty_member_past_the_end_is_tolerated_with_allow_size_mismatch(self) -> None:
+        cut = self._cut_before_the_empty_member()
+        parsed = ea_terf.parse_terf(cut, allow_size_mismatch=True)
+        self.assertEqual(parsed.member_count, 2)
+        self.assertEqual(parsed.member(1), b"")
+        self.assertEqual(parsed.member_format(1), ea_terf.FORMAT_EMPTY)
+        self.assertGreater(parsed.size_mismatch, 0)
+        self.assertEqual(parsed.layout_violations(), [], "the container is otherwise ordinary; only the bytes handed over are short")
+
+    def test_without_the_flag_the_size_mismatch_still_refuses(self) -> None:
+        with self.assertRaises(ea_terf.TerfError) as caught:
+            ea_terf.parse_terf(self._cut_before_the_empty_member())
+        self.assertIn("allow_size_mismatch", str(caught.exception))
+
+    def test_a_member_with_bytes_past_the_end_still_refuses(self) -> None:
+        container = ea_terf.build_terf([b"payload" * 8, b"tail" * 4], chunk="DATA")
+        parsed = ea_terf.parse_terf(container)
+        start = parsed.data_offset + parsed.members[1].offset
+        with self.assertRaises(ea_terf.TerfError) as caught:
+            ea_terf.parse_terf(container[:start + 4], allow_size_mismatch=True)
+        self.assertIn("past the end", str(caught.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

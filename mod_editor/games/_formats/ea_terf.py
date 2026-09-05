@@ -776,8 +776,14 @@ class TerfContainer:
                     "<II", data,
                     compression.offset + CHUNK_HEADER_SIZE + 8 * index)
             start = self.data_offset + offset
+            # A member with bytes must have them.  An *empty* member may sit past
+            # the end when the caller has already accepted a size mismatch: the
+            # Madden 09 Deluxe disc's DB_TEAMS / STADIUMS / MOVIEDAT / UIS_STAD
+            # declare a DATA chunk one alignment unit short of their trailing
+            # empty member, and there is nothing of it to read.
             _require(
-                0 <= start and start + stored <= len(data),
+                0 <= start and (start + stored <= len(data)
+                                or (stored == 0 and allow_size_mismatch)),
                 "member %d runs from %d for %d byte(s), past the end of the "
                 "%d byte(s) this reader was handed."
                 % (index, start, stored, len(data)),
