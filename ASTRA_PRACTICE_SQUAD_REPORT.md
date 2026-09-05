@@ -12,6 +12,26 @@ then 0–12 reserves, then NULL. Only padding bytes `+0x19B` (version 1),
 all zero. Every pointer uses retail field-relative save encoding and all-65
 relocation; no saved absolute pointers or mutable `.text` state.
 
+## Beta-60 relocation
+
+The rebased stack owns `0x2890F0..0x289883` for dynamic kickoff. Practice
+squads no longer write or link any runtime symbol into that span. GCC/binutils
+repacked the same C/assembly across eleven pinned spans: `0x374111..0x37439C`,
+`0x3BA610..0x3BA860`, `0x3DCB20..0x3DCC9D`, `0x3BABE0..0x3BAD2D`,
+`0x3D1E20..0x3D1F5F`, `0x3E1600..0x3E16E1`, `0x3E81B0..0x3E824E`,
+`0x3EE0D0..0x3EE162`, `0x2EAEE0..0x2EAF6F`, `0x3D1610..0x3D169E`,
+`0x2952B0..0x29533C` (exclusive ends). The previous builder offered five
+spans but emitted only four; all four non-kickoff allocations are now used.
+`count` is `0x3D1630`, `listed` is `0x3742FC`, and `owner` is `0x3BAC64`.
+These are functions, not mutable storage. The 65 pointers and metadata at
+`+0x19B/+0x1F2/+0x1F3` are unchanged.
+
+No remaining sufficiently large individual dead function passed the scan;
+whole runtime functions were repacked into smaller spans. The seven new
+spans also have zero external unaligned non-text dword candidates. See the
+[audit ledger](tools/practice_squad/AUDIT.md) for boundaries, sizes, oracle
+uncertainty and the stale reservation-manifest decision.
+
 ## PROVED locally
 
 - Atomic, pinned `status/apply`, idempotence, conflict refusal and repaired XBE
@@ -34,9 +54,12 @@ relocation; no saved absolute pointers or mutable `.text` state.
   before FA/draft ownership changes; trade preflight refuses insufficient
   temporary capacity. Draft limits include hidden physical slots.
 - Both mandatory XBE gates pass, including composition with existing patches.
-  A stricter scan finds zero external references into the four runtime caves,
+  A stricter scan finds zero external references into the eleven runtime caves,
   including entries and unaligned callback pointers. The combined-patch CPU
-  gate/save/reload also executes successfully. Details: [audit ledger](tools/practice_squad/AUDIT.md).
+  gate/save/reload includes dynamic kickoff, position pools and depth-chart
+  rows. Kickoff and practice squads commute byte-for-byte, retain both patch
+  statuses and repaired section digests, and are idempotent together.
+  Details: [audit ledger](tools/practice_squad/AUDIT.md).
 
 ## HYPOTHESIS / deliberate beta limits
 
@@ -64,22 +87,21 @@ Run from this worktree:
 
 ```sh
 python3 tools/practice_squad/build_runtime.py --check
-env -u DISPLAY QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/mod_editor/test_nfl2k5_practice_squad.py tests/mod_editor/test_nfl2k5_save_rost.py tests/mod_editor/test_xbe_patch_memory_writes.py tests/mod_editor/test_xbe_patch_cave_references.py
-python3 tools/practice_squad/audit.py --output /tmp/astra-practice-squad-audit.json
+env -u DISPLAY QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/mod_editor/test_nfl2k5_practice_squad.py tests/mod_editor/test_xbe_patch_memory_writes.py tests/mod_editor/test_xbe_patch_cave_references.py tests/mod_editor/test_nfl2k5_dynamic_kickoff.py
+python3 tools/practice_squad/audit.py --oracle --output /tmp/astra-practice-squad-relocated-audit.json
 python3 packaging/repin.py --apply
 ```
 
-Final result: **40 tests passed, 28 subtests passed**; reproducible runtime;
-zero external cave references; **0 pin updates**. Private inputs and optional
-Unicorn/Capstone have precise skip reasons on machines without them.
-
-The private patch-only build and receipt are in
-`/tmp/astra-practice-squad-build/default.xbe` and `receipt.json`; the separate
-`combined-gate.xbe` is a composition test artifact, not a disc build. No ISO
-was changed. [WIRING.md](WIRING.md) gives exact additions for Claude's protected
-build, preset, GUI and packaging files; those files and release pins remain
-untouched. Commit contains only explicit implementation/test/document paths;
-the supplied `ASTRA_BRIEF.md` remains untracked. No push.
+Relocation result: **57 tests passed, 115 subtests passed**, no skips;
+reproducible runtime; zero external references in the conservative cave gate;
+zero reservation overlaps; **0 pin updates**. Oracle verdicts remain `unknown`
+for all spans, including the unresolved cases detailed in the audit ledger.
+Private inputs and optional Unicorn/Capstone have precise skip reasons on
+machines without them. No ISO was changed. [WIRING.md](WIRING.md) gives exact
+additions for Claude's protected build, preset, GUI and packaging files;
+those files and release pins remain untouched. Commit contains only explicit
+implementation/test/document paths; the supplied `ASTRA_BRIEF.md` and
+`ASTRA_BRIEF_RELOCATE.md` remain untracked. No push.
 
 ## Noah's in-game checklist
 

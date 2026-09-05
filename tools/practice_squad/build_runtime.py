@@ -12,9 +12,13 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'mod_editor/core/nfl2k5_practice_squad_runtime.py'
-# Entire spans pass the conservative reference scan, including their entries.
-CAVES = ((0x2890F0, 1939), (0x374111, 651), (0x3BA610, 592),
-         (0x3DCB20, 381), (0x3BABE0, 333))
+# Entire spans pass audit.py, including their entries. See AUDIT.md for the
+# oracle's unresolved-flow limits. 0x2890F0 belongs to dynamic kickoff.
+# Repack whole functions; never split an instruction or allocate mutable data.
+CAVES = ((0x374111, 651), (0x3BA610, 592), (0x3DCB20, 381),
+         (0x3BABE0, 333), (0x3D1E20, 319), (0x3E1600, 225),
+         (0x3E81B0, 158), (0x3EE0D0, 146), (0x2EAEE0, 143),
+         (0x3D1610, 142), (0x2952B0, 140))
 
 def run(args):
     return subprocess.check_output([str(x) for x in args], text=True)

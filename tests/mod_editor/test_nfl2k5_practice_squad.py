@@ -94,6 +94,21 @@ class PatchTests(unittest.TestCase):
             data=bytearray(self.retail); data[off]^=0x55
             self.assertEqual(ps.status(data),'foreign')
 
+    def test_dynamic_kickoff_and_practice_squad_commute(self):
+        from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
+        kickoff_only,_=kickoff.apply(self.retail)
+        self.assertEqual(ps.status(kickoff_only),'retail')
+        self.assertEqual(kickoff.status(self.patched),'retail')
+        together,_=ps.apply(kickoff_only)
+        reverse,_=kickoff.apply(self.patched)
+        self.assertEqual(together,reverse)
+        self.assertEqual(ps.status(together),'applied')
+        self.assertEqual(kickoff.status(together),'applied')
+        self.assertEqual(ps.apply(together)[0],together)
+        self.assertEqual(kickoff.apply(together)[0],together)
+        for section in ps._sections(together):
+            self.assertEqual(section.stored_digest,ps.section_digest(together,section))
+
 
 @unittest.skipUnless(XBE.is_file() and uni is not None,
                      'private retail XBE or optional unicorn package absent')
@@ -220,8 +235,17 @@ class ExecutionTests(PatchTests):
             'overtime','team_column','seven_on_seven')}
         combined,_=tt._apply_all(self.retail,None,**flags,arc_table=False,kick_power=False,
             penalties='nfl',uniform_choice='choice',kick_laces=True,franchise_practice=True,
-            prospect_names='modern',player_star=True)
+            prospect_names='modern',player_star=True,dynamic_kickoff=True)
+        from mod_editor.core import nfl2k5_position_pools as pools
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
+        combined,_=pools.apply(combined)
+        combined,_=rows.apply(combined)
+        self.assertEqual(ps.status(combined),'retail')
         combined,_=ps.apply(combined)
+        self.assertEqual(kickoff.status(combined),'applied')
+        self.assertEqual(pools.status(combined),'applied')
+        self.assertEqual(rows.status(combined),'applied')
         for section in ps._sections(combined):
             self.uc.mem_write(section.virtual_address,combined[section.raw_offset:section.raw_offset+section.raw_size])
         # Loading executable data reset the fixture's runtime globals.

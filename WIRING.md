@@ -1,12 +1,39 @@
 # Beta-60 integration: experimental practice squads
 
-These are the additions for Claude's protected files, based on beta-59
-`7f1f3b3`. They have deliberately not been applied here. The shipped behavior is
+These are the additions for Claude's protected files on the rebased beta-60
+stack. They have deliberately not been applied here. The shipped behavior is
 **53 active + up to 12 reserves**, with no native reserve screen. Do not label
 this as 16 reserves or witnessed. BASIC/ADVANCED default off; EXPERIMENTAL on.
 Off-season active capacity is `65 - reserve_count`; a full 53+12 roster must
 release active players to add draft picks. Trades needing a temporary extra
 slot are refused before changing ownership.
+
+## Cave ownership after relocation
+
+Dynamic kickoff retains `0x2890F0..0x289883` exclusively. Practice squads use
+the following `(VA, capacity)` allocations (all executable code/constants):
+
+```python
+((0x374111, 651), (0x3BA610, 592), (0x3DCB20, 381), (0x3BABE0, 333),
+ (0x3D1E20, 319), (0x3E1600, 225), (0x3E81B0, 158), (0x3EE0D0, 146),
+ (0x2EAEE0, 143), (0x3D1610, 142), (0x2952B0, 140))
+```
+
+Reserve these complete capacities, including trailing NOP padding, when
+regenerating `data/nfl2k5_cave_reservations.json` after integration. The supplied
+manifest predates rebased source changes and omits kickoff; this branch leaves
+it and the oracle's source-drift guard intact. The relocation audit uses
+`ReservationManifest.load(..., source_root=None)` as permitted by the brief,
+then checks existing reservations and the actual current stack bytes in the
+cave gate. The oracle retains its `unknown` verdict for unresolved indirect
+flow; no closed-world allocation proof is claimed. See
+[AUDIT.md](tools/practice_squad/AUDIT.md) for exact evidence and limits.
+
+Both XBE gates apply practice squads after `_apply_all(...,
+dynamic_kickoff=True)`, `pools.apply(...)` and `rows.apply(...)`. The same
+composition executes the bounded CPU season gate and save/reload. Preserve
+that combination when wiring the option. Storage still uses 65 pointer fields
+and only `+0x19B/+0x1F2/+0x1F3`; no save-format migration is required.
 
 ## `mod_editor/core/nfl2k5_throw_tuning.py`
 

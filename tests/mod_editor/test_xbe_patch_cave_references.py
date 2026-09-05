@@ -56,7 +56,8 @@ class CaveReferenceTests(unittest.TestCase):
         cls.patched, _ = pools.apply(cls.patched)
         cls.patched, _ = rows.apply(cls.patched)
         from mod_editor.core import nfl2k5_practice_squad as ps
-        cls.patched, _ps_receipt = ps.apply(cls.patched)
+        cls.stack = cls.patched
+        cls.patched, _ps_receipt = ps.apply(cls.stack)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -147,9 +148,32 @@ class CaveReferenceTests(unittest.TestCase):
 
     def test_current_owners_are_reserved_for_new_allocations(self) -> None:
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail), source_root=REPO)
+        # The supplied manifest predates this rebase. The relocation brief permits
+        # inspecting its reservations without source_root; current stack bytes
+        # are checked separately below. Keep the oracle's drift guard unchanged.
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
         for start in (0x1AFDF0, 0x28B410, 0x1D82D0, 0x325E70, 0x2979F0, 0xB4A60, 0x2BA840):
             self.assertTrue(manifest.overlaps(start, start + 1), hex(start))
+
+    def test_practice_squad_spans_preserve_stack_owners(self) -> None:
+        from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
+        from mod_editor.core import nfl2k5_practice_squad as ps
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        retail = XbeImage(self.retail)
+        stack = XbeImage(self.stack)
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, retail)
+        for start, size, _ in ps.CAVES:
+            self.assertEqual(manifest.overlaps(start, start + size), [], hex(start))
+            self.assertEqual(stack.read(start, size), retail.read(start, size), hex(start))
+            self.assertEqual({va: refs for va, refs in self.targets.items()
+                              if start <= va < start + size and any(
+                                  not start <= (r if isinstance(r, int) else r[2] + BASE) < start + size
+                                  for r in refs)}, {}, hex(start))
+        self.assertEqual(ps.status(self.stack), 'retail')
+        self.assertEqual(ps.status(self.patched), 'applied')
+        self.assertEqual(kickoff.status(self.patched), 'applied')
+        self.assertEqual(XbeImage(self.patched).read(kickoff.CAVE_VA, kickoff.CAVE_SIZE),
+                         stack.read(kickoff.CAVE_VA, kickoff.CAVE_SIZE))
     def test_depth_rows_share_the_unreferenced_pools_cave_including_its_entry(self) -> None:
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
