@@ -555,6 +555,35 @@ class DialogTests(unittest.TestCase):
         finally:
             dialog.done(0)
 
+    def test_accepting_the_offer_verifies_without_stranding_the_window(self) -> None:
+        """Answering "yes" starts a second task from inside the first's handler.
+
+        That reentrancy is the part worth pinning: if the busy flag were cleared
+        in the wrong order the window would be left unclosable, or the second
+        task would never start.
+        """
+
+        from PyQt5.QtWidgets import QFileDialog, QMessageBox
+
+        destination = self.root / "pack-offered"
+        dialog = self._dialog()
+        real_save = QFileDialog.getSaveFileName
+        real_question = QMessageBox.question
+        QFileDialog.getSaveFileName = staticmethod(
+            lambda *args, **kwargs: (str(destination), "")
+        )
+        QMessageBox.question = staticmethod(lambda *args, **kwargs: QMessageBox.Yes)
+        try:
+            dialog._export()
+            self._settle(dialog)
+            self.assertIn("PASS", dialog.status_label.text())
+            self.assertFalse(dialog._busy)
+            self.assertTrue(dialog.export_button.isEnabled())
+        finally:
+            QFileDialog.getSaveFileName = real_save
+            QMessageBox.question = real_question
+            dialog.done(0)
+
     def test_a_tampered_pack_fails_verification_and_says_so(self) -> None:
         from PyQt5.QtWidgets import QMessageBox
 
