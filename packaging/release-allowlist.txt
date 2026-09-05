@@ -341,8 +341,6 @@ tools/validate_nfl2k5_ps2_playbook.bat
 tools/ps2_iso9660_writer.py
 tools/ps2_iso9660_verify.py
 docs/product/PS2_PHASE2_TEXT.md
-reports/gameplay_tuning/nfl2k5_ps2_text_target_catalog.v1.json
-reports/gameplay_tuning/nfl2k5_ps2_text_trial.v1.json
 tools/nfl2k5_ps2_text_patch.py
 tools/nfl2k5_ps2_text_target_catalog.py
 tools/nfl2k5_ps2_text_verify.py
@@ -389,7 +387,6 @@ tools/validate_nfl2k5_ps2_disc_roster.bat
 # The real-disc trial's receipt: which slot was replaced, its declared
 # sizes and offsets, and both verifiers' verdicts.  Names, offsets and
 # digests only -- no disc bytes, no decoded audio.
-reports/gameplay_tuning/nfl2k5_ps2_audo_trial.v1.json
 tools/spu_adpcm.py
 tools/nfl2k5_ps2_audo_target_catalog.py
 tools/nfl2k5_ps2_audo_patch.py
@@ -405,7 +402,6 @@ tools/validate_nfl2k5_ps2_audo.bat
 # target catalogue is deliberately NOT shipped — it is derived from the user's
 # own disc by the catalogue tool, and the copy in this repository was derived
 # from ours.
-reports/gameplay_tuning/nfl2k5_ps2_stadium_trial.v1.json
 tools/nfl2k5_ps2_stadium_target_catalog.py
 tools/nfl2k5_ps2_stadium_position_patch.py
 tools/nfl2k5_ps2_stadium_position_verify.py

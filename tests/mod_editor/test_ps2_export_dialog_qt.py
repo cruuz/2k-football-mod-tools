@@ -246,7 +246,7 @@ class ViewModelTests(unittest.TestCase):
         )
         self.assertIn("ClassicTextureNames=true", text)
         self.assertIn("LoadTextureReplacements=true", text)
-        self.assertIn("/tmp/pack", text)
+        self.assertIn(str(Path("/tmp/pack")), text)
         self.assertIn("textures/SLUS-20919/replacements", text)
         self.assertIn("retail art", text)
 
