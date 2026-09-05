@@ -328,7 +328,8 @@ def rebuild_span(span: bytes, edited: bytes) -> Tuple[bytes, dict]:
         return span, {"mode": "no_op", "stored_size": stored,
                       "retail_consumed_bytes": source_info.consumed_bytes,
                       "rebuilt_consumed_bytes": source_info.consumed_bytes,
-                      "encoder": "none", "wrapper_identical": True,
+                      "encoder": "none: the source span is returned verbatim",
+                      "wrapper_identical": True,
                       "span_identical": True,
                       "scratch_bytes": fields[5], "matches_expanded": 0}
     try:
@@ -353,7 +354,9 @@ def rebuild_span(span: bytes, edited: bytes) -> Tuple[bytes, dict]:
         "retail_consumed_bytes": source_info.consumed_bytes,
         "rebuilt_consumed_bytes": info.filled_bytes,
         "compressed_bytes_before_fill": info.compressed_bytes,
-        "encoder": "greedy" if info.compressed_bytes <= stored else "optimal",
+        "encoder": "auto: greedy first, optimal-parse only if greedy will not "
+                   "fit; which one ran is not recoverable from the result, so "
+                   "it is not claimed here",
         "padding_bytes": info.padding_bytes,
         "matches_expanded": info.matches_expanded,
         "scratch_bytes": info.scratch_bytes,
