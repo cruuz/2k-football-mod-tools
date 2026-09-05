@@ -36,7 +36,7 @@ document it writes is counts, dimensions, filenames and member indexes.
 Usage::
 
     madden09_ps2_texture_identities.py --source DISC.iso --dump-dir DIR \\
-        --out docs/product/evidence/madden09_ps2/pcsx2-texture-identities.json
+        --out docs/product/measured/madden09_ps2/pcsx2-texture-identities.json
     madden09_ps2_texture_identities.py --source DISC.iso --index CACHE.jsonl \\
         --containers UNIFORMS.DAT,FIELDART.DAT
     madden09_ps2_texture_identities.py --selftest

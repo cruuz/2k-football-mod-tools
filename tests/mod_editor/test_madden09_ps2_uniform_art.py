@@ -558,7 +558,7 @@ class TextureIdentityToolTests(unittest.TestCase):
     """Pairing a PCSX2 texture dump with the disc, on data these tests made.
 
     The real proof is a real dump against a real disc and it is recorded in
-    ``docs/product/evidence/madden09_ps2/``; what runs here is the grammar, the
+    ``docs/product/measured/madden09_ps2/``; what runs here is the grammar, the
     matcher's exactness and the attribution rule, on a synthetic disc.
     """
 

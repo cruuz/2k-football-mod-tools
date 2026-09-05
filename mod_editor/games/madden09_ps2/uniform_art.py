@@ -77,7 +77,7 @@ PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 #: which texture on the disc PCSX2 saw, and under what filename.  Counts,
 #: dimensions, filenames and member indexes; no pixel.
 IDENTITY_SCHEMA = "madden09_ps2_pcsx2_texture_identities/v1"
-IDENTITY_DOCUMENT = Path("docs/product/evidence/madden09_ps2/pcsx2-texture-identities.json")
+IDENTITY_DOCUMENT = Path("docs/product/measured/madden09_ps2/pcsx2-texture-identities.json")
 
 #: Which name :meth:`UniformArtLane.replacement_identity` hands back when a
 #: texture was dumped under more than one convention.  ``classic`` first: it is

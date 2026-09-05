@@ -2811,7 +2811,7 @@
       "evidence": [
         "docs/product/MADDEN09_PS2_IDENTITY.md",
         "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/evidence/madden09_ps2/identity_blast_radius.json"
+        "docs/product/measured/madden09_ps2/identity_blast_radius.json"
       ],
       "game": "madden09_ps2",
       "gui": {
