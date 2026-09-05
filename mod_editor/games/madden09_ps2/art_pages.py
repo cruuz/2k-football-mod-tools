@@ -485,7 +485,7 @@ class ArtPageLane(UniformDiscArtWriteLane):
     def identity_coverage(self, catalogue: Catalogue) -> Dict[str, Dict[str, int]]:
         """Per container: how many of its textures a PCSX2 dump has named.
 
-        Counted off the shipped identity table rather than claimed: a
+        Counted off the two shipped identity tables rather than claimed: a
         container no dump drew comes back ``{"listed": n, "named": 0}``, which
         is the honest answer and the one the page shows.
         """
