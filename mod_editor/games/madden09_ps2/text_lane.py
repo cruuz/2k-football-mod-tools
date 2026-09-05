@@ -836,7 +836,16 @@ def verify_build(source: Path, destination: Path,
                 offset = int(item["offset"])
                 allocation = int(item["allocation_bytes"])
                 allowed.append((offset, allocation))
-                expected = encode_slot(wanted[str(item["target"])], allocation)
+                # Re-expressed rather than encode_slot()'d: a verifier that
+                # calls the encoder cannot see the encoder pad with the wrong
+                # byte, because both sides would be wrong together.
+                text = wanted[str(item["target"])].encode(TEXT_ENCODING, "strict")
+                if len(text) > allocation:
+                    raise TextError(
+                        f"the recipe asks for {len(text)} bytes at byte {offset} of member "
+                        f"{member} of {container_name}, whose allocation is {allocation}."
+                    )
+                expected = text + TERMINATOR * (allocation - len(text))
                 found = bytes(after[offset:offset + allocation])
                 if found != expected:
                     raise TextError(

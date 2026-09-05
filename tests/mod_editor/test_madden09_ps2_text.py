@@ -310,6 +310,30 @@ class TextLaneTests(unittest.TestCase):
         verdict = self.lane.verify(self.source, tampered, receipt)
         self.assertFalse(verdict.passed, verdict.summary)
 
+    def test_the_verifier_catches_padding_written_with_the_wrong_byte(self) -> None:
+        """The verifier re-expresses the encoding rather than calling the encoder."""
+
+        from mod_editor.games._formats import ea_terf
+
+        _edits, destination, receipt = self._built()
+        image = containers.open_disc(destination)
+        entry = next(item for item in containers.data_files(image)
+                     if item.name == containers.TEAM_DATABASE_CONTAINER)
+        original = containers.read_file(image, entry)
+        member = bytearray(ea_terf.parse_terf(original, allow_size_mismatch=True).member(1))
+        edited = receipt.document["edits"][0]
+        offset, allocation = int(edited["offset"]), int(edited["allocation_bytes"])
+        written = int(edited["written_bytes"])
+        member[offset + written:offset + allocation] = b" " * (allocation - written)
+        rebuilt = ea_terf.rewrite_member(original, 1, bytes(member))
+        raw = bytearray(destination.read_bytes())
+        start = entry.lba * 2048
+        raw[start:start + len(rebuilt)] = rebuilt
+        tampered = self.work / "spaces.iso"
+        tampered.write_bytes(bytes(raw))
+        verdict = self.lane.verify(self.source, tampered, receipt)
+        self.assertFalse(verdict.passed, verdict.summary)
+
     def test_a_receipt_with_no_recipe_is_refused_rather_than_believed(self) -> None:
         _edits, destination, receipt = self._built()
         stripped = {key: value for key, value in receipt.document.items() if key != "recipe"}

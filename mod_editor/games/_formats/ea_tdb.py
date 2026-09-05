@@ -914,9 +914,8 @@ CRC_SITE_END_OF_FILE = "end-of-file"
 CRC_FILE_HEADER_OFFSET = 20
 CRC_FILE_HEADER_COVERAGE = 20
 
-_CRC_TABLE: Tuple[int, ...] = tuple(
-    _byte for _byte in ()
-)
+#: Built on first use by :func:`_crc_table`; empty until then.
+_CRC_TABLE: Tuple[int, ...] = ()
 
 
 def _crc_table() -> Tuple[int, ...]:
