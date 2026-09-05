@@ -458,3 +458,8 @@ helper belongs to the Xbox lane); a PS2 sidebar; any change to the six tools.
 - **Catalogue and step subprocesses** are exactly as planned; the cancel test uses a
   sleeping command in place of the tool, since a synthetic catalogue builds in well
   under a second.
+
+
+## Windows end-to-end (2026-09-05)
+
+The shipped portable Windows build drove the service over the retail disc on the owner's PC: open and identity check, text and colour catalogues from the disc, one string and one facemask colour staged, a two-step chained build to a new image (text 34 bytes, colours 8 bytes; 368 s on a hard disk), every step verified by the lane's independent verifier, source opened read-only. Receipt with paths scrubbed: `reports/gameplay_tuning/nfl2k5_ps2_disc_studio_windows_e2e.v1.json`. Nothing was seen in game.
