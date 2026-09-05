@@ -126,6 +126,7 @@ mod_editor/gui/bump_panel_qt.py
 mod_editor/gui/crash_report.py
 mod_editor/gui/create_play_wizard_qt.py
 mod_editor/gui/crib_panel_qt.py
+mod_editor/gui/franchise_panel_qt.py
 mod_editor/gui/gameplay_panel_qt.py
 mod_editor/gui/menus_panel_qt.py
 mod_editor/gui/play_designer_qt.py
