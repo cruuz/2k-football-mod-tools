@@ -369,3 +369,8 @@ tools/nfl2k5_ps2_disc_roster_patch.py
 tools/nfl2k5_ps2_disc_roster_verify.py
 tools/validate_nfl2k5_ps2_disc_roster.sh
 tools/validate_nfl2k5_ps2_disc_roster.bat
+# PS2 Phase 2: exact-slot AUDO audio replacement on the SLUS-20919 disc.
+# The codec, the target catalogue, the patcher, its independent verifier and
+# the validators.  The patcher writes through tools/ps2_iso9660_writer.py, so
+# that module and its verifier ship with it.
+tools/spu_adpcm.py
