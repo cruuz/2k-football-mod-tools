@@ -286,6 +286,47 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
     return BUILD_READY_MESSAGE
 
 
+PS2_GAME_ID = "nfl2k5_ps2"
+
+#: What the File menu says when the PS2 module cannot be discovered at all.
+#: The composed label needs the module's manifest, so a build that refuses the
+#: module has no game words to compose from and says the plain thing instead --
+#: with the refusal on hover rather than a menu entry that silently vanishes.
+PS2_STUDIO_FALLBACK_LABEL = "PS2 Studio\u2026"
+
+
+def _ps2_studio_menu_entry(game_id: str = PS2_GAME_ID) -> tuple[str, str]:
+    """The File menu's studio entry: ``(label, tooltip)``, composed never typed.
+
+    One rule names every studio -- ``<Console> <Game> <Year> Studio`` -- and it
+    lives in the core, composed from the module's own manifest.  This menu asks
+    for it rather than spelling it, so a second game's entry reads like the
+    first the day it is installed.  A module the core refuses still gets an
+    entry: the plain fallback label, with the refusal sentence on hover.
+    """
+
+    try:
+        from mod_editor.games import discover
+        from mod_editor.games.chooser import studio_menu_label
+
+        report = discover()
+        for game in report.games:
+            if game.game_id == game_id:
+                return studio_menu_label(game.manifest.studio_label), game.studio.tooltip
+        for refused in report.refused:
+            if refused.game_id == game_id or refused.directory == game_id:
+                return PS2_STUDIO_FALLBACK_LABEL, (
+                    f"This build cannot load the PlayStation 2 game module: {refused.reason}"
+                )
+    except Exception as exc:  # pragma: no cover - a broken discovery is still an entry
+        return PS2_STUDIO_FALLBACK_LABEL, (
+            f"This build cannot load the PlayStation 2 game module: {exc}"
+        )
+    return PS2_STUDIO_FALLBACK_LABEL, (
+        "No PlayStation 2 game module is installed in this build."
+    )
+
+
 def _getting_started_document() -> Path | None:
     """The packaged Getting Started guide, or None when this build does not carry it."""
 
@@ -1574,9 +1615,6 @@ class StudioMainWindow(QMainWindow):
         self._open_project_action: QAction | None = None
         self._save_project_action: QAction | None = None
         self._save_project_as_action: QAction | None = None
-        self._ps2_save_action: QAction | None = None
-        self._ps2_disc_action: QAction | None = None
-        self._ps2_export_action: QAction | None = None
         self._game_chooser_action: QAction | None = None
         self._ps2_disc_studio_action: QAction | None = None
 
@@ -1637,35 +1675,15 @@ class StudioMainWindow(QMainWindow):
         self._recover_action = file_menu.addAction("Recover Unsaved Edits…")
         self._recover_action.triggered.connect(self._recover_from_menu)
         file_menu.addSeparator()
-        self._ps2_save_action = file_menu.addAction("PS2 Save Editor…")
-        self._ps2_save_action.setToolTip(
-            "Edit an ESPN NFL 2K5 PlayStation 2 memory-card save. This is "
-            "separate from the Xbox game image you have open."
-        )
-        self._ps2_save_action.triggered.connect(self._open_ps2_save_editor)
-        self._ps2_disc_action = file_menu.addAction("PS2 Disc Inventory…")
-        self._ps2_disc_action.setToolTip(
-            "Browse every named resource on an ESPN NFL 2K5 PlayStation 2 disc "
-            "image, read-only, and see each name's Xbox counterpart. This is "
-            "separate from the Xbox game image you have open."
-        )
-        self._ps2_disc_action.triggered.connect(self._open_ps2_disc_inventory)
-        self._ps2_export_action = file_menu.addAction(
-            "Export PS2 replacement pack…"
-        )
-        self._ps2_export_action.setToolTip(
-            "Write the uniform art you have edited as a folder of PCSX2 "
-            "texture replacements for the PlayStation 2 release. Only edited "
-            "targets are written; your Xbox project is not changed."
-        )
-        self._ps2_export_action.triggered.connect(self._open_ps2_export)
-        self._ps2_disc_studio_action = file_menu.addAction("PS2 NFL 2K5 Studio…")
-        self._ps2_disc_studio_action.setToolTip(
-            "Edit text, playbooks, uniform colours, rosters, stadium positions "
-            "and sounds on a copy of an ESPN NFL 2K5 PlayStation 2 disc image. "
-            "A new image is written; your original and your Xbox project are "
-            "not changed."
-        )
+        # Two PS2 entries, not five. The save editor, the disc inventory and
+        # the replacement-pack export are that game's *other* windows and live
+        # in its studio's Windows menu now, under the game they belong to;
+        # --ps2-save, --ps2-disc and --ps2-export still open them alone. The
+        # label here is composed by the core from the module's manifest, never
+        # typed: one game, one name, in every menu that offers it.
+        label, tooltip = _ps2_studio_menu_entry()
+        self._ps2_disc_studio_action = file_menu.addAction(label)
+        self._ps2_disc_studio_action.setToolTip(tooltip)
         self._ps2_disc_studio_action.triggered.connect(self._open_ps2_disc_studio)
         self._game_chooser_action = file_menu.addAction("Select other games…")
         self._game_chooser_action.setToolTip(
@@ -2248,31 +2266,40 @@ class StudioMainWindow(QMainWindow):
         self._set_status("Game chooser closed • your Xbox project was not changed.")
 
     def _open_ps2_disc_studio(self, _checked: bool = False) -> None:
-        """Open the PS2 Disc Studio: the six on-disc writers behind one window.
+        """Open the PlayStation 2 game's studio -- whichever window the module names.
+
+        The core decides what a game's studio *is* (``GameModule.studio_window``)
+        and what it is *called* (the label composed from the manifest); this
+        menu asks for both rather than naming either.  The studio is handed
+        this window's session, so the module's own side windows -- the save
+        editor, the disc inventory, the replacement-pack export -- are reachable
+        from inside it, which is where they now live.
 
         A PS2 disc image is the user's own file and has nothing to do with the
-        Xbox image this window may have loaded, so -- like the other PS2
-        windows -- it is a self-contained dialog off the File menu.  It writes
-        a NEW image and never the source; nothing here touches the Xbox project.
+        Xbox image this window may have loaded: the studio writes a NEW file
+        and never the source, and nothing here touches the Xbox project.
         """
 
-        if self._refuse_while_audio_busy("open the PS2 NFL 2K5 Studio"):
+        if self._refuse_while_audio_busy("open the PS2 game studio"):
             return
         try:
-            from .ps2_disc_studio_qt import Ps2DiscStudioDialog
-        except Exception as exc:  # pragma: no cover - defensive import guard
+            from mod_editor.games import discover
+            from mod_editor.games.chooser import open_studio
+
+            dialog = open_studio(
+                discover(), PS2_GAME_ID, parent=self, context={"facade": self.facade},
+            )
+        except Exception as exc:  # a refused module is a sentence, never a crash
             QMessageBox.warning(
                 self,
-                "PS2 NFL 2K5 Studio is unavailable",
-                f"The PS2 NFL 2K5 Studio could not be loaded: {str(exc).strip()}\n\n"
-                "Nothing was changed.",
+                "The PlayStation 2 studio is unavailable",
+                f"{str(exc).strip()}\n\nNothing was changed.",
             )
             return
-        dialog = Ps2DiscStudioDialog(parent=self)
         dialog.exec_()
         dialog.deleteLater()
         self._set_status(
-            "PS2 NFL 2K5 Studio closed • your Xbox project was not changed."
+            "PS2 studio closed \u2022 your Xbox project was not changed."
         )
 
     def _recover_candidate(self, candidate: RecoveryCandidate) -> None:
@@ -8059,15 +8086,10 @@ class StudioMainWindow(QMainWindow):
             self._open_source_action.setEnabled(not global_busy)
         if self._open_project_action is not None:
             self._open_project_action.setEnabled(ready and not global_busy)
-        if self._ps2_save_action is not None:
-            # PS2 saves are independent of the Xbox source, so this needs no
-            # loaded image -- only the guard against a running operation.
-            self._ps2_save_action.setEnabled(not global_busy)
-        if self._ps2_disc_action is not None:
-            # Likewise: a PS2 disc image is the user's own file, opened
-            # read-only, unrelated to the Xbox source.
-            self._ps2_disc_action.setEnabled(not global_busy)
         if self._ps2_disc_studio_action is not None:
+            # A PS2 disc image is the user's own file, opened read-only and
+            # unrelated to the Xbox source, so this needs no loaded image --
+            # only the guard against a running operation.
             self._ps2_disc_studio_action.setEnabled(not global_busy)
         if self._game_chooser_action is not None:
             self._game_chooser_action.setEnabled(not global_busy)

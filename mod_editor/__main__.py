@@ -93,9 +93,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--game",
         metavar="GAME_ID",
         help=(
-            "open one installed game module on its own, without the studio: "
-            "describes the module, or with --window opens one of its windows; "
-            "'python -m mod_editor.games' lists the modules"
+            "open one installed game module's studio on its own, without the "
+            "Xbox studio; with --window opens one of that module's other "
+            "windows instead; 'python -m mod_editor.games' lists the modules"
         ),
     )
     action.add_argument(
@@ -309,7 +309,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             return games_main(["chooser"])
         if args.window:
             return games_main(["open", args.game, "--window", args.window])
-        return games_main(["show", args.game])
+        # Without --window this opens the module's *studio* -- the window its
+        # studio_window names -- rather than only describing it. A user who
+        # owns one game's release types --game and is in that game's studio;
+        # 'python -m mod_editor.games show <id>' still prints the description.
+        return games_main(["open", args.game])
     if args.check_registry:
         registry = CapabilityRegistryLoader().load(
             allow_sample_fallback=not args.require_registry, check_files=False

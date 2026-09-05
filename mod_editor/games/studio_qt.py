@@ -1294,9 +1294,14 @@ class GameStudioDialog(QDialog):
         parent: Optional[QWidget] = None,
         initial_source: Optional[Path] = None,
         service: Optional[GameStudioService] = None,
+        context: Optional[Mapping[str, Any]] = None,
     ) -> None:
         super().__init__(parent)
         self.module = module
+        #: Whatever opened this studio handed it -- the Xbox studio passes its
+        #: live session as ``facade`` so a side window that needs one can be
+        #: offered here instead of only from the old File menu.
+        self.context: Dict[str, Any] = dict(context or {})
         self.studio_label = module.manifest.studio_label
         self.service = service if service is not None else GameStudioService(module)
         self.initial_source = Path(initial_source) if initial_source else None
@@ -1443,6 +1448,15 @@ class GameStudioDialog(QDialog):
         for spec in others:
             action = self.windows_menu.addAction(spec.menu_label)
             action.setToolTip(spec.tooltip)
+            if spec.needs_studio_session and self.context.get("facade") is None:
+                # Offered, named and explained -- but not clickable, because the
+                # window works on a session this studio was not handed.
+                action.setEnabled(False)
+                action.setToolTip(
+                    f"{spec.tooltip}\n\n{spec.menu_label} works on the open Xbox project, so it "
+                    "needs that studio's session; open it from there."
+                )
+                continue
             action.triggered.connect(lambda _checked=False, window_id=spec.window_id:
                                      self.open_module_window(window_id))
 
@@ -1579,7 +1593,7 @@ class GameStudioDialog(QDialog):
 
         try:
             spec = self.module.window(window_id)
-            dialog = spec.factory(parent=self)
+            dialog = spec.factory(parent=self, **self.context)
         except ContractError as exc:
             self.report(str(exc))
             return None

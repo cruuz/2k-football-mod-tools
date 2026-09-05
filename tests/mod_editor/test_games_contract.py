@@ -481,8 +481,15 @@ class BoundaryTests(unittest.TestCase):
         self.assertNotIn("helper", check.detail, "function-level imports are lazy and allowed")
 
     HOOKS = {
-        # The File menu's one action, "Select other games…", and its handler.
-        "mod_editor/gui/studio_qt.py": {"mod_editor.games.chooser_qt"},
+        # The File menu's two actions -- the PS2 game's studio and "Select
+        # other games…" -- and their handlers.  The studio entry asks the core
+        # for the label it shows (chooser.studio_menu_label) and for the window
+        # it opens (chooser.open_studio over discover()); it names no module.
+        "mod_editor/gui/studio_qt.py": {
+            "mod_editor.games",
+            "mod_editor.games.chooser",
+            "mod_editor.games.chooser_qt",
+        },
         # The one command-line seam: --game / --window / --games-chooser.
         "mod_editor/__main__.py": {"mod_editor.games.__main__"},
     }

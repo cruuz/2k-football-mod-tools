@@ -190,13 +190,33 @@ class WordingTests(unittest.TestCase):
 
 
 class EntryPointTests(unittest.TestCase):
-    def test_the_file_menu_action_mirrors_the_other_ps2_windows(self) -> None:
+    def test_the_file_menu_offers_two_ps2_entries_and_composes_the_label(self) -> None:
+        """Two entries, not five: this game's studio, and "Select other games…".
+
+        The label is not typed here -- the menu asks the core to compose it
+        from the module's manifest, so a second game's entry reads like this
+        one the day it is installed, and a build that cannot load the module
+        still gets an entry with the refusal on hover.  The three side windows
+        moved into the studio's own Windows menu; their flags are untouched.
+        """
+
+        from mod_editor.gui import studio_qt
+
         source = (ROOT / "mod_editor" / "gui" / "studio_qt.py").read_text(encoding="utf-8")
-        self.assertIn('file_menu.addAction("PS2 NFL 2K5 Studio…")', source)
+        for gone in ('"PS2 Save Editor…"', '"PS2 Disc Inventory…"',
+                     '"Export PS2 replacement pack…"'):
+            self.assertNotIn(f"file_menu.addAction({gone})", source, gone)
+        self.assertIn("label, tooltip = _ps2_studio_menu_entry()", source)
+        self.assertIn('self._ps2_disc_studio_action = file_menu.addAction(label)', source)
+        self.assertIn('file_menu.addAction("Select other games…")', source)
+        label, tooltip = studio_qt._ps2_studio_menu_entry()
+        self.assertEqual(label, "PS2 NFL 2K5 Studio\u2026")
+        self.assertTrue(tooltip.strip())
+        self.assertEqual(studio_qt._ps2_studio_menu_entry("no_such_game")[0], "PS2 Studio\u2026")
         handler = source[source.index("def _open_ps2_disc_studio"):]
         handler = handler[:handler.index("\n    def ", 10)]
-        self.assertIn('_refuse_while_audio_busy("open the PS2 NFL 2K5 Studio")', handler)
-        self.assertIn("from .ps2_disc_studio_qt import Ps2DiscStudioDialog", handler)
+        self.assertIn('_refuse_while_audio_busy("open the PS2 game studio")', handler)
+        self.assertIn("from mod_editor.games.chooser import open_studio", handler)
         self.assertIn("your Xbox project was not changed", handler)
         self.assertIn("self._ps2_disc_studio_action.setEnabled(not global_busy)", source)
 

@@ -904,15 +904,26 @@ class EntryPointTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(built, [None])
 
-    def test_the_studio_offers_the_entry_and_a_handler_for_it(self) -> None:
+    def test_the_entry_moved_into_the_ps2_studios_windows_menu(self) -> None:
+        """The export is one of the PS2 game's windows, so it is listed where
+        that game's windows are: inside its studio, not on the Xbox File menu.
+        The module still declares it, with the same label and the same rule
+        that it needs the Xbox session; the --ps2-export flag is unchanged."""
+
+        from mod_editor.games import discover
         from mod_editor.gui import studio_qt
 
-        window = studio_qt.StudioMainWindow
-        self.assertTrue(callable(getattr(window, "_open_ps2_export", None)))
         source = Path(studio_qt.__file__).read_text(encoding="utf-8")
-        self.assertIn('"Export PS2 replacement pack…"', source)
-        self.assertIn("self._ps2_export_action.triggered.connect", source)
-        self.assertIn("from .ps2_export_dialog_qt import Ps2ExportDialog", source)
+        self.assertNotIn('"Export PS2 replacement pack…"', source,
+                         "the entry lives in the game studio's Windows menu now")
+        game = discover().game("nfl2k5_ps2")
+        window = game.window("replacement-pack")
+        self.assertEqual(window.menu_label, "Export PS2 replacement pack…")
+        self.assertEqual(window.flag, "ps2-export")
+        self.assertTrue(window.needs_studio_session,
+                        "it works on the open Xbox project, so it says so")
+        self.assertNotEqual(window.window_id, game.studio_window,
+                            "the Windows menu lists every window except the studio")
 
 
 if __name__ == "__main__":

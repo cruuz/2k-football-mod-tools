@@ -22,7 +22,7 @@ becomes a sentence and not a crash -- is provable here without a display.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Mapping, Optional
 
 from . import DiscoveryReport, RefusedGame
@@ -31,11 +31,37 @@ from .contract import GameModule, Refusal, WindowSpec
 STATUS_LOADABLE = "loadable"
 STATUS_REFUSED = "refused"
 
+#: How a menu spells a studio.  Every menu that offers one -- the Xbox
+#: studio's File menu, the chooser's Open, ``show``'s window list -- reads the
+#: label from here, so the label rule ("<Console> <Game> <Year> Studio") is
+#: applied in exactly one place and a module that spelled its own would still
+#: be displayed by the composed one.
+STUDIO_MENU_SUFFIX = "\u2026"
+
 BOUNDARY_NOTE = (
     "Each game has one studio and works on your own files. Choosing one here "
     "changes nothing until you act inside it; a module that cannot be loaded is "
     "listed with the reason and cannot be opened."
 )
+
+
+def studio_menu_label(studio_label: str) -> str:
+    """The menu caption for a studio: the composed label plus the menu ellipsis."""
+
+    return f"{studio_label}{STUDIO_MENU_SUFFIX}"
+
+
+def studio_window_spec(game: GameModule) -> WindowSpec:
+    """The module's studio window, relabelled with the label the core composes.
+
+    A module may not type its own studio label -- conformance refuses it -- so
+    the ``menu_label`` a module gives its studio window is whatever that window
+    is called *inside* the studio ("Disc Studio\u2026").  Everywhere the studio is
+    offered from outside, the core substitutes the composed label, so the user
+    reads one name for one game in every menu.
+    """
+
+    return replace(game.studio, menu_label=studio_menu_label(game.manifest.studio_label))
 
 
 @dataclass(frozen=True)
@@ -115,7 +141,12 @@ def _row_for_game(game: GameModule) -> ChooserRow:
         contract=game.contract,
         status=STATUS_LOADABLE,
         reason="",
-        windows=tuple(WindowRow.from_spec(spec) for spec in game.windows),
+        windows=tuple(
+            WindowRow.from_spec(
+                studio_window_spec(game) if spec.window_id == game.studio_window else spec
+            )
+            for spec in game.windows
+        ),
         lanes=len(game.lanes),
         studio_window=game.studio_window,
     )
@@ -221,10 +252,13 @@ __all__ = [
     "ChooserRow",
     "STATUS_LOADABLE",
     "STATUS_REFUSED",
+    "STUDIO_MENU_SUFFIX",
     "WindowRow",
     "chooser_headline",
     "chooser_rows",
     "open_studio",
     "open_window",
     "openable_windows",
+    "studio_menu_label",
+    "studio_window_spec",
 ]
