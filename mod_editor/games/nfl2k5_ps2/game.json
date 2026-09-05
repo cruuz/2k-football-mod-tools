@@ -46,5 +46,10 @@
     "mod_editor.core.ps2_disc_service",
     "mod_editor.gui.ps2_disc_dialog_qt"
   ],
-  "tool_modules": []
+  "tool_modules": [],
+  "allowlist_patterns": [
+    "*ps2*",
+    "*xxh3*",
+    "*spu_adpcm*"
+  ]
 }

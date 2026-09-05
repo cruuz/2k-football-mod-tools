@@ -58,12 +58,14 @@ def _parser() -> argparse.ArgumentParser:
     fmode = fragments.add_mutually_exclusive_group(required=True)
     fmode.add_argument("--check", action="store_true")
     fmode.add_argument("--write", action="store_true")
+    fragments.add_argument("--repo-root", type=Path, help=argparse.SUPPRESS)
 
     new = commands.add_parser("new", help="scaffold a new game module")
     new.add_argument("game")
     new.add_argument("--title", required=True)
     new.add_argument("--platform", required=True)
     new.add_argument("--serial", default=None, help="the disc serial the module recognises, if any")
+    new.add_argument("--repo-root", type=Path, help=argparse.SUPPRESS)
     return parser
 
 
@@ -126,8 +128,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if command == "fragments":
         from .fragments import main as fragments_main
 
-        return fragments_main([args.game, "--write" if args.write else "--check"]
-                              + (["--games-root", str(args.games_root)] if args.games_root else []))
+        forwarded = [args.game, "--write" if args.write else "--check"]
+        if args.games_root:
+            forwarded += ["--games-root", str(args.games_root)]
+        if args.repo_root:
+            forwarded += ["--repo-root", str(args.repo_root)]
+        return fragments_main(forwarded)
 
     if command == "new":
         from .scaffold import main as scaffold_main
@@ -135,8 +141,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         forwarded = [args.game, "--title", args.title, "--platform", args.platform]
         if args.serial:
             forwarded += ["--serial", args.serial]
-        if args.games_root:
-            forwarded += ["--games-root", str(args.games_root)]
+        if args.repo_root:
+            forwarded += ["--repo-root", str(args.repo_root)]
         return scaffold_main(forwarded)
 
     report = discover(args.games_root)

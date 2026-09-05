@@ -509,12 +509,17 @@ class GameManifest:
     product_modules: tuple[str, ...]
     tool_modules: tuple[str, ...]
     root: Path
+    #: Case-insensitive glob patterns selecting this game's lines in the
+    #: release allowlist, for ``python -m mod_editor.games fragments``.
+    #: Optional in ``game.json``; defaults to the package's own directory.
+    allowlist_patterns: tuple[str, ...] = ()
 
     _REQUIRED = (
         "schema", "game_id", "package", "title", "platform", "version", "contract",
         "registry_fragment", "allowlist_fragment", "pins",
         "product_modules", "tool_modules",
     )
+    _OPTIONAL = ("allowlist_patterns",)
 
     def __post_init__(self) -> None:
         if self.schema != MANIFEST_SCHEMA:
@@ -541,10 +546,12 @@ class GameManifest:
             )
         for name in ("registry_fragment", "allowlist_fragment", "pins"):
             self._fragment_path(getattr(self, name), name)
-        for name in ("product_modules", "tool_modules"):
+        for name in ("product_modules", "tool_modules", "allowlist_patterns"):
             value = getattr(self, name)
             if not isinstance(value, tuple) or not all(isinstance(v, str) and v for v in value):
                 raise ContractError(f"{self.root / MANIFEST_NAME}: {name} must be a list of strings.")
+        if not self.allowlist_patterns:
+            object.__setattr__(self, "allowlist_patterns", (f"mod_editor/games/{self.root.name}/*",))
 
     def _fragment_path(self, relative: str, name: str) -> Path:
         if not isinstance(relative, str) or not relative or Path(relative).is_absolute() or ".." in Path(relative).parts:
@@ -627,12 +634,14 @@ def load_manifest(package_dir: Path) -> GameManifest:
     path = root / MANIFEST_NAME
     document = _read_json(path)
     missing = [key for key in GameManifest._REQUIRED if key not in document]
-    extra = sorted(set(document) - set(GameManifest._REQUIRED))
+    extra = sorted(set(document) - set(GameManifest._REQUIRED) - set(GameManifest._OPTIONAL))
     if missing or extra:
         raise ContractError(f"{path}: manifest keys differ: missing={missing} extra={extra}")
-    for key in GameManifest._REQUIRED:
+    for key in GameManifest._REQUIRED + GameManifest._OPTIONAL:
+        if key not in document:
+            continue
         value = document[key]
-        if key in ("product_modules", "tool_modules"):
+        if key in ("product_modules", "tool_modules", "allowlist_patterns"):
             if not isinstance(value, list):
                 raise ContractError(f"{path}: {key} must be a list.")
         elif not isinstance(value, str):
@@ -651,6 +660,7 @@ def load_manifest(package_dir: Path) -> GameManifest:
         product_modules=tuple(document["product_modules"]),
         tool_modules=tuple(document["tool_modules"]),
         root=root,
+        allowlist_patterns=tuple(document.get("allowlist_patterns", [])),
     )
 
 

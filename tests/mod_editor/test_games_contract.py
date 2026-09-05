@@ -52,6 +52,7 @@ EXPECTED_SURFACE = {
     "GameManifest": (
         "schema", "game_id", "package", "title", "platform", "version", "contract",
         "registry_fragment", "allowlist_fragment", "pins", "product_modules", "tool_modules", "root",
+        "allowlist_patterns",
     ),
     "GameModule": ("contract", "identity", "identifier", "lanes", "windows", "manifest", "package"),
     "Lane": (
