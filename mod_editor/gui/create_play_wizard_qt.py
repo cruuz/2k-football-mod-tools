@@ -195,9 +195,8 @@ class TeamPage(QWizardPage):
         self.pack_card = QGroupBox("Already have a playbook pack?")
         card = QVBoxLayout(self.pack_card)
         card_text = QLabel(
-            "A .2k5book is a recipe somebody made in this studio — formations, plays and the "
-            "stock entries they replace. It carries no game data and is compiled against your "
-            "own disc. You will see exactly what it replaces before anything is staged."
+            "A playbook pack (.2k5book) is a set of formations and plays someone shared. It carries "
+            "no game data; you will see exactly which stock entries it replaces before anything is added."
         )
         card_text.setWordWrap(True)
         card_text.setStyleSheet(BIG)
@@ -245,7 +244,7 @@ class TeamPage(QWizardPage):
             item.setData(Qt.UserRole, book.asset_id)
             self.list.addItem(item)
             self._books.append(book)
-        self.status.setText("Tip: team books share names with the teams; GEN/PRACTICE/Editor are utility books.")
+        self.status.setText("Tip: GEN, PRACTICE and Editor are utility playbooks, not NFL teams.")
 
     def isComplete(self) -> bool:
         return bool(self.list.selectedItems())
@@ -1028,24 +1027,22 @@ class FinalizePage(QWizardPage):
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         layout.addWidget(self.table, 1)
         row = QHBoxLayout()
-        self.apply = QPushButton("Stage everything into the project")
+        self.apply = QPushButton("Add to project")
         self.apply.setStyleSheet(HUGE)
         self.apply.clicked.connect(self._apply)
-        self.build = QPushButton("Build modded disc…")
+        self.build = QPushButton("Make disc from project…")
         self.build.setStyleSheet(HUGE)
         self.build.setEnabled(False)
         self.build.clicked.connect(self._build)
-        self.launch = QPushButton("Launch xemu")
+        self.launch = QPushButton("Play this disc in xemu")
         self.launch.setStyleSheet(HUGE)
         self.launch.setEnabled(False)
         self.launch.clicked.connect(self._launch)
         row.addWidget(self.apply); row.addWidget(self.build); row.addWidget(self.launch)
         layout.addLayout(row)
         self.hint = QLabel(
-            "QB read order: the four ordered 1-5 values every Dropback node carries (retail sets "
-            "them on all 3,225 of them; nothing in this studio ever did until now). Audible slot: "
-            "which of the formation's three audible groups this play is listed in — leave it on "
-            "Inherit to copy the formation's existing slots."
+            "QB read order: experimental values; receiver-number mapping is not confirmed in-game. "
+            "Audible slot: choose a group, or keep Inherit from the formation."
         )
         self.hint.setWordWrap(True)
         layout.addWidget(self.hint)

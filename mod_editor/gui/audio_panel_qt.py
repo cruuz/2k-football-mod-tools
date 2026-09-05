@@ -1132,6 +1132,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from mod_editor.gui.ux_text import Details
 from mod_editor.gui.audio_waveform_qt import (
     AudioWaveformPreview,
     WaveformCancelled,
@@ -1350,8 +1352,8 @@ if PYQT5_AVAILABLE:
             title = QLabel("Audio")
             title.setObjectName("audioTitle")
             self.subtitle_label = QLabel(
-                "Browse and export every indexed sound; play cues and ranges; "
-                "replace supported standalone and streaming-range WAVs."
+                "Browse indexed audio. Search, Play, Export WAV, or replace a sound marked Editable "
+                "(a longer clip is trimmed to the slot, a shorter one padded)."
             )
             self.subtitle_label.setObjectName("audioMuted")
             self.subtitle_label.setWordWrap(True)
@@ -1623,7 +1625,13 @@ if PYQT5_AVAILABLE:
             replacement_pack_actions.addStretch(1)
             replacement_pack_actions.addWidget(self.import_replacement_pack_button)
             replacement_pack_layout.addLayout(replacement_pack_actions)
-            root.addWidget(replacement_pack)
+            # The template / shortlist tools are for many sounds at once: they stay one click
+            # away under a named, keyboard-operable expander so the landing view is search →
+            # play → replace (AU-03).  The selected count is repeated in the expander title.
+            self.batch_details = Details("Export or import many sounds")
+            self.batch_details.content.setContentsMargins(0, 2, 0, 4)
+            self.batch_details.content.addWidget(replacement_pack)
+            root.addWidget(self.batch_details)
 
             self.shortlist_actions_layout = QGridLayout()
             self.shortlist_actions_layout.setHorizontalSpacing(6)
@@ -1666,6 +1674,7 @@ if PYQT5_AVAILABLE:
             self.shortlist_review_button.setToolTip(_review_boot)
             self.shortlist_review_button.setProperty("disableReason", _review_boot)
             self.shortlist_count_label = QLabel("Selected 0 / 256")
+            self.shortlist_count_label.setAccessibleName("Selected sounds for export")
             self.shortlist_count_label.setObjectName("audioCountPill")
             self.shortlist_count_label.setAccessibleName("Audio shortlist count")
             self.shortlist_count_label.setToolTip(

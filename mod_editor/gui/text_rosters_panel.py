@@ -1001,8 +1001,8 @@ class TextRosterPanel(QWidget):
                 "allocation; mapped-but-unsafe banks remain export-only with an explanation."
             ),
             "text": (
-                "Search every decoded string and edit safe fixed-allocation text. "
-                "Shared strings show their affected owners before Apply."
+                "Search the indexed game text. Edit entries marked Editable; shared text shows "
+                "where else it changes before you apply."
             ),
             "rosters": (
                 "Edit current and historical player names, jersey numbers and face shields "

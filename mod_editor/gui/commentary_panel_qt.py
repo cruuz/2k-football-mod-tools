@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, suggest_copy_name
+from mod_editor.gui.ux_text import XEMU_LINE, Details, plain_failure, show_operation_error, suggest_copy_name
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 AUDIO_FILTER = "Audio (*.wav *.mp3 *.flac *.ogg *.m4a *.aac);;All files (*)"
@@ -129,13 +129,17 @@ class CommentaryPanel(QWidget):
     def _build(self) -> None:
         layout = QVBoxLayout(self)
         intro = QLabel(
-            "Replace one commentary / studio line with your own voice. The speech banks are read from "
-            "the disc, one sub-stream is chosen, your clip is cut to that slot's length (shorter clips "
-            "are padded with silence), encoded to the game's Xbox IMA ADPCM and written into a COPY of "
-            "the disc. Nothing else on the disc changes; the source image is never touched."
+            "Replace a commentary line with your recording and make a disc copy. Longer recordings are "
+            "trimmed; shorter recordings are padded with silence. " + XEMU_LINE
         )
         intro.setWordWrap(True)
         layout.addWidget(intro)
+        intro_details = Details("Details")
+        intro_details.add_text(
+            "The speech banks are read from the disc, one line is chosen, your clip is cut to that slot's "
+            "length, encoded to the game's Xbox IMA ADPCM and written into a COPY of the disc. Nothing else "
+            "on the disc changes; the source disc is never touched.")
+        layout.addWidget(intro_details)
 
         source_box = QGroupBox("1. Game disc (.iso)")
         source_layout = QHBoxLayout(source_box)
@@ -151,9 +155,9 @@ class CommentaryPanel(QWidget):
         pick_box = QGroupBox("2. Line to replace")
         pick_layout = QVBoxLayout(pick_box)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Bank"))
+        row.addWidget(QLabel("Audio bank"))
         self.bank_combo = QComboBox()
-        self.bank_combo.addItems(list(SPEECH_BANKS))
+        self._fill_banks(list(SPEECH_BANKS))
         row.addWidget(self.bank_combo)
         row.addWidget(QLabel("From #"))
         self.start_spin = QSpinBox()
@@ -164,7 +168,7 @@ class CommentaryPanel(QWidget):
         self.count_spin.setRange(1, 500)
         self.count_spin.setValue(25)
         row.addWidget(self.count_spin)
-        self.list_button = QPushButton("List streams")
+        self.list_button = QPushButton("Show lines")
         self.list_button.clicked.connect(self._list_streams)
         row.addWidget(self.list_button)
         row.addStretch(1)
@@ -174,9 +178,9 @@ class CommentaryPanel(QWidget):
         self.stream_list.itemSelectionChanged.connect(self._stream_picked)
         pick_layout.addWidget(self.stream_list)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Stream id"))
+        row.addWidget(QLabel("Line ID (advanced)"))
         self.stream_field = QLineEdit()
-        self.stream_field.setPlaceholderText("bank:index, e.g. cutsceneaudio:12")
+        self.stream_field.setPlaceholderText("bank:index, e.g. cutsceneaudio:12 — filled in when you pick a line above")
         self.stream_field.textChanged.connect(self._refresh)
         row.addWidget(self.stream_field, 1)
         pick_layout.addLayout(row)
@@ -220,7 +224,7 @@ class CommentaryPanel(QWidget):
         row.addWidget(target_button)
         target_layout.addLayout(row)
         row = QHBoxLayout()
-        row.addWidget(QLabel("Retail packs (optional, verifies the slot before writing)"))
+        row.addWidget(QLabel("Original game files folder (optional; checks the slot before writing)"))
         self.retail_field = QLineEdit(str(DEFAULT_RETAIL_PACKS) if DEFAULT_RETAIL_PACKS is not None and DEFAULT_RETAIL_PACKS.is_dir() else "")
         row.addWidget(self.retail_field, 1)
         target_layout.addLayout(row)
@@ -237,6 +241,18 @@ class CommentaryPanel(QWidget):
         layout.addStretch(1)
         self._refresh()
 
+    BANK_NAMES = {"cutsceneaudio": "Cutscene audio (cutsceneaudio)", "halftimeaudio": "Halftime audio (halftimeaudio)"}
+
+    def _fill_banks(self, banks: list[str]) -> None:
+        """Bank ids stay the data; the two verified banks get a plain name beside the id."""
+
+        self.bank_combo.clear()
+        for bank in banks:
+            self.bank_combo.addItem(self.BANK_NAMES.get(bank, bank), bank)
+
+    def current_bank(self) -> str:
+        return str(self.bank_combo.currentData() or self.bank_combo.currentText())
+
     # ------------------------------------------------------------------ state
     def apply_source(self, path: Path, banks: list[str] | None, loaded: bool) -> None:
         """Populate from a disc walk result (also used by tests)."""
@@ -247,8 +263,7 @@ class CommentaryPanel(QWidget):
             self.target_field.setText(suggest_copy_name(path, suffix="commentary"))
             self._target_generated = True
         if banks:
-            self.bank_combo.clear()
-            self.bank_combo.addItems(banks)
+            self._fill_banks(banks)
         self.status_label.setText(
             f"{len(banks or [])} speech/music banks found; list a bank and pick a line." if loaded
             else "Not an NFL 2K5 disc image (no speech banks found)."
@@ -300,7 +315,7 @@ class CommentaryPanel(QWidget):
 
     def _list_streams(self) -> None:
         source = Path(self.source_field.text())
-        bank = self.bank_combo.currentText()
+        bank = self.current_bank()
         start, count = self.start_spin.value(), self.count_spin.value()
         self.status_label.setText(f"Listing {bank} {start}…{start + count - 1}")
 

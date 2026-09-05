@@ -265,39 +265,48 @@ class GameplayPanel(QWidget):
         title = QLabel("Gameplay")
         title.setObjectName("inspectionTitle")
         subtitle = QLabel(
-            "Browse the 21 named controls, 17 Fantasy Draft weights, observed "
-            "save boundaries, and five franchise findings already mapped by research."
+            "Change gameplay with Game Fixes, tune throws, or edit an Xbox settings/franchise save."
+            if self._extra_tabs else
+            "Reference tables mapped by research: the 21 named controls, 17 Fantasy Draft "
+            "weights, observed save boundaries and five franchise findings."
         )
         subtitle.setObjectName("inspectionMuted")
         subtitle.setWordWrap(True)
         titles.addWidget(title)
         titles.addWidget(subtitle)
         header.addLayout(titles, 1)
-        self.export_json_button = QPushButton("Export JSON")
-        self.export_csv_button = QPushButton("Export CSV")
-        header.addWidget(self.export_json_button)
-        header.addWidget(self.export_csv_button)
         root.addLayout(header)
 
+        # The writable pages land first.  The three research tables sit together under one
+        # Reference (read-only) tab with their banner and export buttons, so the first thing
+        # a player sees is no longer a read-only table under an orange warning (GP-01/04/05).
+        self.tabs = QTabWidget()
+        for widget, label in self._extra_tabs:
+            self.tabs.addTab(widget, label)
+        reference = QWidget()
+        reference_layout = QVBoxLayout(reference)
+        reference_layout.setContentsMargins(0, 8, 0, 0)
+        reference_layout.setSpacing(8)
+        boundary_row = QHBoxLayout()
         boundary = QLabel(
-            "READ-ONLY INSPECTOR  •  The three inspector tabs enable no preset, save "
-            "writeback, or executable patch. Displayed save values are pinned research "
-            "fixtures, not values read from your current profile."
-            + ("  The extra workspace tab(s) write a patched COPY of default.xbe "
-               "(xemu-only), never the source." if self._extra_tabs else "")
+            "Reference only: read-only examples from research; these are not values from your open save."
         )
         boundary.setObjectName("inspectionBoundary")
         boundary.setWordWrap(True)
-        root.addWidget(boundary)
-
-        self.tabs = QTabWidget()
-        self.tabs.addTab(self._build_sliders_page(), "21 Sliders")
-        self.tabs.addTab(self._build_draft_page(), "17 Fantasy Draft Weights")
-        self.tabs.addTab(self._build_save_page(), "Saves && Franchise")
-        for widget, label in self._extra_tabs:
-            self.tabs.addTab(widget, label)
+        boundary_row.addWidget(boundary, 1)
+        self.export_json_button = QPushButton("Export JSON")
+        self.export_csv_button = QPushButton("Export CSV")
+        boundary_row.addWidget(self.export_json_button)
+        boundary_row.addWidget(self.export_csv_button)
+        reference_layout.addLayout(boundary_row)
+        self.reference_tabs = QTabWidget()
+        self.reference_tabs.addTab(self._build_sliders_page(), "21 Sliders")
+        self.reference_tabs.addTab(self._build_draft_page(), "17 Fantasy Draft Weights")
+        self.reference_tabs.addTab(self._build_save_page(), "Saves && Franchise")
+        reference_layout.addWidget(self.reference_tabs, 1)
+        self.tabs.addTab(reference, "Reference (read-only)")
         if capability_page is not None:
-            self.tabs.addTab(capability_page, "Capabilities && Limits")
+            self.tabs.addTab(capability_page, "What's possible")
         root.addWidget(self.tabs, 1)
 
         self.status_label = QLabel("Loading mapped findings…")

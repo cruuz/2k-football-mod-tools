@@ -186,12 +186,16 @@ class ProductInspectionOffscreenTests(unittest.TestCase):
             self.assertEqual(gameplay.draft_table.rowCount(), 17)
             self.assertEqual(gameplay.save_table.rowCount(), 8)
             self.assertEqual(gameplay.franchise_table.rowCount(), 5)
-            self.assertEqual(gameplay.tabs.count(), 4)
-            self.assertEqual(gameplay.tabs.tabText(2), "Saves && Franchise")
-            self.assertEqual(gameplay.tabs.tabText(3), "Capabilities && Limits")
+            # the three research tables sit under one Reference (read-only) tab; the
+            # capability cards stay one click away as What's possible
+            self.assertEqual(gameplay.tabs.count(), 2)
+            self.assertEqual(gameplay.tabs.tabText(0), "Reference (read-only)")
+            self.assertEqual(gameplay.tabs.tabText(1), "What's possible")
+            self.assertEqual(gameplay.reference_tabs.count(), 3)
+            self.assertEqual(gameplay.reference_tabs.tabText(2), "Saves && Franchise")
             self.assertIn(
                 "not the separate Franchise rookie-draft scorer",
-                gameplay.tabs.widget(1).findChildren(QLabel)[1].text(),
+                gameplay.reference_tabs.widget(1).findChildren(QLabel)[1].text(),
             )
             even = gameplay.slider_table.item(0, 1)
             odd = gameplay.slider_table.item(1, 1)

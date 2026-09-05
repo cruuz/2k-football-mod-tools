@@ -74,7 +74,7 @@ from mod_editor.core.texture_master import (
     snapshot_texture_master_source,
 )
 from mod_editor.gui import branding
-from mod_editor.gui.ux_text import XEMU_LINE, tab_title  # noqa: F401
+from mod_editor.gui.ux_text import XEMU_LINE, Details, tab_title  # noqa: F401
 from mod_editor.core import mod_build
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
@@ -1300,7 +1300,7 @@ class _PngDropPreview(QFrame):
         self.setObjectName("pngPreview")
         self.setAcceptDrops(True)
         self._replacement_enabled = True
-        self.setMinimumSize(250, 240)
+        self.setMinimumSize(200, 200)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._pixmap: QPixmap | None = None
         layout = QVBoxLayout(self)
@@ -2286,9 +2286,7 @@ class StudioMainWindow(QMainWindow):
                     self._build_colors_page(section), tab_title("Colours & Other Tools")
                 )
                 self._bump_panel = BumpPanel(self.facade)
-                uniform_tabs.addTab(self._bump_panel, "Bump Maps")
-                self._save_panel = SavePanel(self.facade)
-                uniform_tabs.addTab(self._save_panel, tab_title("Saves & Sliders"))
+                uniform_tabs.addTab(self._bump_panel, "Bump Maps (advanced)")
                 # The uniform browser is why people open this page; never let a
                 # newly added tab take the landing position away from it.
                 uniform_tabs.setCurrentIndex(0)
@@ -2335,14 +2333,14 @@ class StudioMainWindow(QMainWindow):
                 identity_tabs = QTabWidget()
                 identity_tabs.setObjectName("teamIdentityTabs")
                 identity_tabs.setAccessibleName("Text and team identity workspaces")
-                identity_tabs.addTab(self._text_roster_panel, "Text && Team Identity")
+                identity_tabs.addTab(self._text_roster_panel, "Game Text")
                 self._edge_panel = GameplayPatchesPanel(
                     self.facade, patches=TEXT_PATCHES, title="Position names",
                     intro="Change what the game calls positions and write one copy. "
                           "For presets and other changes, use ★ Build & Share.",
                     target_suffix="position names",
                 )
-                identity_tabs.addTab(self._edge_panel, "EDGE Rename")
+                identity_tabs.addTab(self._edge_panel, "Position Names (EDGE)")
                 identity_tabs.setCurrentIndex(0)
                 page = identity_tabs
             elif category == ProductCategory.CRIB:
@@ -2374,7 +2372,7 @@ class StudioMainWindow(QMainWindow):
                 presentation_tabs = QTabWidget()
                 presentation_tabs.setObjectName("presentationTabs")
                 presentation_tabs.setAccessibleName("Presentation workspaces")
-                presentation_tabs.addTab(self._build_visual_page(section, visual_kinds), "Inventory")
+                presentation_tabs.addTab(self._build_visual_page(section, visual_kinds), "Scorebug Images")
                 self._presentation_panel = PresentationPanel(self.facade)
                 presentation_tabs.addTab(self._presentation_panel, "ESPN Scorebug && Ticker")
                 self._commentary_panel = CommentaryPanel(self.facade)
@@ -2425,9 +2423,9 @@ class StudioMainWindow(QMainWindow):
                 audio_tabs = QTabWidget()
                 audio_tabs.setObjectName("audioTabs")
                 audio_tabs.setAccessibleName("Audio workspaces")
-                audio_tabs.addTab(self._audio_panel, "Audio Cues")
+                audio_tabs.addTab(self._audio_panel, tab_title("Music & Sounds"))
                 self._sounds_panel = SoundsPanel(self.facade)
-                audio_tabs.addTab(self._sounds_panel, "Sounds")
+                audio_tabs.addTab(self._sounds_panel, "Replace a Sound")
                 audio_tabs.setCurrentIndex(0)
                 page = audio_tabs
             elif category == ProductCategory.PLAYBOOKS_PLAYS:
@@ -2443,11 +2441,15 @@ class StudioMainWindow(QMainWindow):
                 # sliders, acceleration ramp, franchise draft AI) with their
                 # explanations, written through mod_build.
                 self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
+                # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
+                # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
+                self._save_panel = SavePanel(self.facade)
                 self._gameplay_panel = GameplayPanel(
                     self.facade,
                     capability_page=self._build_capability_page(section),
-                    extra_tabs=((self._throw_tuning_panel, "Throw Distance && Arc"),
-                                (self._gameplay_patches_panel, "Gameplay Patches")),
+                    extra_tabs=((self._gameplay_patches_panel, "Game Fixes"),
+                                (self._throw_tuning_panel, "Throw Distance && Arc"),
+                                (self._save_panel, tab_title("Saves & Sliders"))),
                 )
                 page = self._gameplay_panel
             else:
@@ -2675,13 +2677,24 @@ class StudioMainWindow(QMainWindow):
 
     def _build_uniform_page(self, section: ProductCategorySection) -> QWidget:
         page = QWidget()
-        outer = QHBoxLayout(page)
-        outer.setContentsMargins(22, 18, 22, 18)
+        page_layout = QVBoxLayout(page)
+        page_layout.setContentsMargins(22, 14, 22, 18)
+        page_layout.setSpacing(8)
+        uniform_intro = QLabel(
+            "Pick a team and a uniform, click a part, replace its image. Export PNG gives you a template to edit."
+        )
+        uniform_intro.setObjectName("mutedLabel")
+        uniform_intro.setWordWrap(True)
+        page_layout.addWidget(uniform_intro)
+        body = QWidget()
+        page_layout.addWidget(body, 1)
+        outer = QHBoxLayout(body)
+        outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(14)
 
         browser = QFrame()
         browser.setObjectName("panel")
-        browser.setFixedWidth(376)
+        browser.setFixedWidth(356)
         browser_layout = QVBoxLayout(browser)
         browser_layout.setContentsMargins(16, 15, 16, 16)
         browser_layout.setSpacing(9)
@@ -2744,7 +2757,7 @@ class StudioMainWindow(QMainWindow):
         self.uniform_title = QLabel("Choose a uniform set")
         self.uniform_title.setObjectName("panelTitle")
         self.uniform_metadata = QLabel(
-            "39 Team Kit parts • 45 directly linked equipment palettes"
+            "39 editable parts · 45 equipment textures"
         )
         self.uniform_metadata.setObjectName("mutedLabel")
         detail_titles.addWidget(self.uniform_title)
@@ -2767,27 +2780,22 @@ class StudioMainWindow(QMainWindow):
         team_kit_layout = QVBoxLayout(team_kit)
         team_kit_layout.setContentsMargins(13, 10, 13, 11)
         team_kit_layout.setSpacing(7)
-        team_kit_header = QHBoxLayout()
-        team_kit_header.setSpacing(8)
-        team_kit_title = QLabel("Supported Team Kit (39 editable parts)")
+        team_kit_header = QVBoxLayout()
+        team_kit_header.setSpacing(2)
+        team_kit_title = QLabel("Whole kit (39 parts per uniform)")
         team_kit_title.setObjectName("cardTitle")
         self.team_kit_warning = QLabel(
-            "Private working export • may contain retail artwork • do not share it. "
-            "Share the replacement-only .2k5mod project instead."
+            "This export includes game artwork for your own editing. Share your project (.2k5mod) instead."
         )
         self.team_kit_warning.setObjectName("teamKitWarning")
         self.team_kit_warning.setWordWrap(True)
         team_kit_header.addWidget(team_kit_title)
-        team_kit_header.addWidget(self.team_kit_warning, 1)
+        team_kit_header.addWidget(self.team_kit_warning)
         team_kit_layout.addLayout(team_kit_header)
-        team_kit_scope_note = QLabel(
-            "All 45 package-local socks, elbow pads, gloves, long sleeves, "
-            "shoes, and wristbands for the selected set use the same project "
-            "and Build path. Open the linked searchable list below."
+        team_kit_scope_note = (
+            "All 45 socks, elbow pads, gloves, long sleeves, shoes and wristbands of the "
+            "selected uniform use the same project and Make disc from project path."
         )
-        team_kit_scope_note.setObjectName("findingsNote")
-        team_kit_scope_note.setWordWrap(True)
-        team_kit_layout.addWidget(team_kit_scope_note)
 
         equipment_browser_row = QHBoxLayout()
         equipment_browser_row.setSpacing(8)
@@ -2797,8 +2805,9 @@ class StudioMainWindow(QMainWindow):
         equipment_families.setObjectName("mutedLabel")
         equipment_families.setWordWrap(True)
         self.browse_uniform_equipment_button = QPushButton(
-            "Browse 45 Equipment Textures"
+            "Equipment (socks, gloves, shoes…)"
         )
+        self.browse_uniform_equipment_button.setToolTip(team_kit_scope_note)
         self.browse_uniform_equipment_button.setObjectName("secondaryButton")
         self.browse_uniform_equipment_button.setProperty(
             "teamKitAction", "browse-equipment"
@@ -2807,9 +2816,8 @@ class StudioMainWindow(QMainWindow):
             "Browse selected uniform set equipment textures"
         )
         self.browse_uniform_equipment_button.setToolTip(
-            "Open the existing All Textures browser filtered to this physical "
-            "set's 45 equipment textures. Export, Edit, Replace, Revert, project "
-            "save/load, and Build keep using their canonical asset IDs."
+            team_kit_scope_note + " Opens the All Textures browser filtered to this uniform's 45 "
+            "equipment textures; Export, Edit, Replace and Revert work there as usual."
         )
         self.browse_uniform_equipment_button.clicked.connect(
             self._browse_selected_uniform_equipment
@@ -2838,23 +2846,23 @@ class StudioMainWindow(QMainWindow):
         self.team_kit_container.setToolTip(
             "Use an editable folder for GIMP work, or a deterministic ZIP for hand-off."
         )
-        self.team_kit_container.addItem("Editable folder", "folder")
-        self.team_kit_container.addItem("ZIP hand-off", "zip")
-        self.export_team_kit_button = QPushButton("Export Team Kit")
+        self.team_kit_container.addItem("Folder", "folder")
+        self.team_kit_container.addItem("ZIP file", "zip")
+        self.export_team_kit_button = QPushButton("Export whole kit…")
         self.export_team_kit_button.setObjectName("secondaryButton")
         self.export_team_kit_button.setProperty("teamKitAction", "export")
         self.export_team_kit_button.setAccessibleName("Export supported Team Kit")
         self.export_team_kit_button.setToolTip(
             "Export all 39 supported components per selected physical set."
         )
-        self.import_team_kit_button = QPushButton("Import Edited Kit")
+        self.import_team_kit_button = QPushButton("Import edited kit…")
         self.import_team_kit_button.setObjectName("primaryButton")
         self.import_team_kit_button.setProperty("teamKitAction", "import")
         self.import_team_kit_button.setAccessibleName("Import edited Team Kit")
         self.import_team_kit_button.setToolTip(
             "Validate every PNG first, then stage only pixel changes as one Undo action."
         )
-        self.import_digit_sheet_button = QPushButton("Import 0–9 Sheet…")
+        self.import_digit_sheet_button = QPushButton("Import number sheet 0–9…")
         self.import_digit_sheet_button.setObjectName("secondaryButton")
         self.import_digit_sheet_button.setProperty("teamKitAction", "digit-sheet")
         self.import_digit_sheet_button.setAccessibleName(
@@ -2873,10 +2881,14 @@ class StudioMainWindow(QMainWindow):
         team_kit_controls.addWidget(self.team_kit_scope, 2)
         team_kit_controls.addWidget(self.team_kit_container, 1)
         team_kit_controls.addStretch(1)
-        team_kit_controls.addWidget(self.import_digit_sheet_button)
-        team_kit_controls.addWidget(self.export_team_kit_button)
-        team_kit_controls.addWidget(self.import_team_kit_button)
         team_kit_layout.addLayout(team_kit_controls)
+        team_kit_actions = QHBoxLayout()
+        team_kit_actions.setSpacing(8)
+        team_kit_actions.addWidget(self.export_team_kit_button)
+        team_kit_actions.addWidget(self.import_team_kit_button)
+        team_kit_actions.addWidget(self.import_digit_sheet_button)
+        team_kit_actions.addStretch(1)
+        team_kit_layout.addLayout(team_kit_actions)
         detail_layout.addWidget(team_kit)
 
         split = QHBoxLayout()
@@ -2940,23 +2952,24 @@ class StudioMainWindow(QMainWindow):
         panel_layout = QVBoxLayout(panel)
         panel_layout.setContentsMargins(18, 16, 18, 16)
         panel_layout.setSpacing(10)
-        title = QLabel(
-            "Per-Uniform Facemask / Faceshield & Turtleneck Colours"
-        )
+        title = QLabel("Facemask, faceshield and turtleneck colours")
         title.setObjectName("heroTitleSmall")
         blurb = QLabel(
-            "Every physical uniform set owns its own two-word Unif record "
-            "(per-set, not global). Word 0 jointly controls the facemask and "
-            "faceshield; the retail record does not expose a proved, independent "
-            "visor colour — visor type (None/Clear/Dark) is a per-player field "
-            "elsewhere, not a kit tint. Word 1 controls HI_turtleneck. Choose "
-            "the exact team and HOME/AWAY/alternate set before applying a colour. "
-            "Failures stay inline here (no blocking popup on set select)."
+            "Choose a team and uniform. Facemask and faceshield share a colour; turtleneck is "
+            "separate. Add to project keeps the change for your next project build."
         )
         blurb.setObjectName("mutedLabel")
         blurb.setWordWrap(True)
         panel_layout.addWidget(title)
         panel_layout.addWidget(blurb)
+        colours_details = Details("Details")
+        colours_details.add_text(
+            "Every physical uniform set owns its own two-word Unif record (per-set, not global). "
+            "Word 0 jointly controls the facemask and faceshield (there is no independent visor colour); "
+            "the visor type (None / Clear / "
+            "Dark) is a per-player field on Names, Numbers & Faces, not a kit tint. Word 1 controls "
+            "the HI_turtleneck. Failures stay inline here.", object_name="mutedLabel")
+        panel_layout.addWidget(colours_details)
 
         selector_row = QHBoxLayout()
         selector_row.setSpacing(10)
@@ -2987,9 +3000,9 @@ class StudioMainWindow(QMainWindow):
         row.setSpacing(10)
         self.facemask_button = QPushButton("Facemask / faceshield colour…")
         self.facemask_button.setObjectName("secondaryButton")
-        self.turtleneck_button = QPushButton("HI_turtleneck colour…")
+        self.turtleneck_button = QPushButton("Turtleneck colour…")
         self.turtleneck_button.setObjectName("secondaryButton")
-        self.unif_color_apply = QPushButton("Apply to project")
+        self.unif_color_apply = QPushButton("Add to project")
         self.unif_color_revert = QPushButton("Revert")
         self.unif_color_revert.setObjectName("dangerQuietButton")
         row.addWidget(self.facemask_button)
@@ -3533,12 +3546,23 @@ class StudioMainWindow(QMainWindow):
 
         browser = QFrame()
         browser.setObjectName("panel")
-        browser.setFixedWidth(376)
+        browser.setFixedWidth(356)
         browser_layout = QVBoxLayout(browser)
         browser_layout.setContentsMargins(16, 15, 16, 16)
         browser_layout.setSpacing(9)
         heading_row = QHBoxLayout()
         heading = QLabel(section.title)
+        page_intro = {
+            ProductCategory.FIELD_ART_CREATE_TEAM:
+                "Create-a-Team midfield logos, end zones and goalpost pads. Select an image, then "
+                "Replace PNG. For NFL fields, use Stadiums or All Textures.",
+            ProductCategory.TEXTURES:
+                f"Browse {len(assets):,} indexed textures. Select one marked Editable, then Replace PNG. "
+                "Uniforms, fields and the Crib also have their own pages.",
+            ProductCategory.SCOREBUG_PRESENTATION:
+                "The scorebug's own images. Select one marked Editable, then Replace PNG; the one-line "
+                "ESPN bar is the next tab.",
+        }.get(section.category, "")
         heading.setObjectName("panelTitle")
         count_label = QLabel(f"{len(assets):,}")
         count_label.setObjectName("countPill")
@@ -3546,6 +3570,11 @@ class StudioMainWindow(QMainWindow):
         heading_row.addStretch(1)
         heading_row.addWidget(count_label)
         browser_layout.addLayout(heading_row)
+        if page_intro:
+            intro_label = QLabel(page_intro)
+            intro_label.setObjectName("mutedLabel")
+            intro_label.setWordWrap(True)
+            browser_layout.addWidget(intro_label)
         search = QLineEdit()
         _configure_search_field(
             search,
@@ -3827,6 +3856,12 @@ class StudioMainWindow(QMainWindow):
         scenes_layout.setSpacing(8)
         heading_row = QHBoxLayout()
         heading = QLabel("Stadium scenes")
+        stadium_intro = QLabel(
+            "Browse stadium scenes. Select a surface marked Editable, then Replace its image. "
+            "3D exports open in Blender."
+        )
+        stadium_intro.setObjectName("mutedLabel")
+        stadium_intro.setWordWrap(True)
         heading.setObjectName("panelTitle")
         count_label = QLabel("477")
         count_label.setObjectName("countPill")
@@ -3834,6 +3869,7 @@ class StudioMainWindow(QMainWindow):
         heading_row.addStretch(1)
         heading_row.addWidget(count_label)
         scenes_layout.addLayout(heading_row)
+        scenes_layout.addWidget(stadium_intro)
         search_row = QHBoxLayout()
         search_row.setSpacing(8)
         search = QLineEdit()
@@ -3923,13 +3959,13 @@ class StudioMainWindow(QMainWindow):
         view_title_row.addWidget(reset_button)
         view_layout.addLayout(view_title_row)
         viewport = StadiumViewport()
-        viewport.setMinimumSize(430, 300)
+        viewport.setMinimumSize(360, 300)
         view_layout.addWidget(viewport, 1)
         outer.addWidget(view_panel, 1)
 
         texture_panel = QFrame()
         texture_panel.setObjectName("panel")
-        texture_panel.setFixedWidth(340)
+        texture_panel.setFixedWidth(320)
         texture_layout = QVBoxLayout(texture_panel)
         texture_layout.setContentsMargins(14, 14, 14, 14)
         texture_layout.setSpacing(8)
@@ -3948,7 +3984,7 @@ class StudioMainWindow(QMainWindow):
         texture_list.setMaximumHeight(180)
         texture_layout.addWidget(texture_list)
         texture_preview = _PngDropPreview()
-        texture_preview.setMinimumSize(280, 210)
+        texture_preview.setMinimumSize(240, 180)
         texture_layout.addWidget(texture_preview, 1)
         texture_label = QLabel("Click a surface or choose a texture")
         texture_label.setObjectName("codeLabel")
@@ -4394,9 +4430,9 @@ class StudioMainWindow(QMainWindow):
         self._selected_asset = asset
         state.title.setText(asset.label)
         route = (
-            "Preview / Export only"
+            "view only (export)"
             if asset.writer_route is VisualWriterRoute.EXPORT_ONLY
-            else "Unified visual/data build"
+            else f"{asset.width}×{asset.height} image"
         )
         state.metadata.setText(
             f"{asset.group} • {asset.width}×{asset.height} • {route}"
@@ -4413,9 +4449,13 @@ class StudioMainWindow(QMainWindow):
                 " This texture now composes with uniforms, portraits, text, audio, "
                 "and editable Crib textures in the same one-click XISO build."
             )
+        # The note says what happens to a picture, not what the slot demands: any common image
+        # file is resized to the slot for you; only a too-detailed one may not fit (FA-03 / AT-03).
         state.help_label.setText(
-            f"{asset.authoring_note or 'Use an exact-size RGBA PNG.'}{route_note}"
+            f"Common image files are resized to {asset.width}×{asset.height} for you. If the image is "
+            f"too detailed to fit, simplify it and try again.{route_note}"
         )
+        state.help_label.setToolTip(asset.authoring_note or "")
         self._refresh_visual_action_states(state)
         if bool(getattr(self.facade, "source_ready", False)):
             self._load_visual_preview(asset, state.preview)
@@ -6051,10 +6091,10 @@ class StudioMainWindow(QMainWindow):
         owner = " / ".join(uniform_set.team_names) or f"Asset {uniform_set.asset_code}"
         self.uniform_title.setText(owner)
         self.uniform_metadata.setText(
-            f"{uniform_set.style_label} • {uniform_set.side_name.title()} • "
-            f"set {uniform_set.selector} • 39 editable components • "
-            "45 directly linked equipment palettes"
+            f"{uniform_set.style_label} · {uniform_set.side_name.title()} · "
+            "39 editable parts · 45 equipment textures"
         )
+        self.uniform_metadata.setToolTip(f"Uniform set {uniform_set.selector}")
         self._refresh_team_kit_scope_labels()
         self._populate_components(uniform_set)
         if hasattr(self, "unif_color_set"):
@@ -7949,16 +7989,13 @@ class StudioMainWindow(QMainWindow):
         title.setStyleSheet("font-size: 28px; font-weight: 700;")
         layout.addWidget(title)
         blurb = QLabel(
-            "Five simple steps: pick a team's playbook, lay out a formation (modern templates, drag to move, "
-            "click to swap or change a position — RB2 instead of the FB, a WR instead of the TE), choose run or "
-            "pass, draw routes by dragging from a player (or click him for a menu of jobs), then replace "
-            "outdated stock plays and build the disc. Every play is checked against the game's own rules "
-            "before it goes in.\n\nLoad your NFL 2K5 disc first (File → Open)."
+            "Five steps: pick a team, line up a formation, choose run or pass, draw supported routes, "
+            "and place the play in the playbook. The editor checks the play's structure."
         )
         blurb.setWordWrap(True)
         blurb.setStyleSheet("font-size: 15px;")
         layout.addWidget(blurb)
-        button = QPushButton("Start the Create a Play wizard")
+        button = QPushButton("Create a play  \u2192")
         button.setStyleSheet("font-size: 20px; font-weight: 600; padding: 14px 26px;")
         button.setMinimumHeight(60)
         button.clicked.connect(self._open_create_play_wizard)
@@ -8011,7 +8048,7 @@ class StudioMainWindow(QMainWindow):
 
     def _open_create_play_wizard(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
-            QMessageBox.information(self, "Create a Play", "Load your NFL 2K5 XISO first (File → Open XISO).")
+            QMessageBox.information(self, "Create a Play", "Open your game disc first (the button at the top right).")
             return
         from mod_editor.gui.create_play_wizard_qt import CreatePlayWizard
 

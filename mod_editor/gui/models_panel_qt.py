@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from mod_editor.gui.ux_text import suggest_copy_name
+from mod_editor.gui.ux_text import Details, suggest_copy_name
 
 from mod_editor.core import nfl2k5_models as models
 
@@ -121,18 +121,18 @@ class ModelsPanel(QWidget):
     def _build(self) -> None:
         layout = QVBoxLayout(self)
         intro = QLabel(
-            "Every 3D model in the game, out to Blender and back. Pick a model, export it as glTF, edit it, "
-            "then import the edited file and write a COPY of your disc. The source disc is never touched."
+            "Export a model for Blender, then check whether your edited model can be imported. "
+            "Same vertices and faces only; a passing check writes into a copy of your disc."
         )
         intro.setWordWrap(True)
         layout.addWidget(intro)
 
         top = QHBoxLayout()
-        self.source_label = QLabel("Load your NFL 2K5 XISO first (File → Open XISO).")
+        self.source_label = QLabel("Load your NFL 2K5 XISO first: open your game disc (top right) to list the models.")
         self.source_label.setWordWrap(True)
         top.addWidget(self.source_label, 1)
-        self.reload_button = QPushButton("List the models")
-        self.reload_button.setToolTip("Read every model name from the loaded disc (a few seconds the first time)")
+        self.reload_button = QPushButton("Refresh list")
+        self.reload_button.setToolTip("Read every model name from the open disc again (a few seconds the first time)")
         self.reload_button.clicked.connect(self.reload)
         top.addWidget(self.reload_button)
         help_button = QPushButton("What can I change?")
@@ -172,7 +172,7 @@ class ModelsPanel(QWidget):
         self.details.setPlaceholderText("Pick a model to see its meshes, vertices, skin, morph channels and textures.")
         right_layout.addWidget(self.details, 1)
 
-        export_box = QGroupBox("Export to glTF (opens in Blender)")
+        export_box = QGroupBox("1. Export for Blender (.gltf)")
         export_layout = QHBoxLayout(export_box)
         self.export_dir = QLineEdit(str(Path.home() / "2K5 Models"))
         self.export_dir.setToolTip("Folder that receives <model>.gltf, <model>.bin and a README")
@@ -186,14 +186,14 @@ class ModelsPanel(QWidget):
         self.open_button = QPushButton("Open folder")
         self.open_button.clicked.connect(self._open_export_folder)
         export_layout.addWidget(self.open_button)
-        self.color0_check = QCheckBox("Bake vertex colours into COLOR_0")
+        self.color0_check = QCheckBox("Show baked lighting in Blender")
         self.color0_check.setToolTip("Also write the game's baked vertex lighting as COLOR_0, which Blender multiplies into the "
                                      "texture (the darker in-game look). Off keeps textures at full brightness; the lane is always "
                                      "carried as the _NFL_COLOR attribute either way.")
         export_layout.addWidget(self.color0_check)
         right_layout.addWidget(export_box)
 
-        import_box = QGroupBox("Import an edited glTF / GLB")
+        import_box = QGroupBox("2. Check edited model")
         import_layout = QVBoxLayout(import_box)
         row = QHBoxLayout()
         self.edited_field = QLineEdit()
@@ -203,11 +203,15 @@ class ModelsPanel(QWidget):
         choose_edited = QPushButton("Choose…")
         choose_edited.clicked.connect(self._choose_edited)
         row.addWidget(choose_edited)
-        self.check_button = QPushButton("Check the edited file")
+        self.check_button = QPushButton("Check model")
         self.check_button.setToolTip("Fits the file onto the game's vertices and reports what would change; writes nothing")
         self.check_button.clicked.connect(self._check)
         row.addWidget(self.check_button)
         import_layout.addLayout(row)
+        self.import_options_summary = QLabel("")
+        self.import_options_summary.setObjectName("throwMuted")
+        import_layout.addWidget(self.import_options_summary)
+        self.import_options_details = Details("Import options")
         options = QHBoxLayout()
         self.normals_check = QCheckBox("Write normals from the file")
         self.normals_check.setChecked(True)
@@ -228,7 +232,14 @@ class ModelsPanel(QWidget):
                                       "mesh's UV constant the same way")
         options.addWidget(self.rescale_check)
         options.addStretch(1)
-        import_layout.addLayout(options)
+        self.import_options_details.content.addLayout(options)
+        self.import_options_details.add_text(
+            "Same vertex count and faces only; positions and the ticked attributes are written for exactly "
+            "matched vertices, everything else stays the game's own bytes.")
+        import_layout.addWidget(self.import_options_details)
+        for box in (self.normals_check, self.uvs_check, self.colours_check, self.rescale_check):
+            box.toggled.connect(lambda _c: self._refresh_import_summary())
+        self._refresh_import_summary()
         row = QHBoxLayout()
         row.addWidget(QLabel("3. Game disc (.iso)"))
         self.source_field = QLineEdit()
@@ -254,13 +265,14 @@ class ModelsPanel(QWidget):
         import_layout.addLayout(row)
         right_layout.addWidget(import_box)
 
-        set_box = QGroupBox("Player body set (high-detail body + low-detail body + head)")
+        set_box = QGroupBox("Whole player (3 models)")
         set_layout = QVBoxLayout(set_box)
-        self.set_label = QLabel("A player is three models. Select one of them to export or import all three at once.")
+        self.set_label = QLabel("A player is three models: high-detail body, low-detail body and head. "
+                                "Select any one to export or check all three.")
         self.set_label.setWordWrap(True)
         set_layout.addWidget(self.set_label)
         row = QHBoxLayout()
-        self.export_set_button = QPushButton("Export the body set")
+        self.export_set_button = QPushButton("Export all three")
         self.export_set_button.setToolTip("Writes the high-detail body, the low-detail body and the head into the "
                                           "export folder above, with a README for the set")
         self.export_set_button.clicked.connect(self._export_set)
@@ -273,7 +285,7 @@ class ModelsPanel(QWidget):
         choose_set_folder = QPushButton("Choose…")
         choose_set_folder.clicked.connect(self._choose_set_folder)
         row.addWidget(choose_set_folder)
-        self.check_set_button = QPushButton("Check the folder")
+        self.check_set_button = QPushButton("Check all three")
         self.check_set_button.setToolTip("Fits all three edited files onto the game's vertices and reports what would "
                                          "change; writes nothing. If any one of them no longer fits, none is written.")
         self.check_set_button.clicked.connect(self._check_set)
@@ -317,8 +329,8 @@ class ModelsPanel(QWidget):
         self.check_set_button.setEnabled(not self._busy and loaded and body_set is not None
                                          and bool(self.set_folder_field.text().strip()))
         if body_set is None:
-            self.set_label.setText("A player is three models (high-detail body, low-detail body, head). Select one of "
-                                   "them (hi_body, lo_body or hi_head) to export or import all three at once.")
+            self.set_label.setText("A player is three models: High-detail body, low-detail body and head. "
+                                   "Select any one of them (hi_body, lo_body or hi_head) to export or check all three.")
         else:
             self.set_label.setText("Body set: " + ", ".join(
                 f"{models.BODY_SET_LABELS.get(e.name, e.name)} ({e.name})" for e in body_set.entries)
@@ -328,6 +340,13 @@ class ModelsPanel(QWidget):
         ready = self._compiled is not None or self._compiled_set is not None
         self.write_button.setEnabled(not self._busy and ready and bool(source) and bool(target)
                                      and Path(source) != Path(target))
+
+    def _refresh_import_summary(self) -> None:
+        def state(box: QCheckBox) -> str:
+            return "on" if box.isChecked() else "off"
+        self.import_options_summary.setText(
+            f"Normals: {state(self.normals_check)} · colours: {state(self.colours_check)} · "
+            f"UVs: {state(self.uvs_check)} · widen range if needed: {state(self.rescale_check)}")
 
     def _facade_paths(self) -> tuple[Path, Path] | None:
         paths = getattr(self._facade, "models_source_paths", None)
@@ -374,7 +393,7 @@ class ModelsPanel(QWidget):
     def reload(self) -> None:
         paths = self._source_paths or self._facade_paths()
         if paths is None:
-            self.status_label.setText("Load your NFL 2K5 XISO first (File → Open XISO).")
+            self.status_label.setText("Load your NFL 2K5 XISO first: open your game disc (top right) to list the models.")
             return
         index_path, inventory_path = paths
         self.status_label.setText("Reading the model names from your disc…")

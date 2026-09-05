@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import nfl2k5_throw_tuning as tt
-from mod_editor.gui.ux_text import XEMU_LINE, plain_failure, show_operation_error, suggest_copy_name
+from mod_editor.gui.ux_text import XEMU_LINE, Details, plain_failure, show_operation_error, suggest_copy_name
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
 
@@ -75,16 +75,20 @@ class PresentationPanel(QWidget):
     def _build(self) -> None:
         layout = QVBoxLayout(self)
         intro = QLabel(
-            "One horizontal ESPN-style bar at the bottom centre that never swaps sides: "
-            "ESPN mark, away and home abbreviations and scores, down & distance, quarter, clock, "
-            "play clock. Ticker art is repainted to a dark Bottom Line look. The retail two-row "
-            "bug, its drive-direction side swap and the drop-box animations are replaced in place "
-            "inside the field resource pack; nothing else on the disc changes."
+            "Make a disc copy with a one-line ESPN score bar at the bottom of the screen. "
+            "This page writes its own copy; it does not add a project edit. " + XEMU_LINE
         )
         intro.setWordWrap(True)
         layout.addWidget(intro)
+        intro_details = Details("Details")
+        intro_details.add_text(
+            "One horizontal ESPN-style bar at the bottom centre that never swaps sides: ESPN mark, away and "
+            "home abbreviations and scores, down & distance, quarter, clock, play clock. Ticker art is "
+            "repainted to a dark Bottom Line look. The original two-row bug, its side swap and the drop-box "
+            "animations are replaced in place inside the field resource pack; nothing else on the disc changes.")
+        layout.addWidget(intro_details)
 
-        preview_box = QGroupBox("Planned look (mockup rendered from the edited mesh)")
+        preview_box = QGroupBox("Scorebar preview (mockup)")
         preview_layout = QVBoxLayout(preview_box)
         self.preview = QLabel()
         self.preview.setAlignment(Qt.AlignCenter)

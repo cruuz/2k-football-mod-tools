@@ -66,7 +66,9 @@ class StudioShellLayoutTests(unittest.TestCase):
         gameplay = self.window._category_pages[ProductCategory.SLIDERS_GAMEPLAY]
         titles = _tab_titles(gameplay.tabs)
         self.assertIn("Throw Distance & Arc", titles)
-        self.assertIn("Gameplay Patches", titles)
+        self.assertIn("Game Fixes", titles)
+        self.assertIn("Saves & Sliders", titles)
+        self.assertEqual(titles[0], "Game Fixes")
         for moved in ("ESPN Scorebug & Ticker", "Commentary", "Share"):
             self.assertNotIn(moved, titles)
         patches = self.window._gameplay_patches_panel
@@ -77,7 +79,7 @@ class StudioShellLayoutTests(unittest.TestCase):
         page = self.window._category_pages[ProductCategory.SCOREBUG_PRESENTATION]
         self.assertIsInstance(page, QTabWidget)
         assert isinstance(page, QTabWidget)
-        self.assertEqual(_tab_titles(page), ["Inventory", "ESPN Scorebug & Ticker", "Commentary"])
+        self.assertEqual(_tab_titles(page), ["Scorebug Images", "ESPN Scorebug & Ticker", "Commentary"])
         self.assertEqual(page.currentIndex(), 0)
         self.assertIs(page.widget(1), self.window._presentation_panel)
         self.assertIs(page.widget(2), self.window._commentary_panel)
@@ -87,7 +89,7 @@ class StudioShellLayoutTests(unittest.TestCase):
         self.assertIsInstance(page, QTabWidget)
         assert isinstance(page, QTabWidget)
         self.assertEqual(page.objectName(), "audioTabs")
-        self.assertEqual(_tab_titles(page), ["Audio Cues", "Sounds"])
+        self.assertEqual(_tab_titles(page), ["Music & Sounds", "Replace a Sound"])
         self.assertEqual(page.currentIndex(), 0)
         self.assertIs(page.widget(0), self.window._audio_panel)
         self.assertIs(page.widget(1), self.window._sounds_panel)
@@ -97,7 +99,7 @@ class StudioShellLayoutTests(unittest.TestCase):
         page = self.window._category_pages[ProductCategory.TEAM_IDENTITY]
         self.assertIsInstance(page, QTabWidget)
         assert isinstance(page, QTabWidget)
-        self.assertEqual(_tab_titles(page), ["Text & Team Identity", "EDGE Rename"])
+        self.assertEqual(_tab_titles(page), ["Game Text", "Position Names (EDGE)"])
         self.assertIs(page.widget(0), self.window._text_roster_panel)
         edge = self.window._edge_panel
         assert edge is not None

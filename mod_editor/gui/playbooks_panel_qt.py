@@ -499,6 +499,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.gui.ux_text import Details
+
 
 class _TaskSignals(QObject):
     result = pyqtSignal(object)
@@ -565,24 +567,24 @@ class PlaybooksPanel(QWidget):
         title = QLabel("Playbooks & Plays")
         title.setObjectName("playTitle")
         subtitle = QLabel(
-            "Inspect every stock book, formation, family, player assignment, "
-            "and exact raw node chain from your own XISO."
+            "Every team's playbook. To make your own formation or play, use ★ Create a Play — "
+            "this page is the detailed view and the pack tools."
         )
         subtitle.setObjectName("playMuted")
         subtitle.setWordWrap(True)
         titles.addWidget(title)
         titles.addWidget(subtitle)
-        self.count_label = QLabel("Load XISO")
+        self.count_label = QLabel("Open a disc")
         self.count_label.setObjectName("playCountPill")
         header.addLayout(titles, 1)
         header.addWidget(self.count_label)
         root.addLayout(header)
 
         boundary = QLabel(
-            "FREEHAND WAYPOINT DRAWING — NOT SUPPORTED  •  Copy an existing stock "
-            "assignment route safely, then Undo, Revert, save a project, or Build."
+            "Draw supported routes in ★ Create a Play. Here you can copy an existing assignment "
+            "or use the detailed designers."
         )
-        boundary.setObjectName("playBoundary")
+        boundary.setObjectName("playMuted")
         boundary.setWordWrap(True)
         root.addWidget(boundary)
 
@@ -618,7 +620,7 @@ class PlaybooksPanel(QWidget):
         browser_layout.addWidget(self.family_filter)
         browser_layout.addWidget(self.warning_filter)
         self.community_legend = QLabel(
-            "Community flags (annotations only — no auto-fix packs): "
+            "Reported playbook issues (annotations only — no auto-fix packs): "
             "⚠ Ace = G2 TE→WR on long downs · "
             "⚠ Dime = G1 ILB→OLB role map · "
             "⚠ Bear = G13 DE/RLB leftovers. "
@@ -668,7 +670,6 @@ class PlaybooksPanel(QWidget):
         self.export_button = QPushButton("Export Selected Raw PLAY")
         self.export_button.setObjectName("playPrimaryButton")
         detail_header.addLayout(detail_titles, 1)
-        detail_header.addWidget(self.export_button)
         inspector_layout.addLayout(detail_header)
 
         formation_row = QHBoxLayout()
@@ -681,7 +682,7 @@ class PlaybooksPanel(QWidget):
         inspector_layout.addLayout(formation_row)
 
         self.package_map_label = QLabel(
-            "Package map: select a formation to show the 11-byte role map (+0x0D)."
+            "Package map: select a formation to show its role map."
         )
         self.package_map_label.setObjectName("playMuted")
         self.package_map_label.setWordWrap(True)
@@ -726,18 +727,24 @@ class PlaybooksPanel(QWidget):
         route_row.addWidget(self.donor_slot_combo)
         route_row.addWidget(self.copy_route_button)
         route_row.addWidget(self.revert_route_button)
-        inspector_layout.addLayout(route_row)
+        self.copy_route_details = Details("Copy a route")
+        self.copy_route_details.add_text("Copies another play's assignment onto the selected player and target; "
+                                         "Revert puts the stock route back.", object_name="playMuted")
+        self.copy_route_details.content.addLayout(route_row)
+        inspector_layout.addWidget(self.copy_route_details)
 
         create_row = QHBoxLayout()
+        clone_row = QHBoxLayout()
         create_label = QLabel("Create new as clone:")
         create_label.setObjectName("playFieldLabel")
         self.create_formation_button = QPushButton("Create Formation")
         self.create_play_button = QPushButton("Create Play")
         self.create_formation_button.setToolTip("Clone the selected formation into a new slot (reuses name, bumps count).")
         self.create_play_button.setToolTip("Clone the selected play into a new slot (reuses name, 11 assignments, bumps count).")
-        create_row.addWidget(create_label)
-        create_row.addWidget(self.create_formation_button)
-        create_row.addWidget(self.create_play_button)
+        clone_row.addWidget(create_label)
+        clone_row.addWidget(self.create_formation_button)
+        clone_row.addWidget(self.create_play_button)
+        clone_row.addStretch(1)
         self.design_formation_button = QPushButton("Design Formation…")
         self.design_formation_button.setToolTip(
             "Open the Formation Designer: drag the eleven players to new spots (pistol, wildcat, "
@@ -767,6 +774,13 @@ class PlaybooksPanel(QWidget):
         create_row.addWidget(self.export_pack_button)
         create_row.addStretch(1)
         inspector_layout.addLayout(create_row)
+        # clone / list / link tools stay reachable under one named expander (PB-06)
+        self.more_tools_details = Details("More playbook tools")
+        self.more_tools_details.add_text("Clone the selected formation or play into a new slot, or list a play in a "
+                                         "formation's menu. Each writes into your project, never the disc.",
+                                         object_name="playMuted")
+        self.more_tools_details.content.addLayout(clone_row)
+        inspector_layout.addWidget(self.more_tools_details)
 
         name_row = QHBoxLayout()
         self.custom_name_edit = QLineEdit()
@@ -793,7 +807,7 @@ class PlaybooksPanel(QWidget):
         name_row.addWidget(QLabel("Audible slot:"))
         name_row.addWidget(self.link_group_combo)
         name_row.addWidget(self.create_link_button)
-        inspector_layout.addLayout(name_row)
+        self.more_tools_details.content.addLayout(name_row)
 
         # Experimental G2-class menu composition export (offline only).
         self.link_copy_banner = QLabel(
@@ -804,7 +818,10 @@ class PlaybooksPanel(QWidget):
         )
         self.link_copy_banner.setObjectName("playBoundary")
         self.link_copy_banner.setWordWrap(True)
-        inspector_layout.addWidget(self.link_copy_banner)
+        self.experimental_details = Details("Experimental exports")
+        self.experimental_details.add_text("Experimental export; not an in-game verified fix. These write a separate "
+                                           "PLAY copy or pack for offline testing.", object_name="playMuted")
+        self.experimental_details.content.addWidget(self.link_copy_banner)
 
         link_copy_row = QHBoxLayout()
         link_copy_label = QLabel("Export menu copy from donor:")
@@ -874,7 +891,12 @@ class PlaybooksPanel(QWidget):
         link_copy_row.addWidget(self.export_pkgmap_copy_button)
         link_copy_row.addWidget(self.export_g1_pack_button)
         link_copy_row.addWidget(self.export_g2_pack_button)
-        inspector_layout.addLayout(link_copy_row)
+        self.experimental_details.content.addLayout(link_copy_row)
+        raw_row = QHBoxLayout()
+        raw_row.addWidget(self.export_button)
+        raw_row.addStretch(1)
+        self.experimental_details.content.addLayout(raw_row)
+        inspector_layout.addWidget(self.experimental_details)
 
         raw_split = QSplitter(Qt.Horizontal)
         self.assignment_table = QTableWidget(0, 5)
@@ -898,13 +920,13 @@ class PlaybooksPanel(QWidget):
         raw_split.setStretchFactor(0, 4)
         raw_split.setStretchFactor(1, 6)
         inspector_layout.addWidget(raw_split, 5)
-        self.tabs.addTab(inspector, "Structured inspector")
+        self.tabs.addTab(inspector, "Plays")
 
         findings = QTextBrowser()
         findings.setObjectName("playFindings")
         findings.setOpenExternalLinks(False)
         findings.setHtml(PLAY_EDITOR_FINDINGS_HTML)
-        self.tabs.addTab(findings, "Editing boundary")
+        self.tabs.addTab(findings, "What's possible")
         splitter.addWidget(self.tabs)
         splitter.setStretchFactor(0, 3)
         splitter.setStretchFactor(1, 7)
@@ -985,9 +1007,9 @@ class PlaybooksPanel(QWidget):
         self.donor_play_combo.clear()
         self.book_title.setText("Select a playbook")
         self.book_meta.setText(
-            "Load your NFL 2K5 XISO to read the 37 private PLAY resources."
+            "Open your game disc (top right) to read the 37 playbooks."
         )
-        self.count_label.setText("Load XISO")
+        self.count_label.setText("Open a disc")
         self.match_label.setText("Load your XISO to inspect 37 books")
         self.progress_label.setText("Ready")
         self._refresh_controls()
