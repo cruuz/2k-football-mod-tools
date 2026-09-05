@@ -121,3 +121,15 @@ description, because it gives the work something to be right or wrong about.
 
 Security issues: see [SECURITY.md](SECURITY.md) — please do not open a public
 issue for those.
+
+---
+
+## Game modules
+
+Support for another game lives under `mod_editor/games/<game>/` behind a versioned contract
+(`mod_editor/games/contract.py`, spec in `docs/product/GAME_MODULE_CONTRACT.md`). The core
+discovers a module and lists it under **File ▸ Select other games…**; it never imports one by
+name. To start one: `python -m mod_editor.games new <game_id> --title "…" --platform "…"` and
+follow `docs/product/ADDING_A_GAME_MODULE.md`. The contract's files are pinned
+(`mod_editor/games/CONTRACT_PINS.json`); changing them is a versioned event with its own
+procedure, described in `CLAUDE.md` / `AGENTS.md` at the repository root and in the spec.

@@ -8,6 +8,18 @@
 > line or upstream file was edited; §5 lists exactly which edits would be, once, and which files
 > never change again.
 
+> **Status, later on 2026-09-05 — the contract ships.** The owner decided the design lands in this
+> PR rather than as a proposal. Since the note above: `CONTRACT_VERSION` and pinned frozen files
+> with a changelog procedure (`mod_editor/games/pins.py`, `CONTRACT_PINS.json`,
+> `CONTRACT_CHANGELOG.md`); the two one-time hooks are wired (`studio_qt.py` "Select other
+> games…", `__main__.py --game/--window/--games-chooser`); a named CI job; `python -m
+> mod_editor.games new|fragments|pins`; `tools/registry_add_rows.py` for what still touches
+> upstream files; an executable-patch lane kind with a PS2 skeleton lane; discovery fixed for
+> aliased temp roots (macOS, Windows). Normative spec: `GAME_MODULE_CONTRACT.md`; how-to:
+> `ADDING_A_GAME_MODULE.md`; assistant rules: root `CLAUDE.md` / `AGENTS.md`. Sections 5.4–5.5
+> below describe the hooks as they were planned; the table's "one-time" entries for
+> `studio_qt.py` and `__main__.py` are now done, the registry/validator/gate entries remain.
+
 ## 0. The ask, and the answer in one paragraph
 
 The owner wants game support for **Madden NFL** (04/08/09/12 PS2; 12/25 PS3), **NCAA Football**
