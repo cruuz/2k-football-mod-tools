@@ -97,9 +97,9 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
+        "c730017304884f989d108f163cedbe4564d3a7f71e3878c04d5f0cfe1721f481",
     "mod_editor/gui/studio_qt.py":
-        "86bba04358cd3c6602b6461e6e71286e72619afc485d7b107ac7b0822aaf7f61",
+        "f002f0d7c9298cf2f42b3145852eb1351ef1147f0221d6dd71476501ff5ea357",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":

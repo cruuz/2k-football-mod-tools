@@ -2,6 +2,24 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **Simpler words everywhere.** A usability pass over every page for someone who has played 2K5 and maybe used
+  Flying Finn's editor but never a mod studio: one set of names (Open game disc…, Open project… / Save project,
+  Game disc (.iso) / Save disc copy as, Make my disc, Make disc from project, Make disc with these changes, Save disc
+  copy… / Save Xbox save copy… on ★ Rosters, Set up xemu… / Play latest disc in xemu), short labels with the story
+  under Details and a badge that says when a change needs the full disc, is already on the disc, or is not yet tested
+  in-game, and the RSA sentence replaced by "For xemu; original Xbox support is not provided." Opening a disc now
+  fills every page that has its own source field (Build, Game Fixes, Position names, Throw, ESPN bar, Commentary,
+  Replace a Sound, Bump Maps, ★ Models, Share) through that page's own reader, suggests a distinct copy name beside
+  the disc, and loads ★ Rosters on first entry without ever resetting an edited roster; Getting Started's Start
+  SOFTDRINK Basic ticks the preset once the disc has been read. The Build tab puts the presets, the output name, a
+  selection summary and Make my disc with a visible blocker ahead of the option list, fits a 1366-px window, and
+  reaches every BuildPlan field (manual arc, commentary rows, playbook packs, mod name / author / notes were never
+  on it; 7-on-7 stays reachable but disabled). Gameplay lands on Game Fixes with the research tables under
+  Reference (read-only); Saves & Sliders moves there from Uniforms. Share reads Export mod file / Install a friend's
+  mod with plain states. Tab titles no longer clip and lone ampersands no longer vanish. ★ Rosters keeps Finn's
+  layout; it says Est. OVR, units, Position names, a readable contract line, and treats an exported roster-edits
+  file as a snapshot that goes stale after the next edit. Nothing was removed and no writer changed; the record of
+  the pass is `UX_EXECUTION_REPORT.md`.
 - **Practice squads in franchise: 53 active plus up to 12 reserves (Experimental).** Built by GPT-6 Astra: when the
   CPU's season gate cuts a 65-man roster to 53, each team now keeps up to twelve of the players it cut as team-owned
   reserves, in the same 65-slot roster table the game already carries through the off-season (three spare bytes mark

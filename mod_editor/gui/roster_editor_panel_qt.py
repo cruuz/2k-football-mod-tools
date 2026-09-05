@@ -1071,6 +1071,7 @@ class RosterEditorPanel(QWidget):
         self.header_stats = QLabel("")
         self.header_stats.setWordWrap(True)
         self.header_contract = QLabel("")
+        self.header_contract.setWordWrap(True)
         self.header_profile = QLabel("")
         self.header_profile.setWordWrap(True)
         self.header_profile.setToolTip(
@@ -1095,6 +1096,9 @@ class RosterEditorPanel(QWidget):
         self.last_field.editingFinished.connect(lambda: self._name_committed("last"))
         self.college_combo = QComboBox()
         self.college_combo.setAccessibleName("College")
+        # the longest college name must not set the page's minimum width (RO-09)
+        self.college_combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        self.college_combo.setMinimumContentsLength(14)
         self.college_combo.activated.connect(self._college_chosen)
         names.addWidget(QLabel("First"))
         names.addWidget(self.first_field, 1)
