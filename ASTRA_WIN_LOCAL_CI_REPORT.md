@@ -1,5 +1,9 @@
 # Local Windows CI: full-matrix classification and hydration
 
+The sections preceding [Follow-up 2](#follow-up-2) record the earlier run and
+delivery attempt. Follow-up 2 supersedes their forecasts, example hydration
+commands and delivery status.
+
 ## Accepted Windows behavior
 
 Claude ran the runner outside the execution sandbox on 2026-09-05 with Wine
@@ -332,3 +336,178 @@ error: pathspec 'packaging/windows/local_windows_ci_failures.json' did not match
 **No commit was created.** HEAD remains `e84fc49`; all five deliverables are
 present in the worktree for an explicit-path commit outside this restriction.
 No permission escalation, Git-directory relocation or push was attempted.
+
+## Follow-up 2
+
+The continuation reviewed and retained the prior session's uncommitted
+runner, classifier and fixture changes, then completed the output-drain fix,
+validation and documentation. The baseline is the supplied
+`.scratch/matrix5-logs/FULL_MATRIX5.log`, testing `b8d55f4` in
+`/tmp/winci-green` with `--hydrate-release -j 2`:
+
+```text
+HYDRATED_RETAIL_FREE_BETA_INPUTS files=4
+SUMMARY: files=301 passed=246 failed=14 skipped=41 tests=2948
+WALL CLOCK: 1682.202s
+```
+
+### Why hydration copied zero and the checkout was not lean
+
+A read-only inspection on 2026-09-05 found **625 regular source files under
+`/home/noah/2k-football-mod-tools/reports/assets` and all 625 target leaves
+already present**. Running each relative path through `hydration_target`
+returned `existing=625`; they were not refused because the parent directory
+existed, because they were tracked, or because the real source was a link.
+Both inventory files are regular files of **62,137,803 bytes**, SHA-256
+`5295168a4596b7be273e534b36efd2b53f44c7ed5f16893110a63413397f4929`.
+The target lacks `docs/research`, consistent with an earlier partial hydration;
+the available evidence does not identify the exact invocation that copied it.
+
+The old runner already checked the correct `--repo` inventory after hydration,
+but checked it again for every file. The retained full inventory explains why
+matrix5 ran all 12 developer-audit files: eight failed and four passed.
+Release hydration preserves existing leaves and cannot undo that state.
+GitHub's release-only checkout lacks this inventory and skips all 12.
+
+The runner now freezes `not (repo / EVIDENCE).is_file()` **once after hydration**,
+matching `ci.yml`'s exact `-f` path and timing. It prints `CHECKOUT: repo=...;
+lean_checkout=...; inventory=...; inventory_before_hydration=...` and saves it
+to `WORK/logs/checkout.log`. An inventory created or removed by a test cannot
+change selection midway through the matrix. Existing inventories remain
+protected; a fresh snapshot is the documented route to CI-equivalent inputs.
+
+Hydration now reports omission counts: existing/tracked targets, destination
+symlinks, obstructing parents, source symlinks/nonregular files and VCS
+metadata. The beta-53 `reports/assets`, `tools/vendor` and `docs/research`
+symlinks remain unfollowed; use their real source checkout for maintainer
+evidence. Claude's `c6f99d4` TMPDIR correction and `2a2ed1e`/`75d7635`
+VCS-directory/`.git`-file exclusions are retained and covered by tests.
+
+### The six remaining logs
+
+Line numbers below refer to `.scratch/matrix5-logs/<test filename>.log`.
+The manifest's `follow_up_2` records these decisions separately from the
+historical 73-file classifications. The committed six-log fixture preserves
+the audio truncation and the first core fatal traceback; the other four logs
+are complete, with line endings normalized.
+
+| Test file | Updated outcome | Evidence and decision |
+| --- | --- | --- |
+| `test_2k5_audio_operation_integration.py` | Fail; test follow-up | L22 and three other cases have the reviewed private-inventory identity error. L91–109 adds **WinError 32 on `next.xiso` during TemporaryDirectory cleanup**. Preserve failure even after the log is complete. Close/drain window source readers before that temporary directory exits; teardown occurs too late for this scoped fixture. |
+| `test_apf_audio_encoder_gui.py` | Skip; Wine gap | L3–8: the same exact symlink-picker case/statement now reports `WindowsPath('.') != WindowsPath('<TEMP>/ap[37 chars]ble')`. The longer TMPDIR path triggers unittest shortening. Add this observed terminal variant only; a different suffix/count or case remains a failure. |
+| `test_core.py` | Fail; unknown preceding failure | L1 starts `F..` before the known CopyFile2 crash. L9–11 traces it through `create_source_copy`, `create_staging_copy`, and `test_extracted_directory_copy_is_manifest_verified`. The earlier `F` has no traceback. The first alphabetic case is `test_broken_output_symlink_is_refused`; run it alone and report its actual diagnostic. Keep the pre-crash failure guard. |
+| `test_nfl2k5_audo_fixed_slots.py` | Skip; Wine gap | L3–17: hydration gets past the missing capacity catalog and exposes `Private source-audio inventory changed during publication` in the exact service/session logical-ID case. Add that reviewed identity signature. |
+| `test_nfl2k5_scorebug_source_art.py` | Fail; test follow-up | L3–27: `digital_font` TXTR spans differ, `score_buga` regenerates with SHA-256 `bbf446bf...2f9e5a` instead of `67b7c0a1...634b70`, and the reference-match receipt is false. Wine exposes local retail inputs. Compare decoded pixels separately from PNG bytes and record Pillow/zlib/FreeType/font versions before deciding whether generation or the test contract needs correction. The log does not prove a font or compression cause; do not replace golden hashes or add a Wine skip. |
+| `test_platform_compat.py` | Skip; Wine gap | L13–20 adds the exact Everyone-SID (`S-1-1-0`) ACL error on `LOCALAPPDATA/2k5-mod-studio`, after TMPDIR fixes placement. Normalize only that profile prefix. Existing Errno 0 locking, temporary-root ACL and symlink signatures account for the other three blocks. |
+
+All skips still require the reviewed file, case, statement, terminal exception
+and a complete matching failure count. Mixed failures, arbitrary path/hash
+changes, truncated logs, timeouts and WinError 5/32 remain failures. No product
+code or product test assertions were changed. The three failed files above
+are the concrete handoff for Claude; the identity compound check may also
+benefit from field-level diagnostics before any product change.
+
+### Output truncation was also a runner defect
+
+The audio log is exactly **8,192 bytes**, ending at `Ran 17 tests in 71.`.
+The reader used buffered `read(4096)`, which can retain the last partial chunk
+until EOF. After launcher exit, `run_process` joined the reader for 30 seconds
+and then returned even if a descendant still held stdout open. A native pipe
+regression reproduced the buffering defect before the fix. This is consistent
+with the supplied truncation; its exact Wine process history is unavailable.
+
+The pump now uses `read1(4096)` to write available bytes immediately. A file
+finishes only when the launcher has exited and output reaches EOF; the same
+per-file deadline covers both. A descendant retaining stdout triggers the
+existing timeout/process-tree cleanup, never a successful truncated result.
+Native tests verify partial output before EOF and timeout after an exited
+launcher leaves a child holding stdout. This does not fix or skip the audio
+test's actual sharing violation.
+
+### Replay and expected clean numbers
+
+These are **saved-log replays and conditional forecasts**, not a fresh Wine
+matrix. They retain the 301-file baseline so the arithmetic is comparable:
+
+| Scenario | Files | Passed | Failed | Skipped | Counted tests |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Supplied matrix5 | 301 | 246 | 14 | 41 | 2948 |
+| Updated signatures, same already hydrated tree | 301 | 246 | 11 | 44 | 2905 |
+| Same logs with CI's lean selection | 301 | 242 | 3 | 56 | 2824 |
+| Conditional clean result after the three follow-ups | 301 | 243 | 0 | 58 | 2807 |
+
+The three newly recognized gap files remove 8 + 4 + 31 = 43 counted tests.
+All 12 lean files remove another 81 tests, including four previously passing
+files (`test_apf_logo_surface_ownership`, `test_apf_product_findings`,
+`test_nfl2k5_crib`, `test_nfl2k5_stock_midfield_logo_boundary`), not just the
+eight reported failures.
+
+The clean forecast assumes audio cleanup is fixed and its complete output
+contains only the four known identity errors (then its 17 tests are excluded
+as a file skip); core's earlier failure is resolved/diagnosed so only the
+reviewed CopyFile2 crash remains; scorebug's 13-case file passes, possibly with
+properly scoped optional retail skips; and all other outcomes are unchanged.
+It predicts **243 passes and 58 skips**, not an unconditional zero-failure run.
+This branch has 302 files: if its additional runner file passes, the clean
+file totals become **244 passed, 0 failed, 58 skipped**, adding that file's
+Windows-reported test count. Different retail visibility, fresh release inputs
+or a newly detected output-drain timeout can change the actual totals.
+
+### Exact developer commands
+
+For a targeted file in this working tree, with CI's release inputs added:
+
+```bash
+cd /home/noah/2k-worktrees/astra-win-local-ci
+python3 packaging/windows/local_windows_ci.py \
+  --repo "$PWD" --work /tmp/winci-followup2-runtime \
+  --hydrate-release --only test_modpack.py -j 1
+```
+
+For CI-equivalent **committed source, release inputs and file selection**,
+start from a new archive rather than reusing `/tmp/winci-green`. Run the
+following after the deliverables have been committed; the runner still uses
+the installer's Windows runtime under Wine, not the hosted Python environment:
+
+```bash
+cd /home/noah/2k-worktrees/astra-win-local-ci
+winci_snapshot=$(mktemp -d /tmp/winci-ci-equivalent.XXXXXX)
+git archive --format=tar HEAD --output="$winci_snapshot/source.tar"
+tar -xf "$winci_snapshot/source.tar" -C "$winci_snapshot"
+python3 "$winci_snapshot/packaging/windows/local_windows_ci.py" \
+  --repo "$winci_snapshot" --work /tmp/winci-followup2-runtime \
+  --hydrate-release --keep-going -j 1
+```
+
+Expect `inventory_before_hydration=absent` and `lean_checkout=1` for this
+branch and the pinned beta-50 archives. Serial `-j 1` matches CI's file loop;
+`-j 2` is the optional throughput setting used in matrix5. Keep the snapshot
+and `WORK/logs` for diagnosis. Both commands require Wine and the existing
+`gh` authentication/download prerequisites. For maintainer evidence instead,
+use `--hydrate-from /home/noah/2k-football-mod-tools`; expect the inventory to
+enable all 12 developer-audit files without promising their other inputs.
+
+### Validation and delivery
+
+`python3 tests/mod_editor/test_local_windows_ci.py` ran **51 tests in 2.354 s:
+OK (skipped=1)**. The skip is Wine startup, denied by the sandbox with SIGSYS.
+An actual runner `--os-check` with work under `/tmp` independently exited 2
+at `wine --version` (`rc=-31`); no downloads or live matrix were attempted
+after that failure. No permission bypass or Wine API substitution was used.
+
+The tests cover the new six-log signatures and negative mutations, mixed
+sharing violations, all 12 lean files, hydration before sentinel evaluation
+on a selected repository, test-time sentinel mutation, TMPDIR propagation,
+VCS and source/destination link refusal, omission diagnostics, partial pipe
+output and descendant timeouts, plus the existing runner contracts.
+All six evidence entries match their supplied log lines, and full 301-file
+replays reproduce the two updated rows above. The brief and `.scratch/`
+remain outside the deliverable paths. No push.
+
+`py_compile` for the runner/tests, runner `--help`, and `git diff --check`
+also passed. The explicit commit scope is `packaging/windows/local_windows_ci.py`,
+`packaging/windows/local_windows_ci_failures.json`,
+`tests/mod_editor/test_local_windows_ci.py`,
+`tests/fixtures/local_windows_ci_followup2.json`, `packaging/README.md`, and
+this report. Explicit-path staging succeeded in this continuation, superseding
+the earlier filesystem limitation recorded above.

@@ -8,6 +8,7 @@ No product APIs, file locking, or test assertions are patched.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -193,8 +194,8 @@ def plan(repo: Path, only: list[str], changed: set[str] | None = None) -> list[P
     return tests
 
 
-def skip_reason(repo: Path, name: str) -> str | None:
-    if not (repo / EVIDENCE).is_file() and name in LEAN_SKIPS:
+def skip_reason(lean_checkout: bool, name: str) -> str | None:
+    if lean_checkout and name in LEAN_SKIPS:
         return LEAN_REASON
     return None
 
@@ -206,6 +207,8 @@ def normalize_diagnostic(text: str) -> str:
                   "<TEMP>/", text, flags=re.I)
     text = re.sub(r"(<TEMP>/)(?:tmp[a-z0-9_]+|[a-z0-9_-]+-[a-z0-9_]{8})(?=[/'\"])",
                   r"\1<case>", text)
+    text = re.sub(r"[A-Za-z]:/users/[^/\r\n'\"]+/AppData/Local/(?=2k5-mod-studio['\"])",
+                  "<LOCALAPPDATA>/", text, flags=re.I)
     text = re.sub(r"[A-Za-z]:/[^'\"\r\n]*?/tests/fixtures/(?=nfl2k5_player_star_thin_v1\.json)",
                   "<REPO>/tests/fixtures/", text)
     return re.sub(r"(?<=\.apf-team-logo-build-)[a-z0-9_]{8}", "<random>", text)
@@ -282,8 +285,13 @@ def tracked_paths(repo: Path) -> set[str]:
     return set(filter(None, output.split("\0")))
 
 
-def hydration_target(repo: Path, relative: PurePosixPath, tracked: set[str]) -> Path | None:
+def hydration_target(repo: Path, relative: PurePosixPath, tracked: set[str],
+                     omitted: Counter[str] | None = None) -> Path | None:
     """Refuse existing leaves, tracked deletions, links and obstructed parents."""
+    def refuse(reason: str) -> None:
+        if omitted is not None:
+            omitted[reason] += 1
+
     if (relative.is_absolute() or not relative.parts
             or any(p in (".", "..", ".git") or ":" in p or "\\" in p for p in relative.parts)):
         raise ValueError(f"unsafe hydration path: {relative}")
@@ -291,11 +299,13 @@ def hydration_target(repo: Path, relative: PurePosixPath, tracked: set[str]) -> 
     for index, part in enumerate(relative.parts):
         current = current / part
         key = PurePosixPath(*relative.parts[:index + 1]).as_posix()
-        if key in tracked or current.is_symlink():
-            return None
+        if key in tracked:
+            return refuse("tracked")
+        if current.is_symlink():
+            return refuse("destination-symlink")
         if index < len(relative.parts) - 1 and current.exists() and not current.is_dir():
-            return None
-    return None if current.exists() else current
+            return refuse("obstructed-parent")
+    return refuse("existing") if current.exists() else current
 
 
 def copy_hydration_file(repo: Path, relative: PurePosixPath, tracked: set[str],
@@ -329,6 +339,7 @@ def hydrate_from(repo: Path, source: Path) -> list[str]:
     for tree in HYDRATION_TREES:
         origin = source / tree
         before = len(copied)
+        omitted: Counter[str] = Counter()
         if any(p.is_symlink() for p in (origin, *origin.parents) if p.is_relative_to(source)):
             print(f"HYDRATE {tree}/: omitted source symlink", flush=True)
             continue
@@ -337,18 +348,33 @@ def hydrate_from(repo: Path, source: Path) -> list[str]:
             continue
         for parent, dirs, files in os.walk(origin, followlinks=False):
             # never descend into version-control metadata (the main checkout vendors a git repo)
-            dirs[:] = sorted(d for d in dirs if not d.startswith(".git") and d not in (".hg", ".svn") and not (Path(parent) / d).is_symlink())
+            retained = []
+            for name in sorted(dirs):
+                if name.startswith(".git") or name in (".hg", ".svn"):
+                    omitted["source-vcs"] += 1
+                elif (Path(parent) / name).is_symlink():
+                    omitted["source-symlink"] += 1
+                else:
+                    retained.append(name)
+            dirs[:] = retained
             for name in sorted(files):
                 path = Path(parent) / name
-                if name.startswith(".git") or path.is_symlink() or not path.is_file():
-                    continue  # a submodule checkout stores .git as a FILE; never hydrate VCS metadata
+                if name.startswith(".git"):
+                    omitted["source-vcs"] += 1
+                    continue  # a submodule checkout stores .git as a FILE
+                if path.is_symlink() or not path.is_file():
+                    omitted["source-symlink" if path.is_symlink() else "source-nonregular"] += 1
+                    continue
                 relative = PurePosixPath(path.relative_to(source).as_posix())
-                if hydration_target(repo, relative, tracked) is None:
+                if hydration_target(repo, relative, tracked, omitted) is None:
                     continue
                 with path.open("rb") as content:
                     if copy_hydration_file(repo, relative, tracked, content, path.stat().st_mode):
                         copied.append(relative.as_posix())
         print(f"HYDRATE {tree}/: copied {len(copied) - before} absent files from {origin}", flush=True)
+        if omitted:
+            print(f"HYDRATE {tree}/: omitted " + ", ".join(
+                f"{reason}={count}" for reason, count in sorted(omitted.items())), flush=True)
     print(f"HYDRATED_LOCAL_INPUTS files={len(copied)}", flush=True)
     return copied
 
@@ -502,11 +528,12 @@ def _pump(stream, output, lock: threading.Lock) -> None:
     # Wine's python.exe dies in init_sys_streams ("[WinError 6] Invalid handle")
     # when its stdout is a regular file, and runs fine on a pipe (verified
     # 2026-09-05 on wine-9.0 with the 3.12.10 embeddable build). So every child
-    # writes to a pipe and this thread copies it into the log file. Reading to
-    # EOF also cannot block forever: the timeout path kills the whole process
-    # group, which closes every write end a grandchild may still hold.
+    # writes to a pipe and this thread copies it into the log file.
+    # read1 returns available bytes without waiting for 4096 bytes or EOF:
+    # descendants can retain stdout after the launcher exits. The timeout
+    # covers draining their output as well as waiting for the launcher.
     with stream:
-        for chunk in iter(lambda: stream.read(4096), b""):
+        for chunk in iter(lambda: stream.read1(4096), b""):
             with lock:
                 output.write(chunk.decode("utf-8", "replace"))
                 output.flush()
@@ -539,8 +566,9 @@ def run_process(command: list[str], env: dict[str, str], cwd: Path, log: Path,
                     rc = process.wait(timeout=min(remaining, 0.2))
                 except subprocess.TimeoutExpired:
                     continue
-                pump.join(timeout=30)
-                return rc
+                pump.join(timeout=min(remaining, 0.2))
+                if not pump.is_alive():
+                    return rc
         except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
             # taskkill covers Win32 descendants; killpg covers the Unix Wine
             # launcher and same-group children. Never kill a shared wineserver.
@@ -621,9 +649,10 @@ def prove_imports(runtime: Path, repo_windows: str,
 
 
 def run_file(test: Path, repo: Path, repo_windows: str, runtime: Path,
-             env: dict[str, str], logs: Path, timeout: float, logs_windows: str) -> Result:
+             env: dict[str, str], logs: Path, timeout: float, logs_windows: str,
+             lean_checkout: bool) -> Result:
     log = logs / f"{test.name}.log"
-    reason = skip_reason(repo, test.name)
+    reason = skip_reason(lean_checkout, test.name)
     if reason:
         log.write_text(f"SKIP  {test.name}  ({reason})\n", encoding="utf-8")
         return Result(test.name, skipped=reason)
@@ -689,10 +718,20 @@ def main(argv: list[str] | None = None) -> int:
             env = wine_environment(prefix)
             # Fail before downloads when Wine cannot even execute on this host.
             print("Wine: " + checked(["wine", "--version"], env, work, logs / "wine-version.log"), flush=True)
+            inventory = repo / EVIDENCE
+            inventory_before = inventory.is_file()
             if args.hydrate_from:
                 hydrate_from(repo, args.hydrate_from)
             elif args.hydrate_release:
                 hydrate_release(repo, work)
+            # ci.yml evaluates this exact -f sentinel ONCE, after hydration.
+            # Never use ROOT or re-evaluate while tests may create/remove files.
+            lean_checkout = not inventory.is_file()
+            checkout_state = (f"CHECKOUT: repo={repo}; lean_checkout={int(lean_checkout)}; "
+                              f"inventory={inventory}; "
+                              f"inventory_before_hydration={'present' if inventory_before else 'absent'}")
+            print(checkout_state, flush=True)
+            (logs / "checkout.log").write_text(checkout_state + "\n", encoding="utf-8")
             runtime = ensure_runtime(work)
             ensure_prefix(prefix, env, logs)
             temp_windows = checked(["wine", str(runtime / "python.exe"), "-c", TEMP_PROBE],
@@ -717,7 +756,8 @@ def main(argv: list[str] | None = None) -> int:
             with ThreadPoolExecutor(max_workers=args.jobs) as pool:
                 try:
                     for result in pool.map(lambda test: run_file(test, repo, repo_windows, runtime,
-                                                               env, logs, args.timeout, logs_windows), tests):
+                                                               env, logs, args.timeout, logs_windows,
+                                                               lean_checkout), tests):
                         results.append(result)
                         report_result(result)
                 except KeyboardInterrupt:

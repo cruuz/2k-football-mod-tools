@@ -128,6 +128,15 @@
           "headers": [
             "FAIL: test_windows_encoder_picker_resolves_detected_wine_symlink (__main__.ApfAudioEncoderGuiTests.test_windows_encoder_picker_resolves_detected_wine_symlink)"
           ]
+        },
+        {
+          "statement": "self.assertEqual(Path(dialog.wine_path.text()), real_wine.resolve())",
+          "terminal": "AssertionError: WindowsPath('.') != WindowsPath('<TEMP>/ap[37 chars]ble')",
+          "gap": "symlink",
+          "headers": [
+            "FAIL: test_windows_encoder_picker_resolves_detected_wine_symlink (__main__.ApfAudioEncoderGuiTests.test_windows_encoder_picker_resolves_detected_wine_symlink)"
+          ],
+          "observed_in": "matrix5"
         }
       ]
     },
@@ -1155,7 +1164,17 @@
         }
       ],
       "notes": [],
-      "wine_signatures": []
+      "wine_signatures": [
+        {
+          "statement": "fixture._ensure_private_audio_inventories(catalog)  # noqa: SLF001",
+          "terminal": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication",
+          "gap": "identity",
+          "headers": [
+            "ERROR: test_service_session_export_replace_revert_and_project_use_logical_id (__main__.FixedAudoSlotTests.test_service_session_export_replace_revert_and_project_use_logical_id)"
+          ],
+          "observed_in": "matrix5"
+        }
+      ]
     },
     {
       "name": "test_nfl2k5_create_play_wizard_qt.py",
@@ -1510,6 +1529,15 @@
           "headers": [
             "FAIL: test_a_symlinked_directory_is_refused_everywhere (__main__.PrivatePathTests.test_a_symlinked_directory_is_refused_everywhere)"
           ]
+        },
+        {
+          "statement": "verify_private_root_placement(root / \"2k5-mod-studio\", \"test cache root\")",
+          "terminal": "mod_editor.core.platform_compat.PrivatePathError: test cache root at '<LOCALAPPDATA>/2k5-mod-studio' is placed under the profile root but its DACL does not restrict access to the current user; DACL grants visibility to foreign SIDs: S-1-1-0",
+          "gap": "acl",
+          "headers": [
+            "ERROR: test_the_default_private_root_is_this_users_own_tree (__main__.PrivatePathTests.test_the_default_private_root_is_this_users_own_tree)"
+          ],
+          "observed_in": "matrix5"
         }
       ]
     },
@@ -1929,5 +1957,279 @@
         }
       ]
     }
-  ]
+  ],
+  "follow_up_2": {
+    "source": ".scratch/matrix5-logs/FULL_MATRIX5.log",
+    "baseline": {
+      "revision": "b8d55f4",
+      "files": 301,
+      "passed": 246,
+      "failed": 14,
+      "skipped": 41,
+      "tests": 2948,
+      "jobs": 2,
+      "seconds": 1682.202,
+      "hydrated_release_files": 4
+    },
+    "hydration": {
+      "target": "/tmp/winci-green",
+      "source": "/home/noah/2k-football-mod-tools",
+      "reports_assets_regular_files": 625,
+      "target_existing_files": 625,
+      "inventory": "reports/assets/nfl2k5_all_txtr_inventory_v2.json",
+      "inventory_bytes": 62137803,
+      "inventory_sha256": "5295168a4596b7be273e534b36efd2b53f44c7ed5f16893110a63413397f4929",
+      "decision": "All 625 target leaves already exist; inventory matches the maintainer source. Earlier partial hydration is consistent with the retained files and missing docs/research. Release hydration is additive and cannot make this tree lean. Evaluate the CI sentinel once after hydration on --repo; use a fresh archive for CI-equivalent inputs."
+    },
+    "runner_fixes": [
+      {
+        "issue": "The lean sentinel was evaluated for each file, after hydration but during test execution.",
+        "fix": "Freeze the exact ci.yml inventory.is_file() decision once after hydration on --repo. Print and retain the selected repo, inventory path, lean flag and pre-hydration inventory state in checkout.log."
+      },
+      {
+        "issue": "The audio log ends at exactly 8192 bytes, mid-summary. Buffered read(4096) can retain a partial chunk when a descendant holds stdout open; run_process previously returned after a 30-second pump join even when that thread was still alive.",
+        "fix": "Use read1(4096) to flush available bytes immediately. Require both launcher exit and output EOF within the per-file deadline; retained stdout triggers the existing process-tree timeout cleanup. A native pipe regression reproduced the buffering defect before the fix. The supplied Wine log's precise truncation cause still requires a fresh Wine run."
+      }
+    ],
+    "lean_files": [
+      {
+        "name": "test_2k5_uniform_equipment_export.py",
+        "observed_status": "FAIL",
+        "tests": 12
+      },
+      {
+        "name": "test_all_textures_workspace.py",
+        "observed_status": "FAIL",
+        "tests": 23
+      },
+      {
+        "name": "test_apf_logo_surface_ownership.py",
+        "observed_status": "PASS",
+        "tests": 4
+      },
+      {
+        "name": "test_apf_product_findings.py",
+        "observed_status": "PASS",
+        "tests": 6
+      },
+      {
+        "name": "test_menu_modes.py",
+        "observed_status": "FAIL",
+        "tests": 5
+      },
+      {
+        "name": "test_nfl2k5_crib.py",
+        "observed_status": "PASS",
+        "tests": 9
+      },
+      {
+        "name": "test_nfl2k5_crib_geometry_writer.py",
+        "observed_status": "FAIL",
+        "tests": 4
+      },
+      {
+        "name": "test_nfl2k5_face_shield_registry.py",
+        "observed_status": "FAIL",
+        "tests": 2
+      },
+      {
+        "name": "test_nfl2k5_stock_midfield_logo_boundary.py",
+        "observed_status": "PASS",
+        "tests": 3
+      },
+      {
+        "name": "test_no_capability_is_invisible.py",
+        "observed_status": "FAIL",
+        "tests": 2
+      },
+      {
+        "name": "test_presentation_inspection.py",
+        "observed_status": "FAIL",
+        "tests": 3
+      },
+      {
+        "name": "test_uniform_sharing.py",
+        "observed_status": "FAIL",
+        "tests": 8
+      }
+    ],
+    "remaining_six": [
+      {
+        "name": "test_2k5_audio_operation_integration.py",
+        "category": "TEST FOLLOW-UP",
+        "expected_status": "FAIL",
+        "evidence": [
+          {
+            "line": 22,
+            "text": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication"
+          },
+          {
+            "line": 91,
+            "text": "ERROR: test_save_then_open_xiso_starts_only_after_save_worker_releases_shell (__main__.StudioAudioOperationFenceTests.test_save_then_open_xiso_starts_only_after_save_worker_releases_shell)"
+          },
+          {
+            "line": 95,
+            "text": "PermissionError: [WinError 32] Sharing violation: 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpokzjuu6d\\\\next.xiso'"
+          },
+          {
+            "line": 109,
+            "text": "PermissionError: [WinError 32] Sharing violation: 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpokzjuu6d\\\\next.xiso'"
+          }
+        ],
+        "decision": "Four reviewed identity errors remain, plus a new WinError 32 on next.xiso during TemporaryDirectory cleanup. The supplied log is truncated after Ran 17 tests in 71. Close/drain the window source readers before the temporary directory exits, and capture a complete rerun; do not add a sharing-violation skip."
+      },
+      {
+        "name": "test_apf_audio_encoder_gui.py",
+        "category": "WINE GAP",
+        "expected_status": "SKIP",
+        "evidence": [
+          {
+            "line": 3,
+            "text": "FAIL: test_windows_encoder_picker_resolves_detected_wine_symlink (__main__.ApfAudioEncoderGuiTests.test_windows_encoder_picker_resolves_detected_wine_symlink)"
+          },
+          {
+            "line": 8,
+            "text": "AssertionError: WindowsPath('.') != WindowsPath('C:/users/noah/AppData/Local/Temp/winci/ap[37 chars]ble')"
+          }
+        ],
+        "decision": "The longer TMPDIR path makes unittest shorten WindowsPath to ap[37 chars]ble. Add only this observed terminal variant for the existing exact case and statement; other shortening patterns stay failures."
+      },
+      {
+        "name": "test_core.py",
+        "category": "UNKNOWN",
+        "expected_status": "FAIL",
+        "evidence": [
+          {
+            "line": 1,
+            "text": "F..wine: Call from 00006FFFFFC7D3B8 to unimplemented function KERNEL32.dll.CopyFile2, aborting"
+          },
+          {
+            "line": 9,
+            "text": "  File \"Z:\\tmp\\winci-green\\mod_editor\\core\\output.py\", line 62 in create_source_copy"
+          },
+          {
+            "line": 10,
+            "text": "  File \"Z:\\tmp\\winci-green\\mod_editor\\core\\controller.py\", line 324 in create_staging_copy"
+          }
+        ],
+        "decision": "F.. precedes the known CopyFile2 crash. The first alphabetic case is test_broken_output_symlink_is_refused, but the failure traceback is absent. Run that case alone or emit unittest failures immediately in a test-side diagnostic rerun; keep the F guard."
+      },
+      {
+        "name": "test_nfl2k5_audo_fixed_slots.py",
+        "category": "WINE GAP",
+        "expected_status": "SKIP",
+        "evidence": [
+          {
+            "line": 3,
+            "text": "ERROR: test_service_session_export_replace_revert_and_project_use_logical_id (__main__.FixedAudoSlotTests.test_service_session_export_replace_revert_and_project_use_logical_id)"
+          },
+          {
+            "line": 17,
+            "text": "mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication"
+          }
+        ],
+        "decision": "Hydration gets past the missing import-capacity catalog and exposes the reviewed private-inventory identity gap in this exact case."
+      },
+      {
+        "name": "test_nfl2k5_scorebug_source_art.py",
+        "category": "TEST FOLLOW-UP",
+        "expected_status": "FAIL",
+        "evidence": [
+          {
+            "line": 3,
+            "text": "FAIL: test_every_texture_span_is_identical_either_way (__main__.ByteIdentityTests.test_every_texture_span_is_identical_either_way)"
+          },
+          {
+            "line": 8,
+            "text": "AssertionError: b'TXT[57 chars]xfe\\xb0\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x0[8771 chars]\\x00' != b'TXT[57 chars]xfe\\xc0\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x0[8777 chars]\\x00' : digital_font"
+          },
+          {
+            "line": 11,
+            "text": "FAIL: test_the_modern_art_regenerates_byte_for_byte (__main__.DiscSourcedArtTests.test_the_modern_art_regenerates_byte_for_byte)"
+          },
+          {
+            "line": 16,
+            "text": "AssertionError: 'bbf446bf592721ed0bc14375828a20438618c6ac501eba09758e7f66762f9e5a' != '67b7c0a11efcf210dea9d9f8e4edf142f3a46bdb4d08c720645629e78c634b70'"
+          },
+          {
+            "line": 22,
+            "text": "FAIL: test_the_step_writes_the_expected_resource_bytes (__main__.FullDiscWriteTests.test_the_step_writes_the_expected_resource_bytes)"
+          },
+          {
+            "line": 27,
+            "text": "AssertionError: False is not true"
+          }
+        ],
+        "decision": "Wine exposes local retail data and fonts. The digital_font TXTR bytes differ, score_buga PNG hash is bbf446bf592721ed0bc14375828a20438618c6ac501eba09758e7f66762f9e5a instead of 67b7c0a11efcf210dea9d9f8e4edf142f3a46bdb4d08c720645629e78c634b70, and the reference-match receipt is false. Compare decoded pixels separately from PNG bytes and pin/check Pillow, zlib, FreeType and fonts for exact regeneration; the log does not establish the cause. Do not skip or update reference hashes blindly."
+      },
+      {
+        "name": "test_platform_compat.py",
+        "category": "WINE GAP",
+        "expected_status": "SKIP",
+        "evidence": [
+          {
+            "line": 3,
+            "text": "ERROR: test_lock_excludes_a_second_holder_then_releases (__main__.ExclusiveLockTests.test_lock_excludes_a_second_holder_then_releases)"
+          },
+          {
+            "line": 10,
+            "text": "OSError: [Errno 0] Error"
+          },
+          {
+            "line": 13,
+            "text": "ERROR: test_the_default_private_root_is_this_users_own_tree (__main__.PrivatePathTests.test_the_default_private_root_is_this_users_own_tree)"
+          },
+          {
+            "line": 20,
+            "text": "mod_editor.core.platform_compat.PrivatePathError: test cache root at 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\2k5-mod-studio' is placed under the profile root but its DACL does not restrict access to the current user; DACL grants visibility to foreign SIDs: S-1-1-0"
+          },
+          {
+            "line": 23,
+            "text": "ERROR: test_a_private_directory_reports_0o777_and_is_still_accepted (__main__.SimulatedWindowsModeTests.test_a_private_directory_reports_0o777_and_is_still_accepted)"
+          },
+          {
+            "line": 30,
+            "text": "mod_editor.core.platform_compat.PrivatePathError: Cannot confirm an owner-only ACL on 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpd7fh9ajy\\\\derived': DACL grants visibility to foreign SIDs: S-1-1-0"
+          },
+          {
+            "line": 33,
+            "text": "FAIL: test_a_symlinked_directory_is_refused_everywhere (__main__.PrivatePathTests.test_a_symlinked_directory_is_refused_everywhere)"
+          },
+          {
+            "line": 51,
+            "text": "AssertionError: \"non-link directory\" does not match \"test cache could not be inspected at 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpwpk9rvvt\\\\link': [WinError 2] File not found: 'C:\\\\users\\\\noah\\\\AppData\\\\Local\\\\Temp\\\\winci\\\\tmpwpk9rvvt\\\\link'\""
+          }
+        ],
+        "decision": "TMPDIR fixes placement, exposing another owner-only DACL assertion on LOCALAPPDATA/2k5-mod-studio. Add that exact Everyone-SID terminal, normalizing only the profile prefix; existing locking and symlink rules still apply."
+      }
+    ],
+    "replay_existing_tree": {
+      "files": 301,
+      "passed": 246,
+      "failed": 11,
+      "skipped": 44,
+      "tests": 2905
+    },
+    "replay_with_lean_policy": {
+      "files": 301,
+      "passed": 242,
+      "failed": 3,
+      "skipped": 56,
+      "tests": 2824
+    },
+    "conditional_clean": {
+      "files": 301,
+      "passed": 243,
+      "failed": 0,
+      "skipped": 58,
+      "tests": 2807,
+      "conditions": [
+        "The audio cleanup failure is fixed, a complete log contains only the four reviewed identity errors.",
+        "The earlier core failure is resolved or individually diagnosed; only the reviewed CopyFile2 crash with no earlier failed progress remains.",
+        "Scorebug assertions pass or optional retail cases skip within the passing 13-case file.",
+        "Every other matrix5 outcome is unchanged; fresh inputs and host retail visibility may change coverage."
+      ]
+    },
+    "validation_limit": "Wine execution in this sandbox exits SIGSYS (rc=-31) even for wine --version. Counts are supplied-log replay and conditional forecasts, not a new Wine matrix."
+  }
 }

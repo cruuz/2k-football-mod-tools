@@ -6,6 +6,7 @@ from collections import Counter
 import hashlib
 import importlib.util
 import io
+import json
 import os
 from pathlib import Path
 import re
@@ -15,6 +16,7 @@ import sys
 import sysconfig
 import tarfile
 import tempfile
+import threading
 import time
 import unittest
 from unittest.mock import Mock, patch
@@ -78,12 +80,12 @@ class PlanTests(unittest.TestCase):
 
     def test_evidence_controls_skips_even_when_explicitly_selected(self):
         name = next(iter(runner.LEAN_SKIPS))
-        self.assertEqual(runner.skip_reason(self.repo, name), runner.LEAN_REASON)
-        self.assertIsNone(runner.skip_reason(self.repo, "test_modpack.py"))
+        self.assertEqual(runner.skip_reason(not (self.repo / runner.EVIDENCE).is_file(), name), runner.LEAN_REASON)
+        self.assertIsNone(runner.skip_reason(True, "test_modpack.py"))
         evidence = self.repo / runner.EVIDENCE
         evidence.parent.mkdir(parents=True)
         evidence.write_text("{}")
-        self.assertIsNone(runner.skip_reason(self.repo, name))
+        self.assertIsNone(runner.skip_reason(not evidence.is_file(), name))
 
     @unittest.skipUnless(shutil.which("git"), "git is absent")
     def test_changed_paths_include_staged_unstaged_untracked_and_deleted(self):
@@ -230,6 +232,81 @@ PermissionError: [WinError 5] Access denied: 'base.iso.part' -> 'base.iso'
             self.assertIsNone(runner.wine_gap_reason(name, 1, output.replace("tkinter", "mod_editor")))
         self.assertIsNone(runner.wine_gap_reason("test_core.py", 1, output))
 
+    def followup_logs(self):
+        fixture = json.loads((ROOT / "tests/fixtures/local_windows_ci_followup2.json").read_text())
+        return {row["name"]: row for row in fixture["files"]}
+
+    def test_followup_six_logs_match_only_the_three_reviewed_gaps(self):
+        rows = self.followup_logs()
+        decisions = runner.CLASSIFICATIONS["follow_up_2"]["remaining_six"]
+        self.assertEqual(set(rows), {row["name"] for row in decisions})
+        self.assertEqual({name: row["expected_status"] for name, row in rows.items()},
+                         {row["name"]: row["expected_status"] for row in decisions})
+        for name, row in rows.items():
+            with self.subTest(name=name):
+                reason = runner.wine_gap_reason(name, row["rc"], row["output"])
+                self.assertEqual("SKIP" if reason else "FAIL", row["expected_status"])
+                if reason:
+                    self.assertIsNone(runner.wine_gap_reason(name, 124, row["output"]))
+                    self.assertIsNone(runner.wine_gap_reason(name, 1, row["output"] + "TIMED OUT"))
+
+    def test_followup_terminals_remain_specific_after_normalization(self):
+        logs = self.followup_logs()
+        variants = {
+            "test_apf_audio_encoder_gui.py": [("[37 chars]ble", "[38 chars]ble"), ("[37 chars]ble", "[37 chars]exe")],
+            "test_platform_compat.py": [("S-1-1-0", "S-1-5-99"), ("2k5-mod-studio", "another-cache")],
+            "test_nfl2k5_audo_fixed_slots.py": [("inventory changed during publication", "inventory is missing")],
+        }
+        for name, replacements in variants.items():
+            row = logs[name]
+            for old, new in replacements:
+                with self.subTest(name=name, replacement=new):
+                    self.assertIn(old, row["output"])
+                    self.assertIsNone(runner.wine_gap_reason(name, row["rc"], row["output"].replace(old, new)))
+            # New profile names remain portable, including the non-temp ACL root.
+            self.assertIsNotNone(runner.wine_gap_reason(name, row["rc"], row["output"].replace("noah", "someone-else")))
+
+    def test_followup_gaps_never_hide_sharing_violations_or_extra_failures(self):
+        logs = self.followup_logs()
+        audio = logs["test_2k5_audio_operation_integration.py"]
+        # The provided log is truncated; even a complete summary must keep the
+        # new cleanup failure visible, while the four identity errors qualify.
+        complete = audio["output"] + "000s\n\nFAILED (errors=5)\n"
+        self.assertIsNone(runner.wine_gap_reason(audio["name"], 1, complete))
+        self.assertIsNone(runner.wine_gap_reason(audio["name"], 1, complete.replace("WinError 32", "WinError 5")))
+        known = audio["output"].split("ERROR: test_save_then_open_xiso", 1)[0]
+        known += "Ran 17 tests in 71.000s\n\nFAILED (errors=4)\n"
+        self.assertIn("identity or metadata", runner.wine_gap_reason(audio["name"], 1, known))
+        for name in ("test_apf_audio_encoder_gui.py", "test_nfl2k5_audo_fixed_slots.py", "test_platform_compat.py"):
+            row = logs[name]
+            output = row["output"].split("\nFAILED (", 1)[0]
+            count = len(re.findall(r"^(ERROR|FAIL):", output, re.M))
+            output += ("\nERROR: test_regression (__main__.NewTests.test_regression)\n"
+                       "PermissionError: [WinError 5] Access denied: 'base.iso.part' -> 'base.iso'\n"
+                       f"FAILED (errors={count + 1})\n")
+            self.assertIsNone(runner.wine_gap_reason(name, 1, output))
+
+    def test_followup_projection_accounts_for_all_twelve_lean_files(self):
+        data = runner.CLASSIFICATIONS["follow_up_2"]
+        lean = data["lean_files"]
+        self.assertEqual({row["name"] for row in lean}, runner.LEAN_SKIPS)
+        self.assertEqual(Counter(row["observed_status"] for row in lean), {"PASS": 4, "FAIL": 8})
+        existing, clean = data["replay_existing_tree"], data["replay_with_lean_policy"]
+        baseline = data["baseline"]
+        skipped = [row for row in self.followup_logs().values()
+                   if runner.wine_gap_reason(row["name"], row["rc"], row["output"])]
+        self.assertEqual(existing["passed"], baseline["passed"])
+        self.assertEqual(existing["failed"], baseline["failed"] - len(skipped))
+        self.assertEqual(existing["skipped"], baseline["skipped"] + len(skipped))
+        self.assertEqual(existing["tests"], baseline["tests"] - sum(
+            runner.test_count(row["output"]) for row in skipped))
+        self.assertEqual(clean["passed"], existing["passed"] - 4)
+        self.assertEqual(clean["failed"], existing["failed"] - 8)
+        self.assertEqual(clean["skipped"], existing["skipped"] + 12)
+        self.assertEqual(clean["tests"], existing["tests"] - sum(row["tests"] for row in lean))
+        for totals in (baseline, existing, clean, data["conditional_clean"]):
+            self.assertEqual(totals["files"], sum(totals[key] for key in ("passed", "failed", "skipped")))
+
 
 class HydrationTests(unittest.TestCase):
     def setUp(self):
@@ -262,6 +339,7 @@ class HydrationTests(unittest.TestCase):
         self.assertEqual((self.repo / "reports/existing.json").read_bytes(), b"user edit")
         self.assertFalse((self.repo / "mod_editor/core/product.py").exists())
         self.assertIn("HYDRATED_LOCAL_INPUTS files=4", output.getvalue())
+        self.assertIn("omitted existing=2", output.getvalue())
         for relative in expected:
             self.assertIn(f"HYDRATE + {relative}", output.getvalue())
 
@@ -311,6 +389,44 @@ class HydrationTests(unittest.TestCase):
                 runner.hydrate_from(self.repo, source)
         with self.assertRaises(FileNotFoundError):
             runner.hydrate_from(self.repo, self.root / "missing")
+
+    def test_source_version_control_files_and_directories_are_omitted(self):
+        for relative in ("reports/vendor/.git/config", "reports/vendor/.gitignore",
+                         "tools/vendor/submodule/.git", "docs/research/.svn/entries",
+                         "docs/research/.hg/store/data"):
+            self.write(self.source, relative)
+        self.write(self.source, "reports/vendor/reviewed.json")
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(runner.hydrate_from(self.repo, self.source), ["reports/vendor/reviewed.json"])
+
+    @unittest.skipUnless(os.name == "posix", "host symlink fixtures require POSIX")
+    def test_symlinked_source_tree_is_reported_and_real_source_copies_inventory(self):
+        real = self.root / "real"
+        self.write(real, runner.EVIDENCE)
+        (self.source / "reports").mkdir()
+        (self.source / "reports/assets").symlink_to(real / "reports/assets", target_is_directory=True)
+        # os.walk refuses nested directory links too, as in beta-53's reports/assets.
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(runner.hydrate_from(self.repo, self.source), [])
+        self.assertIn("omitted source-symlink=1", output.getvalue())
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(runner.hydrate_from(self.repo, real), [runner.EVIDENCE])
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(runner.hydrate_from(self.repo, real), [])
+        self.assertIn("omitted existing=1", output.getvalue())
+        self.assertTrue((self.repo / runner.EVIDENCE).is_file())
+
+    @unittest.skipUnless(os.name == "posix", "host symlink fixtures require POSIX")
+    def test_hydration_reports_destination_refusal_reasons(self):
+        self.write(self.repo, "reports/existing.json")
+        self.write(self.repo, "reports/obstruction")
+        (self.repo / "reports/linked").symlink_to(self.root / "absent")
+        for name in ("existing.json", "obstruction/child.json", "linked/child.json", "deleted.json"):
+            self.write(self.source, "reports/" + name)
+        with patch.object(runner, "tracked_paths", return_value={"reports/deleted.json"}), \
+                contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(runner.hydrate_from(self.repo, self.source), [])
+        self.assertIn("omitted destination-symlink=1, existing=1, obstructed-parent=1, tracked=1", output.getvalue())
 
     def archives(self, members=None):
         pins = {}
@@ -397,6 +513,7 @@ class PathTests(unittest.TestCase):
                     return r"C:\users\test\AppData\Local\Temp\winci"
                 if command[-1] == runner.OS_PROBE:
                     self.assertEqual(env["TEMP"], env["TMP"])
+                    self.assertEqual(env["TMPDIR"], env["TMP"])
                     self.assertIn(r"AppData\Local\Temp\winci", env["TMP"])
                 return "probe OK"
             def hydrate(repo, source):
@@ -405,6 +522,7 @@ class PathTests(unittest.TestCase):
                 events.append("test")
                 self.assertEqual(env["TEMP"], r"C:\users\test\AppData\Local\Temp\winci")
                 self.assertEqual(env["TMP"], env["TEMP"])
+                self.assertEqual(env["TMPDIR"], env["TEMP"])
                 return runner.Result(test.name, output="Ran 1 test\nOK\n")
             with patch.object(runner.shutil, "which", return_value="command"), \
                  patch.object(runner, "checked", side_effect=check), \
@@ -418,6 +536,52 @@ class PathTests(unittest.TestCase):
                                   "--hydrate-from", str(root / "sibling"), "-j", "2"])
             self.assertEqual(rc, 0)
             self.assertEqual(events, ["hydrate", "test"])
+
+    @unittest.skipUnless(sys.platform == "linux", "runner orchestration uses Linux locks")
+    def test_main_freezes_lean_policy_after_hydration_on_the_selected_repo(self):
+        for option in ("--hydrate-from", "--hydrate-release"):
+            for present_after in (False, True):
+                with self.subTest(option=option, present_after=present_after), tempfile.TemporaryDirectory() as temp:
+                    root = Path(temp)
+                    repo = root / "selected"
+                    tests = repo / "tests/mod_editor"
+                    tests.mkdir(parents=True)
+                    for name in ("test_000_mutates_inventory.py", "test_all_textures_workspace.py"):
+                        (tests / name).write_text("")
+                    inventory = repo / runner.EVIDENCE
+                    inventory.parent.mkdir(parents=True)
+                    def set_inventory(present):
+                        if present:
+                            inventory.write_text("{}")
+                        else:
+                            inventory.unlink(missing_ok=True)
+                    set_inventory(not present_after)
+                    def hydrate(*args):
+                        set_inventory(present_after)
+                    launched = []
+                    def execute(command, env, cwd, log, timeout, pidfile):
+                        self.assertEqual(cwd, repo)
+                        launched.append(log.name)
+                        set_inventory(not present_after)
+                        log.write_text("Ran 1 test\nOK\n")
+                        return 0
+                    hydration_args = [option, str(root / "source")] if option == "--hydrate-from" else [option]
+                    with patch.object(runner.shutil, "which", return_value="command"), \
+                         patch.object(runner, "ROOT", root / "wrong-repo"), \
+                         patch.object(runner, "checked", return_value="probe OK"), \
+                         patch.object(runner, "hydrate_from", side_effect=hydrate), \
+                         patch.object(runner, "hydrate_release", side_effect=hydrate), \
+                         patch.object(runner, "ensure_runtime", return_value=root / "runtime"), \
+                         patch.object(runner, "ensure_prefix"), patch.object(runner, "prove_imports"), \
+                         patch.object(runner, "windows_path", return_value=r"Z:\selected"), \
+                         patch.object(runner, "run_process", side_effect=execute), \
+                         contextlib.redirect_stdout(io.StringIO()) as output:
+                        rc = runner.main(["--repo", str(repo), "--work", str(root / "work"), "-j", "1", *hydration_args])
+                    self.assertEqual(rc, 0)
+                    self.assertEqual(len(launched), 2 if present_after else 1)
+                    self.assertIn(f"lean_checkout={int(not present_after)}; inventory={inventory}", output.getvalue())
+                    self.assertIn(f"inventory_before_hydration={'absent' if present_after else 'present'}", output.getvalue())
+                    self.assertIn(str(inventory), (root / "work/logs/checkout.log").read_text())
 
     def test_environment_clears_display_and_isolated_pythonpath(self):
         with patch.dict(os.environ, {"DISPLAY": ":99", "WAYLAND_DISPLAY": "socket", "PYTHONPATH": "wrong", "PYTHONHOME": "wrong"}):
@@ -471,7 +635,7 @@ class PathTests(unittest.TestCase):
             env = runner.wine_environment(root / "prefix")
             with patch.object(runner, "run_process", side_effect=execute):
                 for name in (runner.ISOLATED, "test_modpack.py"):
-                    result = runner.run_file(root / name, root, r"Z:\repo space", root / "runtime", env, root, 420, r"Z:\logs")
+                    result = runner.run_file(root / name, root, r"Z:\repo space", root / "runtime", env, root, 420, r"Z:\logs", True)
                     self.assertEqual(result.rc, 0)
             self.assertNotIn("PYTHONPATH", seen[0][1])
             self.assertEqual(seen[1][1]["PYTHONPATH"], r"Z:\repo space")
@@ -517,6 +681,48 @@ class CacheTests(unittest.TestCase):
 
 @unittest.skipUnless(sys.platform == "linux", "Unix process groups require Linux")
 class ProcessTests(unittest.TestCase):
+    def test_output_pump_flushes_a_partial_chunk_before_pipe_eof(self):
+        read_fd, write_fd = os.pipe()
+        output = io.StringIO()
+        received = threading.Event()
+        expected = "Ran 17 tests in 71.000s\n\nFAILED (errors=5)\n"
+
+        class ObservedOutput:
+            def write(self, text):
+                output.write(text)
+                if output.getvalue() == expected:
+                    received.set()
+
+            def flush(self):
+                pass
+
+        pump = threading.Thread(target=runner._pump, args=(
+            os.fdopen(read_fd, "rb"), ObservedOutput(), threading.Lock()))
+        pump.start()
+        try:
+            os.write(write_fd, expected.encode())
+            flushed_before_eof = received.wait(timeout=1)
+        finally:
+            os.close(write_fd)
+            pump.join(timeout=2)
+        self.assertFalse(pump.is_alive())
+        self.assertTrue(flushed_before_eof, "partial output was buffered until EOF")
+        self.assertEqual(output.getvalue(), expected)
+
+    def test_exited_launcher_with_inherited_stdout_still_times_out(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            child = "import time; time.sleep(60)"
+            parent = ("import subprocess,sys; subprocess.Popen([sys.executable,'-c',"
+                      + repr(child) + "]); print('final partial chunk', flush=True)")
+            log = root / "test.log"
+            started = time.monotonic()
+            rc = runner.run_process([sys.executable, "-c", parent], dict(os.environ), root, log, 1)
+            self.assertEqual(rc, 124)
+            self.assertLess(time.monotonic() - started, 5)
+            self.assertIn("final partial chunk\n", log.read_text())
+            self.assertIn("TIMED OUT after 1s", log.read_text())
+
     def test_timeout_targets_only_the_recorded_windows_process_tree(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

@@ -33,7 +33,7 @@ python3 packaging/windows/local_windows_ci.py
 python3 packaging/windows/local_windows_ci.py --only test_modpack.py
 python3 packaging/windows/local_windows_ci.py --only 'test_apf_*' --only test_modpack.py -j 2
 python3 packaging/windows/local_windows_ci.py --changed
-python3 packaging/windows/local_windows_ci.py --hydrate-from ~/2k-worktrees/beta-53 -j 2
+python3 packaging/windows/local_windows_ci.py --hydrate-from ~/2k-football-mod-tools -j 2
 python3 packaging/windows/local_windows_ci.py --hydrate-release -j 2
 ```
 
@@ -57,8 +57,10 @@ Lean checkouts need the gitignored catalog inputs. `--hydrate-from DIR` copies
 regular files from `reports/`, `mod_editor/assets/`, `tools/vendor/` and
 `docs/research/` in a separate sibling checkout. It fills only absent paths,
 preserving existing files, tracked deletions and symlinks; source symlinks are
-not followed. Every copied path and each tree's copied count are printed. Missing source trees are
-reported, so a partial sibling is not mistaken for complete hydration.
+not followed. Every copied path and each tree's copied count are printed,
+along with omission counts for existing/tracked files, links, obstructions
+and VCS metadata. Missing source trees are reported. The beta-53 worktree's
+evidence directories are symlinks; select the real source checkout instead.
 
 Alternatively, `--hydrate-release` uses `gh release download` for CI's exact
 two beta-50 archives from `cruuz/2k-football-mod-tools`, verifies both SHA-256
@@ -68,6 +70,13 @@ unsafe paths/nonregular archive members. Downloads are temporary; `gh` must
 already be authenticated. The two hydration options are mutually exclusive.
 For a snapshot without `.git`, existing paths are protected but there is no
 index of tracked deletions. Neither option changes the source checkout.
+
+The runner evaluates CI's exact `reports/assets/nfl2k5_all_txtr_inventory_v2.json`
+file sentinel once, after hydration, on `--repo`. `WORK/logs/checkout.log`
+records that decision and whether the inventory was already present. Release
+hydration preserves existing inputs: it cannot make a previously hydrated
+checkout lean. Use a fresh snapshot for CI-equivalent inputs and selection;
+the exact command sequence is in [Follow-up 2](../ASTRA_WIN_LOCAL_CI_REPORT.md#follow-up-2).
 
 Each file has a 420-second timeout (`--timeout SECS` overrides it), a full log
 at `WORK/logs/test_name.py.log`, and the same PASS/FAIL and SUMMARY accounting
@@ -81,6 +90,8 @@ and count as skipped files, with their original logs retained. Setup failures
 exit 2 without a success summary; test failures exit 1.
 Timeouts print `TIMED OUT`, target the recorded Windows PID and descendants
 with `taskkill /T /F`, and kill the Unix launcher's process group. The runner
+flushes partial output chunks immediately and applies the same deadline when
+a descendant retains stdout after the launcher exits. The runner
 never kills a shared Wine server. A prefix must be empty or owned by this
 runner; `--prefix DIR` chooses a separate one. Cache/prefix locks prevent
 overlapping invocations from corrupting state or logs.
@@ -96,16 +107,18 @@ checks the actual Qt platform, prints Windows interpreter facts and the
 pre-normalization CRT environment values, and proves normal versus isolated
 child imports. The runner uses a private runtime copy for Python path setup;
 the cached installer runtime and installer build output are unchanged.
-The runner sets Windows `TEMP` and `TMP` to `LOCALAPPDATA/Temp/winci`, matching
-the private-profile placement that real Windows cache tests require.
+The runner supplies `TEMP`, `TMP` and `TMPDIR` as `LOCALAPPDATA/Temp/winci`.
+Wine resets `TEMP`/`TMP` from its registry; CPython honors the inherited
+`TMPDIR`, placing test caches under the expected private profile root.
 
-After hydration, the TEMP fix and precise skips, the conditional projection
-for that 301-file tree is 256 passed, 44 skipped and 1 unresolved failure if
-the original 12 evidence-skipped files are enabled and pass. If those 12 stay
-skipped, it is 244 passed, 56 skipped and 1 unresolved failure. This branch
-adds one runner test file. These are forecasts pending a Wine rerun; new
-failures may appear when hydration enables more coverage. `test_core.py`
-retains its unreported failure before the CopyFile2 crash.
+The later hydrated matrix measured 246 passed, 14 failed and 41 skipped in
+28.0 minutes. Replaying its logs with the updated signatures and CI's lean
+selection yields 242 passed, 3 failed and 56 skipped. Audio cleanup, an
+unreported core failure before CopyFile2, and scorebug byte differences need
+the test-side follow-up documented in the report. Conditional on resolving
+those and unchanged other outcomes, the clean projection is 243 passed,
+0 failed and 58 skipped for 301 files; this branch adds one runner test file.
+These are replay/forecast numbers, not a new Wine acceptance run.
 
 Wine can expose Windows CPython branches, binary I/O and Windows handle
 sharing behavior. It does not certify native Windows filesystem, GUI, shell,
