@@ -400,6 +400,12 @@ tools/validate_nfl2k5_ps2_audo.bat
 # catalogue, the same-count position writer, the independent verifier and their
 # validators. The ISO9660 writer/verifier ship with them because the writer
 # produces its new image through them.
+# The trial record ships too, as the text lane's does: it is the receipt for the
+# one real-disc run, and it carries names, offsets, sizes and digests only. The
+# target catalogue is deliberately NOT shipped — it is derived from the user's
+# own disc by the catalogue tool, and the copy in this repository was derived
+# from ours.
+reports/gameplay_tuning/nfl2k5_ps2_stadium_trial.v1.json
 tools/nfl2k5_ps2_stadium_target_catalog.py
 tools/nfl2k5_ps2_stadium_position_patch.py
 tools/nfl2k5_ps2_stadium_position_verify.py

@@ -1,0 +1,491 @@
+{
+  "catalog": {
+    "schema": "nfl2k5_ps2_stadium_target_catalog/v1",
+    "sha256": "1b68cdfa52aeb43311943eb02fa44715ba1e62c2b9905d9a7f1a8aec0f547f3d",
+    "target_count": 1041
+  },
+  "claims": {
+    "changed_count_or_topology_write_back": false,
+    "hardware_visibility_proved": false,
+    "production_ready": false,
+    "runtime_visibility_proved": false,
+    "same_count_position_write_back": true
+  },
+  "compression": {
+    "codec": "VC-LZ",
+    "compressed_bytes_before_fill": 1296233,
+    "encoder": "auto: greedy first, optimal-parse only if greedy will not fit; which one ran is not recoverable from the result, so it is not claimed here",
+    "exact_minimum_scratch": 162,
+    "matches_expanded": 1444,
+    "mode": "patched",
+    "padding_bytes": 8,
+    "rebuilt_consumed_bytes": 1306536,
+    "retail_consumed_bytes": 1306541,
+    "scratch_bytes": 192,
+    "scratch_policy": "wrapper preserved byte-identical",
+    "span_identical": false,
+    "stored_size": 1306544,
+    "wrapper_identical": true
+  },
+  "decoded_diff": {
+    "changed_bytes": 1000,
+    "changed_ranges": 250,
+    "every_changed_byte_inside_a_declared_lane": true
+  },
+  "edits": [
+    {
+      "after_sha256": "711fc2beafe2cba3ee73c90ee8d1f61cedae61380288b9695718c354e943269e",
+      "before_sha256": "9724e4c8fcef8cf98136273b2e9ef802d5594ebe151ece572278f435eddcd5a9",
+      "payload_offset": 597200,
+      "payload_size": 832,
+      "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b16/l7",
+      "vertex_count": 52,
+      "written_bytes": 624,
+      "written_ranges": 52
+    },
+    {
+      "after_sha256": "fbc5a3d0732540aeb32ad0f4850a6c2a712226f7847c9cfc745b66f727af32b2",
+      "before_sha256": "a71e21aba809f29a7a3f1c98f53aa4b823a886a74fb66418913ea307f81ead24",
+      "payload_offset": 569400,
+      "payload_size": 816,
+      "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b4/l1",
+      "vertex_count": 51,
+      "written_bytes": 612,
+      "written_ranges": 51
+    },
+    {
+      "after_sha256": "3763e02f7e9bd7007c2abe0c947a7eb4a453227a058672e03230541dc1b8f00c",
+      "before_sha256": "71ed3c06ba8e1279b4e9651fbbed2796090bc4ec8a63743dca7a53ebcb6a9f4a",
+      "payload_offset": 580008,
+      "payload_size": 784,
+      "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b7/l7",
+      "vertex_count": 49,
+      "written_bytes": 588,
+      "written_ranges": 49
+    },
+    {
+      "after_sha256": "0054227f2acb6ae1953add6d4bc95549d495b2d70afc6c4d99489901808d95fd",
+      "before_sha256": "e81f42dfcbd8e87e803a41c4ce7bdfc801fa8540ee3398488a88173ae9f9cb95",
+      "payload_offset": 595980,
+      "payload_size": 784,
+      "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b16/l6",
+      "vertex_count": 49,
+      "written_bytes": 588,
+      "written_ranges": 49
+    },
+    {
+      "after_sha256": "879f9eceb0940d5e22fab19291d9a3e90f59c47e341ea67c695cfea7b5fb28ac",
+      "before_sha256": "c85e4c69dd51d1c944d6ccbd77079514e89b23682533c82c5996b9f94930390e",
+      "payload_offset": 599636,
+      "payload_size": 784,
+      "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b16/l9",
+      "vertex_count": 49,
+      "written_bytes": 588,
+      "written_ranges": 49
+    }
+  ],
+  "fit_sampling": {
+    "greedy_fits": 3,
+    "note": "Twelve stadium scenes, each moving every vertex of its largest eligible lane by +400 on y, measured with the retail-identical greedy encoder. edit_cost_bytes is len(greedy(edited)) minus the retail stream's consumed bytes, so it is the edit's cost exactly. Medians quoted in the document are upper medians (sorted[n // 2]).",
+    "rows": [
+      {
+        "chunk": 4,
+        "edit_cost_bytes": 16,
+        "entry": 1221,
+        "greedy_bytes": 956019,
+        "greedy_fits": false,
+        "greedy_seconds": 52.1,
+        "headroom": 13,
+        "offset_bits": 12,
+        "retail_consumed": 956003,
+        "stored": 956016,
+        "vertices": 54
+      },
+      {
+        "chunk": 4,
+        "edit_cost_bytes": 51,
+        "entry": 1260,
+        "greedy_bytes": 862616,
+        "greedy_fits": false,
+        "greedy_seconds": 37.7,
+        "headroom": 11,
+        "offset_bits": 12,
+        "retail_consumed": 862565,
+        "stored": 862576,
+        "vertices": 51
+      },
+      {
+        "chunk": 4,
+        "edit_cost_bytes": 182,
+        "entry": 1299,
+        "greedy_bytes": 898977,
+        "greedy_fits": false,
+        "greedy_seconds": 36.1,
+        "headroom": 5,
+        "offset_bits": 12,
+        "retail_consumed": 898795,
+        "stored": 898800,
+        "vertices": 53
+      },
+      {
+        "chunk": 2,
+        "edit_cost_bytes": 5,
+        "entry": 1338,
+        "greedy_bytes": 940172,
+        "greedy_fits": true,
+        "greedy_seconds": 44.2,
+        "headroom": 9,
+        "offset_bits": 13,
+        "retail_consumed": 940167,
+        "stored": 940176,
+        "vertices": 54
+      },
+      {
+        "chunk": 2,
+        "edit_cost_bytes": 3,
+        "entry": 1377,
+        "greedy_bytes": 948144,
+        "greedy_fits": true,
+        "greedy_seconds": 40.8,
+        "headroom": 3,
+        "offset_bits": 13,
+        "retail_consumed": 948141,
+        "stored": 948144,
+        "vertices": 54
+      },
+      {
+        "chunk": 4,
+        "edit_cost_bytes": 68,
+        "entry": 1416,
+        "greedy_bytes": 960955,
+        "greedy_fits": false,
+        "greedy_seconds": 25.4,
+        "headroom": 9,
+        "offset_bits": 12,
+        "retail_consumed": 960887,
+        "stored": 960896,
+        "vertices": 55
+      },
+      {
+        "chunk": 4,
+        "edit_cost_bytes": 42,
+        "entry": 1455,
+        "greedy_bytes": 955695,
+        "greedy_fits": false,
+        "greedy_seconds": 26.8,
+        "headroom": 11,
+        "offset_bits": 12,
+        "retail_consumed": 955653,
+        "stored": 955664,
+        "vertices": 52
+      },
+      {
+        "chunk": 4,
+        "edit_cost_bytes": 124,
+        "entry": 1494,
+        "greedy_bytes": 1004271,
+        "greedy_fits": false,
+        "greedy_seconds": 17.9,
+        "headroom": 13,
+        "offset_bits": 13,
+        "retail_consumed": 1004147,
+        "stored": 1004160,
+        "vertices": 55
+      },
+      {
+        "chunk": 2,
+        "edit_cost_bytes": 7,
+        "entry": 1533,
+        "greedy_bytes": 1129677,
+        "greedy_fits": true,
+        "greedy_seconds": 19.1,
+        "headroom": 10,
+        "offset_bits": 13,
+        "retail_consumed": 1129670,
+        "stored": 1129680,
+        "vertices": 55
+      },
+      {
+        "chunk": 2,
+        "edit_cost_bytes": 19,
+        "entry": 1572,
+        "greedy_bytes": 1146854,
+        "greedy_fits": false,
+        "greedy_seconds": 15.9,
+        "headroom": 13,
+        "offset_bits": 12,
+        "retail_consumed": 1146835,
+        "stored": 1146848,
+        "vertices": 56
+      },
+      {
+        "chunk": 3,
+        "edit_cost_bytes": 13,
+        "entry": 1611,
+        "greedy_bytes": 1276161,
+        "greedy_fits": false,
+        "greedy_seconds": 22.0,
+        "headroom": 12,
+        "offset_bits": 13,
+        "retail_consumed": 1276148,
+        "stored": 1276160,
+        "vertices": 52
+      },
+      {
+        "chunk": 4,
+        "edit_cost_bytes": 81,
+        "entry": 1650,
+        "greedy_bytes": 922933,
+        "greedy_fits": false,
+        "greedy_seconds": 29.7,
+        "headroom": 12,
+        "offset_bits": 13,
+        "retail_consumed": 922852,
+        "stored": 922864,
+        "vertices": 51
+      }
+    ],
+    "scenes_sampled": 12
+  },
+  "iso_writer": {
+    "bytes_declared": 1073741832,
+    "declared_ranges": [
+      {
+        "length": 8,
+        "reason": "dirrec_length:/VC_20919/0.",
+        "start": 536682
+      },
+      {
+        "length": 1073741824,
+        "reason": "extent:/VC_20919/0.",
+        "start": 29980672
+      }
+    ],
+    "entry_count": 78,
+    "file_size": 4665081856,
+    "note": "The writer replaces whole files, so it declares the entire 1 GiB pack extent it rewrote plus the both-endian length fields of that extent's directory record. The edit itself touches 1,306,576 of those bytes.",
+    "schema": "ps2_iso9660_write/v1",
+    "slack_bytes": 0,
+    "volume_blocks": 2277872,
+    "volume_id": "50137"
+  },
+  "not_done": {
+    "emulator": "No PCSX2 run and no hardware. This trial proves the bytes and the allocations; it does not prove the geometry renders, nor that the lane names correspond to anything a player would recognise. That needs a screen and belongs to the runtime lane."
+  },
+  "output_image": {
+    "committed_to_the_repository": false,
+    "same_size_as_source": true,
+    "sha256": "c3f61cd55f3f8a9ceb1464aa71c5ef9328aa96ca0b3c8d1954e656e8a46caa17",
+    "size": 4665081856
+  },
+  "packs": [
+    {
+      "bytes_spliced": 1306576,
+      "iso_path": "/VC_20919/0.",
+      "pack_offset": 793824752,
+      "sha256": "fdc7c71700fe4fb2f5961fc96a93f8d5c80358663304d9145f5338daceff39b1",
+      "size": 1073741824
+    }
+  ],
+  "recipe": {
+    "contains_only_target_ids_and_positions": true,
+    "edit_count": 5,
+    "note": "The recipe holds the user's own coordinates and is not committed. Only its digest, its edit count and the target ids it names are recorded here.",
+    "operation": {
+      "axis": "y",
+      "note": "every vertex of every named lane translated by +400 on y; x and z carried over unchanged",
+      "units": 400.0
+    },
+    "schema": "nfl2k5_ps2_stadium_position_recipe/v1",
+    "sha256": "81c0634b02831de863281fd7ed605dbb890713237208ae170d32c631b5e6a217"
+  },
+  "scene": {
+    "chunk_offset": 327152,
+    "edited_decoded_sha256": "a6b0437c05daa057837b85527cbba7669fa0c49e031147673bed20626d6a727b",
+    "outer_entry_index": 1556,
+    "output_span_sha256": "20e39afaf4b10e3a4c10075261f5e196e94155bf1017983a53e0dfda162b9110",
+    "source_decoded_sha256": "7226cb7592aa2605f9b06cff3431bc25c61ca8b788f1fc7b0d41a7cb81f2baa5",
+    "source_span_sha256": "b1dd0ea4fc2317701aef2505e17ac42246fc2be33ddc85daffc1707fb63ec2a9",
+    "span_size": 1306576,
+    "stored_size": 1306544,
+    "system_bytes": 686416,
+    "video_bytes": 1231440,
+    "virtual_offset": 793824752
+  },
+  "schema": "nfl2k5_ps2_stadium_trial/v1",
+  "shape": {
+    "bounding_radius": 3974.489013671875,
+    "index": 98,
+    "name": "sideline_home_south"
+  },
+  "source_image": {
+    "boot_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+    "modified": false,
+    "opened_read_only": true,
+    "retail_boot_elf": true,
+    "serial": "SLUS-20919",
+    "sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+    "size": 4665081856
+  },
+  "verdicts": {
+    "nfl2k5_ps2_stadium_position_verify": {
+      "catalog_sha256": "1b68cdfa52aeb43311943eb02fa44715ba1e62c2b9905d9a7f1a8aec0f547f3d",
+      "chunk": {
+        "output_consumed_bytes": 1306536,
+        "output_span_sha256": "20e39afaf4b10e3a4c10075261f5e196e94155bf1017983a53e0dfda162b9110",
+        "physical_windows": [
+          {
+            "image_offset": 823805424,
+            "pack": "0",
+            "size": 1306576
+          }
+        ],
+        "source_consumed_bytes": 1306541,
+        "source_span_sha256": "b1dd0ea4fc2317701aef2505e17ac42246fc2be33ddc85daffc1707fb63ec2a9",
+        "span_size": 1306576,
+        "stored_size": 1306544,
+        "system_bytes": 686416,
+        "video_bytes": 1231440,
+        "virtual_offset": 793824752,
+        "wrapper_identical": true,
+        "wrapper_scratch_bytes": 192
+      },
+      "claims": {
+        "changed_count_or_topology_write_back": false,
+        "hardware_visibility_proved": false,
+        "production_ready": false,
+        "runtime_visibility_proved": false,
+        "same_count_position_write_back": true
+      },
+      "decoded": {
+        "changed_bytes": 1000,
+        "changed_ranges": 250,
+        "every_changed_byte_inside_a_declared_lane": true,
+        "matches_recipe_exactly": true,
+        "output_sha256": "a6b0437c05daa057837b85527cbba7669fa0c49e031147673bed20626d6a727b",
+        "size": 1917856,
+        "source_sha256": "7226cb7592aa2605f9b06cff3431bc25c61ca8b788f1fc7b0d41a7cb81f2baa5",
+        "w_component_preserved": true
+      },
+      "image": {
+        "allowed_windows": 1,
+        "changed_bytes": 1282669,
+        "directory_records_unchanged": true,
+        "file_size": 4665081856,
+        "first_changed_offset": 823805465,
+        "last_changed_offset": 825111999,
+        "pack_count": 5,
+        "pack_extents_unmoved": true,
+        "volume_blocks": 2277872
+      },
+      "lanes": [
+        {
+          "after_sha256": "711fc2beafe2cba3ee73c90ee8d1f61cedae61380288b9695718c354e943269e",
+          "before_sha256": "9724e4c8fcef8cf98136273b2e9ef802d5594ebe151ece572278f435eddcd5a9",
+          "chain_end_offset": 606048,
+          "chain_offset": 590464,
+          "dma_tags": 4,
+          "payload_offset": 597200,
+          "payload_size": 832,
+          "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b16/l7",
+          "unpacks": 63,
+          "vertex_count": 52
+        },
+        {
+          "after_sha256": "fbc5a3d0732540aeb32ad0f4850a6c2a712226f7847c9cfc745b66f727af32b2",
+          "before_sha256": "a71e21aba809f29a7a3f1c98f53aa4b823a886a74fb66418913ea307f81ead24",
+          "chain_end_offset": 570240,
+          "chain_offset": 568192,
+          "dma_tags": 2,
+          "payload_offset": 569400,
+          "payload_size": 816,
+          "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b4/l1",
+          "unpacks": 9,
+          "vertex_count": 51
+        },
+        {
+          "after_sha256": "3763e02f7e9bd7007c2abe0c947a7eb4a453227a058672e03230541dc1b8f00c",
+          "before_sha256": "71ed3c06ba8e1279b4e9651fbbed2796090bc4ec8a63743dca7a53ebcb6a9f4a",
+          "chain_end_offset": 581024,
+          "chain_offset": 572416,
+          "dma_tags": 3,
+          "payload_offset": 580008,
+          "payload_size": 784,
+          "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b7/l7",
+          "unpacks": 38,
+          "vertex_count": 49
+        },
+        {
+          "after_sha256": "0054227f2acb6ae1953add6d4bc95549d495b2d70afc6c4d99489901808d95fd",
+          "before_sha256": "e81f42dfcbd8e87e803a41c4ce7bdfc801fa8540ee3398488a88173ae9f9cb95",
+          "chain_end_offset": 606048,
+          "chain_offset": 590464,
+          "dma_tags": 4,
+          "payload_offset": 595980,
+          "payload_size": 784,
+          "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b16/l6",
+          "unpacks": 63,
+          "vertex_count": 49
+        },
+        {
+          "after_sha256": "879f9eceb0940d5e22fab19291d9a3e90f59c47e341ea67c695cfea7b5fb28ac",
+          "before_sha256": "c85e4c69dd51d1c944d6ccbd77079514e89b23682533c82c5996b9f94930390e",
+          "chain_end_offset": 606048,
+          "chain_offset": 590464,
+          "dma_tags": 4,
+          "payload_offset": 599636,
+          "payload_size": 784,
+          "target_id": "nfl2k5ps2/stadium/e1556/c2/s98/b16/l9",
+          "unpacks": 63,
+          "vertex_count": 49
+        }
+      ],
+      "mode": "patched",
+      "recipe_sha256": "81c0634b02831de863281fd7ed605dbb890713237208ae170d32c631b5e6a217",
+      "schema": "nfl2k5_ps2_stadium_position_verify/v1",
+      "topology": {
+        "chain_bytes_outside_position_payloads_unchanged": true,
+        "dma_and_vif_structure_unchanged": true,
+        "note": "on PS2 the vertex count is the VIF UNPACK NUM field and primitives are assembled by the VU1 microprogram the chain invokes, so preserving the chain outside the position payloads is what preserves the triangle set",
+        "vertex_counts_unchanged": true
+      },
+      "verdict": "pass"
+    },
+    "ps2_iso9660_verify": {
+      "declared_bytes": 1073741832,
+      "declared_ranges": [
+        {
+          "length": 8,
+          "reason": "dirrec_length:/VC_20919/0.",
+          "start": 536682
+        },
+        {
+          "length": 1073741824,
+          "reason": "extent:/VC_20919/0.",
+          "start": 29980672
+        }
+      ],
+      "entries_compared": 79,
+      "file_size": 4665081856,
+      "replacements_checked": [
+        {
+          "extent_offset": 29980672,
+          "lba": 14639,
+          "length_field_offset": 536682,
+          "new_length": 1073741824,
+          "path": "/VC_20919/0.",
+          "previous_length": 1073741824,
+          "sha256": "fdc7c71700fe4fb2f5961fc96a93f8d5c80358663304d9145f5338daceff39b1",
+          "zero_filled_bytes": 0
+        }
+      ],
+      "result": "PASS",
+      "schema": "ps2_iso9660_verify/v1",
+      "slack_bytes": 0,
+      "unchanged_bytes_compared": 3591340024,
+      "volume_blocks": 2277872,
+      "volume_id": "50137"
+    }
+  },
+  "what_this_is": "One real-disc trial of bounded, same-count stadium position editing for ESPN NFL 2K5 on PlayStation 2 (SLUS-20919). Five catalogued VIF UNPACK V4_32 position lanes of a single shape were rewritten, the scene was recompressed into the chunk's fixed stored body with a byte-identical 0x20 wrapper, and the result was spliced into a new image through the fixed-allocation ISO9660 writer. Run offline on a copy of the user's own image; no emulator and no hardware were involved."
+}
