@@ -19,7 +19,8 @@
   the middle, whoever is controlling him, in games, practice and franchise, following the same HUD and coach-camera
   visibility as the ordinary circle. Proved by bounded execution of the real queue, decoder and model-selection routines
   and of the live-game roster copy (the tag byte survives the load). The tag bit is the same one the future ability gates
-  will read. Unwitnessed until Noah's next play.
+  will read. Noah's first look confirmed it draws; a second pass made it bold enough to read on a far receiver:
+  radius 108 with a thick white band and a near-black border drawn underneath for contrast on turf and yard lines.
 - **Fixed before release: the dynamic kickoff's coverage men lined up beside the kicker.** Noah's first play of the
   pre-release disc showed the ten coverage players standing at the kicking 35 with the kicker instead of on the receiving
   40. The playbook data was right; a retail pre-snap clamp (0x183F60, called from the selected-play target routine)
