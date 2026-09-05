@@ -352,10 +352,16 @@ rules; nothing is copied from a game.
 `conformance_edits` renames **a formation and a set**, which on the synthetic
 fixture lands on the **growth** path — so the conformance harness exercises
 `plan_member_rewrite`, `rewrite_member` and the `FE.QKL` mirroring on every run.
-`tests/mod_editor/test_madden09_ps2_playbooks.py` pins the **exact-size** path
-separately (a rename to a string the payload already carries), the member-level
-cache refusal (a synthetic disc that *does* cache a playbook), a stale cache copy
-failing the verifier, and a value changed behind the receipt's back.
+`tests/mod_editor/test_madden09_ps2_playbooks.py` (52 tests) pins the
+**exact-size** path separately — a rename to a string the payload already
+carries — along with the member-level cache refusal on a synthetic disc that
+*does* cache a playbook, a stale cache copy failing the verifier, a value
+changed behind the receipt's back, a container that stored its playbook
+uncompressed taking the rewrite path rather than the splice, and the refusals a
+recipe earns for naming a UI screen or a member the container does not have.
+`tests/mod_editor/test_ea_tdb.py` pins the name decode: every byte round-trips,
+a name really carrying a backslash never renders as an escape, and a table
+named `SGF\x00` parses, writes and parses identical.
 
 ---
 
