@@ -363,9 +363,77 @@ capabilities and 9 NFL 2K5 PS2 rows: the separate PS2 save-import bridge, the
 read-only PS2 disc inventory, the PCSX2 replacement-pack export for edited uniform
 art (File > Export PS2 replacement pack…, or --ps2-export) and six on-disc writers
 (display text, playbooks, uniform colours, the disc roster, stadium positions and
-one-shot AUDO sounds), which are CLI-only today. No current 2K5 capability
+one-shot AUDO sounds), which the PS2 Disc Studio window drives (see below). No current 2K5 capability
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.
+
+## PS2 Disc Studio (RC85)
+
+**File > PS2 Disc Studio…**, or `python -m mod_editor --ps2-disc-studio [your.iso]`, opens
+one window over the six PlayStation 2 on-disc writers. It works on **your own SLUS-20919
+disc image**, which is opened read-only and never written: every build creates a **new**
+ISO at a name that does not exist yet, and a build that fails or is cancelled deletes
+whatever it had created. It is separate from the Xbox game image in the main window and
+never touches your Xbox project.
+
+**Nothing built here has been seen or heard in an emulator yet.** Each lane is proved
+offline -- its bytes land where they should and an independent verifier re-derives that
+from the two images -- and no further. The window says so in its boundary note and in the
+receipt, and each tab carries its lane's caveats in plain words (the registry's rules are
+one click away on every tab).
+
+How it goes:
+
+1. **Open Disc Image…** The identity line shows the serial, whether the boot ELF is the
+   retail one, and the size. A disc that is not SLUS-20919 can be looked at but nothing is
+   planned or built from it.
+2. **Build catalogue** on a tab. The lane's own catalogue tool runs over your disc and the
+   result is cached on this machine, keyed by the disc, under
+   `2k5-mod-studio/ps2-disc-studio/` in your private application-data folder (`%LOCALAPPDATA%`
+   on Windows, your home folder elsewhere). On the trial machine the text catalogue took about
+   a second and the colours catalogue half of one; the stadium catalogue has two scopes -- the
+   one proved scene, or every stadium scene on the disc, which is long -- and says so.
+   Catalogues hold names, offsets, counts and digests only.
+3. **Pick a target, edit, Add to recipe.** Every editor shows its budget and refuses over the
+   line, in place, with the fix in the sentence:
+   - **Text** -- 6,658 editable strings (215 read-only ones are listed greyed with the reason).
+     The current text is read from your disc for display. The budget is the original's own
+     length: a replacement may be shorter or the same length, never longer, and inline tokens
+     such as `|CROSS|` must stay in place. "Used by N records" means editing changes them all.
+   - **Playbooks** -- 37 books with their headroom (50 formations, 270 plays, 3,500 nodes; eight
+     books are at the play cap). Formations and plays are designed with the studio's own
+     Formation Designer and Play Designer on the book read from your disc; names are up to 40
+     printable ASCII characters.
+   - **Colours** -- the facemask and turtleneck words of 634 uniform packages, named by selector
+     (package number, home or away, variant; team names appear only when this machine also has
+     the Xbox uniform catalogue). The current words show as swatches; each edit changes at most
+     eight bytes.
+   - **Roster** -- the boot roster's 2,547 players and the 75 historic rosters: first and last
+     name inside the bytes the original occupies, jersey 0-99, face shield None/Clear/Dark.
+     Each roster you edit is its own build step.
+   - **Stadium** -- catalogued position lanes; x, y, z offsets move every vertex of a lane. Whether
+     the recompressed scene fits its fixed span is decided during the build (tens of minutes;
+     the STADIUMS trial measured 17 minutes for one scene).
+   - **Audio** -- 844 AUDO slots, each with its capacity in seconds. A strict 16-bit PCM WAV with
+     the slot's channel count; a longer sound is refused with the slot's capacity, a shorter one
+     is followed by silence. 690 slots share a name with another slot.
+4. **Check** -- on a tab, or *Check everything* on the Build page. This is each lane's own dry
+   run against your disc; every refusal the patcher would make appears here, and *Build* is
+   offered only once every staged lane has checked clean.
+5. **Build new ISO.** Lanes run as chained steps in a fixed order (text, playbooks, colours,
+   roster, stadium, audio), each writing a new image from the previous one and verifying it with
+   the lane's independent verifier before the previous intermediate is deleted. Each step copies
+   the whole 4.3 GB image and rewrites a 1 GiB pack: minutes per step on most machines (the trial
+   machine's fast storage did two steps in 49 seconds), plus the two verifiers re-reading both
+   images. The build refuses to start unless the destination's drive has room for the new image
+   **plus one intermediate** and the staged pack (about 9.9 GiB for this disc), and says the sizes.
+   A JSON receipt with every step's changed bytes, digests, verdicts and timings is written next
+   to the new image; *Open folder* takes you there.
+
+Rules that prevent most refusals here: keep text inside the shown character budget and keep
+its tokens; keep names inside the shown budget; supply mono WAVs to mono slots and stereo to
+stereo; do not stage two aliases of one stadium span; choose a destination that does not exist
+yet, on a drive with room for two images.
 
 ## What v1.0 covers
 

@@ -1,8 +1,9 @@
 # PS2 Disc Studio — implementation plan
 
-> **Status 2026-09-05 — plan committed first; the code follows it.** This document is
-> kept current as the work lands: every deviation is recorded in §15 rather than
-> silently folded in.
+> **Status 2026-09-05 — delivered on branch `ps2-disc-studio`.** Service, worker, six lane
+> adapters, window shell and six tabs, the two entry points, 60 tests, allowlist lines,
+> docs and the real-disc trial are in. Every deviation from the plan as first committed
+> is recorded in §15.
 
 The six PlayStation 2 on-disc writers of Phase 2 exist today only as command-line
 tools: text banks, playbooks, uniform colours, the disc roster, stadium position
@@ -366,14 +367,17 @@ the studio's own test module so the upstream test file is untouched).
 
 ## 10. Real-disc trial
 
-With the stock ISO (read-only): open in the service; build the text and colours
-catalogues (record seconds); compose one shorter-or-equal STRG replacement with
-`expect_sha256` and one facemask colour; run the two-lane queue to gitignored
-scratch outside the repository; both verifiers; record timings, sizes, SHA-256s,
-verdicts, changed-byte counts, offsets in
-`reports/gameplay_tuning/nfl2k5_ps2_disc_studio_trial.v1.json`. No decoded
-text, no colour words, no image bytes; the scratch images are deleted after the
-receipt is recorded. `reports/` is evidence only and is not allowlisted.
+**Done, on the rig** (see §15 for why not the dev box). With the stock ISO opened
+read-only: text and colours catalogues built by the lanes' tools (1.03 s / 0.51 s);
+one shorter-by-one STRG replacement pinned by its original's digest (`String message
+897`, 10 → 9 code units) and one facemask colour (`09H0`, `#12FF34`); both planned
+clean (0.35 s / 0.09 s); the two-lane queue built a NEW image in 49 s with the text
+verifier (`pass`, 10 bytes differ, exactly the edited allocation) and the colour
+verifier (`PASS`, 634 Unif records decoded, 1,073,741,816 unchanged bytes compared);
+the source re-hashed to the registry's retail pin. Report:
+`reports/gameplay_tuning/nfl2k5_ps2_disc_studio_trial.v1.json` — names, selectors,
+offsets, counts and digests, no decoded text or colour words; the images were
+deleted after the verifiers ran. `reports/` is evidence only and is not allowlisted.
 
 ## 11. Docs, allowlist, coordinator handoff
 
@@ -421,4 +425,36 @@ helper belongs to the Xbox lane); a PS2 sidebar; any change to the six tools.
 
 ## 15. Deviations from this plan
 
-(none yet)
+- **Free-space rule tightened (owner request).** The plan allowed a single-step build to
+  need only one image's worth of room. The owner's drive filled to 32 MB during this
+  work and crashed the dev box, so the service now always requires room for the new
+  image **plus one intermediate** plus the staged pack, whatever the step count, and
+  the refusal states the sizes (`BuildEstimate.sentence`).
+- **Trial ran on the rig, not the dev box (same reason).** No 4 GB image was written on
+  the dev box. The stock ISO on the rig was opened read-only over SSH; the catalogue
+  builds, the plan → build → verify cycle and the source re-hash ran there through the
+  same service the window uses, detached with `setsid nohup`, and the images were
+  deleted after the verifiers ran. The dev box ran the plan → refuse → build → verify
+  cycle on the lanes' synthetic discs only.
+- **Trial numbers.** The catalogue builds the plan called long-running took 1.03 s (text)
+  and 0.51 s (colours) on the rig's storage; the text patcher's dry run 0.35 s; two
+  chained steps 49 s in all (text: write 9.6 s, verify 11.4 s; colours: write 8.3 s,
+  verify 8.9 s; hashing 3 s each). The "long-running" concern stands for the stadium
+  catalogue's every-scene scope and for a stadium build step, which were not part of
+  this trial.
+- **Tabs split into a second module.** `ps2_disc_studio_qt.py` holds the shell, the task
+  runner and the Build page; `ps2_disc_studio_tabs_qt.py` holds the six tabs. One window,
+  as planned, two files.
+- **Stadium recipe preview.** Composing a stadium recipe decodes the whole scene, so the
+  tab previews the staged offsets and vertex counts; the exact recipe is composed at
+  Check and Build (and never carries coordinates into a receipt).
+- **Playbook links.** A play designed with the Play Designer's *Link* option is linked to
+  the formation under the index the writer will give it (the book's play count plus
+  its place among the pending additions); explicit links take indices.
+- **Team names on the Colours tab** come from the Xbox uniform catalogue when the
+  machine has one (it is derived from the user's XISO and not shipped); otherwise
+  packages are named by decoded selector plus the current colour swatches read from
+  the disc.
+- **Catalogue and step subprocesses** are exactly as planned; the cancel test uses a
+  sleeping command in place of the tool, since a synthetic catalogue builds in well
+  under a second.

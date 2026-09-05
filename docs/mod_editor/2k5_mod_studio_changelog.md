@@ -58,6 +58,20 @@
   payload; every catalogue tool rebuilds its catalogue from the user's own disc.
 - Registry 71 -> 78 rows; the `audio`, `colors`, `menus`, `players_rosters`, `scripts_config`,
   `stadiums_fields` and `uniforms` surfaces now cover the PS2 target.
+- **PS2 Disc Studio** (File > PS2 Disc Studio…, or `--ps2-disc-studio [ISO]`): one window over
+  the six on-disc writers -- a tab per lane (Text, Playbooks, Colours, Roster, Stadium, Audio) and a
+  Build page. It opens the user's SLUS-20919 ISO read-only, builds each lane's catalogue from that
+  disc with the lane's own tool (cached per disc under the private application-data folder),
+  shows every budget on screen and refuses over the line in place, previews the exact recipe,
+  dry-runs it with the patcher so every refusal surfaces before any image exists, then writes a
+  NEW image as a chained queue of steps, each verified by the lane's independent verifier before
+  the previous intermediate is deleted; a build refuses to start without room for the image plus
+  one intermediate and says the size. Formations and plays reuse the Formation Designer and Play
+  Designer on the book read from the disc. Qt-free service (`mod_editor/core/ps2_disc_studio_*`),
+  thin window (`mod_editor/gui/ps2_disc_studio_*`), 60 tests on the lanes' synthetic discs. Trial on
+  the stock disc (`reports/gameplay_tuning/nfl2k5_ps2_disc_studio_trial.v1.json`): catalogues in
+  about a second each, a two-lane (text + facemask) build in 49 s with both verifiers PASS and the
+  source digest unchanged. Still nothing on a screen: every lane stays `offline-writer-proved`.
 
 ## v1.0 RC84 — NFL 2K5 (PS2): the disc, read by name (unreleased)
 
