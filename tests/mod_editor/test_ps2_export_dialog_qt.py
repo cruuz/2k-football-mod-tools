@@ -14,6 +14,13 @@ The test that matters most is
 ``DialogTests.test_the_receipt_carries_the_emulator_settings``: a pack shown
 without ``ClassicTextureNames`` and ``LoadTextureReplacements`` looks like it
 worked and then silently draws the retail art.
+
+Close behind it is the emulator-target group.  The pack is the same bytes for
+every answer, so nothing else here would catch a window that stopped asking, or
+tooltips that stopped explaining why it asks.  Those tests check the hover text
+against ``TARGET_EXPLANATION_REQUIRED_FACTS`` rather than against sentences of
+their own, so the wording -- including the measured numbers -- can be corrected
+in one place and still cannot quietly disappear.
 """
 
 from __future__ import annotations
@@ -158,7 +165,8 @@ def write_project(directory: Path, name: str = "kit.2k5mod") -> Path:
 class ViewModelTests(unittest.TestCase):
     def test_nothing_is_offered_without_a_plan(self) -> None:
         state = dialog_module.ps2_export_action_state(
-            plan_ready=False, busy=False, mapped_count=3, exported=False
+            plan_ready=False, busy=False, mapped_count=3, exported=False,
+            target_chosen=True,
         )
         self.assertTrue(state.can_choose_project)
         self.assertFalse(state.can_export)
@@ -166,7 +174,8 @@ class ViewModelTests(unittest.TestCase):
 
     def test_a_busy_dialog_offers_nothing(self) -> None:
         state = dialog_module.ps2_export_action_state(
-            plan_ready=True, busy=True, mapped_count=3, exported=True
+            plan_ready=True, busy=True, mapped_count=3, exported=True,
+            target_chosen=True,
         )
         self.assertEqual(
             (state.can_choose_project, state.can_export, state.can_verify),
@@ -175,20 +184,40 @@ class ViewModelTests(unittest.TestCase):
 
     def test_exporting_needs_at_least_one_mapped_target(self) -> None:
         none_mapped = dialog_module.ps2_export_action_state(
-            plan_ready=True, busy=False, mapped_count=0, exported=False
+            plan_ready=True, busy=False, mapped_count=0, exported=False,
+            target_chosen=True,
         )
         some = dialog_module.ps2_export_action_state(
-            plan_ready=True, busy=False, mapped_count=1, exported=False
+            plan_ready=True, busy=False, mapped_count=1, exported=False,
+            target_chosen=True,
         )
         self.assertFalse(none_mapped.can_export)
         self.assertTrue(some.can_export)
 
+    def test_exporting_waits_for_the_emulator_answer(self) -> None:
+        """No default, so an unanswered window cannot write a pack."""
+
+        unanswered = dialog_module.ps2_export_action_state(
+            plan_ready=True, busy=False, mapped_count=2, exported=False,
+            target_chosen=False,
+        )
+        answered = dialog_module.ps2_export_action_state(
+            plan_ready=True, busy=False, mapped_count=2, exported=False,
+            target_chosen=True,
+        )
+        self.assertFalse(unanswered.can_export)
+        self.assertTrue(answered.can_export)
+        # The question gates writing, not reading.
+        self.assertTrue(unanswered.can_choose_project)
+
     def test_verifying_needs_a_pack_to_have_been_written(self) -> None:
         before = dialog_module.ps2_export_action_state(
-            plan_ready=True, busy=False, mapped_count=1, exported=False
+            plan_ready=True, busy=False, mapped_count=1, exported=False,
+            target_chosen=True,
         )
         after = dialog_module.ps2_export_action_state(
-            plan_ready=True, busy=False, mapped_count=1, exported=True
+            plan_ready=True, busy=False, mapped_count=1, exported=True,
+            target_chosen=True,
         )
         self.assertFalse(before.can_verify)
         self.assertTrue(after.can_verify)
@@ -239,6 +268,59 @@ class ViewModelTests(unittest.TestCase):
                          dialog_module.DEFAULT_REQUIRED_SETTINGS)
         self.assertEqual(dialog_module.required_settings(None),
                          dialog_module.DEFAULT_REQUIRED_SETTINGS)
+
+    def test_the_three_targets_match_the_service(self) -> None:
+        self.assertEqual(dialog_module.EMULATOR_TARGET_VALUES,
+                         svc.EMULATOR_TARGETS)
+        with self.assertRaises(ValidationError):
+            dialog_module.target_choice("dolphin")
+
+    def test_the_explanation_still_states_every_required_fact(self) -> None:
+        """The contract in docs/product/PS2_M1_PLAN.md, checked against itself.
+
+        The facts live in one constant so the wording -- and the measured
+        numbers in it -- can be corrected in one place; this asserts the hover
+        text has not drifted away from them.
+        """
+
+        self.assertEqual(dialog_module.target_explanation_gaps(), ())
+        text = dialog_module.target_explanation_text()
+        for fact in dialog_module.TARGET_EXPLANATION_REQUIRED_FACTS:
+            self.assertIn(fact, text)
+
+    def test_every_choice_carries_a_label_an_audience_and_an_explanation(self) -> None:
+        self.assertEqual(len(dialog_module.EMULATOR_TARGET_CHOICES), 3)
+        for choice in dialog_module.EMULATOR_TARGET_CHOICES:
+            with self.subTest(choice=choice.value):
+                self.assertTrue(choice.label.strip())
+                self.assertTrue(choice.audience.strip())
+                # Long enough to be an explanation rather than a restatement
+                # of the label.
+                self.assertGreater(len(choice.tooltip), 80)
+        self.assertIn("the files are the same",
+                      dialog_module.TARGET_GROUP_TOOLTIP.lower())
+
+    def test_the_instructions_follow_the_target(self) -> None:
+        """Each answer names the settings that emulator actually has."""
+
+        classic = dialog_module.penguinscreen2_instructions(
+            Path("/tmp/pack"), PROVENANCE, svc.TARGET_PENGUINSCREEN2_CLASSIC)
+        modern = dialog_module.penguinscreen2_instructions(
+            Path("/tmp/pack"), PROVENANCE, svc.TARGET_PCSX2_MODERN)
+        legacy = dialog_module.penguinscreen2_instructions(
+            Path("/tmp/pack"), PROVENANCE, svc.TARGET_PCSX2_LEGACY)
+        self.assertIn("ClassicTextureNames=true", classic)
+        self.assertIn("LoadTextureReplacements=true", classic)
+        # A stock PCSX2 has no such setting; naming it sends the user hunting.
+        self.assertNotIn("ClassicTextureNames=true", modern)
+        self.assertNotIn("ClassicTextureNames=true", legacy)
+        self.assertIn("1.7.4034", modern)
+        self.assertIn("584", modern)
+        self.assertIn("1.7.4034", legacy)
+        for text in (classic, modern, legacy):
+            self.assertIn("LoadTextureReplacements=true", text)
+            self.assertIn("retail art", text)
+            self.assertIn(str(Path("/tmp/pack")), text)
 
     def test_the_instructions_carry_both_settings_and_the_path(self) -> None:
         text = dialog_module.penguinscreen2_instructions(
@@ -326,11 +408,22 @@ class DialogTests(unittest.TestCase):
     #: "use the suite's default" case needs a sentinel of its own.
     _DEFAULT = object()
 
-    def _dialog(self, project=_DEFAULT, manifest=_DEFAULT):
-        return dialog_module.Ps2ExportDialog(
+    def _dialog(self, project=_DEFAULT, manifest=_DEFAULT,
+                target=svc.TARGET_PENGUINSCREEN2_CLASSIC):
+        """A window, with the emulator already answered unless a test wants none.
+
+        The window opens with nothing selected on purpose, so a test about the
+        export path has to answer that question first, exactly as a user does.
+        ``target=None`` leaves it unanswered.
+        """
+
+        dialog = dialog_module.Ps2ExportDialog(
             self.project if project is self._DEFAULT else project,
             manifest=self.manifest if manifest is self._DEFAULT else manifest,
         )
+        if target is not None:
+            dialog._target_radios[target].setChecked(True)
+        return dialog
 
     def _export_to(self, dialog, destination: Path) -> None:
         """Drive the export, standing in for the folder chooser and the prompt."""
@@ -383,6 +476,110 @@ class DialogTests(unittest.TestCase):
             self.assertFalse(dialog.verify_button.isEnabled())
         finally:
             dialog.done(0)
+
+    def test_nothing_is_answered_when_the_window_opens(self) -> None:
+        """No default, because the right answer depends on the user's emulator.
+
+        A default would be a guess made silently, and the way they would find
+        out it was wrong is by following instructions for a setting their build
+        does not have.
+        """
+
+        dialog = self._dialog(target=None)
+        try:
+            self.assertIsNone(dialog.selected_target())
+            for radio in dialog._target_radios.values():
+                self.assertFalse(radio.isChecked())
+            self.assertFalse(dialog.export_button.isEnabled())
+            self.assertIn("no default", dialog.info_label.text())
+            # Answering is all it takes.
+            dialog._target_radios[svc.TARGET_PCSX2_MODERN].setChecked(True)
+            self.assertEqual(dialog.selected_target(), svc.TARGET_PCSX2_MODERN)
+            self.assertTrue(dialog.export_button.isEnabled())
+        finally:
+            dialog.done(0)
+
+    def test_every_choice_explains_itself_on_hover(self) -> None:
+        """Tooltip and accessible description, both from the one constant.
+
+        A screen-reader user is told exactly what a mouse user is told, and the
+        required facts are checked against
+        ``TARGET_EXPLANATION_REQUIRED_FACTS`` rather than sentences written
+        here, so correcting the wording is one edit in one place.
+        """
+
+        dialog = self._dialog(target=None)
+        try:
+            self.assertEqual(len(dialog._target_radios),
+                             len(dialog_module.EMULATOR_TARGET_CHOICES))
+            hovers = [dialog.target_group.toolTip()]
+            for choice in dialog_module.EMULATOR_TARGET_CHOICES:
+                radio = dialog._target_radios[choice.value]
+                with self.subTest(choice=choice.value):
+                    self.assertEqual(radio.text(), choice.label)
+                    self.assertEqual(radio.toolTip(), choice.tooltip)
+                    self.assertEqual(radio.accessibleDescription(),
+                                     choice.tooltip)
+                    self.assertTrue(radio.toolTip().strip())
+                hovers.append(radio.toolTip())
+                hovers.append(radio.text())
+            # The group explains the question itself, not just the answers.
+            self.assertTrue(dialog.target_group.toolTip().strip())
+            self.assertEqual(dialog.target_group.toolTip(),
+                             dialog.target_group.accessibleDescription())
+            whole = "\n".join(hovers)
+            for fact in dialog_module.TARGET_EXPLANATION_REQUIRED_FACTS:
+                self.assertIn(fact, whole,
+                              f"the hover text no longer says {fact}")
+        finally:
+            dialog.done(0)
+
+    def test_each_answer_reaches_the_receipt_and_the_instructions(self) -> None:
+        """Same files every time; a different receipt and different steps."""
+
+        digests = {}
+        for target in svc.EMULATOR_TARGETS:
+            with self.subTest(target=target):
+                destination = self.root / ("pack-" + target)
+                dialog = self._dialog(target=target)
+                try:
+                    self._export_to(dialog, destination)
+                    receipt = json.loads(
+                        (destination / svc.RECEIPT_NAME).read_text("utf-8"))
+                    self.assertEqual(receipt["emulator_target"], target)
+                    digests[target] = sorted(
+                        (row["pcsx2_png"], row["sha256"])
+                        for row in receipt["files"]
+                    )
+                    shown = dialog.receipt_label.text()
+                    self.assertIn(
+                        dialog_module.target_choice(target).audience, shown)
+                    for setting in receipt["instructions"]["settings"]:
+                        self.assertIn(setting, shown)
+                finally:
+                    dialog.done(0)
+        first = digests[svc.EMULATOR_TARGETS[0]]
+        for target, rows in digests.items():
+            self.assertEqual(rows, first, target)
+
+    def test_the_validators_own_explanation_check_passes_here(self) -> None:
+        """The step ``validate_nfl2k5_ps2_replacement_pack.sh`` runs.
+
+        Running it in CI as well as in the validator means a change that
+        empties the hover text fails on the machine that made it, not later on
+        somebody's release box.
+        """
+
+        import contextlib
+        import io
+
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            code = dialog_module.check_target_explanation()
+        self.assertEqual(code, 0, buffer.getvalue())
+        self.assertIn("NFL2K5_PS2_EXPORT_TARGET_EXPLANATION_PASS",
+                      buffer.getvalue())
+        self.assertIn("default=none", buffer.getvalue())
 
     def test_export_is_refused_when_nothing_maps(self) -> None:
         # A project whose only edit the manifest cannot name must not offer an

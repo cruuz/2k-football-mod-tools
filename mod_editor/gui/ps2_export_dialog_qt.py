@@ -25,6 +25,18 @@ service's message is surfaced verbatim.
 replacement PNGs and nothing else; the table shows names, statuses and counts.
 There is no preview of disc art, no byte editing and no disc writing.
 
+*Where the pack will be used is the user's answer, and it is explained where
+they give it.*  The files are the same for every answer -- there is one spelling
+of a GS identity -- but what an emulator does with them is not: PCSX2 v1.7.4034
+began hashing only a texture's clamped draw region, and PenguinScreen2's
+Classic Texture Names setting restores the original whole-texture hashing.  So
+the window offers three targets with **no default**, keeps Export disabled
+until one is picked, and gives each a tooltip and an identical accessible
+description.  :data:`EMULATOR_TARGET_CHOICES` is the single source of that
+text; :data:`TARGET_EXPLANATION_REQUIRED_FACTS` is what it must still say, and
+:func:`check_target_explanation` -- run by the tests and by
+``tools/validate_nfl2k5_ps2_replacement_pack.sh`` -- proves it does.
+
 The manifest may be absent from a given build (it is produced by a separate
 work package).  That is reported as a plain sentence and leaves every control
 disabled, rather than raising on construction.
@@ -41,9 +53,13 @@ from typing import Any, Callable, Optional, Tuple
 from mod_editor.core import ps2_export_service as service
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.ps2_export_service import (
+    DEFAULT_EMULATOR_TARGET,
     STATUS_AMBIGUOUS,
     STATUS_MAPPED,
     STATUS_UNMAPPED,
+    TARGET_PCSX2_LEGACY,
+    TARGET_PCSX2_MODERN,
+    TARGET_PENGUINSCREEN2_CLASSIC,
     Ps2ExportError,
 )
 
@@ -74,6 +90,152 @@ DEFAULT_REQUIRED_SETTINGS = (
     "ClassicTextureNames=true",
     "LoadTextureReplacements=true",
 )
+
+@dataclass(frozen=True)
+class EmulatorTargetChoice:
+    """One answer to "where will you use this pack?", and its explanation.
+
+    ``label`` is the radio's text, ``audience`` names the builds in one line for
+    the receipt view, and ``tooltip`` is the hover text -- which is also set as
+    the accessible description, so a screen reader is told exactly what a mouse
+    user is told.
+    """
+
+    value: str
+    label: str
+    audience: str
+    tooltip: str
+
+
+#: Why the question exists at all. Shown on the group itself, so hovering the
+#: question -- not just an answer -- explains it.
+TARGET_GROUP_TOOLTIP = (
+    "The files are the same for every choice; your answer is recorded in the "
+    "receipt and tailors the instructions. It matters because PCSX2 v1.7.4034 "
+    "changed how a replacement texture is identified: it hashes only the "
+    "clamped draw region instead of the whole texture, so a name computed the "
+    "original way - as this studio's are, from the disc - is not looked up for "
+    "a texture the game draws clamped. PenguinScreen2's Classic Texture Names "
+    "setting restores the original whole-texture hashing."
+)
+
+#: The three answers, their labels and the whole of their explanation. This is
+#: the single source: the radios, their tooltips and their accessible
+#: descriptions are built from it, and nothing else states this text.
+EMULATOR_TARGET_CHOICES = (
+    EmulatorTargetChoice(
+        value=TARGET_PENGUINSCREEN2_CLASSIC,
+        label=(
+            "PenguinScreen2 with Classic Texture Names on - loads every file "
+            "(recommended)"
+        ),
+        audience="PenguinScreen2 with Classic Texture Names on",
+        tooltip=(
+            "Classic Texture Names restores the whole-texture hashing this "
+            "studio's filenames were computed with - and the old TCC flag in "
+            "the name, and a crop at injection - so every file in the pack is "
+            "looked up, whatever the game does with the texture. Turn on Load "
+            "Texture Replacements as well. This is the emulator these packs "
+            "have actually been witnessed rendering on."
+        ),
+    ),
+    EmulatorTargetChoice(
+        value=TARGET_PCSX2_MODERN,
+        label=(
+            "PCSX2 1.7.4034 or newer, including 2.x - loads these packs; no "
+            "setting needed"
+        ),
+        audience="stock PCSX2 v1.7.4034 and later, including every 2.x release",
+        tooltip=(
+            "From v1.7.4034 PCSX2 identifies a texture by hashing only its "
+            "clamped draw region, so a pack's file for a texture the game "
+            "draws clamped would be skipped. Measured across the 60 dumps on "
+            "the test rig: 584 distinct identities fall in that class, and "
+            "none of this studio's texture names is among them - so every name "
+            "this pack uses is looked up. Three stock builds (v2.7.469, "
+            "v2.6.0, v2.9.30) loaded it with identical pixel counts. Only Load "
+            "Texture Replacements needs to be on."
+        ),
+    ),
+    EmulatorTargetChoice(
+        value=TARGET_PCSX2_LEGACY,
+        label="PCSX2 before 1.7.4034 - loads every file",
+        audience="PCSX2 builds older than v1.7.4034",
+        tooltip=(
+            "Builds before v1.7.4034 hash the whole texture, which is how this "
+            "studio's filenames were computed, so every file matches however "
+            "the game draws it. Only Load Texture Replacements needs to be on. "
+            "(v1.7.5606 later stopped printing the texture's TCC flag into bit "
+            "14 of the last number, but the loader ignores that bit, so the "
+            "same files load on newer builds too.)"
+        ),
+    ),
+)
+
+#: The choice values, in the order they are offered.
+EMULATOR_TARGET_VALUES = tuple(
+    choice.value for choice in EMULATOR_TARGET_CHOICES
+)
+
+#: What the explanation must still say, whoever edits the wording. Each entry
+#: is a literal that has to appear in the hover text taken together: the build
+#: that changed how a texture is identified and what it changed to, the build
+#: that dropped the TCC flag and why that never broke loading, the setting that
+#: restores the original hashing and the fork that has it, the builds each
+#: answer targets, the setting they all need -- and the measurement, so a
+#: tooltip cannot drift away from what was actually observed on the rig.
+TARGET_EXPLANATION_REQUIRED_FACTS = (
+    "1.7.4034",
+    "clamped draw region",
+    "584",
+    "60 dumps",
+    "none of this studio's texture names",
+    "Three stock builds",
+    "1.7.5606",
+    "TCC",
+    "ignores",
+    "Classic Texture Names",
+    "PenguinScreen2",
+    "2.x",
+    "Load Texture Replacements",
+)
+
+
+def target_choice(value: str) -> EmulatorTargetChoice:
+    """The choice with this value; unknown values are refused, never guessed."""
+
+    for choice in EMULATOR_TARGET_CHOICES:
+        if choice.value == value:
+            return choice
+    raise ValidationError(
+        "An export is for " + ", ".join(EMULATOR_TARGET_VALUES) + "."
+    )
+
+
+def target_explanation_text() -> str:
+    """Every word of the explanation, as one block, for checking."""
+
+    return "\n".join(
+        [TARGET_GROUP_TOOLTIP]
+        + [f"{choice.label}\n{choice.audience}\n{choice.tooltip}"
+           for choice in EMULATOR_TARGET_CHOICES]
+    )
+
+
+def target_explanation_gaps() -> Tuple[str, ...]:
+    """Required facts the explanation no longer states.
+
+    Empty means the hover text still explains the whole problem. This is the
+    contract ``docs/product/PS2_M1_PLAN.md`` writes down, so an edit that
+    shortens the tooltips into uselessness -- or quietly drops a measured
+    number -- fails before it ships rather than after.
+    """
+
+    text = target_explanation_text()
+    return tuple(
+        fact for fact in TARGET_EXPLANATION_REQUIRED_FACTS if fact not in text
+    )
+
 
 STATUS_LABELS = {
     STATUS_MAPPED: "Will export",
@@ -108,6 +270,7 @@ def ps2_export_action_state(
     busy: bool,
     mapped_count: int,
     exported: bool,
+    target_chosen: bool,
 ) -> Ps2ExportActionState:
     """Compute button gating without consulting any widget.
 
@@ -115,11 +278,19 @@ def ps2_export_action_state(
     and at least one *mapped* target: a plan whose every entry is skipped would
     publish a folder holding nothing but a receipt, which is a confusing way to
     say "none of your edits are in the map yet".
+
+    It also needs ``target_chosen``. The pack is the same bytes whichever
+    emulator it is for, but the instructions are not, and a user told to turn
+    on a setting their build does not have will hunt for it until they give up.
+    The parameter is required rather than defaulted so no caller inherits an
+    answer it never gave.
     """
 
     return Ps2ExportActionState(
         can_choose_project=not busy,
-        can_export=bool(plan_ready and not busy and mapped_count > 0),
+        can_export=bool(
+            plan_ready and not busy and mapped_count > 0 and target_chosen
+        ),
         can_verify=bool(exported and not busy),
     )
 
@@ -253,33 +424,22 @@ def _normalise_settings(found: Any) -> Tuple[str, ...]:
 
 
 def penguinscreen2_instructions(
-    destination: Path, provenance: Any = None
+    destination: Path, provenance: Any = None,
+    emulator_target: Optional[str] = None,
 ) -> str:
-    """What to do with the folder that was just written.
+    """What to do with the folder that was just written, for one emulator.
 
-    The settings line is not decoration.  PenguinScreen2 only looks for these
-    filenames when the classic naming convention is on, and only loads them when
-    replacement loading is on; with either off the game draws the retail art and
-    the user concludes the export failed.
+    The steps come from the Qt-free service, which also writes them into the
+    receipt, so the window and the pack say the same thing and the independent
+    verifier can hold the pack to it. The settings line is not decoration: name
+    the wrong ones and the game draws the retail art while the user concludes
+    the export failed.
     """
 
-    settings = required_settings(provenance)
-    body = [
-        f"1. Copy the textures folder from\n     {destination}\n"
-        "   into PenguinScreen2's texture directory, keeping the "
-        f"{'/'.join(service.REPLACEMENTS_DIR)} path intact.",
-        "2. Turn on these PenguinScreen2 settings before booting:",
-    ]
-    body.extend(f"     • {row}" for row in settings)
-    body.append(
-        "   Without both of them the game draws the retail art and the pack "
-        "looks like it did nothing."
-    )
-    body.append(
-        f"3. Boot your own {service.SERIAL} disc and go to a moment where the "
-        "art you edited is on screen."
-    )
-    return "\n".join(body)
+    target = emulator_target or DEFAULT_EMULATOR_TARGET
+    return "\n".join(service.emulator_instructions(
+        target, destination, required_settings(provenance)
+    ))
 
 
 def receipt_summary_text(receipt: Any) -> str:
@@ -289,10 +449,13 @@ def receipt_summary_text(receipt: Any) -> str:
     skipped = tuple(getattr(receipt, "skipped", ()) or ())
     resampled = sum(1 for row in files if getattr(row, "resampled_from", None))
     targets = len({getattr(row, "source_target", "") for row in files})
+    emulator = str(getattr(receipt, "emulator_target", "") or "")
     parts = [
         f"Wrote {len(files)} PCSX2 file{'' if len(files) == 1 else 's'} "
         f"from {targets} edited target{'' if targets == 1 else 's'}."
     ]
+    if emulator:
+        parts.append("For " + target_choice(emulator).audience + ".")
     if resampled:
         parts.append(
             f"{resampled} were resampled to the PS2 aspect (PCSX2 scales any "
@@ -334,15 +497,18 @@ from PyQt5.QtCore import (  # noqa: E402
 from PyQt5.QtGui import QColor  # noqa: E402
 from PyQt5.QtWidgets import (  # noqa: E402
     QAbstractItemView,
+    QButtonGroup,
     QDialog,
     QDialogButtonBox,
     QFileDialog,
+    QGroupBox,
     QHBoxLayout,
     QHeaderView,
     QLabel,
     QMessageBox,
     QProgressBar,
     QPushButton,
+    QRadioButton,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -497,6 +663,34 @@ class Ps2ExportDialog(QDialog):
         head.setSectionResizeMode(2, QHeaderView.Stretch)
         root.addWidget(self.table, 1)
 
+        self.target_group = QGroupBox("Where will you use this pack?")
+        self.target_group.setObjectName("targetGroup")
+        self.target_group.setAccessibleName("Where will you use this pack")
+        # The group carries the reason the question exists, so hovering the
+        # question -- not only an answer -- explains it.
+        self.target_group.setToolTip(TARGET_GROUP_TOOLTIP)
+        self.target_group.setAccessibleDescription(TARGET_GROUP_TOOLTIP)
+        target_layout = QVBoxLayout(self.target_group)
+        target_layout.setSpacing(4)
+        self.target_buttons = QButtonGroup(self)
+        self.target_buttons.setExclusive(True)
+        #: value -> radio, in the order EMULATOR_TARGET_CHOICES offers them.
+        self._target_radios = {}
+        for index, choice in enumerate(EMULATOR_TARGET_CHOICES):
+            radio = QRadioButton(choice.label)
+            radio.setObjectName("target_" + choice.value)
+            radio.setToolTip(choice.tooltip)
+            radio.setAccessibleName(choice.label)
+            # The same words as the tooltip: a screen reader is told exactly
+            # what a mouse user is told, not a shorter paraphrase.
+            radio.setAccessibleDescription(choice.tooltip)
+            target_layout.addWidget(radio)
+            self.target_buttons.addButton(radio, index)
+            self._target_radios[choice.value] = radio
+        # Deliberately nothing checked: see the module docstring. Export stays
+        # disabled until the user answers.
+        root.addWidget(self.target_group)
+
         self.receipt_label = QLabel("")
         self.receipt_label.setObjectName("exportReceiptCard")
         self.receipt_label.setWordWrap(True)
@@ -566,6 +760,8 @@ class Ps2ExportDialog(QDialog):
         )
 
     def _connect(self) -> None:
+        for radio in self._target_radios.values():
+            radio.toggled.connect(self._target_picked)
         self.project_button.clicked.connect(self._choose_project)
         self.export_button.clicked.connect(self._export)
         self.verify_button.clicked.connect(self._verify)
@@ -629,6 +825,31 @@ class Ps2ExportDialog(QDialog):
             return
         if done is not None:
             done(outcome)
+        self._refresh_controls()
+
+    # -- where the pack will be used -----------------------------------
+
+    def selected_target(self) -> Optional[str]:
+        """Which emulator the user picked, or ``None`` if they have not yet."""
+
+        for value, radio in self._target_radios.items():
+            if radio.isChecked():
+                return value
+        return None
+
+    def _target_picked(self, checked: bool) -> None:
+        """Only the gating changes: the answer writes no different file.
+
+        Exclusive radios emit twice per click -- once for the button leaving
+        the checked state, once for the one entering it -- so only the entering
+        half does anything. There is no re-plan, because the pack is the same
+        bytes under the same names for all three answers.
+        """
+
+        if not checked:
+            return
+        if self._plan is not None:
+            self._fill_table()
         self._refresh_controls()
 
     # -- planning ------------------------------------------------------
@@ -737,6 +958,13 @@ class Ps2ExportDialog(QDialog):
         hint = live_session_hint(self._project_source, len(entries))
         source = getattr(plan, "project_source", "") or "the open project"
         lines = [f"Project: {source}", hint or summary]
+        if self.selected_target() is None:
+            lines.append(
+                "Choose where you will use this pack, below. There is no "
+                "default: the files are the same either way, but PCSX2 changed "
+                "how a texture is identified at v1.7.4034, so the instructions "
+                "are not. Export turns on once you pick one."
+            )
         self.info_label.setText("\n".join(lines))
         self.status_label.setStyleSheet("")
         self._status(hint or summary)
@@ -766,7 +994,7 @@ class Ps2ExportDialog(QDialog):
     # -- exporting -----------------------------------------------------
 
     def _export(self) -> None:
-        if self._busy or self._plan is None:
+        if self._busy or self._plan is None or self.selected_target() is None:
             return
         suggested = suggested_pack_name(getattr(self._plan, "project_source", ""))
         # A folder that does not exist yet cannot be picked with the directory
@@ -781,10 +1009,14 @@ class Ps2ExportDialog(QDialog):
             return
         destination = Path(selected)
         plan = self._plan
+        target = self.selected_target()
+        settings = required_settings(getattr(plan, "provenance", None))
         self._start(
             "Writing the replacement pack",
             "The replacement pack could not be written",
-            lambda _stage: service.run_export(plan, destination),
+            lambda _stage: service.run_export(
+                plan, destination, emulator_target=target, settings=settings,
+            ),
             self._exported,
         )
 
@@ -794,8 +1026,9 @@ class Ps2ExportDialog(QDialog):
         self.receipt_label.setText(
             receipt_summary_text(receipt)
             + "\n\n"
-            + penguinscreen2_instructions(getattr(receipt, "path", Path("")),
-                                          provenance)
+            + penguinscreen2_instructions(
+                getattr(receipt, "path", Path("")), provenance,
+                getattr(receipt, "emulator_target", None))
         )
         self.receipt_label.show()
         self.status_label.setStyleSheet(f"color: {_MATCH_COLOUR};")
@@ -871,10 +1104,12 @@ class Ps2ExportDialog(QDialog):
             busy=self._busy,
             mapped_count=len(getattr(plan, "mapped", ())) if plan else 0,
             exported=self._receipt is not None,
+            target_chosen=self.selected_target() is not None,
         )
         self.project_button.setEnabled(state.can_choose_project)
         self.export_button.setEnabled(state.can_export)
         self.verify_button.setEnabled(state.can_verify)
+        self.target_group.setEnabled(not self._busy)
         self.table.setEnabled(not self._busy)
 
     def done(self, result: int) -> None:
@@ -892,8 +1127,79 @@ class Ps2ExportDialog(QDialog):
         self.status_label.setToolTip(message)
 
 
+def check_target_explanation(argv: Any = None) -> int:
+    """Prove the window still explains the question, and still asks it.
+
+    Run by ``tools/validate_nfl2k5_ps2_replacement_pack.sh`` and its ``.bat``,
+    and by the tests. It builds the real window offscreen rather than reading
+    the constants, because the contract is about what a user can hover over and
+    what a screen reader is told: a constant no widget uses would satisfy a
+    check of the constant and help nobody.
+
+    Checked, in the terms ``docs/product/PS2_M1_PLAN.md`` writes down: every
+    fact in :data:`TARGET_EXPLANATION_REQUIRED_FACTS` still appears in the
+    hover text; every choice carries that text as both tooltip and accessible
+    description; the group explains the question itself; the three choices are
+    the service's three; and nothing is preselected.
+    """
+
+    from PyQt5.QtWidgets import QApplication
+
+    problems = []
+    gaps = target_explanation_gaps()
+    if gaps:
+        problems.append("facts missing from the hover text: " + ", ".join(gaps))
+
+    # Held in a local: a QApplication that is garbage-collected takes the
+    # widget system with it, and constructing a QWidget without one aborts.
+    application = QApplication.instance() or QApplication([])
+    dialog = Ps2ExportDialog(None)
+    application.processEvents()
+    try:
+        offered = tuple(dialog._target_radios)
+        for choice in EMULATOR_TARGET_CHOICES:
+            radio = dialog._target_radios.get(choice.value)
+            if radio is None:
+                problems.append("no radio for " + choice.value)
+                continue
+            if not radio.toolTip().strip():
+                problems.append("no tooltip on " + choice.value)
+            if radio.accessibleDescription() != choice.tooltip:
+                problems.append(
+                    "the accessible description of " + choice.value
+                    + " is not the tooltip"
+                )
+        if not dialog.target_group.toolTip().strip():
+            problems.append("no tooltip on the target group")
+        preselected = dialog.selected_target()
+    finally:
+        dialog.done(0)
+
+    if offered != EMULATOR_TARGET_VALUES:
+        problems.append("the choices offered are " + ", ".join(offered))
+    if preselected is not None:
+        problems.append("an emulator target is preselected: " + preselected)
+    if problems:
+        print(
+            "NFL2K5_PS2_EXPORT_TARGET_EXPLANATION_FAIL " + "; ".join(problems),
+            file=sys.stderr,
+        )
+        return 1
+    print(
+        "NFL2K5_PS2_EXPORT_TARGET_EXPLANATION_PASS choices=%d default=none "
+        "facts=%d" % (len(EMULATOR_TARGET_CHOICES),
+                      len(TARGET_EXPLANATION_REQUIRED_FACTS))
+    )
+    return 0
+
+
 __all__ = [
     "BOUNDARY_NOTE",
+    "EMULATOR_TARGET_CHOICES",
+    "EMULATOR_TARGET_VALUES",
+    "EmulatorTargetChoice",
+    "TARGET_EXPLANATION_REQUIRED_FACTS",
+    "TARGET_GROUP_TOOLTIP",
     "DEFAULT_REQUIRED_SETTINGS",
     "MISSING_MANIFEST_NOTE",
     "PROJECT_FILTER",
@@ -902,12 +1208,20 @@ __all__ = [
     "Ps2ExportActionState",
     "Ps2ExportDialog",
     "live_session_hint",
+    "check_target_explanation",
     "penguinscreen2_instructions",
     "plan_summary_text",
     "ps2_export_action_state",
     "receipt_summary_text",
     "required_settings",
     "status_label",
+    "target_choice",
+    "target_explanation_gaps",
+    "target_explanation_text",
     "suggested_pack_name",
     "verdict_text",
 ]
+
+
+if __name__ == "__main__":  # pragma: no cover - the validator's entry point
+    raise SystemExit(check_target_explanation(sys.argv[1:]))

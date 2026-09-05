@@ -12,8 +12,15 @@ rem naming an unedited target, a filename the manifest does not map, a
 rem missing file, a forged provenance block, a stray directory and an
 rem uncanonical filename are each rejected. It also proves a run without the
 rem project is downgraded rather than passed, because the check that no
-rem exported file names an unedited target cannot run without it. No game
-rem data is required.
+rem exported file names an unedited target cannot run without it, and that a
+rem receipt with no emulator target, an unknown one, or another target's
+rem instructions is rejected. No game data is required.
+rem
+rem It then checks the export window's "Where will you use this pack?"
+rem question: three answers, nothing preselected, and every fact in the dialog
+rem module's TARGET_EXPLANATION_REQUIRED_FACTS still present in the hover text.
+rem That check builds the real window offscreen and so needs PyQt5; where PyQt5
+rem is absent it says so and is skipped.
 
 rem Run from the repository root, two levels up from this script.
 cd /d "%~dp0.."
@@ -37,5 +44,13 @@ if not defined PY_CMD (
 %PY_CMD% -m py_compile mod_editor\core\ps2_export_service.py tools\nfl2k5_ps2_replacement_pack_verify.py tools\nfl2k5_ps2_replacement_pack_audit.py || exit /b 1
 %PY_CMD% tools\nfl2k5_ps2_replacement_pack_verify.py --selftest || exit /b 1
 
-echo NFL2K5_PS2_REPLACEMENT_PACK_VALIDATION_PASS
+set "QT_QPA_PLATFORM=offscreen"
+%PY_CMD% -c "import PyQt5" >nul 2>nul
+if errorlevel 1 (
+    echo NFL2K5_PS2_EXPORT_TARGET_EXPLANATION_SKIPPED pyqt5=absent
+) else (
+    %PY_CMD% -m mod_editor.gui.ps2_export_dialog_qt || exit /b 1
+)
+
+echo NFL2K5_PS2_REPLACEMENT_PACK_VALIDATION_PASS targets=penguinscreen2_classic,pcsx2_modern,pcsx2_legacy
 exit /b 0
