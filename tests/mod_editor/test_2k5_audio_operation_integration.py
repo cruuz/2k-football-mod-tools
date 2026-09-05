@@ -640,9 +640,11 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
             self.application.processEvents()
 
             # The new source refresh includes an asynchronous read of the
-            # selected physical set's facemask/turtleneck record. It must be
-            # queued only after the source worker releases the blocking shell.
-            self.assertEqual(len(tasks), 2)
+            # selected physical set's facemask/turtleneck record, and (since the
+            # open-disc hook) one read-only inspection of the disc for the Build /
+            # Game Fixes / Position names pages. Both must be queued only after
+            # the source worker releases the blocking shell.
+            self.assertEqual(len(tasks), 3)
             self.assertFalse(self.window._blocking)
             self.assertEqual(self.deferred_audio_reset_states, [False])
             self.assertEqual(self.deferred_crib_refresh_states, [False])
