@@ -15,9 +15,21 @@
   shape of the PS2 save and disc windows: lists the project's edited uniform targets as mapped /
   unmapped / ambiguous and exports the mapped ones into a fresh folder with a receipt.
   Independent verifier `tools/nfl2k5_ps2_replacement_pack_verify.py` plus
-  `tools/validate_nfl2k5_ps2_replacement_pack.sh/.bat`. Correct rendering needs PenguinScreen2 /
-  PCSX2 with `LoadTextureReplacements=true` and `ClassicTextureNames=true`; the receipt carries
-  the warning. **Witnessed 2026-09-05** on PenguinScreen2 build `8226182a` by GS-dump replay of a
+  `tools/validate_nfl2k5_ps2_replacement_pack.sh/.bat`.
+- **The window asks where the pack will be used, and there is no default.** The files are the
+  same bytes for every answer -- one spelling of a GS identity -- but what an emulator does with
+  them is not, so the answer is recorded in the receipt and decides the instructions the window
+  and the receipt give. PenguinScreen2 with `ClassicTextureNames=true` (recommended, and the only
+  build these packs have been *witnessed* on) restores the whole-texture hashing this studio's
+  filenames were computed with, so every file is looked up whatever the game does with the
+  texture; stock PCSX2 -- v1.7.4034 and later, including every 2.x -- needs only
+  `LoadTextureReplacements=true`, because from that build it hashes just a texture's clamped draw
+  region: measured across the rig's 60 dumps, 584 distinct identities fall in that class and
+  **none of this studio's texture names is among them**, and three stock builds (v2.7.469,
+  v2.6.0, v2.9.30) loaded the pack with identical pixel counts. A user is never told to turn on a
+  setting their build does not have, the tooltips carry the whole explanation (and the same words
+  as their accessible descriptions), and the verifier fails a pack whose instructions belong to a
+  different emulator than the one it names. **Witnessed 2026-09-05** on PenguinScreen2 build `8226182a` by GS-dump replay of a
   gameplay dump: a 13-file pack exported by this service rendered in place of the disc's art (ESPN
   shield, scorebug and kick-meter dial visibly replaced against a reference frame from the same dump; uniform parts —
   torso, sleeves, pants, gloves, head/hair — witnessed on two player-filling dumps against an empty-pack control; the

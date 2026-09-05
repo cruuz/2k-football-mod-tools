@@ -1308,3 +1308,39 @@ fit the pool's 13,238 UTF-16 bytes (the built-in list uses all of them; shorter 
 surname equal to the retail one at its index keeps its call-out, any other surname is announced by
 number; the build receipt lists every slot as kept or replaced. Unwitnessed in game: please report
 whether a drafted Smith is called by name and a drafted Diggs by number.
+
+## ★ PCSX2 replacement pack — your uniform edits, on the PS2 game (RC85)
+
+Your project's **edited** uniform textures can be exported as a texture-replacement
+pack for the PlayStation 2 release, which you then load in an emulator. Nothing is
+written into any disc image, and nothing is ever exported for a texture you have not
+edited, so no retail art leaves your copy.
+
+Open your project, then **File → Export PS2 replacement pack…** (or start the studio
+with `--ps2-export`). The window lists each edited uniform target as *Will export*,
+*Skipped* or *Ambiguous*, you choose an output folder, and Export writes the files
+plus a receipt describing exactly what was written.
+
+**It asks where you will use the pack, and it does not guess.** Export stays disabled
+until you answer. The files are the same either way — the answer only decides what you
+are told to turn on, because the emulators differ:
+
+- **PenguinScreen2 with Classic Texture Names on** — recommended, and the only
+  emulator these packs have actually been *witnessed* rendering on. Turn on
+  `ClassicTextureNames=true` and `LoadTextureReplacements=true`. Every file in the
+  pack is looked up whatever the game does with the texture.
+- **PCSX2 1.7.4034 or newer, including 2.x** — turn on `LoadTextureReplacements=true`
+  and nothing else; there is no Classic Texture Names setting in stock PCSX2, so do not
+  go hunting for one. From that build PCSX2 identifies a texture by hashing only the
+  part of it the game draws, which in principle can skip a pack file. Measured across
+  60 dumps from the test rig, 584 identities fall in that class and none of this
+  studio's texture names is among them, and three stock builds loaded the pack with
+  identical pixel counts.
+- **PCSX2 older than 1.7.4034** — `LoadTextureReplacements=true` only. These builds
+  hash the whole texture, which is how the filenames were computed.
+
+If the art still looks like the retail game, the setting is almost always the reason:
+with texture replacement off, the pack loads nothing and looks like it did nothing.
+The exported receipt repeats the steps for the emulator you chose, and
+`tools/nfl2k5_ps2_replacement_pack_verify.py` re-checks a finished pack — including
+that its instructions match the emulator it says it is for.
