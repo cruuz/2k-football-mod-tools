@@ -853,11 +853,405 @@ class RosterTab(LaneTab):
         self.editor_target_changed(self._current)
 
 
+# --------------------------------------------------------------------------
+# Playbooks
+# --------------------------------------------------------------------------
+
+def _xbox_designers():
+    """The Xbox lane's formation and play designers, when this build ships them.
+
+    Both take a parsed book and its body and hand back the same mapping the
+    PS2 recipe schema accepts, so they are reused as they are.  A build
+    without them falls back to the bounded editors below.
+    """
+    try:
+        from mod_editor.gui.play_designer_qt import FormationDesignerDialog, PlayDesignerDialog
+    except Exception:
+        return None, None
+    return FormationDesignerDialog, PlayDesignerDialog
+
+
+class _FormationTableDialog(QDialog):
+    """Bounded fallback: donor formation, custom name, 11 slot positions in centimetres."""
+
+    def __init__(self, book: Any, body: bytes, formation_index: int, parent: Optional[QWidget] = None) -> None:
+        super().__init__(parent)
+        self.setWindowTitle("Create a formation (clone and place)")
+        self.setAccessibleName("Create a formation")
+        self.result_payload: Optional[dict] = None
+        layout = QVBoxLayout(self)
+        form = QFormLayout()
+        self.name_edit = QLineEdit()
+        self.name_edit.setMaxLength(MAX_CUSTOM_NAME_CHARS)
+        self.name_edit.setPlaceholderText(f"printable ASCII, up to {MAX_CUSTOM_NAME_CHARS}; blank keeps the donor's name")
+        self.name_edit.setAccessibleName("Formation name")
+        form.addRow("Name", self.name_edit)
+        layout.addLayout(form)
+        self.table = QTableWidget(11, 3)
+        self.table.setHorizontalHeaderLabels(("Slot", "X (cm, + right)", "Depth (cm, − behind the line)"))
+        self.table.verticalHeader().setVisible(False)
+        self.table.setAccessibleName("Slot positions")
+        self.table.setAccessibleDescription("Eleven slots, each an x and a depth in signed centimetres.")
+        positions = self._donor_positions(body, formation_index)
+        for slot in range(11):
+            self.table.setItem(slot, 0, QTableWidgetItem(str(slot)))
+            for column, value in ((1, positions[slot][0]), (2, positions[slot][1])):
+                spin = QSpinBox()
+                spin.setRange(-6000, 6000)
+                spin.setValue(int(value))
+                spin.setAccessibleName(f"Slot {slot} {'x' if column == 1 else 'depth'} in centimetres")
+                self.table.setCellWidget(slot, column, spin)
+        layout.addWidget(self.table, 1)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.button(QDialogButtonBox.Ok).setText("Stage formation")
+        buttons.accepted.connect(self._accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    @staticmethod
+    def _donor_positions(body: bytes, formation_index: int) -> List[List[int]]:
+        try:
+            from mod_editor.core import nfl2k5_play_codec as codec
+            from mod_editor.core.nfl2k5_playbook_inspector import FORMATION_BASE, FORMATION_SIZE
+
+            offset = FORMATION_BASE + formation_index * FORMATION_SIZE
+            record = codec.FormationRecord.from_bytes(body[offset:offset + FORMATION_SIZE])
+            return [[int(slot.x[0]), int(slot.z[0])] for slot in record.slots]
+        except Exception:
+            return [[(slot - 5) * 120, 0] for slot in range(11)]
+
+    def _accept(self) -> None:
+        self.result_payload = {
+            "custom_name": self.name_edit.text().strip() or None,
+            "slot_positions": [[int(self.table.cellWidget(slot, 1).value()),
+                                int(self.table.cellWidget(slot, 2).value())] for slot in range(11)],
+            "category_index": None,
+        }
+        self.accept()
+
+
+class PlaybooksTab(LaneTab):
+    COLUMNS = (
+        ("Book", lambda t: t.label),
+        ("Formations", lambda t: f"{t.data.get('formations', 0)}/50"),
+        ("Plays", lambda t: f"{t.data.get('plays', 0)}/270"),
+        ("Nodes", lambda t: f"{t.data.get('nodes', 0):,}"),
+        ("Headroom", lambda t: f"{t.data.get('formation_headroom', 0)} f · {t.data.get('play_headroom', 0)} p"
+         + (" · AT THE PLAY CAP" if t.data.get("at_play_capacity") else "")),
+    )
+
+    def _build_editor(self, form: QFormLayout) -> None:
+        self._pending: Dict[str, List[dict]] = {"formations": [], "plays": [], "links": []}
+        self._book: Any = None
+        self._body: Optional[bytes] = None
+        self.donor_formation = QComboBox()
+        self.donor_formation.setAccessibleName("Donor formation")
+        self.donor_play = QComboBox()
+        self.donor_play.setAccessibleName("Donor play")
+        form.addRow("Donor formation", self.donor_formation)
+        form.addRow("Donor play", self.donor_play)
+        buttons = QHBoxLayout()
+        self.formation_button = QPushButton("Add formation…")
+        self.formation_button.setAccessibleName("Design a formation cloned from the donor")
+        self.play_button = QPushButton("Add play…")
+        self.play_button.setAccessibleName("Design a play cloned from the donor")
+        self.link_button = QPushButton("Add link…")
+        self.link_button.setAccessibleName("Link a formation to a play by index")
+        buttons.addWidget(self.formation_button)
+        buttons.addWidget(self.play_button)
+        buttons.addWidget(self.link_button)
+        holder = QWidget()
+        holder.setLayout(buttons)
+        form.addRow("Create", holder)
+        self.pending_list = QListWidget()
+        self.pending_list.setAccessibleName("Items to write into this book")
+        self.pending_list.setMaximumHeight(110)
+        form.addRow("For this book", self.pending_list)
+        self.pending_clear = QPushButton("Discard these items")
+        self.pending_clear.setAccessibleName("Discard the items designed for this book")
+        form.addRow("", self.pending_clear)
+        self.designer_note = QLabel("")
+        self.designer_note.setWordWrap(True)
+        self.designer_note.setObjectName("mutedLabel")
+        form.addRow("", self.designer_note)
+        self.formation_button.clicked.connect(self._add_formation)
+        self.play_button.clicked.connect(self._add_play)
+        self.link_button.clicked.connect(self._add_link)
+        self.pending_clear.clicked.connect(self._discard_pending)
+        formation_designer, play_designer = _xbox_designers()
+        self.designer_note.setText(
+            "Formations and plays are designed with the studio's own Play Designer, on this book read from your disc."
+            if formation_designer is not None else
+            "The Play Designer is not in this build; formations are placed from an 11-slot table and plays are clones of a donor.")
+
+    def editor_values(self) -> dict:
+        return {key: list(items) for key, items in self._pending.items() if items}
+
+    def editor_target_changed(self, target: Optional[Target]) -> None:
+        self._pending = {"formations": [], "plays": [], "links": []}
+        self.pending_list.clear()
+        self.donor_formation.clear()
+        self.donor_play.clear()
+        self._book, self._body = None, None
+        if target is None or self.host.source_path is None:
+            return
+        try:
+            self._book, self._body = self.lane.read_book(self.host.source_path, target.key)
+        except ValidationError as exc:
+            self.refusal_label.setText(str(exc))
+            return
+        for formation in self._book.formations:
+            self.donor_formation.addItem(f"{formation.index}: {formation.name}", formation.index)
+        for play in self._book.plays:
+            self.donor_play.addItem(f"{play.index}: {play.name}", play.index)
+
+    def editor_reset(self) -> None:
+        self.editor_target_changed(self._current)
+
+    def _pending_changed(self) -> None:
+        self.pending_list.clear()
+        for key, items in self._pending.items():
+            for item in items:
+                if key == "links":
+                    text = f"link formation {item['formation_index']} → play {item['play_index']}"
+                else:
+                    text = f"{key[:-1]} from donor {item.get('donor_formation_index', item.get('donor_play_index'))}" \
+                           f"{' named ' + repr(item['custom_name']) if item.get('custom_name') else ''}"
+                self.pending_list.addItem(QListWidgetItem(text))
+        self.schedule_validate()
+
+    def _discard_pending(self) -> None:
+        self._pending = {"formations": [], "plays": [], "links": []}
+        self._pending_changed()
+
+    def _add_formation(self) -> None:
+        if self._book is None or self._body is None or self.donor_formation.currentData() is None:
+            return
+        donor = int(self.donor_formation.currentData())
+        formation_designer, _play_designer = _xbox_designers()
+        dialog_class = formation_designer or _FormationTableDialog
+        dialog = dialog_class(self._book, self._body, donor, self)
+        if dialog.exec_() == QDialog.Accepted and dialog.result_payload:
+            payload = dict(dialog.result_payload)
+            payload["donor_formation_index"] = donor
+            self._pending["formations"].append(payload)
+            self._pending_changed()
+
+    def _add_play(self) -> None:
+        if self._book is None or self._body is None or self.donor_play.currentData() is None:
+            return
+        donor = int(self.donor_play.currentData())
+        _formation_designer, play_designer = _xbox_designers()
+        if play_designer is None or self.donor_formation.currentData() is None:
+            name, ok = _ask_name(self, "Name the cloned play")
+            if not ok:
+                return
+            self._pending["plays"].append({"donor_play_index": donor, "custom_name": name or None})
+        else:
+            formation = int(self.donor_formation.currentData())
+            dialog = play_designer(self._book, self._body, formation, donor, parent=self)
+            if dialog.exec_() != QDialog.Accepted or not dialog.result_payload:
+                return
+            payload = dict(dialog.result_payload)
+            link = payload.pop("link", False)
+            payload["donor_play_index"] = donor
+            self._pending["plays"].append({k: v for k, v in payload.items() if v is not None or k == "custom_name"})
+            if link:
+                # New plays are appended in order, so this play's index is the
+                # book's play count plus its place among the pending additions.
+                new_index = len(self._book.plays) + len(self._pending["plays"]) - 1
+                self._pending["links"].append({"formation_index": formation, "play_index": new_index})
+        self._pending_changed()
+
+    def _add_link(self) -> None:
+        if self._book is None:
+            return
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Link a formation to a play")
+        form = QFormLayout(dialog)
+        formation_spin = QSpinBox()
+        formation_spin.setRange(0, 49)
+        formation_spin.setAccessibleName("Formation index")
+        play_spin = QSpinBox()
+        play_spin.setRange(0, 269)
+        play_spin.setAccessibleName("Play index")
+        form.addRow("Formation index", formation_spin)
+        form.addRow("Play index", play_spin)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        form.addRow(buttons)
+        if dialog.exec_() == QDialog.Accepted:
+            self._pending["links"].append({"formation_index": int(formation_spin.value()),
+                                           "play_index": int(play_spin.value())})
+            self._pending_changed()
+
+
+def _ask_name(parent: QWidget, title: str) -> "tuple[str, bool]":
+    dialog = QDialog(parent)
+    dialog.setWindowTitle(title)
+    form = QFormLayout(dialog)
+    edit = QLineEdit()
+    edit.setMaxLength(MAX_CUSTOM_NAME_CHARS)
+    edit.setPlaceholderText("printable ASCII, blank keeps the donor's name")
+    edit.setAccessibleName("Custom name")
+    form.addRow("Name", edit)
+    buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+    buttons.accepted.connect(dialog.accept)
+    buttons.rejected.connect(dialog.reject)
+    form.addRow(buttons)
+    accepted = dialog.exec_() == QDialog.Accepted
+    return edit.text().strip(), accepted
+
+
+# --------------------------------------------------------------------------
+# Stadium
+# --------------------------------------------------------------------------
+
+class StadiumTab(LaneTab):
+    COLUMNS = (
+        ("Lane", lambda t: t.label),
+        ("Vertices", lambda t: str(t.data.get("position", {}).get("vertex_count", ""))),
+        ("Shares span with", lambda t: str(int(t.data.get("payload_span_target_count", 1)) - 1) + " other"
+         if int(t.data.get("payload_span_target_count", 1)) > 1 else "—"),
+        ("Target id", lambda t: t.key),
+    )
+
+    def _build_editor(self, form: QFormLayout) -> None:
+        self.offsets: Dict[str, QDoubleSpinBox] = {}
+        for axis, label in (("dx", "Move x by"), ("dy", "Move y by"), ("dz", "Move z by")):
+            spin = QDoubleSpinBox()
+            spin.setRange(-100000.0, 100000.0)
+            spin.setDecimals(3)
+            spin.setSingleStep(10.0)
+            spin.setAccessibleName(f"{label} (scene units)")
+            spin.setAccessibleDescription(
+                "Added to every vertex of the lane; the result is rounded to the nearest binary32.")
+            spin.valueChanged.connect(lambda _v: self.schedule_validate())
+            form.addRow(label, spin)
+            self.offsets[axis] = spin
+        note = QLabel("Whether the recompressed scene fits its fixed span is decided during the build.")
+        note.setWordWrap(True)
+        note.setObjectName("mutedLabel")
+        form.addRow("", note)
+
+    def editor_values(self) -> dict:
+        values: Dict[str, Any] = {axis: float(spin.value()) for axis, spin in self.offsets.items()}
+        if self._current is not None:
+            values["_row"] = self._current.data
+        return values
+
+    def editor_target_changed(self, target: Optional[Target]) -> None:
+        for spin in self.offsets.values():
+            spin.blockSignals(True)
+            spin.setValue(0.0)
+            spin.blockSignals(False)
+
+    def editor_reset(self) -> None:
+        self.editor_target_changed(self._current)
+
+    def preview_text(self) -> str:
+        # Composing a stadium recipe decodes the whole scene; the preview shows
+        # the offsets instead and the exact recipe is built at Check.
+        if not self._staged:
+            return ""
+        lines = [f"schema: {self.lane.recipe_schema}", f"catalog: pinned to the {self._scope} catalogue's digest"]
+        for edit in self._staged:
+            values = edit.values
+            lines.append(f"{edit.target_key}: every vertex moved by "
+                         f"({values.get('dx', 0)}, {values.get('dy', 0)}, {values.get('dz', 0)})")
+        return "\n".join(lines)
+
+
+# --------------------------------------------------------------------------
+# Audio
+# --------------------------------------------------------------------------
+
+class AudioTab(LaneTab):
+    COLUMNS = (
+        ("Sound", lambda t: t.label),
+        ("Channels", lambda t: "stereo" if int(t.data.get("channels", 1)) == 2 else "mono"),
+        ("Rate", lambda t: f"{t.data.get('sample_rate', '')} Hz"),
+        ("Capacity", lambda t: f"{int(t.data.get('max_frames', 0)) / max(1, int(t.data.get('sample_rate', 1))):.2f} s"),
+        ("Name unique", lambda t: "yes" if t.data.get("unique_name") else "no (shared)"),
+        ("Slot id", lambda t: t.key),
+    )
+
+    def _build_editor(self, form: QFormLayout) -> None:
+        row = QHBoxLayout()
+        self.wav_edit = QLineEdit()
+        self.wav_edit.setPlaceholderText("a strict 16-bit PCM WAV: fmt and data chunks only")
+        self.wav_edit.setAccessibleName("Replacement WAV file")
+        self.wav_edit.setAccessibleDescription(
+            "16-bit PCM RIFF/WAVE with the slot's channel count; another sample rate is resampled to the slot's.")
+        self.wav_edit.textChanged.connect(lambda _t: self._wav_changed())
+        self.browse_button = QPushButton("Browse…")
+        self.browse_button.setAccessibleName("Choose a WAV file")
+        self.browse_button.clicked.connect(self._browse)
+        row.addWidget(self.wav_edit, 1)
+        row.addWidget(self.browse_button)
+        holder = QWidget()
+        holder.setLayout(row)
+        form.addRow("WAV", holder)
+        self.fit_label = QLabel("")
+        self.fit_label.setWordWrap(True)
+        self.fit_label.setAccessibleName("How the WAV fits the slot")
+        form.addRow("Fit", self.fit_label)
+
+    def editor_values(self) -> dict:
+        return {"wav": self.wav_edit.text().strip() or None}
+
+    def editor_target_changed(self, target: Optional[Target]) -> None:
+        self._wav_changed()
+
+    def editor_reset(self) -> None:
+        self.wav_edit.blockSignals(True)
+        self.wav_edit.clear()
+        self.wav_edit.blockSignals(False)
+        self._wav_changed()
+
+    def _browse(self) -> None:
+        selected, _filter = QFileDialog.getOpenFileName(self, "Choose a replacement WAV", str(Path.home()),
+                                                        self.host.WAV_FILTER)
+        if selected:
+            self.wav_edit.setText(selected)
+
+    def _wav_changed(self) -> None:
+        target = self._current
+        text = self.wav_edit.text().strip()
+        if target is None or not text:
+            self.fit_label.setText("")
+        else:
+            try:
+                info = self.lane.describe_wav(target, Path(text))
+            except ValidationError as exc:
+                self.fit_label.setStyleSheet(f"color: {_INVALID_COLOUR};")
+                self.fit_label.setText(str(exc))
+            else:
+                resampled = f" (resampled from {info['rate']} Hz)" if info["resampled"] else ""
+                self.fit_label.setStyleSheet("" if info["fits"] else f"color: {_INVALID_COLOUR};")
+                self.fit_label.setText(
+                    f"Your WAV: {info['seconds']:.2f} s of {info['capacity_seconds']:.2f} s "
+                    f"({info['frames']:,} of {target.data.get('max_frames'):,} frames at "
+                    f"{target.data.get('sample_rate')} Hz){resampled}"
+                    + ("" if info["fits"] else " — too long for this slot"))
+        self.schedule_validate()
+
+
+_MORE_TABS: Dict[str, type] = {"playbooks": PlaybooksTab, "stadium": StadiumTab, "audio": AudioTab}
+
+
 def make_lane_tab(window: Any, lane: Any) -> LaneTab:
-    """The tab class for a lane id; the remaining lanes land in the second half of this module."""
+    """The tab class for a lane id."""
     classes: Dict[str, type] = {"text": TextTab, "colors": ColoursTab, "roster": RosterTab}
-    classes.update(globals().get("_MORE_TABS", {}))
+    classes.update(_MORE_TABS)
     try:
         return classes[lane.id](window, lane)
     except KeyError as exc:
         raise ValidationError(f"No tab is available for the {lane.title} lane in this build.") from exc
+
+
+__all__ = [
+    "AudioTab", "ColoursTab", "LaneTab", "PlaybooksTab", "RosterTab", "StadiumTab", "TargetTableModel",
+    "TextTab", "make_lane_tab",
+]
