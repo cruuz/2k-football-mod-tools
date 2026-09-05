@@ -1,0 +1,499 @@
+{
+  "blast_radius": {
+    "copies_per_team": 3,
+    "copies_written_per_team": 2,
+    "db_teams_members_total": 235,
+    "db_teams_members_with_a_team_table": 235,
+    "db_teams_team_rows_per_member": {
+      "0": 1,
+      "1": 234
+    },
+    "per_team": [
+      {
+        "db_teams_member": 0,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 106,
+        "team_id": 1,
+        "template_identity_identical": true,
+        "template_member_1_record": 0
+      },
+      {
+        "db_teams_member": 1,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 107,
+        "team_id": 2,
+        "template_identity_identical": true,
+        "template_member_1_record": 1
+      },
+      {
+        "db_teams_member": 2,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 108,
+        "team_id": 3,
+        "template_identity_identical": true,
+        "template_member_1_record": 2
+      },
+      {
+        "db_teams_member": 3,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 0,
+        "team_id": 4,
+        "template_identity_identical": true,
+        "template_member_1_record": 3
+      },
+      {
+        "db_teams_member": 4,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 14,
+        "team_id": 5,
+        "template_identity_identical": true,
+        "template_member_1_record": 4
+      },
+      {
+        "db_teams_member": 5,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 15,
+        "team_id": 6,
+        "template_identity_identical": true,
+        "template_member_1_record": 5
+      },
+      {
+        "db_teams_member": 6,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 16,
+        "team_id": 7,
+        "template_identity_identical": true,
+        "template_member_1_record": 6
+      },
+      {
+        "db_teams_member": 7,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 17,
+        "team_id": 8,
+        "template_identity_identical": true,
+        "template_member_1_record": 7
+      },
+      {
+        "db_teams_member": 8,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 18,
+        "team_id": 9,
+        "template_identity_identical": true,
+        "template_member_1_record": 8
+      },
+      {
+        "db_teams_member": 9,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 19,
+        "team_id": 10,
+        "template_identity_identical": true,
+        "template_member_1_record": 9
+      },
+      {
+        "db_teams_member": 10,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 20,
+        "team_id": 11,
+        "template_identity_identical": true,
+        "template_member_1_record": 10
+      },
+      {
+        "db_teams_member": 11,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 21,
+        "team_id": 12,
+        "template_identity_identical": true,
+        "template_member_1_record": 11
+      },
+      {
+        "db_teams_member": 12,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 22,
+        "team_id": 13,
+        "template_identity_identical": true,
+        "template_member_1_record": 12
+      },
+      {
+        "db_teams_member": 13,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 23,
+        "team_id": 14,
+        "template_identity_identical": true,
+        "template_member_1_record": 13
+      },
+      {
+        "db_teams_member": 14,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 24,
+        "team_id": 15,
+        "template_identity_identical": true,
+        "template_member_1_record": 14
+      },
+      {
+        "db_teams_member": 15,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 25,
+        "team_id": 16,
+        "template_identity_identical": true,
+        "template_member_1_record": 15
+      },
+      {
+        "db_teams_member": 16,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 26,
+        "team_id": 17,
+        "template_identity_identical": true,
+        "template_member_1_record": 16
+      },
+      {
+        "db_teams_member": 17,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 27,
+        "team_id": 18,
+        "template_identity_identical": true,
+        "template_member_1_record": 17
+      },
+      {
+        "db_teams_member": 18,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 174,
+        "team_id": 19,
+        "template_identity_identical": true,
+        "template_member_1_record": 18
+      },
+      {
+        "db_teams_member": 19,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 175,
+        "team_id": 20,
+        "template_identity_identical": true,
+        "template_member_1_record": 19
+      },
+      {
+        "db_teams_member": 20,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 176,
+        "team_id": 21,
+        "template_identity_identical": true,
+        "template_member_1_record": 20
+      },
+      {
+        "db_teams_member": 21,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 177,
+        "team_id": 22,
+        "template_identity_identical": true,
+        "template_member_1_record": 21
+      },
+      {
+        "db_teams_member": 22,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 178,
+        "team_id": 23,
+        "template_identity_identical": true,
+        "template_member_1_record": 22
+      },
+      {
+        "db_teams_member": 23,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 179,
+        "team_id": 24,
+        "template_identity_identical": true,
+        "template_member_1_record": 23
+      },
+      {
+        "db_teams_member": 24,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 180,
+        "team_id": 25,
+        "template_identity_identical": true,
+        "template_member_1_record": 24
+      },
+      {
+        "db_teams_member": 25,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 181,
+        "team_id": 26,
+        "template_identity_identical": true,
+        "template_member_1_record": 25
+      },
+      {
+        "db_teams_member": 26,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 182,
+        "team_id": 27,
+        "template_identity_identical": true,
+        "template_member_1_record": 26
+      },
+      {
+        "db_teams_member": 27,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 183,
+        "team_id": 28,
+        "template_identity_identical": true,
+        "template_member_1_record": 27
+      },
+      {
+        "db_teams_member": 28,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 184,
+        "team_id": 29,
+        "template_identity_identical": true,
+        "template_member_1_record": 28
+      },
+      {
+        "db_teams_member": 29,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 185,
+        "team_id": 30,
+        "template_identity_identical": true,
+        "template_member_1_record": 29
+      },
+      {
+        "db_teams_member": 30,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 186,
+        "team_id": 31,
+        "template_identity_identical": true,
+        "template_member_1_record": 30
+      },
+      {
+        "db_teams_member": 31,
+        "db_teams_record": 0,
+        "strmdata_identity_identical": true,
+        "strmdata_record": 187,
+        "team_id": 32,
+        "template_identity_identical": true,
+        "template_member_1_record": 31
+      }
+    ],
+    "strmdata_identity_identical_to_anchor": 32,
+    "strmdata_rows_in_team_id_order": false,
+    "strmdata_team_rows": 234,
+    "teams": 32,
+    "template_dat_member_1_team_rows": 33,
+    "template_dat_other_team_tables": [
+      {
+        "carries_an_nfl_team_id": false,
+        "fields": 70,
+        "member": 2,
+        "record_bytes": 128,
+        "records": 185
+      },
+      {
+        "carries_an_nfl_team_id": false,
+        "fields": 68,
+        "member": 3,
+        "record_bytes": 128,
+        "records": 194
+      },
+      {
+        "carries_an_nfl_team_id": false,
+        "fields": 128,
+        "member": 4,
+        "record_bytes": 180,
+        "records": 194
+      }
+    ],
+    "template_dat_reason": "named in /DATA/FE.QKL, the preload cache",
+    "template_dat_written": false,
+    "template_identity_identical_to_anchor": 32
+  },
+  "catalogue": {
+    "copies_written_per_build": 64,
+    "stream_rows": 234,
+    "teams_listed": 32
+  },
+  "disc": {
+    "content_sha256": "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+    "executable_sha256": "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+    "image_bytes": 1657339904,
+    "serial": "SLUS-21770"
+  },
+  "instrument": "mod_editor/games/madden09_ps2/identity_lane.py, read-only over the owner's own image; the build wrote a NEW image which was deleted after the verifier passed.",
+  "real_disc_trial": {
+    "adversarial": [
+      {
+        "flip": "one byte outside every declared range",
+        "result": "refused: no declared range covers it"
+      },
+      {
+        "flip": "one byte inside a declared ISO range",
+        "result": "refused: the file's bytes no longer hash to what the receipt declared"
+      }
+    ],
+    "bytes_declared": 7746536,
+    "checksum_slots_correct": 470,
+    "copies_not_written": [],
+    "databases_reparsed": 2,
+    "databases_written": [
+      {
+        "bytes": 21744,
+        "destination_sha256": "30b82fe32acf4dcbda53d6271f8fcf3cb558803cd85acc321c7be4f039129be3",
+        "iso_path": "/DATA/DB_TEAMS.DAT",
+        "member": 0,
+        "source_sha256": "4a7b4702e9a8d75a7185cd2899c78d0df4511e6341e59aaf9e72873d6c0b2ed3"
+      },
+      {
+        "bytes": 5160728,
+        "destination_sha256": "db4e28b6243b97747d4901a77c2344fa7131394baa394ba89dde4ed52666eb63",
+        "iso_path": "/DATA/STRMDATA.DB",
+        "member": null,
+        "source_sha256": "bd25f0b17c46f64fcba24c6f4b43dc28b8a12fb2d79c1a092140052c3a8e866c"
+      }
+    ],
+    "declared_ranges": [
+      {
+        "length": 8,
+        "reason": "dirrec_length:/DATA/DB_TEAMS.DAT",
+        "start": 538410
+      },
+      {
+        "length": 8,
+        "reason": "dirrec_length:/DATA/STRMDATA.DB",
+        "start": 539916
+      },
+      {
+        "length": 5160728,
+        "reason": "extent:/DATA/STRMDATA.DB",
+        "start": 1056499712
+      },
+      {
+        "length": 2585792,
+        "reason": "extent:/DATA/DB_TEAMS.DAT",
+        "start": 1177688064
+      }
+    ],
+    "destination_image_deleted": true,
+    "edit": "one team's TSNA (abbreviation) and its primary colour, on DB_TEAMS.DAT member 0",
+    "iso_entries_compared": 197,
+    "iso_unchanged_bytes_compared": 1649593368,
+    "undeclared_changed_bytes": 0,
+    "values_read_back": 8,
+    "verdict": "identity verifier: PASS \u00b7 8 value(s) read back from the destination \u00b7 2 database(s) re-parsed with 470 checksum slot(s) all correct \u00b7 0 undeclared changed bytes."
+  },
+  "runtime": "Not tested. No emulator has booted a rebuilt Madden 09 disc. A runtime witness would be the owner opening Team Select and reading the renamed abbreviation, and seeing the recoloured helmet and jersey preview.",
+  "schema": "madden09_ps2_identity_evidence/v1",
+  "team_table": {
+    "edited_fields": {
+      "CYID": {
+        "bits": 8,
+        "role": "city id",
+        "type": "UINT"
+      },
+      "TB2B": {
+        "bits": 8,
+        "role": "secondary colour, blue",
+        "type": "UINT"
+      },
+      "TB2G": {
+        "bits": 8,
+        "role": "secondary colour, green",
+        "type": "UINT"
+      },
+      "TB2R": {
+        "bits": 8,
+        "role": "secondary colour, red",
+        "type": "UINT"
+      },
+      "TBCB": {
+        "bits": 8,
+        "role": "primary colour, blue",
+        "type": "UINT"
+      },
+      "TBCG": {
+        "bits": 8,
+        "role": "primary colour, green",
+        "type": "UINT"
+      },
+      "TBCR": {
+        "bits": 8,
+        "role": "primary colour, red",
+        "type": "UINT"
+      },
+      "TDNA": {
+        "bytes": 17,
+        "characters_offered": 16,
+        "type": "STRING"
+      },
+      "TLNA": {
+        "bytes": 18,
+        "characters_offered": 17,
+        "type": "STRING"
+      },
+      "TMNC": {
+        "bytes": 17,
+        "characters_offered": 16,
+        "type": "STRING"
+      },
+      "TSNA": {
+        "bytes": 7,
+        "characters_offered": 6,
+        "type": "STRING"
+      }
+    },
+    "fields": 65,
+    "name": "TEAM",
+    "read_but_not_edited": [
+      "TCDO",
+      "TCRP",
+      "TGPT",
+      "TCTX",
+      "TGID",
+      "CGID",
+      "DGID",
+      "LGID",
+      "TORD",
+      "DISN"
+    ],
+    "record_bytes": 116,
+    "same_schema_in": "all 235 DB_TEAMS.DAT members and the bare STRMDATA.DB"
+  },
+  "text_members": {
+    "containers": [
+      "OSDKSTRN.DAT",
+      "STORYMSG.DAT",
+      "STRYCPTN.DAT",
+      "STRYEMAL.DAT",
+      "STRYHDLN.DAT",
+      "STRYTEXT.DAT"
+    ],
+    "note": "Six TERF containers larger than the 96 MB reader cap were not scanned; they are the speech, music and movie containers and hold no TEXT bank this instrument could reach.",
+    "scanned": 14748,
+    "with_a_string_five_characters_or_longer": 464,
+    "with_a_team_identity_string": 543,
+    "written_by_this_lane": 0
+  },
+  "what": "Where each of the 32 NFL teams' identity is written on a Madden NFL 09 (USA, SLUS-21770) PlayStation 2 disc, which copies the lane writes, and the offline proof of one real-disc build. Counts, indexes and digests only: no string, name, colour value or byte from the disc is recorded here."
+}
