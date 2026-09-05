@@ -478,8 +478,12 @@ def _write_xbe_bytes(target: Path, payload: bytes) -> None:
             size = os.fstat(fd).st_size
             off, length = tt.image_xbe_extent(fd, size)
             if length != len(payload):
-                raise ValueError("default.xbe size changed")
-            platform_compat.pwrite(fd, payload, off)
+                # the only supported size change is the SPECIAL depth-chart layout; the helper
+                # validates the layout, appends it and repoints the directory (unknown growth is refused)
+                from . import nfl2k5_depth_chart_storage as storage
+                storage.write_image_xbe(fd, payload)
+            else:
+                platform_compat.pwrite(fd, payload, off)
             os.fsync(fd)
         finally:
             os.close(fd)

@@ -73,16 +73,17 @@
   words and the byte ranges it touched. Undo / Redo per action, a dirty marker, and every write goes through
   the core module's writers — no offset lives in the page. Reproduces Finn's IR save byte for byte through the
   UI path; the year rule and the IR move are the witnessed parts, everything else is unwitnessed in game.
-- **SLOT, NICKEL CORNER and DIME CORNER rows on the depth chart, X / Z labels (Experimental).** The executable
-  follow-up to the playbook roles, built by GPT-6 Astra: the depth-chart table is re-laid at thirteen rows per unit
-  instead of eleven (the nine surviving stride multiplies and the row-count callback rewritten in place, the table
-  at .rdata 0x5140D8 re-laid with the specials untouched), the offence gains a SLOT row and both defences gain
-  NICKEL CORNER and DIME CORNER rows that are views onto your receiver and corner lists through the one-pool
-  third-starter cave, LWR / RWR read X / Z, and the duplicate-starter warning keeps to the original eleven rows.
-  Needs the one-pool positions and the playbook roles and switches them on when the disc lacks them; the position
-  modules now read the table stride off the executable so both layouts parse. 840 bytes on a one-pool source, both
-  executable gates, eight composition orders identical. Unwitnessed in game: thirteen rows fitting the screen,
-  moves through the new rows and the franchise auto-depth are the checklist items.
+- **The SPECIAL tab: role depth charts, X / Z labels (Experimental).** Offence and both defences keep their eleven
+  depth-chart rows, with LWR / RWR shown as X and Z, so nothing scrolls off the screen. The Special Teams tab is renamed
+  SPECIAL and now carries thirteen rows: KR, PR, K, P, then SLOT, NICKEL CORNER, DIME CORNER, GADGET, left and right
+  GUNNER, LONG SNAPPER, 3RD DOWN BACK and POWER BACK. These are views onto your existing receiver, corner, back and
+  centre lists (so moving a player into a role can change another row; right gunner and dime corner share a list), and
+  the same build's playbook pass lines those players up on the field: the slot man and the nickel / dime corners inside,
+  the two punt gunners and the long snapper, the third-down back in shotgun and three-receiver sets and the power back in
+  goal-line and short-yardage sets. It replaces the earlier thirteen-row layout that ran off the screen. Because it adds
+  the extra rows without disturbing the retail table, the executable grows by 72 KB (a new read-only data page appended
+  to it, the disc's directory repointed to the larger file); a real build writes and reads it back correctly, but whether
+  the enlarged executable boots is the one thing still unwitnessed. Built by GPT-6 Astra.
 - **Franchise saves, decoded.** The two signed saves on hand turned out to be franchise saves, and so is the one
   pulled out of the emulator's disk image, so the Rosters tab has been opening franchise saves all along; now the
   studio also reads the rest of the file. Beyond the roster arena a franchise save carries a season block (mode,

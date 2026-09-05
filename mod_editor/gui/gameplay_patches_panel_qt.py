@@ -171,12 +171,16 @@ PATCHES = (
      "corners inside (retail already did for 66 of 71 and 36 of 38 sets). Twelve shared groups whose formations "
      "disagree by more than two yards, bunch sets and special teams keep their retail assignments and are listed in "
      "the build report. Changes who lines up, not how they play: Advanced. No new depth-chart rows yet. Unwitnessed in game."),
-    ("depth_chart_rows", "SLOT, NICKEL and DIME rows on the depth chart, X / Z labels (disc images only, experimental)",
-     "Retail: the depth chart lists two receivers (LWR / RWR) and two corners; who plays the slot or the nickel is whoever "
-     "the formation happens to pick. Patch: the offence gets a SLOT row and both defences get NICKEL CORNER and DIME CORNER "
-     "rows (thirteen rows per unit instead of eleven; LWR / RWR become X / Z). The new rows are views onto your receiver "
-     "and corner lists, so moving a player there moves him in that list. Needs the one-pool positions and the X / Z / SLOT "
-     "playbook roles and switches them on when the disc lacks them. Special teams keep KR, PR, K and P. Unwitnessed in game."),
+    ("depth_chart_rows", "SPECIAL tab: role depth charts, X / Z labels (disc images only, experimental)",
+     "Retail: the depth chart lists two receivers (LWR / RWR) and two corners and a four-row Special Teams tab; who plays the "
+     "slot, the nickel or the gadget is whoever the formation happens to pick. Patch: offence and both defences keep their "
+     "eleven rows, with LWR / RWR shown as X / Z, and the Special Teams tab is renamed "
+     "SPECIAL and carries KR, PR, K, P, then SLOT, NICKEL CORNER, DIME CORNER, GADGET, left and right GUNNER, LONG SNAPPER, "
+     "3RD DOWN BACK and POWER BACK. SPECIAL scrolls. These are shared depth lists, so moving a player into one role can "
+     "change another row (right gunner and dime corner share a list). The book pass also lines up those players: the slot "
+     "and nickel / dime men, the punt gunners and long snapper, the 3rd-down back in passing sets and the power back in "
+     "goal-line sets. Needs the one-pool positions and the roles and switches them on when the disc lacks them. This grows "
+     "the executable, so it needs an in-game boot check. Unwitnessed."),
     ("practice_squad", "Practice squads: 53 active + up to 12 reserves in franchise (experimental)",
      "Retail: the season gate cuts every franchise roster to 53 and the rest become free agents. Patch: each team keeps up to "
      "twelve of the players it cuts as team-owned reserves (the same 65-slot roster table; three spare bytes mark the list). "
@@ -236,8 +240,8 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "seven_on_seven": ("7-on-7 practice", "Practice Type 7-On-7 with 7-on-7 sets in the practice playbook.", NOT_TESTED),
     "player_star": ("Show a star under selected players", "Select players under Names, Numbers & Faces; every tagged player on the field gets a white star outline.", NOT_TESTED),
     "depth_roles": ("X / Z / SLOT receivers and nickel / dime corners", "Changes who lines up in every playbook, not how they play.", NOT_TESTED),
-    "depth_chart_rows": ("SLOT, NICKEL and DIME rows on the depth chart",
-                         "Switches on the merged position groups and the playbook roles when the disc lacks them.", NOT_TESTED),
+    "depth_chart_rows": ("SPECIAL tab: role depth charts",
+                         "SLOT, nickel, dime, gadget, gunners, long snapper and 3rd-down / power backs on a renamed SPECIAL tab; offence and defence keep eleven rows.", NOT_TESTED),
     "edge_rename": ("Call defensive ends EDGE", "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.", ""),
     "scheme_labels": ("Use scheme-specific depth-chart names", "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.", ""),
 }

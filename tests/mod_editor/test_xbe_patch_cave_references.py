@@ -146,8 +146,10 @@ class CaveReferenceTests(unittest.TestCase):
         patched, _ = picture.apply(dependency)
         self.assertEqual(picture.status(patched), "applied")
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
+        # the regenerated manifest now observes the playoff presentation itself (it rides the season step);
+        # nothing ELSE may own its sites
         for site in picture.sites():
-            self.assertEqual(manifest.overlaps(site.va, site.va + site.size), [], site.label)
+            self.assertEqual(manifest.overlaps(site.va, site.va + site.size, exclude_owner="nfl2k5_playoff_picture"), [], site.label)
         for start, size in ((picture.TREE_UPDATE_VA, picture.TREE_UPDATE_SIZE),
                             (picture.TREE_SCORES_VA, picture.TREE_SCORES_SIZE)):
             for target, refs in self.targets.items():

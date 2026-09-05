@@ -46,6 +46,7 @@ mod_editor/core/image_fit.py
 mod_editor/core/json_stream.py
 mod_editor/core/nfl2k5_career_stats.py
 mod_editor/core/nfl2k5_depth_chart_rows.py
+mod_editor/core/nfl2k5_depth_chart_storage.py
 mod_editor/core/nfl2k5_depth_roles.py
 mod_editor/core/nfl2k5_dynamic_kickoff.py
 mod_editor/core/nfl2k5_franchise_save.py
@@ -53,6 +54,7 @@ mod_editor/core/nfl2k5_playoff_picture.py
 mod_editor/core/nfl2k5_practice_squad.py
 mod_editor/core/nfl2k5_practice_squad_runtime.py
 mod_editor/core/nfl2k5_save_rost.py
+mod_editor/core/nfl2k5_special_roles.py
 mod_editor/core/texture_master.py
 mod_editor/core/menu_modes.py
 mod_editor/core/model.py
@@ -324,6 +326,7 @@ tools/fatx_dirent_rename.py
 data/playbooks/modern_gun_core.2k5book
 docs/mod_editor/playbook_packs.md
 docs/mod_editor/save_rost_codec.md
+docs/mod_editor/special_roles_audit.json
 mod_editor/core/nfl2k5_playbook_pack.py
 mod_editor/gui/playbook_pack_dialog_qt.py
 mod_editor/gui/task_delivery.py

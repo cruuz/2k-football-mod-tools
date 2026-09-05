@@ -61,6 +61,7 @@ from . import nfl2k5_camera as camera_patch
 from . import nfl2k5_kick_rules as kick_rules_patch
 from . import nfl2k5_dynamic_kickoff as dynamic_kickoff_patch
 from . import nfl2k5_depth_chart_rows as depth_chart_rows_patch
+from . import nfl2k5_depth_chart_storage as depth_chart_storage
 from . import nfl2k5_practice_squad as practice_squad_patch
 from . import nfl2k5_playoff_picture as playoff_picture_patch
 
@@ -659,9 +660,15 @@ def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
         offset, length = xc.xbe_extent(descriptor, size)
     except xc.PatchError as exc:
         raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
-    _require(length == EXPECTED_XBE_SIZE,
-             f"default.xbe inside the image is {length} bytes, not the retail "
-             f"{EXPECTED_XBE_SIZE}")
+    if length != EXPECTED_XBE_SIZE:
+        # the SPECIAL depth-chart rework appends a read-only table page, growing default.xbe to a
+        # single recognised larger size; every other size is refused
+        _require(length == depth_chart_storage.FILE_SIZE,
+                 f"default.xbe inside the image is {length} bytes, not the retail "
+                 f"{EXPECTED_XBE_SIZE} or the SPECIAL layout {depth_chart_storage.FILE_SIZE}")
+        candidate = platform_compat.pread(descriptor, length, offset)
+        _require(len(candidate) == length and depth_chart_rows_patch.status(candidate) == "applied",
+                 "the larger default.xbe is not the recognised SPECIAL depth-chart layout")
     return int(offset), int(length)
 
 
@@ -1040,7 +1047,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (bool(prospect_names), _prospect_names_adapter(prospect_names), "prospect_names_patch", "prospect-names"),
                                      (player_star, player_star_patch, "player_star_patch", "player-star"),
                                      (dynamic_kickoff, _dynamic_kickoff_adapter(dynamic_kickoff_settings), "dynamic_kickoff_patch", "dynamic-kickoff"),
-                                     (depth_chart_rows, depth_chart_rows_patch, "depth_chart_rows_patch", "depth-chart rows"),
+                                     (depth_chart_rows, depth_chart_rows_patch, "depth_chart_rows_patch", "SPECIAL tab"),
                                      (practice_squad, practice_squad_patch, "practice_squad_patch", "practice squad")):
         if not flag:
             continue
@@ -1279,9 +1286,14 @@ def write_image_copy(
                     i = j
                 else:
                     i += 1
-            for a, b in ranges:
-                written = platform_compat.pwrite(dst, patched[a:b], offset + a)
-                _require(written == b - a, "short write while patching the copy")
+            xbe_relocation: dict[str, object] | None = None
+            if len(patched) != len(original):
+                # the SPECIAL rework grows default.xbe: append it and repoint its directory entry
+                xbe_relocation = depth_chart_storage.write_image_xbe(dst, patched)
+            else:
+                for a, b in ranges:
+                    written = platform_compat.pwrite(dst, patched[a:b], offset + a)
+                    _require(written == b - a, "short write while patching the copy")
             disc_receipt: dict[str, object] | None = None
             if edge_rename:
                 report("Renaming Def End players and trivia text in the copy", 0, 0)
@@ -1294,11 +1306,16 @@ def write_image_copy(
     report("Verifying the patched copy", 0, 0)
     check = _open_binary(target, os.O_RDONLY)
     try:
-        _require(os.fstat(check).st_size == size, "copied image has the wrong size")
-        after = platform_compat.pread(check, length, offset)
+        grown = int(xbe_relocation["image_growth"]) if xbe_relocation else 0
+        actual_size = os.fstat(check).st_size
+        _require(actual_size == size + grown, "copied image has the wrong size")
+        after_offset, after_length = image_xbe_extent(check, actual_size)
+        after = platform_compat.pread(check, after_length, after_offset)
     finally:
         os.close(check)
     _require(after == patched, "patched default.xbe read-back differs inside the copy")
+    if xbe_relocation is not None:
+        receipt = {**receipt, "xbe_relocation": xbe_relocation}
     if disc_receipt is not None:
         check = _open_binary(target, os.O_RDONLY)
         try:
