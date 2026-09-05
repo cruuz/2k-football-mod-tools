@@ -158,7 +158,7 @@ PATCHED_REMOVE = bytes.fromhex(
 )
 
 # Context gates cover the native pointer-sort frame and returner/UI call ABI.
-# The whole bench block is accepted as retail or the exact Tier 2 replacement.
+# The whole bench block is pinned by the retail/SPECIAL layout owner.
 SORT_PREFIX_SHA256 = "55a6689d6bccfea9d6aadbf39c3261ae7af8614e8adf309ebff78fca3427a40e"
 FALLBACK_SHA256 = "ab0cf0d699372e7996efaaf7edf988dec7ced0cfd211fcacdf7438e3923934d5"
 
@@ -171,11 +171,12 @@ class Site:
     after: bytes
 
 
-def sites(stride: int = 11) -> tuple[Site, ...]:
-    if stride not in (11, 13):
-        raise DepthLockError("unknown depth-chart stride")
+def sites(layout: str = "retail") -> tuple[Site, ...]:
+    """Both layouts use stride 11; SPECIAL alone uses encoded swap chains."""
+    if layout not in ("retail", "special"):
+        raise DepthLockError("unknown depth-chart layout")
     swap_before, swap_after = bytearray(RETAIL_SWAP), bytearray(PATCHED_SWAP)
-    swap_before[3:5] = swap_after[3:5] = bytes.fromhex("85c0" if stride == 11 else "a801")
+    swap_before[3:5] = swap_after[3:5] = bytes.fromhex("85c0" if layout == "retail" else "a801")
     values = (
         ("compactor", COMPACT_VA, RETAIL_COMPACT, PATCHED_COMPACT),
         ("weekly_rank_stage", RANK_STAGE_VA, RETAIL_RANK_STAGE, PATCHED_RANK_STAGE),
@@ -188,39 +189,43 @@ def sites(stride: int = 11) -> tuple[Site, ...]:
                  for label, va, before, after in values)
 
 
-def _context(payload: bytes) -> tuple[XbeImage, int]:
+def _context(payload: bytes) -> tuple[XbeImage, str]:
     from . import nfl2k5_depth_chart_rows as rows
     image = XbeImage(payload)
-    stride = modern.layout_stride(payload)
+    # Check the complete coordinated layout, including stride, table/storage,
+    # reader pointers, counts, swap test and bench arm. Accepting either bench
+    # arm in isolation would silently accept a partial SPECIAL install.
+    rows_state = rows.status(payload)
+    if rows_state == "foreign":
+        raise DepthLockError("unknown or mixed retail/SPECIAL depth-chart layout")
+    layout = "special" if rows_state == "applied" else "retail"
     if hashlib.sha256(image.read(0x2BDCF0, 0xF0)).hexdigest() != SORT_PREFIX_SHA256:
         raise DepthLockError("unknown native weekly pointer-sort frame")
     if hashlib.sha256(image.read(0x242BB0, 0x4A)).hexdigest() != FALLBACK_SHA256:
         raise DepthLockError("unknown returner fallback ABI")
-    if image.read(rows.BENCH_VA, len(rows.RETAIL_BENCH)) != (
-            rows.RETAIL_BENCH if stride == 11 else rows.bench_bytes()):
-        raise DepthLockError("unknown bench promotion call sites")
     if image.read(returners.SITE_VA, returners.SITE_SIZE) not in (
             returners.RETAIL_SITE, returners.site_bytes()):
         raise DepthLockError("unknown returner selection loop")
-    for site in sites(stride):
+    for site in sites(layout):
         section = image.section(site.va, len(site.before))
         if section is None or section.name != ".text" or section.flags != 0x16:
             raise DepthLockError("expected retail read-only text mapping")
-    return image, stride
+    return image, layout
 
 
 def read_any(payload: bytes) -> dict[str, object]:
     """Describe complete retail/applied/foreign states; partial installs refuse."""
     try:
-        image, stride = _context(payload)
+        image, layout = _context(payload)
         states = {}
-        for site in sites(stride):
+        for site in sites(layout):
             got = image.read(site.va, len(site.before))
             states[site.label] = ("retail" if got == site.before else
                                   "applied" if got == site.after else "foreign")
         unique = set(states.values())
         state = next(iter(unique)) if len(unique) == 1 else "foreign"
-        return {"status": state, "sites": states, "stride": stride}
+        return {"status": state, "sites": states, "stride": modern.SLOTS_PER_UNIT,
+                "layout": layout}
     except (ValueError, struct.error, IndexError) as exc:
         return {"status": "foreign", "reason": str(exc)}
 
@@ -237,11 +242,11 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     if state["status"] == "applied":
         return payload, {"status": "applied", "already_applied": True,
                          "changed_bytes": 0, "edits": [], "sections_repinned": []}
-    image, stride = _context(payload)
+    image, layout = _context(payload)
     buf = bytearray(payload)
     sections = _sections(payload)
     touched, edits = set(), []
-    for site in sites(stride):
+    for site in sites(layout):
         off = image.offset(site.va, len(site.before))
         buf[off:off + len(site.after)] = site.after
         touched.add(_section_for_offset(sections, off).index)
@@ -256,6 +261,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
         raise DepthLockError("depth locks post-apply verification failed")
     return patched, {"status": "applied", "already_applied": False, "edits": edits,
                      "changed_bytes": sum(a != b for a, b in zip(payload, patched)),
-                     "sections_repinned": sorted(touched), "stride": stride,
+                     "sections_repinned": sorted(touched), "stride": modern.SLOTS_PER_UNIT,
+                     "layout": layout,
                      "lock_offset": hex(LOCK_OFFSET), "lock_bits": dict(LOCK_BITS),
                      "new_caves": [], "runtime_globals": [], "runtime_witnessed": False}

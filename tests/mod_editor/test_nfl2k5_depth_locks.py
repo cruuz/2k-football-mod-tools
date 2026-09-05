@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+from functools import lru_cache
 import os
 from pathlib import Path
 import random
@@ -20,10 +21,17 @@ from mod_editor.core import nfl2k5_depth_locks as locks
 from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_returner_fix as returners
 from mod_editor.core import nfl2k5_bump_strength as strength
+from mod_editor.core import nfl2k5_depth_chart_rows as rows
+from mod_editor.core import nfl2k5_modern_positions as modern
+from mod_editor.core import nfl2k5_position_pools as pools
+from mod_editor.core import nfl2k5_franchise_practice as practice
+from mod_editor.core import nfl2k5_practice_squad as squad
+from mod_editor.core import nfl2k5_practice_reserves as reserves
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 
 XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/default.xbe"
 HAVE_CPU = importlib.util.find_spec("unicorn") is not None
+HAVE_DISASM = importlib.util.find_spec("capstone") is not None
 TEAM, PLAYERS, STACK, STOP = 0x2000000, 0x2100000, 0x3008000, 0x3100000
 
 
@@ -40,7 +48,47 @@ def fields(raw):
     return word >> 10 & 7, word >> 13 & 7, raw[0x52]
 
 
+@lru_cache(maxsize=12)
+def composition(special, practice_level, locks_first):
+    """Both lock orders, retail/SPECIAL, and off/squad/squad+reserves."""
+    data = returners.apply(XBE.read_bytes())[0]
+    if locks_first:
+        data = locks.apply(data)[0]
+    if special:
+        for mod in (modern, pools, rows):
+            data = mod.apply(data)[0]
+    if practice_level:
+        data = squad.apply(data)[0]
+    if practice_level == 2:
+        data = practice.apply(data)[0]
+        data = reserves.apply(data)[0]
+    if not locks_first:
+        data = locks.apply(data)[0]
+    return data
+
+
 class RecordTests(unittest.TestCase):
+    @unittest.skipUnless(HAVE_DISASM, "Capstone required for call-site proof")
+    def test_actual_bench_calls_match_compactor_return_pins(self):
+        from capstone import Cs, CS_ARCH_X86, CS_MODE_32
+        from capstone.x86 import X86_OP_IMM
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        md.detail = True
+        pins = set()
+        for arm, expected in ((rows.RETAIL_BENCH, [(0x244452, 0x244457), (0x244471, 0x244476)]),
+                              (rows.bench_bytes(), [(0x24445F, 0x244464)])):
+            calls = [(ins.address, ins.address + ins.size)
+                     for ins in md.disasm(arm, rows.BENCH_VA)
+                     if ins.mnemonic == "call" and ins.operands[0].type == X86_OP_IMM
+                     and ins.operands[0].imm == locks.COMPACT_VA]
+            self.assertEqual(calls, expected)
+            pins.update(ret for _call, ret in calls)
+        comparisons = {ins.operands[1].imm for ins in md.disasm(locks.PATCHED_COMPACT, locks.COMPACT_VA)
+                       if ins.mnemonic == "cmp" and len(ins.operands) == 2
+                       and ins.operands[1].type == X86_OP_IMM
+                       and rows.BENCH_VA <= ins.operands[1].imm < rows.BENCH_END_VA}
+        self.assertEqual(comparisons, pins)
+
     def test_all_lock_combinations_preserve_every_other_bit(self):
         raw = bytes(range(84))
         for initial in range(256):
@@ -128,6 +176,8 @@ class PatchTests(unittest.TestCase):
     def setUpClass(cls):
         cls.retail = XBE.read_bytes()
         cls.patched, cls.receipt = locks.apply(cls.retail)
+        cls.special = rows.apply(pools.apply(modern.apply(cls.retail)[0])[0])[0]
+        cls.special_patched = locks.apply(cls.special)[0]
 
     def test_pins_idempotence_only_owned_writes_and_section_digests(self):
         self.assertEqual(hashlib.sha256(self.retail).hexdigest(), locks.RETAIL_SHA256)
@@ -154,14 +204,16 @@ class PatchTests(unittest.TestCase):
         self.assertEqual(receipt["changed_bytes"], 0)
 
     def test_corruptions_partial_patches_context_and_truncation_refuse(self):
-        for original in (self.retail, self.patched):
-            for site in locks.sites():
+        for original in (self.retail, self.patched, self.special, self.special_patched):
+            for site in locks.sites(locks.read_any(original)["layout"]):
                 for delta in (0, len(site.before) // 2, len(site.before) - 1):
                     broken = bytearray(original)
                     broken[site.va - 0x10000 + delta] ^= 0x40
                     self.assertEqual(locks.status(broken), "foreign", (site.label, delta))
+                    before = bytes(broken)
                     with self.assertRaises(locks.DepthLockError):
                         locks.apply(broken)
+                    self.assertEqual(broken, before)
             for va in (0x2BDCF0, 0x242BB0, 0x244405, returners.SITE_VA):
                 broken = bytearray(original)
                 broken[va - 0x10000] ^= 0x40
@@ -176,6 +228,78 @@ class PatchTests(unittest.TestCase):
         text_section = XbeImage(self.retail).section(locks.COMPACT_VA)
         struct.pack_into("<I", broken, text_section.header, text_section.flags | 1)
         self.assertEqual(locks.status(broken), "foreign")
+
+    def test_layout_recognition_special_ownership_and_idempotence(self):
+        pooled = pools.apply(modern.apply(self.retail)[0])[0]
+        for original, layout in ((self.retail, "retail"), (pooled, "retail"), (self.special, "special")):
+            with self.subTest(layout=layout, pools=pools.status(original)):
+                state = locks.read_any(original)
+                self.assertEqual((state["status"], state["stride"], state["layout"]), ("retail", 11, layout))
+                patched, receipt = locks.apply(original)
+                self.assertEqual(locks.status(patched), "applied")
+                self.assertEqual(locks.read_any(patched)["layout"], layout)
+                self.assertEqual((receipt["stride"], receipt["layout"]), (11, layout))
+                self.assertEqual(len(patched), len(original))
+                self.assertEqual(locks.apply(patched)[0], patched)
+                self.assertTrue(locks.apply(patched)[1]["already_applied"])
+                image = XbeImage(original)
+                allowed = set()
+                for site in locks.sites(layout):
+                    start = image.offset(site.va, len(site.before))
+                    allowed.update(range(start, start + len(site.before)))
+                for section in strength._sections(patched):
+                    self.assertEqual(section.stored_digest, strength.section_digest(patched, section))
+                    if section.index in receipt["sections_repinned"]:
+                        allowed.update(range(section.header_offset + 36, section.header_offset + 56))
+                self.assertTrue(all(i in allowed for i, (a, b) in enumerate(zip(original, patched)) if a != b))
+
+    def test_mixed_layouts_obsolete_stride_and_partial_special_locks_refuse(self):
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        for original in (self.retail, self.patched, self.special, self.special_patched):
+            special = original in (self.special, self.special_patched)
+            changes = [("obsolete_stride", modern.STRIDE_INSTRUCTION_VA, bytes.fromhex("6bc00d")),
+                       ("wrong_bench", rows.BENCH_VA, rows.RETAIL_BENCH if special else rows.bench_bytes()),
+                       ("wrong_swap_chain", rows.SWAP_CHAIN_VA, bytes.fromhex("85c0" if special else "a801")),
+                       ("wrong_table", 0x243AED, b"\x8d\x04\xc5" + struct.pack("<I", rows.RETAIL_TABLE_VA if special else rows.TABLE_VA))]
+            image = XbeImage(original)
+            # Pin each reader/count/title plus storage and the final role record.
+            if special:
+                for site in (*rows.code_sites(), *rows.title_sites()):
+                    changes.append((site.label, site.va, bytes([image.read(site.va, 1)[0] ^ 0x40])))
+                for va in (rows.TABLE_VA + 45 * rows.RECORD_SIZE + 0x44, rows.TABLE_END_VA,
+                           rows.RETAIL_TABLE_VA, storage.SECTION_VA):
+                    changes.append((hex(va), va, bytes([image.read(va, 1)[0] ^ 0x40])))
+            for label, va, value in changes:
+                with self.subTest(special=special, change=label):
+                    broken = bytearray(original)
+                    at = image.offset(va, len(value))
+                    broken[at:at + len(value)] = value
+                    before = bytes(broken)
+                    self.assertEqual(locks.read_any(broken)["status"], "foreign")
+                    with self.assertRaises(locks.DepthLockError):
+                        locks.apply(broken)
+                    self.assertEqual(broken, before)
+        for site in locks.sites("special"):
+            partial = bytearray(self.special)
+            at = XbeImage(partial).offset(site.va, len(site.after))
+            partial[at:at + len(site.after)] = site.after
+            self.assertEqual(locks.status(partial), "foreign", site.label)
+            with self.assertRaises(locks.DepthLockError):
+                locks.apply(partial)
+        with self.assertRaises(locks.DepthLockError):
+            locks.sites(13)
+
+    def test_both_lock_orders_with_each_practice_composition(self):
+        for special in (False, True):
+            for level in (0, 1, 2):
+                with self.subTest(special=special, practice_level=level):
+                    first, last = (composition(special, level, order) for order in (True, False))
+                    self.assertEqual(first, last)
+                    self.assertEqual(locks.status(first), "applied")
+                    self.assertEqual(rows.status(first), "applied" if special else "retail")
+                    self.assertEqual(squad.status(first), "applied" if level else "retail")
+                    self.assertEqual(reserves.status(first), "applied" if level == 2 else "retail")
+                    self.assertEqual(locks.apply(first)[0], first)
 
     def test_composition_before_and_after_rows_and_returner_fix(self):
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
@@ -209,6 +333,7 @@ class CPU:
         self.teams = [TEAM]
         self.human = False
         self.confirmation = 1
+        self.compactor_calls = []
         u.mem_map(0x10000, 0xFF0000)
         image = XbeImage(data)
         for s in image.sections:
@@ -226,6 +351,10 @@ class CPU:
             u.mem_map(address, size)
 
         def boundary(cpu, address, _size, _data):
+            if address == locks.COMPACT_VA:
+                sp = cpu.reg_read(UC_X86_REG_ESP)
+                ret = struct.unpack("<I", cpu.mem_read(sp, 4))[0]
+                self.compactor_calls.append((ret, cpu.reg_read(UC_X86_REG_EAX)))
             if address not in (0xC4BE0, 0xC4C50, 0x13EC30, 0x14E540):
                 return
             if address == 0xC4BE0:
@@ -257,11 +386,11 @@ class CPU:
             raw[off] = index
         u.mem_write(team, bytes(raw))
 
-    def run(self, address, *, ecx=TEAM, eax=0, esi=0, edi=0, stack_args=(), stop=STOP, budget=400000):
-        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ECX, UC_X86_REG_ESI, UC_X86_REG_EDI, UC_X86_REG_ESP, UC_X86_REG_EIP
+    def run(self, address, *, ecx=TEAM, eax=0, edx=0, esi=0, edi=0, stack_args=(), stop=STOP, budget=400000):
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ECX, UC_X86_REG_EDX, UC_X86_REG_ESI, UC_X86_REG_EDI, UC_X86_REG_ESP, UC_X86_REG_EIP
         u = self.uc
         u.mem_write(STACK, struct.pack("<" + "I" * (1 + len(stack_args)), stop, *stack_args))
-        for reg, value in ((UC_X86_REG_ESP, STACK), (UC_X86_REG_EAX, eax), (UC_X86_REG_ECX, ecx),
+        for reg, value in ((UC_X86_REG_ESP, STACK), (UC_X86_REG_EAX, eax), (UC_X86_REG_ECX, ecx), (UC_X86_REG_EDX, edx),
                            (UC_X86_REG_ESI, esi), (UC_X86_REG_EDI, edi)):
             u.reg_write(reg, value)
         u.emu_start(address, stop, count=budget)
@@ -327,21 +456,23 @@ class ExecutionTests(unittest.TestCase):
         self.assertNotEqual(cpu.team()[:8], before[0][:8])
 
     def test_user_swap_locks_only_the_selected_chain_in_both_layouts(self):
-        from mod_editor.core import nfl2k5_position_pools as pools, nfl2k5_modern_positions as modern, nfl2k5_depth_chart_rows as rows
-        expanded = rows.apply(pools.apply(modern.apply(self.patched)[0])[0])[0]
-        for data, chains in ((self.patched, (0, 1)), (expanded, (0, 1, 2, 3))):
-            for chain in chains:
-                raw = [record(rank=0, side=2, bits=0xF0), record(rank=1, side=0, bits=0xE0)]
-                cpu = CPU(data)
-                cpu.seed(raw)
-                sp = cpu.run(locks.SWAP_VA, ecx=PLAYERS, esi=PLAYERS + 84, eax=chain, stack_args=(TEAM,))
-                self.assertEqual(sp, STACK + 8)
-                bit = 1 << (chain & 1)
-                for i in range(2):
-                    expected = list(fields(raw[i]))
-                    expected[chain & 1] = fields(raw[1 - i])[chain & 1]
-                    expected[2] |= bit
-                    self.assertEqual(fields(cpu.player(i)), tuple(expected))
+        for special in (False, True):
+            for level in (0, 1, 2):
+                for first in (True, False):
+                    data = composition(special, level, first)
+                    for chain in range(5 if special else 2):
+                        with self.subTest(special=special, practice_level=level, locks_first=first, chain=chain):
+                            raw = [record(rank=0, side=2, bits=0xF0), record(rank=1, side=0, bits=0xE0)]
+                            cpu = CPU(data)
+                            cpu.seed(raw)
+                            sp = cpu.run(locks.SWAP_VA, ecx=PLAYERS, esi=PLAYERS + 84, eax=chain, stack_args=(TEAM,))
+                            self.assertEqual(sp, STACK + 8)
+                            bit = 1 << (chain & 1)
+                            for i in range(2):
+                                expected = list(fields(raw[i]))
+                                expected[chain & 1] = fields(raw[1 - i])[chain & 1]
+                                expected[2] |= bit
+                                self.assertEqual(fields(cpu.player(i)), tuple(expected))
 
     def test_confirmed_kr_pr_selection_tracks_identity_after_pointer_sort(self):
         original = [record(position=0, score=.8), record(position=3, rank=2, side=1, score=.2),
@@ -363,11 +494,9 @@ class ExecutionTests(unittest.TestCase):
         cpu.run(0x2BDCF0)
         self.assertEqual(cpu.returner_identities()[2], 1)
 
-    def test_real_confirmation_branches_and_bench_entry(self):
+    def test_real_returner_confirmation_branches(self):
         from unicorn.x86_const import UC_X86_REG_EBP
-        from mod_editor.core import nfl2k5_position_pools as pools, nfl2k5_modern_positions as modern, nfl2k5_depth_chart_rows as rows
-        expanded = rows.apply(pools.apply(modern.apply(self.patched)[0])[0])[0]
-        for data in (self.patched, expanded):
+        for data in (self.patched, composition(True, 0, True)):
             for confirm in (0, 1):
                 for position in (253, 254):
                     cpu = CPU(data)
@@ -381,18 +510,79 @@ class ExecutionTests(unittest.TestCase):
                         self.assertTrue(fields(cpu.player(1))[2] & (4 if position == 254 else 16))
                     else:
                         self.assertEqual((cpu.team(), [cpu.player(i) for i in range(3)]), before)
-                for slot, chain in ((6, 0), (10, 1)):  # LT / RT
-                    cpu = CPU(data)
-                    cpu.seed([record(rank=min(i, 7), side=min(i, 7)) for i in range(9)])
-                    cpu.confirmation = confirm
-                    cpu.uc.mem_write(0xC17478, struct.pack("<I", slot))
-                    before = [cpu.player(i) for i in range(9)]
-                    self.assertEqual(cpu.run(0x244405, ecx=0, eax=8, esi=PLAYERS + 84 * 8,
-                                             edi=TEAM, stop=0x244499), STACK)
-                    if confirm:
-                        self.assertEqual(fields(cpu.player(8))[2], 1 << chain)
-                    else:
-                        self.assertEqual([cpu.player(i) for i in range(9)], before)
+
+    def test_actual_bench_arms_all_special_roles_in_both_practice_orders(self):
+        from unicorn.x86_const import UC_X86_REG_EAX
+        ordinary = [(0, 6, 14, 0), (0, 10, 14, 1)]  # LT / RT
+        roles = [(unit, slot, position, encoded) for unit, slot, _abbr, _name, position, encoded in rows.ROLE_ROWS]
+        for special in (False, True):
+            for level in (0, 1, 2):
+                for first in (True, False):
+                    data = composition(special, level, first)
+                    for unit, slot, position, encoded in ordinary + (roles if special else []):
+                        chain = encoded & 1
+                        for action in ("select", "cancel", "promote"):
+                            with self.subTest(special=special, practice_level=level, locks_first=first,
+                                              unit=unit, slot=slot, action=action):
+                                cpu = CPU(data)
+                                raw = [record(position=position, rank=min(i, 7), side=min(i, 7),
+                                              bits=0xE0, score=(i + 1) / 10) for i in range(9)]
+                                # Keep the other chain locked while promoting an unlocked chain.
+                                raw[8] = locks.set_lock(raw[8], "rank" if chain else "side")
+                                cpu.seed(raw)
+                                cpu.confirmation = int(action == "promote")
+                                cpu.uc.mem_write(pools.DC_UNIT_VA, struct.pack("<I", unit))
+                                cpu.uc.mem_write(pools.DC_SLOT_VA, struct.pack("<I", slot))
+                                before = cpu.team(), [cpu.player(i) for i in range(9)]
+                                # Exercise both sides of actual-row > 7, including offsets 1 and 2.
+                                displayed = (7 if action == "select" else 8) - (encoded >> 1)
+                                stop = rows.BENCH_END_VA if action == "select" else 0x244499
+                                self.assertEqual(cpu.run(rows.BENCH_VA, ecx=0, eax=displayed,
+                                                         esi=PLAYERS + 8 * 84, edi=TEAM, stop=stop), STACK)
+                                if action != "promote":
+                                    self.assertEqual((cpu.team(), [cpu.player(i) for i in range(9)]), before)
+                                    self.assertEqual(cpu.compactor_calls, [])
+                                    if action == "select":
+                                        self.assertEqual(cpu.uc.reg_read(UC_X86_REG_EAX), displayed)
+                                    continue
+                                expected_return = 0x244464 if special else (0x244457 if chain else 0x244476)
+                                self.assertEqual(len(cpu.compactor_calls), 1)
+                                ret, saved_chain = cpu.compactor_calls[0]
+                                self.assertEqual(ret, expected_return)
+                                if special:
+                                    self.assertEqual(saved_chain, encoded)
+                                promoted = fields(cpu.player(8))
+                                self.assertLess(promoted[chain], 7)
+                                self.assertEqual(promoted[1 - chain], 7)
+                                self.assertEqual(promoted[2], 0xE3)
+                                # The player's new preference survives the full weekly sorter.
+                                self.assertEqual(cpu.run(0x2BDCF0), STACK + 4)
+                                self.assertEqual(fields(cpu.player(8)), promoted)
+                                self.assertEqual(cpu.player(8)[:40] + cpu.player(8)[42:82] + cpu.player(8)[83:],
+                                                 raw[8][:40] + raw[8][42:82] + raw[8][83:])
+
+    def test_practice_staging_copies_locked_reserves_without_mutating_sources(self):
+        for special in (False, True):
+            for first in (True, False):
+                for mode, expected_count in ((0, 9), (2, 9), (3, 6)):
+                    with self.subTest(special=special, locks_first=first, mode=mode):
+                        cpu = CPU(composition(special, 2, first))
+                        raw = [record(rank=min(i, 7), side=min(i, 7), bits=0xFF) for i in range(9)]
+                        cpu.seed(raw)
+                        cpu.uc.mem_write(TEAM + squad.ACTIVE_COUNT, bytes([6]))
+                        cpu.uc.mem_write(TEAM + squad.VERSION_OFFSET, bytes([squad.VERSION]))
+                        cpu.uc.mem_write(TEAM + squad.COUNT, bytes([3, squad.MARKER]))
+                        cpu.uc.mem_write(TEAM + 500, bytes(500))
+                        cpu.uc.mem_write(reserves.LEAGUE_VA, struct.pack("<I", 1))
+                        cpu.uc.mem_write(reserves.MODE_VA, struct.pack("<I", mode))
+                        before = bytes(cpu.uc.mem_read(TEAM, 1000)), [cpu.player(i) for i in range(9)]
+                        self.assertEqual(cpu.run(reserves.STAGE_VA, edx=TEAM + 500), STACK + 4)
+                        self.assertEqual((bytes(cpu.uc.mem_read(TEAM, 1000)), [cpu.player(i) for i in range(9)]), before)
+                        self.assertEqual(cpu.uc.mem_read(reserves.TEAM_COPIES[0] + squad.ACTIVE_COUNT, 1)[0], expected_count)
+                        for i in range(expected_count):
+                            expected = bytearray(raw[i])
+                            expected[0x34] = 1  # native disposable-copy side tag
+                            self.assertEqual(bytes(cpu.uc.mem_read(reserves.PLAYER_COPIES[0] + i * 84, 84)), expected)
 
     def test_compactor_reserves_holes_overflow_and_is_idempotent(self):
         for count in (0, 1, 2, 7, 8, 9, 54, 65):
@@ -426,7 +616,7 @@ class ExecutionTests(unittest.TestCase):
             self.assertEqual(retail.team(), patched.team())
 
     def test_bench_callers_set_lock_after_compaction(self):
-        for return_address, chain in ((0x244457, 1), (0x244476, 0), (0x244464, 2), (0x244464, 3)):
+        for return_address, chain in ((0x244457, 1), (0x244476, 0), *((0x244464, chain) for chain in range(5))):
             cpu = CPU(self.patched)
             raw = [record(rank=min(i, 7), side=min(i, 7)) for i in range(9)]
             selected = bytearray(raw[8])
@@ -485,3 +675,7 @@ class ExecutionTests(unittest.TestCase):
             cpu.run(0x2BDCF0, budget=1000000)
             self.assertNotEqual(cpu.returner_identities()[0], 0)
             self.assertEqual(cpu.returner_identities()[1:], (64, 1))
+
+
+if __name__ == "__main__":
+    unittest.main()

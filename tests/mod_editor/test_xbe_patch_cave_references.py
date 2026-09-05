@@ -230,7 +230,7 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual(locks.RUNTIME_GLOBALS, ())
         self.assertEqual(locks.status(self.before_depth_locks), "retail")
         self.assertEqual(locks.status(self.patched), "applied")
-        for site in locks.sites(13):
+        for site in locks.sites("special"):
             # The only shared reservation is rows' two-byte chain test. It
             # remains unchanged; no byte belonging to another owner is used.
             for va in range(site.va, site.va + len(site.before)):

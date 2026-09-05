@@ -22,7 +22,10 @@ common:
  mov ebp,ecx
  # Only successful bench promotions call from these three return addresses.
  # ESI is the selected record. Clear its old chain lock for compaction and
- # re-lock its final row on exit. The expanded row arm preserves EAX=chain.
+ # re-lock its final row on exit. Both layouts keep unit stride 11.
+ # Retail calls at 0x244452 (side) / 0x244471 (rank); final SPECIAL calls
+ # at 0x24445f and preserves EAX=encoded chain (0..4). Its return pin is
+ # still 0x244464 after relocating the 46-record table to 0xee3000.
  mov dword ptr [esp+0x68],0
  mov eax,[esp+0x8c]
  push 2
@@ -212,7 +215,7 @@ rank_stage:
  jmp 0x2bde70
 
 # The first five bytes retain the rows module's chain-bit patch location.
-# The packer uses TEST EAX,EAX for stride 11, TEST AL,1 for stride 13.
+# The packer uses TEST EAX,EAX for retail, TEST AL,1 for SPECIAL (stride 11).
 .section .depth_swap,"ax"
 .global swap
 swap:
