@@ -60,7 +60,9 @@ class OpenDiscHookTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def setUp(self) -> None:
-        self.tmp = tempfile.TemporaryDirectory()
+        # Windows: a lane's inspection worker can still hold the synthetic image when the
+        # directory goes; the temp dir tolerates that (the OS frees it) rather than failing the test.
+        self.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.xbe = Path(self.tmp.name) / "default.xbe"
         self.xbe.write_bytes(_build_synthetic_xbe())
         self.window = StudioMainWindow(facade=BrowseOnlyFacade(), offer_recovery=False)
