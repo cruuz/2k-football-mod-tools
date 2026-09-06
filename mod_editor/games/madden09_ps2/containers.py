@@ -25,7 +25,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import struct
 import sys
-from typing import Any, Callable, Dict, Iterator, List, Optional, Sequence, Tuple
+from typing import (Any, Callable, Dict, Iterator, List, Mapping, Optional,
+                    Sequence, Tuple)
 
 from mod_editor.games._formats import ea_terf
 from mod_editor.games.contract import Refusal
@@ -247,27 +248,32 @@ def data_files(image: Any) -> Tuple[DataFile, ...]:
     return tuple(found)
 
 
-def _read_extent(image: Any, lba: int, wanted: int) -> Optional[bytes]:
+def _read_extent(image: Any, lba: int, wanted: int, start: int = 0) -> Optional[bytes]:
     """*wanted* bytes from the extent at *lba*, or ``None`` if they are not there.
 
     Addressed through the reader rather than by multiplying by a sector size:
-    a raw-CD image's logical blocks are not contiguous in the file.
+    a raw-CD image's logical blocks are not contiguous in the file.  ``start``
+    is a byte offset **inside** the extent, so a caller that wants one member
+    out of a 180 MB container pays for that member's sectors and no more.
     """
 
     out = bytearray()
+    skip = start % iso_lib.SECTOR_USER_BYTES
+    first = start // iso_lib.SECTOR_USER_BYTES
     try:
         with open(image.path, "rb") as handle:
             block = 0
-            while len(out) < wanted:
-                handle.seek(iso_lib.extent_byte_offset(image, lba + block, 0))
-                chunk = handle.read(min(iso_lib.SECTOR_USER_BYTES, wanted - len(out)))
+            while len(out) < wanted + skip:
+                handle.seek(iso_lib.extent_byte_offset(image, lba + first + block, 0))
+                chunk = handle.read(min(iso_lib.SECTOR_USER_BYTES,
+                                        wanted + skip - len(out)))
                 if not chunk:
                     return None
                 out += chunk
                 block += 1
     except (OSError, ValueError):
         return None
-    return bytes(out[:wanted]) if len(out) >= wanted else None
+    return bytes(out[skip:skip + wanted]) if len(out) >= wanted + skip else None
 
 
 def read_file(image: Any, entry: DataFile, *, limit: Optional[int] = CONTAINER_SIZE_LIMIT) -> bytes:
@@ -486,7 +492,17 @@ QL01_MAX_ENTRIES = 1 << 20
 
 @dataclass(frozen=True)
 class PreloadCopy:
-    """One byte-for-byte copy a preload cache carries, and where it lives."""
+    """One byte-for-byte copy a preload cache carries, and where it lives.
+
+    :attr:`container`, :attr:`kind` and :attr:`member` are what this copy
+    **is** -- which is not always what its ``DTLS`` row *said*.  A row at a
+    container boundary can name a member one past the end of the container it
+    names, and the bytes at its offset are then the next thing the cache
+    carries; :func:`preload_copies` re-attributes such a row to whatever its
+    bytes actually equal and keeps the row's own words in
+    :attr:`declared_container` / :attr:`declared_member`, so nothing is lost
+    and the coherence rule covers the bytes rather than the claim.
+    """
 
     cache: str
     container: str
@@ -495,10 +511,21 @@ class PreloadCopy:
     member: Optional[int]
     #: Absolute byte offset inside the cache file.
     offset: int
+    #: What the ``DTLS`` row named, when that is not what this copy is.
+    #: Empty / ``None`` for the ordinary case, which is all but 2 of the
+    #: retail Madden 09 disc's 6,270 copies [M].
+    declared_container: str = ""
+    declared_kind: Optional[int] = None
+    declared_member: Optional[int] = None
 
     @property
     def is_header(self) -> bool:
         return self.kind == PRELOAD_KIND_HEADER
+
+    @property
+    def reattributed(self) -> bool:
+        """Whether this copy's ``DTLS`` row named something it is not."""
+        return bool(self.declared_container)
 
     def length_in(self, parsed: ea_terf.TerfContainer) -> int:
         """How many bytes this copy is, given the container it copies."""
@@ -508,13 +535,23 @@ class PreloadCopy:
         if self.member is None or not 0 <= self.member < parsed.member_count:
             raise DiscError(
                 f"{self.cache} carries a copy of {self.container} member "
-                f"{self.member}, which that container does not have.")
+                f"{self.member} at byte {self.offset}, and that container has "
+                f"{parsed.member_count} member(s) (0..{parsed.member_count - 1}); "
+                f"no other copy in the cache at that offset matches the bytes "
+                f"there, so how long this copy is cannot be said.")
         return parsed.members[self.member].stored_size
 
     def as_dict(self) -> Dict[str, Any]:
-        return {"cache": self.cache, "container": self.container,
-                "kind": "header" if self.is_header else "member",
-                "member": self.member, "offset": self.offset}
+        row = {"cache": self.cache, "container": self.container,
+               "kind": "header" if self.is_header else "member",
+               "member": self.member, "offset": self.offset}
+        if self.reattributed:
+            row["declared_container"] = self.declared_container
+            row["declared_kind"] = ("header"
+                                    if self.declared_kind == PRELOAD_KIND_HEADER
+                                    else "member")
+            row["declared_member"] = self.declared_member
+        return row
 
 
 @dataclass(frozen=True)
@@ -598,6 +635,151 @@ def parse_preload_cache(data: bytes, cache: str) -> Tuple[PreloadCopy, ...]:
     return tuple(out)
 
 
+#: A container's shape, read from the first :data:`PROBE_BYTES` of it: enough
+#: to say how many members it has, how long its directory is, and where any
+#: one member's stored bytes sit -- without holding a 180 MB container in
+#: memory to answer a question about 512 bytes of a cache.
+@dataclass(frozen=True)
+class _ContainerShape:
+    lba: int
+    head: bytes
+    member_count: int
+    data_offset: int
+    directory_offset: int
+
+    def member(self, index: int) -> Optional[Tuple[int, int]]:
+        """``(offset in DATA, stored size)`` for member *index*, if it is there."""
+        if not 0 <= index < self.member_count:
+            return None
+        at = self.directory_offset + 8 + 8 * index
+        if at + 8 > len(self.head):
+            return None
+        return struct.unpack_from("<II", self.head, at)  # type: ignore[return-value]
+
+
+def _container_shape(image: Any, entry: DataFile) -> Optional[_ContainerShape]:
+    """What a ``/DATA`` file's own header says about its members, or ``None``."""
+
+    # A short container has fewer bytes than the probe asks for, and a read
+    # past its last sector comes back empty rather than short, so ask for what
+    # the record says is there.
+    head = _read_extent(image, entry.lba, min(PROBE_BYTES, entry.recorded_length))
+    if not head or not head.startswith(ea_terf.TERF_MAGIC):
+        return None
+    try:
+        _alignment, member_count = struct.unpack_from("<HH", head, 12)
+    except struct.error:
+        return None
+    position = 0
+    directory_offset = data_offset = -1
+    for _ in range(16):
+        if position + 8 > len(head):
+            break
+        tag = bytes(head[position:position + 4])
+        size, = struct.unpack_from("<I", head, position + 4)
+        if size < 8:
+            break
+        if tag == ea_terf.DIR1_MAGIC:
+            directory_offset = position
+        if tag == ea_terf.DATA_MAGIC:
+            data_offset = position
+            break
+        position += size
+    if directory_offset < 0 or data_offset < 0:
+        return None
+    return _ContainerShape(lba=entry.lba, head=head, member_count=member_count,
+                           data_offset=data_offset,
+                           directory_offset=directory_offset)
+
+
+def _copy_source(image: Any, entry: DataFile, shape: _ContainerShape,
+                 copy: "PreloadCopy") -> Optional[bytes]:
+    """The bytes *copy* claims to be a copy of, read off the disc."""
+
+    if copy.is_header:
+        return shape.head[:shape.data_offset] if shape.data_offset <= len(shape.head) else None
+    row = shape.member(int(copy.member or 0))
+    if row is None:
+        return None
+    offset, stored = row
+    if stored <= 0:
+        return None
+    return _read_extent(image, entry.lba, stored, shape.data_offset + offset)
+
+
+def _reattribute(image: Any, present: Mapping[str, DataFile],
+                 shapes: Dict[str, Optional[_ContainerShape]],
+                 blob: bytes, copies: Sequence["PreloadCopy"]
+                 ) -> Tuple["PreloadCopy", ...]:
+    """Attribute every copy to the container whose bytes it actually equals.
+
+    A ``DTLS`` row at a container boundary can name a member the container it
+    names does not have.  Measured, twice on the retail Madden 09 disc and
+    twelve times on Madden 06: ``FE.QKL`` names ``UIS_FONT.DAT`` member 10 of
+    a ten-member container at the very offset where its own header row puts
+    the **next** file in the ``FILS`` list, and the bytes there are that
+    file's container header; ``GAME.QKL`` names ``SOUNDDAT.DAT`` members 470
+    to 481 of a 447-member container at two offsets its own rows already
+    attribute to real members of that container, and the bytes there are
+    those members' [M].  The row's file index is read correctly in every
+    case -- its neighbours with the same index resolve and match -- so the
+    off-by-one is EA's, in the member number, not this parser's.
+
+    So the tie-breaker is the bytes: a row whose declared member does not
+    exist is re-attributed to another row **at the same offset in the same
+    cache** whose own attribution resolves and whose source bytes are what is
+    there.  Anything else keeps its own words and is refused by
+    :meth:`PreloadCopy.length_in`, which names the offset.
+    """
+
+    def shape_of(name: str) -> Optional[_ContainerShape]:
+        if name not in shapes:
+            entry = present.get(name.upper())
+            shapes[name] = None if entry is None else _container_shape(image, entry)
+        return shapes[name]
+
+    def resolves(copy: "PreloadCopy") -> bool:
+        shape = shape_of(copy.container)
+        if shape is None:
+            return True  # not on this image: nothing to check it against
+        return copy.is_header or 0 <= int(copy.member or -1) < shape.member_count
+
+    unresolved = [copy for copy in copies if not resolves(copy)]
+    if not unresolved:
+        return tuple(copies)
+    by_offset: Dict[int, List["PreloadCopy"]] = {}
+    for copy in copies:
+        by_offset.setdefault(copy.offset, []).append(copy)
+    out: List["PreloadCopy"] = []
+    for copy in copies:
+        if resolves(copy):
+            out.append(copy)
+            continue
+        matches: List["PreloadCopy"] = []
+        for other in by_offset.get(copy.offset, ()):
+            if other is copy or not resolves(other):
+                continue
+            entry = present.get(other.container.upper())
+            shape = shape_of(other.container)
+            if entry is None or shape is None:
+                continue
+            source = _copy_source(image, entry, shape, other)
+            if source and blob[copy.offset:copy.offset + len(source)] == source:
+                if not any(m.container == other.container and m.kind == other.kind
+                           and m.member == other.member for m in matches):
+                    matches.append(other)
+        if len(matches) == 1:
+            found = matches[0]
+            out.append(PreloadCopy(
+                cache=copy.cache, container=found.container, kind=found.kind,
+                member=found.member, offset=copy.offset,
+                declared_container=copy.container, declared_kind=copy.kind,
+                declared_member=copy.member))
+        else:
+            out.append(copy)
+    return tuple(out)
+
+
 def preload_copies(image: Any, *, caches: Sequence[str] = PRELOAD_CACHES
                    ) -> Dict[str, ContainerPreload]:
     """``container name -> ContainerPreload`` for every cache on this image.
@@ -607,15 +789,22 @@ def preload_copies(image: Any, *, caches: Sequence[str] = PRELOAD_CACHES
     container's directory has to change the copies of that directory too, and
     a member that is itself copied has to be rewritten in the cache as well or
     refused.
+
+    Every copy is filed under the container whose bytes it **is**, which for a
+    handful of rows at a container boundary is not the one their ``DTLS`` row
+    names -- see :func:`_reattribute`, which measures rather than guesses.
     """
 
     present = {entry.name.upper(): entry for entry in data_files(image)}
+    shapes: Dict[str, Optional[_ContainerShape]] = {}
     found: Dict[str, Dict[str, Any]] = {}
     for cache in caches:
         entry = present.get(cache.upper())
         if entry is None:
             continue
-        copies = parse_preload_cache(read_file(image, entry, limit=None), cache)
+        blob = read_file(image, entry, limit=None)
+        copies = _reattribute(image, present, shapes, blob,
+                              parse_preload_cache(blob, cache))
         for copy in copies:
             row = found.setdefault(copy.container, {"header": [], "members": {}})
             if copy.is_header:
@@ -1030,6 +1219,16 @@ def build_synthetic_preload_cache(payload: Sequence[Tuple[str, int, Optional[int
     Built from the format's own rules so CI can prove the cache-coherence step
     -- the one that keeps a container's three cached directories in step with
     the container -- without a game.
+
+    A copy whose bytes are ``None`` carries none of its own and points at the
+    **previous** copy's offset.  That is the shape a real cache has at a
+    container boundary: the retail Madden 09 disc's ``FE.QKL`` puts a row
+    naming ``UIS_FONT.DAT`` member 10 of a ten-member container at the very
+    offset its own header row gives the next file in the ``FILS`` list, and
+    Madden 06's ``GAME.QKL`` aliases twelve out-of-range ``SOUNDDAT.DAT``
+    member numbers onto two offsets it already attributes to real members
+    [M].  A fixture has to be able to carry it or the re-attribution is
+    untested.
     """
 
     names: List[str] = []
@@ -1043,6 +1242,9 @@ def build_synthetic_preload_cache(payload: Sequence[Tuple[str, int, Optional[int
     body = bytearray()
     offsets: List[int] = []
     for _container, _kind, _member, blob in payload:
+        if blob is None:
+            offsets.append(offsets[-1] if offsets else 0)
+            continue
         while len(body) % alignment:
             body.append(0)
         offsets.append(len(body))
@@ -1105,6 +1307,7 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
                          stream_database: Optional[bytes] = None,
                          preload_caches: bool = True,
                          recorded_short: bool = False,
+                         boundary_copies: bool = False,
                          uniform_members: Optional[Sequence[bytes]] = None) -> bytes:
     """A tiny ``SLUS-21770``-shaped image carrying two synthetic containers.
 
@@ -1126,7 +1329,10 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     needs an image with no cache at all.  ``recorded_short=True`` gives
     ``DB_TEAMS.DAT`` the shape the *Deluxe* image's own containers have --
     see :func:`make_recorded_short` -- so a writer's recovery mode is proved
-    without any game data.
+    without any game data.  ``boundary_copies=True`` adds the two shapes a
+    real cache carries at a container boundary: a ``DTLS`` row naming a member
+    past the end of its own container, once aliased onto another row of the
+    **same** container and once onto the **header** copy of a different one.
     """
 
     if uniform_members is None:
@@ -1160,13 +1366,21 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     # UNIFORMS.DAT's directory in GAME.QKL and two in FE.QKL, and none of its
     # members [M] -- so CI proves the coherence step rather than assuming it.
     directory = uniforms[:ea_terf.parse_terf(uniforms).data_offset]
-    game_cache = build_synthetic_preload_cache([
+    game_payload: List[Tuple[str, int, Optional[int], Optional[bytes]]] = [
         (UNIFORM_CONTAINER, PRELOAD_KIND_HEADER, None, directory),
         (TEAM_DATABASE_CONTAINER, PRELOAD_KIND_MEMBER, 1, teams_member_one),
-    ])
-    fe_cache = build_synthetic_preload_cache([
+    ]
+    fe_payload: List[Tuple[str, int, Optional[int], Optional[bytes]]] = [
         (UNIFORM_CONTAINER, PRELOAD_KIND_HEADER, None, directory),
-    ])
+    ]
+    if boundary_copies:
+        past_team = len(team_members)
+        game_payload.append(
+            (TEAM_DATABASE_CONTAINER, PRELOAD_KIND_MEMBER, past_team, None))
+        fe_payload.append(
+            (TEAM_DATABASE_CONTAINER, PRELOAD_KIND_MEMBER, past_team, None))
+    game_cache = build_synthetic_preload_cache(game_payload)
+    fe_cache = build_synthetic_preload_cache(fe_payload)
     boot = b"BOOT2 = cdrom0:\\%s;1\r\nVER = 1.00\r\nVMODE = NTSC\r\n" % BOOT_FILE.encode("ascii")
     sub_files = [
         (UNIFORM_CONTAINER.encode("ascii") + b";1", uniforms),

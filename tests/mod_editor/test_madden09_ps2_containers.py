@@ -4,9 +4,12 @@ Every byte here is built by :mod:`containers`' own synthetic-disc builders out
 of the formats' rules; nothing reads a disc, so this suite runs for a
 contributor who owns none of these games.
 
-One shape is pinned that a real image has and a naive fixture does not: a
-container whose ISO9660 directory record understates it, which the
-community's *Deluxe* image does to six of its own.
+Two shapes are pinned that a real image has and a naive fixture does not:
+
+* a container whose ISO9660 directory record understates it, which the
+  community's *Deluxe* image does to six of its own;
+* a preload-cache row at a container boundary that names a member the
+  container it names does not have.
 """
 
 from __future__ import annotations
@@ -105,6 +108,112 @@ class OrdinaryContainerTests(_Disc):
         self.assertEqual(len(writable.data), entry.recorded_length)
         self.assertEqual(writable.declared_length, entry.recorded_length)
         self.assertEqual(writable.parsed.short_tail, 0)
+
+
+class PreloadBoundaryTests(_Disc):
+    """A ``DTLS`` row that names a member its container does not have.
+
+    Measured twice on the retail Madden 09 disc (``FE.QKL`` naming
+    ``UIS_FONT.DAT`` member 10 of a ten-member container) and twelve times on
+    Madden 06 (``GAME.QKL`` naming ``SOUNDDAT.DAT`` members 470-481 of a
+    447-member container).  In every case the row's own file index is read
+    correctly -- its neighbours with that index resolve and match -- and the
+    bytes at its offset are another copy the same cache already carries, so
+    the off-by-one is in EA's member number and the bytes are the tie-breaker.
+    """
+
+    kwargs = {"boundary_copies": True}
+
+    def _copies(self):
+        rows = containers.preload_copies(self.image)
+        return [copy for row in rows.values()
+                for copy in list(row.header)
+                + [item for items in row.members.values() for item in items]]
+
+    def test_without_the_boundary_rows_nothing_is_re_attributed(self) -> None:
+        plain = self.work / "plain.iso"
+        plain.write_bytes(containers.build_synthetic_disc())
+        rows = containers.preload_copies(containers.open_disc(plain))
+        for row in rows.values():
+            for copy in list(row.header) + [item for items in row.members.values()
+                                            for item in items]:
+                self.assertFalse(copy.reattributed)
+                self.assertEqual(copy.as_dict().get("declared_container"), None)
+
+    def test_every_copy_resolves_and_none_is_refused(self) -> None:
+        for copy in self._copies():
+            entry = self.files[copy.container]
+            parsed = ea_terf.parse_terf(
+                containers.read_file(self.image, entry, limit=None),
+                allow_size_mismatch=True)
+            self.assertGreater(copy.length_in(parsed), 0)
+
+    def test_a_row_aliased_onto_another_member_of_its_own_container(self) -> None:
+        """Madden 06's shape: an out-of-range number on a real member's offset."""
+        moved = [copy for copy in self._copies()
+                 if copy.reattributed and copy.cache == "GAME.QKL"]
+        self.assertEqual(len(moved), 1)
+        copy = moved[0]
+        self.assertEqual(copy.container, containers.TEAM_DATABASE_CONTAINER)
+        self.assertEqual(copy.declared_container, containers.TEAM_DATABASE_CONTAINER)
+        self.assertFalse(copy.is_header)
+        self.assertEqual(copy.member, 1)
+        self.assertGreater(copy.declared_member, copy.member)
+        twin = next(other for other in self._copies()
+                    if other.offset == copy.offset and not other.reattributed)
+        self.assertEqual((twin.container, twin.member), (copy.container, copy.member))
+
+    def test_a_row_aliased_onto_the_next_containers_header(self) -> None:
+        """Madden 09's shape: the bytes are the next file's container header."""
+        moved = [copy for copy in self._copies()
+                 if copy.reattributed and copy.cache == "FE.QKL"]
+        self.assertEqual(len(moved), 1)
+        copy = moved[0]
+        self.assertEqual(copy.container, containers.UNIFORM_CONTAINER)
+        self.assertTrue(copy.is_header)
+        self.assertEqual(copy.declared_container, containers.TEAM_DATABASE_CONTAINER)
+        self.assertEqual(copy.declared_kind, containers.PRELOAD_KIND_MEMBER)
+        self.assertIsNone(copy.member)
+
+    def test_the_bytes_the_re_attributed_copy_names_are_the_bytes_there(self) -> None:
+        blob = containers.read_file(self.image, self.files["FE.QKL"], limit=None)
+        copy = next(item for item in self._copies()
+                    if item.reattributed and item.cache == "FE.QKL")
+        parsed = ea_terf.parse_terf(
+            containers.read_file(self.image, self.files[copy.container], limit=None),
+            allow_size_mismatch=True)
+        length = copy.length_in(parsed)
+        source = containers.read_file(
+            self.image, self.files[copy.container], limit=None)[:length]
+        self.assertEqual(blob[copy.offset:copy.offset + length], source)
+
+    def test_a_re_attributed_copy_keeps_what_its_row_said(self) -> None:
+        copy = next(item for item in self._copies() if item.reattributed)
+        row = copy.as_dict()
+        self.assertEqual(row["declared_container"], containers.TEAM_DATABASE_CONTAINER)
+        self.assertEqual(row["declared_kind"], "member")
+        self.assertIsNotNone(row["declared_member"])
+
+
+class PreloadUnresolvableTests(unittest.TestCase):
+    """A row whose bytes match nothing is still refused, and says where."""
+
+    def test_the_refusal_names_the_offset_and_the_member_count(self) -> None:
+        members = [b"alpha member", b"bravo member"]
+        container = ea_terf.build_terf(members)
+        cache = containers.build_synthetic_preload_cache([
+            (containers.TEAM_DATABASE_CONTAINER, containers.PRELOAD_KIND_MEMBER,
+             9, b"bytes that copy nothing on this disc"),
+        ])
+        copies = containers.parse_preload_cache(cache, "GAME.QKL")
+        self.assertEqual(len(copies), 1)
+        with self.assertRaises(Refusal) as caught:
+            copies[0].length_in(ea_terf.parse_terf(container))
+        message = str(caught.exception)
+        self.assertIn("member 9", message)
+        self.assertIn(str(copies[0].offset), message)
+        self.assertIn("has 2 member(s) (0..1)", message)
+        self.assertIn("matches the bytes there", message)
 
 
 if __name__ == "__main__":
