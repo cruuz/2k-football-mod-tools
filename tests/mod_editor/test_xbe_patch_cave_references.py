@@ -325,8 +325,10 @@ class CaveReferenceTests(unittest.TestCase):
         stack = XbeImage(self.stack)
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), retail)
         for start, size, _ in ps.CAVES:
-            # the manifest now observes the practice squad itself; nothing ELSE may own its caves
-            self.assertEqual(manifest.overlaps(start, start + size, exclude_owner='nfl2k5_practice_squad'), [], hex(start))
+            # the manifest now observes the practice squad itself; nothing ELSE may own its caves,
+            # except the roster arena growth owner, which declares its ps_import/ps_export repoints there
+            self.assertEqual([e for e in manifest.overlaps(start, start + size, exclude_owner='nfl2k5_practice_squad')
+                              if e.detail.split(':', 1)[0] != 'nfl2k5_roster_arena_growth'], [], hex(start))
             self.assertEqual(stack.read(start, size), retail.read(start, size), hex(start))
             self.assertEqual({va: refs for va, refs in self.targets.items()
                               if start <= va < start + size and any(
