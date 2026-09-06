@@ -135,7 +135,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import struct
-from typing import Dict, List, Mapping, Sequence, Tuple, Union
+from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union
 
 from mod_editor.games.contract import Refusal
 
@@ -191,6 +191,19 @@ FIELD_TYPE_NAMES: Mapping[int, str] = {
 #: The types read through a byte slice rather than through the bit packer, and
 #: which are therefore byte-aligned in every table measured.
 BYTE_ALIGNED_TYPES = (FIELD_STRING, FIELD_BINARY, FIELD_FLOAT)
+
+#: How many bits of a record a field of a type this reader does not decode
+#: occupies.  Measured on the NCAA Football 09 disc, where 16 tables across
+#: ``STRMDATA.DB`` and ``TEMPLATE.DAT`` carry type ids **13** and **14**: in
+#: every one of them the next field begins exactly 32 bits later, and the
+#: type's own ``bits`` word is a multiple of 8 far larger than the whole
+#: record -- 80, 104, 200, 400, 720, 800, 960, 2000, 2040, 2048 bits against
+#: records of 8, 12 or 20 bytes [M].  So the ``bits`` word is **not** a
+#: per-record width; what it is (a maximum text length, most likely, with the
+#: record holding a four-byte handle) is not established [A], which is why
+#: this reader carries such a field and refuses to decode it rather than
+#: guessing.
+UNDECODED_SLOT_BITS = 32
 
 #: How wide a ``FLOAT`` is in every table measured.
 FLOAT_WIDTH = 32
@@ -362,7 +375,28 @@ class TdbField:
 
     @property
     def type_name(self) -> str:
-        return FIELD_TYPE_NAMES.get(self.type_id, "unknown type %d" % self.type_id)
+        return FIELD_TYPE_NAMES.get(
+            self.type_id,
+            "a field type this reader does not decode (type %d)" % self.type_id)
+
+    @property
+    def decoded(self) -> bool:
+        """Whether this reader knows how to read a value out of this field."""
+        return self.type_id in FIELD_TYPE_NAMES
+
+    @property
+    def undecoded_reason(self) -> Optional[str]:
+        """Why this field carries no value here, or ``None`` when it does.
+
+        A state, not a failure: the field is in the directory, its name and
+        offset are read, and the table around it is read normally.  Only the
+        value is missing, and this says so in the field's own terms rather
+        than blaming the directory.
+        """
+        if self.decoded:
+            return None
+        return ("%s; its %d-bit width is not a per-record width, so there is "
+                "no value here to read" % (self.type_name, self.bit_width))
 
     @property
     def byte_aligned(self) -> bool:
@@ -398,6 +432,11 @@ class TdbTable:
     #: The four bytes the file spells this name with; empty when described
     #: rather than read.  See :attr:`name_bytes`.
     raw_name: bytes = b""
+
+    @property
+    def undecoded_fields(self) -> Tuple[TdbField, ...]:
+        """The fields of this table whose type this reader does not decode."""
+        return tuple(field for field in self.fields if not field.decoded)
 
     @property
     def name_bytes(self) -> bytes:
@@ -553,14 +592,36 @@ class TdbDatabase:
             raw_field_name = bytes(body[base + 8:base + 8 + NAME_BYTES])
             field_name = self._name(raw_field_name, "field", base + 8)
             bit_width, = struct.unpack_from("<I", body, base + 12)
-            _require(
-                bit_offset + bit_width <= record_bytes * 8,
-                "field %s of table %s covers bits %d..%d of a record that is "
-                "%d byte(s) long; the field directory is being read at the "
-                "wrong offset or the file is damaged."
-                % (field_name, name, bit_offset, bit_offset + bit_width,
-                   record_bytes),
-            )
+            if type_id in FIELD_TYPE_NAMES:
+                _require(
+                    bit_offset + bit_width <= record_bytes * 8,
+                    "field %s of table %s covers bits %d..%d of a record that "
+                    "is %d byte(s) long; the field directory is being read at "
+                    "the wrong offset or the file is damaged."
+                    % (field_name, name, bit_offset, bit_offset + bit_width,
+                       record_bytes),
+                )
+            else:
+                # A type outside 0..4 carries a `bits` word that is not a
+                # per-record width -- NCAA Football 09's types 13 and 14
+                # declare 80 to 2,048 bits inside 8-byte records [M] -- so
+                # measuring the record against it would call a sound directory
+                # damaged.  What is still checked is the one thing a misread
+                # directory would break: the field has to start inside the
+                # record.
+                _require(
+                    bit_offset < record_bytes * 8,
+                    "field %s of table %s is %s and starts at bit %d of a "
+                    "record that is %d byte(s) long, so it begins past the end "
+                    "of the record; the field directory is being read at the "
+                    "wrong offset or the file is damaged."
+                    % (field_name, name,
+                       FIELD_TYPE_NAMES.get(
+                           type_id,
+                           "a field type this reader does not decode (type %d)"
+                           % type_id),
+                       bit_offset, record_bytes),
+                )
             fields.append(TdbField(field_name, type_id, bit_offset, bit_width,
                                    raw_name=raw_field_name))
         return TdbTable(
@@ -678,15 +739,37 @@ class TdbDatabase:
                            self.record_bytes(resolved, index))
 
     def row(self, table: Union[str, TdbTable], index: int) -> Dict[str, TdbValue]:
-        """Every field of record *index*, keyed by field name."""
+        """Every field of record *index*, keyed by field name.
+
+        A field whose type this reader does not decode comes back ``None``:
+        this is a survey of the record, and leaving the field out of it would
+        hide that the table has one.  :attr:`TdbTable.undecoded_fields` names
+        them and :attr:`TdbField.undecoded_reason` says why; :meth:`value`,
+        which is a demand for one field rather than a survey, refuses instead.
+        """
         resolved = self._resolve_table(table)
         record = self.record_bytes(resolved, index)
-        return {field.name: self.decode(field, record)
+        return {field.name: (self.decode(field, record) if field.decoded else None)
                 for field in resolved.fields}
 
     @staticmethod
     def decode(field: TdbField, record: bytes) -> TdbValue:
-        """Read *field* out of one raw *record*."""
+        """Read *field* out of one raw *record*.
+
+        A field whose type this reader does not decode is refused here by its
+        own true cause -- the type -- and never by a claim about the
+        directory, which is read correctly.  :meth:`row` surveys such a field
+        as ``None`` instead; :attr:`TdbTable.undecoded_fields` names them.
+        """
+        if not field.decoded:
+            raise TdbError(
+                "field %s of this record is %s: its %d-bit width is not a "
+                "per-record width, so there is nothing here to read as a "
+                "value. The field is in the directory and the table's other "
+                "fields read normally; take the record with record_bytes() if "
+                "you mean to look at its bytes yourself."
+                % (field.name, field.type_name, field.bit_width)
+            )
         if field.type_id in (FIELD_UINT, FIELD_SINT):
             value = _read_bits(record, field.bit_offset, field.bit_width)
             if (field.type_id == FIELD_SINT and field.bit_width > 0
@@ -719,9 +802,9 @@ class TdbDatabase:
                 raw = raw[:end]
             return raw.decode(TEXT_ENCODING)
         raise TdbError(
-            "field %s declares type %d, which is not one of the five this "
-            "format defines (%s); the field directory is being read at the "
-            "wrong offset or the file is damaged."
+            "field %s declares type %d, which is one of the five this format "
+            "defines (%s) and yet reached the end of decode; this is a bug in "
+            "this reader, not in the file."
             % (field.name, field.type_id,
                ", ".join("%d=%s" % item for item in FIELD_TYPE_NAMES.items()))
         )
@@ -812,12 +895,25 @@ def _layout(fields: Sequence[Tuple[str, int, int]]) -> Tuple[List[TdbField], int
             % (name,),
         )
         _require(
-            type_id in FIELD_TYPE_NAMES,
-            "field %s asks for type %r, and the format defines %s."
+            isinstance(type_id, int) and not isinstance(type_id, bool)
+            and 0 <= type_id < 256,
+            "field %s asks for type %r; a type id is a byte, and the format "
+            "defines %s -- anything else is carried undecoded."
             % (name, type_id,
                ", ".join("%d=%s" % item for item in FIELD_TYPE_NAMES.items())),
         )
         raw_name = encode_name(name)
+        if type_id not in FIELD_TYPE_NAMES:
+            # A type this reader does not decode occupies its measured
+            # 32-bit slot in the record, and its declared `bits` word goes
+            # into the directory verbatim -- that is the shape NCAA
+            # Football 09's types 13 and 14 have [M], and a fixture has to be
+            # able to carry it or the reader's handling of it is untested.
+            cursor += -cursor % 8
+            placed.append(TdbField(name, type_id, cursor, bit_width,
+                                   raw_name=raw_name))
+            cursor += UNDECODED_SLOT_BITS
+            continue
         if type_id in BYTE_ALIGNED_TYPES:
             _require(
                 bit_width % 8 == 0,
@@ -840,11 +936,11 @@ def _encode(field: TdbField, value: object) -> int:
     record whose old bits it has cleared.
     """
     _require(
-        field.type_id in FIELD_TYPE_NAMES,
-        "field %s declares type %d, which is not one of the five this format "
-        "defines (%s); it cannot be written."
-        % (field.name, field.type_id,
-           ", ".join("%d=%s" % item for item in FIELD_TYPE_NAMES.items())),
+        field.decoded,
+        "field %s is %s, so this writer cannot say which bits of the record a "
+        "value would occupy and will not write it. The table's other fields "
+        "are written normally."
+        % (field.name, field.type_name),
     )
     if field.type_id in BYTE_ALIGNED_TYPES:
         _require(
@@ -1265,6 +1361,13 @@ def encode_field(field: TdbField, record: bytes, value: TdbValue) -> bytes:
     """
     stride = len(record)
     _require(
+        field.decoded,
+        "field %s is %s, so this writer cannot say which bits of the record a "
+        "value would occupy and will not write it. The table's other fields "
+        "are written normally."
+        % (field.name, field.type_name),
+    )
+    _require(
         field.bit_offset + field.bit_width <= stride * 8,
         "field %s covers bits %d..%d and this record is %d byte(s); the field "
         "does not belong to this table."
@@ -1372,6 +1475,7 @@ __all__ = [
     "FIELD_SINT",
     "FIELD_STRING",
     "FIELD_TYPE_NAMES",
+    "UNDECODED_SLOT_BITS",
     "FIELD_UINT",
     "FLOAT_WIDTH",
     "NAME_BYTES",

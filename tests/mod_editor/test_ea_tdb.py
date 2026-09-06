@@ -266,7 +266,7 @@ class StructureTests(unittest.TestCase):
         self.assertEqual(play.field("PFNA").type_name, "STRING")
         self.assertEqual(play.field("GYTG").type_name, "FLOAT")
         self.assertEqual(play.field("PHSH").type_name, "BINARY")
-        self.assertIn("unknown type",
+        self.assertIn("does not decode (type 9)",
                       ea_tdb.TdbField("junk", 9, 0, 1).type_name)
 
     def test_the_declared_size_ends_four_bytes_past_the_last_table(self) -> None:
@@ -444,7 +444,13 @@ class RefusalTests(unittest.TestCase):
         with self.assertRaises(ea_tdb.TdbError):
             self.parsed.row("PLAY", 400)
 
-    def test_an_unknown_field_type_is_refused_rather_than_guessed(self) -> None:
+    def test_an_undecoded_field_type_is_named_and_not_blamed_on_the_directory(self) -> None:
+        """The refusal has to say the type, not accuse the directory.
+
+        The NCAA Football 09 disc carries field types 13 and 14 whose ``bits``
+        word is not a per-record width; this reader used to call every one of
+        them a directory read at the wrong offset, which was never true.
+        """
         broken = bytearray(self.built)
         table = self.parsed.table("PLAY")
         base = table.offset + ea_tdb.TDB_TABLE_HEADER_SIZE
@@ -452,7 +458,17 @@ class RefusalTests(unittest.TestCase):
         reparsed = ea_tdb.parse_tdb(bytes(broken))
         with self.assertRaises(ea_tdb.TdbError) as caught:
             reparsed.value("PLAY", 0, "PPOS")
-        self.assertIn("not one of the five", str(caught.exception))
+        message = str(caught.exception)
+        self.assertIn("a field type this reader does not decode (type 7)", message)
+        self.assertNotIn("wrong offset", message)
+        self.assertNotIn("damaged", message)
+        # The table around it still reads.
+        self.assertEqual(reparsed.value("PLAY", 1, "PGID"), PLAY_ROWS[1]["PGID"])
+        self.assertEqual(reparsed.value("PLAY", 1, "PFNA"), PLAY_ROWS[1]["PFNA"])
+        reread = reparsed.table("PLAY")
+        self.assertEqual([field.name for field in reread.undecoded_fields], ["PPOS"])
+        self.assertIsNone(reparsed.row("PLAY", 1)["PPOS"])
+        self.assertEqual(reparsed.row("PLAY", 1)["PGID"], PLAY_ROWS[1]["PGID"])
 
     def test_a_misaligned_string_is_refused_rather_than_read_askew(self) -> None:
         broken = bytearray(self.built)
@@ -495,7 +511,7 @@ class RefusalTests(unittest.TestCase):
                                [{}])])
         self.assertIn("multiple of 8", str(caught.exception))
         with self.assertRaises(ea_tdb.TdbError) as caught:
-            ea_tdb.build_tdb([("PLAY", [("PGID", 9, 4)], [{}])])
+            ea_tdb.build_tdb([("PLAY", [("PGID", "nine", 4)], [{}])])
         self.assertIn("format defines", str(caught.exception))
 
     def test_the_builder_refuses_more_rows_than_it_declared_room_for(self) -> None:
@@ -700,6 +716,106 @@ class NulNamedTableTests(unittest.TestCase):
     def test_the_checksums_still_close_over_a_nul_named_table(self) -> None:
         signed = ea_tdb.recompute_crcs(self.built)
         self.assertEqual(ea_tdb.verify_crcs(signed), [])
+
+
+#: A table in the shape the NCAA Football 09 disc carries 16 times: a field of
+#: a type this reader does not decode, at bit 0, whose declared width is far
+#: larger than the whole record, followed by a field 32 bits in [M].  Built
+#: here from the format's own rules; no disc is read.
+UNDECODED_FIELDS = [
+    ("ASNA", 13, 400),
+    ("ASNU", ea_tdb.FIELD_UINT, 10),
+]
+
+UNDECODED_ROWS = [{"ASNU": 7}, {"ASNU": 1023}, {"ASNU": 0}]
+
+
+class UndecodedFieldTypeTests(unittest.TestCase):
+    """Types outside 0..4 carry a ``bits`` word that is not a record width.
+
+    The reader used to measure the record against that word and refuse the
+    whole database -- 2 of the NCAA Football 09 disc's 582 -- with a sentence
+    accusing the field directory of being read at the wrong offset. It was
+    not: the directory is read correctly and the word means something else.
+    """
+
+    def setUp(self) -> None:
+        self.built = ea_tdb.build_tdb([("ANIN", UNDECODED_FIELDS, UNDECODED_ROWS)])
+        self.parsed = ea_tdb.parse_tdb(self.built)
+
+    def test_the_database_parses_and_the_shape_is_the_measured_one(self) -> None:
+        table = self.parsed.table("ANIN")
+        # 32 bits for the undecoded field's slot plus a 10-bit UINT.
+        self.assertEqual(table.record_bytes, 6)
+        undecoded = table.field("ASNA")
+        self.assertFalse(undecoded.decoded)
+        self.assertEqual(undecoded.bit_offset, 0)
+        self.assertEqual(undecoded.bit_width, 400)
+        self.assertGreater(undecoded.bit_width, table.record_bytes * 8)
+        self.assertEqual(table.field("ASNU").bit_offset, ea_tdb.UNDECODED_SLOT_BITS)
+        self.assertEqual([field.name for field in table.undecoded_fields], ["ASNA"])
+
+    def test_the_other_fields_of_the_table_read_normally(self) -> None:
+        for index, row in enumerate(UNDECODED_ROWS):
+            with self.subTest(record=index):
+                self.assertEqual(self.parsed.value("ANIN", index, "ASNU"), row["ASNU"])
+
+    def test_asking_for_the_undecoded_value_names_the_type_as_the_cause(self) -> None:
+        with self.assertRaises(ea_tdb.TdbError) as caught:
+            self.parsed.value("ANIN", 0, "ASNA")
+        message = str(caught.exception)
+        self.assertIn("a field type this reader does not decode (type 13)", message)
+        self.assertIn("not a per-record width", message)
+        self.assertNotIn("wrong offset", message)
+        self.assertNotIn("damaged", message)
+
+    def test_a_row_surveys_the_undecoded_field_as_none(self) -> None:
+        row = self.parsed.row("ANIN", 1)
+        self.assertEqual(sorted(row), ["ASNA", "ASNU"])
+        self.assertIsNone(row["ASNA"])
+        self.assertEqual(row["ASNU"], 1023)
+
+    def test_the_field_says_why_it_carries_no_value(self) -> None:
+        table = self.parsed.table("ANIN")
+        self.assertIsNone(table.field("ASNU").undecoded_reason)
+        reason = table.field("ASNA").undecoded_reason
+        self.assertIsNotNone(reason)
+        self.assertIn("type 13", reason or "")
+        self.assertIn("not a per-record width", reason or "")
+
+    def test_a_decoded_field_of_the_same_table_is_still_writable(self) -> None:
+        written = ea_tdb.write_records(self.parsed, "ANIN", {0: {"ASNU": 512}})
+        self.assertEqual(len(written), len(self.built))
+        after = ea_tdb.parse_tdb(written)
+        self.assertEqual(after.value("ANIN", 0, "ASNU"), 512)
+        self.assertEqual(ea_tdb.verify_crcs(written), [])
+
+    def test_writing_the_undecoded_field_is_refused_by_its_type(self) -> None:
+        with self.assertRaises(ea_tdb.TdbError) as caught:
+            ea_tdb.write_records(self.parsed, "ANIN", {0: {"ASNA": 1}})
+        message = str(caught.exception)
+        self.assertIn("a field type this reader does not decode (type 13)", message)
+        self.assertIn("will not write it", message)
+
+    def test_a_field_that_starts_past_the_record_is_still_refused(self) -> None:
+        """The one guard a misread directory would trip is kept."""
+        broken = bytearray(self.built)
+        table = self.parsed.table("ANIN")
+        base = table.offset + ea_tdb.TDB_TABLE_HEADER_SIZE
+        struct.pack_into("<I", broken, base + 4, table.record_bytes * 8)
+        with self.assertRaises(ea_tdb.TdbError) as caught:
+            ea_tdb.parse_tdb(bytes(broken))
+        message = str(caught.exception)
+        self.assertIn("begins past the end of the record", message)
+        self.assertIn("wrong offset", message)
+
+    def test_type_fourteen_is_carried_the_same_way(self) -> None:
+        built = ea_tdb.build_tdb([("TICK", [("OPTT", 14, 2048),
+                                            ("OPTD", ea_tdb.FIELD_UINT, 7)],
+                                   [{"OPTD": 99}])])
+        parsed = ea_tdb.parse_tdb(built)
+        self.assertEqual(parsed.value("TICK", 0, "OPTD"), 99)
+        self.assertIn("(type 14)", parsed.table("TICK").field("OPTT").type_name)
 
 
 if __name__ == "__main__":
