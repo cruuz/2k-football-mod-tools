@@ -1,14 +1,13 @@
 """Private-cache PLAY parser for the 2K5 Mod Studio playbook inspector.
 
-The product release contains this parser and structural constants only.  The
-37 stock playbooks, their names, descriptors, and route/action bytes are read
-from the user's indexed XISO at runtime and are never bundled with the app or
-stored in a shareable project.
+The product release contains the parser and structural constants. The 37 stock
+resources and their route/action payloads are read from the user's indexed XISO
+at runtime and are never bundled with the app. Separate authoring requests can
+retain copied operands in user-created projects and packs.
 
-This is deliberately an inspector, not a compiler.  Formation membership,
-eleven assignment pointers, complete node-chain extents, and broad play-family
-bits are exact.  Coordinate axes, player roles, opcode actions, and custom-play
-save ownership remain unknown, so mutation is not exposed here.
+This is a read-only inspector. The separate codec and writer now decode and
+validate formation coordinates, assignment operands and conditional flags.
+Runtime AI and gameplay fidelity require evidence beyond the PLAY grammar.
 """
 
 from __future__ import annotations
@@ -65,7 +64,7 @@ PLAY_FAMILY_LABELS: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class PlaybookNode:
-    """One still-opaque eight-byte assignment/action node."""
+    """One exact eight-byte assignment/action node."""
 
     index: int
     opcode: int
@@ -209,6 +208,22 @@ class Nfl2k5Playbook:
             self.plays[link.play_index]
             for link in self.formations[index].play_links
         )
+
+    def decoded_play(self, play_index: int) -> list[dict]:
+        """All eleven declared spans, including alternate branches and raw bytes.
+
+        Do not stop at the first terminal flag: a conditional chain has a
+        terminal on both paths. Pool extents may also contain orphan nodes.
+        """
+        if type(play_index) is not int or not 0 <= play_index < len(self.plays):
+            raise ValidationError("Choose a play in this book.")
+        return [dict(slot=a.slot_index, descriptor=f"0x{a.descriptor_word:08x}",
+                     start=a.chain_start_index, nodes=[
+                         dict(index=n.index, opcode=f"0x{n.opcode:02x}",
+                              flags=f"0x{n.flags:02x}", raw=n.raw_hex,
+                              description=n.description, condition=n.condition)
+                         for n in self.assignment_chain(a).nodes])
+                for a in self.plays[play_index].assignments]
 
 
 def _u32(data: bytes, offset: int, label: str) -> int:

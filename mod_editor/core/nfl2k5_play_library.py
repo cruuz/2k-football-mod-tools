@@ -121,6 +121,22 @@ def play_chains(body: bytes, play_index: int) -> tuple[int, list[tuple[int, list
     return flags, out
 
 
+def exact_play_chains(body: bytes, play_index: int) -> list[Chain]:
+    """Decode retail assignments with *every* flag, refusing lossy encodings.
+
+    Rules are extracted from the user's resource, never synthesized from a
+    football name. Checking the encoder also protects reserved bytes/bits from
+    being silently discarded if a future resource uses a different format.
+    """
+    result = []
+    for _descriptor, raw_nodes in play_chains(body, play_index)[1]:
+        nodes = [codec.Node.from_bytes(raw) for raw in raw_nodes]
+        if [node.to_bytes() for node in nodes] != raw_nodes:
+            raise ValueError("This assignment contains bytes the PLAY encoder cannot preserve")
+        result.append([(node.op, list(node.operands), node.flags) for node in nodes])
+    return result
+
+
 def offense_formations(book: Nfl2k5Playbook, body: bytes) -> list[int]:
     return [f.index for f in book.formations if formation_record(body, f.index).type_code < 4]
 
@@ -1110,14 +1126,14 @@ def defense_pairs(book: Nfl2k5Playbook, body: bytes, formation_index: int) -> li
 
 def effective_defense(front: Sequence[Chain], coverage: Sequence[Chain]) -> list[Chain]:
     active = defense_active(coverage)
-    return [[(op, list(v)) for op, v in (coverage[s] if s in active else front[s])] for s in range(11)]
+    return [[(n[0], list(n[1]), *n[2:]) for n in (coverage[s] if s in active else front[s])] for s in range(11)]
 
 
 def defense_counts(chains: Sequence[Chain]) -> dict:
     rush = []
     deep = []
     for s in sorted(defense_active(chains)):
-        action = next(((op, v) for op, v in chains[s] if op in (0x0B, 0x0D, 0x0E)), None)
+        action = next(((n[0], n[1]) for n in chains[s] if n[0] in (0x0B, 0x0D, 0x0E)), None)
         if action and action[0] == 0x0B:
             rush.append(s)
         if action and action[0] == 0x0D and action[1][1] >= 15 * YD - .001:

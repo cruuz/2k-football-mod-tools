@@ -1989,7 +1989,7 @@ def validate_defense_pack_play(play: PackPlay, book: Nfl2k5Playbook | None, body
 
 
 def _freeze_chains(chains: Sequence) -> tuple:
-    return tuple(None if c is None else tuple((int(op), tuple(float(v) for v in vals)) for op, vals in c)
+    return tuple(None if c is None else tuple((int(n[0]), tuple(float(v) for v in n[1]), *n[2:]) for n in c)
                  for c in chains)
 
 

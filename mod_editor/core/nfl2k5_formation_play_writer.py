@@ -209,6 +209,39 @@ class PlayCreateRequest:
         return row
 
 
+def rule_play_request(asset_id: str, body: bytes, donor_play_index: int,
+                      chains: Sequence, *, custom_name: str | None = None,
+                      replace_index: int | None = None,
+                      play_flags: int | None = None) -> PlayCreateRequest:
+    """Validate extracted rules and retain byte-identical donor assignments.
+
+    This explicit rules path avoids spending node capacity for an unchanged
+    chain. Replacing the original play with all its original rules, no new
+    name and no header change reproduces the entire resource byte for byte.
+    Ordinary authored requests retain their existing allocation behavior.
+    """
+    from . import nfl2k5_play_library as lib
+    count = struct.unpack_from("<I", body, 0x38)[0]
+    if type(donor_play_index) is not int or not 0 <= donor_play_index < count:
+        raise ValidationError("Rule donor is outside this playbook.")
+    if len(chains) != 11:
+        raise ValidationError("Rules need eleven complete assignments.")
+    donor_flags, donor = lib.play_chains(body, donor_play_index)
+    flags = donor_flags if play_flags is None else play_flags
+    try:
+        error = lib.validate_chains(flags, donor, chains)
+        if error:
+            raise ValueError(error)
+        assignments = tuple(
+            None if [n.to_bytes() for n in codec.encode_chain(c, donor[s][1])] == donor[s][1]
+            else tuple((n.op, tuple(n.operands), n.flags) for n in codec.encode_chain(c, donor[s][1]))
+            for s, c in enumerate(chains))
+    except (ValueError, IndexError, TypeError) as exc:
+        raise ValidationError(f"Rule assignments failed validation: {exc}") from exc
+    return PlayCreateRequest(asset_id, donor_play_index, custom_name,
+                             assignments, replace_index, play_flags)
+
+
 @dataclass(frozen=True, slots=True)
 class FormationLinkRequest:
     """List one play in one formation's empty 36-slot menu table.
@@ -463,7 +496,7 @@ def compile_formation_play_creations(
     formation_requests: Iterable[FormationCreateRequest | Mapping[str, object]] = (),
     play_requests: Iterable[PlayCreateRequest | Mapping[str, object]] = (),
     link_requests: Iterable[FormationLinkRequest | Mapping[str, object]] = (),
-    *, _seven_on_seven_source: bytes | None = None,
+    *, _seven_on_seven_source: bytes | None = None, allow_unchanged: bool = False,
 ) -> CompiledFormationPlayResource:
     # Normalize requests
     norm_formations = tuple(
@@ -926,7 +959,7 @@ def compile_formation_play_creations(
         )
 
     rebuilt = bytes(replacement)
-    if rebuilt == raw_resource:
+    if rebuilt == raw_resource and not allow_unchanged:
         raise ValidationError("Formation/play clone produced no byte change.")
 
     changed = _difference_ranges(raw_resource, rebuilt)

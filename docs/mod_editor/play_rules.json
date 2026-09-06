@@ -1,0 +1,834 @@
+{
+  "schema": "nfl2k5_play_rules/v1",
+  "evidence": "EXPERIMENTAL / UNWITNESSED",
+  "retail_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "opcode_table": "0x00521078",
+  "opcode_table_sha256": "cf59c9ec6e250849eb3c23a9abb7675ae782487bb355e4596626dd5afa1f06cf",
+  "runtime_dispatch_initializer": "0x001B85A0",
+  "opcodes": [
+    {
+      "opcode": 0,
+      "meaning": "No assignment action. Preserve the donor placeholder and its descriptor.",
+      "table_flags": "0x200f",
+      "callbacks": {
+        "decode": "0x002b4200",
+        "encode": "0x002b4210",
+        "draw": "0x00180830",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x001abcd0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 1,
+      "meaning": "Open an offensive or special-teams assignment, or mark an inactive slot in a split defensive call. Role, pre-snap offset and delay are data.",
+      "table_flags": "0x000f",
+      "callbacks": {
+        "decode": "0x002b4230",
+        "encode": "0x002b4350",
+        "draw": "0x00180840",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x001ae490",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 2,
+      "meaning": "Snap to a friendly slot. The receiver of the snap must have a compatible ball chain.",
+      "table_flags": "0x08c5",
+      "callbacks": {
+        "decode": "0x002b4800",
+        "encode": "0x002b4820",
+        "draw": "0x001808d0",
+        "validate": "0x002b4840"
+      },
+      "runtime_initializer": "0x002d3300",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 3,
+      "meaning": "Take the snap or perform the named ball action. Valid choices depend on the play family.",
+      "table_flags": "0x1805",
+      "callbacks": {
+        "decode": "0x002b4880",
+        "encode": "0x002b48a0",
+        "draw": "0x001808e0",
+        "validate": "0x002b48c0"
+      },
+      "runtime_initializer": "0x002d3e80",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 4,
+      "meaning": "Move the ball handler using a mode and offset. This alone does not change the formation shotgun flag.",
+      "table_flags": "0x3081",
+      "callbacks": {
+        "decode": "0x002b4950",
+        "encode": "0x002b4a30",
+        "draw": "0x001808f0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002f3d10",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 5,
+      "meaning": "Hold for a kick. No packed operands.",
+      "table_flags": "0x20c4",
+      "callbacks": {
+        "decode": "0x002b4200",
+        "encode": "0x002b4210",
+        "draw": "0x001809a0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002ee000",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 6,
+      "meaning": "Enter passing AI. Four read values 1 through 5 refer to slots 6 through 10; a first zero defaults to slot 7 and later zeros skip. The delay is nominal, not a guaranteed throw time.",
+      "table_flags": "0x20c1",
+      "callbacks": {
+        "decode": "0x002b4ac0",
+        "encode": "0x002b4b80",
+        "draw": "0x001809b0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x0019c740",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 7,
+      "meaning": "Punt with a mode, aim offsets and encoded angle. Kick trajectory and success are runtime decisions.",
+      "table_flags": "0x20c4",
+      "callbacks": {
+        "decode": "0x002b4c30",
+        "encode": "0x002b4d50",
+        "draw": "0x001809c0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002ee040",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 8,
+      "meaning": "Place kick with a mode, aim offsets and encoded angle. Kick trajectory and success are runtime decisions.",
+      "table_flags": "0x2044",
+      "callbacks": {
+        "decode": "0x002b4df0",
+        "encode": "0x002b4f10",
+        "draw": "0x001809d0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002edfb0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 9,
+      "meaning": "Run toward a point with a movement mode. Collision, pursuit and steering remain runtime behavior.",
+      "table_flags": "0x2348",
+      "callbacks": {
+        "decode": "0x002b4fb0",
+        "encode": "0x002b5090",
+        "draw": "0x00180a00",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002f1ba0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 10,
+      "meaning": "Coverage movement type and offsets. The broad label is a research interpretation; keep unfamiliar modes as retail values.",
+      "table_flags": "0x2004",
+      "callbacks": {
+        "decode": "0x002b5120",
+        "encode": "0x002b5240",
+        "draw": "0x00181b00",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002f2750",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 11,
+      "meaning": "Rush mode, lateral lane and delay. Seventeen lane positions exist; 17 means no lane. The mode alone is not a new spy rule.",
+      "table_flags": "0x2002",
+      "callbacks": {
+        "decode": "0x002b52e0",
+        "encode": "0x002b5380",
+        "draw": "0x00180ab0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002fe190",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 12,
+      "meaning": "Alternate rush instruction using the same lane/time packing. Inspectable; the defensive authoring guard currently refuses this less-established action.",
+      "table_flags": "0x2008",
+      "callbacks": {
+        "decode": "0x002b53e0",
+        "encode": "0x002b5480",
+        "draw": "0x00180bb0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002f10b0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 13,
+      "meaning": "Zone landmark X/depth, receiver selectors, boundary mode and transition value. Live receiver pickup and adjustment happen in code.",
+      "table_flags": "0x210a",
+      "callbacks": {
+        "decode": "0x002b54e0",
+        "encode": "0x002b5660",
+        "draw": "0x00180c30",
+        "validate": "0x002b5740"
+      },
+      "runtime_initializer": "0x001a6220",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 14,
+      "meaning": "Man target selector, cushion and boundary/transition fields. Operand c is a friendly exchange partner when transition fields are active; receiver selectors are a different namespace.",
+      "table_flags": "0x210a",
+      "callbacks": {
+        "decode": "0x002b5770",
+        "encode": "0x002b58d0",
+        "draw": "0x00180cb0",
+        "validate": "0x002b59c0"
+      },
+      "runtime_initializer": "0x001a5bc0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 15,
+      "meaning": "Movement with three selector fields and X/depth. Exact field packing is proved; arbitrary football interpretations of A/B/C are not.",
+      "table_flags": "0x210a",
+      "callbacks": {
+        "decode": "0x002b59f0",
+        "encode": "0x002b5af0",
+        "draw": "0x00180d80",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x001a6220",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 16,
+      "meaning": "Rush movement type and offsets. The broad label is a research interpretation; inspectable but outside the defensive authoring guard.",
+      "table_flags": "0x2008",
+      "callbacks": {
+        "decode": "0x002b5ba0",
+        "encode": "0x002b5cc0",
+        "draw": "0x00180dd0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002f0f10",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 17,
+      "meaning": "Block or movement leg: type, delay, relative mode, end style, turn, X/depth and group. Type 0 drive, 1 pass set, 2 pull, 3 release then block, 4 lead. Type 9 uses named-spot table indices. These labels describe stock paths, not guaranteed block targets.",
+      "table_flags": "0x200d",
+      "callbacks": {
+        "decode": "0x002b5d60",
+        "encode": "0x002b5f60",
+        "draw": "0x00181cc0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002400b0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 18,
+      "meaning": "Route segment type and distance. Type 8 chips, type 9 uses the screen/pass-block path depending on role and chain, type 10 runs then blocks. Context matters.",
+      "table_flags": "0x2101",
+      "callbacks": {
+        "decode": "0x002b60a0",
+        "encode": "0x002b61c0",
+        "draw": "0x00182110",
+        "validate": "0x002b6240"
+      },
+      "runtime_initializer": "0x00229ae0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 19,
+      "meaning": "Give or pitch to a friendly slot, using the transfer kind. The target needs a paired take instruction.",
+      "table_flags": "0x20c1",
+      "callbacks": {
+        "decode": "0x002b62f0",
+        "encode": "0x002b6330",
+        "draw": "0x00180e80",
+        "validate": "0x002b6370"
+      },
+      "runtime_initializer": "0x00300b00",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 20,
+      "meaning": "Fake a transfer to a friendly slot. The target needs the matching fake-take instruction.",
+      "table_flags": "0x2481",
+      "callbacks": {
+        "decode": "0x002b63b0",
+        "encode": "0x002b63c0",
+        "draw": "0x00180eb0",
+        "validate": "0x002b63d0"
+      },
+      "runtime_initializer": "0x00300b00",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 21,
+      "meaning": "Run/follow path. Mode 2 names a friendly slot; preserve that dependency when moving assignments.",
+      "table_flags": "0x2089",
+      "callbacks": {
+        "decode": "0x002b63e0",
+        "encode": "0x002b6530",
+        "draw": "0x00182b30",
+        "validate": "0x002b6610"
+      },
+      "runtime_initializer": "0x002e4590",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 22,
+      "meaning": "Take a handoff or pitch with animation selector, delay and aim lane. Pair it with its giver.",
+      "table_flags": "0x2141",
+      "callbacks": {
+        "decode": "0x002b6620",
+        "encode": "0x002b66d0",
+        "draw": "0x00181b10",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002e41f0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 23,
+      "meaning": "Fake taking the transfer, with delay and aim lane. Pair it with its fake giver.",
+      "table_flags": "0x2501",
+      "callbacks": {
+        "decode": "0x002b6730",
+        "encode": "0x002b67e0",
+        "draw": "0x00181cb0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002e41f0",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 24,
+      "meaning": "Release/move continuation. Mode 2 follows a friendly slot. This is not a new coverage or blocking policy.",
+      "table_flags": "0x200f",
+      "callbacks": {
+        "decode": "0x002b6840",
+        "encode": "0x002b6990",
+        "draw": "0x00182b20",
+        "validate": "0x002b6a70"
+      },
+      "runtime_initializer": "0x001af530",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 25,
+      "meaning": "Rejected by the retail play validator. A table entry and callback do not make it authorable.",
+      "table_flags": "0x220a",
+      "callbacks": {
+        "decode": "0x002b6a80",
+        "encode": "0x002b6bd0",
+        "draw": "0x00180ed0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x001afb50",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 26,
+      "meaning": "Conditional decision/link. All eight operands and normal/alternate flag bytes matter. Kind 6 watches another friendly condition node; alternate and source-node indices are different.",
+      "table_flags": "0x2205",
+      "callbacks": {
+        "decode": "0x002b6cb0",
+        "encode": "0x002b6e20",
+        "draw": "0x00180f10",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x001af870",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 27,
+      "meaning": "Open a defensive assignment using pre-snap X/depth and lane. An opener-only chain is a placeholder in a split defensive call.",
+      "table_flags": "0x080a",
+      "callbacks": {
+        "decode": "0x002b4420",
+        "encode": "0x002b4580",
+        "draw": "0x001808b0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002d6550",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    },
+    {
+      "opcode": 28,
+      "meaning": "Defensive alignment instruction with lane and selectors. Inspectable; not enabled in the narrow defensive authoring guard.",
+      "table_flags": "0x080a",
+      "callbacks": {
+        "decode": "0x002b4650",
+        "encode": "0x002b4760",
+        "draw": "0x001808c0",
+        "validate": "0x002b4220"
+      },
+      "runtime_initializer": "0x002e6770",
+      "evidence": "PROVED table/callback identity and codec packing; behavioral names are bounded research interpretations."
+    }
+  ],
+  "presets": [
+    {
+      "id": "combo_inside",
+      "label": "Combo Inside Zone: linked coverage rules",
+      "names": [
+        "Combo Inside Zone"
+      ],
+      "family": 1,
+      "scope": "active",
+      "note": "This is a defensive man/zone exchange, not an offensive-line combo block. Copy both sides of each exchange."
+    },
+    {
+      "id": "outside_zone",
+      "label": "Outside Zone: OL rules",
+      "names": [
+        "Strong Outside Zone",
+        "Weak Outside Zone"
+      ],
+      "family": 0,
+      "scope": "line",
+      "note": "Exact native line chains. Automatic target choice and double-team behavior are runtime code."
+    },
+    {
+      "id": "inside_zone",
+      "label": "Inside Zone: OL rules",
+      "names": [
+        "Strong Inside Zone",
+        "Weak Inside Zone"
+      ],
+      "family": 0,
+      "scope": "line",
+      "note": "Retail zone-run data. No separate zone-step or double-team opcode was established."
+    },
+    {
+      "id": "power",
+      "label": "Power: OL rules",
+      "names": [
+        "Strong Power",
+        "Weak Power",
+        "Strong Power-O",
+        "Weak Power-O"
+      ],
+      "family": 0,
+      "scope": "line",
+      "note": "Copy the complete lineman paths and flags, including pulls where the donor uses them."
+    },
+    {
+      "id": "counter",
+      "label": "Counter: OL rules",
+      "names": [
+        "Strong Counter",
+        "Weak Counter",
+        "Strong Counter Trey",
+        "Weak Counter Trey"
+      ],
+      "family": 0,
+      "scope": "line",
+      "note": "Pull and timing paths come from this exact donor, not from a generated Counter recipe."
+    },
+    {
+      "id": "draw",
+      "label": "Draw: complete rules",
+      "names": [
+        "Strong Draw",
+        "Weak Draw",
+        "Draw"
+      ],
+      "family": 0,
+      "scope": "all",
+      "note": "The delayed line and paired give/take chains stay together."
+    },
+    {
+      "id": "screen",
+      "label": "Screen: complete rules",
+      "names": [
+        "50 H Screen Strong",
+        "50 H Screen Weak",
+        "50 TE Screen",
+        "50 Z Slip Screen"
+      ],
+      "family": 0,
+      "scope": "all",
+      "note": "Keep the native receiver, blockers, center snap and quarterback timing together."
+    },
+    {
+      "id": "cover3",
+      "label": "Cover 3 landmarks",
+      "names": [
+        "3 Weak",
+        "3 Strong",
+        "3 Sky",
+        "3 Robber"
+      ],
+      "family": 1,
+      "scope": "active",
+      "note": "Preserve the partial coverage plus compatible front. Landmark data does not create modern match coverage."
+    },
+    {
+      "id": "cover2man",
+      "label": "Cover 2 Man rules",
+      "names": [
+        "2 Man",
+        "2 Man Bump"
+      ],
+      "family": 1,
+      "scope": "active",
+      "note": "Native man selectors/cushions and deep halves. No selection-frequency claim."
+    },
+    {
+      "id": "fire",
+      "label": "Fire zone rules",
+      "names": [
+        "Strong Fire Zone Blitz",
+        "Middle Fire Zone Blitz",
+        "Outside Fire Zone Blitz",
+        "Weak Fire Zone Blitz",
+        "Open Fire Zone"
+      ],
+      "family": 1,
+      "scope": "active",
+      "note": "Retain front/coverage pairing and verify every linked menu after replacement."
+    },
+    {
+      "id": "speed_option",
+      "label": "Speed option: complete retail rules",
+      "names": [
+        "Strong Speed Option",
+        "Weak Speed Option"
+      ],
+      "family": 0,
+      "scope": "all",
+      "note": "This is the actual retail conditional speed option, not an Inside Zone Read."
+    },
+    {
+      "id": "pass_sets",
+      "label": "Pass protection: retail OL rules",
+      "names": [
+        "50 Z Comeback",
+        "50 All Go",
+        "50 All Streaks",
+        "50 X Slant"
+      ],
+      "family": 0,
+      "scope": "line",
+      "note": "A copied pass set is data. The automatic slide offset is runtime-only."
+    }
+  ],
+  "vocabulary": [
+    {
+      "term": "Defensive combo exchange",
+      "encoding": "0x1B -> 0x0D -> 0x0E paired with 0x1B -> 0x0E -> 0x0D",
+      "evidence": "PROVED",
+      "meaning": "Partner is man operand 5 (c), transition operand 6; zone has transition operand 6. Keep slots 4/9 and 6/10 together in ATL p28.",
+      "consumers": "0x0019FA10, 0x001A2E70, 0x001A5090"
+    },
+    {
+      "term": "Zone run / zone step",
+      "encoding": "0x11 type 8 in the sampled Inside/Outside Zone line; offsets, turn, end and group",
+      "evidence": "PROVED bytes; HYPOTHESIS football policy",
+      "meaning": "Both sampled zone runs use type 8, group 2; their lateral offsets differ. Other runs use type 0 drive legs. No separate zone-step toggle or guaranteed double-team command was proved.",
+      "consumers": "0x0023ABB0, 0x002400B0, 0x0023F450"
+    },
+    {
+      "term": "Double team / combo block",
+      "encoding": "No dedicated opcode established",
+      "evidence": "PROVED runtime candidate selection; HYPOTHESIS double-team interpretation",
+      "meaning": "The resolver ranks primary/secondary live candidates, sees other blockers and can swap their targets. Copying a leg cannot prescribe a new coordination algorithm. Not authorable as new AI.",
+      "consumers": "0x002FAFF0 (especially 0x002FBF26..0x002FC179)"
+    },
+    {
+      "term": "Pull / trap",
+      "encoding": "0x11 type 2 with lateral/depth offsets and time",
+      "evidence": "PROVED data and distinct runtime path",
+      "meaning": "The type-2 path selects its own movement/update helpers. Engagement and timing against a live front remain unwitnessed.",
+      "consumers": "0x002400B0, 0x0023F450 case 2"
+    },
+    {
+      "term": "Lead / release then block",
+      "encoding": "0x11 types 4 / 3, optionally preceded by 0x18",
+      "evidence": "PROVED grammar; HYPOTHESIS result",
+      "meaning": "Copy every leg; a selected path is not a guaranteed live defender.",
+      "consumers": "0x0023ABB0, 0x0023F450"
+    },
+    {
+      "term": "Pass set / slide protection",
+      "encoding": "0x11 type 1; 0x1A in conditional protection",
+      "evidence": "PROVED data; PROVED runtime slide offset",
+      "meaning": "0x0023B6E0 counts predicted threats by side and writes the bounded offset at 0x00C16BAC. Pass-set consumers add it. No new authorable slide algorithm.",
+      "consumers": "0x0023B6E0, 0x0023ABB0, 0x0023F450"
+    },
+    {
+      "term": "Zone landmarks",
+      "encoding": "0x1B -> 0x0D; X, depth, selectors and boundary mode",
+      "evidence": "PROVED",
+      "meaning": "Runtime initializes a zone record and adds actor adjustments; later callbacks pick receivers and steer. Landmark coordinates alone do not implement Palms or match quarters.",
+      "consumers": "0x001A6220, 0x001A5090, 0x001A5790"
+    },
+    {
+      "term": "Man target and cushion",
+      "encoding": "0x0E with receiver selectors, side and depth",
+      "evidence": "PROVED",
+      "meaning": "Friendly exchange partner and geometric opponent selector are different fields.",
+      "consumers": "0x001A5BC0, 0x001A2E70"
+    },
+    {
+      "term": "Rush / fire zone",
+      "encoding": "0x1B -> 0x0B; replacement 0x0D coverage over front",
+      "evidence": "PROVED grammar; HYPOTHESIS football result",
+      "meaning": "A coverage can drop a front lineman; active coverage wins overlap. Preserve a legal eleven-slot front/coverage union.",
+      "consumers": "0x001CEA80, 0x001A8C80, 0x001A8CB0"
+    },
+    {
+      "term": "Screen hold and release",
+      "encoding": "0x11 finite hold -> 0x18 -> 0x11 type 3; receiver 0x12 type 9",
+      "evidence": "PROVED",
+      "meaning": "Not every screen-named play uses that grammar. Nominal delays do not promise a throw or catch frame.",
+      "consumers": "0x00229AE0, 0x0019C740; ASTRA_SCREEN_PASS_REPORT.md"
+    },
+    {
+      "term": "Read / motion / synchronization",
+      "encoding": "0x1A with explicit path flags; 0x13/0x16 transfer pair",
+      "evidence": "PROVED predicate; HYPOTHESIS modern read",
+      "meaning": "Kinds 0/1 test assignment/header, 4 position/velocity, 5 geometry, 6 another decision, 7 personnel. No new EDGE/apex recognition policy is authored.",
+      "consumers": "0x001ACE40, 0x001AC7B0; ASTRA_READ_OPTION_BUILD_REPORT.md"
+    }
+  ],
+  "unavailable": [
+    {
+      "name": "Combo Inside Zone: OL rules",
+      "reason": "The retail play is defensive. Use its linked coverage rules."
+    },
+    {
+      "name": "Inside Zone Read",
+      "reason": "No such retail name in 37 books. Separate read presets remain experiments."
+    },
+    {
+      "name": "Slide protection",
+      "reason": "No retail call with this identity. Copy pass sets; the automatic slide offset is runtime-only."
+    }
+  ],
+  "sections": [
+    {
+      "id": "start",
+      "title": "Using retail rules",
+      "text": [
+        "EXPERIMENTAL / UNWITNESSED. Open a game source, choose a book and formation, then use the Rules library beside Assignments. The viewer shows every declared node including both terminal branches.",
+        "Presets are selectors. The app reads exact chains from your current book when you apply them. Search any retail play, choose all assignments, offensive line or active defense, and inspect the selected positions before applying.",
+        "Position codes and depth-chart ordinals must match. Friendly partners move with their assignments; opponent selectors and decision-node indices stay in their own namespaces. Incompatible personnel, split exchanges, class mismatch and stale sources refuse.",
+        "A renamed or relocated play has new name/pointer bytes. Applying the original rules to their original play without a name/header change can reproduce the entire original resource. Replacing a changed chain normally consumes new nodes."
+      ],
+      "links": [
+        "docs/mod_editor/play_rules.md"
+      ]
+    },
+    {
+      "id": "format",
+      "title": "PLAY and formation format",
+      "text": [
+        "Each resource is 78,768 bytes: a 32-byte wrapper and a fixed 0x13390-byte body. Every offset here is from the body. Counts at +0x34, +0x38 and +0x40 cover formations, plays and nodes.",
+        "Formations: 0x134 + 0xB4*f. Name pointer at +0; flags at +4; five eligible slots at +8; eleven package-role bytes at +0x0D. Slot records begin at +0x1A with a 14-byte stride. Mirror/stance nibble at +1; three signed-centimetre X columns at +2/+4/+6 and depth columns at +8/+10/+12. The authoring writer synchronizes all three.",
+        "Formation auxiliary: 0x245C + 0x50*f, 36 u16 menu links. Low 9 bits name the play; group bits retain existing audible/selection behavior. +0x48 & 63 is category row index; +0x4C is membership mask. Category row index is different from CPU category code.",
+        "Categories: 0x993C + 16*c. Code at +4 & 63, eleven position bytes at +5. Low five bits are kind, high three are depth ordinal. Correct native defense kinds: 12 DE, 13 DT, 14 MLB, 15 OLB, 16 FS, 17 SS, 18 CB. Older format memos had incorrect labels.",
+        "Plays: 0x33FC + 96*p. Flags at +4, eleven descriptor/pointer pairs at +8/+12 with stride 8. Family=(flags>>6)&7. Type=flags&63. Run/pass class is header data: run 0x8000, pass 0x6000, quick 0x2000; play action bit 21. A pass chain under a run header is unsafe.",
+        "Nodes: 0x9ADC, eight bytes each: opcode, flag, two reserved bytes, packed u32. Descriptor low nibble is chain length. Descriptor side/feature bits are rebuilt by the existing validator; high byte is inherited. Relative pointers resolve as field + signed stored value - 1.",
+        "Node X/depth use biased one-foot units; decoded values are centimetres. One yard is 91.44 cm. Time fields use tenths of a second. Block-leg type 9 uses named-spot table indices instead of X/depth units.",
+        "Node flags: 0x01 alternate path, 0x02 terminal, 0x04 first action, 0x10 ball-carrier phase. A condition may have two terminal nodes. Do not stop reading at the first terminal.",
+        "Strings begin at 0x10840; the UTF-16 unit count is at 0x1083C. Custom names append only into verified empty space.",
+        "The older PLAY_EDITOR_FINDINGS gap list predates the full codec and these runtime findings; use this reference for current authoring scope."
+      ],
+      "links": [
+        "docs/product/PLAY_EDITOR_FINDINGS.md",
+        "mod_editor/core/nfl2k5_play_codec.py",
+        "ASTRA_PLAY_RULES_REPORT.md"
+      ]
+    },
+    {
+      "id": "defense",
+      "title": "Defense, coverage and blitz findings",
+      "text": [
+        "Beta 61 authors Cover 0/1, Cover 2 Man/Hard/Soft, Cover 3, four-deep spot quarters, Cover 6 and replacement pressures. Tampa MLB drop and Double A alignment remain experiments. These are retail script/spot recipes; complete modern matching is not established.",
+        "Front and partial coverage combine to cover all eleven defenders. Coverage wins an overlapping active slot, enabling a defensive lineman to drop while another defender rushes. CPU category and front/coverage menus must remain valid; validation does not prove call frequency.",
+        "Combo Inside Zone is defensive. ATL p28 uses zone-to-man and man-to-zone paired scripts. The runtime reacts to predicted receiver geometry and signals a partner. This is real reactive logic, but does not prove complete Palms or quarters-match against every release.",
+        "Rush has 17 real lateral lanes plus no-lane value 17. Spy, contain, rush, and shallow zone are different behaviors. Geometry preview is not a simulation of opponent interaction.",
+        "The optional initial deep-zone corner cap changes a runtime throttle term. It is not an authorable zone node, and it does not establish head direction, interceptions or full coverage fidelity."
+      ],
+      "links": [
+        "ASTRA_DEFENSE_PLAY_REPORT.md",
+        "ASTRA_ZONE_DROP_REPORT.md",
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+      ]
+    },
+    {
+      "id": "spy",
+      "title": "Spy intent and the separate runtime patch",
+      "text": [
+        "The beta-61 authoring fallback is a same-slot MLB shallow middle zone, 3 through 5 yards deep, with versioned spy intent stored in the project/pack. PLAY bytes alone cannot prove spy intent.",
+        "The beta-62 dedicated spy backend now exists separately. It checks authored receipts or the native command bit before taking over ordinary zone callbacks. It remains EXPERIMENTAL / UNWITNESSED and requires the paired Build runtime option.",
+        "Its immutable lookup is 512 bytes: a 16-byte header and at most 31 records. It cannot hold one authored spy in all 32 NFL books simultaneously. Command spies do not consume table records. Copying a retail rule bundle does not create or transfer spy intent."
+      ],
+      "links": [
+        "ASTRA_DEFENSE_PLAY_REPORT.md",
+        "ASTRA_QB_SPY_RUNTIME_REPORT.md"
+      ]
+    },
+    {
+      "id": "option",
+      "title": "Options, reads and screens",
+      "text": [
+        "Five native speed-option donors: MIN 24, NO 57, NO 66, PHI 175 and TEN 144. Copy both the quarterback and the pitch back, preserving flags and the kind-6 synchronization reference. A mirror does not necessarily choose a different take animation.",
+        "No play named Inside Zone Read was found in the 37 retail books. The separate Zone read and RPO presets are authored experiments using the native position/velocity predicate, with an expected opponent fixture. They are not extracted retail zone-read plays.",
+        "Each supported chain has 1 through 15 nodes and one forward condition. Condition/cache indices are 0 through 7; alternate targets are 1 through 7 within the chain. Synchronization cycles, stale references and flattened forks refuse.",
+        "PLAY cannot add a new mesh timer policy, recognize an arbitrary backside EDGE/apex or guarantee an unblocked read defender. The target-selection code can still block him. Modern decision fidelity and human-input behavior need gameplay witnesses.",
+        "Screen timing presets use the measured finite hold/release/block grammar where it exists. Read-order mapping and nominal delay are data, while receiver readiness and pressure decisions are runtime."
+      ],
+      "links": [
+        "ASTRA_READ_OPTION_BUILD_REPORT.md",
+        "ASTRA_SCREEN_PASS_REPORT.md"
+      ]
+    },
+    {
+      "id": "pipeline",
+      "title": "Practice books, packs and Build",
+      "text": [
+        "PRACTICE and Editor are utility books with drill records. The beta-61 defense pack preserves those drills and appends its ten calls to their 4-3 menu, while team books replace records. Free Practice in Franchise and seven-on-seven are separate features; do not rewrite drill identities to install a rule.",
+        "Normal path: choose source -> author formation and assignments -> validate and choose replacements -> stage project -> save/export .2k5book -> inspect install plan -> compile into a disc copy -> export .2k5patch if wanted. The source game stays read-only.",
+        "A .2k5book is a structured recipe, not a raw PLAY blob. Schema v3 preserves explicit node flags and option metadata; defense/spy intent uses its existing fields. Automatic cross-book retargeting of custom defense/option scripts is refused. Re-extract a rule from the target book and review it instead.",
+        "Compilation checks node/name/link capacity before mutation, reparses the complete fixed-span result and issues exact changed ranges and source/replacement hashes. Shared play replacement affects every formation menu referencing it.",
+        "Practice-book and pack installation reuse the existing Build and Share transport. Rules add no executable owner or archive growth allocation."
+      ],
+      "links": [
+        "docs/mod_editor/playbook_packs.md",
+        "ASTRA_DEFENSE_PLAY_REPORT.md",
+        "ASTRA_READ_OPTION_BUILD_REPORT.md",
+        "mod_editor/core/nfl2k5_seven_on_seven_book.py"
+      ]
+    },
+    {
+      "id": "limits",
+      "title": "Capacity and evidence limits",
+      "text": [
+        "50 formations, 270 plays, 26 categories, 36 links per formation, 3,500 nodes and 15 nodes per chain. Custom names: 1 through 40 printable ASCII characters. Node/name space is finite even when replacing an existing play.",
+        "Eight retail team books already have 270 plays: ARZ, BUF, CIN, HOU, JAX, NYJ, OAK and SD. Prefer replacement and check the whole staged batch. Retail CHI has 761 spare nodes before other packs.",
+        "A validator pass proves structural acceptance by the ported validator, not a gameplay witness. PROVED labels refer to bytes or static consumer flow; HYPOTHESIS labels cover inferred football semantics. Nothing in this feature is witnessed until Noah plays it.",
+        "No dedicated authorable double-team policy, protection-slide algorithm, modern match-coverage policy, true spy opcode or general modern zone-read AI has been established in PLAY. Existing runtime code still controls those decisions.",
+        "Unlinked plays can be inspected, but source bundles need a linked formation to establish personnel. Less-established defensive opcodes stay inspectable and may be refused by the existing authoring guard."
+      ],
+      "links": [
+        "ASTRA_PLAY_RULES_REPORT.md",
+        "ASTRA_QB_SPY_RUNTIME_REPORT.md"
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "id": "combo_inside",
+      "book": "ATL",
+      "formation": 23,
+      "play": 28
+    },
+    {
+      "id": "outside_zone",
+      "book": "ATL",
+      "formation": 6,
+      "play": 77
+    },
+    {
+      "id": "power",
+      "book": "ATL",
+      "formation": 2,
+      "play": 98
+    },
+    {
+      "id": "counter",
+      "book": "ATL",
+      "formation": 10,
+      "play": 127
+    },
+    {
+      "id": "inside_zone",
+      "book": "TB",
+      "formation": 15,
+      "play": 70
+    },
+    {
+      "id": "speed_option",
+      "book": "MIN",
+      "formation": 12,
+      "play": 24
+    },
+    {
+      "id": "draw",
+      "book": "ATL",
+      "formation": 6,
+      "play": 159
+    },
+    {
+      "id": "screen",
+      "book": "ATL",
+      "formation": 5,
+      "play": 178
+    },
+    {
+      "id": "cover3",
+      "book": "ATL",
+      "formation": 23,
+      "play": 8
+    },
+    {
+      "id": "cover2man",
+      "book": "ATL",
+      "formation": 23,
+      "play": 25
+    },
+    {
+      "id": "fire",
+      "book": "CIN",
+      "formation": 27,
+      "play": 12
+    },
+    {
+      "id": "pass_sets",
+      "book": "ATL",
+      "formation": 12,
+      "play": 60
+    }
+  ],
+  "runtime_consumers": [
+    "0x0019FA10",
+    "0x001A2E70",
+    "0x001A5090",
+    "0x001A5790",
+    "0x001A6220",
+    "0x001B85A0",
+    "0x001B8BC0",
+    "0x001B8C40",
+    "0x001B8CA0",
+    "0x0023ADA0",
+    "0x0023ABB0",
+    "0x0023B6E0",
+    "0x0023DBE0",
+    "0x0023F450",
+    "0x002400B0",
+    "0x002FAFF0",
+    "0x001ACE40",
+    "0x001A9840",
+    "0x001CEA80"
+  ]
+}

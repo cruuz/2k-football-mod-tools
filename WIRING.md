@@ -5093,3 +5093,143 @@ normalization, exact replay and changed-setting refusal. Run both XBE gates,
 the Momentum suites and the manifest suite against the fresh private/release
 manifest. Keep source-fingerprint checks enabled. No gameplay witness or
 release enablement is implied by these offline checks.
+# r62-play-rules-editor: retail Rules library and Info reference
+
+This feature authors PLAY data through the existing compiler and project/pack
+pipeline. Its own wizard tabs and panels are implemented. All shared files
+below were left untouched as required by ASTRA_BRIEF.md. Evidence and witness
+requirements are in `ASTRA_PLAY_RULES_REPORT.md`.
+
+## Studio registration
+
+Import `PlayInfoPanel` from `mod_editor.gui.play_info_panel_qt` in the protected
+`studio_qt.py`. In `_build_create_play_page`, keep the existing authoring page
+and replace its final `return page` with this wrapper (`QTabWidget` is already
+imported):
+
+```python
+tabs = QTabWidget()
+tabs.setObjectName("createPlayTabs")
+tabs.addTab(page, "Create a Play")
+self._play_info_panel = PlayInfoPanel()
+tabs.addTab(self._play_info_panel, "Info")
+return tabs
+```
+
+Update that page's blurb to:
+
+```text
+Choose a formation, design assignments or copy retail rules, then place the
+play in the book. Rules and gameplay results are experimental and unwitnessed.
+Use Info for the format, rule vocabulary and current evidence limits.
+```
+
+The wizard already contains Assignments, Rules library and Info tabs on its
+assignment page. The standalone Studio Info tab makes the same reference
+available before choosing a source. It needs no facade, retail assets, runtime
+patch or source eligibility gate. Do not edit `playbooks_panel_qt.py` for this
+job; the Create a Play surface satisfies the requested placement. Maintain the
+existing `PlaybooksPanel(self.facade)` registration.
+
+## Explicit dispatcher, Build and allocator disposition
+
+| Protected integration item | Required change |
+| --- | --- |
+| `_apply_all` owner tuple and kwarg | None. This is an existing PLAY resource writer path, not an XBE patch. |
+| `_selected_space_requests`, `_xbe_space_adapter`, `_grown_status_fields` | None. No owner or executable/data allocation. |
+| `read_xbe` status dictionary | No new key. |
+| `read_image` status dictionary | No new key. |
+| `write_xbe_copy` status dictionary | No new key. |
+| `write_image_copy` status dictionary | No new key; normal resource compiler receipts apply. |
+| `BuildPlan` field, normalization, deferral, final pass | No new field. Existing staged formation/play/pack requests carry the change. |
+| Basic / advanced / experimental preset enablement | None enables or silently copies rules. Applying a bundle is an explicit authoring action. |
+| Gameplay Patches `PATCHES` text and `NEEDS_IMAGE` | No new row or membership. Retail rules are PLAY data; Patch installation uses the existing project/pack transport. |
+| Build `_option` caption (60-character limit) | Not applicable; no new checkbox. |
+| Allocator budgets, union, memory/cave gates and cave manifest | No new owner; no changes or regeneration needed for this job. |
+
+Existing dedicated Spy and read-option runtime settings keep their own Build
+requirements. Copying a retail bundle does not create those intents or enable
+their switches. Do not invent a gameplay patch toggle to expose a data editor.
+
+## Exact release allowlist additions
+
+Add these currently absent lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_play_rules.py
+mod_editor/gui/play_rules_panel_qt.py
+mod_editor/gui/play_info_panel_qt.py
+docs/mod_editor/play_rules.json
+docs/mod_editor/play_rules.md
+docs/mod_editor/play_rules.evidence.json
+ASTRA_PLAY_RULES_REPORT.md
+ASTRA_DEFENSE_PLAY_REPORT.md
+ASTRA_READ_OPTION_BUILD_REPORT.md
+ASTRA_SCREEN_PASS_REPORT.md
+ASTRA_GAMEPLAY_LEVERS_REPORT.md
+```
+
+The last four reports are linked by Info and were absent from this branch's
+allowlist. Retain existing lines for `ASTRA_ZONE_DROP_REPORT.md`,
+`ASTRA_QB_SPY_RUNTIME_REPORT.md`, `docs/product/PLAY_EDITOR_FINDINGS.md`,
+`docs/mod_editor/playbook_packs.md` and
+`mod_editor/core/nfl2k5_seven_on_seven_book.py`. The codec, library, inspector,
+writer, pack module and Create a Play wizard already have product paths; retain
+their updated versions. The evidence JSON contains hashes/counts and corpus
+locations, not node payloads or decompiler bodies.
+
+Do not release `.scratch/play_rules_audit.json`, the research CLI, tests or
+`docs/mod_editor/play_rules.capability.json`; those are local/developer evidence
+or integration inputs. Presets ship selectors only. User-exported project/pack
+operands remain user artifacts and must not be copied into the release.
+
+## Runtime closure
+
+Add these explicit imports to the protected runtime closure check:
+
+```text
+mod_editor.core.nfl2k5_play_rules
+mod_editor.gui.play_rules_panel_qt
+mod_editor.gui.play_info_panel_qt
+```
+
+Stage `docs/mod_editor/play_rules.json` at that exact relative path. Its loader
+resolves the application root from `mod_editor/core`; retain the normal staged
+directory layout. Retain transitive codec/library/inspector/writer/pack, errors,
+PyQt5 and existing book-reader closure. No Capstone, Unicorn, Ghidra, network
+dependency or game asset is needed to open Info.
+
+Extend the offscreen runtime probe to instantiate `PlayInfoPanel`, assert 47
+topics including all 29 opcode topics and a read-only reader, search `31
+records`, and open the linked local reports. Missing reference JSON must fail
+the release probe rather than ship an empty tab. Run the normal staged closure
+and provider fingerprint regeneration after integration. Source tests prove
+the panels, not the protected packaged build that this job cannot edit.
+
+## Capability handoff
+
+Merge `docs/mod_editor/play_rules.capability.json` as capability
+`nfl2k5.scripts.play_rules` on existing surface `scripts_config` using the
+registry serializer. Classification is `offline-writer-proved`, runtime
+`not-tested`, exposed edit mode with `default_enabled: false`. No surface enum
+or schema expansion is needed. The backend command invokes the existing
+project writer with `python3 -m tools.nfl2k5_visual_mod_project ...`; the
+validation command is `python3 -m tests.mod_editor.test_nfl2k5_play_rules`.
+The read-only catalog/inspect commands are documented in the guide.
+
+The handoff passes the repository validator's structural checks and its own
+evidence/command file checks. A full inherited registry file check currently
+stops at the pre-existing missing `docs/research/apf_audio.md` in capability 0;
+resolve that independently when doing shared integration. Do not mistake it
+for a missing new Rules file.
+
+The older `nfl2k5.scripts.director_playbook` row contains stale global claims
+that the compiler never authors nodes and that the true-spy backend is not yet
+built. Reconcile that row with the already-landed authoring/spy capabilities
+and the new Rules row: copied operands can persist in local projects and v3
+packs, while the distributed library contains selectors only. The new row does
+not claim a witnessed runtime outcome.
+
+Run both new standalone Rules test files, the existing authoring/writer,
+defense/read-option and pack suites, and protected Studio/runtime closure
+checks after wiring. No updater, tag, workflow or push change is requested.
