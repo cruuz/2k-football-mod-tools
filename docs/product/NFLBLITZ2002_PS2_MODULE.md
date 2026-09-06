@@ -44,23 +44,40 @@ pixel, palette entry or record from the disc is in this repository.
 
 ## 2. What the module is made of
 
+The **lane behaviour** lives in `mod_editor/games/_lanes/blitz_zip_lanes.py`,
+shared with NFL Blitz 2003 because the two discs are the same pair. This package
+is what points it at *this* disc.
+
 | file | what it holds |
 |---|---|
 | `containers.py` | the identity digests, which member feeds which page, the ZIP pair opened in place off the image, the text line-slot and roster readers, and every synthetic builder |
 | `disc_identity.py` | the shared PS2 identifier, given this game's identity |
-| `zip_lane.py` | the one way anything is written: same-length members, three CRC sites, the shared ISO9660 writer in, its independent verifier out |
-| `text_lane.py` | `TextLineLane`, three rows: the crowd tables, `field.tab`, the trivia banks |
-| `roster_lane.py` | `RosterNameLane`, one row: either 32-byte name field of any of the 738 records |
-| `texture_lane.py` | `TextureDictionaryLane`, three rows: the all-textures inventory and two export lanes |
-| `camera_lane.py` | `ContainerInventoryLane`, one row: camera paths, `WIFF` containers, RenderWare clumps |
+| `zip_lane.py` | the shared build/verify pair bound to this disc's reader: same-length members, every CRC site, the shared ISO9660 writer in, its independent verifier out |
+| `text_lane.py` | three `TextLineLane` rows: the crowd tables, `field.tab`, the trivia banks |
+| `roster_lane.py` | one `RosterNameLane` row: either 32-byte name field of any of the 738 records |
+| `texture_lane.py` | three `TextureDictionaryLane` rows: the all-textures inventory and two export lanes |
+| `camera_lane.py` | one `ContainerInventoryLane` row: camera paths, `WIFF` containers, RenderWare clumps |
 | `validators.json`, `tools/validate_nflblitz2002_ps2_*.{sh,bat}` | five validators through `tools/validate_game_lane.py` |
 | `tests/mod_editor/test_nflblitz2002_ps2_lanes.py`, `..._module.py` | 24 tests on the synthetic disc, plus the conformance harness |
 
 Shared code this module added: `mod_editor/games/_formats/blitz_zip.py` (the
-Midway stored ZIP, both `.ZIH` shapes, and the bounded three-place writer) and
+Midway stored ZIP, both `.ZIH` shapes, and the bounded writer) and
 `mod_editor/games/_formats/rw_txd.py` (RenderWare texture dictionaries with PS2
-native rasters). Both joined the release allowlist and the runtime closure.
+native rasters), plus `mod_editor/games/_lanes/blitz_zip_lanes.py` (the four
+lane classes and the build/verify pair, which NFL Blitz 2003 instantiates rather
+than copies). All three are on the release allowlist and in the runtime closure.
 17 tests prove `blitz_zip` and 14 prove `rw_txd`, each on sources they build.
+
+Both formats have a document of their own, and they are where the measurements
+live rather than in this file:
+
+* **`docs/product/MIDWAY_ZIP_FORMAT.md`** — the stored ZIP, both `.ZIH` shapes,
+  how a member is located and verified, the same-length writer and **why it
+  declares four byte ranges on this disc and two on the 2003 one**.
+* **`docs/product/RENDERWARE_TXD_FORMAT.md`** — the section-chunk stream, the
+  texture dictionary, the PS2 raster, the GS layout measurement (§4 below in
+  short form), the PCSX2 identity, and a cross-disc census of what the same
+  reader makes of NFL Blitz Pro, Blitz: The League and Madden NFL 06.
 
 ## 3. The fourteen pages
 
@@ -162,7 +179,9 @@ The 8-bit answer beats the null by 232% and is taken. **No 4-bit candidate
 separates from the null** — the best beats it by 9% — so `decode_rgba` refuses a
 4-bit raster by name and the refusal quotes those two numbers. Guessing there
 would put a wrong picture on a page. 32-bit rasters are direct colour and need
-no index step.
+no index step. `docs/product/RENDERWARE_TXD_FORMAT.md` §5 states what the score
+is and how to recompute it, and names the assumption that would make the 4-bit
+negative wrong.
 
 Per disc: 4,189 of 10,420 rasters decode (2002) and 6,392 of 11,828 (2003);
 4,166 and 6,365 identities are derived; 0 refusals in either walk [M].
@@ -260,6 +279,8 @@ index's record shape, and the counts. Nothing else (§2 there has the numbers).
   and rewriting the member at its own length is within these readers —
   `rw_txd._swizzle8` is the exact inverse the synthetic builder already uses —
   and it is **not proved**, so it is not offered.
+  `docs/product/RENDERWARE_TXD_FORMAT.md` §8 is what such a writer would still
+  have to get right.
 * **No 4-bit decode** (§4), which is 6,231 rasters on the 2002 disc.
 * **No `WIFF` chunk reader, no `.dff` geometry reader, no camera-record
   decode**, each with its measured reason in §5.

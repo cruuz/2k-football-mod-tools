@@ -131,20 +131,41 @@ because the module knows which disc it is looking at.
 **Not booted.** No image built by this module has been booted in an emulator or
 on hardware, and no receipt claims otherwise.
 
-## 5. Why this is a copy and not an import
+## 5. This is an instantiation, not a copy
 
-The contract forbids a game package importing a sibling game
-(`mod_editor/games/contract.py`, `ALLOWED_CORE_IMPORTS`), and the shared layer a
-second instantiation would otherwise use — `mod_editor/games/_lanes/` — was
-outside this work's boundary. So the eleven module files are the 2002 module's
-with a recorded substitution list applied: identity, digests, archive paths,
-the default index shape, and the counts in the prose. The two format readers
-under `mod_editor/games/_formats/` are genuinely shared and are imported, not
-copied.
+It **was** a copy. The contract forbids a game package importing a sibling game
+(`mod_editor/games/contract.py`, `ALLOWED_CORE_IMPORTS`), and when this module
+shipped, the shared layer a second instantiation would use —
+`mod_editor/games/_lanes/` — held nothing for a Midway disc. So the lane files
+were the 2002 module's with a recorded substitution list applied, and this
+section asked the next agent to extract them.
 
-**The next agent should extract `mod_editor/games/_lanes/blitz_zip_lanes.py`**
-holding `TextLineLane`, `RosterNameLane`, `TextureDictionaryLane`,
-`ContainerInventoryLane` and the `zip_lane` build/verify pair, parameterised on
-a disc module exactly as `_lanes/terf_art.py` is — and leave both games as
-thin wirings over it. That is the shape the charter asks for; this work could
-not reach it without editing files it did not own.
+**That extraction is done.** `mod_editor/games/_lanes/blitz_zip_lanes.py` now
+holds `TextLineLane`, `RosterNameLane`, `TextureDictionaryLane`,
+`ContainerInventoryLane`, the `zip_lane` build/verify pair and the four
+command-line entry points, parameterised on a disc-access module exactly as
+`_lanes/terf_art.py` is for the two Tiburon discs. Both games are thin wirings
+over it: each lane file names which members, which page, which classification
+and its own schema string, and nothing else.
+
+| | before | after |
+|---|---:|---:|
+| `mod_editor/games/nflblitz2002_ps2/*.py` | 2,223 | 1,017 |
+| `mod_editor/games/nflblitz2003_ps2/*.py` | 2,224 | 1,018 |
+| `mod_editor/games/_lanes/blitz_zip_lanes.py` | — | 1,347 |
+| **total** | **4,447** | **3,382** |
+
+A game still never imports a sibling game; both import the shared layer. The
+two format readers under `mod_editor/games/_formats/` were already shared and
+are unchanged.
+
+The schema strings stay per game on purpose — `nflblitz2003_ps2_text_lines/v1`
+is not `nflblitz2002_ps2_text_lines/v1` — so a recipe written against one disc
+is refused by the other rather than silently applied to it.
+
+Both formats now have a document of their own:
+`docs/product/MIDWAY_ZIP_FORMAT.md` (the pair, both `.ZIH` shapes and **why this
+disc's builds declare two ranges where the 2002 disc's declare four**) and
+`docs/product/RENDERWARE_TXD_FORMAT.md` (the texture dictionaries, the GS layout
+measurement, and a cross-disc census of what the same reader makes of NFL Blitz
+Pro, Blitz: The League and Madden NFL 06).
