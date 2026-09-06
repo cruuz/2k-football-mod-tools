@@ -14,10 +14,14 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'tests')]
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 from mod_editor.core import mod_build as build, nfl2k5_throw_tuning as tt
 from mod_editor.core import nfl2k5_team_names_2026 as names
-from tests.nfl2k5_allocator_stack import REQUESTS as _ALL_REQUESTS
-from mod_editor.core import nfl2k5_read_option_runtime as _read_option
-# every owner the protected dispatcher is wired for; the read-option runtime joins when integration 3 wires it
-REQUESTS = tuple(r for r in _ALL_REQUESTS if r[0] != _read_option.OWNER)
+# Exactly the owners selected by this integration-2 fixture. Integration 3
+# additionally tests the independently selected new owners in its own suite.
+REQUESTS = tuple(row for module in (
+    tt.kickoff_relocated_patch, tt.scorebug_runtime_patch, tt.momentum_patch,
+    tt.defensive_try_patch, tt.zone_drop_patch, tt.roster_storage_patch,
+    tt.coverage_slider_patch, tt.scramble_tuning_patch, tt.music_playlist_patch,
+    tt.practice_squad_screen_patch, tt.abilities_patch, tt.qb_spy_patch, tt.calendar_engine_patch,
+) for row in module.REQUESTS)
 from tests.mod_editor.test_nfl2k5_xbe_space import RETAIL, image_with_xbe
 
 FLAGS = ('all_stadiums', 'team_names_2026', 'coverage_slider', 'scramble_tuning',
@@ -70,7 +74,8 @@ class PlanTests(unittest.TestCase):
                 self.assertEqual(Path(path).read_bytes(), b'source')
                 return dict(path=str(path), container='xiso', scorebug='retail', hires_pack='retail')
             stack.enter_context(patch.object(build, 'inspect', new=inspect))
-            stack.enter_context(patch.object(hires, 'inspect_image', return_value={'assets':[{'key':'helmet'}]}))
+            stack.enter_context(patch.object(hires, 'preflight_budget', return_value={'whole_game_fit_proved':False}))
+            stack.enter_context(patch.object(hires, 'inspect_image', return_value={'assets':[{'key':'helmet','family':'helmets'}]}))
             def compile(source, output, folder, **kw):
                 events.append('hires')
                 Path(output).write_bytes(b'final remapped archive')
@@ -97,7 +102,8 @@ class PlanTests(unittest.TestCase):
             source, target = Path(directory)/'source.iso', Path(directory)/'output.iso'
             source.write_bytes(b'source')
             stack.enter_context(patch.object(tt, 'is_disc_image', return_value=True))
-            stack.enter_context(patch.object(hires, 'inspect_image', return_value={'assets':[{'key':'scorebug'}]}))
+            stack.enter_context(patch.object(hires, 'preflight_budget', return_value={'whole_game_fit_proved':False}))
+            stack.enter_context(patch.object(hires, 'inspect_image', return_value={'assets':[{'key':'renamed_art', 'family':'scorebug'}]}))
             stack.enter_context(patch.object(shutil, 'copyfile', side_effect=AssertionError('copied before preflight')))
             for flag in ('scorebug', 'scorebug_runtime'):
                 with self.assertRaisesRegex(ValueError, 'conflicts'):
@@ -184,7 +190,17 @@ class ExecutableTests(unittest.TestCase):
                 grown, _ = kickoff.apply(grown)
             build._write_xbe_bytes(Path(image), grown)
             return rec
-        with tempfile.TemporaryDirectory() as directory, patch.object(ingame,'runtime_apply_in_place',new=resources):
+        def validate_playlist(image, *, expected):
+            # This fixture owns only an XBE. Validate its actual installed table;
+            # descriptor/archive geometry is covered by the Music owner suite.
+            state, selected = tt.music_playlist_patch._inspect(build._xbe_bytes(image))
+            self.assertEqual(state, 'applied')
+            self.assertEqual(selected, tt.music_playlist_patch.from_options(expected))
+            tt.music_playlist_patch.validate_source(selected, tt.music_playlist_patch.BANK_COUNTS)
+            return {'installed':True, 'revalidated_after_rebuild':True}
+        with tempfile.TemporaryDirectory() as directory, patch.object(ingame,'runtime_apply_in_place',new=resources), patch.object(
+                build._core_module('nfl2k5_music_banks'), 'read_descriptor_counts', return_value=tt.music_playlist_patch.BANK_COUNTS), patch.object(
+                build._core_module('nfl2k5_music_banks'), 'revalidate_playlist', side_effect=validate_playlist):
             source=Path(directory)/'source.iso'
             source.write_bytes(image_with_xbe(self.retail))
             for writer in ('dispatcher','build'):

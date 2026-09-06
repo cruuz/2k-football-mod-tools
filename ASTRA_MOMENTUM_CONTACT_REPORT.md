@@ -1,5 +1,7 @@
 # r62 momentum-contact, 2026-09-06
 
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
+
 **EXPERIMENTAL / UNWITNESSED. All presets remain off.**
 
 Built the requested bounded tier C extension in the existing Momentum owner,
@@ -315,8 +317,8 @@ The actual disposable manifest command was:
 ```sh
 QT_QPA_PLATFORM=offscreen MOD_STUDIO_NO_UPDATE_CHECK=1 /usr/bin/time -v \
   python3 tools/nfl2k5_cave_oracle.py manifest \
-  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
-  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '<media>/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
   --work-dir /tmp --json .scratch/momentum-contact/manifest.json
 ```
 

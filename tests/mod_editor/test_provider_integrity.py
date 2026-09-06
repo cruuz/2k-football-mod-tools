@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+# Standalone invocation must not depend on a caller's PYTHONPATH.
+import sys
+from pathlib import Path
+sys.path[:0] = [str(Path(__file__).resolve().parents[2]), str(Path(__file__).resolve().parents[1])]
+
 import ast
 import copy
 from dataclasses import replace
@@ -194,7 +199,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [195, 9, 8, 9, 8, 9]  # +10 wave-A runtime modules and their byte templates; the hi-res and 2026-name modules load via mod_build, not the backend closure,
+            [225, 9, 8, 9, 8, 9]  # +10 wave-A runtime modules and their byte templates; the hi-res and 2026-name modules load via mod_build, not the backend closure,
         )
         for provider in providers:
             entries = [provider.backend_module]

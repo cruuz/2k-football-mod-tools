@@ -1,5 +1,7 @@
 # Astra play rules editor report
 
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
+
 | Rule vocabulary | PLAY data | Evidence and authoring boundary | Runtime consumers |
 | --- | --- | --- | --- |
 | Defensive combo exchange | 0x1B -> 0x0D -> 0x0E paired with 0x1B -> 0x0E -> 0x0D | PROVED. Partner is man operand 5 (c), transition operand 6; zone has transition operand 6. Keep slots 4/9 and 6/10 together in ATL p28. | 0x0019FA10, 0x001A2E70, 0x001A5090 |
@@ -66,7 +68,7 @@ encode, draw and validation callback addresses. Its SHA-256 is
 The offline auditor verified every table field against the structured reference.
 
 Corpus paths below are relative to the read-only Ghidra root
-`/home/noah/2k-football-mod-tools/research/functions/nfl2k5`.
+`<home>/2k-football-mod-tools/research/functions/nfl2k5`.
 The evidence manifest pins each complete decompiler block by SHA-256.
 
 | Consumer | Corpus location |
@@ -248,7 +250,7 @@ serialization and project save/reopen/recompile equality.
 Full refreshed offline research command:
 
 ```sh
-python3 tools/nfl2k5_play_rules_research.py --image '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)' --xbe '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' --corpus /home/noah/2k-football-mod-tools/research/functions/nfl2k5 > .scratch/play_rules_audit.json
+python3 tools/nfl2k5_play_rules_research.py --image '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)' --xbe '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' --corpus <home>/2k-football-mod-tools/research/functions/nfl2k5 > .scratch/play_rules_audit.json
 ```
 
 Result: exit 0; 37 books; 9,251 validated plays and synchronization checks;
@@ -257,7 +259,7 @@ entries pinned; 55 corpus blocks found and 83 explicitly listed gaps. Refreshed
 audit counts, hashes and corpus pins match the committed evidence manifest.
 
 CLI smoke: `python3 -m mod_editor.core.nfl2k5_play_rules inspect --image
-'/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)' --book ATL
+'<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)' --book ATL
 --play 28 --formation 23` exited 0; its parsed JSON contains all 11 assignments
 and 26 nodes. Output remains local in `.scratch/combo_rules.json`.
 

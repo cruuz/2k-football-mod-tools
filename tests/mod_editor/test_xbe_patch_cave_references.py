@@ -320,15 +320,34 @@ class CaveReferenceTests(unittest.TestCase):
     def test_practice_squad_spans_preserve_stack_owners(self) -> None:
         from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
         from mod_editor.core import nfl2k5_practice_squad as ps
+        from mod_editor.core import nfl2k5_roster_arena_growth as arena
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         retail = XbeImage(self.retail)
         stack = XbeImage(self.stack)
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), retail)
+        # The larger-roster owner deliberately delegates these stable PS entry
+        # points to its sealed RX allocation. Prove each exact bridge, rather
+        # than treating the entire original owner's cave as shared/free space.
+        self.assertEqual(arena.status(self.patched), 'applied')
+        installed = XbeImage(self.patched)
+        bridges = {va: (name, before, after)
+                   for name, va, before, after in arena.sites(arena.allocation(self.patched)['va'])
+                   if name in arena.BRIDGES}
         for start, size, _ in ps.CAVES:
-            # the manifest now observes the practice squad itself; nothing ELSE may own its caves,
-            # except the roster arena growth owner, which declares its ps_import/ps_export repoints there
-            self.assertEqual([e for e in manifest.overlaps(start, start + size, exclude_owner='nfl2k5_practice_squad')
-                              if e.detail.split(':', 1)[0] != 'nfl2k5_roster_arena_growth'], [], hex(start))
+            overlaps = manifest.overlaps(start, start + size, exclude_owner='nfl2k5_practice_squad')
+            for hit in overlaps:
+                self.assertEqual(hit.detail.split(':', 1)[0], arena.OWNER, hit)
+                matching = [(va, name, before, after) for va, (name, before, after) in bridges.items()
+                            if va <= hit.start < hit.end <= va + len(before)]
+                self.assertEqual(len(matching), 1, hit)
+                va, _name, before, after = matching[0]
+                self.assertEqual(len(before), 5)
+                self.assertEqual(installed.read(va, len(after)), after)
+            for va, (name, before, _after) in bridges.items():
+                if start <= va < start + size:
+                    self.assertTrue(any(hit.start == va and hit.end == va + len(before)
+                                        and hit.detail == f'{arena.OWNER}: declared edit: {name}'
+                                        for hit in overlaps), name)
             self.assertEqual(stack.read(start, size), retail.read(start, size), hex(start))
             self.assertEqual({va: refs for va, refs in self.targets.items()
                               if start <= va < start + size and any(

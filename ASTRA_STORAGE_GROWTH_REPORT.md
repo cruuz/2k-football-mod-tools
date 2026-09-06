@@ -1,5 +1,7 @@
 # r62 roster storage growth
 
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
+
 Design recorded before implementation, 2026-09-05. EXPERIMENTAL / UNWITNESSED.
 
 ## Design decision
@@ -276,8 +278,8 @@ decoded XBE sites, including `GHIDRA_GAP` entries. Reproduce with:
 
 ```sh
 python3 tools/nfl2k5_roster_storage_audit.py \
-  --corpus /home/noah/2k-football-mod-tools/research/functions/nfl2k5 \
-  --xbe '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --corpus <home>/2k-football-mod-tools/research/functions/nfl2k5 \
+  --xbe '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
   --json docs/mod_editor/nfl2k5_roster_storage_census.json
 ```
 
@@ -361,8 +363,8 @@ The following **real disposable image** manifest build passed:
 
 ```sh
 python3 tools/nfl2k5_cave_oracle.py manifest \
-  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
-  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '<media>/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
   --work-dir .scratch --json .scratch/storage-manifest.json
 ```
 

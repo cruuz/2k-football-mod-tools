@@ -556,11 +556,11 @@ class StudioSession:
 
     @property
     def build_settings(self):
-        from mod_editor.core.nfl2k5_music_playlist import build_settings
+        from mod_editor.core.nfl2k5_build_settings import build_settings
         return build_settings(self._build_settings)
 
     def set_build_settings(self, value):
-        from mod_editor.core.nfl2k5_music_playlist import build_settings
+        from mod_editor.core.nfl2k5_build_settings import build_settings
         checked = build_settings(value)
         if checked == self._build_settings:
             return

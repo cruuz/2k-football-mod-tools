@@ -423,9 +423,10 @@ ABILITY_LABELS = {"speedster": "Speedster", "right_stick_moves": "Right-Stick Mo
                   "juke": "Juke (phase 2)", "spin": "Spin (phase 2)",
                   "truck": "Shoulder Charge / Truck (phase 2)",
                   "hurdle": "Hurdle (phase 2)", "stiff_arm": "Stiff-Arm (phase 2)"}
-VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style")
+VIRTUAL_FIELDS = ("power_run_style_bucket", "throw_style", "guardian_cap")
 
 ENUMS: dict[str, Sequence[str]] = {
+    "guardian_cap": YES_NO,
     "position": POSITIONS, "hand": HANDS, "body": BODIES, "helmet": HELMETS,
     "face_shield": FACE_SHIELDS, "dreads": YES_NO, "eye_black": YES_NO, "mouthpiece": YES_NO,
     "left_glove": GLOVES, "right_glove": GLOVES, "left_wrist": WRISTS, "right_wrist": WRISTS,
@@ -894,6 +895,17 @@ class PlayerRecord:
         self.values[field] = self.values[field] | bit if enabled else self.values[field] & ~bit
 
     # ------------------------------------------------------------------ raw field access
+    @property
+    def guardian_cap(self) -> bool:
+        """The overlay selection at physical +0x53 bit 5, separate from abilities."""
+        return bool(self.values["unknown_53_high"] & 0x10)
+
+    @guardian_cap.setter
+    def guardian_cap(self, enabled: bool) -> None:
+        _require(type(enabled) is bool, "Guardian cap requires a Boolean")
+        value = self.values["unknown_53_high"]
+        self.values["unknown_53_high"] = value | 0x10 if enabled else value & ~0x10
+
     def get(self, name: str) -> int:
         if name in ABILITY_BITS:
             return int(self.abilities[name])
@@ -903,6 +915,10 @@ class PlayerRecord:
         return self.values[name]
 
     def set(self, name: str, value: int) -> None:
+        if name == "guardian_cap":
+            _require(type(value) in (int, bool) and value in (0, 1), "Guardian cap accepts 0 or 1")
+            self.guardian_cap = bool(value)
+            return
         if name in STYLE_RATINGS or name in VIRTUAL_FIELDS:
             _require(type(value) is int, f"{name} requires a whole number")
         if name in ABILITY_BITS:
@@ -3012,7 +3028,7 @@ CSV_IDENTITY = ("pool", "index", "team", "first", "last", "position", "jersey", 
                 "face_mask", "face_shield", "mouthpiece", "turtleneck", "sleeves", "neck_roll",
                 "left_glove", "right_glove", "left_wrist", "right_wrist", "left_elbow",
                 "right_elbow", "left_shoe", "right_shoe", "depth_rank", "depth_side", "player_type")
-CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS)
+CSV_COLUMNS = CSV_IDENTITY + RATING_BYTE_ORDER + tuple(ABILITY_BITS) + ("guardian_cap",)
 CSV_READ_ONLY = frozenset({"pool", "index"})
 FREE_AGENT_CSV_WORDS = frozenset({"free_agent", "free agents", "free agent", "fa"})
 
@@ -3052,6 +3068,7 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
         "player_type": record.values["player_type"],
     }
     row.update({name: int(value) for name, value in record.abilities.items()})
+    row["guardian_cap"] = int(record.guardian_cap)
     row.update(record.ratings())
     return row
 
@@ -3198,7 +3215,7 @@ def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
             new = instead
     else:
         new = _enum_value(column, value) if column in ENUMS else int(value)
-    if (record.get(column) if column in ABILITY_BITS else record.values.get(column)) == new:
+    if (record.get(column) if column in ABILITY_BITS or column == "guardian_cap" else record.values.get(column)) == new:
         return 0, note
     record.set(column, new)
     return 1, note

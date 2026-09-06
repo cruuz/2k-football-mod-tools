@@ -1,5 +1,7 @@
 # r62 abilities runtime, 2026-09-05
 
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
+
 **EXPERIMENTAL / UNWITNESSED. All presets off.**
 
 Implemented abilities rules v1 in `nfl2k5_abilities_runtime.py`, its GNU
@@ -195,8 +197,8 @@ The real manifest command completed successfully:
 
 ```text
 /usr/bin/time -v python3 tools/nfl2k5_cave_oracle.py manifest \
-  '/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
-  --xiso '/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
+  '<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe' \
+  --xiso '<media>/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso' \
   --work-dir .scratch --json .scratch/abilities/manifest.json
 ```
 

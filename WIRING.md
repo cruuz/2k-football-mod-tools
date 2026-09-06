@@ -8557,3 +8557,59 @@ The report `ASTRA_MYCAREER_COMPOSE_REPORT.md` gives the full pair matrix,
 additional guard conflicts discovered, exact validation commands and Noah's
 remaining played witness list. MyCareer and all affected gameplay features
 remain EXPERIMENTAL / UNWITNESSED.
+
+
+## Beta 62 integration 3 disposition (2026-09-06)
+
+The integration authorized by `ASTRA_BRIEF.md` is implemented in the protected
+product sources. `ASTRA_INTEGRATION_62_3_REPORT.md` records every feature,
+protected diff location, test result, limitation and played-witness requirement.
+
+The dispatcher now carries collision settings, read-option controls, unavailable
+franchise/Senior Bowl guards, Guardian overlay, MyCareer, screen hooks, modern
+naming, Crib reclaim and roster arena through validation, exact request unions,
+settings adapters, the allocator-first tuple, image pairing and all four status
+dictionaries. Existing defensive-try, widescreen and QB-spy flags consume the
+landed grown owners. Build defers allocations, checks final PLAY compiler pairs,
+freezes MyCareer setup, publishes Guardian resources before final XBE, and runs
+modern DATA, roster arena, Crib shrink and playlist revalidation after growth.
+
+New opt-ins stay false in every preset; collision level defaults to zero, extra
+created teams to zero, Guardian practice preference to true, and hires families
+to all six while the parent remains off. Experimental modern naming is conditional
+on every manifest span fitting. The later scorebug handoff supersedes the earlier
+probe-field proposal: diagnostics stay CLI-only; runtime stays false in presets.
+The existing single widescreen flag remains. MyCareer setup selection/preparation
+does not tick its checkbox or the independent Crib option. Native Senior Bowl
+and franchise-2026 execution remain unavailable and refuse before preparation.
+
+Both patch panels, the Build settings/project map, Rules/Create a Play Info,
+Senior Bowl preparation, MyCareer, Stadiums workflow, animation source field,
+Guardian roster/CSV/undo controls, signed-save migration and transient modern-name
+facade are connected. Practice help now promises the corrected Coach's Desk
+return. Hires controls preserve numerical budget failures and reject stale worker
+results; 128 MiB remains disabled. The wizard describes native I or eligible
+Shotgun formations and distinguishes data recipes from runtime controls.
+
+Registry counts are 108 overall and 70 NFL2K5; all candidate IDs are merged with
+resolvable local module commands. The allowlist has 475 exact files. Provider
+integrity covers the actual 225-module closure; the runtime imports 180 product
+modules and 34 tools. Reviewed release metadata is 24 files, including the exact
+music routing report, with no broader reports/payload exception. Shipped old
+reports use portable path notation while retaining their evidence.
+
+The required 77-test owner-pairwise suite passes in both orders. The staged file
+audit and runtime closure pass. The required real-disc manifest regeneration
+also passed alone after repinning, observing 10,051 reservations from 115 writer
+calls. Initial disk preflight refused at 104.75 GB; capacity later rose to 111 GB
+and the monitored run never fell below 104.64 GB. Its temporary directory and
+discs were removed. No manual fingerprint updates were used. See the report's
+final ledger for both XBE gates and the oracle result. Historical private registry
+evidence is separately reported as missing; no dummy evidence was shipped.
+Every new game behavior remains experimental/unwitnessed.
+
+The existing practice-squad cave assertion was updated for the arena owner's
+fifteen exact five-byte ABI bridges. It validates the complete sealed owner,
+exact manifest spans/labels and installed bridge bytes while retaining every
+retail-reference check. No arena, practice-squad, allocator or oracle guard was
+relaxed. The post-manifest full gate results are in the report.

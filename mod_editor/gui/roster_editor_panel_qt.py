@@ -901,6 +901,22 @@ class RosterEditorPanel(QWidget):
             source_row.addWidget(widget)
         source_row.addWidget(self.source_label, 1)
         layout.addLayout(source_row)
+        arena = Details("Migrate a signed save for a larger roster")
+        arena.add_text("EXPERIMENTAL / UNWITNESSED. Create a separately signed save copy and use it with the matching Build options. The original save stays intact. The league remains 32 teams.")
+        self.arena_reserves_check = QCheckBox("16 reserves")
+        self.arena_reserves_check.setChecked(True)
+        self.arena_teams_check = QCheckBox("Two extra created teams")
+        self.arena_eligible = QComboBox()
+        self.arena_eligible.addItem("No team eligible for a 17th reserve", 0)
+        for team in range(32):
+            self.arena_eligible.addItem(f"Team ordinal {team}: allow a 17th reserve", 1 << team)
+        arena.content.addWidget(self.arena_reserves_check)
+        arena.content.addWidget(self.arena_teams_check)
+        arena.content.addWidget(self.arena_eligible)
+        self.arena_migrate_button = QPushButton("Migrate signed save copy")
+        self.arena_migrate_button.clicked.connect(self._migrate_arena_save)
+        arena.content.addWidget(self.arena_migrate_button)
+        layout.addWidget(arena)
 
         # a franchise save says what season it is in; read-only, filled by load_save, hidden otherwise
         self.franchise_label = QLabel("")
@@ -1134,7 +1150,7 @@ class RosterEditorPanel(QWidget):
                                 "Retail auto-depth ignores these locks. Returner choices take effect at the next patched sort.")
         self.locks_note.setWordWrap(True)
         box.addWidget(self.locks_note)
-        self.reserves_note = QLabel("Reserves: EXPERIMENTAL / UNWITNESSED. Save moves in a signed Xbox save copy.")
+        self.reserves_note = QLabel("Reserves: EXPERIMENTAL / UNWITNESSED. Save moves in a signed Xbox save copy. Migrated saves require the matching larger-roster disc.")
         self.reserves_note.setWordWrap(True)
         box.addWidget(self.reserves_note)
         return pane
@@ -1225,8 +1241,35 @@ class RosterEditorPanel(QWidget):
         self.ability_bulk_button.clicked.connect(lambda: self.set_abilities(
             self.visible_players(), {name: check.isChecked() for name, check in self.ability_checks.items()}))
         box.addWidget(self.ability_bulk_button)
+        self.guardian_cap_check = QCheckBox("Guardian cap (experimental)")
+        self.guardian_cap_check.setToolTip("Stored selection for the Guardian overlay Build option. Works with either helmet. Experimental and unwitnessed.")
+        self.guardian_cap_check.toggled.connect(lambda on: self.set_guardian_caps(
+            [self.selected_player()] if self.selected_player() else [], on))
+        box.addWidget(self.guardian_cap_check)
+        self.guardian_bulk_button = QPushButton("Apply cap choice to all shown players")
+        self.guardian_bulk_button.clicked.connect(lambda: self.set_guardian_caps(
+            self.visible_players(), self.guardian_cap_check.isChecked()))
+        box.addWidget(self.guardian_bulk_button)
         box.addStretch(1)
         return host
+
+    def set_guardian_caps(self, players, enabled):
+        if type(enabled) is not bool:
+            raise rr.RosterRecordError("Guardian cap requires a Boolean")
+        if self.document is None:
+            return 0
+        if any(self.document.by_offset.get(p.offset) is not p for p in players):
+            raise rr.RosterRecordError("player belongs to another document")
+        edits = [(p, p.record.guardian_cap) for p in players if p.record.guardian_cap != enabled]
+        if not edits:
+            return 0
+        def put(after):
+            for player, before in edits:
+                player.record.guardian_cap = enabled if after else before
+                self._after_edit(player)
+        put(True)
+        self.undo_stack.push(UndoEntry("Guardian caps", lambda: put(False), lambda: put(True)))
+        return len(edits)
 
     def _ability_changed(self, name: str, enabled: bool) -> None:
         player = self.selected_player()
@@ -1328,7 +1371,7 @@ class RosterEditorPanel(QWidget):
     def _team_count_label(self, team: rr.TeamRecord) -> str:
         name = team.abbreviation or team.nickname or f'Team {team.index}'
         if team.index < 32:
-            return f"{name} · {len(team.slots)} active + {len(self.document.reserves[team.index])} reserve"
+            return f"{name} · {len(team.slots)} active + {len(self.document.reserves[team.index])}/{self.document.reserve_limit(team.index)} reserve"
         return f"{name} · {len(team.slots)}"
 
     def _restore_composed(self, payload: bytes, edits) -> None:
@@ -1785,7 +1828,7 @@ class RosterEditorPanel(QWidget):
             item.setSizeHint(QSize(200, 22))
             self.team_list.addItem(item)
             if team.index < 32:
-                reserve = QListWidgetItem(f"    Reserves · {len(self.document.reserves[team.index])}")
+                reserve = QListWidgetItem(f"    Reserves · {len(self.document.reserves[team.index])}/{self.document.reserve_limit(team.index)}")
                 reserve.setData(Qt.UserRole, ("reserve", team.index))
                 reserve.setToolTip(f"{team.display} reserves")
                 self.team_list.addItem(reserve)
@@ -1908,6 +1951,11 @@ class RosterEditorPanel(QWidget):
             check.setEnabled(player is not None)
             check.blockSignals(False)
         self.ability_bulk_button.setEnabled(player is not None)
+        self.guardian_cap_check.blockSignals(True)
+        self.guardian_cap_check.setChecked(player.record.guardian_cap if player else False)
+        self.guardian_cap_check.setEnabled(player is not None)
+        self.guardian_cap_check.blockSignals(False)
+        self.guardian_bulk_button.setEnabled(player is not None)
         if player is None:
             self.header_name.setText("—")
             self.header_stats.setText("")
@@ -2219,7 +2267,7 @@ class RosterEditorPanel(QWidget):
                 team = self.document.teams[index]
                 item.setText(self._team_count_label(team))
             elif kind == "reserve":
-                item.setText(f"    Reserves · {len(self.document.reserves[index])}")
+                item.setText(f"    Reserves · {len(self.document.reserves[index])}/{self.document.reserve_limit(index)}")
             else:
                 item.setText(f"{captions[kind]} · {counts[kind]}")
 
@@ -2950,6 +2998,27 @@ class RosterEditorPanel(QWidget):
             raise rr.RosterRecordError(f"{destination} exists")
         shutil.copyfile(self._source_path, destination)
         return rr.apply(destination, self.edits_document())
+
+    def _migrate_arena_save(self):
+        source, _ = QFileDialog.getOpenFileName(self, "Choose the signed save to migrate", "", SAVE_FILTER)
+        if not source:
+            return
+        parent = QFileDialog.getExistingDirectory(self, "Choose a parent folder for the new migrated save")
+        if not parent:
+            return
+        try:
+            from mod_editor.core import nfl2k5_roster_arena as arena
+            target = Path(parent) / "roster-migrated"
+            if target.exists():
+                raise ValueError("roster-migrated already exists; choose another parent folder")
+            receipt = arena.migrate_save(source, target,
+                reserves_16=self.arena_reserves_check.isChecked(),
+                created_teams_extra=2 if self.arena_teams_check.isChecked() else 0,
+                eligible_team_mask=int(self.arena_eligible.currentData()))
+            self._set_status(f"Signed migrated save: {target}. Use the matching Build options. Experimental and unwitnessed.")
+            return receipt
+        except (OSError, ValueError) as exc:
+            show_operation_error(self, "migrate the signed save copy", str(exc))
 
     def _write_copy(self) -> None:
         if self.document is None:

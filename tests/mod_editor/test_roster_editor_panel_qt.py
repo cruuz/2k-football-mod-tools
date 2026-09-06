@@ -66,9 +66,9 @@ class RosterEditorPanelTests(unittest.TestCase):
     # ------------------------------------------------------------------ layout
     def test_the_page_opens_with_the_teams_pools_and_the_first_squad(self) -> None:
         rows = [self.panel.team_list.item(i).text() for i in range(self.panel.team_list.count())]
-        self.assertEqual(rows[:6], ["IND · 3 active + 0 reserve", "    Reserves · 0",
-                                  "ATL · 3 active + 0 reserve", "    Reserves · 0",
-                                  "SF · 0 active + 0 reserve", "    Reserves · 0"])
+        self.assertEqual(rows[:6], ["IND · 3 active + 0/12 reserve", "    Reserves · 0/12",
+                                  "ATL · 3 active + 0/12 reserve", "    Reserves · 0/12",
+                                  "SF · 0 active + 0/12 reserve", "    Reserves · 0/12"])
         self.assertEqual(rows[-3:], ["Free Agents · 1", "Draft Class · 1", "Other pools · 0"])
         self.assertEqual([p.display for p in self.panel.visible_players()],
                          ["Peyton Manning", "Marvin Harrison", "Edgerrin James"])
@@ -526,7 +526,7 @@ class MembershipPanelTests(unittest.TestCase):
         return player
 
     def test_the_buttons_follow_the_selection(self) -> None:
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0 reserve"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0/12 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0/12 reserve"])
         self.assertTrue(self.panel.release_button.isEnabled())
         self.assertTrue(self.panel.swap_button.isEnabled())
         self.assertEqual(self.panel.team_menu_button.text(), "Move to ▾")
@@ -547,18 +547,18 @@ class MembershipPanelTests(unittest.TestCase):
         receipt = self.panel.release_selected()
         assert receipt is not None
         self.assertEqual(receipt["from"]["slot"], 5)
-        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1} active + 0 reserve")
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1} active + 0/12 reserve")
         self.assertEqual(self.rows()[-3], "Free Agents · 4")
         self.assertIn((player.pool, player.index), self.panel._dirty)
         self.assertNotIn(player, self.panel.visible_players())
         self.assertIn("Released", self.panel.status_label.text())
         self.assertEqual(self.panel.undo(), f"{player.display}: release")
-        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE} active + 0 reserve")
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE} active + 0/12 reserve")
         self.assertIs(self.panel.visible_players()[5], player)
         self.assertNotIn((player.pool, player.index), self.panel._dirty)
         self.assertEqual(self.panel.document.to_body(), self.body)
         self.panel.redo()
-        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1} active + 0 reserve")
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1} active + 0/12 reserve")
 
     def test_a_refusal_is_reported_on_the_status_line_and_changes_nothing(self) -> None:
         self.panel.load_document(rr.load_body(league_body(rr.TEAM_MIN_PLAYERS)), label="tight")
@@ -577,7 +577,7 @@ class MembershipPanelTests(unittest.TestCase):
         receipt = self.panel.send_selected_to(1)
         assert receipt is not None
         self.assertEqual((receipt["operation"], receipt["to"]["team"]), ("sign", "ATL"))
-        self.assertEqual(self.rows()[1], f"ATL · {LEAGUE_CLUB_SIZE + 1} active + 0 reserve")
+        self.assertEqual(self.rows()[1], f"ATL · {LEAGUE_CLUB_SIZE + 1} active + 0/12 reserve")
         self.assertIn("Sign:", self.panel.status_label.text())
         self.goto(1, LEAGUE_CLUB_SIZE)                    # he sits at the bottom of ATL
         self.assertIs(self.panel.selected_player(), free_agent)
@@ -586,7 +586,7 @@ class MembershipPanelTests(unittest.TestCase):
         moved = self.panel.send_selected_to(0)
         assert moved is not None
         self.assertEqual((moved["operation"], moved["from"]["team"], moved["to"]["team"]), ("transfer", "ATL", "IND"))
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0 reserve"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1} active + 0/12 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0/12 reserve"])
         self.panel.undo()
         self.panel.undo()
         self.assertEqual(self.panel.document.to_body(), self.body)
@@ -603,7 +603,7 @@ class MembershipPanelTests(unittest.TestCase):
         self.assertEqual(receipt["operation"], "swap")
         self.assertIs(self.panel.visible_players()[2], other)
         self.assertIs(self.panel.document.team_players(1)[4], player)
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0 reserve"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0/12 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0/12 reserve"])
         entries = self.panel.refresh_diff()
         self.assertEqual({e["name"] for e in entries}, {player.display, other.display})
         report = self.panel.report.toPlainText()
@@ -617,7 +617,7 @@ class MembershipPanelTests(unittest.TestCase):
         edited = text.replace(f"primary,{mover.index},ATL,", f"primary,{mover.index},IND,")
         receipt = self.panel.import_csv_text(edited)
         self.assertEqual(receipt["changed"], 1)
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE - 1} active + 0 reserve"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1} active + 0/12 reserve", f"ATL · {LEAGUE_CLUB_SIZE - 1} active + 0/12 reserve"])
         self.assertIn((mover.pool, mover.index), self.panel._dirty)
         document = self.panel.edits_document()
         self.assertEqual(len(document["moves"]), 1)
@@ -626,7 +626,7 @@ class MembershipPanelTests(unittest.TestCase):
         self.assertEqual(replay["players_moved"], 1)
         self.assertEqual(replayed, self.panel.document.to_body())
         self.panel.undo()
-        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0 reserve"])
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE} active + 0/12 reserve", f"ATL · {LEAGUE_CLUB_SIZE} active + 0/12 reserve"])
         self.assertEqual(self.panel.document.to_body(), self.body)
         self.assertNotIn((mover.pool, mover.index), self.panel._dirty)
 
@@ -675,7 +675,7 @@ class RepairPanelTests(unittest.TestCase):
         self.assertEqual(self.panel.document.players[0].record.values["headless"], 0)
         self.assertIn(("primary", 0), self.panel._dirty)
         self.assertEqual([self.panel.team_list.item(i).text() for i in (0, 2)],
-                         ["IND · 3 active + 0 reserve", "ATL · 3 active + 0 reserve"])
+                         ["IND · 3 active + 0/12 reserve", "ATL · 3 active + 0/12 reserve"])
         self.assertEqual(self.panel.undo(), "repair (3)")
         self.assertEqual(self.panel.document.to_body(), self.body)
         self.assertEqual(self.panel.repair_button.text(), "Repair (3)")

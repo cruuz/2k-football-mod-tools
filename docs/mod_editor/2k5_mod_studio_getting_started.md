@@ -376,14 +376,14 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 95 cross-title rows, including 53 Xbox NFL 2K5
+The current registry has 108 cross-title rows, including 70 Xbox NFL 2K5
 capabilities and the separate PS2 save-import bridge. No current 2K5 capability
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.
 
 ## What v1.0 covers
 
-The complete 18-tab sidebar is present even where a feature remains read-only.
+The complete 19-page sidebar is present even where a feature remains read-only.
 The whole-game resource browser is the fallback home for anything that does not
 yet have a specialized editor, so indexed assets are not hidden.
 
@@ -1388,3 +1388,14 @@ fit the pool's 13,238 UTF-16 bytes (the built-in list uses all of them; shorter 
 surname equal to the retail one at its index keeps its call-out, any other surname is announced by
 number; the build receipt lists every slot as kept or replaced. Unwitnessed in game: please report
 whether a drafted Smith is called by name and a drafted Diggs by number.
+
+
+## Beta-62 owner integration 3
+
+All new gameplay experiments remain unwitnessed. Build exposes weight/speed collisions independently of movement, paired read-option controls, a second screen-pass experiment, Guardian overlays, MyCareer setup, a Crib movie cut, 16 reserves and two extra created teams. All are off in every preset. The scorebug effects option is also off in every preset; the static v8 bar remains in Experimental. Diagnostic scorebug probes are CLI-only.
+
+Create a Play now includes an Info reference; the wizard retains its Rules page. Gameplay includes Senior Bowl preparation, with native simulation disabled. The 2026 franchise rules option remains unavailable until its owner supports saved counters and native player outcomes. MyCareer prepares a created quarterback called MyPlayer and supplies the paired setup to Build. Larger roster saves require the matching disc and an explicit signed-copy migration on Rosters; no team automatically receives a seventeenth reserve.
+
+[Modern mode names](modern_2k_mode_names.md) previews Play Now, MyNFL and MyPlayer in Game Text. The checkbox shares the source binding with Build, and Experimental enables it only when every current manifest span fits. Use the original source to restore retail names. [Animation import](nfl2k5_animation_import.md) exposes the bounded clip and limb workflows. [Stadium Blender textures](nfl2k5_stadium_blender_workflow.md) exports PNG textures with UV coordinates and stages only changed pixels; it does not import changed UVs or geometry.
+
+Hi-res Build has six selectable families. Its worker checks the modeled texture cost before encoding and disc copying, and rejects stale replies after a folder or selection changes. A result below the ceiling does not prove whole-game fit; headroom is unknown. The 128 MiB target remains disabled because the game limits texture addresses to the first 64 MiB.

@@ -6,9 +6,13 @@ import hashlib
 import json
 from pathlib import Path
 import tempfile
+import sys
 import unittest
 from unittest import mock
 import zipfile
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.studio.audio_annotations import (

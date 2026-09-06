@@ -2718,34 +2718,38 @@
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.core.nfl2k5_animation --index <vc_53450030/0> --inventory <resource-inventory.json> export <archive:outer/chunk> --output <new-export-directory>",
-        "module": "mod_editor/core/nfl2k5_animation.py",
-        "operation": "export"
+        "command": "python3 -m mod_editor.core.nfl2k5_animation_import --index <vc_53450030/0> --inventory <resource-inventory.json> import <archive:outer/chunk> --gltf <primary.gltf> --source <source.iso> --output <new-copy.iso>",
+        "module": "mod_editor/core/nfl2k5_animation_import.py",
+        "operation": "write"
       },
-      "classification": "extract-only",
+      "classification": "offline-writer-proved",
       "evidence": [
-        "ASTRA_BONE_ANIM_REPORT.md",
-        "tests/mod_editor/test_nfl2k5_animation.py",
-        "tests/mod_editor/test_nfl2k5_animation_retail.py",
-        "tests/mod_editor/test_animations_panel_qt.py"
+        "ASTRA_BONE_IMPORT_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_animation_import.py",
+        "tests/mod_editor/test_nfl2k5_animation_import_retail.py",
+        "tests/mod_editor/test_animations_panel_qt.py",
+        "tests/mod_editor/test_xbe_patch_memory_writes.py",
+        "tests/mod_editor/test_xbe_patch_cave_references.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "export",
-        "reason": "Experimental inspector with disabled import. What would change checks an edited native-key JSON file and writes no game data."
+        "mode": "edit",
+        "reason": "Experimental output-copy imports become available only after per-bundle source, pose and byte-range preflight. Gameplay remains unwitnessed."
       },
       "id": "nfl2k5.animations.inspect_export",
       "input_constraints": [
-        "Use a canonical resource inventory and the user's matching archive. Only referee 3107/27 and player 3092/163 have named skeleton bindings; other families remain unresolved.",
-        "Embedded inspection accepts only the pinned retail XBE and headers 0x0086dfe0 and 0x008528e8. This is not an exhaustive embedded-root census.",
-        "Existing SMCD key preflight fixes identity, name, channels, frames, rate, multiplier, duration and flags; events, trajectory, auxiliary fields and slack retain their bytes.",
-        "MMCD and embedded replacement, arbitrary edited-glTF ingestion and disc writes remain disabled."
+        "Archive import is limited to referee 3107/27 and player 3092/163 with their matching skeletons; MMCD/paired roots and unresolved archive families remain inspection-only.",
+        "primary.gltf/bin retain canonical layout, channels, frames and native times. Mandatory sidecar is checked against freshly read source bytes; only rotation values may change.",
+        "Events, trajectory, auxiliary records, identity, duration, flags and slack retain their original bytes. Pose comparison limits are 0.75 degrees against requested native poses and 1.0 degree against sampled glTF poses; no continuous bound.",
+        "Two pinned occupied embedded .rdata roots create a new XBE with exact key spans and a repinned section digest. Family and football selection meaning are unresolved. No cave or runtime storage.",
+        "Left forearm scale 0.98 through 1.02 must fit each original compressed span/scratch budget. Both LODs, derived pivots, geometry and normals are coordinated; original SKEL directions and conservative native position bounds are retained.",
+        "Only new output copies are written. Source image, directory, all resource spans and changed bundle hashes must pass before mutation. This does not add clip identities, bone counts, selectors or arbitrary Blender re-export support."
       ],
       "portme": [
-        "Complete Noah's witness plan and transactional archive transport before explicitly enabling import.",
-        "Resolve additional skeleton ownership and live root/proportion state before claiming gameplay-equivalent exports."
+        "Record Noah's start/blend/loop/end/mirror/replay and both-LOD/contact/body-profile witness before promising gameplay import.",
+        "Resolve embedded and additional archive family binding, live actor root, high-body proportions, morphs and accessories; support broader DCC interchange only with new reviewed gates."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -2755,9 +2759,9 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_BONE_ANIM_REPORT.md"
+          "ASTRA_BONE_IMPORT_REPORT.md"
         ],
-        "scope": "No gameplay witness. Local portable poses have no captured actor root, live player proportions or high-body postprocess. glTF bakes are inspection representations.",
+        "scope": "Offline compilation, compact output-copy transport and recovered C numerical comparisons only. No played game, live actor root, continuous interpolation bound, contact or body-profile acceptance.",
         "status": "not-tested"
       },
       "selectors": {
@@ -2771,19 +2775,22 @@
         "notes": "Multi-root resources are separate selectable parts; packed channel count alone never assigns a skeleton family."
       },
       "source_container": {
-        "format": "Uncompressed SMCD/MMCD archive resources and explicitly identified absolute-pointer XBE roots",
+        "format": "Uncompressed SMCD/MMCD archive roots, compressed SCNE player body resources, SKEL axes and pinned absolute-pointer XBE roots",
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
           "75b67ce8f338943a8cc6bdc46718f61c7c2d9c4945d186983796a090aa31363f",
-          "a86c827b09db69990c4070cbb59d5c989db420a9d03427acd814823361a82e52"
+          "a86c827b09db69990c4070cbb59d5c989db420a9d03427acd814823361a82e52",
+          "2a89df4b2e83dee4c7937194e5cd885c4b3662720bf976d8440ab5c3fb423e56",
+          "43c95e150c72805b419e05db3cff6cacc69c56791c349caa2f0456782775893b",
+          "c0892cd00a6819031c5cc6e7e4392548cc72e665e27f7dc14c928fc860feed3d"
         ],
-        "resource": "5,198 inventoried archive resources, 6,068 roots; two separately identified embedded roots",
+        "resource": "5,198 catalogued archive animations, two embedded roots, coordinated player resources 3/113, 3/114 and 3/116",
         "retail_file": "vc_53450030/0 and optional default.xbe"
       },
-      "summary": "Catalogue archive animation roots and two explicitly identified embedded roots separately; preview local poses and export glTF with mandatory native bytes and metadata. Import is disabled.",
+      "summary": "Inspect/export native clips and import fixed-channel primary glTF with a mandatory native sidecar. Coordinate a left forearm length edit at both body detail levels. Author a modest referee gesture within its existing identity and span.",
       "surface": "models_shap_scne",
-      "title": "Animations (EXPERIMENTAL / UNWITNESSED)",
-      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+      "title": "Animations and limb edits (EXPERIMENTAL / UNWITNESSED)",
+      "validation_command": "python3 -m mod_editor.core.nfl2k5_animation_import --help"
     },
     {
       "backend": {
@@ -3360,6 +3367,70 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_crib_reclaim rebuild source.iso output.iso",
+        "module": "mod_editor/core/nfl2k5_crib_reclaim.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_MY_CAREER_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_crib_reclaim.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Own MyCareer studio page; protected shell integration remains in WIRING.md. Both options default off."
+      },
+      "id": "nfl2k5.crib.movie_reclaim",
+      "input_constraints": [
+        "Pinned USA Crib dispatcher and exact resource IDs, sizes and hashes; mixed or foreign states refuse.",
+        "Separate source/output images; transaction verifies every retained outer and named file before publication.",
+        "An XBE-only hook reclaims zero disc bytes. Use the independent image rebuild option.",
+        "Streaming buffers at most 1 MiB for archive/disc copying; large builds require scratch capacity plus 100 GiB remaining free."
+      ],
+      "portme": [
+        "Complete Noah's precise witness list in ASTRA_MY_CAREER_REPORT.md before claiming played runtime acceptance."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_MY_CAREER_REPORT.md"
+        ],
+        "scope": "Bounded native function execution and offline writers are tested. No Xbox boot, graphics, controller play or console filesystem witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "crib_reclaim",
+            "required": true
+          }
+        ],
+        "notes": "Protected dispatcher, Build, UI shell, closure and registry integration is specified in WIRING.md."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Pinned Crib movie dispatcher and 23 exact MOV outer entries; streaming 16-pack archive and XDVDFS shrink.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Disable the 23 Crib movies and compact a separate image while preserving the Trophy Room, awards, profile, shared room, games and furniture.",
+      "surface": "crib_assets",
+      "title": "Crib movie cut (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_crib_reclaim"
+    },
+    {
+      "backend": {
         "command": "python3 tools/cross_title_model_compatibility.py --json-out <compatibility.json> --matrix-tsv <matrix.tsv> --bones-tsv <bones.tsv>",
         "module": "tools/cross_title_model_compatibility.py",
         "operation": "inspect"
@@ -3429,8 +3500,84 @@
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_practice_squad_screen.py <source.xbe> <new-copy.xbe>",
-        "module": "mod_editor/core/nfl2k5_practice_squad_screen.py",
+        "command": "python3 -m mod_editor.core.nfl2k5_guardian_resources apply <private-build-copy.iso>",
+        "module": "mod_editor/core/nfl2k5_guardian_resources.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_GUARDIAN_OVERLAY_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_guardian_overlay.py",
+        "tests/mod_editor/test_nfl2k5_guardian_resources.py",
+        "tests/mod_editor/test_nfl2k5_guardian_unicorn.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      },
+      "id": "nfl2k5.equipment.guardian_overlay",
+      "input_constraints": [
+        "Pinned USA XBE and supported common lo_body/hi_head model spans. Reserve the complete allocator owner union before installation.",
+        "Route A is exclusive with the older Guardian C replacement. One global neutral helmet01 texture is appended to the common resource group.",
+        "guardian_overlay is false in every preset. guardian_everyone_practice defaults true only within the enabled feature. No practice flag is written to roster records.",
+        "Per-player record +0x53 bit 5. Existing saves require their own roster edit. Optional CLI selections carry exact pool/index and normalized record SHA-256 pins."
+      ],
+      "portme": [
+        "Complete Noah's witness list in ASTRA_GUARDIAN_OVERLAY_REPORT.md, including both LODs, save lifecycles, alternate uniforms and performance."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_GUARDIAN_OVERLAY_REPORT.md"
+        ],
+        "scope": "Bounded retail TXTR registration, lookup, material binder, live hook, matte refresh and native clone only; no GPU, asynchronous loader, full disc, or played save-lifecycle witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "guardian_overlay",
+            "required": true
+          },
+          {
+            "allowed": "boolean; true by default inside the enabled feature",
+            "name": "guardian_everyone_practice",
+            "required": false
+          },
+          {
+            "allowed": "None retains stored selections; list of pinned records replaces the selection; [] clears it",
+            "name": "guardian_players",
+            "required": false
+          }
+        ],
+        "notes": "Guardian cap is independent of Helmet, Star Tag and abilities. The cap uses existing B geometry and does not add a helmet selector value."
+      },
+      "source_container": {
+        "format": "XBE and sequential TXTR/SCNE/ROST in XDVDFS archive",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Three pinned live hooks, 496 B named RX, fixed-span B shells and one 88544 B common TXTR; 88064 B sector-aligned archive growth",
+        "retail_file": "User-owned USA default.xbe and vc_53450030 archive"
+      },
+      "summary": "A per-player padded cover over either retail helmet, with optional caps for everyone in practice.",
+      "surface": "players_rosters",
+      "title": "Guardian caps (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_guardian_overlay"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli practice_squad_screen <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
@@ -3450,7 +3597,7 @@
       "input_constraints": [
         "Pinned USA XBE and applied practice_squad, franchise_practice, practice_reserves prerequisites.",
         "Allocate all selected owner requests together before any installation. Foreign, mixed and altered prerequisites refuse.",
-        "Only the selected human NFL team can move its owned eligible player; promotion below 53 active, demotion below 12 reserves, 65 physical slots.",
+        "Only the selected human NFL team can move its owned eligible player; promotion below 53 active, demotion below 12 reserves on legacy saves; 16 or an explicitly eligible 17 on migrated saves, 65 physical slots.",
         "No CPU poaching or protection; no save-format growth."
       ],
       "portme": [
@@ -3491,6 +3638,72 @@
       "surface": "menus",
       "title": "Practice Squad screen (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_practice_squad_screen"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_senior_bowl capability",
+        "module": "mod_editor/core/nfl2k5_senior_bowl.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "ASTRA_SENIOR_BOWL_REPORT.md",
+        "docs/mod_editor/senior_bowl.md",
+        "tests/mod_editor/test_nfl2k5_senior_bowl.py",
+        "tests/mod_editor/test_nfl2k5_senior_bowl_unicorn.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "view",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Host preview and project choices only. Native event activation must stay disabled; no retail hook is installed."
+      },
+      "id": "nfl2k5.franchise.senior_bowl_preview",
+      "input_constraints": [
+        "Signed, bounded franchise SAVEGAME.DAT with matching EXTRA; complete primary pool and ownership lists.",
+        "At most 4096 primary players and 512 eligible prospects. Two complete 53-player positional quotas; shortages refuse.",
+        "Kit banks 50 and 51, home or away, current era 0 only.",
+        "A dormant XBE component install does not enable an in-game event. Native simulator, save transport and menus are unavailable."
+      ],
+      "portme": [
+        "Complete the native save, simulation isolation and menu bridge proofs in docs/mod_editor/senior_bowl.md before enabling the requested MVP."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_SENIOR_BOWL_REPORT.md"
+        ],
+        "scope": "Dormant bounded i386 policy, normalized-snapshot squad selection and envelope-copy proofs only. No native game hook, simulator execution, save I/O or screen lifecycle has been proved.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in all presets; unavailable in the current revision",
+            "name": "senior_bowl",
+            "required": true
+          }
+        ],
+        "notes": "Host project settings round-trip independently. Do not enable an in-game event based on component install status."
+      },
+      "source_container": {
+        "format": "Signed Xbox franchise save; optional dormant XBE components",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Whole primary pool, current prospect flags, club/reserve/free-agent/IR ownership; separate development event file",
+        "retail_file": "User-owned SAVEGAME.DAT and EXTRA; pinned USA default.xbe for developer proofs"
+      },
+      "summary": "Configure kit donors and preview two 53-player rookie squads. Native simulation and game-save support are unavailable.",
+      "surface": "schedules_franchise",
+      "title": "Senior Bowl preview (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_senior_bowl"
     },
     {
       "backend": {
@@ -3550,8 +3763,8 @@
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_abilities_runtime.py <source.xbe> <new-copy.xbe>",
-        "module": "mod_editor/core/nfl2k5_abilities_runtime.py",
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli abilities_runtime <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
@@ -3806,8 +4019,8 @@
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py <source.xbe> <new-copy.xbe>",
-        "module": "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py",
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli dynamic_kickoff_relocated <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
@@ -3820,7 +4033,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in witness disc only; off in every preset."
+        "reason": "EXPERIMENTAL/UNWITNESSED. Enable only in the experimental preset after protected build integration."
       },
       "id": "nfl2k5.gameplay.kickoff_relocated",
       "input_constraints": [
@@ -3828,6 +4041,7 @@
         "Recognized existing owners, bounded named allocations and matching kickoff settings; rebuild from base to change allocations."
       ],
       "portme": [
+        "Complete WIRING.md and regenerate the reservation manifest.",
         "Witness boot, logo availability and both-direction kickoff lineup, hold and contact release."
       ],
       "public_distribution": {
@@ -3864,11 +4078,11 @@
       "summary": "Relocate the existing dynamic kickoff with equivalent instructions and separate writable state.",
       "surface": "gameplay_tuning_sliders",
       "title": "Kickoff in extra space (experimental, unwitnessed)",
-      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_xbe_space"
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_momentum.py <source.xbe> <new-copy.xbe>",
+        "command": "python3 -m mod_editor.core.nfl2k5_momentum <source.xbe> --output <new-copy.xbe> --level 0 --collisions --collision-level 50",
         "module": "mod_editor/core/nfl2k5_momentum.py",
         "operation": "write"
       },
@@ -3878,7 +4092,9 @@
         "tests/mod_editor/test_nfl2k5_momentum.py",
         "tests/mod_editor/test_xbe_patch_memory_writes.py",
         "tests/mod_editor/test_xbe_patch_cave_references.py",
-        "ASTRA_INTEGRATION_3_REPORT.md"
+        "ASTRA_INTEGRATION_3_REPORT.md",
+        "ASTRA_MOMENTUM_CONTACT_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_momentum_collisions.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -3889,14 +4105,15 @@
       },
       "id": "nfl2k5.gameplay.momentum",
       "input_constraints": [
-        "Pinned USA retail hook/table bytes and supported XBE geometry; all spans and section digests validated.",
-        "Integer level 0..100; contact requires a positive level; all presets retail/off.",
-        "Combined named grown allocation requests chosen before installing any owner; rebuild to change settings.",
-        "Ordinary running only for braking/contact history; special states fall back to retail. Legacy rating ramp must be off for parity witnesses."
+        "Pinned USA native resolver, accessor, pair calculation, reaction dispatcher, turn tables and hooks; complete sections and code seals validated.",
+        "Integer momentum and momentum_collision_level 0..100; Boolean momentum_contact and momentum_collisions. Run-up requires positive momentum; positive collision level requires its separate flag.",
+        "All presets off/0. Collisions can be enabled with movement momentum 0 and run-up off. Both levels 0 leave retail bytes identical.",
+        "Combined named requests chosen before installing any owner; collisions require allocator scale-out. Rebuild from the supported base to change settings or upgrade model 1.",
+        "Live ordinary attached ball carrier only; collision gain capped at six effective rating points, combined run-up/collision gain at eight. Legacy rating ramp must be off for parity witnesses."
       ],
       "portme": [
-        "Integrate and test both orders with the absent defensive-try owner.",
-        "Witness cuts, stop-and-go, contact, catches, pursuit, both controllers and CPU movement."
+        "Wire the two new independent collision fields and component status into the protected dispatcher, BuildPlan and UI using WIRING.md.",
+        "Witness selected tackle/reaction animations, yards after contact, boot, lifecycle and both human and CPU play; a matched native fixture does not remove retail controller-side branches."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -3906,9 +4123,10 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_MOMENTUM_BUILD_REPORT.md"
+          "ASTRA_MOMENTUM_BUILD_REPORT.md",
+          "ASTRA_MOMENTUM_CONTACT_REPORT.md"
         ],
-        "scope": "Bounded Unicorn hooks and deterministic retail resolver fixtures passed. Loader, animation assets, gameplay feel and full tackle reactions remain unwitnessed.",
+        "scope": "Bounded native contact resolver and reaction-dispatch branch selection, mass/speed/standing comparisons, ABI and matched-context CPU/human parity. Animation entry is a fixture boundary. Gameplay and loader remain unwitnessed.",
         "status": "not-tested"
       },
       "selectors": {
@@ -3922,9 +4140,19 @@
             "allowed": "Boolean, default false; true requires momentum > 0",
             "name": "momentum_contact",
             "required": true
+          },
+          {
+            "allowed": "Boolean, default false",
+            "name": "momentum_collisions",
+            "required": true
+          },
+          {
+            "allowed": "integer 0..100, default 0; positive requires momentum_collisions",
+            "name": "momentum_collision_level",
+            "required": true
           }
         ],
-        "notes": "The two controls share one configured executable owner. Exact zero adds no Momentum hooks or history."
+        "notes": "Model 2 uses one owner. Collision-only mode leaves movement hooks/tables retail. Omitted replay settings retain configuration. In-place upgrades of model 1 refuse."
       },
       "source_container": {
         "format": "XBE in XDVDFS",
@@ -3934,14 +4162,14 @@
         "resource": "ordinary turn curve, pinned locomotion/contact hooks, named grown RX/RW allocations",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Adjust fast turning and ordinary braking, with an optional bounded running-start contact bonus.",
+      "summary": "Adjust fast turning and ordinary braking, with separate capped running-start and weight-and-velocity contact options.",
       "surface": "gameplay_tuning_sliders",
       "title": "Player momentum (experimental, unwitnessed)",
-      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_momentum_collisions"
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_qb_spy_runtime.py <source.xbe> <new-copy.xbe>",
+        "command": "python3 -m mod_editor.core.nfl2k5_qb_spy_runtime source.xbe new-spy.xbe",
         "module": "mod_editor/core/nfl2k5_qb_spy_runtime.py",
         "operation": "write"
       },
@@ -3949,23 +4177,26 @@
       "evidence": [
         "ASTRA_QB_SPY_RUNTIME_REPORT.md",
         "tests/mod_editor/test_nfl2k5_qb_spy_runtime.py",
-        "tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py"
+        "tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py",
+        "ASTRA_QB_SPY_MAN_RUSH_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_qb_spy_man_rush.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Protected Build and Gameplay integration is specified in WIRING.md; zone-only, all presets off."
+        "reason": "EXPERIMENTAL / UNWITNESSED. Zone, man and rush command spies share the existing opt-in. Protected text updates are specified in WIRING.md; all presets off."
       },
       "id": "nfl2k5.gameplay.qb_spy",
       "input_constraints": [
         "Pinned USA XBE or supported composed source; mixed/foreign bytes refuse before mutation.",
         "Reserve the complete owner union before the first allocation.",
-        "Authored intent requires exact PLAY/compiler receipt pairs; valid empty table enables command spies."
+        "Authored intent requires exact PLAY/compiler receipt pairs; valid empty table enables command spies.",
+        "Revision 1 allocations require rebuilding from base with the grown revision 2 request union."
       ],
       "portme": [
-        "Complete Noah's paired witness list in ASTRA_QB_SPY_RUNTIME_REPORT.md; man/rush is deferred tier 2."
+        "Complete Noah's paired witness list in ASTRA_QB_SPY_MAN_RUSH_REPORT.md."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -3975,9 +4206,10 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_QB_SPY_RUNTIME_REPORT.md"
+          "ASTRA_QB_SPY_RUNTIME_REPORT.md",
+          "ASTRA_QB_SPY_MAN_RUSH_REPORT.md"
         ],
-        "scope": "Bounded spy decisions, target/ABI boundaries and native loader/command/reset instructions. Movement, boot and gameplay are unwitnessed.",
+        "scope": "Bounded shared spy decisions, native man/rush initializer and callback bodies with explicit helper observation boundaries, zone regression, target/ABI and loader/command/reset proofs. Movement, boot and gameplay remain unwitnessed.",
         "status": "not-tested"
       },
       "selectors": {
@@ -3988,20 +4220,88 @@
             "required": true
           }
         ],
-        "notes": "Zone assignments only; at most 31 authored play/slot records paired with their exact compiler replacement resources. Command spies need no table rows."
+        "notes": "Zone, man and rush commands; authored v1 intent remains a paired shallow-zone fallback with at most 31 records. Command spies need no table rows."
       },
       "source_container": {
         "format": "XBE in XDVDFS",
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "five live hooks; owned 1536-byte RX, 768-byte RW and 512-byte RO allocations",
+        "resource": "twelve live entry hooks and three dispatch MOV immediate repoints; owned 2048-byte RX, 768-byte RW and 512-byte RO allocations",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Zone defenders retain QB priority, shadow four yards deep and latch pursuit on forward or lateral escape.",
+      "summary": "Zone, man and rush spies share QB priority, four-yard shadowing and latched pursuit on forward or lateral escape. Native man/rush targets and callback identities remain valid for fallback.",
       "surface": "gameplay_tuning_sliders",
-      "title": "QB spy for zone defenders (experimental, unwitnessed)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_qb_spy_runtime"
+      "title": "QB spy for zone, man and rush (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_qb_spy_man_rush"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_read_option_runtime apply source.xbe --output new-read-option.xbe --table compiled-intent.bin",
+        "module": "mod_editor/core/nfl2k5_read_option_runtime.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_READ_OPTION_RUNTIME_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_read_option_runtime.py",
+        "tests/mod_editor/test_nfl2k5_read_option_unicorn.py",
+        "tools/nfl2k5_read_option_runtime.S",
+        "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_read_option_controls.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. Human read cue, live replacement EDGE, frame sampling and RPO native pass request have bounded instruction proofs. Protected integration is in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.read_option_runtime",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes.",
+        "At most two authored read plays, bound to exact PLAY/compiler receipt pairs. Empty table is dormant.",
+        "RPO receiver must be slot 7 or 8; receiver slot 6 shares the snap button. Native speed options are excluded.",
+        "Version 1 request sets require rebuilding from the base. An explicit automatic-EDGE table uses snap assignments instead of an authored defender."
+      ],
+      "portme": [
+        "Run Noah's paired Shotgun, EDGE crash/wide, RPO slant and lifecycle witness list in ASTRA_READ_OPTION_CONTROLS_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_READ_OPTION_CONTROLS_REPORT.md"
+        ],
+        "scope": "Bounded installed instructions prove the human-only native HUD cue, snap assignment selection, live unblocked replacement, 21-tick window, hysteresis and RPO receiver press through the native pass initializer to the native throw-request store. Task allocation, GPU submission and aim calculation are fixture boundaries. Game boot, transfers, mesh/throw animation and defense remain unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "read_option_runtime",
+            "required": true
+          }
+        ],
+        "notes": "Two paired authored reads. Human release to give, hold to keep; RPO accepts its receiver press during the first 20 distinct live mesh simulation ticks and commits on tick 21. Native I and supported Shotgun authoring; no rendered-frame timing claim."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Five pinned live hooks; existing owner rebuilt from base with 2048 RX, 256 RW and 88 RO bytes.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Paired custom reads latch give, keep or pass with modern hold-to-keep controls and a CPU edge read.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Read option mesh controls (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_controls"
     },
     {
       "backend": {
@@ -4067,8 +4367,76 @@
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_xbe_space.py <source.xbe> <new-copy.xbe>",
-        "module": "mod_editor/core/nfl2k5_xbe_space.py",
+        "command": "python3 -m mod_editor.core.nfl2k5_screen_hooks apply source.xbe --output new-screen-hooks.xbe",
+        "module": "mod_editor/core/nfl2k5_screen_hooks.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_SCREEN_HOOKS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_screen_hooks.py",
+        "tests/mod_editor/test_nfl2k5_screen_hooks_unicorn.py",
+        "tests/mod_editor/test_nfl2k5_screen_hooks_manifest.py",
+        "tools/nfl2k5_screen_hooks.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Second experiment after timing levels A-D. All presets off. Protected integration is specified in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.screen_hooks",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; allocate the complete owner union before installation.",
+        "Requires loaded Start, take-snap, mode-0 drop, terminal-pass QB grammar and an explicit first read of slot 6 through 10 with a type-9 or type-10 route.",
+        "Only finite type-0/1 holds followed by mode-0 release and terminal type-3 block qualify; terminal and infinite blockers bypass.",
+        "Explicit QB delays survive. Fixed policies, no new writable storage or readiness guarantee."
+      ],
+      "portme": [
+        "Wire the shared product controls and regenerate the production cave manifest as specified in WIRING.md.",
+        "Run Noah's paired-snap witness protocol in ASTRA_SCREEN_HOOKS_REPORT.md after the data-tier observations."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_SCREEN_HOOKS_REPORT.md"
+        ],
+        "scope": "Bounded installed instructions and real PLAY loader prove scoping, timer policies and ordinary-pass bypass. Loader boot, movement, contact, receiver readiness, throw decisions and gameplay benefit remain unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; independent explicit opt-in",
+            "name": "screen_hooks",
+            "required": true
+          }
+        ],
+        "notes": "Retail: original timers. Patch: 0.8-second screen hold floor and 0.6-second default QB initializer. Second experiment after timing levels A-D."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "two pinned live hooks of 9 and 7 bytes; one 640-byte RX owner; no new RW or RO",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Second screen timing experiment: matched finite line holds wait until 0.8 seconds after the snap and default QB timers use 0.6 seconds.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Screen pass timing hooks (second experiment, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_screen_hooks"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli xbe_space <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
@@ -4081,7 +4449,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in witness disc only; off in every preset."
+        "reason": "EXPERIMENTAL/UNWITNESSED. Enable only in the experimental preset after protected build integration."
       },
       "id": "nfl2k5.gameplay.xbe_space",
       "input_constraints": [
@@ -4089,6 +4457,7 @@
         "Recognized existing owners, bounded named allocations and matching kickoff settings; rebuild from base to change allocations."
       ],
       "portme": [
+        "Complete WIRING.md and regenerate the reservation manifest.",
         "Witness boot, logo availability and both-direction kickoff lineup, hold and contact release."
       ],
       "public_distribution": {
@@ -4125,12 +4494,12 @@
       "summary": "Add two bounded preloaded sections with named allocations and preserve SPECIAL.",
       "surface": "scripts_config",
       "title": "Extra patch space (experimental, unwitnessed)",
-      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_xbe_space"
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes())\nwith Path(sys.argv[3]).open('xb') as output:\n    output.write(payload)\nprint(receipt)\" mod_editor/core/nfl2k5_zone_drop.py <source.xbe> <new-copy.xbe>",
-        "module": "mod_editor/core/nfl2k5_zone_drop.py",
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli zone_drop <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
@@ -4190,18 +4559,21 @@
       "summary": "Cap the initial deep-zone depth request for exact cornerback identities. Later steering and ball-response code remain unchanged.",
       "surface": "gameplay_tuning_sliders",
       "title": "Corner deep-zone backpedal (experimental, unwitnessed)",
-      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+      "validation_command": "python3 -m tools.validate_beta61_integrated_features"
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_defensive_try.py <source.xbe> <new-copy.xbe>",
+        "command": "python3 -m mod_editor.core.nfl2k5_defensive_try apply <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_defensive_try.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
       "evidence": [
         "ASTRA_DEFENSIVE_TRY_REPORT.md",
+        "ASTRA_DEFENSIVE_TRY_BOXSCORE_REPORT.md",
         "tests/mod_editor/test_nfl2k5_defensive_try.py",
+        "tests/mod_editor/test_nfl2k5_defensive_try_stats.py",
+        "tests/mod_editor/test_nfl2k5_defensive_try_manifest.py",
         "tests/mod_editor/test_xbe_patch_memory_writes.py",
         "tests/mod_editor/test_xbe_patch_cave_references.py",
         "ASTRA_INTEGRATION_3_REPORT.md"
@@ -4211,17 +4583,18 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. All presets leave this off. Manual witness-disc selection only after protected integration, with the missing box-score category disclosed."
+        "reason": "EXPERIMENTAL / UNWITNESSED. All presets leave this off. Manual witness-disc selection after protected integration. Suspended saves do not retain the new current-game counts."
       },
       "id": "nfl2k5.gameplay_tuning_sliders.defensive_try",
       "input_constraints": [
         "User-owned USA NFL 2K5 executable in a disposable disc image; pinned instructions and recognized section geometry.",
         "Allocate the complete owner union before growth. Changing owners requires rebuilding from base.",
-        "Exhibition witness build only. No saved defensive-conversion player, season or franchise category is implemented."
+        "Completed-game player history uses native packed field 59; regular season and postseason remain separate. Current-game counts are not serialized in suspended saves. Archived per-game franchise box scores are not extended.",
+        "Live counts and each saved season saturate at 32767. Team historical totals follow current roster membership. Existing offensive conversion fields and saved TEAM field 87 are preserved."
       ],
       "portme": [
-        "Implement and prove the missing retail box-score row and persistent category before calling the full stat requirement complete.",
-        "Complete every Noah witness in ASTRA_DEFENSIVE_TRY_REPORT.md."
+        "Complete protected integration and regenerate the production cave manifest as specified in WIRING.md.",
+        "Complete every Noah witness in ASTRA_DEFENSIVE_TRY_BOXSCORE_REPORT.md. Suspended-game counts and archived per-game franchise box scores need separate format work."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -4231,9 +4604,9 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_DEFENSIVE_TRY_REPORT.md"
+          "ASTRA_DEFENSIVE_TRY_BOXSCORE_REPORT.md"
         ],
-        "scope": "Static and bounded Unicorn proofs only. Actual loader, score bug, box score, commentary, CPU motion, penalties and period/OT behavior remain unwitnessed. The diagnostic tally is limited to retained drive history.",
+        "scope": "Static and bounded Unicorn proofs of committed history, stat/attempt readers, native box formatting, player-card callbacks, season merge, fold/delete and roster save/load relocation. Actual loader, visible rendering, commentary, CPU pursuit, penalties and period/OT behavior remain unwitnessed.",
         "status": "not-tested"
       },
       "selectors": {
@@ -4251,13 +4624,13 @@
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "pinned try handlers and named grown code/data sections",
+        "resource": "pinned try/stat handlers and named grown code/data/read-only sections; native player+0x2C packed season stream",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "Enable defensive try returns, split scoring history, original-team kickoff, try safeties and CPU return selection. Includes a temporary diagnostic team tally; the retail box-score category remains unimplemented.",
+      "summary": "Enable defensive try returns, split history, original-team kickoff, try safeties and CPU return selection. Adds a native box-score row, player-card column, player points, event labels and a saved player season/career category, including completed franchise games. EXPERIMENTAL / UNWITNESSED.",
       "surface": "gameplay_tuning_sliders",
       "title": "Defensive two-point returns (experimental)",
-      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_defensive_try_stats"
     },
     {
       "backend": {
@@ -4489,6 +4862,135 @@
       "surface": "menus",
       "title": "NFL 2K5 menu/layout viewer",
       "validation_command": "bash tools/validate_layout_inventory.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_modern_naming apply COPY.iso",
+        "module": "mod_editor/core/nfl2k5_modern_naming.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_MODERN_NAMING_REPORT.md",
+        "docs/mod_editor/modern_2k_mode_names.md",
+        "tests/mod_editor/test_nfl2k5_modern_naming.py",
+        "tests/mod_editor/test_modern_naming_panel.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Build opt-in and Text & Team Identity preview. Basic/Advanced off; Experimental on only when every configured string fits. Protected integration is specified in WIRING.md."
+      },
+      "id": "nfl2k5.menus.modern_naming",
+      "input_constraints": [
+        "Only reviewed USA .string_ literals and Crib STRG allocations; no save, pointer, code or resource-size edits.",
+        "User JSON may change only desired/fallbacks. Mixed/foreign strings and changed placeholders refuse before mutation.",
+        "Apply targets a disposable image; disabling restores from a separate original source."
+      ],
+      "portme": [
+        "Wire the shared Build/Studio files as specified in WIRING.md and bind the MyCareer owner labels.",
+        "Witness all menu/title/prompt routes, pause/load/save labels and text width in game."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Only the original implementation, mapping metadata, source pins and user recipes ship; no retail file, image, pack or executable.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Static literal/lookup references, exact readback, offline composition and offscreen Qt only. No game witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Boolean; Basic/Advanced false; Experimental conditional on all_strings_fit().",
+            "name": "modern_naming",
+            "required": false
+          }
+        ],
+        "notes": "Text mapping does not create MyCareer or a card mode."
+      },
+      "source_container": {
+        "format": "NFL 2K5 USA XBE and uncompressed STRG resource",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .string_ section 14 and archive outer 4248 chunk 1, STRG pool 3.",
+        "retail_file": "default.xbe and vc_53450030/0..F"
+      },
+      "summary": "Fixed-span Play Now, MyNFL and MyPlayer text with a complete before/after preview. Experimental / Unwitnessed.",
+      "surface": "menus",
+      "title": "Modern 2K mode names",
+      "validation_command": "python3 -m mod_editor.core.nfl2k5_modern_naming check"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_my_career prepare source.zip output --first My --last Player",
+        "module": "mod_editor/core/nfl2k5_my_career.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_MY_CAREER_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_my_career.py",
+        "tests/mod_editor/test_nfl2k5_my_career_unicorn.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Own MyCareer studio page; protected shell integration remains in WIRING.md. Both options default off."
+      },
+      "id": "nfl2k5.mode.my_career",
+      "input_constraints": [
+        "Pinned USA executable; reserve the full selected owner union before installation.",
+        "Create setup from a signed, real NFL Draft stage Franchise save with an eligible unassigned primary-pool QB prospect.",
+        "Configure MyCareer.json in Build, import its paired MyCareer.zip and enter through MyCareer. All presets off.",
+        "Native journal I/O, complete menu routes, camera and gameplay require the witness list. Missing or mismatched checkpoints disable MyPlayer control."
+      ],
+      "portme": [
+        "Complete Noah's precise witness list in ASTRA_MY_CAREER_REPORT.md before claiming played runtime acceptance."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_MY_CAREER_REPORT.md"
+        ],
+        "scope": "Bounded native function execution and offline writers are tested. No Xbox boot, graphics, controller play or console filesystem witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "my_career",
+            "required": true
+          }
+        ],
+        "notes": "Protected dispatcher, Build, UI shell, closure and registry integration is specified in WIRING.md."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "FPP menu action and pinned hooks; allocator-owned 8192 RX and 4096 RW bytes; fixed signed Franchise save and bounded checkpoint journal.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "A created quarterback, MyPlayer, follows native Franchise drafting with fixed player control, CPU management, whole-game fixtures and bounded weekly XP.",
+      "surface": "mode_state_routing",
+      "title": "MyCareer (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career"
     },
     {
       "backend": {
@@ -5291,7 +5793,7 @@
       "summary": "Preserve eligible players' September 1 ages through explicit fictional birth-date shifts, with exact changes and skips, session undo and signed-copy persistence.",
       "surface": "players_rosters",
       "title": "Shift roster ages to a season year (experimental)",
-      "validation_command": "QT_QPA_PLATFORM=offscreen python3 -m tests.mod_editor.test_rosters_data_qt"
+      "validation_command": "python3 -m tests.mod_editor.test_rosters_data_qt"
     },
     {
       "backend": {
@@ -5575,6 +6077,77 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_roster_arena_image build source.iso --output grown.iso --created-teams-extra 2",
+        "module": "mod_editor/core/nfl2k5_roster_arena_image.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_ROSTER_ARENA_GROWTH_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_roster_arena_growth.py",
+        "tests/mod_editor/test_nfl2k5_roster_arena_image.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      },
+      "id": "nfl2k5.rosters.arena_growth",
+      "input_constraints": [
+        "Pinned USA executable, complete allocator union, and a paired migrated disc ROST.",
+        "Existing signed saves migrate to version 1; keep originals. Disc resources migrate to version 18.",
+        "Only NFL ordinals 0..31 use five overflow indices. Active prefix remains 65; regular season/promotions remain 53.",
+        "Seventeenth reserve requires an explicit eligible-team mask; no automatic eligibility inference.",
+        "Extra count is 0 or 2. Old 52 ordinals remain stable; new IDs 100/101 at 52/53 inherit stock assets and playbooks. The franchise league stays 32 teams."
+      ],
+      "portme": [
+        "Complete the console witness list and protected integration in ASTRA_ROSTER_ARENA_GROWTH_REPORT.md and WIRING.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_ROSTER_ARENA_GROWTH_REPORT.md"
+        ],
+        "scope": "Bounded Unicorn consumers proved; Xbox kernel allocation, complete disc boot, created-team UI and franchise gameplay remain unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boolean; false in every preset",
+            "name": "reserves_16",
+            "required": false
+          },
+          {
+            "allowed": "0 or 2; 0 in every preset",
+            "name": "created_teams_extra",
+            "required": false
+          }
+        ],
+        "notes": "Either option reserves the same 8192-byte RX owner. No new RW allocation."
+      },
+      "source_container": {
+        "format": "XDVDFS and signed Xbox save",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "ROST outer index 5, versioned 0x92000 arena; signed SAVEGAME.DAT and EXTRA; paired XBE",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Versioned roster arena, 16 reserves with explicit 17th eligibility, and two optional created records.",
+      "surface": "players_rosters",
+      "title": "Larger reserves and two extra created teams (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_roster_arena_growth"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl2k5_xbox_save_inventory.py --image <read-only-xemu-hdd.raw> --expected-image-sha256 <sha256> --json-out <inventory.json> --inventory-tsv-out <inventory.tsv> --slider-tsv-out <sliders.tsv>",
         "module": "tools/nfl2k5_xbox_save_inventory.py",
         "operation": "inspect"
@@ -5649,6 +6222,72 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_calendar_engine --xbe <source.xbe> --output <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_calendar_engine.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_CALENDAR_ENGINE_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_calendar_engine.py",
+        "tests/mod_editor/test_nfl2k5_calendar_engine_unicorn.py",
+        "tests/mod_editor/test_nfl2k5_calendar_engine_delivery.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "The combined season_cap build option enables the calendar, gate, 2026 schedule resources and allocator. Basic and Advanced leave it off; Experimental enables it. EXPERIMENTAL / UNWITNESSED."
+      },
+      "id": "nfl2k5.schedules_franchise.calendar_engine",
+      "input_constraints": [
+        "Pinned USA executable and a complete allocator union.",
+        "Recognized complete season owners; base year 2004 or 2026. The executable-only CLI cannot install or certify external regular/preseason templates; use the combined 2026 image build for the shipped matching resources.",
+        "Current dates encode year minus 2000; historical/templates retain their source context. No automatic migration of ambiguous older wrapped dates.",
+        "Extracted executable only, at most 12,300,288 bytes; output must be a new file. Full owner union must be reserved before any allocator owner is installed."
+      ],
+      "portme": [
+        "EXPERIMENTAL / UNWITNESSED: Noah must witness natural rollovers, boot and save/reload at 2053, 2098..2101, 2104 and indices 127/128; see ASTRA_CALENDAR_ENGINE_REPORT.md.",
+        "Current schedules encode year minus 2000. Historical/template paths keep their source context; ambiguous wrapped old saves and permanent century archives are not migrated.",
+        "Schedule rule follows the shipped template: opening Thursday is 77 days before the fourth Thursday in November; preseason begins 35 days earlier; postseason uses fixed day offsets from that opening. This is not a future real-world NFL schedule prediction."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Do not distribute generated executables, discs or saves.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded isolated x86 instructions and synthetic-league generators only. No naturally advanced franchise, loader or save/reload gameplay witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Boolean. The combined Build option implies calendar_engine, season_2026 and xbe_space; off in Basic/Advanced, on in Experimental.",
+            "name": "season_cap",
+            "required": true
+          }
+        ],
+        "notes": "season_cap is the existing combined image-build control, not a save edit. The backend CLI retains the recognized executable starting year and writes a new XBE copy; it does not install disc schedule resources or migrate saves."
+      },
+      "source_container": {
+        "format": "XBE",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Pinned date, live DOB, season-label and completion-gate sites; nfl2k5_calendar owns 1,024 RX and 2,048 immutable RO bytes, with no new writable or persistent state.",
+        "retail_file": "user-owned USA Xbox default.xbe"
+      },
+      "summary": "Gregorian current-franchise dates, moving live birth-year century and full year labels, with the existing bounded history and save schema.",
+      "surface": "schedules_franchise",
+      "title": "128-season franchise calendar (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_calendar_engine"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl_franchise_limit_feasibility.py --json-out <feasibility.json> --tsv-out <feasibility.tsv>",
         "module": "tools/nfl_franchise_limit_feasibility.py",
         "operation": "inspect"
@@ -5711,6 +6350,70 @@
       "surface": "schedules_franchise",
       "title": "NFL 2K5 franchise-limit feasibility",
       "validation_command": "bash tools/validate_nfl_franchise_limit_feasibility.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_franchise_2026 --self-check",
+        "module": "mod_editor/core/nfl2k5_franchise_2026.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "ASTRA_FRANCHISE_2026_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_franchise_2026.py",
+        "tests/mod_editor/test_nfl2k5_franchise_2026_unicorn.py",
+        "tools/nfl2k5_franchise_2026.c",
+        "tools/nfl2k5_franchise_2026.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "view",
+        "reason": "No retail hooks call the dormant kernel. Saved native counters and result identity adapters are not implemented."
+      },
+      "id": "nfl2k5.schedules_franchise.rules_2026_inspection",
+      "input_constraints": [
+        "EXPERIMENTAL / UNWITNESSED. Apply installs a dormant proof kernel only; Build must call require_runtime_ready and refuse true requests.",
+        "Host companions bind the exact SAVEGAME.DAT digest and must be explicitly retained. Native saving cannot persist this companion.",
+        "Existing capacities remain 53 active, 12 PS, 65 team references and five IR slots. Rules use the supplied R1-R5 memo snapshot; no claim of full modern IR capacity."
+      ],
+      "portme": [
+        "Finish native save transport, pool lifecycle, all result identity adapters and CPU/cutdown/trade hooks before enabling this option."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "none-until-safe",
+        "rule": "Distribute original source and evidence only; never retail executable, disc, save or generated companion payloads.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded kernel instructions and retail hazard snippets only. No hooked game, console boot, native save reload, rendered screen or Noah witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "False in all presets; true refuses preflight while native enforcement is unavailable.",
+            "name": "franchise_2026_rules",
+            "required": false
+          }
+        ],
+        "notes": "Host session and companion are explicit APIs. There is no native manual screen."
+      },
+      "source_container": {
+        "format": "Original Xbox XBE and fixed 720044-byte franchise SAVEGAME.DAT",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Dormant allocator kernel plus a separate 4168-byte host counter companion; no retail/save span is borrowed.",
+        "retail_file": "ESPN NFL 2K5 (USA)/default.xbe; user-owned SAVEGAME.DAT"
+      },
+      "summary": "Read-only inspection of the dormant kernel and pinned native integration hazards. Host transactions and bounded R1-R5 proofs exist; native franchise enforcement is incomplete.",
+      "surface": "schedules_franchise",
+      "title": "2026 franchise kernel inspection (rules unavailable)",
+      "validation_command": "python3 -m mod_editor.core.nfl2k5_franchise_2026 --self-check"
     },
     {
       "backend": {
@@ -5858,22 +6561,23 @@
     },
     {
       "backend": {
-        "command": "Python API: mod_editor/core/nfl2k5_scorebug_ingame.py runtime_apply_in_place(output_copy)",
-        "module": "mod_editor/core/nfl2k5_scorebug_ingame.py",
+        "command": "python3 -m tools.nfl2k5_scorebug_reference apply --runtime",
+        "module": "tools/nfl2k5_scorebug_reference.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
+        "ASTRA_SCOREBUG_FIX_REPORT.md",
         "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
-        "tests/mod_editor/test_nfl2k5_scorebug_resources.py"
+        "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+        "tests/mod_editor/test_nfl2k5_scorebug_native.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Experimental preset or explicit selection. EXPERIMENTAL / UNWITNESSED."
+        "reason": "EXPERIMENTAL / UNWITNESSED v2. A tester reports a v1 entry-to-game freeze; keep runtime off in all presets pending the diagnostic matrix."
       },
       "id": "nfl2k5.scorebug_presentation.runtime",
       "input_constraints": [
@@ -5882,7 +6586,8 @@
         "An XBE alone cannot install the required 264 native panel textures. Rebuild from base when changing the owner set."
       ],
       "portme": [
-        "Complete Noah's boot, team identity, scoring, timeout, clock, down-slide and next-game witness list."
+        "Apply the r62 scorebug section of WIRING.md, disable automatic runtime selection and regenerate the protected reservation manifest.",
+        "Run the six-profile matrix and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FIX_REPORT.md."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -5892,16 +6597,16 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_SCOREBUG_RUNTIME_REPORT.md",
-          "docs/scorebug_runtime/evidence.json"
+          "ASTRA_SCOREBUG_FIX_REPORT.md",
+          "docs/scorebug_ingame/witness_r61b.md"
         ],
-        "scope": "Static analysis and bounded Unicorn execution prove the native descriptor relocation, lookup, binding and event paths. Actual kernel loading, asynchronous collection lifetime, GPU rendering, memory pressure and gameplay remain unwitnessed.",
+        "scope": "The earlier v1 runtime build froze entering gameplay in xemu on macOS; that failure is not reproduced or fixed here. v2 has bounded native collection, allocation, decompression, lookup and event checks. OS asynchronous lifetime, GPU consumption and live memory pressure remain unproved.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "false by default; true only for an experimental disc build",
+            "allowed": "false in every preset; manual true implies scorebug and xbe_space and selects the full diagnostic profile",
             "name": "scorebug_runtime",
             "required": true
           }
@@ -5918,10 +6623,79 @@
         "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "Bind native team panels and show timeout counts, score flashes, down refresh and play-clock urgency.",
+      "summary": "Native team panels and scorebug events, with reduced-resource CLI probes for a reported entry-to-game freeze.",
       "surface": "scorebug_presentation",
-      "title": "Team logos and scorebug effects (experimental, unwitnessed)",
-      "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+      "title": "Scorebug effects (diagnostic only)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m tools.nfl2k5_scorebug_reference apply --runtime-probe full",
+        "module": "tools/nfl2k5_scorebug_reference.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_SCOREBUG_FIX_REPORT.md",
+        "docs/scorebug_ingame/fix_receipts.json",
+        "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+        "tests/mod_editor/test_nfl2k5_scorebug_native.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "CLI-only diagnostics; no new BuildPlan field or GUI option."
+      },
+      "id": "nfl2k5.scorebug_presentation.runtime_probes",
+      "input_constraints": [
+        "User-owned USA XISO with pinned retail HUD resources; padded images are read through logical XDVDFS extents.",
+        "Use a separate output copy and a clean retail source for each profile. v7/v1 and different profiles refuse rather than migrating mixed bytes.",
+        "Pair includes TB, NE and neutral fallback in both orientations; transport and resources install no runtime hooks."
+      ],
+      "portme": [
+        "Apply the r62 scorebug section of WIRING.md, disable automatic runtime selection and regenerate the protected reservation manifest.",
+        "Run the six-profile matrix and static 4:3/widescreen witness list in ASTRA_SCOREBUG_FIX_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute the compiler and recipes; derive native resources from the user's own disc. Do not distribute generated game resources, executables or discs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_SCOREBUG_FIX_REPORT.md",
+          "docs/scorebug_ingame/witness_r61b.md"
+        ],
+        "scope": "The earlier v1 runtime build froze entering gameplay in xemu on macOS; that failure is not reproduced or fixed here. v2 has bounded native collection, allocation, decompression, lookup and event checks. OS asynchronous lifetime, GPU consumption and live memory pressure remain unproved.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "transport | hooks | resources | neutral | pair | full",
+            "name": "runtime_probe",
+            "required": true
+          }
+        ],
+        "notes": "CLI --runtime-probe selects the profile. --runtime is shorthand for full. Pair is TB/NE plus neutral. Status requires the matching profile. No additional allocator owner."
+      },
+      "source_container": {
+        "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+          "2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8",
+          "5f56ff615439fa8d1f87a833393f29e565873250f523c31134e6f2fae4004c49"
+        ],
+        "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
+        "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
+      },
+      "summary": "Make independent transport, hooks, resources, neutral, TB/NE pair and full diagnostic disc copies.",
+      "surface": "scorebug_presentation",
+      "title": "Scorebug freeze probes (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_resources"
     },
     {
       "backend": {
@@ -6206,6 +6980,79 @@
     },
     {
       "backend": {
+        "command": "python3 -m tools.nfl2k5_visual_mod_project build --project <project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
+        "module": "tools/nfl2k5_visual_mod_project.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_PLAY_RULES_REPORT.md",
+        "docs/mod_editor/play_rules.json",
+        "docs/mod_editor/play_rules.evidence.json",
+        "docs/mod_editor/play_rules.md",
+        "mod_editor/core/nfl2k5_play_rules.py",
+        "mod_editor/core/nfl2k5_formation_play_writer.py",
+        "mod_editor/gui/play_rules_panel_qt.py",
+        "mod_editor/gui/play_info_panel_qt.py",
+        "tests/mod_editor/test_nfl2k5_play_rules.py",
+        "tests/mod_editor/test_nfl2k5_play_rules_qt.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Applying selected rules is an explicit authoring action. Read-only Info works without game assets. Top-level Studio registration is specified in WIRING.md."
+      },
+      "id": "nfl2k5.scripts.play_rules",
+      "input_constraints": [
+        "Library presets contain selectors, not retail node payloads. Extract from the currently loaded book; source body SHA-256 and exact position/ordinal codes bind the bundle.",
+        "Copy complete declared chains, including alternate terminal paths. Preserve explicit flags. Friendly exchange/transfer/synchronization dependencies cannot be split; opponent selectors are not friendly slots.",
+        "Partial copies need matching families, run/pass/play-action headers and defensive component. Unlinked plays and special teams are inspectable; the wizard refuses their application.",
+        "No new double-team, automatic slide, modern match, spy or zone-read AI policy is authored. Combo Inside Zone is defense; Inside Zone Read and Slide protection have no exact-name retail donors.",
+        "Reuse identical donor pointers; changed chains use the existing fixed-capacity writer with full validator, menu and synchronization checks. Same-resource byte identity applies only without other edits.",
+        "Project/pack exports may contain copied operands and explicit flags. Keep extracted exports local; they are not Studio release assets. No cross-book automatic bundle application."
+      ],
+      "portme": [
+        "Noah must capture copied coverage exchanges, blocking/slide behavior, screens and both native option paths in gameplay before any runtime-proved classification.",
+        "83 callback/consumer addresses lack independent Ghidra blocks; preserve raw labels for unresolved semantics."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship selectors, parsers, parameter schemas and explanatory reference. Do not bundle extracted node payloads, private audit exports or Ghidra blocks.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline census: 37 books, 9251 validated plays, 91833 exact node round trips and 12 unchanged whole-resource rule applications. Offscreen project/pack persistence proved; no disc or gameplay witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Current canonical book, linked source formation/play, assignment slots 0 through 10 and matching native target personnel",
+            "name": "source_rules",
+            "required": true
+          }
+        ],
+        "notes": "Named presets and any-play search resolve from loaded source bytes; schema v3 carries explicit node flags through pack serialization."
+      },
+      "source_container": {
+        "format": "Fixed-span little-endian PLAY resource with 32-byte wrapper and 0x13390-byte body",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "37 canonical PLAY books; individual resource reads only",
+        "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
+      },
+      "summary": "Extract exact per-position retail assignment bundles in Create a Play, preserve linked exchanges and branch flags, validate through the existing writer, and inspect complete chains beside a searchable read-only Info reference. EXPERIMENTAL / UNWITNESSED.",
+      "surface": "scripts_config",
+      "title": "Retail rules library and PLAY reference",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_play_rules"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl_create_team_field_art_xiso_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --preview-dir <preview-dir> --plan <plan.json>",
         "module": "tools/nfl_create_team_field_art_xiso_workflow.py",
         "operation": "write"
@@ -6358,8 +7205,8 @@
     },
     {
       "backend": {
-        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes())\nwith Path(sys.argv[3]).open('xb') as output:\n    output.write(payload)\nprint(receipt)\" mod_editor/core/nfl2k5_roster_storage.py <source.xbe> <new-copy.xbe>",
-        "module": "mod_editor/core/nfl2k5_roster_storage.py",
+        "command": "python3 -m mod_editor.core.nfl2k5_patch_cli roster_storage <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
@@ -6419,6 +7266,71 @@
       "surface": "stadiums_fields",
       "title": "All 82 Create a Team stadiums (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_roster_storage"
+    },
+    {
+      "backend": {
+        "command": "python3 -m tools.nfl_stadium_texture_bundle --gltf <textures.gltf> --index <archive/0> --inventory <resources.json> --output <new-private-directory>",
+        "module": "tools/nfl_stadium_texture_bundle.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_STADIUM_EDITOR_REPORT.md",
+        "docs/mod_editor/nfl2k5_stadium_blender_workflow.md",
+        "docs/mod_editor/nfl2k5_stadium_editor_retail_proof.json",
+        "tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit Stadiums edit, not a preset."
+      },
+      "id": "nfl2k5.stadiums_fields.blender_textures",
+      "input_constraints": [
+        "A privately indexed NFL 2K5 USA source and its verified Stadiums cache.",
+        "Canonical texture IDs, one scene per bundle, original image dimensions, fixed P8 allocations and bounded lossless compression.",
+        "No new topology, UV, transform, material or collision write-back."
+      ],
+      "portme": [
+        "MisterAlex must inspect material preview and actual Blender image export. Noah must play the witness list in ASTRA_STADIUM_EDITOR_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship tooling only. Exported glTFs, PNGs and compiled SCNE spans contain private user-owned game data.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_STADIUM_EDITOR_REPORT.md"
+        ],
+        "scope": "Offline source replay, UV equation checks, complete no-op spans and changed P8 round trips. bpy is mocked. No Blender UI or played-game witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Canonical nfl2k5.stadium.oNNNN.cNNNN.sceneNNNN.textureNNNN IDs from the selected source scene.",
+            "name": "nfl2k5_texture_id",
+            "required": true
+          }
+        ],
+        "notes": "The helper stores IDs on materials and images. Shared texture users change together."
+      },
+      "source_container": {
+        "format": "SCNE in VC-LZ archive packs 8 and 9 in XDVDFS",
+        "hash_pins": [
+          "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
+        ],
+        "resource": "Source-bound P8 index chains and BGRA palettes in fixed SCNE spans.",
+        "retail_file": "User-owned ESPN NFL 2K5 USA XISO"
+      },
+      "summary": "Export embedded textures with source UV coordinates; stage Blender-painted images through the fixed P8 writer. Preserve unchanged pixels and complete unchanged SCNE spans.",
+      "surface": "stadiums_fields",
+      "title": "Blender Stadium textures (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_stadium_editor_roundtrip"
     },
     {
       "backend": {
@@ -6513,7 +7425,14 @@
         "reports/hires_pack_consumers.v1.json",
         "reports/hires_pack_build.v1.json",
         "tests/mod_editor/test_nfl2k5_hires_pack.py",
-        "tests/mod_editor/test_nfl2k5_hires_pack_retail.py"
+        "tests/mod_editor/test_nfl2k5_hires_pack_retail.py",
+        "ASTRA_HIRES_MORE_REPORT.md",
+        "reports/hires_families.v2.json",
+        "reports/hires_consumers.v2.json",
+        "reports/hires_compile_all.v2.json",
+        "reports/hires_player_names.v2.json",
+        "tests/mod_editor/test_nfl2k5_hires_families.py",
+        "tests/mod_editor/test_nfl2k5_hires_families_retail.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6524,10 +7443,12 @@
       },
       "id": "nfl2k5.textures.hires_pack",
       "input_constraints": [
-        "Pinned USA pilot TXTR wrappers and audited executable consumer ranges; one to three explicit artwork filenames.",
-        "scorebug.png 128x128, field_logo.png 512x512, helmet.png 512x512, or same-basename NFL 2K5 .2ktexmaster. Files up to 32 MiB, expanded masters up to 64 MiB, source images up to 16 megapixels.",
-        "Shared P8 palette, native mip count, exact retail or matching authored recipe; mixed or foreign selections refuse.",
-        "Only xemu-64 is selectable and remains unwitnessed. xemu-128 and 4x texture output refuse."
+        "Pinned NFL 2K5 USA ordinary P8 TXTR, paired clean/mud jersey TSET, or complete baseline SCNE with one appended midfield raster. Exact consumer and allocator code/table pins.",
+        "64 current 00..31 H0/A0 helmets; 1,920 current-kit number textures; 64 paired jerseys; 126 created-team midfield logos; 348 embedded stock center_logo textures; scorebug frame and ESPN strip. See catalog for filenames and sizes.",
+        "PNG or NFL 2K5 .2ktexmaster per input; jerseys require both clean and .mud inputs. Original mip count; shared palette indices for each clean/mud pair. Unknown, mixed, foreign and incomplete inputs refuse.",
+        "The reference/runtime scorebug changes a pinned binding table and conflicts with the Hi-res scorebug family, including ESPN-only input. The other five families pass the complete executable owner union in both orders.",
+        "32 MiB per input, 64 MiB expanded master, 16 megapixels per master source; paired jersey quantization limited to 8192 unique color pairs across mips. 256 MiB selected resource input/output bounds and 768 MiB rewritten-container bound.",
+        "xemu-64 is experimental and unwitnessed. Over-ceiling modeled allocations refuse with exact required and excess bytes. Under-ceiling does not prove whole-game fit and reports null headroom. xemu-128 and 4x texture output refuse."
       ],
       "portme": [
         "Run Noah's native versus 2x artwork comparisons at xemu rendering scales 1x, 2x and 4x, including full-game memory and lifecycle checks."
@@ -6540,9 +7461,9 @@
       },
       "runtime": {
         "evidence": [
-          "ASTRA_HIRES_PACK_REPORT.md"
+          "ASTRA_HIRES_MORE_REPORT.md"
         ],
-        "scope": "Static normalized UV evidence, bounded compiler and transaction tests, and real disc builds. Exhaustive runtime consumers, guest heap headroom, rendered sampling and 128 MiB support are unproved.",
+        "scope": "Pinned static binders and normalized UVs; bounded compiler/transaction tests and every catalogued target compiled at 2x offline. Whole-game heap headroom, wider residency lifetimes, rendered appearance and 128 MiB support remain unproved.",
         "status": "not-tested"
       },
       "selectors": {
@@ -6553,7 +7474,7 @@
             "required": true
           },
           {
-            "allowed": "existing folder with one to three exact pilot basenames",
+            "allowed": "existing folder with exact catalogued artwork filenames and complete clean/mud jersey pairs",
             "name": "hires_folder",
             "required": true
           },
@@ -6566,24 +7487,29 @@
             "allowed": "xemu-64 only",
             "name": "hires_target",
             "required": true
+          },
+          {
+            "allowed": "nonempty unique subset of helmets, field_logos, stock_fields, scorebug, numbers, jerseys; omitted legacy plans select all present inputs",
+            "name": "hires_families",
+            "required": true
           }
         ],
-        "notes": "Build integration is specified in WIRING.md. Run after other archive writers; reject same-asset scorebug or texture edits. No executable patch or allocator owner."
+        "notes": "Parent Hi-res stays off in basic/advanced/experimental. Family and budget display integration is specified in WIRING.md. No XBE owner or heap enlargement. Reject same-resource edits before the final shared archive transaction."
       },
       "source_container": {
-        "format": "TXTR in segmented IFF archive in XDVDFS",
+        "format": "TXTR, TSET and SCNE in segmented IFF archive in XDVDFS",
         "hash_pins": [
           "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
           "ea7da5c66e03f8bdf1724a73f021ccaf6b8bb4726179d449a65e783b0192a010",
           "c6f56638ebf3c77993d87f810cd31b6d7abc2b754da8172ed5184e4bc7508725"
         ],
-        "resource": "o346c53 score_buga; o384c0 CT33D.IFF center_logo; o3613c11 uniform 00H0.IFF helmet00",
+        "resource": "Exact outer/chunk/name-ID/descriptor hashes in nfl2k5_hires_catalog.py, plus the three legacy pilot identities in nfl2k5_hires_texture.py",
         "retail_file": "user-owned NFL 2K5 USA disc"
       },
-      "summary": "Compile up to three selected pilot textures at 2x or native size and transactionally rebuild the archive in a new disc copy.",
+      "summary": "Compile 2,524 pinned current-kit and midfield/scorebug targets at 2x or native size, with family selection and a necessary memory-bound refusal.",
       "surface": "uniforms",
       "title": "Hi-res pack (experimental, unwitnessed)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_hires_pack"
+      "validation_command": "python3 -m mod_editor.core.nfl2k5_hires_pack catalog"
     },
     {
       "backend": {

@@ -1,5 +1,7 @@
 # Franchise Practice exit correction
 
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
+
 2026-09-06. Base: `f371972f4a17cecf654c019d5c6ff3a3c32c7caa`.
 **EXPERIMENTAL / UNWITNESSED.** Noah witnessed the previous build returning to
 Main Menu. This correction has bounded CPU and offline patch evidence, not a
@@ -32,7 +34,7 @@ All addresses below are Xbox virtual addresses in the USA retail XBE:
 - File size: 11,948,032 bytes.
 - SHA-256: `73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9`.
 - Feature-only patched SHA-256: `6a9008b9e3aaf6c83a60418a72c8fd8dc1cf3cc90059a385d39addea17b871c9`.
-- Input: `/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe`.
+- Input: `<media>/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe`.
 - Ghidra: read-only `research/functions/nfl2k5/pseudo_c` under the main repository.
   Relevant records include `FUN_000617E0`, `FUN_00062BE0`, `FUN_00064530`,
   `FUN_00064CD0`, `FUN_0006E400`, `FUN_0006E450`, `FUN_0006EBE0`,

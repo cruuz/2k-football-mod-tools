@@ -1,4 +1,6 @@
 | Consumer | Address / evidence | Class before polish | Fixed / open |
+
+Public path notation: `<home>` and `<media>` identify the original local home and mounted input directories. Recorded hashes, measurements and outcomes are unchanged.
 |---|---|---|---|
 | Active world projection | `2AC80 -> 2B510`, active `A6AFC0`, projection `+0`, composite `+F0` | Correct in v2 for the first field: widened matrix, retail principal point | PROVED: retained hor+; native composite rebuild now used. |
 | Second interlaced field | `2B510`, `2B5B0`, matrices `+130/+170` | Stretched: v2 only corrected the first field | PROVED FIX: corrected x columns in both fields, native y difference retained. |
@@ -42,7 +44,7 @@ Evidence and implementation
 ---------------------------
 
 The audit used the read-only USA corpus at
-`/home/noah/2k-football-mod-tools/research/functions/nfl2k5/functions.tsv`
+`<home>/2k-football-mod-tools/research/functions/nfl2k5/functions.tsv`
 and its `pseudo_c` shards, then checked hook instructions in the retail XBE.
 The companion [byte receipt](docs/mod_editor/widescreen_polish_receipts.json)
 includes exact corpus file names, body ranges and caller/callee lists for the

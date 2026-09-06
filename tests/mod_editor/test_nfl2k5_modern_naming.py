@@ -269,6 +269,10 @@ class NamingTests(unittest.TestCase):
             DEFAULT_REGISTRY, validate_data, _local_path, _command_module)
         row=json.loads((ROOT/'docs/mod_editor/nfl2k5_modern_naming_capability.json').read_text())
         registry=json.loads(DEFAULT_REGISTRY.read_text())
+        installed=[item for item in registry['capabilities'] if item['id']==row['id']]
+        if installed:
+            self.assertEqual(installed,[row])
+        registry['capabilities']=[item for item in registry['capabilities'] if item['id']!=row['id']]
         registry['capabilities'].append(row)
         registry['capabilities'].sort(key=lambda item:item['id'])
         # Older registry rows refer to absent private research. Validate all

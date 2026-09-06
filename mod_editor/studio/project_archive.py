@@ -23,7 +23,7 @@ import zipfile
 
 from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
-from mod_editor.core.nfl2k5_music_playlist import build_settings as music_build_settings
+from mod_editor.core.nfl2k5_build_settings import build_settings as music_build_settings
 from mod_editor.core.json_stream import read_bounded_regular_file
 from mod_editor.core.nfl2k5_audio_origin_authorization import (
     AuthorizedPcm16Wav,

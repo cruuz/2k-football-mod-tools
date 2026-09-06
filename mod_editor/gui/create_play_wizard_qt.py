@@ -691,11 +691,13 @@ class PlayTypePage(QWizardPage):
         form.addRow("Intended read defender", self.option_read)
         self.option_receiver = QComboBox()
         form.addRow("RPO quick slant receiver", self.option_receiver)
-        note = QLabel(lib.OPTION_NOTICE + " Native under-center I personnel only. "
+        note = QLabel(lib.OPTION_NOTICE + " Native I formations, or Shotgun with a back for Zone read and RPO. "
             "Speed option keeps stock supporting blocks. Read mesh: 1 yard to the run side, "
             "3 yards back. Keep: 4 yards opposite, 3 up. Back: 2 yards to the run side, 5 up. "
             "The selected defender is not guaranteed to remain unblocked. "
-            "RPO uses a 3-yard slant and a nominal 0.3-second pass delay.")
+            "RPO uses a 3-yard slant and a nominal 0.3-second pass delay. "
+            "These are data-only recipes. Select Read option mesh controls in Build "
+            "to enable the separate runtime controls.")
         note.setWordWrap(True); form.addRow(note)
         layout.addWidget(self.option_box)
         for combo in (self.option_preset, self.option_side, self.option_back, self.option_defense, self.option_receiver):
@@ -723,7 +725,7 @@ class PlayTypePage(QWizardPage):
         rec = lib.formation_record(self.wiz.body, cur.donor_formation_index)
         actual = [(s.x[0], s.z[0]) for s in rec.slots]
         if list(cur.positions) != actual or cur.category_positions is not None:
-            raise ValueError("Option presets keep the native under-center formation. Restore its stock positions and personnel first.")
+            raise ValueError("Option presets keep the native formation. Restore its stock positions and personnel first.")
         return lib.make_option_design(self.wiz.book, self.wiz.body, cur.donor_formation_index,
             self.option_preset.currentText(), weak=self.option_side.currentData(),
             back_slot=self.option_back.currentData(), opponent_formation_index=self.option_defense.currentData(),
