@@ -121,12 +121,17 @@ class Wrappers(unittest.TestCase):
 
 
 class TokenDerivation(unittest.TestCase):
-    def test_it_matches_what_the_wrappers_promise(self) -> None:
+    def test_both_wrappers_name_the_token_they_promise(self) -> None:
+        """A lane's own test suite reads the validator file and looks for its
+        pass line; a wrapper that delegates still has to say which line it is."""
+
         for game, document in manifests().items():
             for lane in document["lanes"]:
-                promised = (ROOT / f"tools/validate_{game}_{lane}.sh").read_text(encoding="utf-8")
-                with self.subTest(game=game, lane=lane):
-                    self.assertIn(driver.pass_token(game, lane), promised)
+                token = driver.pass_token(game, lane)
+                for suffix in (".sh", ".bat"):
+                    path = ROOT / f"tools/validate_{game}_{lane}{suffix}"
+                    with self.subTest(game=game, lane=lane, suffix=suffix):
+                        self.assertIn(token, path.read_text(encoding="utf-8"))
 
     def test_it_is_the_shape_every_other_validator_uses(self) -> None:
         self.assertEqual(driver.pass_token("madden09_ps2", "uniform_disc_art"),

@@ -5,6 +5,7 @@ rem Mirrors tools/validate_madden09_ps2_uniform_art.sh: both hand the work to
 rem tools/validate_game_lane.py, which reads mod_editor/games/madden09_ps2/validators.json
 rem for the steps this lane needs and derives the pass token from the lane name.
 rem No game data, and no test framework: this has to run in a shipped tree.
+rem Prints MADDEN09_PS2_UNIFORM_ART_VALIDATION_PASS on success.
 rem Note: no parentheses inside echo lines within if blocks; cmd.exe reads them as block ends.
 
 rem Run from the repository root, one level up from this script.
