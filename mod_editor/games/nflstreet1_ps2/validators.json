@@ -1,0 +1,126 @@
+{
+  "game_id": "nflstreet1_ps2",
+  "lanes": {
+    "art_pages": {
+      "compile": [
+        "mod_editor/games/nflstreet1_ps2/art_pages.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.nflstreet1_ps2.art_pages"
+        }
+      ],
+      "what": "the portrait, logo, field, playfield, presentation and menu art lanes"
+    },
+    "audio": {
+      "compile": [
+        "mod_editor/games/nflstreet1_ps2/audio_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.nflstreet1_ps2.audio_lane"
+        }
+      ],
+      "what": "the SCHl stream and BNKl bank audio lanes"
+    },
+    "databases": {
+      "compile": [
+        "mod_editor/games/nflstreet1_ps2/database_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.nflstreet1_ps2.database_lane"
+        }
+      ],
+      "what": "the team roster record lane"
+    },
+    "identity": {
+      "compile": [
+        "mod_editor/games/nflstreet1_ps2/identity_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.nflstreet1_ps2.identity_lane"
+        }
+      ],
+      "what": "the team identity record lane"
+    },
+    "inventory": {
+      "compile": [
+        "mod_editor/games/nflstreet1_ps2/inventory_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.nflstreet1_ps2.inventory_lane"
+        }
+      ],
+      "what": "the /DATA container inventory lane"
+    },
+    "playbooks": {
+      "compile": [
+        "mod_editor/games/nflstreet1_ps2/playbooks_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.nflstreet1_ps2.playbooks_lane"
+        }
+      ],
+      "what": "the playbook and play-name lane"
+    },
+    "text": {
+      "compile": [
+        "mod_editor/games/nflstreet1_ps2/text_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.nflstreet1_ps2.text_lane"
+        }
+      ],
+      "what": "the TEXT string-bank lane"
+    },
+    "textures": {
+      "compile": [
+        "mod_editor/games/nflstreet1_ps2/texture_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.nflstreet1_ps2.texture_lane"
+        }
+      ],
+      "what": "the kit, skin and tattoo texture census lane"
+    }
+  },
+  "schema": "vc_game_lane_validators/v1"
+}

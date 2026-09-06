@@ -1,0 +1,28 @@
+{
+  "capability_rows": 15,
+  "game_id": "nflstreet3_ps2",
+  "hidden_disc_writers": 11,
+  "lanes_on_contract": 15,
+  "product_modules": 27,
+  "retail_identity": {
+    "content_sha256": "d80064ae58cb4da7a1f4cdc04b2bedcfb4fee6d91c0562bc1dc7a6670295124c",
+    "executable_sha256": "88fd27455a031f053cccb81b0e97ca32e2ea69fe0a941d4f5d21771d739aedfa"
+  },
+  "save_writer_ids": [],
+  "schema": "vc_game_module_pins/v1",
+  "shipped_files": 36,
+  "surfaces": [
+    "audio",
+    "colors",
+    "logos_cards",
+    "menus",
+    "players_rosters",
+    "portraits_faces",
+    "scorebug_presentation",
+    "scripts_config",
+    "stadiums_fields",
+    "textures",
+    "uniforms"
+  ],
+  "windows": 1
+}
