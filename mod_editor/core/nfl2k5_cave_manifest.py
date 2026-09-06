@@ -347,14 +347,14 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
         if synthetic_owner_bytes:
             progress(f"Building synthetic {synthetic_owner_bytes}-byte owner on the real disposable disc")
             probe, _ = space.apply(allocation_base, all_requests + probe_requests, scaleout=True)
-            for module, kwargs in ((defensive_try, {}), (zone_drop, {}), (relocated, {}),
+            for module, kwargs in ((defensive_try, {}), (zone_drop, {}), (relocated, {}), (runtime, {}),
+                                   (momentum, dict(momentum=100, momentum_contact=True)),
                                    (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
-                                   (runtime, {}), (momentum, dict(momentum=100, momentum_contact=True)),
-                                   (roster_storage, {}), (coverage, {}), (scramble, {}), (practice_screen, {}),
+                                   (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
                                    (music, dict(song_records=[dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256) for i in range(200)]))):
                 probe, _ = module.apply(probe, **kwargs)
             probe, _ = space.install_code(probe, "synthetic_scaleout", b"\xc3" + b"\x90" * (synthetic_owner_bytes - 1))
-            if any(module.status(probe) != "applied" for module in (space, relocated, runtime, momentum, defensive_try, zone_drop, music, roster_storage, coverage, scramble, playlist, practice_screen)):
+            if any(module.status(probe) != "applied" for module in (space, relocated, runtime, momentum, defensive_try, zone_drop, music, roster_storage, coverage, scramble, playlist, practice_screen, abilities, qb_spy, calendar)):
                 raise OracleError("synthetic owner does not compose with the complete real owner union")
             descriptor = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
             try:

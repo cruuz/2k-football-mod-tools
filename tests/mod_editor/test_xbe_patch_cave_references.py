@@ -344,8 +344,6 @@ class CaveReferenceTests(unittest.TestCase):
         # The complete union now requires RO storage and selects v3 even
         # when the caller did not explicitly request scale-out.
         if space.is_scaleout(self.patched):
-        # Calendar requires v3 even when the caller does not force scale-out.
-        if space.layout(self.patched)["version"] == 3:
             self.assertEqual(proof["retail_mapping_overlaps"], [])
             self.assertEqual(len(proof["pages"]), 52)
             self.assertEqual(len(proof["encoded_references"]), 1081)  # disclosed raw inventory
