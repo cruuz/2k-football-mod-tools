@@ -4301,7 +4301,7 @@
         "Bounded target list: at most 3,000 member rows are listed while the document's totals stay complete."
       ],
       "portme": [
-        "Move the MMAP pixel decoder from mod_editor/games/madden09_ps2/mmap_art.py into mod_editor/games/_formats and this row becomes an exporter unchanged. Run from a scratch harness against this disc, that decoder draws 1,162 of 1,221 sampled members and refuses 59 by name; that is a measurement of the decoder, not a claim about this module.",
+        "Move the MMAP pixel decoder from mod_editor/games/madden09_ps2/mmap_art.py into mod_editor/games/_formats and this row becomes an exporter unchanged. Run from a scratch harness outside any game module, sampling 40 MMAP members per container, that decoder draws 1,019 of 1,063 and refuses 44 in three groups: 23 palette-only entries with no pixels of their own, 19 that declare no palette, and 2 whose surface does not satisfy the stride rule. That is a measurement of the decoder, not a claim about this module.",
         "An LZH1 encoder is needed before any rewrite of UNIFORM.DAT, PLADATA.DAT or UIS_TMLO.DAT, whose members are LZH1-packed; PLYRFACE.DAT and UIS_GEAR.DAT store theirs uncompressed.",
         "Join a texture to the school it dresses. None of the five containers names its members."
       ],

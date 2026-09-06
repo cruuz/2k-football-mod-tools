@@ -17,8 +17,8 @@ format package; it never imports another game*.  So this row is
 ``read-only-mapped`` and not ``extract-only``, and the one thing that lifts it is
 moving that decoder into ``_formats`` -- a shared-file change, not a change to
 this module.  Run from a scratch harness against this disc, that decoder draws
-**1,162 of 1,221 sampled members** and refuses 59 by name [M]; that number is a
-measurement, not a capability of this module.
+**1,019 of 1,063** members sampled 40 per container and refuses 44 by name [M];
+that number is a measurement of the decoder, not a capability of this module.
 
 Run it without a window::
 
