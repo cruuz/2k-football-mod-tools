@@ -10,15 +10,17 @@ This lane opens each one's header through the **shared** reader
 the format declares -- version, format id, dimensions, header size -- for every
 member of the kit and face containers.
 
-**It does not export a PNG, and does not claim to.**  A pixel decoder for
-``MMAP`` exists in this repository, but it lives inside the Madden 09 package,
-and ``mod_editor/games/_formats/__init__.py`` is explicit that *a game imports a
-format package; it never imports another game*.  So this row is
-``read-only-mapped`` and not ``extract-only``, and the one thing that lifts it is
-moving that decoder into ``_formats`` -- a shared-file change, not a change to
-this module.  Run from a scratch harness against this disc, that decoder draws
-**1,019 of 1,063** members sampled 40 per container and refuses 44 by name [M];
-that number is a measurement of the decoder, not a capability of this module.
+**It does not export a PNG, and does not claim to.**  The ``MMAP`` pixel
+decoder is now a shared format package
+(:mod:`mod_editor.games._formats.mmap_art`), so the barrier that used to keep it
+out of reach -- *a game imports a format package; it never imports another game*
+-- is gone, and this module may import it.  What is still missing is this lane's
+own export path, the independent verifier that has to fail on a tampered PNG,
+and the evidence from this disc; so the row stays ``read-only-mapped`` and does
+not claim ``extract-only``.  Run from a scratch harness against this disc, that
+decoder draws **1,019 of 1,063** members sampled 40 per container and refuses 44
+by name [M]; that number is a measurement of the decoder, not a capability of
+this module.
 
 Run it without a window::
 

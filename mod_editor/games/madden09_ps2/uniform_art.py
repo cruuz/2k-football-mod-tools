@@ -68,7 +68,8 @@ from mod_editor.games.contract import (
 from mod_editor.games._formats import ea_terf
 from mod_editor.games._formats import pcsx2_texture_name as texture_identity
 
-from . import containers, mmap_art
+from mod_editor.games._formats import mmap_art
+from . import containers
 
 CAPABILITY_ID = "madden09ps2.uniforms.mmap_export"
 LANE_ID = "uniforms.mmap_export"

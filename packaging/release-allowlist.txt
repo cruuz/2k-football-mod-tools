@@ -585,6 +585,7 @@ docs/product/measured/madden09_ps2/art-page-textures.json
 # madden09_ps2: shipped by the game module (mod_editor/games/madden09_ps2/allowlist.fragment.txt).
 mod_editor/games/_formats/xxhash3_64.py
 mod_editor/games/_formats/pcsx2_texture_name.py
+mod_editor/games/_formats/mmap_art.py
 # madden09_ps2: shipped by the game module (mod_editor/games/madden09_ps2/allowlist.fragment.txt).
 docs/product/measured/madden09_ps2/pcsx2-texture-identity-derivation.json
 # ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).

@@ -436,7 +436,7 @@ different row, and no pack has been loaded.
 |---|---|
 | `mod_editor/games/madden09_ps2/art_pages.py` | the four container lists, the parameterised lane, the synthetic-disc builder, the CLI |
 | `mod_editor/games/madden09_ps2/uniform_art.py` | the lane itself: catalogue, decode, encode, write-back, verify. Container-parameterised; the uniform rows are its defaults |
-| `mod_editor/games/madden09_ps2/mmap_art.py` | the `MMAP` layout: parse, decode, index, encode |
+| `mod_editor/games/_formats/mmap_art.py` | the `MMAP` layout: parse, decode, index, encode. Shared: it was in the Madden package until every EA PS2 disc measured turned out to carry the same wrapper. `mod_editor/games/madden09_ps2/mmap_art.py` re-exports it for code written against the old path. |
 | `mod_editor/games/madden09_ps2/containers.py` | the disc, the `TERF` containers, the preload caches, the synthetic parts |
 | `mod_editor/games/_formats/ea_terf.py` | the container format and both codecs |
 | `tools/ps2_iso9660_writer.py`, `tools/ps2_iso9660_verify.py` | the image writer and the independent verifier |

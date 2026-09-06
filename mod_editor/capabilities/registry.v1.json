@@ -4291,7 +4291,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "view",
-        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio as a table and no editor. It is not an exporter and does not pretend to be: exporting a PNG needs the MMAP pixel decoder, which is in the Madden 09 package and out of a game module's reach, so the row states that instead of drawing a disabled Export button."
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio as a table and no editor. It is not an exporter and does not pretend to be: the MMAP pixel decoder is now a shared format package (mod_editor/games/_formats/mmap_art.py) and within this module's reach, but this lane still reads headers only. Exporting a PNG needs an export path, its own independent verifier and a measurement on this disc, none of which exist yet, so the row says so instead of drawing a disabled Export button."
       },
       "id": "ncaa09ps2.uniforms.texture_census",
       "input_constraints": [
@@ -4301,7 +4301,7 @@
         "Bounded target list: at most 3,000 member rows are listed while the document's totals stay complete."
       ],
       "portme": [
-        "Move the MMAP pixel decoder from mod_editor/games/madden09_ps2/mmap_art.py into mod_editor/games/_formats and this row becomes an exporter unchanged. Run from a scratch harness outside any game module, sampling 40 MMAP members per container, that decoder draws 1,019 of 1,063 and refuses 44 in three groups: 23 palette-only entries with no pixels of their own, 19 that declare no palette, and 2 whose surface does not satisfy the stride rule. That is a measurement of the decoder, not a claim about this module.",
+        "Give this lane a PNG export through the shared decoder, mod_editor/games/_formats/mmap_art.py: the decoder moved into _formats, so the import barrier that filed this row read-only-mapped is gone and only the lane's own export path, its independent verifier and evidence on this disc are still missing. Run from a scratch harness outside any game module, sampling 40 MMAP members per container, that decoder draws 1,019 of 1,063 and refuses 44 in three groups: 23 palette-only entries with no pixels of their own, 19 that declare no palette, and 2 whose surface does not satisfy the stride rule. That is a measurement of the decoder, not a claim about this module; this row earns extract-only when the lane exports and a verifier proves it.",
         "An LZH1 encoder is needed before any rewrite of UNIFORM.DAT, PLADATA.DAT or UIS_TMLO.DAT, whose members are LZH1-packed; PLYRFACE.DAT and UIS_GEAR.DAT store theirs uncompressed.",
         "Join a texture to the school it dresses. None of the five containers names its members."
       ],
@@ -4329,7 +4329,7 @@
             "required": false
           }
         ],
-        "notes": "Filters over a read-only table. The GUI must not offer an export or an import: this module has no MMAP pixel decoder to do either with."
+        "notes": "Filters over a read-only table. The GUI must not offer an export or an import: this lane reads MMAP wrapper headers and decodes no pixel."
       },
       "source_container": {
         "format": "MMAP texture wrapper: a 40-byte header declaring a version, a 00 01 02 03 marker, a payload size and three ascending sizes, with width and height in the four bytes that follow it; stored or LZH1-packed inside a TERF member",
@@ -4340,7 +4340,7 @@
         "resource": "2,566 MMAP members in the five kit and face containers; 6,978 disc-wide",
         "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "Read the MMAP wrapper header of every kit, equipment and face texture on a user's SLUS-21752 ISO through the shared TERF reader: version, header size, declared payload size and the dimensions that follow the header. Measured on the retail disc: 2,566 MMAP members across five containers -- UNIFORM.DAT 1,200, PLADATA.DAT 888, UIS_GEAR.DAT 396, PLYRFACE.DAT 64 and COACFACE.DAT 18 -- against 6,978 MMAP members disc-wide. No pixel is decoded and no PNG is written: the MMAP pixel decoder in this repository lives inside the Madden 09 package, and a game imports a format package and never another game.",
+      "summary": "Read the MMAP wrapper header of every kit, equipment and face texture on a user's SLUS-21752 ISO through the shared TERF reader: version, header size, declared payload size and the dimensions that follow the header. Measured on the retail disc: 2,566 MMAP members across five containers -- UNIFORM.DAT 1,200, PLADATA.DAT 888, UIS_GEAR.DAT 396, PLYRFACE.DAT 64 and COACFACE.DAT 18 -- against 6,978 MMAP members disc-wide. No pixel is decoded and no PNG is written: this lane reads the wrapper header and stops there. The MMAP pixel decoder is a shared format package (mod_editor/games/_formats/mmap_art.py) that this module may import, and this row will say so differently on the day the lane exports and a verifier proves it.",
       "surface": "uniforms",
       "title": "NCAA 09 (PS2) kit, equipment and face textures",
       "validation_command": "bash tools/validate_ncaa09_ps2_textures.sh"

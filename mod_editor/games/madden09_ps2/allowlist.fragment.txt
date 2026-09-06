@@ -47,4 +47,5 @@ docs/product/measured/madden09_ps2/art-page-texture-identities.json
 docs/product/measured/madden09_ps2/art-page-textures.json
 mod_editor/games/_formats/xxhash3_64.py
 mod_editor/games/_formats/pcsx2_texture_name.py
+mod_editor/games/_formats/mmap_art.py
 docs/product/measured/madden09_ps2/pcsx2-texture-identity-derivation.json

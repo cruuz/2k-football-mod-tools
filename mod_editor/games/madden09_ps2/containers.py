@@ -31,7 +31,7 @@ from typing import (Any, Callable, Dict, Iterator, List, Mapping, Optional,
 from mod_editor.games._formats import ea_terf
 from mod_editor.games.contract import Refusal
 
-from . import mmap_art
+from mod_editor.games._formats import mmap_art
 
 _ROOT = Path(__file__).resolve().parents[3]
 _TOOLS = _ROOT / "tools"

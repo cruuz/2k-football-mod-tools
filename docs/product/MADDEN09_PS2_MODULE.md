@@ -1313,7 +1313,8 @@ three are the palette, name and attachment tables' **offsets**, and the width
 and height are the **first surface row's** first four bytes.
 
 That correction is what unlocked it. The full layout is in the module
-docstring of `mod_editor/games/madden09_ps2/mmap_art.py`.
+docstring of `mod_editor/games/_formats/mmap_art.py` (the module moved into the shared format
+package; `mod_editor/games/madden09_ps2/mmap_art.py` re-exports it unchanged).
 
 ### 6.2 The rules that had to be right
 

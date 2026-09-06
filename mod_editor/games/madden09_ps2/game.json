@@ -44,7 +44,8 @@
     "docs/product/measured/madden09_ps2/*",
     "mod_editor/games/_formats/ea_tdb.py",
     "mod_editor/games/_formats/xxhash3_64.py",
-    "mod_editor/games/_formats/pcsx2_texture_name.py"
+    "mod_editor/games/_formats/pcsx2_texture_name.py",
+    "mod_editor/games/_formats/mmap_art.py"
   ],
   "page_notes": {
     "field_art": "FIELDART.DAT holds 73 MMAP textures -- 69 at 128x128 and four at 1024x256, all of them decodable -- and this page edits them: preview, export a PNG, give one back at exactly the same size, and Build writes a NEW disc image. The container's other 642 members are SMF geometry, which no decoder here reads. Create-team art has not been located on this disc by this project. No rebuilt Madden 09 container has ever been booted.",
