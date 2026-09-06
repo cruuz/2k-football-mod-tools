@@ -154,13 +154,21 @@ class CatalogueTests(unittest.TestCase):
         self.assertEqual(set(coverage), listed)
         for container, counts in coverage.items():
             with self.subTest(container=container):
-                self.assertEqual(counts["named"], 0,
+                self.assertEqual(counts["confirmed"], 0,
                                  "a synthetic texture was never drawn by any emulator")
+                self.assertEqual(counts["named"], counts["derived"],
+                                 "every name on a synthetic disc is derived from the texture's own bytes")
+                self.assertLessEqual(counts["named"], counts["listed"])
 
-    def test_a_texture_no_dump_has_shown_gets_no_name_and_says_so(self) -> None:
+    def test_a_texture_no_dump_has_shown_gets_a_derived_name_and_says_so(self) -> None:
         target = self.catalogue.targets[0]
-        self.assertIsNone(self.lane.replacement_identity(target))
-        self.assertIn("No PCSX2 dump has shown", self.lane.identity_note(target))
+        name = self.lane.replacement_identity(target)
+        names = self.lane.replacement_identities(target)
+        self.assertTrue(name and name.endswith(".png"))
+        self.assertTrue(all(convention.startswith("derived:") for convention in names),
+                        "a synthetic texture has only derived names, never a dump-confirmed one")
+        self.assertIn(name, names["derived:modern"])
+        self.assertIn("Derived from this texture's own bytes", self.lane.identity_note(target))
 
 
 class IdentityTableTests(unittest.TestCase):
@@ -203,7 +211,10 @@ class IdentityTableTests(unittest.TestCase):
         art_pages.ART_PAGE_IDENTITY_DOCUMENT = table
         uniform_art._IDENTITY_CACHE.pop(str(table), None)
         try:
-            self.assertIsNone(self.lane.replacement_identity(target))
+            name = self.lane.replacement_identity(target)
+            self.assertNotEqual(name, "nope.png", "a table of another schema is never trusted")
+            self.assertIn(name, self.lane.replacement_identities(target)["derived:modern"],
+                          "with the table ignored, the derived name is what remains")
         finally:
             art_pages.ART_PAGE_IDENTITY_DOCUMENT = original
             uniform_art._IDENTITY_CACHE.pop(str(table), None)

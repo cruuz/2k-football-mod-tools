@@ -72,6 +72,7 @@ from mod_editor.games._formats import ea_terf
 
 from . import containers
 from .uniform_art import (
+    DERIVED_PREFIX,
     UniformDiscArtWriteLane,
     _sha256,
     load_identities,
@@ -483,21 +484,30 @@ class ArtPageLane(UniformDiscArtWriteLane):
                          catalogue.targets, document)
 
     def identity_coverage(self, catalogue: Catalogue) -> Dict[str, Dict[str, int]]:
-        """Per container: how many of its textures a PCSX2 dump has named.
+        """Per container: how many textures have a PCSX2 name, and where it came from.
 
-        Counted off the two shipped identity tables rather than claimed: a
-        container no dump drew comes back ``{"listed": n, "named": 0}``, which
-        is the honest answer and the one the page shows.
+        ``confirmed`` counts names a texture dump of the running game has shown
+        PCSX2 writing; ``derived`` counts textures whose name is computed from
+        their own bytes with no dump behind it; ``named`` is either.  Counted off
+        the identity tables and the catalogue rather than claimed: a synthetic
+        disc no emulator ever drew comes back with ``confirmed`` 0, which is the
+        honest answer and the one the page shows.
         """
 
         out: Dict[str, Dict[str, int]] = {}
+        blank = {"listed": 0, "named": 0, "confirmed": 0, "derived": 0}
         for row in catalogue.document.get("rows", ()):
-            slot = out.setdefault(str(row["container"]), {"listed": 0, "named": 0})
+            slot = out.setdefault(str(row["container"]), dict(blank))
             slot["listed"] += 1
         for target in catalogue.targets:
-            if self.replacement_identity(target) is not None:
-                out.setdefault(str(target.raw.get("container")),
-                               {"listed": 0, "named": 0})["named"] += 1
+            names = self.replacement_identities(target)
+            confirmed = any(not convention.startswith(DERIVED_PREFIX) for convention in names)
+            derived = any(convention.startswith(DERIVED_PREFIX) for convention in names)
+            if not (confirmed or derived):
+                continue
+            slot = out.setdefault(str(target.raw.get("container")), dict(blank))
+            slot["named"] += 1
+            slot["confirmed" if confirmed else "derived"] += 1
         return out
 
     def plan(self, source: Path, recipe, catalogue: Catalogue):
