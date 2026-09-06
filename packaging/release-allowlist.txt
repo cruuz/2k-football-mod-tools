@@ -741,3 +741,16 @@ tools/validate_nflblitz2003_ps2_text.bat
 tools/validate_nflblitz2003_ps2_text.sh
 tools/validate_nflblitz2003_ps2_textures.bat
 tools/validate_nflblitz2003_ps2_textures.sh
+# nflblitz2002_ps2: shipped by the game module (mod_editor/games/nflblitz2002_ps2/allowlist.fragment.txt).
+docs/product/measured/nflblitz2002_ps2/containers.json
+docs/product/measured/nflblitz2002_ps2/probes.json
+docs/product/measured/nflblitz2002_ps2/roster-rst.json
+docs/product/measured/nflblitz2002_ps2/texture-dictionaries.json
+docs/product/measured/nflblitz2002_ps2/writer-trial.json
+docs/product/measured/nflblitz2002_ps2/zip-index.json
+docs/product/measured/nflblitz2003_ps2/containers.json
+docs/product/measured/nflblitz2003_ps2/probes.json
+docs/product/measured/nflblitz2003_ps2/roster-rst.json
+docs/product/measured/nflblitz2003_ps2/texture-dictionaries.json
+docs/product/measured/nflblitz2003_ps2/writer-trial.json
+docs/product/measured/nflblitz2003_ps2/zip-index.json

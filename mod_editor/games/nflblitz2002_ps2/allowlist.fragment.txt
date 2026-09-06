@@ -27,3 +27,9 @@ tools/validate_nflblitz2002_ps2_textures.bat
 tools/validate_nflblitz2002_ps2_textures.sh
 mod_editor/games/_formats/blitz_zip.py
 mod_editor/games/_formats/rw_txd.py
+docs/product/measured/nflblitz2002_ps2/containers.json
+docs/product/measured/nflblitz2002_ps2/probes.json
+docs/product/measured/nflblitz2002_ps2/roster-rst.json
+docs/product/measured/nflblitz2002_ps2/texture-dictionaries.json
+docs/product/measured/nflblitz2002_ps2/writer-trial.json
+docs/product/measured/nflblitz2002_ps2/zip-index.json

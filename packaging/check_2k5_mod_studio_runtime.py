@@ -1906,6 +1906,7 @@ def main() -> int:
         "mod_editor.games._formats.rw_txd",
         "mod_editor.games.nflblitz2002_ps2.containers",
         "mod_editor.games.nflblitz2003_ps2",
+        "mod_editor.games.nflblitz2002_ps2.text_lane",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative

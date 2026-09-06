@@ -27,3 +27,9 @@ tools/validate_nflblitz2003_ps2_text.bat
 tools/validate_nflblitz2003_ps2_text.sh
 tools/validate_nflblitz2003_ps2_textures.bat
 tools/validate_nflblitz2003_ps2_textures.sh
+docs/product/measured/nflblitz2003_ps2/containers.json
+docs/product/measured/nflblitz2003_ps2/probes.json
+docs/product/measured/nflblitz2003_ps2/roster-rst.json
+docs/product/measured/nflblitz2003_ps2/texture-dictionaries.json
+docs/product/measured/nflblitz2003_ps2/writer-trial.json
+docs/product/measured/nflblitz2003_ps2/zip-index.json
