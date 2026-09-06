@@ -14,16 +14,12 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'tests')]
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 from mod_editor.core import mod_build as build, nfl2k5_throw_tuning as tt
 from mod_editor.core import nfl2k5_team_names_2026 as names
-from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS
-from mod_editor.core import nfl2k5_roster_storage as _storage, nfl2k5_coverage_slider as _coverage, nfl2k5_scramble_tuning as _scramble
-# The owners the protected dispatcher is wired for. The wave-A owners (playlist, Practice Squad screen,
-# abilities, QB spy, calendar) join this union when their WIRING sections land.
-REQUESTS = LEGACY_REQUESTS + _storage.REQUESTS + _coverage.REQUESTS + _scramble.REQUESTS
+from tests.nfl2k5_allocator_stack import REQUESTS  # every owner the protected dispatcher is wired for
 from tests.mod_editor.test_nfl2k5_xbe_space import RETAIL, image_with_xbe
 
 FLAGS = ('all_stadiums', 'team_names_2026', 'coverage_slider', 'scramble_tuning',
          'flatter_deep_ball', 'chop_block_toggle', 'hires_pack')
-GROWN = dict(all_stadiums=True, coverage_slider=True, scramble_tuning=True,
+GROWN = dict(all_stadiums=True, coverage_slider=True, scramble_tuning=True, music_shuffle=True, practice_squad_screen=True, abilities=True, abilities_off_week=6, qb_spy=True,
              momentum=100, momentum_contact=True, defensive_try=True, zone_drop_cap=True)
 
 
@@ -144,9 +140,9 @@ class ExecutableTests(unittest.TestCase):
         cls.retail = RETAIL.read_bytes()
 
     def test_complete_request_union_and_four_status_returns(self):
-        union = tt._selected_space_requests(True, True, 100, True, True, True, True, True)
+        union = tt._selected_space_requests(True, True, 100, True, True, True, True, True, True, True, True, True, True)
         self.assertEqual(set(union), set(REQUESTS))
-        options = {**GROWN, 'flatter_deep_ball':True, 'chop_block_toggle':True, 'settings':tt.TuningSettings(80)}
+        options = {**GROWN, 'calendar_engine':True, 'season_cap':True, 'flatter_deep_ball':True, 'chop_block_toggle':True, 'settings':tt.TuningSettings(80)}
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             for image in (False, True):
@@ -155,14 +151,14 @@ class ExecutableTests(unittest.TestCase):
                 original=hashlib.sha256(source.read_bytes()).hexdigest()
                 result = (tt.write_image_copy if image else tt.write_xbe_copy)(source,target,**options)
                 report = tt.read_any(target)
-                for key in ('all_stadiums','coverage_slider','scramble_tuning','flatter_deep_ball','chop_block_toggle'):
+                for key in ('all_stadiums','coverage_slider','scramble_tuning','flatter_deep_ball','chop_block_toggle','music_shuffle','practice_squad_screen','abilities','qb_spy','calendar_engine'):
                     self.assertEqual((result[key],report[key]), ('applied','applied'),key)
                     self.assertIn(key+'_patch',result)
                 self.assertIn('chop_block_evidence',report)
                 self.assertEqual(report['settings'],tt.TuningSettings(80))
                 payload = build._xbe_bytes(target)
                 self.assertTrue(tt.xbe_space_patch.is_scaleout(payload))
-                self.assertEqual(tt._apply_all(payload,None,False,**GROWN,flatter_deep_ball=True,chop_block_toggle=True)[0],payload)
+                self.assertEqual(tt._apply_all(payload,None,False,**GROWN,calendar_engine=True,season_cap=True,flatter_deep_ball=True,chop_block_toggle=True)[0],payload)
                 self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),original)
 
     def test_runtime_scorebug_reserves_all_owners_before_final_install(self):
@@ -174,10 +170,11 @@ class ExecutableTests(unittest.TestCase):
         def resources(image, *, with_kickoff=False, extra_requests=()):
             events.append('runtime')
             before = build._xbe_bytes(Path(image))
-            for key in ('all_stadiums','coverage_slider','scramble_tuning'):
+            for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):
                 self.assertEqual(tt._grown_status_fields(before)[key], 'retail')
             requested = tuple(runtime.REQUESTS) + tuple(extra_requests) + (tuple(kickoff.REQUESTS) if with_kickoff else ())
-            self.assertEqual(set(requested), set(REQUESTS))
+            from mod_editor.core import nfl2k5_calendar_engine as calendar
+            self.assertEqual(set(requested), set(REQUESTS) - set(calendar.REQUESTS))  # the calendar needs the 2026 templates, absent on a synthetic disc
             grown, rec = space.apply(before, requested)
             grown, _ = runtime.apply(grown)
             if with_kickoff:
@@ -198,7 +195,7 @@ class ExecutableTests(unittest.TestCase):
                                                            kickoff_relocated=True,**GROWN))
                     self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','scorebug_runtime','xbe_space'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
                 final=build._xbe_bytes(target)
-                for key in ('all_stadiums','coverage_slider','scramble_tuning'):
+                for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):
                     self.assertEqual(tt._grown_status_fields(final)[key], 'applied')
                 self.assertEqual(runtime.status(final), 'applied')
                 self.assertEqual(len(final), space.SCALE_FILE_SIZE)

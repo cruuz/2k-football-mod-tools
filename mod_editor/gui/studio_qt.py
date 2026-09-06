@@ -1868,6 +1868,17 @@ class StudioMainWindow(QMainWindow):
         if self._build_panel is not None:
             self._build_panel.set_music_policy(values)
 
+    def _music_playlist_changed(self, document):
+        """The Music page's playlist choices feed the Build plan's music_shuffle flag and selection."""
+        if self._build_panel is None:
+            return
+        try:
+            self._build_panel.set_music_shuffle_selection(dict(document) if document else None)
+        except ValueError as exc:
+            self.statusBar().showMessage(f"Playlist choices not accepted: {exc}", 8000)
+            return
+        self._mark_workspace_changed()
+
     def _music_changed(self):
         if self._build_panel is not None:
             self._build_panel.music_project_check.setChecked(bool(getattr(self.facade, "modified_count", 0)))
@@ -2636,6 +2647,7 @@ class StudioMainWindow(QMainWindow):
                 self._music_panel.operation_guard = lambda: self._embedded_operation_denial("Music")
                 self._music_panel.changed.connect(self._music_changed)
                 self._music_panel.policy_changed.connect(self._music_policy_changed)
+                self._music_panel.playlist_changed.connect(self._music_playlist_changed)
                 self._music_panel.receipt_ready.connect(self._music_receipt_ready)
                 self._music_panel.operation_state_changed.connect(self._music_operation_state_changed)
                 audio_tabs.addTab(self._music_panel, "Music")

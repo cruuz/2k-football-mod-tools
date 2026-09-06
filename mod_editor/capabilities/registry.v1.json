@@ -3429,6 +3429,71 @@
     },
     {
       "backend": {
+        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_practice_squad_screen.py <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_practice_squad_screen.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_PS_NATIVE_SCREEN_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_practice_squad_screen.py",
+        "tests/mod_editor/test_nfl2k5_practice_squad_screen_unicorn.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      },
+      "id": "nfl2k5.franchise.practice_squad_screen",
+      "input_constraints": [
+        "Pinned USA XBE and applied practice_squad, franchise_practice, practice_reserves prerequisites.",
+        "Allocate all selected owner requests together before any installation. Foreign, mixed and altered prerequisites refuse.",
+        "Only the selected human NFL team can move its owned eligible player; promotion below 53 active, demotion below 12 reserves, 65 physical slots.",
+        "No CPU poaching or protection; no save-format growth."
+      ],
+      "portme": [
+        "Complete Noah's in-game witness list in ASTRA_PS_NATIVE_SCREEN_REPORT.md, including sorted identity, 0/12 reserves, multi-human context, save/reload, cap/depth and game-day exclusion."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_PS_NATIVE_SCREEN_REPORT.md"
+        ],
+        "scope": "Bounded CPU execution of native page dispatch, construction, transactions, rebuilding and teardown. Graphics, controller use, Xbox loading and save lifecycle remain unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "practice_squad_screen",
+            "required": true
+          }
+        ],
+        "notes": "Requires practice_squad, franchise_practice, practice_reserves and a complete allocator request union; WIRING.md specifies protected integration."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "One delegated Coach Desk pointer, 4096 immutable RX bytes and 256 zero-initialized RW bytes",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Coach's Desk Active and Reserves lists with guarded Promote and Demote actions.",
+      "surface": "menus",
+      "title": "Practice Squad screen (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_practice_squad_screen"
+    },
+    {
+      "backend": {
         "command": null,
         "module": null,
         "operation": "none"
@@ -3485,7 +3550,77 @@
     },
     {
       "backend": {
-        "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_penalties as m; result, receipt = m.apply_chop_block(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>",
+        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_abilities_runtime.py <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_abilities_runtime.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_ABILITIES_RUNTIME_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_abilities_runtime.py",
+        "tests/mod_editor/test_nfl2k5_abilities_unicorn.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.abilities_runtime",
+      "input_constraints": [
+        "Pinned USA XBE with supported composed owners; foreign/mixed bytes and settings refuse.",
+        "Reserve the complete allocator owner union first. Seven shipped roster flags; no automatic assignment or save migration.",
+        "abilities_off_week is None or integer zero-based regular-season row 0..17. All presets off.",
+        "The special-move meter is restricted to live ball carriers. Right-stick actions also require Right-Stick Moves; unclassified charge consumers are denied."
+      ],
+      "portme": [
+        "Complete Noah's witness list in ASTRA_ABILITIES_RUNTIME_REPORT.md, including noncarrier meter impact and all controller layouts."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_ABILITIES_RUNTIME_REPORT.md"
+        ],
+        "scope": "Bounded native clamps, command gates, initializer and native meter only. No game, loader, save-lifecycle or simulated-game witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "abilities",
+            "required": true
+          },
+          {
+            "allowed": "None or integer 0..17; meaningful only with abilities enabled",
+            "name": "abilities_off_week",
+            "required": false
+          }
+        ],
+        "notes": "Week displayed 1..18 maps to zero-based 0..17. Existing week only; simulation unaffected."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "seven pinned hook spans and a named 1072-byte immutable RX allocation; zero new writable state",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Stored player permissions control movement Speed, special moves and native charge; one optional existing regular-season week disables them.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Player abilities (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_abilities_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_penalties <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_penalties.py",
         "operation": "write"
       },
@@ -3543,11 +3678,11 @@
       "summary": "Expose the existing toggle repair independently of penalty-rate tuning. Retail shares Clipping enable; the detector exists.",
       "surface": "gameplay_tuning_sliders",
       "title": "Repair Chop Block toggle (experimental, unwitnessed)",
-      "validation_command": "python3 tests/mod_editor/test_nfl2k5_penalties.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_penalties"
     },
     {
       "backend": {
-        "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_coverage_slider as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>",
+        "command": "python3 -m mod_editor.core.nfl2k5_coverage_slider <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_coverage_slider.py",
         "operation": "write"
       },
@@ -3605,11 +3740,11 @@
       "summary": "Expand the direct ball-reaction contribution while preserving the float32 neutral point at 50.",
       "surface": "gameplay_tuning_sliders",
       "title": "Coverage slider response (experimental, unwitnessed)",
-      "validation_command": "python3 tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_gameplay_levers"
     },
     {
       "backend": {
-        "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_throw_arc as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>",
+        "command": "python3 -m mod_editor.core.nfl2k5_throw_arc <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_throw_arc.py",
         "operation": "write"
       },
@@ -3667,7 +3802,7 @@
       "summary": "Increase the deep lob speed knot to 25 yards per second while keeping the chosen distance curve and speeds through 35 yards.",
       "surface": "gameplay_tuning_sliders",
       "title": "Flatter deep flight (experimental, unwitnessed)",
-      "validation_command": "python3 tests/mod_editor/test_nfl2k5_throw_arc.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_throw_arc"
     },
     {
       "backend": {
@@ -3806,7 +3941,71 @@
     },
     {
       "backend": {
-        "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_scramble_tuning as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>",
+        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_qb_spy_runtime.py <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_qb_spy_runtime.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_QB_SPY_RUNTIME_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_qb_spy_runtime.py",
+        "tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Protected Build and Gameplay integration is specified in WIRING.md; zone-only, all presets off."
+      },
+      "id": "nfl2k5.gameplay.qb_spy",
+      "input_constraints": [
+        "Pinned USA XBE or supported composed source; mixed/foreign bytes refuse before mutation.",
+        "Reserve the complete owner union before the first allocation.",
+        "Authored intent requires exact PLAY/compiler receipt pairs; valid empty table enables command spies."
+      ],
+      "portme": [
+        "Complete Noah's paired witness list in ASTRA_QB_SPY_RUNTIME_REPORT.md; man/rush is deferred tier 2."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_QB_SPY_RUNTIME_REPORT.md"
+        ],
+        "scope": "Bounded spy decisions, target/ABI boundaries and native loader/command/reset instructions. Movement, boot and gameplay are unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "qb_spy",
+            "required": true
+          }
+        ],
+        "notes": "Zone assignments only; at most 31 authored play/slot records paired with their exact compiler replacement resources. Command spies need no table rows."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "five live hooks; owned 1536-byte RX, 768-byte RW and 512-byte RO allocations",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Zone defenders retain QB priority, shadow four yards deep and latch pursuit on forward or lateral escape.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "QB spy for zone defenders (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_qb_spy_runtime"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_scramble_tuning <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_scramble_tuning.py",
         "operation": "write"
       },
@@ -3864,7 +4063,7 @@
       "summary": "Use 65% of the native acceleration curve for live QB carriers with raw Speed <= 60. CPU bailout decisions and top speed are unchanged.",
       "surface": "gameplay_tuning_sliders",
       "title": "Slow-QB acceleration (experimental, unwitnessed)",
-      "validation_command": "python3 tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_gameplay_levers"
     },
     {
       "backend": {
@@ -4885,6 +5084,78 @@
     },
     {
       "backend": {
+        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_music_playlist.py <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_music_playlist.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_MUSIC_PLAYLIST_REPORT.md",
+        "reports/music_playlist_contexts.v1.json",
+        "tests/mod_editor/test_nfl2k5_music_playlist.py",
+        "tests/mod_editor/test_nfl2k5_music_playlist_contexts.py",
+        "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Music tab Playlist page. Default off in all presets. Background disc/HDD playlists are replaced; temporary jukebox previews remain. Individual screen routing and audible output are unwitnessed."
+      },
+      "id": "nfl2k5.music.playlist",
+      "input_constraints": [
+        "Verified USA XBE and validated source AUSB descriptors. Named allocator union must contain code 2048, data 512 and read_only 1024 bytes for nfl2k5_music_playlist.",
+        "Selection has at most 100 unique (bank,index) records. Runtime rejects missing descriptors, invalid indices and empty/reversed ranges before binding/enqueueing.",
+        "Build defaults to 7 menu and 59 jukebox recordings. Outtakes off leaves 54; beds on adds ten. Zero stops and one repeats.",
+        "Rebuild from the supported base for a different installed selection. Publish through the existing image copy transaction. No saved profile, purchase or PA clip mutation."
+      ],
+      "portme": [
+        "Complete every individual screen route and Noah witness row before any all-mode claim.",
+        "Recover the actual drafta player. The two 165C20 callers inspected here request coachambience.",
+        "Witness real stream resume, preview completion, volume, stereo/surround and PA/show coexistence."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Only generated patch code, playlist choices and authored assets are portable. No original song, whole bank or disc is included.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED. Bounded native instruction tests and byte pins only. No all-modes claim.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false or true; defaults false",
+            "name": "music_shuffle",
+            "required": true
+          },
+          {
+            "allowed": "Music Playlist choices schema 1, or default 66-song Selection",
+            "name": "music_shuffle_selection",
+            "required": false
+          }
+        ],
+        "notes": "The Music page and main Build checkbox share one personal opt-in."
+      },
+      "source_container": {
+        "format": "NFL 2K5 USA XBE plus source AUSB descriptors",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Pinned music controller hooks and newly allocated RX/RW/RO children",
+        "retail_file": "default.xbe and vc_53450030/0..F"
+      },
+      "summary": "Shuffle 66 original menu and jukebox recordings through the shared background player. Optional spoken outtakes and ten established beds; timed shows retain their music. EXPERIMENTAL / UNWITNESSED.",
+      "surface": "audio",
+      "title": "Shared music shuffle (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_music_playlist"
+    },
+    {
+      "backend": {
         "command": "Python API: mod_editor/core/nfl2k5_music_policy.py Selection(...).apply(payload)",
         "module": "mod_editor/core/nfl2k5_music_policy.py",
         "operation": "write"
@@ -5014,7 +5285,7 @@
       "summary": "Preserve eligible players' September 1 ages through explicit fictional birth-date shifts, with exact changes and skips, session undo and signed-copy persistence.",
       "surface": "players_rosters",
       "title": "Shift roster ages to a season year (experimental)",
-      "validation_command": "QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_rosters_data_qt.py"
+      "validation_command": "QT_QPA_PLATFORM=offscreen python3 -m tests.mod_editor.test_rosters_data_qt"
     },
     {
       "backend": {
@@ -5160,7 +5431,7 @@
       "summary": "One grouped pass writes 17 fixed-space modern identity/label cells; no changes to saves, STRG, asset codes or pointers.",
       "surface": "players_rosters",
       "title": "2026 team names (experimental)",
-      "validation_command": "python3 tests/mod_editor/test_nfl2k5_team_names_2026.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_team_names_2026"
     },
     {
       "backend": {
@@ -6141,7 +6412,7 @@
       "summary": "Relocate the stadium picker ID list and update every discovered search, preview and controller bound. Keep the existing roster and save layout.",
       "surface": "stadiums_fields",
       "title": "All 82 Create a Team stadiums (experimental, unwitnessed)",
-      "validation_command": "python3 tests/mod_editor/test_nfl2k5_roster_storage.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_roster_storage"
     },
     {
       "backend": {
@@ -6306,7 +6577,7 @@
       "summary": "Compile up to three selected pilot textures at 2x or native size and transactionally rebuild the archive in a new disc copy.",
       "surface": "uniforms",
       "title": "Hi-res pack (experimental, unwitnessed)",
-      "validation_command": "python3 tests/mod_editor/test_nfl2k5_hires_pack.py"
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_hires_pack"
     },
     {
       "backend": {

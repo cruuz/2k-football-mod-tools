@@ -109,6 +109,7 @@ class BuildPanel(QWidget):
         self.star_players: list[str] = []
         self._star_names: list[str] = []
         self.playbook_packs: list[str] = []
+        self._music_shuffle_selection = None  # the Music page's playlist document (schema 1), set by the shell
         self._build_ui()
         self._refresh()
 
@@ -350,6 +351,24 @@ class BuildPanel(QWidget):
         self.all_stadiums_check = self._option(g, "all_stadiums",
             "All 82 Create a Team stadiums (experimental)", tt.roster_storage_patch.UI_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.music_shuffle_check = self._option(g, "music_shuffle", "Shuffle songs in menus, Crib and games",
+            "Experimental, not yet tested in game. Uses the Music tab playlist. "
+            "Loading and shows keep their timed music.", badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.abilities_check = self._option(g, "abilities", "Player abilities (experimental)",
+            tt.abilities_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.abilities_week = QComboBox()
+        self.abilities_week.addItem("No abilities-off week", None)
+        for week in range(1, 19):
+            self.abilities_week.addItem(f"Week {week}", week - 1)
+        self.abilities_week.setCurrentIndex(0)
+        self.abilities_week.setEnabled(False)
+        self.abilities_week.setAccessibleName("Week with abilities off")
+        self.abilities_week.setToolTip("Use an existing regular-season week. Player ability flags stay saved and return the following week.")
+        g.addWidget(self.abilities_week)
+        self.abilities_check.toggled.connect(self._abilities_toggled)
+        self.abilities_week.currentIndexChanged.connect(lambda _index: self._refresh())
+        self.qb_spy_check = self._option(g, "qb_spy", "QB spy for zone defenders (experimental)",
+            tt.qb_spy_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.kick_rules_check = self._option(g, "kick_rules", "Modern kick spots & kicking power",
                                              "Kickoff: 35 · touchback: 35 · PAT snap: 15.",
                                              details="These describe the shipped patch, not a newly verified NFL ruleset. Two-point tries stay at the 2; "
@@ -476,9 +495,11 @@ class BuildPanel(QWidget):
             "Washington Cmdrs (WAS); Arizona uses ARI. Existing saves keep their names. "
             "EXPERIMENTAL / UNWITNESSED.", needs_image=True, details=self._team_names_details())
         self.season_cap_check = self._option(
-            f, "season_cap", "128-season franchise gate (experimental)",
-            "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet. "
-            "Game birth dates can already be wrong in 2053. Not tested in game.", badge=NOT_TESTED)
+            f, "season_cap", "128-season franchise (experimental)",
+            tt.calendar_engine_patch.UI_TEXT, badge=NOT_TESTED, needs_image=True)
+        self.practice_squad_screen_check = self._option(
+            f, "practice_squad_screen", "Practice Squad screen (experimental)",
+            tt.practice_squad_screen_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         self.position_row_check = self._option(f, "position_row", "Change position in Edit Player",
                                                "In-game: use Depth Chart → Auto afterward.", badge=NOT_TESTED,
                                                details="The Position row (the game's own picker, 17 positions, ratings kept, overall recomputed) sits "
@@ -858,7 +879,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season gate"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -877,7 +898,7 @@ class BuildPanel(QWidget):
             ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"),
             ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
             ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"),
-            ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season gate"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
+            ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"),
             ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
@@ -926,7 +947,8 @@ class BuildPanel(QWidget):
         self._set_badge("hires_pack", str(state.get("hires_pack", "requires image")))
         gate(self.catch_check, "catch_slider")
         gate(self.accel_check, "accel_ramp")
-        for key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning"):
+        for key in ("momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
+                    "music_shuffle", "practice_squad_screen", "abilities", "qb_spy"):
             gate(getattr(self, key + "_check"), key, needs_image=True)
         gate(self.flatter_deep_ball_check, "flatter_deep_ball")
         gate(self.chop_block_toggle_check, "chop_block_toggle")
@@ -1028,6 +1050,9 @@ class BuildPanel(QWidget):
         self.momentum_level.blockSignals(True)
         self.momentum_level.setCurrentIndex(0)
         self.momentum_level.blockSignals(False)
+        self.abilities_week.blockSignals(True)
+        self.abilities_week.setCurrentIndex(0)
+        self.abilities_week.blockSignals(False)
         values = mod_build.PRESETS[name]
         self.screen_timing_combo.setCurrentText(values.get("screen_timing") or "D")
         boxes = self._boxes()
@@ -1078,7 +1103,8 @@ class BuildPanel(QWidget):
             "draft_ai": self.draft_check, "returner_fix": self.returner_check, "progression": self.progression_check,
             **{key: getattr(self, key + "_check") for key in (
                 "scorebug_runtime", "music_policy", "music_unlock", "music_userlist", "music_project", "music_library",
-                "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning")},
+                "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "team_names_2026", "coverage_slider", "scramble_tuning",
+                "music_shuffle", "practice_squad_screen", "abilities", "qb_spy")},
             "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "guardian_cap": self.guardian_cap_check, "screen_timing": self.screen_timing_check, "scheme_labels": self.scheme_labels_check,
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
             "position_pools": self.position_pools_check, "depth_roles": self.depth_roles_check,
@@ -1131,6 +1157,13 @@ class BuildPanel(QWidget):
             momentum_contact=self.momentum_contact_check.isChecked(),
             defensive_try=self.defensive_try_check.isChecked(), zone_drop_cap=self.zone_drop_cap_check.isChecked(),
             all_stadiums=self.all_stadiums_check.isChecked(),
+            music_shuffle=self.music_shuffle_check.isChecked(),
+            music_shuffle_selection=self._music_shuffle_selection if self.music_shuffle_check.isChecked() else None,
+            practice_squad_screen=self.practice_squad_screen_check.isChecked(),
+            abilities=self.abilities_check.isChecked(),
+            abilities_off_week=(self.abilities_week.currentData() if self.abilities_check.isChecked() else None),
+            qb_spy=self.qb_spy_check.isChecked(),
+            calendar_engine=self.season_cap_check.isChecked(),
             coverage_slider=self.coverage_slider_check.isChecked(),
             scramble_tuning=self.scramble_tuning_check.isChecked(),
             flatter_deep_ball=self.flatter_deep_ball_check.isChecked(),
@@ -1189,7 +1222,7 @@ class BuildPanel(QWidget):
     def has_work(self) -> bool:
         p = self.plan()
         return bool(self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
+                    or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits
                     or p.commentary or p.playbook_packs)
 
@@ -1429,6 +1462,24 @@ class BuildPanel(QWidget):
         if chosen:
             getattr(self, key + "_field").setText(chosen)
             getattr(self, key + "_check").setChecked(True)
+
+    def _abilities_toggled(self, on):
+        self.abilities_week.setEnabled(bool(on))
+        if not on:
+            self.abilities_week.blockSignals(True)
+            self.abilities_week.setCurrentIndex(0)
+            self.abilities_week.blockSignals(False)
+        self._refresh()
+
+    def set_music_shuffle_selection(self, document):
+        """The Music page's playlist choices (schema 1) or None; the enable flag follows the page."""
+        if document is None:
+            self._music_shuffle_selection = None
+            return
+        self._music_shuffle_selection = tt.music_playlist_patch.from_options(document)
+        if self.music_shuffle_check.isChecked() != bool(document.get("music_shuffle")):
+            self.music_shuffle_check.setChecked(bool(document.get("music_shuffle")))
+        self._refresh()
 
     def set_music_policy(self, values):
         self.music_policy_check.setChecked(values.get("music_policy") == "jukebox_menus")

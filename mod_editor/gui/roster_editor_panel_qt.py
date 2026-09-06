@@ -1210,7 +1210,8 @@ class RosterEditorPanel(QWidget):
     def _build_abilities_page(self) -> QWidget:
         host = QWidget()
         box = QVBoxLayout(host)
-        note = QLabel("EXPERIMENTAL / UNWITNESSED: no gameplay effect until the abilities runtime patch ships")
+        note = QLabel("Stored abilities. They affect play only with Player abilities rules v1 on the game disc "
+                      "(Build tab, experimental and unwitnessed). Existing franchise saves keep their own flags.")
         note.setWordWrap(True)
         box.addWidget(note)
         self.ability_checks = {}

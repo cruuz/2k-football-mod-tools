@@ -66,7 +66,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
-        self.assertIn("registry has 91 cross-title rows", getting_started)
+        self.assertIn("registry has 95 cross-title rows", getting_started)
         self.assertIn("complete 18-tab sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(

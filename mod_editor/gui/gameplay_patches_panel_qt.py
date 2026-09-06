@@ -62,6 +62,18 @@ PATCHES = (
      "Retail: Create a Team offers 67 stadiums. Patch: Offers all 82 existing "
      "stadiums. EXPERIMENTAL / UNWITNESSED. Added previews and game loading need "
      "testing. Team and reserve limits stay the same."),
+    ("music_shuffle", "Shared music shuffle (experimental)",
+     "Retail: each screen chooses its own music. Patch: selected menu and jukebox recordings shuffle "
+     "in the shared menu, Crib and game background player. Loading and shows keep their timed music. "
+     "Background disc and HDD playlists are replaced. Individual screen coverage is still untested in game."),
+    ("practice_squad_screen", "Practice Squad screen (experimental)", tt.practice_squad_screen_patch.HELP_TEXT),
+    ("abilities", "Player abilities (experimental)",
+     "Retail ignores stored ability flags. Patch: Speedster permits movement Speed above 99. Each special "
+     "move requires its stored permission, and right-stick moves also require Right-Stick Moves. The "
+     "special-move charge meter works only for live ball carriers with an allowed move, including CPU "
+     "players. Abilities must be assigned in Rosters or the save first. An optional existing franchise "
+     "week turns them off temporarily. EXPERIMENTAL / UNWITNESSED. Simulated games are unchanged."),
+    ("qb_spy", "QB spy for zone defenders (experimental)", tt.qb_spy_patch.HELP_TEXT),
     ("defensive_try", "Defensive two-point returns (experimental)", tt.defensive_try_patch.UI_TEXT),
     ("zone_drop_cap", "Corner deep-zone backpedal (experimental, unwitnessed)",
      "Retail: corners can request full depth during their initial deep-zone drop. Patch: caps that initial "
@@ -232,12 +244,11 @@ PATCHES = (
      "Other uniforms keep their current artwork. This affects C wearers in practice "
      "and games alike. It does not add a separate player choice or put caps on everyone "
      "in practice. Appearance and shine still need an in-game check. EXPERIMENTAL / UNWITNESSED."),
-    ("season_cap", "128-season franchise gate (experimental)",
-     "Retail: the franchise completion check stops advancement after index 30 in retirement. "
-     "Patch: the check accepts indices through 127. "
-     "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet. "
-     "Game birth dates can already be wrong in 2053. EXPERIMENTAL / UNWITNESSED. "
-     "Editing a save year does not simulate seasons."),
+    ("season_cap", "128-season franchise (experimental)",
+     "Retail: Franchise dates and birth dates use a fixed century. Patch: Repairs "
+     "dates, weekdays, live player birth years and season labels through index 127, "
+     "with the final postseason in the following year. EXPERIMENTAL / UNWITNESSED. "
+     "Natural rollovers and save reloads still need testing. History keeps its existing limits."),
     ("depth_locks", "Depth chart locks: tackles, guards and returners stay where you put them (experimental)",
      "Retail: the weekly auto-depth ranks tackles and guards by rating, so the better RT slides over to LT, and it rewrites "
      "KR and PR every week. Patch: moving a player on the depth chart, or confirming a returner, locks that choice in the "
@@ -281,8 +292,8 @@ LABELS: dict[str, tuple[str, str, str]] = {
                      "Neutral gray artwork is for Detroit current away only.", NOT_TESTED),
     "xbe_space": ("Extra patch space (experimental)", "Needs a disc boot check before regular use.", NOT_TESTED),
     "kickoff_relocated": ("Kickoff in extra space (experimental)", "Check lineup, hold until contact and returns.", NOT_TESTED),
-    "season_cap": ("128-season franchise gate (experimental)",
-                   "Franchise runs to 128 seasons. Dates and ages after 2099 are not repaired yet.", NOT_TESTED),
+    "season_cap": ("128-season franchise (experimental)",
+                   "Dates, weekdays, birth years and labels repaired through index 127; untested in game.", NOT_TESTED),
     "catch_slider": ("Fix Catching & Interception sliders", "Catching controls drops; Interception controls picks.", ""),
     "accel_ramp": ("Legacy acceleration ramp", "A separate rating-based envelope for controller-driven players.", ""),
     "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
@@ -313,7 +324,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "season_cap", "calendar_engine", "coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
