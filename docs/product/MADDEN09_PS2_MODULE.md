@@ -1466,6 +1466,36 @@ and whose TEX0 does not, an open question recorded in
 **726 dumped names the pixel matcher could not** — textures in containers the
 pixel index never scanned — bringing the dump-identified images to 3,283.
 
+**Which GS modes this dump used, and the one it did not** [M]. An 8-bit texture
+a game uploads as the *high-byte* `PSMT8H` surface is hashed by PCSX2 over the
+plain linear texel stream, not the block image, so it carries a different
+`bits` word **and** a different TEX0 hash for the same pixels; MVP Baseball
+2005's census counted 1,035 such names as disagreements before that was known.
+The check now tries that reading for every 8-bit surface and records the mode
+of every dumped name:
+
+| GS pixel mode | names checked | TEX0 reproduced | not reproduced | names of a mode this surface has none |
+|---|---:|---:|---:|---:|
+| `PSMT8` (19) | 5,370 | 5,314 | 56 | 16 |
+| `PSMT4` (20) | 3,895 | 3,883 | 12 | 1,182 |
+| `PSMT8H` (27) | 0 | 0 | 0 | 0 |
+| **total** | **9,265** | **9,197** | **68** | **1,198** |
+
+**None of the 9,620 names these 33 frames wrote declares PSM 27.** The second
+reading therefore had nothing to answer here and moved no count, which is why
+the art lanes leave `TerfArtLane.extra_psms` empty rather than offering a
+high-byte name for every 8-bit texture on no evidence.
+
+**One hypothesis for the 68 was tested and refused** [M]. NCAA Football 09's
+`FLDDATA.DAT` turned out to store some mip pyramids as a **run of consecutive
+one-level members** under a single palette, which PCSX2 hashes as one chain —
+four of its twelve unreproduced names are exactly that. The same probe was run
+here: for each of the 68, the chain that starts at its own member and walks
+forward while the size halves and the palette holds. It explains **0 of 68**,
+so Madden 09's 26-texture class is not a split pyramid on the disc and the
+`MADDEN09_PS2_GAPS.md` §1 reading — levels the game builds at load — is still
+the only candidate, still untested.
+
 **Over the whole disc** the rule names **12,378 images in 45 containers** —
 162,459 names, one per mip chain and convention; it refuses 3,978 images whose
 width or height is not a power of two, 461 palette-only entries, 625

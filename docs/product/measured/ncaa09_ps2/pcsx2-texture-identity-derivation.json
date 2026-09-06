@@ -300,10 +300,66 @@
       "identities_confirmed": 500,
       "identities_not_derivable": 0,
       "names": 1106,
+      "names_high_byte_checked": 0,
+      "names_high_byte_reproduced": 0,
       "names_psm_disagrees": 88,
       "names_tex0_not_reproduced": 12,
       "names_tex0_reproduced": 1094
     },
+    "cross_member_chain": {
+      "chains": [
+        {
+          "base": "64x64",
+          "container": "FLDDATA.DAT",
+          "key": "FLDDATA.DAT:75:0",
+          "last_member": 78,
+          "levels": 4,
+          "member": 75
+        },
+        {
+          "base": "64x64",
+          "container": "FLDDATA.DAT",
+          "key": "FLDDATA.DAT:75:0",
+          "last_member": 78,
+          "levels": 4,
+          "member": 75
+        },
+        {
+          "base": "32x32",
+          "container": "FLDDATA.DAT",
+          "key": "FLDDATA.DAT:76:0",
+          "last_member": 78,
+          "levels": 3,
+          "member": 76
+        },
+        {
+          "base": "32x32",
+          "container": "FLDDATA.DAT",
+          "key": "FLDDATA.DAT:76:0",
+          "last_member": 78,
+          "levels": 3,
+          "member": 76
+        }
+      ],
+      "names_explained": 4,
+      "names_still_unexplained": 8,
+      "question": "A TERF container can hold one texture's mip pyramid as a run of consecutive one-level members under a single palette, and PCSX2 hashes every level of the draw's LOD range into one state, so a member hashed on its own reproduces none of the run's names. Each unreproduced name is re-checked against the chain that starts at its own member and walks forward while the size halves and the palette holds."
+    },
+    "dumped_names_by_psm": {
+      "19": {
+        "names": 124,
+        "not a reading of this surface": 88,
+        "tex0 not reproduced": 0,
+        "tex0 reproduced": 124
+      },
+      "20": {
+        "names": 982,
+        "not a reading of this surface": 0,
+        "tex0 not reproduced": 12,
+        "tex0 reproduced": 970
+      }
+    },
+    "dumped_names_by_psm_note": "Every dumped name of every identity, by the GS pixel mode its bits word declares: 19 is PSMT8, 20 is PSMT4, 27 is the high-byte PSMT8H. 'not a reading of this surface' is a name of a mode this surface has none -- a 4-bit name on an 8-bit surface, which the pixel matcher paired because a picture exists at both depths -- and those are the psm_disagrees count, split by mode. A mode absent from this table is a mode no draw in this capture used, so the reading for it had nothing to answer.",
     "lod_chains": {
       "0+1": 965,
       "0+3": 2,

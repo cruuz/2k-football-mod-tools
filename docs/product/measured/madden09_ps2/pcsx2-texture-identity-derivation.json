@@ -389,10 +389,33 @@
       "identities_confirmed": 2994,
       "identities_not_derivable": 0,
       "names": 9265,
+      "names_high_byte_checked": 0,
+      "names_high_byte_reproduced": 0,
       "names_psm_disagrees": 1198,
       "names_tex0_not_reproduced": 68,
       "names_tex0_reproduced": 9197
     },
+    "cross_member_chain": {
+      "chains": [],
+      "names_explained": 0,
+      "names_still_unexplained": 68,
+      "question": "A TERF container can hold one texture's mip pyramid as a run of consecutive one-level members under a single palette, and PCSX2 hashes every level of the draw's LOD range into one state, so a member hashed on its own reproduces none of the run's names. Each unreproduced name is re-checked against the chain that starts at its own member and walks forward while the size halves and the palette holds."
+    },
+    "dumped_names_by_psm": {
+      "19": {
+        "names": 5370,
+        "not a reading of this surface": 16,
+        "tex0 not reproduced": 56,
+        "tex0 reproduced": 5314
+      },
+      "20": {
+        "names": 3895,
+        "not a reading of this surface": 1182,
+        "tex0 not reproduced": 12,
+        "tex0 reproduced": 3883
+      }
+    },
+    "dumped_names_by_psm_note": "Every dumped name of every identity, by the GS pixel mode its bits word declares: 19 is PSMT8, 20 is PSMT4, 27 is the high-byte PSMT8H. 'not a reading of this surface' is a name of a mode this surface has none -- a 4-bit name on an 8-bit surface, which the pixel matcher paired because a picture exists at both depths -- and those are the psm_disagrees count, split by mode. A mode absent from this table is a mode no draw in this capture used, so the reading for it had nothing to answer.",
     "lod_chains": {
       "0+1": 1240,
       "0+2": 742,

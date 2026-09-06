@@ -215,16 +215,55 @@ against the names the emulator really wrote:
   dump with every surface that draws the same picture, and a picture can exist
   at both depths, so the name belongs to the sibling surface.
 * **12 names are not reproduced**, and all twelve are on **six members of
-  `FLDDATA.DAT`** (75, 76, 79, 80, 81, 82). On each of the six the dumped CLUT
-  hash, the dumped `bits` word and the decoded picture all agree with the
-  member, and only the `TEX0` half differs. The member's palette holds sixteen
-  distinct colours, so the index bytes are forced by the picture and the two
-  sides are hashing the same bytes in a different order. **Why is not
-  established.** Two explanations were tested and refused: the six are not a mip
-  chain split across consecutive members (hashing 79+80+81+82 as one chain
-  produces none of the four names), and single-surface members are not a class
-  that fails (223 single-surface `UNIFORM.DAT` textures and 9 in `STADATA.DAT`
-  reproduce). This is a finding about the derivation, not about the dump.
+  `FLDDATA.DAT`** (75, 76, 79, 80, 81, 82), every one of them 4-bit. On each of
+  the six the dumped CLUT hash, the dumped `bits` word and the decoded picture
+  all agree with the member, and only the `TEX0` half differs. The member's
+  palette holds sixteen distinct colours, so the index bytes are forced by the
+  picture and the two sides are hashing the same bytes in a different order.
+  **Four of the twelve are now explained, and eight are not** [M]:
+
+  * All six are `mip_count == 1` members standing in a **run of consecutive
+    members that halve under one palette** — 75, 76, 77, 78 are 64×64, 32×32,
+    16×16 and 8×8 under CLUT `e00d7b51…`, and 79 … 84 are 128×64 down to 8×4
+    under CLUT `da1d61f0…`. That is one texture's mip pyramid stored as several
+    members, and PCSX2 feeds every level of the draw's LOD range into **one**
+    hash state, so a member hashed on its own reproduces none of the run's
+    names. The check now walks that chain automatically.
+  * For the first run it reproduces the names **exactly**: member 75's name is
+    the hash of members 75+76+77+78 in order, and member 76's is 76+77+78. The
+    earlier reading of this page — that the chain hypothesis was tested and
+    refused — was tested on members 79…82 only, and those are not the whole
+    run; the two members that carry its 16×16 and 8×8 levels were not in it.
+  * For the second run **no chain reproduces anything**. Every contiguous
+    sub-range of members 79…84, in both directions, under four readings of each
+    level's bytes (block image, linear one byte per texel, packed nibbles, the
+    stored bytes as they sit), was hashed and none of the four names came back
+    [M]. The 8×4 tail is the suspect — it is the one level the first run does
+    not have, its stored block is 32 bytes for 16 bytes of texels, and every
+    chain of this run passes through it — but that is a hypothesis and not a
+    measurement. **Eight names remain unexplained**, and this stays a finding
+    about the derivation, not about the dump.
+
+**Which GS modes this dump actually used** [M]. An 8-bit texture a game uploads
+as the *high-byte* `PSMT8H` surface is hashed by PCSX2 over the plain linear
+texel stream rather than the block image, so it has a different `bits` word
+**and** a different TEX0 hash from the same pixels drawn as `PSMT8` — a
+distinction that cost MVP Baseball 2005's census 1,035 names before it was
+known. The check now tries that second reading for every 8-bit surface and
+records the mode of every dumped name it saw:
+
+| GS pixel mode | names checked | TEX0 reproduced | not reproduced | names of a mode this surface has none |
+|---|---:|---:|---:|---:|
+| `PSMT8` (19) | 124 | 124 | 0 | 88 |
+| `PSMT4` (20) | 982 | 970 | 12 | 0 |
+| `PSMT8H` (27) | 0 | 0 | 0 | 0 |
+| **total** | **1,106** | **1,094** | **12** | **88** |
+
+**Not one of the 1,100 names this dump wrote declares PSM 27**, so the second
+reading had nothing to answer and no count above moved when it was added. That
+is also why the art lanes leave `extra_psms` empty: offering a high-byte name
+for every 8-bit texture would be a claim about how this game draws that nothing
+on this disc supports.
 
 Across the whole disc the same rule names **17,183 of 19,596 images** in 35
 containers, 235,722 names in all; the 2,413 it will not name are palette-only
