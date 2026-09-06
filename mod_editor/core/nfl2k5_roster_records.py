@@ -110,7 +110,7 @@ OBJ_OFF = 0x40
 # where the roster object sits relative to the ROST preamble, by version: 17 = the disc resource layout (object at
 # +0x40); 0 = the runtime arena the game serialises into SAVEGAME.DAT (object at +0x20; the file-relative wrapper at
 # 0x2E0, preamble at 0x300, object at 0x320, arena of 0x91000 bytes ending at 0x91320 in every real save examined)
-ROST_VERSIONS = {17: 0x40, 0: 0x20}
+ROST_VERSIONS = {17: 0x40, 0: 0x20, 18: 0x40, 1: 0x20}
 PLAYER_SIZE = 0x54
 TEAM_SIZE = 0x1F4
 TEAM_SLOTS = 65
@@ -837,12 +837,12 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     """
     from . import nfl2k5_save_writer as writer
     writer.validate_franchise_base_year(base_year)
-    if (len(payload) == writer.FRANCHISE_SAVE_SIZE and preamble == 0x300
+    if (len(payload) in (writer.FRANCHISE_SAVE_SIZE, writer.FRANCHISE_SAVE_SIZE + 0x1000) and preamble == 0x300
             and payload[0x2E0:0x2E4] == b"ROST"
-            and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020
+            and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020 + len(payload) - writer.FRANCHISE_SAVE_SIZE
             and payload[0x30C:0x310] == b"ROST"
-            and struct.unpack_from("<I", payload, 0x310)[0] == 0):
-        return base_year + payload[writer.FRANCHISE_YEAR_OFFSET]
+            and struct.unpack_from("<I", payload, 0x310)[0] == (1 if len(payload) > writer.FRANCHISE_SAVE_SIZE else 0)):
+        return base_year + payload[writer.FRANCHISE_YEAR_OFFSET + len(payload) - writer.FRANCHISE_SAVE_SIZE]
     return None
 
 
@@ -1274,6 +1274,8 @@ class TeamRecord:
     clean_parse: bool = True                               # count byte == pointers we could resolve
     repaired: bool = False                                 # a repair rewrote the count / the whole list
     stadium_index: int | None = None                       # record ordinal, not the stadium's asset ID
+    kind: int | None = None
+    asset_id: int | None = None
 
     @property
     def reordered(self) -> bool:
@@ -1287,7 +1289,7 @@ class TeamRecord:
 
     @property
     def is_club(self) -> bool:
-        return self.index < CLUB_TEAM_COUNT
+        return self.index < 32 or (self.kind in (2, 4) if self.kind is not None else self.index < CLUB_TEAM_COUNT)
 
     @property
     def display(self) -> str:
@@ -1398,6 +1400,11 @@ class RosterDocument:
         self.version = self.u32(base + 0x10)
         _require(self.version in ROST_VERSIONS, f"ROST version {self.version} (expected 17 for a disc "
                                                  "resource or 0 for a save arena)")
+        if self.version in (1, 18):
+            # The grown schema owns a fixed tail and moved tables. Validate all
+            # pointers against that boundary before the editor follows them.
+            from .nfl2k5_save_rost import decode
+            decode(bytes(b), base_year=self.base_year, reference_year=self.reference_year)
         root = self.rel(base + 0x14)
         expected_root = base + ROST_VERSIONS[self.version]
         _require(root == expected_root, f"the roster object should sit at +0x{ROST_VERSIONS[self.version]:x}, "
@@ -1446,6 +1453,12 @@ class RosterDocument:
         arena_end = len(b)
         if base >= 0x20 and b[base - 0x20:base - 0x1C] == b"ROST":
             arena_end = base + self.u32(base - 0x1C)
+        from . import nfl2k5_roster_arena as arena
+        try:
+            self.overflow = arena.read(b, root, arena_end, self.version)
+        except arena.ArenaError as exc:
+            raise RosterRecordError(str(exc)) from exc
+        self.arena_end = arena_end
         try:
             self.stadiums = storage.read_stadiums(b, root=root, end=arena_end)
         except storage.RosterStorageError as exc:
@@ -1479,6 +1492,8 @@ class RosterDocument:
                               player_count=count, slots=slots, original_slots=tuple(slots),
                               coach_offset=coach,
                               stadium_index=stadium.index if stadium else None,
+                              kind=self.u32(offset + 0x128),
+                              asset_id=struct.unpack_from('<H', b, offset + 0x118)[0],
                               scheme=struct.unpack_from("<H", b, offset + TEAM_SCHEME_WORD)[0],
                               clean_parse=(count == len(slots) and count <= TEAM_SLOTS))
             self.teams.append(team)
@@ -1507,14 +1522,15 @@ class RosterDocument:
             # Any reserve metadata must pass the strict storage decoder.
             try:
                 ids = ps.reserve_list(raw, team_offset=team.offset,
-                                      player_pool_offset=self.primary_table) if metadata != (0, 0, 0) else ()
+                                      player_pool_offset=self.primary_table, overflow=self.overflow,
+                                      team_index=team.index) if metadata != (0, 0, 0) else ()
                 for index in ids:
                     key = ("primary", index)
                     _require(key not in self.reserve_owner, "duplicate reserve owner")
                     target = self.primary_table + index * PLAYER_SIZE
                     _require(target in self.by_offset and self.by_offset[target].pool == "primary",
                              "reserve index outside primary pool")
-                    _require(not any(t < CLUB_TEAM_COUNT for t in self.by_offset[target].teams)
+                    _require(not any(self.teams[t].is_club for t in self.by_offset[target].teams)
                              and target not in self.free_agents, "reserve has another owner")
                     self.reserve_owner[key] = team.index
                 self.reserves[team.index] = ids
@@ -1770,6 +1786,11 @@ class RosterDocument:
         return [self.by_offset[self.primary_table + index * PLAYER_SIZE]
                 for index in self.reserves.get(team_index, ())]
 
+    def reserve_limit(self, team_index: int) -> int:
+        """The selected save's capacity, including its explicit eligibility bit."""
+        from . import nfl2k5_practice_squad as ps
+        return self.overflow.limit(team_index) if self.overflow is not None and team_index < 32 else ps.RESERVE_LIMIT
+
     def adopt_body(self, payload: bytes) -> None:
         """Publish re-decoded bytes, retaining objects held by the UI and undo commands."""
         _require(len(payload) == len(self.body), "the roster arena changed size")
@@ -1852,7 +1873,7 @@ class RosterDocument:
         owner = self.reserve_owner.get((player.pool, player.index))
         if owner is not None:
             return owner
-        clubs = [index for index in player.teams if index < CLUB_TEAM_COUNT]
+        clubs = [index for index in player.teams if self.teams[index].is_club]
         return min(clubs) if clubs else None
 
     def is_free_agent(self, player: Player) -> bool:
@@ -1886,9 +1907,10 @@ class RosterDocument:
             raise MembershipRefused(MSG_FREE_AGENT_IR)
 
     def membership_limit(self, team_index: int) -> int:
-        from .nfl2k5_franchise_save import is_franchise_save, SEASON_BLOCK, S_STAGE
-        limit = TEAM_SLOTS - len(self.reserves.get(team_index, ()))
-        if is_franchise_save(bytes(self.body)) and self.body[SEASON_BLOCK + S_STAGE] >= 8:
+        from .nfl2k5_franchise_save import is_franchise_save, FranchiseSave
+        capacity = 70 if self.overflow is not None and team_index < 32 else TEAM_SLOTS
+        limit = min(TEAM_SLOTS, capacity - len(self.reserves.get(team_index, ())))
+        if is_franchise_save(bytes(self.body)) and FranchiseSave(bytes(self.body)).header.stage >= 8:
             limit = min(limit, 53)
         return limit
 
@@ -2130,11 +2152,14 @@ class RosterDocument:
 
     def _read_reserve_lists(self, body: bytes | bytearray) -> dict[int, tuple[int, ...]]:
         from . import nfl2k5_practice_squad as ps
+        from . import nfl2k5_roster_arena as arena
+        overflow = arena.read(body, self.obj_base + OBJ_OFF, self.arena_end, self.version)
         result = {}
         for team in self.teams:
             raw = body[team.offset:team.offset + TEAM_SIZE]
             result[team.index] = (ps.reserve_list(raw, team_offset=team.offset,
-                                                  player_pool_offset=self.primary_table)
+                                                  player_pool_offset=self.primary_table,
+                                                  overflow=overflow, team_index=team.index)
                                   if (raw[ps.VERSION_OFFSET], raw[ps.COUNT], raw[ps.MARKER_OFFSET]) != (0, 0, 0) else ())
         return result
 
@@ -2237,10 +2262,15 @@ class RosterDocument:
             raw = bytes(out[team.offset:team.offset + TEAM_SIZE])
             # Snapshot reserves before moving the active boundary.
             active = [(offset - self.primary_table) // PLAYER_SIZE for offset in team.slots]
-            out[team.offset:team.offset + TEAM_SIZE] = ps.repack_team(
-                raw, active, self.reserves[team.index], team_offset=team.offset,
-                player_pool_offset=self.primary_table, player_count=len(self.by_pool("primary")),
-                mark=bool(raw[ps.VERSION_OFFSET]))
+            if self.overflow is not None:
+                from . import nfl2k5_roster_arena as arena
+                from .nfl2k5_save_rost import decode
+                arena.repack(out, decode(bytes(self.body)), team.index, active, self.reserves[team.index])
+            else:
+                out[team.offset:team.offset + TEAM_SIZE] = ps.repack_team(
+                    raw, active, self.reserves[team.index], team_offset=team.offset,
+                    player_pool_offset=self.primary_table, player_count=len(self.by_pool("primary")),
+                    mark=bool(raw[ps.VERSION_OFFSET]))
         if tuple(self.free_agents) != self.original_free_agents:
             _require(self.free_agent_list is not None, "this roster has no free-agent list")
             _require(len(self.original_free_agents) == self.free_agent_count_field,
@@ -2256,7 +2286,7 @@ class RosterDocument:
                     struct.pack_into("<i", out, field_offset, self.free_agents[index] - field_offset + 1)
                 else:
                     struct.pack_into("<i", out, field_offset, 0)
-        if self.version == 0 and any(self.body[t.offset + 0x19b] == 1 for t in self.teams):
+        if self.version in (0, 1) and any(self.body[t.offset + 0x19b] in (1, 2) for t in self.teams):
             from . import nfl2k5_practice_squad as ps
             try:
                 for team in self.teams[:32]:
@@ -2346,7 +2376,7 @@ def _entry(archive) -> Any:
     entries = archive.entries
     _require(len(entries) > ROST_OUTER_INDEX, f"the archive has no outer entry {ROST_OUTER_INDEX}")
     entry = entries[ROST_OUTER_INDEX]
-    _require(entry.size == RESOURCE_SIZE,
+    _require(entry.size in (RESOURCE_SIZE, 0x92060),
              f"outer entry {ROST_OUTER_INDEX} is 0x{entry.size:x} bytes, not the main roster")
     return entry
 
@@ -2384,7 +2414,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
     with _outer_image()(path) as archive:
         entry = _entry(archive)
         resource = archive.read(entry.virtual_offset, entry.size)
-    _require(resource[:4] == b"ROST" and len(resource) == RESOURCE_SIZE, "the roster resource is foreign")
+    _require(resource[:4] == b"ROST" and len(resource) in (RESOURCE_SIZE, 0x92060), "the roster resource is foreign")
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
                               resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
                               reference_year=reference_year)
@@ -2397,7 +2427,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
 def resource_status(resource: bytes) -> str:
     """retail | edited | foreign for an outer-entry-5 payload."""
 
-    if len(resource) != RESOURCE_SIZE or resource[:4] != b"ROST":
+    if len(resource) not in (RESOURCE_SIZE, 0x92060) or resource[:4] != b"ROST":
         return "foreign"
     body = resource[RESOURCE_HEADER_SIZE:]
     if hashlib.sha256(body).hexdigest() == RETAIL_BODY_SHA256:
@@ -2686,7 +2716,7 @@ def save_document(document: RosterDocument, target: Path | str, *, overwrite: bo
     payload = document.to_body()        # for a save-loaded document this is the whole arena
     _require(len(payload) == len(document.container.savegame), "the arena changed size; refusing to write")
     from .nfl2k5_practice_squad import validate_save
-    if document.version == 0 or any(document.reserves.values()):
+    if document.version in (0, 1) or any(document.reserves.values()):
         validate_save(payload)
     return document.container.write(target, payload, overwrite=overwrite)
 
@@ -2697,10 +2727,10 @@ def edits_document(document: RosterDocument, *, name: str = "", author: str = ""
 
     document.check_depth_locks()
     from . import nfl2k5_practice_squad as ps
+    original_reserves = document._read_reserve_lists(document.original)
     for team in document.teams:
         raw = document.original[team.offset:team.offset + TEAM_SIZE]
-        old = (ps.reserve_list(raw, team_offset=team.offset, player_pool_offset=document.primary_table)
-               if (raw[ps.VERSION_OFFSET], raw[ps.COUNT], raw[ps.MARKER_OFFSET]) != (0, 0, 0) else ())
+        old = original_reserves[team.index]
         _require(old == document.reserves[team.index],
                  "Reserve moves require a signed-save copy; Build & Share cannot represent these moves")
     edits = []
@@ -2935,7 +2965,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
         if now > TEAM_SLOTS:
             problems.append(f"{team.display} would need {now} pointer slots (the record holds {TEAM_SLOTS})")
     for player, _entry in movers:
-        if len([t for t in player.teams if t < CLUB_TEAM_COUNT]) > 1:
+        if len([t for t in player.teams if roster.teams[t].is_club]) > 1:
             problems.append(f"{player.display} would be on two clubs")
     if len(roster.free_agents) > roster.free_agent_capacity:
         problems.append(f"the free-agent list would hold {len(roster.free_agents)} of {roster.free_agent_capacity}")
@@ -3856,7 +3886,7 @@ def validate_membership(document: RosterDocument) -> list[dict[str, Any]]:
                                        "(the game carries up to 65 through the off-season and trims "
                                        "the tail at the season gate)"})
     for player in document.players:
-        if len([t for t in player.teams if t < CLUB_TEAM_COUNT]) > 1:
+        if len([t for t in player.teams if document.teams[t].is_club]) > 1:
             findings.append({"level": "error", "player": player.display, "check": "team list",
                              "detail": "listed on two clubs: "
                                        + ", ".join(document.teams[t].abbreviation for t in player.teams)})

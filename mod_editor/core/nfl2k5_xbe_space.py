@@ -560,9 +560,16 @@ def dormant_union():
     from . import nfl2k5_abilities_runtime as abilities, nfl2k5_qb_spy_runtime as qb_spy
     from . import nfl2k5_calendar_engine as calendar
     from . import nfl2k5_guardian_overlay as guardian
+    from . import nfl2k5_read_option_runtime as read_option, nfl2k5_franchise_2026 as franchise_2026
+    from . import nfl2k5_senior_bowl as senior_bowl, nfl2k5_roster_arena_growth as arena_growth
+    from . import nfl2k5_animation_xbe as animation_xbe, nfl2k5_my_career as my_career
+    from . import nfl2k5_screen_hooks as screen_hooks
+    # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS
             + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
-            + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + guardian.REQUESTS)
+            + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + guardian.REQUESTS
+            + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS
+            + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS)
 
 
 def is_scaleout(payload):
@@ -630,7 +637,9 @@ def _scale_regions():
 
 
 def _scale_allocations(requests):
-    requests = _requests(requests)
+    # This late arena owner must not displace shipped beta-62 allocations or
+    # their protected manifest extents. Existing request sets pack identically.
+    requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
     out = _legacy_allocations([r for r in requests if r[0] in LEGACY_OWNERS])
     regions = _scale_regions()[3:]
     cursors = {r["va"]: PAGE if r["kind"] == "read_only" else 0 for r in regions}

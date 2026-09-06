@@ -26,7 +26,8 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: Coach's Desk has no reserve list or move actions. "
     "Patch: Practice Squad replaces The Crib on Coach's Desk with Active and Reserves "
-    "pages, Demote and Promote. Keep up to 53 active and 12 reserve players. "
+    "pages, Demote and Promote. Keep up to 53 active players. Larger reserves "
+    "require the separate roster growth patch and a migrated save. "
     "Trophy Room remains on the main menu. CPU poaching and protection are off."
 )
 TEMPLATES = {"descriptor": (0x555098, 48), "frame": (0x555070, 40),
@@ -100,7 +101,7 @@ def code_for(payload, code_va, data_va):
                         ("reserve_text", "Reserves"), ("promote_text", "Promote"),
                         ("demote_text", "Demote"), ("cancel_text", "Cancel"),
                         ("invalid_text", "Select your franchise team first."),
-                        ("refused_text", "Move refused. Check team ownership and the 53 active / 12 reserve limits.")):
+                        ("refused_text", "Move refused. Check team ownership and your active and reserve limits.")):
         append(name, value.encode("utf-16le") + b"\0\0")
     append("promote_menu", bytes(24))
     append("demote_menu", bytes(24))

@@ -7,128 +7,138 @@ CODE = bytes.fromhex(
     "837b3c00742e31ff3b34bd6c78e50074084783ff2272f1eb1b833cbd5c77e50000741189f0e8fcff"
     "ffff85c0780689f089faeb0231c05f5e5bc3e8fcffffff85c0740a3b0500000000740231c0c3e8e7"
     "ffffff85c0740389d0c3b8ffffffffc3e8d5ffffff85c0740a8b800401000085c07505b800000000"
-    "c3b801000000c351e8fcffffff85c0741b68000070416800005041e8fcffffffc7050824aa000000"
-    "000059c359ba00000000e97703000051e8fcffffffe8fcffffffa30000000059890d04000000c3c7"
-    "050000000000000000c7050400000000000000c7050800000000000000c3535152575589c585c00f"
-    "84c20000008b1d1829b7002b43040f82b300000031d2b954000000f7f185d20f85a20000003b030f"
-    "839a00000031ff31c98b531c515289d0e8fcffffff5a5985c00f888000000051520fb68a1c010000"
-    "01c88b4c240483f920721f39f2741b83ba2801000002741283ba280100000474090fb68a1c010000"
-    "eb0231c939c1730d392c8a750539f2753b4741ebef5a594181c2f40100003b4b18729983ff017527"
+    "c3b801000000c353515283fa41724f83fa46734f8b1d1829b70085db744581bb001c0900324b3552"
+    "75392b431c723431d2b9f4010000f7f185d2752783f82073226bc00a8b14248d84039e1b09000fb7"
+    "04503b03730d6bc054034304eb078b0490eb0231c05a595bc351e8fcffffff85c0741b6800007041"
+    "6800005041e8fcffffffc7050824aa000000000059c359ba00000000e99c03000051e8fcffffffe8"
+    "fcffffffa30000000059890d04000000c3c7050000000000000000c7050400000000000000c70508"
+    "00000000000000c3535152575589c585c00f84d80000008b1d1829b7002b43040f82c900000031d2"
+    "b954000000f7f185d20f85b80000003b030f83b000000031ff31c98b531c515289d0e8fcffffff5a"
+    "5985c00f889600000051520fb68a1c01000001c88b4c240483f920721f39f2741b83ba2801000002"
+    "741283ba280100000474090fb68a1c010000eb0231c939c1732383f9417305392c8aeb0f505289d0"
+    "89cae898feffff39e85a58750539f2753b4741ebd95a594181c2f40100003b4b18728383ff017527"
     "8b4b388b7b3c85c9740689e8f2af7417b9a0000000bfe021e40089e8f2af740789e8eb0583c40831"
-    "c05d5f5a595bc331c0eb05b80100000053565789c389cf83fa11754ee861feffff85c0744539d775"
-    "4189c6e8fcffffff85c0783685db75070fb6861c01000089c731c989f285db740a0fb6861c010000"
-    "8d148639f9730f8b048ae8cffeffff85c0740741ebed89f8eb0231c05f5e5bc331c0eb05b8010000"
-    "0053565789c389d689cf837c241011754685f67842e8f0fdffff85c0743939d7753589f789c6e8fc"
-    "ffffff85c0782885db750d0fb6861c01000039c77319eb0d39c773130fb6861c01000001c78b04be"
-    "e861feffffeb0231c05f5e5bc204005356575589cf89d5833d08000000000f850a0100003b3d0400"
-    "00000f85fe00000085ed0f84f6000000817d58000000000f85e90000008b44241485c00f88dd0000"
-    "0083bda4000000410f87d00000003b85a40000000f83c40000008b554085d20f84b90000008b1c82"
-    "e8b800000085c00f8493000000c7050800000001000000b800000000817d5c000000007505b80000"
-    "00006a006aff6a01576a0050ba00000000b940c0e300e8fcffffff83f8017564e87000000085c074"
-    "4f89da89f1817d5c00000000740fe8fcffffff85c0740b806352e0eb05e8fcffffff85c0742a89e9"
-    "e8fcffffff89e98b95bc000000e8fcffffffc785c800000000000000c785b400000000000000eb0c"
-    "89f9ba00000000e882000000c70508000000000000005d5f5e5bc204003b3d040000007566817d58"
-    "00000000755de86ffcffff85c0745689c689d8e80efdffff85c074498a4308241c3c04753e807b28"
-    "ee74380fb68e1c01000031d2817d5c000000007414817d5c00000000751d89ca0fb686f201000001"
-    "c139ca730e391c96740342ebf4b801000000c331c0c36a006aff6a00516a0068fc425000b940c0e3"
-    "00e8fcffffffc3"
+    "c05d5f5a595bc331c0eb05b80100000053565789c389cf83fa117551e8e9fdffff85c0744839d775"
+    "4489c6e8fcffffff85c0783985db75070fb6861c01000089c731c939f9732289ca85db74090fb686"
+    "1c01000001c289f0e8f2fdffffe8b6feffff85c0740741ebda89f8eb0231c05f5e5bc331c0eb05b8"
+    "0100000053565789c389d689cf837c241011754c85f67848e875fdffff85c0743f39d7753b89f789"
+    "c6e8fcffffff85c0782e85db750d0fb6861c01000039c7731feb0d39c773190fb6861c01000001c7"
+    "89f089fae87efdffffe842feffffeb0231c05f5e5bc204005356575589cf89d5833d08000000000f"
+    "850a0100003b3d040000000f85fe00000085ed0f84f6000000817d58000000000f85e90000008b44"
+    "241485c00f88dd00000083bda4000000410f87d00000003b85a40000000f83c40000008b554085d2"
+    "0f84b90000008b1c82e8b800000085c00f8493000000c7050800000001000000b800000000817d5c"
+    "000000007505b8000000006a006aff6a01576a0050ba00000000b940c0e300e8fcffffff83f80175"
+    "64e87000000085c0744f89da89f1817d5c00000000740fe8fcffffff85c0740b806352e0eb05e8fc"
+    "ffffff85c0742a89e9e8fcffffff89e98b95bc000000e8fcffffffc785c800000000000000c785b4"
+    "00000000000000eb0c89f9ba00000000e888000000c70508000000000000005d5f5e5bc204003b3d"
+    "04000000756c817d58000000007563e8eefbffff85c0745c89c689d8e8effcffff85c0744f8a4308"
+    "241c3c047544807b28ee743e0fb68e1c01000031d2817d5c000000007414817d5c00000000752389"
+    "ca0fb686f201000001c139ca731489f0e8e2fbffff39d8740342ebeeb801000000c331c0c36a006a"
+    "ff6a00516a0068fc425000b940c0e300e8fcffffffc3"
 )
 RELOCATIONS = (
     (158, 2, 'ps_reserve_count', 0),
     (179, 2, 'code', 0),
     (189, 1, 'state_data', 0),
     (236, 1, 'invalid_text', 0),
-    (249, 2, 'code', 0),
-    (268, 2, 'fade', 0),
-    (278, 1, 'descriptor', 0),
-    (286, 1, 'invalid_text', 0),
-    (297, 2, 'code', 319),
-    (302, 2, 'code', 0),
-    (307, 1, 'state_data', 0),
-    (314, 1, 'state_data', 0),
-    (321, 1, 'state_data', 0),
-    (331, 1, 'state_data', 0),
-    (341, 1, 'state_data', 0),
-    (417, 2, 'ps_reserve_count', 0),
-    (604, 2, 'ps_reserve_count', 0),
-    (719, 2, 'ps_reserve_count', 0),
-    (785, 1, 'state_data', 0),
-    (798, 1, 'state_data', 0),
-    (819, 1, 'sheet', 0),
-    (895, 1, 'state_data', 0),
-    (904, 1, 'demote_menu', 0),
-    (911, 1, 'reserve_binding', 0),
-    (918, 1, 'promote_menu', 0),
-    (933, 1, 'screen_text', 0),
-    (943, 2, 'dialog', 0),
-    (968, 1, 'reserve_binding', 0),
-    (975, 2, 'ps_demote', 0),
-    (990, 2, 'ps_promote', 0),
-    (1001, 2, 'rebuild', 0),
-    (1014, 2, 'clamp', 0),
-    (1043, 1, 'refused_text', 0),
-    (1054, 1, 'state_data', 0),
-    (1071, 1, 'state_data', 0),
-    (1080, 1, 'sheet', 0),
-    (1135, 1, 'active_binding', 0),
-    (1144, 1, 'reserve_binding', 0),
-    (1202, 2, 'dialog', 0),
+    (347, 2, 'code', 0),
+    (366, 2, 'fade', 0),
+    (376, 1, 'descriptor', 0),
+    (384, 1, 'invalid_text', 0),
+    (395, 2, 'code', 417),
+    (400, 2, 'code', 0),
+    (405, 1, 'state_data', 0),
+    (412, 1, 'state_data', 0),
+    (419, 1, 'state_data', 0),
+    (429, 1, 'state_data', 0),
+    (439, 1, 'state_data', 0),
+    (515, 2, 'ps_reserve_count', 0),
+    (724, 2, 'ps_reserve_count', 0),
+    (842, 2, 'ps_reserve_count', 0),
+    (914, 1, 'state_data', 0),
+    (927, 1, 'state_data', 0),
+    (948, 1, 'sheet', 0),
+    (1024, 1, 'state_data', 0),
+    (1033, 1, 'demote_menu', 0),
+    (1040, 1, 'reserve_binding', 0),
+    (1047, 1, 'promote_menu', 0),
+    (1062, 1, 'screen_text', 0),
+    (1072, 2, 'dialog', 0),
+    (1097, 1, 'reserve_binding', 0),
+    (1104, 2, 'ps_demote', 0),
+    (1119, 2, 'ps_promote', 0),
+    (1130, 2, 'rebuild', 0),
+    (1143, 2, 'clamp', 0),
+    (1172, 1, 'refused_text', 0),
+    (1183, 1, 'state_data', 0),
+    (1200, 1, 'state_data', 0),
+    (1209, 1, 'sheet', 0),
+    (1264, 1, 'active_binding', 0),
+    (1273, 1, 'reserve_binding', 0),
+    (1337, 2, 'dialog', 0),
 )
 LABELS = {
-    'action_check': 1069,
-    'action_done': 1062,
-    'action_popup': 922,
-    'action_promote': 989,
-    'action_refused': 1040,
-    'action_result': 994,
-    'action_unlock': 1052,
-    'activate': 775,
-    'active_count': 567,
-    'active_get': 672,
-    'check_bad': 1179,
-    'check_done': 1181,
-    'check_good': 1173,
-    'check_slots': 1161,
-    'code_end': 1207,
+    'action_check': 1198,
+    'action_done': 1191,
+    'action_popup': 1051,
+    'action_promote': 1118,
+    'action_refused': 1169,
+    'action_result': 1123,
+    'action_unlock': 1181,
+    'activate': 904,
+    'active_count': 687,
+    'active_get': 795,
+    'check_bad': 1314,
+    'check_done': 1316,
+    'check_good': 1308,
+    'check_slots': 1290,
+    'code_end': 1342,
     'context': 0,
     'context_bad': 172,
     'context_done': 174,
     'context_find': 128,
     'context_found': 145,
     'context_league': 126,
-    'count': 576,
-    'count_bad': 666,
-    'count_done': 668,
-    'count_good': 662,
-    'count_loop': 643,
-    'count_ready': 623,
+    'count': 696,
+    'count_bad': 789,
+    'count_done': 791,
+    'count_good': 785,
+    'count_loop': 747,
+    'count_ready': 743,
+    'count_slot': 766,
     'current': 178,
     'current_done': 197,
-    'enter': 295,
-    'get_bad': 767,
-    'get_done': 769,
-    'get_reserve': 744,
-    'get_slot': 757,
-    'getter': 681,
-    'leave': 319,
-    'message': 1182,
+    'enter': 393,
+    'get_bad': 896,
+    'get_done': 898,
+    'get_reserve': 867,
+    'get_slot': 880,
+    'getter': 804,
+    'leave': 417,
+    'message': 1317,
     'one': 241,
-    'owned': 350,
-    'owned_bad': 559,
-    'owned_bad_pop': 556,
-    'owned_done': 561,
-    'owned_ir': 536,
-    'owned_next': 501,
-    'owned_slots': 484,
-    'owned_start': 482,
-    'owned_step': 498,
-    'owned_team': 412,
-    'reserve_count': 571,
-    'reserve_get': 676,
-    'row': 247,
-    'row_bad': 284,
+    'owned': 448,
+    'owned_bad': 679,
+    'owned_bad_pop': 676,
+    'owned_compare': 611,
+    'owned_done': 681,
+    'owned_extra': 596,
+    'owned_ir': 656,
+    'owned_next': 621,
+    'owned_slots': 582,
+    'owned_start': 580,
+    'owned_step': 618,
+    'owned_team': 510,
+    'reserve_count': 691,
+    'reserve_get': 799,
+    'row': 345,
+    'row_bad': 382,
     'selector': 198,
     'selector_bad': 210,
+    'slot': 247,
+    'slot_bad': 339,
+    'slot_done': 341,
+    'slot_native': 334,
     'title': 216,
     'title_bad': 235,
     'title_done': 240,

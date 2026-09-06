@@ -133,6 +133,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_modern_naming as modern_naming
         if modern_naming.status(cls.patched) != "applied":
             raise AssertionError("Modern mode text missing from the composed XBE")
+        from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
+        if arena_growth.status(cls.patched) != "applied":
+            raise AssertionError("arena growth missing from the composed XBE")
         from mod_editor.core import nfl2k5_modern_naming as modern_naming
         from mod_editor.core import nfl2k5_screen_hooks as screen
         # This audit allocates nothing. It verifies that neither deferred CB
@@ -571,8 +574,7 @@ class ReverseOwnerOrderTests(CaveReferenceTests):
 
     def test_both_installation_orders_are_byte_identical(self):
         from tests.nfl2k5_allocator_stack import compose
-        from mod_editor.core import nfl2k5_modern_naming as modern_naming
-        self.assertEqual(modern_naming.apply(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
+        self.assertEqual(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0], self.patched)
 
 
 class ScaleoutOwnerTests(CaveReferenceTests):

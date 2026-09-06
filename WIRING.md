@@ -8322,3 +8322,206 @@ The current manifest already has six stale source fingerprints at the base
 commit; this fix adds the screen-hooks source change. Refresh through actual
 writer observation, not a manual hash substitution. The bounded screen-hook
 projection correctly refuses this stale parent and is not a release manifest.
+## r62-roster-arena-growth integration (2026-09-06)
+
+This section supersedes the earlier storage-growth proposal for reserves and extra
+created records. EXPERIMENTAL / UNWITNESSED. Keep `reserves_16=False` and
+`created_teams_extra=0` in Basic, Advanced and Experimental. No preset enables
+either. The implementation and proof boundary are in
+`ASTRA_ROSTER_ARENA_GROWTH_REPORT.md`. Do not regenerate the protected manifest
+until the dispatcher and complete resource build described here are integrated.
+
+### Dispatcher: nfl2k5_throw_tuning.py
+
+Import `nfl2k5_roster_arena_growth as roster_arena_patch` and
+`nfl2k5_roster_arena_image as roster_arena_image`. Thread keyword arguments
+`reserves_16: bool = False, created_teams_extra: int = 0` through `_apply_all`,
+`write_xbe`, `write_image`, `_selected_space_requests`, `_xbe_space_adapter`, every
+forwarding call and the CLI. Reject bool/non-int for `created_teams_extra` and
+all values except 0/2. Validate the boolean independently even when both options
+are off. Call `roster_arena_patch.options(...)` only if either option is selected.
+
+Append `roster_arena_patch.REQUESTS` exactly once to the selected union if
+`reserves_16 or created_teams_extra`. Its only request is
+`('nfl2k5_roster_arena_growth', 'code', 8192, 16)`. The allocator selects v3; no
+additional RW or page-count change. Include both flags in the allocator entry's
+condition and adapter arguments. Also pass them into the union used by
+`scorebug_ingame.runtime_apply_in_place(..., extra_requests=...)`. Every selected
+owner must be reserved before any grown owner is installed. Adding a missing
+owner to an already populated directory intentionally refuses.
+
+Use this settings adapter and append this `_apply_all` owners tuple **after**
+the allocator and the existing PS/practice prerequisites (screen and growth
+compose in either order):
+
+```python
+class _roster_arena_adapter:
+    def __init__(self, reserves_16, created_teams_extra):
+        self.kwargs = dict(reserves_16=reserves_16,
+                           created_teams_extra=created_teams_extra)
+    @staticmethod
+    def status(payload):
+        return roster_arena_patch.status(payload)
+    def apply(self, payload):
+        return roster_arena_patch.apply(payload, **self.kwargs)
+
+(reserves_16 or created_teams_extra,
+ _roster_arena_adapter(reserves_16, created_teams_extra),
+ 'roster_arena_growth', 'experimental larger roster arena'),
+```
+
+Normalize either flag to `xbe_space=True, practice_squad=True,
+franchise_practice=True`. Preserve the existing `practice_reserves` dependency;
+the growth owner also installs it itself. `reserves_16` additionally normalizes
+`practice_squad_screen=True` so users can manage the larger squad in game.
+`created_teams_extra=2` alone retains the 12-reserve limit. The new owner calls
+base PS/practice apply safely; their status methods recognize only a fully
+verified delegation, including allocation seals and hook pins.
+
+Add these fields to `_grown_status_fields(payload)` using
+`settings = roster_arena_patch.read_settings(payload)`:
+
+```python
+'roster_arena_growth': settings['status'],
+'reserves_16': ('foreign' if settings['status'] == 'foreign' else
+                'applied' if settings['reserves_16'] else 'retail'),
+'created_teams_extra': ('foreign' if settings['status'] == 'foreign' else
+                        'applied' if settings['created_teams_extra'] else 'retail'),
+'roster_arena_settings': settings,
+```
+
+The **four status dictionaries** are `read_xbe` (payload), `read_image` (payload),
+`write_xbe` (result), and `write_image` (after). All four must spread this helper;
+add it to `write_xbe` if absent. For image read/write results separately include
+`roster_arena_resource = roster_arena_image.image_status(path_or_target)`. An
+XBE's applied status alone does not prove the paired ROST. Raw XBE writes are a
+development component only; the public options require an image. For image
+writes run the paired final resource pass below before reporting success.
+
+When `scorebug_runtime` defers owners, defer these two flags too. Carry their
+original values through allocation planning and restore them in the final
+`_apply_all`. Do not install growth using a partial request union during an
+earlier roster/text or scorebug pass.
+
+### BuildPlan and paired publication: mod_build.py
+
+Add fields `reserves_16: bool = False` and `created_teams_extra: int = 0`, explicit
+off/zero entries to all three preset dictionaries, and both to recipe/export,
+summary, capability dependency lookup, `wants_xbe_patch`, option validation and
+normalization. Map both to module `nfl2k5_roster_arena_growth`. Report normalized
+PS/practice/screen dependencies in the recipe. Include both flags in every
+final allocator condition and `_selected_space_requests` call.
+
+In the early `replace(plan, ...)` used to defer grown owners set
+`reserves_16=False, created_teams_extra=0`; preserve the original values for the
+final union and final `_apply_all`. Update the `scorebug_runtime` deferral in
+`write_image` the same way. After **all** other disc resource edits (rosters,
+team/history strings, music, art), and after final composed XBE installation,
+run this on the Build-owned disposable working image:
+
+```python
+if plan.reserves_16 or plan.created_teams_extra:
+    with tempfile.TemporaryDirectory(prefix='.roster-arena-',
+                                     dir=target.parent) as folder:
+        paired = Path(folder).resolve() / target.name
+        rec = roster_arena_image.build_image(
+            target, paired, reserves_16=plan.reserves_16,
+            created_teams_extra=plan.created_teams_extra, progress=progress)
+        os.replace(paired, target)  # writer has closed every descriptor
+    receipt['steps'].append({'step': 'roster_arena_growth', **rec})
+```
+
+The paired writer uses the existing archive relocation and transactional-copy
+primitives, resolves outer 5 by index and pinned name ID, updates the ROST
+wrapper and all outer/pack/directory geometry, and verifies every neighboring
+outer plus the entire composed XBE before replacement. Its replay is byte
+identical. Never send the grown ROST through the old equal-size resource writer.
+Reopen the image to validate the pair and use fresh offsets in subsequent reads.
+Public failure must discard the entire Build-owned image, including any earlier
+XBE-only intermediate. Do not publish an executable/resource mismatch.
+
+Existing saves are separate artifacts. Provide a signed-copy action using
+`nfl2k5_roster_arena.migrate_save(source, new_target, reserves_16=...,
+created_teams_extra=...)` and reload the result. The action verifies EXTRA,
+preserves all other container members, signs and reopens the copy. It refuses
+the source as destination and existing output files. Loading an old v0 save in
+the patched native runtime enables the arena and preserves its old 52 records;
+adding two records to that existing save requires the host migration.
+
+### Gameplay Patches, Build captions and roster panel
+
+In `gameplay_patches_panel_qt.py` add these PATCHES entries and both keys to
+`NEEDS_IMAGE`:
+
+* `reserves_16`, caption `16 reserves (experimental)`: `Retail: 65 player slots per team.
+  Patch: 16 reserves in a migrated save; an explicitly eligible team may hold
+  17. EXPERIMENTAL / UNWITNESSED. Build a paired disc and keep the original save.`
+* `created_teams_extra`, caption `Two extra created teams (experimental)`:
+  `Retail: two created-team records. Patch: two more records with separate names
+  and inherited stock assets. EXPERIMENTAL / UNWITNESSED. The franchise league
+  stays at 32 teams.`
+
+This panel is boolean-driven: translate the created-team toggle to integer 2
+when checked and 0 when unchecked at the adapter boundary. Never pass True as
+the integer. Bare-XBE inputs must disable these public actions. Both option
+states must agree with the pair status, not simply one changed executable.
+
+In `build_panel_qt.py` use `_option` captions `16 reserves (experimental)` and
+`Two extra created teams (experimental)` (both under 60 characters), the same
+help text, `badge='EXPERIMENTAL / UNWITNESSED'`, and `needs_image=True`. Add both
+to preset syncing, dirty detection, enablement, status summary and plan assembly;
+convert the second checkbox to `2 if checked else 0`. Preserve the off defaults
+on preset switching. Add feature labels in the two summary mappings.
+
+`roster_editor_panel_qt.py` is outside this task's GUI scope. Its current
+`_refresh_actions` delegates to `document.reserve_move_check`; that backend now
+accepts migrated v1 saves and the correct 16/17 limit. Preserve that authoritative
+check and its refusal text. Use `document.reserve_limit(team_index)` for the
+Reserves count/limit label. Backend reserve transactions now enforce 16/17 only
+for migrated NFL teams; never raise the global legacy constant. Provide the
+signed-copy migration action above and reload via `nfl2k5_roster_records.load_save`.
+Show `EXPERIMENTAL / UNWITNESSED. Requires the matching larger-roster disc.`
+For the optional 17th, take an explicit team-eligibility decision and pass its
+bit in `eligible_team_mask` during migration. Default mask is zero. There is no
+automatic player nationality/eligibility classifier. Do not silently infer one
+from a player name or grant all teams an extra slot. Reserve-only moves remain
+signed-save operations; Build & Share correctly refuses to encode them.
+
+### Packaging, registry and manifest
+
+Add these literal allowlist lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_roster_arena.py
+mod_editor/core/nfl2k5_roster_arena_code.py
+mod_editor/core/nfl2k5_roster_arena_growth.py
+mod_editor/core/nfl2k5_roster_arena_image.py
+docs/mod_editor/nfl2k5_roster_arena_growth_capability.json
+```
+
+Development C/assembly and tests need no runtime compiler or extra runtime
+package. Existing PS screen/code, franchise/roster/save modules, archive writer,
+platform compatibility helpers and allocator are already distributed; keep
+them in the runtime closure. Explicitly import these four new modules in
+`packaging/check_2k5_mod_studio_runtime.py`'s closure list using dotted
+`mod_editor.core.*` names. The new dependency chain also reaches
+`nfl2k5_music_archive`, `nfl2k5_music_banks`, `nfl2k5_save_rost`,
+`nfl2k5_roster_records`, `nfl2k5_franchise_save`, `nfl2k5_practice_squad`,
+`nfl2k5_practice_reserves`, `nfl2k5_xbe_space`, and the archive tools they already
+import. Exercise both new modules' `--help` in the installed runtime.
+
+Merge the one schema-valid object from
+`docs/mod_editor/nfl2k5_roster_arena_growth_capability.json` into the sorted
+registry. ID `nfl2k5.rosters.arena_growth`, classification
+`offline-writer-proved`, runtime `not-tested`, GUI default false. Both command
+fields use `python3 -m <dotted.module> ...` for file-check resolution. Update the
+existing PS-screen capability's 12-only constraint to describe legacy 12 and
+migrated 16/explicitly eligible 17; retain its unwitnessed label.
+
+The full request union, gate compose tuple, manifest recorder owner lists and
+probe list, and allocator dormant union are already updated here. The late
+owner packs after existing owners so their shipped addresses remain exact.
+Claude must regenerate `data/nfl2k5_cave_reservations.json` using the integrated
+manifest builder and the required disposable-disc/disk policy, then rerun both
+gates. This worktree deliberately does not edit that protected JSON, release
+checker, dispatcher, Build plan or GUI files.

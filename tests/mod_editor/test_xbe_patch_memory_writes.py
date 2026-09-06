@@ -185,6 +185,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_modern_naming as modern_naming
         if modern_naming.status(cls.patched) != "applied":
             raise AssertionError("Modern mode text missing from the composed XBE")
+        from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
+        if arena_growth.status(cls.patched) != "applied":
+            raise AssertionError("arena growth missing from the composed XBE")
         from mod_editor.core import nfl2k5_modern_naming as modern_naming
         from mod_editor.core import nfl2k5_screen_hooks as screen
         cls.table = sections(cls.patched)
@@ -423,22 +426,15 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
         image = XbeImage(self.patched)
         places = read_option.allocations(self.patched)
-        self.assertEqual(set(places), {'code', 'data', 'read_only'})
-        for kind, row in places.items():
-            self.assertEqual(image.runtime_writable(row['va'], row['size']), kind == 'data')
+        self.assertEqual(set(places), {'code', 'read_only'})
+        for row in places.values():
+            self.assertFalse(image.runtime_writable(row['va'], row['size']))
             self.assertNotEqual(image.section(row['va']).name, '.text')
         code = places['code']
         self.assertTrue(image.section(code['va']).executable)
         writes = absolute_writes(self.patched, [(code['va'], code['va']+read_option.assembly.LABELS['config'])])
         self.assertTrue(writes)
-        data = places['data']
-        for row in writes:
-            if row['target'] is not None:
-                target = int(row['target'], 0)
-                self.assertTrue(row['writable'], row)
-                # Displaced retail snap store plus exclusively owned new state.
-                self.assertTrue(data['va'] <= target < data['va']+data['size']
-                                or target == 0xE602C8, row)
+        self.assertTrue(all(row['target'] is None for row in writes), writes)
 
     def test_senior_bowl_dormant_components_write_only_owned_or_caller_buffers(self):
         from mod_editor.core import nfl2k5_senior_bowl as bowl, nfl2k5_senior_bowl_code as code
@@ -537,8 +533,7 @@ class ReverseOwnerOrderTests(PatchWriteTests):
 
     def test_both_installation_orders_are_byte_identical(self):
         from tests.nfl2k5_allocator_stack import compose
-        from mod_editor.core import nfl2k5_modern_naming as modern_naming
-        self.assertEqual(modern_naming.apply(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
+        self.assertEqual(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0], self.patched)
 
 
 class ScaleoutOwnerTests(PatchWriteTests):

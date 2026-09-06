@@ -62,32 +62,48 @@ def _require(condition: bool, reason: str) -> None:
         raise PracticeSquadError(reason)
 
 
-def _record(team_record: bytes | bytearray | memoryview) -> tuple[bytes, int, int, tuple[int | None, ...]]:
+def _record(team_record: bytes | bytearray | memoryview, *, overflow=None,
+            team_index: int | None = None) -> tuple[bytes, int, int, tuple[int | None, ...]]:
     data = bytes(team_record)
     _require(len(data) == TEAM_SIZE, 'expected one 500-byte team record')
     active = data[ACTIVE_COUNT]
     version, count, marker = data[VERSION_OFFSET], data[COUNT], data[MARKER_OFFSET]
+    grown = version == 2 and overflow is not None and team_index is not None and 0 <= team_index < 32
     _require((version, count, marker) == (0, 0, 0) or
-             (version == VERSION and marker == MARKER), 'unsupported reserve metadata')
-    _require(count <= RESERVE_LIMIT and active + count <= 65, 'reserve/physical roster capacity exceeded')
+             ((version == VERSION or grown) and marker == MARKER), 'unsupported reserve metadata')
+    limit = overflow.limit(team_index) if grown else RESERVE_LIMIT
+    _require(active <= 65 and count <= limit and active + count <= (70 if grown else 65),
+             'reserve/physical roster capacity exceeded')
+    occupied = min(65, active + count)
     refs = tuple(i*4 + value - 1 if value else None
                  for i, value in enumerate(struct.unpack_from('<65i', data)))
-    _require(all(x is not None for x in refs[:active+count]), 'null occupied player reference')
-    _require(all(x is None for x in refs[active+count:]), 'nonempty unused player slot')
-    _require(len(set(refs[:active+count])) == active+count, 'duplicate active/reserve player identity')
+    _require(all(x is not None for x in refs[:occupied]), 'null occupied player reference')
+    _require(all(x is None for x in refs[occupied:]), 'nonempty unused player slot')
+    _require(len(set(refs[:occupied])) == occupied, 'duplicate active/reserve player identity')
     return data, active, count, refs
 
 
 def reserve_list(team_record: bytes | bytearray | memoryview, *, team_offset: int = 0,
-                 player_pool_offset: int | None = None) -> tuple[int, ...]:
+                 player_pool_offset: int | None = None, overflow=None,
+                 team_index: int | None = None) -> tuple[int, ...]:
     """Return reserve identities; optionally resolve to primary pool indices."""
-    _data, active, count, refs = _record(team_record)
+    _data, active, count, refs = _record(team_record, overflow=overflow, team_index=team_index)
     targets = refs[active:active+count]
+    extra = ()
+    if overflow is not None and team_index is not None and 0 <= team_index < 32:
+        extra = tuple(i for i in overflow.rows[team_index] if i != 0xFFFF)
+        _require(len(extra) == max(0, active + count - 65), 'reserve overflow/count mismatch')
+        _require(not extra or _data[VERSION_OFFSET] == 2, 'overflow has legacy team metadata')
+        _require(player_pool_offset is not None, 'overflow identities require primary pool coordinates')
     if player_pool_offset is None:
         return tuple(int(x) for x in targets)
     offsets = tuple(int(x) + team_offset - player_pool_offset for x in targets)
     _require(all(x >= 0 and x % 84 == 0 for x in offsets), 'reserve reference outside/alignment of primary pool')
-    return tuple(x // 84 for x in offsets)
+    result = tuple(x // 84 for x in offsets) + extra
+    active_ids = {int(x) + team_offset for x in refs[:active]}
+    _require(len(set(result)) == len(result) and not any(
+        player_pool_offset + 84 * i in active_ids for i in result), 'duplicate active/reserve player identity')
+    return result
 
 
 def set_reserve_list(team_record: bytes | bytearray | memoryview, identities: Iterable[int], *,
@@ -197,7 +213,8 @@ def validate_roster(payload: bytes, *, ir_player_indices: Iterable[int] = (),
         raw = payload[team.offset:team.offset + TEAM_SIZE]
         legacy = (raw[VERSION_OFFSET], raw[COUNT], raw[MARKER_OFFSET]) == (0, 0, 0)
         values = (() if allow_legacy_tail and legacy else reserve_list(
-            raw, team_offset=team.offset, player_pool_offset=primary.offset))
+            raw, team_offset=team.offset, player_pool_offset=primary.offset,
+            overflow=document.overflow, team_index=team.index))
         squads[team.index] = values
         for index in values:
             _require(index < primary.count, f'team {team.index}: reserve index outside primary pool')
@@ -324,7 +341,7 @@ def reserve_transaction(payload: bytes, team_index: int, primary_index: int, *, 
     """
     from .nfl2k5_save_rost import decode
     doc = decode(payload)
-    _require(doc.layout.version == 0, 'reserve moves require a signed-save copy')
+    _require(doc.layout.version in (0, 1), 'reserve moves require a signed-save copy')
     squads = validate_save(payload, strict_storage=True)
     _require(type(team_index) is int and 0 <= team_index < min(32, len(doc.teams)), 'select an NFL team')
     player = doc.by_key.get(('primary', primary_index))
@@ -343,15 +360,17 @@ def reserve_transaction(payload: bytes, team_index: int, primary_index: int, *, 
         active.append(primary_index)
     else:
         _require(active.count(primary_index) == 1, 'player is not active on this team')
-        _require(len(reserves) < RESERVE_LIMIT, 'practice squad is full (12 players)')
+        limit = doc.overflow.limit(team_index) if doc.overflow is not None else RESERVE_LIMIT
+        _require(len(reserves) < limit, f'practice squad is full ({limit} players)')
         removed_slot = active.index(primary_index)
         active.remove(primary_index)
         reserves.append(primary_index)
     out = bytearray(payload)
-    pool = doc.tables['primary']
-    out[team.offset:team.offset+TEAM_SIZE] = repack_team(
-        payload[team.offset:team.offset+TEAM_SIZE], active, reserves,
-        team_offset=team.offset, player_pool_offset=pool.offset, player_count=pool.count)
+    from . import nfl2k5_roster_arena as arena
+    try:
+        arena.repack(out, doc, team_index, active, reserves)
+    except arena.ArenaError as exc:
+        raise PracticeSquadError(str(exc)) from exc
     if not promote:
         out[player.offset + 0x25] &= 0x1f       # C3A90 removal flags 0xE000
         out[player.offset + 0x52] &= ~0x1f     # composed persistent-lock removal
@@ -455,13 +474,21 @@ def _state(payload: bytes, site: Site, sections) -> str:
     return 'retail' if hashlib.sha256(got).hexdigest() == site.digest else 'foreign'
 
 
-def status(xbe: bytes) -> str:
+def _base_status(xbe: bytes) -> str:
     """retail/applied/foreign; partial patches and malformed images fail closed."""
     try:
         sections = _sections(xbe)
         states = {_state(xbe, site, sections) for site in sites()}
         return states.pop() if len(states) == 1 else 'foreign'
     except (ValueError, struct.error, IndexError):
+        return 'foreign'
+
+
+def status(xbe: bytes) -> str:
+    from . import nfl2k5_roster_arena_growth as growth
+    try:
+        return _base_status(growth.project(xbe))
+    except (ValueError, KeyError, TypeError, struct.error, IndexError, StopIteration):
         return 'foreign'
 
 

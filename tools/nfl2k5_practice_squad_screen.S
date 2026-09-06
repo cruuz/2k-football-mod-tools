@@ -115,6 +115,50 @@ one:
  mov eax, 1
  ret
 
+/* EAX team, EDX combined index. Preserve all other registers. The persistent
+ * overflow uses primary indices, never saved RAM pointers. */
+slot:
+ push ebx
+ push ecx
+ push edx
+ cmp edx, 65
+ jb slot_native
+ cmp edx, 70
+ jae slot_bad
+ mov ebx, DWORD PTR [0xb72918]
+ test ebx, ebx
+ jz slot_bad
+ cmp DWORD PTR [ebx+0x91c00], 0x52354b32
+ jne slot_bad
+ sub eax, DWORD PTR [ebx+0x1c]
+ jc slot_bad
+ xor edx, edx
+ mov ecx, 500
+ div ecx
+ test edx, edx
+ jnz slot_bad
+ cmp eax, 32
+ jae slot_bad
+ imul eax, eax, 10
+ mov edx, DWORD PTR [esp]
+ lea eax, [ebx+eax+0x91c20-130]
+ movzx eax, WORD PTR [eax+edx*2]
+ cmp eax, DWORD PTR [ebx]
+ jae slot_bad
+ imul eax, eax, 84
+ add eax, DWORD PTR [ebx+4]
+ jmp slot_done
+slot_native:
+ mov eax, DWORD PTR [eax+edx*4]
+ jmp slot_done
+slot_bad:
+ xor eax, eax
+slot_done:
+ pop edx
+ pop ecx
+ pop ebx
+ ret
+
 row:
  push ecx
  call context
@@ -199,7 +243,20 @@ owned_start:
 owned_slots:
  cmp ecx, eax
  jae owned_next
+ cmp ecx, 65
+ jae owned_extra
  cmp DWORD PTR [edx+ecx*4], ebp
+ jmp owned_compare
+owned_extra:
+ push eax
+ push edx
+ mov eax, edx
+ mov edx, ecx
+ call slot
+ cmp eax, ebp
+ pop edx
+ pop eax
+owned_compare:
  jne owned_step
  cmp edx, esi
  jne owned_bad_pop
@@ -272,15 +329,17 @@ count_ready:
  /* Validate every exposed row before allocating a list of that count. */
  mov edi, eax
  xor ecx, ecx
- mov edx, esi
- test ebx, ebx
- jz count_loop
- movzx eax, BYTE PTR [esi+0x11c]
- lea edx, [esi+eax*4]
 count_loop:
  cmp ecx, edi
  jae count_good
- mov eax, DWORD PTR [edx+ecx*4]
+ mov edx, ecx
+ test ebx, ebx
+ jz count_slot
+ movzx eax, BYTE PTR [esi+0x11c]
+ add edx, eax
+count_slot:
+ mov eax, esi
+ call slot
  call owned
  test eax, eax
  jz count_bad
@@ -334,7 +393,9 @@ get_reserve:
  movzx eax, BYTE PTR [esi+0x11c]
  add edi, eax
 get_slot:
- mov eax, DWORD PTR [esi+edi*4]
+ mov eax, esi
+ mov edx, edi
+ call slot
  call owned
  jmp get_done
 get_bad:
@@ -466,7 +527,9 @@ action_check:
 check_slots:
  cmp edx, ecx
  jae check_bad
- cmp DWORD PTR [esi+edx*4], ebx
+ mov eax, esi
+ call slot
+ cmp eax, ebx
  je check_good
  inc edx
  jmp check_slots

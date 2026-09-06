@@ -85,6 +85,8 @@ def sites() -> list[tuple[str, int, bytes, bytes]]:
 
 def status(payload: bytes) -> str:
     try:
+        from . import nfl2k5_roster_arena_growth as growth
+        normalized = growth.project(payload)
         at = rdata.offset_of(payload, COPY_PLAYERS_VA)
         actual = payload[at:at + len(RETAIL_COPY_PLAYERS)]
         if actual != RETAIL_COPY_PLAYERS:
@@ -94,7 +96,8 @@ def status(payload: bytes) -> str:
             if (actual[6:] != RETAIL_COPY_PLAYERS[6:] or
                     career.status(payload) != "applied"):
                 return "foreign"
-        state = rdata.status(payload, sites())
+        # the grown roster arena projects its overflow block away before the retail-site check
+        state = rdata.status(normalized, sites())
         if state == "applied" and (ps.status(payload) != "applied" or fp.status(payload) != "applied"):
             return "foreign"
         return state
@@ -107,6 +110,9 @@ def apply(payload: bytes) -> tuple[bytes, dict[str, object]]:
         raise PracticeReservesError("apply practice squads and Franchise Practice first")
     if status(payload) == "foreign":
         raise PracticeReservesError("foreign practice staging routine or player-copy helper")
+    from . import nfl2k5_roster_arena_growth as growth
+    if growth.status(payload) == 'applied':
+        return payload, {'already_applied': True, 'changed_bytes': 0, 'overflow_projection': True}
     try:
         patched, receipt = rdata.apply(payload, sites(), "Practice reserves")
     except rdata.RdataSiteError as exc:

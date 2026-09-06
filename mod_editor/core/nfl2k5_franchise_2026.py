@@ -315,16 +315,18 @@ class RuleState:
         self._team(team, v)
         return True
 
-    def activate(self, team, player, day, *, medically_clear, active_count, reserve_count):
+    def activate(self, team, player, day, *, medically_clear, active_count, reserve_count,
+                 reserve_limit=12, combined_limit=65):
         _integer(day, 0, 511, "day")
         _integer(active_count, 0, 65, "active count")
-        _integer(reserve_count, 0, 12, "reserve count")
+        _require((reserve_limit, combined_limit) in ((12, 65), (12, 70), (16, 70), (17, 70)), "invalid roster limits")
+        _integer(reserve_count, 0, reserve_limit, "reserve count")
         entries, i, e = self._find(team, player)
         v = self.team(team)
         _require(v[5] == EMPTY and day >= v[8], "pending game or date moved backwards")
         _require(e.flags & PRACTICE and day < e.expiry and v[1] - e.entry_games >= 4, "IR return window is not open")
         _require(medically_clear is True, "medical clearance required")
-        _require(active_count < 53 and active_count + reserve_count < 65, "no legal active roster slot")
+        _require(active_count < 53 and active_count + reserve_count < combined_limit, "no legal active roster slot")
         used, returns = self.history(player)
         _require(returns < 2, "player return limit reached")
         self._history(player, used, returns + 1)
@@ -385,7 +387,7 @@ class Candidate:
     available: bool = True
 
 
-def select_game_day(active, reserves=(), elevations=(), previous=(), special=()):
+def select_game_day(active, reserves=(), elevations=(), previous=(), special=(), *, reserve_limit=12, combined_limit=65):
     """R1: deterministic identity list; no ownership, injury or contract writes.
 
     First cover primary positions and requested special roles, secure eight OL
@@ -394,7 +396,8 @@ def select_game_day(active, reserves=(), elevations=(), previous=(), special=())
     """
     active, reserves, elevations = tuple(active), tuple(reserves), tuple(elevations)
     previous, special = tuple(previous), tuple(special)
-    _require(len(active) <= 53 and len(reserves) <= 12 and len(active) + len(reserves) <= 65, "ownership capacity exceeded")
+    _require((reserve_limit, combined_limit) in ((12, 65), (12, 70), (16, 70), (17, 70)), "invalid roster limits")
+    _require(len(active) <= 53 and len(reserves) <= reserve_limit and len(active) + len(reserves) <= combined_limit, "ownership capacity exceeded")
     _require(len(elevations) <= 2 and len(set(elevations)) == len(elevations), "at most two unique elevations")
     all_players = active + reserves
     _require(len({p.player for p in all_players}) == len(all_players), "duplicate player ownership")
@@ -515,13 +518,18 @@ class HostSession:
             save.place_on_injured_reserve(team, player, legacy_marker=False)
         return self._transaction(operation)
 
+    def _roster_limits(self, team):
+        block = self.save.roster.overflow
+        return dict(reserve_limit=block.limit(team), combined_limit=70) if block is not None and team < 32 else {}
+
     def activate_ir(self, team, player, day):
         def operation(save, state):
             count, _ = save._team_slots(team)
             reserves = save._validate_ownership()[team]
             off = save.player_offset(player)
             clear = not struct.unpack_from("<I", save.buffer, off + 0x24)[0] & 0x70000000
-            state.activate(team, player, day, medically_clear=clear, active_count=count, reserve_count=len(reserves))
+            state.activate(team, player, day, medically_clear=clear, active_count=count, reserve_count=len(reserves),
+                           **self._roster_limits(team))
             save.activate_from_injured_reserve(team, player, clear_legacy_marker=False)
         return self._transaction(operation)
 
@@ -547,7 +555,8 @@ class HostSession:
                              max(buf[off + 0x36:off + 0x52]),
                              bool(buf[off + 8] & 4) and not bool(buf[off + 8] & 0x18)
                              and not bool(struct.unpack_from("<I", buf, off + 0x24)[0] & 0x70000000))
-        selected = select_game_day([candidate(p) for p in active], [candidate(p) for p in reserves], elevations)
+        selected = select_game_day([candidate(p) for p in active], [candidate(p) for p in reserves], elevations,
+                                   **self._roster_limits(team))
         phase = self.save.header.stage
         _require(phase in (8, 9), "game preparation is only for regular/postseason games")
         trial = self.state.copy()

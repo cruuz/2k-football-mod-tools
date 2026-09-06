@@ -9,6 +9,8 @@ import hashlib
 import os
 import struct
 import unittest
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from mod_editor.core import nfl2k5_practice_squad as ps
 
