@@ -694,6 +694,95 @@ def write_recipe(path: str, catalog_sha: str, edits: Sequence[Tuple[str, Sequenc
         handle.write(cat.canonical_json(document))
 
 
+# ---------------------------------------------------------------------------
+# Self-test scaffolding
+# ---------------------------------------------------------------------------
+# These helpers, and the claims below that use them, used to live in
+# tests/mod_editor/test_nfl2k5_ps2_stadium_position.py.  The release stage does
+# not carry tests/, so a validator that ran ``python -m unittest`` could not
+# prove any of this in a shipped tree.  Nothing here reads game data.
+
+def _selftest_disc(root: str, name: str = "source.iso", **kwargs) -> dict:
+    """A synthetic source ISO plus the catalogue that authorises it."""
+    source = os.path.join(root, name)
+    with open(source, "wb") as handle:
+        handle.write(build_synthetic_disc(**kwargs))
+    document = cat.catalog(source, [(0, None)], False, None, True)
+    catalog_path = os.path.join(root, name + ".catalog.json")
+    with open(catalog_path, "wb") as handle:
+        handle.write(cat.canonical_json(document))
+    return {"source": source, "catalog": catalog_path, "document": document,
+            "sha256": load_catalog(catalog_path)["sha256"],
+            "targets": document["targets"]}
+
+
+def _selftest_moved(target, delta: float = 1.0):
+    count = target["position"]["vertex_count"]
+    return [(11.0 + index * delta, 21.0, 29.0 - index * delta)
+            for index in range(count)]
+
+
+def _selftest_decode_scene(iso_path: str, verifier) -> bytes:
+    """The scene's decoded bytes, read without going through the writer."""
+    layout = verifier.read_iso_packs(iso_path)
+    with open(iso_path, "rb") as handle:
+        table = verifier.read_outer_table(handle, layout["packs"])
+        base = table[0][2] * verifier.ALIGNMENT
+        header = verifier._virtual_read(handle, layout["packs"], base,
+                                        verifier.CHUNK_HEADER)
+        stored, system_bytes, video_bytes = struct.unpack_from("<3I", header, 4)
+        body = verifier._virtual_read(handle, layout["packs"],
+                                      base + verifier.CHUNK_HEADER, stored)
+    decoded, _consumed = verifier.decompress(body, system_bytes + video_bytes)
+    return decoded
+
+
+def _selftest_chunk_offset(iso_path: str, identity: dict, verifier) -> int:
+    layout = verifier.read_iso_packs(iso_path)
+    with open(iso_path, "rb") as handle:
+        table = verifier.read_outer_table(handle, layout["packs"])
+    base = table[identity["entry_index"]][2] * verifier.ALIGNMENT
+    return layout["packs"][0]["byte_offset"] + base + identity["chunk_offset"]
+
+
+def _selftest_forge(disc: dict, recipe_path: str, destination: str,
+                    extra_decoded_offset: int, verifier) -> str:
+    """The image a broken writer would produce, built without the writer.
+
+    The recipe's coordinates go into the declared lanes and one further decoded
+    byte is flipped; the whole scene is then recompressed into the same fixed
+    span with the same wrapper and spliced into a copy of the source.  The
+    container stays perfectly well formed -- only the containment claim is
+    false, which is the one thing the verifier is for.
+    """
+    loaded = load_catalog(disc["catalog"])
+    parsed = load_recipe(recipe_path, loaded)
+    decoded = bytearray(_selftest_decode_scene(disc["source"], verifier))
+    for edit in parsed["edits"]:
+        start = edit["row"]["position"]["payload"]["offset"]
+        for vertex, triple in enumerate(edit["positions"]):
+            struct.pack_into("<3f", decoded, start + vertex * 16, *triple)
+    decoded[extra_decoded_offset] ^= 0xFF
+
+    offset = _selftest_chunk_offset(disc["source"], parsed["identity"], verifier)
+    with open(disc["source"], "rb") as handle:
+        handle.seek(offset)
+        header = handle.read(verifier.CHUNK_HEADER)
+        stored = struct.unpack_from("<I", header, 4)[0]
+        handle.seek(offset)
+        span = handle.read(verifier.CHUNK_HEADER + stored)
+    rebuilt, _info = vclz.rebuild_fixed_span_filled(span, bytes(decoded),
+                                                    encoder="auto")
+    _require(len(rebuilt) == len(span), "the forged span changed length")
+    _require(rebuilt[:verifier.CHUNK_HEADER] == span[:verifier.CHUNK_HEADER],
+             "the forged wrapper changed")
+    shutil.copyfile(disc["source"], destination)
+    with open(destination, "r+b") as handle:
+        handle.seek(offset)
+        handle.write(rebuilt)
+    return destination
+
+
 def selftest(tmp: Optional[str] = None) -> int:
     import nfl2k5_ps2_stadium_position_verify as verifier
 
@@ -733,12 +822,248 @@ def selftest(tmp: Optional[str] = None) -> int:
     check(result["verdict"] == "pass", "verifier verdict %r" % result["verdict"])
     check(result["decoded"]["changed_bytes"] > 0, "verifier saw no change")
 
+    # -- the verifier must be able to fail --------------------------------
+    disc = _selftest_disc(root, "disc.iso")
+    first = disc["targets"][0]
+    recipe_path = os.path.join(root, "disc-recipe.json")
+    write_recipe(recipe_path, disc["sha256"],
+                 [(first["target_id"], _selftest_moved(first))])
+    honest = os.path.join(root, "honest.iso")
+    patch(disc["source"], disc["catalog"], recipe_path, honest)
+    check(verifier.verify(disc["source"], honest, disc["catalog"],
+                          recipe_path)["verdict"] == "pass",
+          "the honest image did not verify")
+
+    # -- the catalogue is a map of editable capacity, not a copy of the
+    #    geometry, and both walkers read the same scene ---------------------
+    summary = disc["document"]["summary"]
+    check((summary["scenes"], summary["shapes"], summary["batches"],
+           summary["target_count"]) == (1, 1, 2, 2),
+          "catalogue summary %r" % (summary,))
+    check([t["position"]["vertex_count"] for t in disc["targets"]] == [4, 6],
+          "catalogued vertex counts")
+    common = disc["document"]["target_common"]
+    check(common["position_encoding"] == "vif_unpack_v4_32", "position encoding")
+    check(common["element_stride"] == 16 and common["lane_size"] == 12,
+          "lane geometry")
+    check(common["w_component_preserved"], "the w component is not preserved")
+    check(not common["eligibility"]["runtime_visibility_proved"],
+          "runtime visibility was claimed and nothing here can prove it")
+    for target in disc["targets"]:
+        check(target["eligible"], "a synthetic target was refused")
+        check(target["max_distance_over_radius"] <= 1.0001,
+              "a target left its bounding sphere")
+    with open(disc["catalog"], "r", encoding="utf-8") as handle:
+        catalog_text = handle.read()
+    check("positions" not in catalog_text, "the catalogue emitted coordinates")
+    policy = disc["document"]["data_policy"]
+    check(not policy["contains_retail_geometry_or_pixel_bytes"],
+          "the catalogue declares it carries geometry")
+    check(not policy["contains_position_values"],
+          "the catalogue declares it carries positions")
+
+    scene_bytes = _selftest_decode_scene(disc["source"], verifier)
+    system_bytes = disc["document"]["scenes"][0]["identity"]["system_bytes"]
+    for target in disc["targets"]:
+        address = verifier._parse_target_id(target["target_id"])
+        found = verifier.scene_lanes(scene_bytes[:system_bytes],
+                                     address["s"], address["b"])[address["l"]]["lane"]
+        check(found["num"] == target["position"]["vertex_count"]
+              and found["data_offset"] == target["position"]["payload"]["offset"]
+              and found["data_bytes"] == target["position"]["payload"]["size"],
+              "the writer's and the verifier's walkers disagree on %s"
+              % target["target_id"])
+
+    def refuses(call, pattern, why, output=None):
+        try:
+            call()
+        except PatchError as exc:
+            check(pattern in str(exc),
+                  "refusal for %s said %r" % (why, str(exc)))
+        except verifier.VerifyError as exc:
+            check(pattern in str(exc),
+                  "refusal for %s said %r" % (why, str(exc)))
+        else:
+            failures.append("accepted: %s" % why)
+        if output is not None:
+            check(not os.path.exists(output),
+                  "%s left an output image behind" % why)
+
+    # The fourth component of vertex 0 is inside the payload and outside every
+    # declared 12-byte lane; the byte before the payload is outside it
+    # altogether.  The writer carries both over untouched, so a verifier that
+    # cannot see them changed is a rubber stamp.
+    payload = first["position"]["payload"]
+    for extra in (payload["offset"] + 12, payload["offset"] - 4):
+        forged = _selftest_forge(disc, recipe_path,
+                                 os.path.join(root, "forged%d.iso" % extra),
+                                 extra, verifier)
+        refuses(lambda path=forged: verifier.verify(disc["source"], path,
+                                                    disc["catalog"], recipe_path),
+                "", "a decoded byte changed outside the declared lanes")
+
+    outside = os.path.join(root, "outside.iso")
+    shutil.copyfile(honest, outside)
+    layout = verifier.read_iso_packs(outside)
+    stray = layout["packs"][0]["byte_offset"] + layout["packs"][0]["length"] - 1
+    with open(outside, "r+b") as handle:
+        handle.seek(stray)
+        original = handle.read(1)
+        handle.seek(stray)
+        handle.write(bytes([original[0] ^ 0xFF]))
+    refuses(lambda: verifier.verify(disc["source"], outside, disc["catalog"],
+                                    recipe_path),
+            "outside the declared", "a byte changed outside the chunk span")
+
+    scratch_image = os.path.join(root, "scratch.iso")
+    shutil.copyfile(honest, scratch_image)
+    identity = disc["document"]["scenes"][first["scene_index"]]["identity"]
+    wrapper = _selftest_chunk_offset(scratch_image, identity, verifier)
+    with open(scratch_image, "r+b") as handle:
+        handle.seek(wrapper + 0x14)
+        handle.write(struct.pack("<I", 0xB0))
+    refuses(lambda: verifier.verify(disc["source"], scratch_image,
+                                    disc["catalog"], recipe_path),
+            "wrapper changed", "a moved +0x14 scratch word")
+
+    # -- the writer must refuse, and leave nothing behind ------------------
+    never = os.path.join(root, "never.iso")
+
+    for label, positions in (
+            ("a vertex count one short", _selftest_moved(first)[:-1]),
+            ("a vertex count one long",
+             _selftest_moved(first) + [(1.0, 2.0, 3.0)])):
+        path = os.path.join(root, "count.json")
+        write_recipe(path, disc["sha256"], [(first["target_id"], positions)])
+        refuses(lambda p=path: patch(disc["source"], disc["catalog"], p, never),
+                "exactly", label, never)
+
+    inexact = _selftest_moved(first)
+    inexact[0] = (0.1, 21.0, 29.0)              # not representable in binary32
+    path = os.path.join(root, "inexact.json")
+    write_recipe(path, disc["sha256"], [(first["target_id"], inexact)])
+    refuses(lambda: patch(disc["source"], disc["catalog"], path, never),
+            "binary32", "an inexact binary32 coordinate", never)
+
+    path = os.path.join(root, "unknown.json")
+    write_recipe(path, disc["sha256"],
+                 [("nfl2k5ps2/stadium/e0/c0/s0/b9/l0", [(1.0, 2.0, 3.0)])])
+    refuses(lambda: patch(disc["source"], disc["catalog"], path, never),
+            "not authorised", "a target the catalogue does not authorise", never)
+
+    path = os.path.join(root, "wrongpin.json")
+    write_recipe(path, "0" * 64, [(first["target_id"], _selftest_moved(first))])
+    refuses(lambda: patch(disc["source"], disc["catalog"], path, never),
+            "different catalog", "a recipe pinned to another catalogue", never)
+
+    taken = os.path.join(root, "taken.iso")
+    with open(taken, "wb") as handle:
+        handle.write(b"already here")
+    refuses(lambda: patch(disc["source"], disc["catalog"], recipe_path, taken),
+            "existing output", "an output image that already exists")
+    with open(taken, "rb") as handle:
+        check(handle.read() == b"already here",
+              "an existing output image was overwritten")
+
+    # Two edits in one recipe may not span two SCNE chunks: the catalogue is
+    # forged to declare a second scene so the refusal can be reached at all.
+    with open(disc["catalog"], "r", encoding="utf-8") as handle:
+        forged_document = json.load(handle)
+    second_scene = json.loads(json.dumps(forged_document["scenes"][0]))
+    second_scene["scene_index"] = 1
+    second_scene["identity"] = dict(second_scene["identity"], entry_index=1)
+    forged_document["scenes"].append(second_scene)
+    second = json.loads(json.dumps(forged_document["targets"][1]))
+    second["target_id"] = "nfl2k5ps2/stadium/e1/c0/s0/b0/l0"
+    second["scene_index"] = 1
+    forged_document["targets"].append(second)
+    forged_catalog = os.path.join(root, "forged-catalog.json")
+    with open(forged_catalog, "wb") as handle:
+        handle.write(cat.canonical_json(forged_document))
+    path = os.path.join(root, "twoscenes.json")
+    write_recipe(path, load_catalog(forged_catalog)["sha256"],
+                 [(first["target_id"], _selftest_moved(first)),
+                  (second["target_id"], _selftest_moved(second))])
+    refuses(lambda: patch(disc["source"], forged_catalog, path, never),
+            "different SCNE chunk", "edits spanning two scenes", never)
+
+    # The stored body has no spare bytes and every vertex is identical, so
+    # making them all distinct forces the stream past a body that had nothing
+    # spare.  The writer must refuse before the destination exists.
+    tight = _selftest_disc(root, "tight.iso", vertex_counts=(64,),
+                           slack_bytes=0, scratch=16, uniform_positions=True)
+    tight_target = tight["targets"][0]
+    grown = [(1000.0 + index * 3.0, 2000.0 - index * 7.0, 3000.0 + index * 11.0)
+             for index in range(tight_target["position"]["vertex_count"])]
+    path = os.path.join(root, "overflow.json")
+    write_recipe(path, tight["sha256"], [(tight_target["target_id"], grown)])
+    overflow = os.path.join(root, "overflow.iso")
+    refuses(lambda: patch(tight["source"], tight["catalog"], path, overflow),
+            "stored body", "a recompression that does not fit", overflow)
+
+    # -- two lanes, a straddled chunk, and a no-op --------------------------
+    both = os.path.join(root, "both.json")
+    write_recipe(both, disc["sha256"],
+                 [(target["target_id"], _selftest_moved(target, 0.5))
+                  for target in disc["targets"]])
+    both_output = os.path.join(root, "both.iso")
+    both_report = patch(disc["source"], disc["catalog"], both, both_output)
+    check(len(both_report["edits"]) == 2, "two lanes in one recipe")
+    both_result = verifier.verify(disc["source"], both_output, disc["catalog"],
+                                  both)
+    check(both_result["verdict"] == "pass", "two-lane verdict")
+    check(sum(lane["vertex_count"] for lane in both_result["lanes"]) == 10,
+          "two-lane vertex total")
+
+    # A resource may begin in one pack file and end in the next, so the writer
+    # builds two replacement files for one edit and the verifier reads across
+    # the seam.
+    straddle = _selftest_disc(root, "straddle.iso", split_packs=True,
+                              scratch=4096, slack_bytes=256)
+    check(len(verifier.read_iso_packs(straddle["source"])["packs"]) == 2,
+          "the straddling fixture has one pack")
+    straddle_target = straddle["targets"][0]
+    path = os.path.join(root, "straddle.json")
+    write_recipe(path, straddle["sha256"],
+                 [(straddle_target["target_id"], _selftest_moved(straddle_target))])
+    straddle_output = os.path.join(root, "straddle-out.iso")
+    straddle_report = patch(straddle["source"], straddle["catalog"], path,
+                            straddle_output)
+    check([pack["iso_path"] for pack in straddle_report["packs"]]
+          == ["/VC_20919/0.", "/VC_20919/1."], "the straddled edit used one pack")
+    check(straddle_report["scene"]["span_size"]
+          == sum(pack["bytes_spliced"] for pack in straddle_report["packs"]),
+          "the straddled splice lost bytes")
+    straddle_result = verifier.verify(straddle["source"], straddle_output,
+                                      straddle["catalog"], path)
+    check(straddle_result["verdict"] == "pass", "straddled verdict")
+    check([window["pack"]
+           for window in straddle_result["chunk"]["physical_windows"]] == ["0", "1"],
+          "the verifier did not read across the seam")
+
+    # A recipe asking for exactly what is already there reproduces the source.
+    scene = _selftest_decode_scene(disc["source"], verifier)
+    current = [struct.unpack_from("<3f", scene, payload["offset"] + index * 16)
+               for index in range(first["position"]["vertex_count"])]
+    path = os.path.join(root, "noop.json")
+    write_recipe(path, disc["sha256"], [(first["target_id"], current)])
+    noop_output = os.path.join(root, "noop.iso")
+    noop_report = patch(disc["source"], disc["catalog"], path, noop_output)
+    check(noop_report["compression"]["mode"] == "no_op", "a no-op was patched")
+    with open(disc["source"], "rb") as a, open(noop_output, "rb") as b:
+        check(a.read() == b.read(), "a no-op recipe changed the image")
+    noop_result = verifier.verify(disc["source"], noop_output, disc["catalog"],
+                                  path)
+    check(noop_result["mode"] == "no_op", "no-op verdict mode")
+    check(noop_result["image"]["changed_bytes"] == 0, "no-op changed bytes")
+
     for failure in failures:
         sys.stderr.write("FAIL: %s\n" % failure)
     if failures:
         return 1
     print("NFL2K5_PS2_STADIUM_POSITION_PATCH_SELFTEST_PASS targets=%d vertices=%d "
-          "image_changed=%d wrapper_identical=true"
+          "image_changed=%d wrapper_identical=true refusals=9 "
+          "verifier_failures_forced=4 packs_straddled=2 no_op_byte_identical=true"
           % (document["summary"]["target_count"], count,
              result["image"]["changed_bytes"]))
     return 0

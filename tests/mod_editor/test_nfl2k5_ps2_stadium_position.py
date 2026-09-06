@@ -40,18 +40,21 @@ def _write(path: Path, payload: bytes) -> Path:
 
 
 class _Disc:
-    """A synthetic source ISO plus its catalogue, in a scratch directory."""
+    """A synthetic source ISO plus its catalogue, in a scratch directory.
+
+    The builder is the tool's own (``_selftest_disc``): the lane's validator
+    has to prove itself in a shipped tree, where ``tests/`` does not exist, so
+    the fixture lives with the tool and these tests drive the same one.
+    """
 
     def __init__(self, root: Path, **kwargs) -> None:
         self.root = root
-        self.source = _write(root / "source.iso",
-                             patcher.build_synthetic_disc(**kwargs))
-        self.document = catalog_tool.catalog(str(self.source), [(0, None)],
-                                             False, None, True)
-        self.catalog = _write(root / "catalog.json",
-                              catalog_tool.canonical_json(self.document))
-        self.catalog_sha = patcher.load_catalog(str(self.catalog))["sha256"]
-        self.targets = self.document["targets"]
+        built = patcher._selftest_disc(str(root), **kwargs)
+        self.source = Path(built["source"])
+        self.document = built["document"]
+        self.catalog = Path(built["catalog"])
+        self.catalog_sha = built["sha256"]
+        self.targets = built["targets"]
 
     def recipe(self, name: str, edits) -> Path:
         path = self.root / name
@@ -59,9 +62,7 @@ class _Disc:
         return path
 
     def moved(self, target, delta: float = 1.0):
-        count = target["position"]["vertex_count"]
-        return [(11.0 + index * delta, 21.0, 29.0 - index * delta)
-                for index in range(count)]
+        return patcher._selftest_moved(target, delta)
 
 
 class Ps2StadiumPositionTests(unittest.TestCase):
@@ -414,66 +415,18 @@ class Ps2StadiumPositionTests(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 def _decode_scene(iso_path: Path) -> bytes:
-    layout = verifier.read_iso_packs(str(iso_path))
-    with open(iso_path, "rb") as handle:
-        table = verifier.read_outer_table(handle, layout["packs"])
-        base = table[0][2] * verifier.ALIGNMENT
-        header = verifier._virtual_read(handle, layout["packs"], base,
-                                        verifier.CHUNK_HEADER)
-        stored, system_bytes, video_bytes = struct.unpack_from("<3I", header, 4)
-        body = verifier._virtual_read(handle, layout["packs"],
-                                      base + verifier.CHUNK_HEADER, stored)
-    decoded, _consumed = verifier.decompress(body, system_bytes + video_bytes)
-    return decoded
+    return patcher._selftest_decode_scene(str(iso_path), verifier)
 
 
 def _chunk_image_offset(iso_path: Path, identity: dict) -> int:
-    """The absolute byte offset of a chunk's fixed span inside the image."""
-    layout = verifier.read_iso_packs(str(iso_path))
-    with open(iso_path, "rb") as handle:
-        table = verifier.read_outer_table(handle, layout["packs"])
-    base = table[identity["entry_index"]][2] * verifier.ALIGNMENT
-    return (layout["packs"][0]["byte_offset"] + base + identity["chunk_offset"])
+    return patcher._selftest_chunk_offset(str(iso_path), identity, verifier)
 
 
 def _forge_image(disc: "_Disc", recipe: Path, destination: Path,
                  extra_decoded_offset: int) -> Path:
-    """Build the image a broken writer would produce, bypassing the writer.
-
-    The recipe's coordinates go into the declared lanes and one further
-    decoded byte is flipped, then the whole scene is recompressed into the
-    same fixed span with the same wrapper and spliced into a copy of the
-    source. The container stays perfectly well formed.
-    """
-    import nfl_vc_lz_fill as vclz
-    import nfl_txtr as txtr
-
-    loaded = patcher.load_catalog(str(disc.catalog))
-    parsed = patcher.load_recipe(str(recipe), loaded)
-    decoded = bytearray(_decode_scene(disc.source))
-    for edit in parsed["edits"]:
-        start = edit["row"]["position"]["payload"]["offset"]
-        for vertex, triple in enumerate(edit["positions"]):
-            struct.pack_into("<3f", decoded, start + vertex * 16, *triple)
-    decoded[extra_decoded_offset] ^= 0xFF
-
-    identity = parsed["identity"]
-    offset = _chunk_image_offset(disc.source, identity)
-    with open(disc.source, "rb") as handle:
-        handle.seek(offset)
-        header = handle.read(verifier.CHUNK_HEADER)
-        stored = struct.unpack_from("<I", header, 4)[0]
-        handle.seek(offset)
-        span = handle.read(verifier.CHUNK_HEADER + stored)
-    rebuilt, _info = vclz.rebuild_fixed_span_filled(span, bytes(decoded),
-                                                    encoder="auto")
-    assert len(rebuilt) == len(span)
-    assert rebuilt[:verifier.CHUNK_HEADER] == span[:verifier.CHUNK_HEADER]
-    shutil.copyfile(disc.source, destination)
-    with open(destination, "r+b") as handle:
-        handle.seek(offset)
-        handle.write(rebuilt)
-    return destination
+    return Path(patcher._selftest_forge(
+        {"source": str(disc.source), "catalog": str(disc.catalog)},
+        str(recipe), str(destination), extra_decoded_offset, verifier))
 
 
 if __name__ == "__main__":
