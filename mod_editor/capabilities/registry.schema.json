@@ -158,6 +158,7 @@
           "enum": [
             "apf2k8_xbox360",
             "madden09_ps2",
+            "ncaa09_ps2",
             "nfl2k5_ps2",
             "nfl2k5_xbox"
           ]
@@ -260,6 +261,7 @@
           "enum": [
             "apf2k8_xbox360",
             "madden09_ps2",
+            "ncaa09_ps2",
             "nfl2k5_ps2",
             "nfl2k5_xbox"
           ]

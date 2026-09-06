@@ -587,3 +587,28 @@ mod_editor/games/_formats/xxhash3_64.py
 mod_editor/games/_formats/pcsx2_texture_name.py
 # madden09_ps2: shipped by the game module (mod_editor/games/madden09_ps2/allowlist.fragment.txt).
 docs/product/measured/madden09_ps2/pcsx2-texture-identity-derivation.json
+# ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
+docs/product/measured/ncaa09_ps2/tdb-schema.json
+mod_editor/games/ncaa09_ps2/allowlist.fragment.txt
+mod_editor/games/ncaa09_ps2/audio_lane.py
+mod_editor/games/ncaa09_ps2/containers.py
+mod_editor/games/ncaa09_ps2/database_lane.py
+mod_editor/games/ncaa09_ps2/disc_identity.py
+mod_editor/games/ncaa09_ps2/game.json
+mod_editor/games/ncaa09_ps2/__init__.py
+mod_editor/games/ncaa09_ps2/inventory_lane.py
+mod_editor/games/ncaa09_ps2/__main__.py
+mod_editor/games/ncaa09_ps2/pins.json
+mod_editor/games/ncaa09_ps2/registry.fragment.json
+mod_editor/games/ncaa09_ps2/text_lane.py
+mod_editor/games/ncaa09_ps2/texture_lane.py
+tools/validate_ncaa09_ps2_audio.bat
+tools/validate_ncaa09_ps2_audio.sh
+tools/validate_ncaa09_ps2_databases.bat
+tools/validate_ncaa09_ps2_databases.sh
+tools/validate_ncaa09_ps2_inventory.bat
+tools/validate_ncaa09_ps2_inventory.sh
+tools/validate_ncaa09_ps2_text.bat
+tools/validate_ncaa09_ps2_text.sh
+tools/validate_ncaa09_ps2_textures.bat
+tools/validate_ncaa09_ps2_textures.sh

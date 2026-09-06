@@ -1,0 +1,474 @@
+{
+  "capabilities": [
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.ncaa09_ps2.audio_lane --source <SLUS-21752.iso> [--out <catalogue.json>] [--selftest]",
+        "module": "mod_editor/games/ncaa09_ps2/audio_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
+        "tests/mod_editor/test_ncaa09_ps2_module.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Audio page of the PS2 NCAA 09 Studio with Export WAV and no import: the page states, in the row's own words, that a bank sound is not replaced here and why."
+      },
+      "id": "ncaa09ps2.audio.banks",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and memory-mapped read-only; an export writes only where the user asks and never touches the source.",
+        "A raw-CD image is refused by name: the memory map needs the 2048-byte sector layout every PlayStation 2 DVD uses.",
+        "The catalogue carries offsets, lengths, rates and channel counts -- never a sample.",
+        "A sound that declares no length or no sample rate is listed and refused, rather than exported at a rate nobody measured.",
+        "No writer: check_edit refuses every value, because there is nothing this lane accepts to write.",
+        "Bounded: at most 3,000 sound rows are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "Establish which tag the 460 rateless sounds carry a rate in, and they become exportable too.",
+        "A same-length replacement writer needs a container writer for this disc and the three QL01 preload caches kept in step with it.",
+        "Join a bank to the event that plays it. SOUNDDAT.DAT names none of its members."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter writes local WAVs and no path writes anything into the game or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<bank member>:<sound>, as the catalogue writes it",
+            "name": "sound",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "Export writes one WAV per selected sound. There is no import: the row's own sentence says why."
+      },
+      "source_container": {
+        "format": "EA BNKl bank: a directory of sound entries, each an SCHl-shaped header and a run of PlayStation ADPCM, inside a stored TERF member",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "728 banks, 1,213 sounds, 753 with both a length and a rate",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Catalogue every EA BNKl sound bank on a user's SLUS-21752 ISO and export its sounds as WAV. Measured on the retail disc: 728 banks in SOUNDDAT.DAT, all 728 opening, holding 1,213 PlayStation ADPCM sounds of which 753 declare both a length and a sample rate and export; the other 460 are listed and refused rather than written at a rate nobody measured. The image is memory-mapped, so the 539 MB container is never copied.",
+      "surface": "audio",
+      "title": "NCAA 09 (PS2) BNKl sound banks",
+      "validation_command": "bash tools/validate_ncaa09_ps2_audio.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.ncaa09_ps2.audio_lane --source <SLUS-21752.iso> [--out <catalogue.json>] [--selftest]",
+        "module": "mod_editor/games/ncaa09_ps2/audio_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
+        "tests/mod_editor/test_ncaa09_ps2_module.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Audio page of the PS2 NCAA 09 Studio with Export WAV and no import at all: the page states, in the row's own words, that a stream is not replaced here, that 7,609 of the 8,021 are a codec nobody decodes, and that no rebuilt NCAA Football 09 container has been booted."
+      },
+      "id": "ncaa09ps2.audio.streams",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and memory-mapped read-only; an export writes only where the user asks and never touches the source.",
+        "A raw-CD image is refused by name: the memory map needs the 2048-byte sector layout every PlayStation 2 DVD uses.",
+        "The catalogue carries offsets, lengths, rates, channel counts and codec names -- never a sample.",
+        "A stream whose codec this module does not decode is refused by name rather than exported at a guess.",
+        "No writer: check_edit refuses every value, because there is nothing this lane accepts to write.",
+        "Bounded: at most 3,000 stream rows are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "A MicroTalk decoder would take 7,609 of this disc's 8,021 streams from listed to exportable; none exists publicly, in this repository or in ffmpeg.",
+        "A same-length replacement writer needs a container writer for this disc and the three QL01 preload caches kept in step with it.",
+        "Join a stream to the line it speaks. SPCHDATA.DAT names none of its members; SPCHHDRS.DAT's 5,816 fixed-size records are the obvious index and are undecoded."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter writes local WAVs and no path writes anything into the game or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>, as the catalogue writes it",
+            "name": "stream",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "Export writes one WAV per selected stream. There is no import: the row's own sentence says why."
+      },
+      "source_container": {
+        "format": "EA SCHl stream: an SCHl header chunk carrying tagged values (codec, channels, sample rate, sample count) followed by SCDl data blocks, inside a stored TERF member",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "8,021 streams; 412 EA-XA ADPCM, 7,609 MicroTalk",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Catalogue every EA SCHl stream on a user's SLUS-21752 ISO -- codec, platform tag, channels, sample rate, sample count and length -- and export the ones whose codec decodes here as WAV. Measured on the retail disc: 8,021 streams in three containers, of which 412 are EA-XA ADPCM and export (408 in SOUNDDAT.DAT, 4 in FESNDDAT.DAT) and 7,609 are EA MicroTalk, which no decoder in this repository or in ffmpeg opens and which are listed with their rate and length and refused by name. The image is memory-mapped, so the 631 MB speech container is never copied.",
+      "surface": "audio",
+      "title": "NCAA 09 (PS2) SCHl audio streams",
+      "validation_command": "bash tools/validate_ncaa09_ps2_audio.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.ncaa09_ps2.text_lane --source <SLUS-21752.iso> [--out <report.json>] [--selftest]",
+        "module": "mod_editor/games/ncaa09_ps2/text_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
+        "tests/mod_editor/test_ncaa09_ps2_module.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Menus & UI page of the PS2 NCAA 09 Studio as a table with a preview and no editor: a writer would replace a string inside the room its slot already has and rewrite the three QL01 preload caches that copy the container, and neither is built for this game."
+      },
+      "id": "ncaa09ps2.menus.text_members",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
+        "Counts and lengths in the catalogue; a string reaches the user only through the preview, read off their own image at the moment they ask for it.",
+        "latin-1 and never utf-8: EA stored 8-bit characters, and a utf-8 decoder either mangles an accented character or refuses the whole bank.",
+        "Bounded: at most 2,000 member rows are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "Build the same-allocation string writer the Madden 09 module already has, once a container writer for this disc exists and the three QL01 caches can be kept in step.",
+        "Join a bank to the screen that draws it. None of the four containers names its members.",
+        "Read the 17 FNTS fonts in FONTS.DAT and UIS_FONT.DAT; no font decoder exists here."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "EXAMS.DAT | JERSEY.DAT | OSDKSTRN.DAT | GAMEDATA.DAT",
+            "name": "container",
+            "required": false
+          },
+          {
+            "allowed": "0..memberCount-1 within one container",
+            "name": "member",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table with a preview. The GUI must not offer a string edit: no writer for this disc's containers exists."
+      },
+      "source_container": {
+        "format": "TEXT member: NUL-terminated 8-bit strings, byte-aligned, inside a stored TERF member",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "1,247 TEXT members, 1,247 slots, 241,787 bytes",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Measure every TEXT string bank on a user's SLUS-21752 ISO: how many NUL-terminated slots, how many characters, how many bytes of room past the strings that are there now, and whether the member ends in a terminator. Measured on the retail disc: 1,247 TEXT members in four containers -- EXAMS.DAT 1,238, JERSEY.DAT 7, OSDKSTRN.DAT 1 and GAMEDATA.DAT 1 -- 241,787 bytes in all. The strings are read from the user's own image on demand for a preview and are never stored in this repository.",
+      "surface": "menus",
+      "title": "NCAA 09 (PS2) TEXT string banks",
+      "validation_command": "bash tools/validate_ncaa09_ps2_text.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.ncaa09_ps2.database_lane --source <SLUS-21752.iso> [--out <report.json>] [--selftest]",
+        "module": "mod_editor/games/ncaa09_ps2/database_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
+        "tests/mod_editor/test_ncaa09_ps2_module.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 NCAA 09 Studio as a table and no editor. There is no roster writer and the reason is measured, not pending: this disc's PLAY table shares 37 of its 86 field names with Madden 09's 110 and carries neither PFNA nor PLNA, so there is no name to write; its rating fields are five bits wide where Madden's are seven, and the scale those five bits are on is not established."
+      },
+      "id": "ncaa09ps2.players.league_databases",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
+        "Schema only: table names, record strides, row counts, capacities and each field's name, type, width and offset. A record's contents are never read, and a test asserts the point by searching the serialised catalogue for the synthetic fixture's own string values and failing if it finds one.",
+        "A database the shared reader refuses is recorded with the reader's own sentence rather than dropped: two of this disc's 582 declare a field type the reader does not name, and a catalogue that omitted them would read as if they were not there.",
+        "Bounded: at most 700 database rows are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "Name TDB field types 13 and 14. Eighteen fields of STRMDATA.DB and two of TEMPLATE.DAT member 3 declare them, always at a bit offset that is a multiple of 32 and always with a width larger than the record itself, which is what refuses those two databases today.",
+        "Establish the scale of PLAY's five-bit rating fields before any roster writer offers a spinner; a five-bit field holds 0..31, whatever the game shows.",
+        "Decide which of TEAM's 74 fields selects a school's colours from the 64-row PACL palette. TPID is seven bits wide and PACL has 64 rows, which fits and is not proof."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "LEAGUE.DAT | GAMEDATA.DAT | TEMPLATE.DAT | STRMDATA.DB",
+            "name": "container",
+            "required": false
+          },
+          {
+            "allowed": "0..memberCount-1 within one container",
+            "name": "member",
+            "required": false
+          },
+          {
+            "allowed": "a 16-character schema digest from the catalogue",
+            "name": "schema",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer a record edit: no writer for this disc's databases exists."
+      },
+      "source_container": {
+        "format": "EA TDB v8, little-endian, bit-packed LSB-first, four CRC-32/MPEG-2 slots per database; packed as RLE1 or stored TERF members, plus one bare file",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "582 databases, 3,702 tables, 71,772 field definitions, 8,564 checksum slots",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Catalogue every EA TDB database on a user's SLUS-21752 ISO, table by table, with each field's name, type, bit width and bit offset, and verify the four CRC-32/MPEG-2 slots EA stores in each. Measured on the retail disc: 582 databases -- 433 in LEAGUE.DAT (one league database and 432 per-team rosters holding 24,717 PLAY rows), 137 in GAMEDATA.DAT (one shared play library and 136 playbooks), 11 in TEMPLATE.DAT and the bare STRMDATA.DB -- 3,702 tables, 71,772 field definitions, 11 distinct schema shapes, and 8,564 of 8,564 checksum slots holding the value they recompute to. Two databases are refused by the shared reader and recorded with its own sentence. Field names and widths only; no record's contents are read.",
+      "surface": "players_rosters",
+      "title": "NCAA 09 (PS2) league, roster and playbook databases",
+      "validation_command": "bash tools/validate_ncaa09_ps2_databases.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.ncaa09_ps2.inventory_lane --source <SLUS-21752.iso> [--out <report.json>] [--selftest]",
+        "module": "mod_editor/games/ncaa09_ps2/inventory_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
+        "tests/mod_editor/test_ncaa09_ps2_module.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the All Textures page of the PS2 NCAA 09 Studio as a table and no editor: every column is read straight off the user's disc by the shared TERF reader, which opens 85 of 85 containers and 30,391 of 30,391 members on this image. There is no NCAA Football 09 container writer in this module, so the page lists and never offers an edit."
+      },
+      "id": "ncaa09ps2.textures.container_inventory",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract rather than quietly doing nothing.",
+        "Bounded: a container over 144 MB is listed with its size and left unread, so STADIUMS.DAT (197 MB), MOVIEDAT.DAT (333 MB), SOUNDDAT.DAT (539 MB) and SPCHDATA.DAT (631 MB) never enter memory.",
+        "Metadata only: offsets, sizes, codec ids and format labels. A member's bytes are read only to classify its first 32 bytes and are never stored or emitted.",
+        "Format sampling is declared: the first 256 members of each container are decompressed to classify them, and every row says how many it sampled so nobody reads the histogram as the whole container.",
+        "Bounded target list: at most 4,000 member rows are listed while the document's totals stay complete."
+      ],
+      "portme": [
+        "Classify every member rather than the first 256 per container once the LZH1 decoder is fast enough to make it free; the sample is a speed decision, not a format limit.",
+        "Read the four oversized containers through a memory map, the way the audio lane already does, so 'listed unread' stops being a state at all.",
+        "Join the MMAP rows to the texture census so one table can say which kit a texture is."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "a /DATA file name, e.g. UNIFORM.DAT",
+            "name": "container",
+            "required": false
+          },
+          {
+            "allowed": "0..memberCount-1 within one container",
+            "name": "member",
+            "required": false
+          },
+          {
+            "allowed": "NONE (stored) | RLE1 | LZH1 | an unimplemented id, by name",
+            "name": "codec",
+            "required": false
+          },
+          {
+            "allowed": "MMAP | SMF | DMF | TDB | TEXT | TERF | SCHl | BNKl | FNTS | MPCh | SKL1 | SEVT | ELF | empty | unclassified | unsupported codec | unreadable",
+            "name": "format",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer a byte edit, a member export or a container rebuild from this row."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image holding EA TERF containers under /DATA: a TERF header, a DIR1 member directory, an optional COMP codec table and a DATA payload chunk, at 4-, 16-, 64- or 2048-byte member alignment",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "85 TERF containers, 81 under the read limit; 30,391 members disc-wide",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Open a user's SLUS-21752 ISO read-only and walk every EA TERF container under /DATA: the chunk chain, the member-data alignment, each member's offset, stored size, codec and unpacked size, and -- after decompression, because a packed member's stored magic means nothing -- what format its bytes carry. Measured on the retail disc: 85 containers of which 81 are under the 144 MB read limit, 30,391 members across the disc, chains TERF->DIR1->DATA 49, TERF->DIR1->COMP->DATA 35 and TERF->HSH1->DIR1->DATA 1, alignments 4/16/64/2048, and codecs stored 22,801, LZH1 7,157, RLE1 433. Nothing is written and no member payload is read into a catalogue.",
+      "surface": "textures",
+      "title": "NCAA 09 (PS2) /DATA container inventory",
+      "validation_command": "bash tools/validate_ncaa09_ps2_inventory.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.ncaa09_ps2.texture_lane --source <SLUS-21752.iso> [--out <report.json>] [--selftest]",
+        "module": "mod_editor/games/ncaa09_ps2/texture_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
+        "tests/mod_editor/test_ncaa09_ps2_module.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio as a table and no editor. It is not an exporter and does not pretend to be: exporting a PNG needs the MMAP pixel decoder, which is in the Madden 09 package and out of a game module's reach, so the row states that instead of drawing a disabled Export button."
+      },
+      "id": "ncaa09ps2.uniforms.texture_census",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
+        "Header only: what the member's own MMAP wrapper declares. No pixel is decoded, no palette is read and no PNG is produced.",
+        "Bounded: UNIFORM.DAT is 127,942,528 bytes and is read whole; a container over 144 MB is listed with its size and left unread.",
+        "Bounded target list: at most 3,000 member rows are listed while the document's totals stay complete."
+      ],
+      "portme": [
+        "Move the MMAP pixel decoder from mod_editor/games/madden09_ps2/mmap_art.py into mod_editor/games/_formats and this row becomes an exporter unchanged. Run from a scratch harness against this disc, that decoder draws 1,162 of 1,221 sampled members and refuses 59 by name; that is a measurement of the decoder, not a claim about this module.",
+        "An LZH1 encoder is needed before any rewrite of UNIFORM.DAT, PLADATA.DAT or UIS_TMLO.DAT, whose members are LZH1-packed; PLYRFACE.DAT and UIS_GEAR.DAT store theirs uncompressed.",
+        "Join a texture to the school it dresses. None of the five containers names its members."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "UNIFORM.DAT | PLADATA.DAT | UIS_GEAR.DAT | PLYRFACE.DAT | COACFACE.DAT",
+            "name": "container",
+            "required": false
+          },
+          {
+            "allowed": "0..memberCount-1 within one container",
+            "name": "member",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer an export or an import: this module has no MMAP pixel decoder to do either with."
+      },
+      "source_container": {
+        "format": "MMAP texture wrapper: a 40-byte header declaring a version, a 00 01 02 03 marker, a payload size and three ascending sizes, with width and height in the four bytes that follow it; stored or LZH1-packed inside a TERF member",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "2,566 MMAP members in the five kit and face containers; 6,978 disc-wide",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Read the MMAP wrapper header of every kit, equipment and face texture on a user's SLUS-21752 ISO through the shared TERF reader: version, header size, declared payload size and the dimensions that follow the header. Measured on the retail disc: 2,566 MMAP members across five containers -- UNIFORM.DAT 1,200, PLADATA.DAT 888, UIS_GEAR.DAT 396, PLYRFACE.DAT 64 and COACFACE.DAT 18 -- against 6,978 MMAP members disc-wide. No pixel is decoded and no PNG is written: the MMAP pixel decoder in this repository lives inside the Madden 09 package, and a game imports a format package and never another game.",
+      "surface": "uniforms",
+      "title": "NCAA 09 (PS2) kit, equipment and face textures",
+      "validation_command": "bash tools/validate_ncaa09_ps2_textures.sh"
+    }
+  ],
+  "game": {
+    "id": "ncaa09_ps2",
+    "platform": "PlayStation 2",
+    "public_input": "User supplies a legally obtained USA PS2 ISO (SLUS-21752); the tool never bundles game files, BIOS, saves, or emulator binaries, and every lane for this disc reads.",
+    "retail_identity": {
+      "content_sha256": "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8",
+      "executable_sha256": "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee"
+    },
+    "title": "NCAA Football 09 (USA, PlayStation 2)"
+  },
+  "schema": "vc_mod_capability_registry_fragment/v1",
+  "surfaces": [
+    "audio",
+    "menus",
+    "players_rosters",
+    "textures",
+    "uniforms"
+  ]
+}
