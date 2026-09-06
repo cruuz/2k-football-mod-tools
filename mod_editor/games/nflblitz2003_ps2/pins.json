@@ -10,7 +10,7 @@
   },
   "save_writer_ids": [],
   "schema": "vc_game_module_pins/v1",
-  "shipped_files": 32,
+  "shipped_files": 36,
   "surfaces": [
     "colors",
     "gameplay_tuning_sliders",

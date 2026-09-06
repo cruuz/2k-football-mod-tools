@@ -33,3 +33,7 @@ docs/product/measured/nflblitz2003_ps2/roster-rst.json
 docs/product/measured/nflblitz2003_ps2/texture-dictionaries.json
 docs/product/measured/nflblitz2003_ps2/writer-trial.json
 docs/product/measured/nflblitz2003_ps2/zip-index.json
+mod_editor/games/_lanes/blitz_zip_lanes.py
+docs/product/RENDERWARE_TXD_FORMAT.md
+docs/product/MIDWAY_ZIP_FORMAT.md
+docs/product/measured/rw_txd/cross-disc-census.json
