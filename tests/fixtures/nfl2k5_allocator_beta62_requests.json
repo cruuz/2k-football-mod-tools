@@ -54,6 +54,12 @@
   16
  ],
  [
+  "nfl2k5_screen_hooks",
+  "code",
+  640,
+  16
+ ],
+ [
   "nfl2k5_roster_storage",
   "code",
   82,
@@ -192,24 +198,6 @@
   16
  ],
  [
-  "nfl2k5_guardian_cap_overlay",
-  "code",
-  2048,
-  16
- ],
- [
-  "nfl2k5_guardian_cap_overlay",
-  "data",
-  336,
-  16
- ],
- [
-  "nfl2k5_screen_hooks",
-  "code",
-  640,
-  16
- ],
- [
   "nfl2k5_my_career",
   "code",
   8192,
@@ -219,6 +207,18 @@
   "nfl2k5_my_career",
   "data",
   4096,
+  16
+ ],
+ [
+  "nfl2k5_guardian_cap_overlay",
+  "code",
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_guardian_cap_overlay",
+  "data",
+  336,
   16
  ]
 ]
