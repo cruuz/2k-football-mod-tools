@@ -8090,3 +8090,174 @@ commands use `python3 -m <dotted.module> ...` for registry file-check mode.
 After protected wiring, verify paired Shotgun builds, disabled presets,
 missing/stale recipe refusals, the revised budget, all four status dictionaries,
 release closure and both XBE gates before offering Noah a witness disc.
+
+# r62 hires-more family and memory handoff, 2026-09-06
+
+This section supersedes the three-asset limits in the r62 hires-pack handoff.
+It is resource-only, EXPERIMENTAL / UNWITNESSED. Protected files were not
+edited. The existing Build pass already calls the extended backend, so its
+folder validation and before/after-compile budget refusals take effect now.
+The family controls and budget display below still need integration.
+
+## BuildPlan, presets and preflight
+
+In `mod_editor/core/mod_build.py`, retain the existing four fields and add:
+
+```python
+hires_families: tuple[str, ...] = (
+    "helmets", "field_logos", "stock_fields", "scorebug", "numbers", "jerseys")
+```
+
+Basic, advanced (`modern`) and experimental all retain `hires_pack=False`.
+All six family choices initially select which *present* files participate
+when the user explicitly enables Hi-res; they do not enable Hi-res itself.
+Preserve the selected family tuple with the folder, normalize serialized
+lists to tuples, reject duplicates/unknown names, and reject an empty tuple
+when enabled. No folder work runs while Hi-res is off. Preserve compatibility
+with saved plans that lack the new field by using the tuple above.
+
+Add `nfl2k5_hires_layouts`, `nfl2k5_hires_catalog`, `nfl2k5_hires_budget` and
+`nfl2k5_hires_evidence` to the `availability()["hires_pack"]` import closure.
+Pass `families=plan.hires_families` to both existing `inspect_image` preflight
+and final `build_image`. Add a cheap budget stage before texture encoding:
+
+```python
+receipt["hires_budget"] = hires.preflight_budget(
+    plan.hires_folder, scale=plan.hires_scale, target=plan.hires_target,
+    families=plan.hires_families)
+```
+
+The model covers two shared team texture sets, two primary field scenes,
+two selected external logos, selected scorebug textures, and the 22 native
+player-name output surfaces. It prices the actual wrappers and 128-byte
+allocator headers/alignment. After encoding, `build_image` repeats the check
+with actual checked scratch sizes. An overage raises a ValueError stating
+required bytes, the 65,011,712-byte (62 MiB) ceiling and excess bytes, before
+any public mutation. Do not catch this as a warning and continue.
+
+An under-ceiling result is **unproved**, never green/safe. Show `message`
+and `modeled_delta_bytes`; `headroom_bytes` is deliberately null. The boot
+allocation result, startup reservations, context-selected heap, other live
+resources and fragmentation are unknown. Do not display
+`modeled_residual_to_ceiling_bytes` as headroom. The report explicitly cannot
+fulfil the requested whole-game safe-fit proof. No preset or automatic
+subset should treat `family_subsets` as certification. It supplies only a
+selection inside the necessary arithmetic bound.
+
+Keep the existing final-pass deferral: after all other fixed-span resource
+writers, scene edits, reference/runtime scorebug work and music compilation.
+Resolve resources in the current private image. Pass the same family tuple
+through preflight and the final pass, preserve the source/input/destination
+transaction, then retain the final verification and image hash. Do not run
+fixed retail-offset inspectors on the remapped image and call them current.
+
+Conflict detection must compare selected `(outer, chunk)` identities with
+other texture/stadium imports, not only `scorebug` or filename prefixes.
+Both jersey images belong to the same TSET; the entire stock-field SCNE is
+pinned around its selected descriptor, so any independent scene modification
+conflicts. Check consumer pins as well as resource identities. The existing
+reference/runtime scorebug changes the table at `0xA95C60`; selecting either
+Hi-res scorebug input therefore refuses that combination, even when an
+individual texture resource does not overlap. It needs a separately audited
+combined consumer recipe. The other five families pass the complete XBE
+owner union in both orders, so do not reject them solely because a scorebug
+option is enabled.
+
+In the existing `mod_build.py` Hi-res preflight, replace the check for
+`row["key"] == "scorebug"` with
+`any(row["family"] == "scorebug" for row in preview["assets"])`, keeping
+the `(plan.scorebug or plan.scorebug_runtime)` condition. This catches
+`scorebug_espn` before the private build passes alter its consumer table.
+
+## Build tab controls
+
+In protected `mod_editor/gui/build_panel_qt.py`, keep the existing parent
+`_option` caption `Hi-res pack (experimental)` (25 characters). Add six
+family `_option` controls beneath it, using these captions, all below 60:
+
+| UI key | Caption | Backend family |
+| --- | --- | --- |
+| `hires_helmets` | `All teams' helmets (experimental)` | `helmets` |
+| `hires_field_logos` | `Created-team midfield logos (experimental)` | `field_logos` |
+| `hires_stock_fields` | `Stock midfield logos (experimental)` | `stock_fields` |
+| `hires_scorebug` | `Scorebug art (experimental)` | `scorebug` |
+| `hires_numbers` | `Uniform numbers (experimental)` | `numbers` |
+| `hires_jerseys` | `Jerseys, clean and muddy (experimental)` | `jerseys` |
+
+Use plain tooltip text: `Retail: original texture sizes. Patch: selected
+artwork uses 2x detail. Experimental and unwitnessed. Memory fit is unproved.`
+For jerseys add `Supply both the clean image and its .mud image.` For stock
+fields add `Original scene pixels remain allocated beside the new logo.`
+Enable family controls only for an available image source with the parent
+Hi-res option checked. Their availability inherits the parent; do not probe
+six nonexistent executable owners. Derive `BuildPlan.hires_families` from
+checked controls; include it in plan persistence, dirty state, summaries,
+reset/preset handling and final receipts. The parent remains off in every
+preset. Display one summary row per family rather than 2,524 per-asset rows;
+the JSON receipt retains every exact resource result.
+
+Run `preflight_budget` in the existing worker pattern when folder, scale,
+target or family selection changes. Retain the request identity so an older
+worker cannot enable Build after a new folder fails. Disable Build on any
+preflight exception and show its exact numerical refusal. Under-ceiling
+results retain the experimental/unproved warning; no green fit badge.
+Keep `xemu-128` disabled and backend refusal in place. Explanation:
+`The game still limits texture addresses to the first 64 MiB.` No confirmation
+dialog or override removes a refusal. Names do not get an enabled checkbox.
+
+## Dispatcher, statuses and Gameplay Patches
+
+There is no new XBE patch or allocation. These explicit N/A entries satisfy
+the shared wiring contract:
+
+| Protected surface | Required treatment |
+| --- | --- |
+| `_apply_all` owners tuple | No new tuple entry; this compiler accepts resources/images. |
+| `_apply_all` kwarg | No Hi-res family argument belongs in the executable dispatcher. |
+| `read_xbe` status dictionary | No executable Hi-res state. |
+| `read_image` status dictionary | Keep executable statuses; use Build's archive receipt for Hi-res. |
+| `write_xbe_copy` status dictionary | No change; a standalone XBE contains no family art. |
+| `write_image_copy` status dictionary | No new XBE status; the final Build archive pass supplies verification. |
+| `_grown_status_fields` | No new field. |
+| `_selected_space_requests` / `_xbe_space_adapter` | No new flags or requests. |
+| `tests/nfl2k5_allocator_stack.py` and cave manifest lists | No new owner; keep their complete existing union. |
+
+Gameplay Patches `PATCHES` / `NEEDS_IMAGE`: no new row or new executable
+Patch, since the Build folder is required and that panel cannot represent
+it. Retain the existing explanation for Hi-res if it is surfaced there:
+`Retail: original texture sizes. Patch: use the Hi-res folder in Build.
+Experimental and unwitnessed; memory fit is unproved.` It must remain
+image-only (`NEEDS_IMAGE`) wherever the existing parent option appears.
+All Textures keeps its native fixed-span contract; do not route these larger
+resources through its existing in-place writers. Studio registration needs
+no new panel. The cave manifest must not be regenerated by this worktree.
+
+## Release closure and capability
+
+Add these exact allowlist lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_hires_catalog.py
+mod_editor/core/nfl2k5_hires_layouts.py
+mod_editor/core/nfl2k5_hires_budget.py
+mod_editor/core/nfl2k5_hires_evidence.py
+```
+
+Retain the existing pack/texture/guide lines. The catalog is generated Python
+metadata and is required at runtime; it contains no retail pixel payload.
+The three audit/acceptance tools and reports remain developer evidence,
+not release runtime dependencies. In protected
+`packaging/check_2k5_mod_studio_runtime.py`, import all four new dotted core
+modules along with the two existing Hi-res modules, then smoke-test catalog
+count, a budget receipt with null headroom, and refusal of `xemu-128`.
+The layouts module imports `nfl2k5_hires_texture`, `tools.nfl_txtr`, the
+existing P8 palette codec and standard-library `collections`, `functools`
+and `struct`; no new wheel, Qt panel or private research inventory is needed.
+Refresh existing provider closure fingerprints after integration as needed.
+
+Update the existing capability `nfl2k5.textures.hires_pack`, on the existing
+`uniforms` surface; no new surface ID is needed. The complete schema-valid
+handoff is `docs/mod_editor/nfl2k5_hires_pack_capability.json`. Its backend
+and validation command both use `python3 -m <dotted.module> ...`. Preserve
+`runtime.status=not-tested` and default false. Do not turn static compilation
+or budget arithmetic into a witnessed/compatible capability classification.

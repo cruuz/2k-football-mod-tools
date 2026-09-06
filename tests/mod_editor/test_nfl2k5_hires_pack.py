@@ -26,7 +26,7 @@ from tools import nfl_txtr as txtr
 
 def fixtures():
     assets, resources = [], {}
-    for i, original in enumerate(texture.ASSETS):
+    for i, original in enumerate(texture.PILOT_ASSETS):
         a = replace(original, outer=i, chunk=1, name_id=100+i, native=16, levels=1 if i == 0 else 3)
         system = bytearray(128)
         system[12:16] = b"TXTR"

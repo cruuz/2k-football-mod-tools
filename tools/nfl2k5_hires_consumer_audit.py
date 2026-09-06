@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Reproduce bounded static pilot-consumer metadata. Never writes game bytes.
+"""Reproduce bounded static consumer metadata. Never writes game bytes.
 
 EXPERIMENTAL / UNWITNESSED. Audits every field SCNE in outer 3136..3612,
 the scorebug's nine frame materials, and the live helmet's A shell/accessories
-at both LODs. This is not an exhaustive runtime call-graph proof.
+at both LODs. --families adds the ESPN strip, numbers and clean/mud jersey
+draws at the three player scene splits. This is not an exhaustive runtime
+call-graph proof.
 """
 from __future__ import annotations
 
@@ -26,7 +28,8 @@ from tools import nfl_txtr as txtr
 def audit_scene(raw, key, wanted):
     source = models.ModelSpanSource({key:raw})
     _, decoded, scene = source.parse(key)
-    selected = {x["index"] for x in scene["materials"] if x["name"] in wanted}
+    selected = {x["index"] for x in scene["materials"] if
+                (wanted(x["name"]) if callable(wanted) else x["name"] in wanted)}
     rows = []
     for shape in scene["shapes"]:
         subs = [x for x in scene["submeshes"] if x["shape_index"]==shape["index"] and x["material_index"] in selected]
@@ -46,8 +49,8 @@ def audit_scene(raw, key, wanted):
     return dict(key=key,scene=scene["name"],span_sha256=pack.sha(raw),decoded_sha256=pack.sha(decoded),draws=rows)
 
 
-def audit(image):
-    result = dict(schema="nfl2k5_hires_consumers/v1",experimental=True,runtime_witnessed=False,
+def audit(image, *, families=False):
+    result = dict(schema="nfl2k5_hires_consumers/v2" if families else "nfl2k5_hires_consumers/v1",experimental=True,runtime_witnessed=False,
         equation="uv = NORMSHORT2(register 6) * shape[+0x30].xy + shape[+0x30].zw; no texture-size term",
         inherited_shader_evidence="mod_editor/core/nfl2k5_models.py module documentation; RC78 UV correction",
         exhaustive_runtime_consumers_proved=False,scenes=[],field_scenes_scanned=477)
@@ -66,9 +69,12 @@ def audit(image):
             return data[:end].decode("utf-16le")
         pairs = [list(string(v) for v in struct.unpack("<II",readva(0xA95C60+i*8,8))) for i in range(11)]
         result["scorebug_binding_pairs"] = pairs
-        wanted = {material for material,name in pairs if name=="score_buga"}
-        for outer,chunk,names in ((346,78,wanted),(3,113,{"HI_HELMET_A","HELMET_A_accessories"}),
-                                  (3,115,{"HI_HELMET_A","HELMET_A_accessories"})):
+        wanted = {material for material,name in pairs if families or name=="score_buga"}
+        uniform = (lambda n: n in {"HI_HELMET_A", "HELMET_A_accessories"} or 'NUMBER' in n or 'UNIF_jersey' in n)
+        scenes = ((346,78,wanted),(3,113,uniform),(3,114,uniform),(3,115,uniform)) if families else (
+            (346,78,wanted),(3,113,{"HI_HELMET_A","HELMET_A_accessories"}),
+            (3,115,{"HI_HELMET_A","HELMET_A_accessories"}))
+        for outer,chunk,names in scenes:
             entry = disc.archive_entries[outer]
             archive.require(entry.size<=32*archive.BLOCK,"Scene container exceeds bound")
             container = disc.read_entry_range(entry,0,entry.size)
@@ -102,8 +108,9 @@ def audit(image):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("image",type=Path)
+    parser.add_argument("--families", action="store_true")
     args = parser.parse_args()
-    print(json.dumps(audit(args.image),indent=2))
+    print(json.dumps(audit(args.image, families=args.families),indent=2))
 
 
 if __name__ == "__main__":

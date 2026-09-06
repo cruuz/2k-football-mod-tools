@@ -11,7 +11,14 @@
       "reports/hires_pack_consumers.v1.json",
       "reports/hires_pack_build.v1.json",
       "tests/mod_editor/test_nfl2k5_hires_pack.py",
-      "tests/mod_editor/test_nfl2k5_hires_pack_retail.py"
+      "tests/mod_editor/test_nfl2k5_hires_pack_retail.py",
+      "ASTRA_HIRES_MORE_REPORT.md",
+      "reports/hires_families.v2.json",
+      "reports/hires_consumers.v2.json",
+      "reports/hires_compile_all.v2.json",
+      "reports/hires_player_names.v2.json",
+      "tests/mod_editor/test_nfl2k5_hires_families.py",
+      "tests/mod_editor/test_nfl2k5_hires_families_retail.py"
     ],
     "game": "nfl2k5_xbox",
     "gui": {
@@ -22,10 +29,12 @@
     },
     "id": "nfl2k5.textures.hires_pack",
     "input_constraints": [
-      "Pinned USA pilot TXTR wrappers and audited executable consumer ranges; one to three explicit artwork filenames.",
-      "scorebug.png 128x128, field_logo.png 512x512, helmet.png 512x512, or same-basename NFL 2K5 .2ktexmaster. Files up to 32 MiB, expanded masters up to 64 MiB, source images up to 16 megapixels.",
-      "Shared P8 palette, native mip count, exact retail or matching authored recipe; mixed or foreign selections refuse.",
-      "Only xemu-64 is selectable and remains unwitnessed. xemu-128 and 4x texture output refuse."
+      "Pinned NFL 2K5 USA ordinary P8 TXTR, paired clean/mud jersey TSET, or complete baseline SCNE with one appended midfield raster. Exact consumer and allocator code/table pins.",
+      "64 current 00..31 H0/A0 helmets; 1,920 current-kit number textures; 64 paired jerseys; 126 created-team midfield logos; 348 embedded stock center_logo textures; scorebug frame and ESPN strip. See catalog for filenames and sizes.",
+      "PNG or NFL 2K5 .2ktexmaster per input; jerseys require both clean and .mud inputs. Original mip count; shared palette indices for each clean/mud pair. Unknown, mixed, foreign and incomplete inputs refuse.",
+      "The reference/runtime scorebug changes a pinned binding table and conflicts with the Hi-res scorebug family, including ESPN-only input. The other five families pass the complete executable owner union in both orders.",
+      "32 MiB per input, 64 MiB expanded master, 16 megapixels per master source; paired jersey quantization limited to 8192 unique color pairs across mips. 256 MiB selected resource input/output bounds and 768 MiB rewritten-container bound.",
+      "xemu-64 is experimental and unwitnessed. Over-ceiling modeled allocations refuse with exact required and excess bytes. Under-ceiling does not prove whole-game fit and reports null headroom. xemu-128 and 4x texture output refuse."
     ],
     "portme": [
       "Run Noah's native versus 2x artwork comparisons at xemu rendering scales 1x, 2x and 4x, including full-game memory and lifecycle checks."
@@ -39,9 +48,9 @@
     "runtime": {
       "status": "not-tested",
       "evidence": [
-        "ASTRA_HIRES_PACK_REPORT.md"
+        "ASTRA_HIRES_MORE_REPORT.md"
       ],
-      "scope": "Static normalized UV evidence, bounded compiler and transaction tests, and real disc builds. Exhaustive runtime consumers, guest heap headroom, rendered sampling and 128 MiB support are unproved."
+      "scope": "Pinned static binders and normalized UVs; bounded compiler/transaction tests and every catalogued target compiled at 2x offline. Whole-game heap headroom, wider residency lifetimes, rendered appearance and 128 MiB support remain unproved."
     },
     "selectors": {
       "fields": [
@@ -53,7 +62,7 @@
         {
           "name": "hires_folder",
           "required": true,
-          "allowed": "existing folder with one to three exact pilot basenames"
+          "allowed": "existing folder with exact catalogued artwork filenames and complete clean/mud jersey pairs"
         },
         {
           "name": "hires_scale",
@@ -64,23 +73,28 @@
           "name": "hires_target",
           "required": true,
           "allowed": "xemu-64 only"
+        },
+        {
+          "name": "hires_families",
+          "required": true,
+          "allowed": "nonempty unique subset of helmets, field_logos, stock_fields, scorebug, numbers, jerseys; omitted legacy plans select all present inputs"
         }
       ],
-      "notes": "Build integration is specified in WIRING.md. Run after other archive writers; reject same-asset scorebug or texture edits. No executable patch or allocator owner."
+      "notes": "Parent Hi-res stays off in basic/advanced/experimental. Family and budget display integration is specified in WIRING.md. No XBE owner or heap enlargement. Reject same-resource edits before the final shared archive transaction."
     },
     "source_container": {
-      "format": "TXTR in segmented IFF archive in XDVDFS",
+      "format": "TXTR, TSET and SCNE in segmented IFF archive in XDVDFS",
       "hash_pins": [
         "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
         "ea7da5c66e03f8bdf1724a73f021ccaf6b8bb4726179d449a65e783b0192a010",
         "c6f56638ebf3c77993d87f810cd31b6d7abc2b754da8172ed5184e4bc7508725"
       ],
-      "resource": "o346c53 score_buga; o384c0 CT33D.IFF center_logo; o3613c11 uniform 00H0.IFF helmet00",
+      "resource": "Exact outer/chunk/name-ID/descriptor hashes in nfl2k5_hires_catalog.py, plus the three legacy pilot identities in nfl2k5_hires_texture.py",
       "retail_file": "user-owned NFL 2K5 USA disc"
     },
-    "summary": "Compile up to three selected pilot textures at 2x or native size and transactionally rebuild the archive in a new disc copy.",
+    "summary": "Compile 2,524 pinned current-kit and midfield/scorebug targets at 2x or native size, with family selection and a necessary memory-bound refusal.",
     "surface": "uniforms",
     "title": "Hi-res pack (experimental, unwitnessed)",
-    "validation_command": "python3 tests/mod_editor/test_nfl2k5_hires_pack.py"
+    "validation_command": "python3 -m mod_editor.core.nfl2k5_hires_pack catalog"
   }
 ]

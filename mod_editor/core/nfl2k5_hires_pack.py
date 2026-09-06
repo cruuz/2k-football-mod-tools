@@ -1,15 +1,15 @@
 """Opt-in resource-only 2x pack. EXPERIMENTAL / UNWITNESSED.
 
-Hi-res/scorebug.png (128 square), field_logo.png and helmet.png (512 square)
-select the three pinned pilots. A .2ktexmaster may replace each PNG. Missing
-names are unselected; both extensions for one name refuse. Native output uses
-the same retained sources with scale=1. Keep the folder for exact replay and
-downscale; changing artwork on an already authored pilot requires a retail
-source. No presets, XBE patch, 4x texture tier, or 128 MiB memory patch.
+Explicit artwork names select pinned current-team helmets, numbers, paired
+jerseys, midfield logos and the scorebug atlas/strip. Run catalog for the full
+list. Keep the folder for exact replay and native-size output. Whole-game
+memory fit is unproved; no 128 MiB target or executable patch is installed.
 """
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
+from dataclasses import asdict
 import io
 import json
 import os
@@ -22,11 +22,13 @@ from . import nfl2k5_hires_texture as texture
 from . import nfl2k5_music_archive as archive
 from . import nfl2k5_music_banks as transport
 from . import texture_master
+from . import nfl2k5_hires_budget as budget
+from .nfl2k5_hires_evidence import RANGES as FAMILY_RANGES
 from . import nfl2k5_bump_strength
 from .json_stream import read_bounded_regular_file
 from .errors import ValidationError
 
-SCHEMA = "nfl2k5_hires_pack/v1"
+SCHEMA = "nfl2k5_hires_pack/v2"
 ASSETS = texture.ASSETS
 require = texture.require
 sha = texture.sha
@@ -52,6 +54,7 @@ CONSUMER_RANGES = {
         (0x004EEAF8, 16, "0fbb2ff7e5e09eb4d2a7fbf40bd24d4f8c617844e9b31156cfe2bc029f18ffa2"),
         (0x004EF390, 64, "9b618fe07ebd9011bfa6a2f5d432ff9bd404fcb60fcb32aaaf897e0c62a3a92a")),
 }
+CONSUMER_RANGES.update(FAMILY_RANGES)
 
 
 def validate_consumer_xbe(payload, keys):
@@ -60,7 +63,7 @@ def validate_consumer_xbe(payload, keys):
     require(len(payload) <= 16*archive.BLOCK, "Executable exceeds 16 MiB")
     sections = nfl2k5_bump_strength._sections(payload)
     result = []
-    for family in ("common", *keys):
+    for family in dict.fromkeys(("common", "memory", *(texture.BY_KEY[k].consumer for k in keys))):
         for address, size, digest in CONSUMER_RANGES[family]:
             matches = [s for s in sections if s.virtual_address <= address
                        and address+size <= s.virtual_address+s.raw_size]
@@ -82,65 +85,129 @@ def _consumer_check(disc, keys):
 def _selection(keys):
     keys = tuple(keys)
     require(keys and len(keys) == len(set(keys)) and set(keys) <= set(texture.BY_KEY),
-            "Select one to three known pilot assets")
+            "Select one or more known Hi-res assets")
     return tuple(a for a in ASSETS if a.key in keys)
 
 
-def load_folder(folder):
-    """Explicit filenames select targets; validate masters through the existing reader."""
+FAMILIES = ("helmets", "field_logos", "stock_fields", "scorebug", "numbers", "jerseys")
+
+
+def asset_family(asset):
+    return asset.family or {"helmet": "helmets", "field_logo": "field_logos", "scorebug": "scorebug"}[asset.key]
+
+
+def _load_artwork(asset, path):
+    _, payload = read_bounded_regular_file(path, "Hi-res artwork", maximum=32*1024**2)
+    detail = dict(path=str(path), file_sha256=sha(payload), kind=path.suffix[1:])
+    if path.suffix == ".png":
+        rgba = texture.png_rgba(payload, asset)
+        detail["authored_png_sha256"] = sha(payload)
+    else:
+        # Bound expanded work before the general master loader renders it.
+        # In particular, a tiny ZIP must not summon three 64-Mpixel canvases.
+        with zipfile.ZipFile(io.BytesIO(payload)) as zipped:
+            infos = zipped.infolist()
+            require(len(infos) in (4, 5) and sum(i.file_size for i in infos) <= 64*archive.BLOCK,
+                    "Hi-res master exceeds the 64 MiB expanded bound")
+            manifest = zipped.getinfo("manifest.json")
+            require(manifest.file_size <= 256*1024, "Master manifest exceeds bound")
+            doc = json.loads(zipped.read(manifest))
+            require(isinstance(doc, dict) and isinstance(doc.get("native"), dict)
+                    and isinstance(doc.get("source"), dict), "Malformed master manifest")
+            require((doc["native"].get("width"),doc["native"].get("height")) == (asset.native,asset.height),
+                    f"{asset.key}: master native canvas differs")
+            w, h = doc["source"].get("width"),doc["source"].get("height")
+            require(type(w) is int and type(h) is int and w > 0 and h > 0 and w*h <= 16*1024**2,
+                    "Hi-res master source exceeds 16 megapixels")
+        bundle = texture_master.load_texture_master_bundle(path)
+        doc = bundle.manifest
+        require(doc["editor_target"] == "nfl2k5_xbox", "Only NFL 2K5 literal-color masters are supported")
+        require((doc["native"]["width"], doc["native"]["height"]) == (asset.native, asset.height),
+                f"{asset.key}: master native canvas differs")
+        # The loader re-renders and authenticates this preview including any
+        # native paint overlay. A 4x preview is reduced once to the 2x pilot.
+        with Image.open(io.BytesIO(bundle.high_resolution_png)) as image:
+            raster = image.convert("RGBA")
+            if bundle.high_resolution_scale != 2:
+                raster = raster.resize((asset.native*2, asset.height*2), Image.Resampling.LANCZOS)
+            rgba = raster.tobytes()
+        detail.update(master_source_sha256=sha(bundle.source_bytes), master_asset_id=bundle.asset_id,
+            authored_png_sha256=sha(bundle.high_resolution_png), transform=doc["transform"],
+            native_raster_edit=doc["native_raster_edit"], preview_scale=bundle.high_resolution_scale,
+            conversion="validated master preview to 2x, Lanczos only when 4x")
+        require(archive.file_hash(path) == detail["file_sha256"], "Master changed while reading")
+    detail["rgba_sha256"] = sha(rgba)
+    return rgba, detail
+
+
+class FolderSources(Mapping):
+    """Validate every file first, then decode one selected raster at a time."""
+    def __init__(self, entries):
+        self.entries = entries
+
+    def __len__(self):
+        return len(self.entries)
+
+    def __iter__(self):
+        return iter(self.entries)
+
+    def __getitem__(self, key):
+        asset = texture.BY_KEY[key]
+        expected = self.entries[key]
+        rasters, details = [], []
+        for info in expected:
+            rgba, detail = _load_artwork(asset, Path(info["path"]))
+            require(detail == info, "Authored input changed after preflight")
+            rasters.append(rgba)
+            details.append(detail)
+        detail = dict(details[0], inputs=details)
+        return (tuple(rasters) if asset.kind == "TSET" else rasters[0]), detail
+
+    def input_details(self):
+        return [info for entries in self.entries.values() for info in entries]
+
+
+def load_folder(folder, *, families=None):
+    """Explicit filenames; optional family filters. Unknown artwork refuses."""
     folder = Path(folder).resolve()
     require(folder.is_dir(), "Choose an existing Hi-res folder")
+    if families is None:
+        families = FAMILIES
+    require(not isinstance(families, str), "Families must be a sequence")
+    families = tuple(families)
+    require(families and len(set(families)) == len(families) and set(families) <= set(FAMILIES), "Unknown or empty Hi-res family selection")
+    known = {a.key+suffix+ext for a in ASSETS for suffix in (("", ".mud") if a.kind == "TSET" else ("",))
+             for ext in (".png", ".2ktexmaster")}
+    for path in folder.iterdir():
+        if path.suffix.lower() in (".png", ".2ktexmaster"):
+            require(path.name in known, f"Unknown Hi-res artwork: {path.name}")
     result = {}
     for asset in ASSETS:
-        paths = [folder/(asset.key+ext) for ext in (".png", ".2ktexmaster")]
-        paths = [p for p in paths if p.exists() or p.is_symlink()]
-        require(len(paths) <= 1, f"{asset.key}: choose either PNG or master, not both")
-        if not paths:
+        if asset_family(asset) not in families:
             continue
-        path = paths[0]
-        _, payload = read_bounded_regular_file(path, "Hi-res artwork", maximum=32*1024**2)
-        detail = dict(path=str(path), file_sha256=sha(payload), kind=path.suffix[1:])
-        if path.suffix == ".png":
-            rgba = texture.png_rgba(payload, asset)
-            detail["authored_png_sha256"] = sha(payload)
-        else:
-            # Bound expanded work before the general master loader renders it.
-            # In particular, a tiny ZIP must not summon three 64-Mpixel canvases.
-            with zipfile.ZipFile(io.BytesIO(payload)) as zipped:
-                infos = zipped.infolist()
-                require(len(infos) in (4, 5) and sum(i.file_size for i in infos) <= 64*archive.BLOCK,
-                        "Hi-res master exceeds the 64 MiB expanded bound")
-                manifest = zipped.getinfo("manifest.json")
-                require(manifest.file_size <= 256*1024, "Master manifest exceeds bound")
-                doc = json.loads(zipped.read(manifest))
-                require(isinstance(doc, dict) and isinstance(doc.get("native"), dict)
-                        and isinstance(doc.get("source"), dict), "Malformed master manifest")
-                require((doc["native"].get("width"),doc["native"].get("height")) == (asset.native,asset.native),
-                        f"{asset.key}: master native canvas differs")
-                w, h = doc["source"].get("width"),doc["source"].get("height")
-                require(type(w) is int and type(h) is int and w > 0 and h > 0 and w*h <= 16*1024**2,
-                        "Hi-res master source exceeds 16 megapixels")
-            bundle = texture_master.load_texture_master_bundle(path)
-            doc = bundle.manifest
-            require(doc["editor_target"] == "nfl2k5_xbox", "Only NFL 2K5 literal-color masters are supported")
-            require((doc["native"]["width"], doc["native"]["height"]) == (asset.native, asset.native),
-                    f"{asset.key}: master native canvas differs")
-            # The loader re-renders and authenticates this preview including any
-            # native paint overlay. A 4x preview is reduced once to the 2x pilot.
-            with Image.open(io.BytesIO(bundle.high_resolution_png)) as image:
-                raster = image.convert("RGBA")
-                if bundle.high_resolution_scale != 2:
-                    raster = raster.resize((asset.native*2, asset.native*2), Image.Resampling.LANCZOS)
-                rgba = raster.tobytes()
-            detail.update(master_source_sha256=sha(bundle.source_bytes), master_asset_id=bundle.asset_id,
-                authored_png_sha256=sha(bundle.high_resolution_png), transform=doc["transform"],
-                native_raster_edit=doc["native_raster_edit"], preview_scale=bundle.high_resolution_scale,
-                conversion="validated master preview to 2x, Lanczos only when 4x")
-            require(archive.file_hash(path) == detail["file_sha256"], "Master changed while reading")
-        detail["rgba_sha256"] = sha(rgba)
-        result[asset.key] = (rgba, detail)
+        entries = []
+        suffixes = ("", ".mud") if asset.kind == "TSET" else ("",)
+        for suffix in suffixes:
+            paths = [folder/(asset.key+suffix+ext) for ext in (".png", ".2ktexmaster")]
+            paths = [p for p in paths if p.exists() or p.is_symlink()]
+            require(len(paths) <= 1, f"{asset.key}: choose either PNG or master, not both")
+            if paths:
+                _, detail = _load_artwork(asset, paths[0])
+                entries.append(detail)
+        require(not entries or len(entries) == len(suffixes), f"{asset.key}: supply both clean and .mud artwork")
+        if entries:
+            result[asset.key] = entries
     _selection(result)
-    return result
+    return FolderSources(result)
+
+
+def preflight_budget(folder, *, scale=2, target="xemu-64", families=None):
+    """Build-tab budget before texture encoding or creating an output copy."""
+    require(target == "xemu-64", "128 MiB target unavailable: the guest memory and GPU address path is unproved")
+    sources = load_folder(folder, families=families)
+    report = budget.model(_selection(sources), scale)
+    budget.enforce(report)
+    return report
 
 
 def _compile(payload, sources, scale, target):
@@ -149,11 +216,14 @@ def _compile(payload, sources, scale, target):
     assets = _selection(sources)
     require(set(payload) == set(sources), "Resource and selected artwork identities differ")
     # Validate every wrapper/system before any encoding or proposed mutation.
-    inspected = {a.key: texture.inspect_span(payload[a.key], a) for a in assets}
+    require(sum(len(raw) for raw in payload.values()) <= 256*archive.BLOCK, "Selected resources exceed 256 MiB host bound")
+    inspected = {a.key: texture.inspect_span(payload[a.key], a)[0] for a in assets}
+    budget.enforce(budget.model(assets, scale))
     output, rows, states = {}, [], set()
     for asset in assets:
         key = asset.key
-        before, system = inspected[key]
+        before = inspected[key]
+        _, system = texture.inspect_span(payload[key], asset)
         rgba, source = sources[key]
         raw, compiled = texture.compile_texture(system, rgba, asset, scale)
         if sha(payload[key]) == asset.retail_sha256:
@@ -164,31 +234,34 @@ def _compile(payload, sources, scale, target):
             state = f"authored-{before['scale']}x"
         states.add(state)
         output[key] = raw
+        require(sum(map(len, output.values())) <= 256*archive.BLOCK, "Compiled resources exceed 256 MiB host bound")
         rows.append(dict(key=key, outer=asset.outer, chunk=asset.chunk, name_id=asset.name_id,
-                         texture=asset.name, input=source, before=before, after=compiled["decoded"],
+                         texture=asset.name, family=asset_family(asset), input=source, before=before, after=compiled["decoded"],
                          compiler=compiled, prior_state=state, changed=raw != payload[key]))
     require(len(states) == 1, "Mixed retail/authored or mixed-scale selection; rebuild the selected set from retail")
+    live_budget = budget.model(assets, scale, rows=rows)
+    budget.enforce(live_budget)
     video = sum(row["after"]["video_bytes"] for row in rows)
-    native_video = sum(sum(w*h for w, h in a.dimensions(1))+1024 for a in assets)
+    native_video = sum(a.original_video if a.kind == "SCNE" else a.video_size(1) for a in assets)
     return output, dict(schema=SCHEMA, experimental=True, runtime_witnessed=False, target=target, scale=scale,
         status="applied" if all(not r["changed"] for r in rows) else next(iter(states)), assets=rows,
         already_applied=all(not r["changed"] for r in rows),
-        memory=dict(selected_video_bytes=video, native_video_bytes=native_video, video_delta=video-native_video,
+        memory=dict(live_budget, selected_video_bytes=video, native_video_bytes=native_video, video_delta=video-native_video,
                     selected_load_allocation_bytes=sum(r["after"]["load_allocation_bytes"] for r in rows),
                     nominal_64_mib_fraction=video/(64*1024**2), nominal_128_mib_fraction=video/(128*1024**2),
                     peak_scene_measured=False, target_128_available=False,
-                    exclusions="Other resources, heap headers, alignment, transitions, host textures/framebuffers"))
+                    exclusions="See unknowns; host texture caches and framebuffers are separate from guest RAM"))
 
 
-def apply(payload, folder, *, scale=2, target="xemu-64"):
-    """Pure resource apply: mapping of selected key -> complete TXTR bytes, plus receipt."""
-    return _compile(payload, load_folder(folder), scale, target)
+def apply(payload, folder, *, scale=2, target="xemu-64", families=None):
+    """Pure apply of selected key -> complete TXTR/TSET/SCNE span, plus receipt."""
+    return _compile(payload, load_folder(folder, families=families), scale, target)
 
 
-def status(payload, folder, *, scale=2, target="xemu-64"):
+def status(payload, folder, *, scale=2, target="xemu-64", families=None):
     """Exact recipe-relative state, including foreign/mixed refusal without mutation."""
     try:
-        return apply(payload, folder, scale=scale, target=target)[1]["status"]
+        return apply(payload, folder, scale=scale, target=target, families=families)[1]["status"]
     except (ValueError, OSError, ValidationError, zipfile.BadZipFile, KeyError):
         return "foreign"
 
@@ -196,27 +269,50 @@ def status(payload, folder, *, scale=2, target="xemu-64"):
 def _read(disc, keys):
     assets = _selection(keys)
     spans, positions = {}, {}
+    groups = {}
     for asset in assets:
-        require(asset.outer < len(disc.archive_entries), "Pilot outer is missing")
-        entry = disc.archive_entries[asset.outer]
-        require(entry.name_id == asset.name_id and entry.size <= 32*archive.BLOCK, "Foreign pilot outer identity/size")
+        groups.setdefault(asset.outer, []).append(asset)
+    for outer, group in groups.items():
+        require(0 <= outer < len(disc.archive_entries), "Selected outer is missing")
+        entry = disc.archive_entries[outer]
+        require(all(entry.name_id == a.name_id for a in group) and entry.size <= 32*archive.BLOCK, "Foreign selected outer identity/size")
         container = disc.read_entry_range(entry, 0, entry.size)
-        walked = list(archive.chunks(container))
-        require(asset.chunk < len(walked), "Pilot chunk is missing")
-        _, at, raw = walked[asset.chunk]
-        disc.containers[asset.outer] = container
-        spans[asset.key] = raw
-        positions[asset.key] = dict(outer_offset=entry.virtual_offset, outer_size=entry.size, chunk_offset=at,
-            virtual_offset=entry.virtual_offset+at, outer_sha256=sha(container),
-            segments=[dict(pack=s.pack_name, offset=s.pack_offset, size=s.size) for s in entry.segments])
+        wanted = {a.chunk: a for a in group}
+        found = set()
+        for index, at, raw in archive.chunks(container):
+            if index not in wanted:
+                continue
+            asset = wanted[index]
+            found.add(index)
+            spans[asset.key] = raw
+            positions[asset.key] = dict(outer_offset=entry.virtual_offset, outer_size=entry.size, chunk_offset=at,
+                virtual_offset=entry.virtual_offset+at, outer_sha256=sha(container),
+                segments=[dict(pack=s.pack_name, offset=s.pack_offset, size=s.size) for s in entry.segments])
+        require(found == set(wanted), "Selected chunk is missing")
+        require(sum(map(len, spans.values())) <= 256*archive.BLOCK, "Selected resources exceed 256 MiB host bound")
     return spans, positions
 
 
-def inspect_image(source, folder=None, *, scale=2, target="xemu-64"):
+def _rewrite(disc, replacements):
+    containers = {}
+    by_chunk = {(texture.BY_KEY[k].outer, texture.BY_KEY[k].chunk): raw for k, raw in replacements.items()}
+    for outer in sorted({o for o, _ in by_chunk}):
+        entry = disc.archive_entries[outer]
+        require(entry.size <= 32*archive.BLOCK, "Outer exceeds bound")
+        disc.containers = {outer: disc.read_entry_range(entry, 0, entry.size)}
+        containers.update(archive.rewrite_containers(disc, by_chunk))
+        require(sum(map(len, containers.values())) <= 768*archive.BLOCK, "Rewritten containers exceed 768 MiB host bound")
+    disc.containers.clear()
+    return containers
+
+
+def inspect_image(source, folder=None, *, scale=2, target="xemu-64", families=None):
     """Fresh XDVDFS/archive inspection. Without artwork, nonretail bytes are unverified."""
-    sources = load_folder(folder) if folder is not None else None
+    require(type(scale) is int and scale in (1, 2), "Only native or 2x output is supported")
+    require(target == "xemu-64", "128 MiB target unavailable: the guest memory and GPU address path is unproved")
+    sources = load_folder(folder, families=families) if folder is not None else None
     with archive.Disc(source, descriptors=()) as disc:
-        spans, positions = _read(disc, sources if sources is not None else texture.BY_KEY)
+        spans, positions = _read(disc, sources if sources is not None else (a.key for a in texture.PILOT_ASSETS))
         consumers = _consumer_check(disc, tuple(spans))
         if sources is not None:
             _, receipt = _compile(spans, sources, scale, target)
@@ -232,6 +328,7 @@ def inspect_image(source, folder=None, *, scale=2, target="xemu-64"):
                 rows.append(item)
             states = {r["status"] for r in rows}
             receipt = dict(schema=SCHEMA, experimental=True, runtime_witnessed=False, assets=rows,
+                           inspection_scope="legacy pilot probes; supply a folder to inspect selected families",
                            status=next(iter(states)) if len(states) == 1 else "mixed")
         return dict(receipt, image_size=disc.image_size, locations=positions, consumer_xbe=consumers)
 
@@ -274,19 +371,18 @@ def _verify(source, output, geometry, containers, expected, progress):
                     output_sha256=archive.digest(new.read, new.image_size))
 
 
-def build_image(source, output, folder, *, scale=2, target="xemu-64", overwrite=False, progress=None):
+def build_image(source, output, folder, *, scale=2, target="xemu-64", families=None, overwrite=False, progress=None):
     """Compile first, then reuse the music grow/shrink writer and publication transaction."""
     start = time.monotonic()
     progress = progress or (lambda *_: None)
     source = Path(source).resolve()
-    sources = load_folder(folder)
+    sources = load_folder(folder, families=families)
     before_identity = archive.identity(source)
     with archive.Disc(source, descriptors=()) as disc:
         spans, positions = _read(disc, sources)
         consumers = _consumer_check(disc, tuple(sources))
         replacements, receipt = _compile(spans, sources, scale, target)
-        containers = archive.rewrite_containers(disc, {(texture.BY_KEY[k].outer, texture.BY_KEY[k].chunk): v
-                                                      for k, v in replacements.items()})
+        containers = _rewrite(disc, replacements)
         geometry = archive.layout(disc, {i: len(b) for i, b in containers.items()})
         source_hash = archive.digest(disc.read, disc.image_size)
         require(archive.identity(source) == before_identity, "Source changed while compiling")
@@ -295,13 +391,14 @@ def build_image(source, output, folder, *, scale=2, target="xemu-64", overwrite=
                        layout=geometry, logical_growth=geometry["virtual_size"]-disc.packs[-1].virtual_end,
                        physical_growth=geometry["image_size"]-disc.image_size,
                        planning_seconds=time.monotonic()-start)
-    input_paths = [value[1]["path"] for value in sources.values()]
-    require(all(archive.file_hash(path) == sources[key][1]["file_sha256"]
-                for key, (_, detail) in sources.items() for path in [detail["path"]]), "Artwork changed while compiling")
+    input_details = sources.input_details()
+    input_paths = [detail["path"] for detail in input_details]
+    require(all(archive.file_hash(detail["path"]) == detail["file_sha256"]
+                for detail in input_details), "Artwork changed while compiling")
 
     def build(_directory, staged):
         require(all(archive.file_hash(detail["path"]) == detail["file_sha256"]
-                    for _, detail in sources.values()), "Artwork changed before write")
+                    for detail in input_details), "Artwork changed before write")
         with archive.Disc(source, descriptors=()) as disc:
             current, _ = _read(disc, sources)
             require(current == spans and archive.layout(disc, {i: len(b) for i, b in containers.items()}) == geometry,
@@ -323,21 +420,33 @@ def build_image(source, output, folder, *, scale=2, target="xemu-64", overwrite=
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("status", "inspect_image", "apply"))
-    parser.add_argument("source", type=Path)
+    parser.add_argument("command", choices=("catalog", "budget", "status", "inspect_image", "apply"))
+    parser.add_argument("source", type=Path, nargs="?")
     parser.add_argument("--folder", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--scale", type=int, choices=(1, 2), default=2)
     parser.add_argument("--target", choices=("xemu-64", "xemu-128"), default="xemu-64")
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--family", choices=FAMILIES, action="append", dest="families")
     args = parser.parse_args(argv)
-    if args.command == "apply":
-        if args.folder is None or args.output is None:
-            parser.error("apply requires --folder and --output")
+    if args.command == "catalog":
+        result = dict(schema=SCHEMA, experimental=True, runtime_witnessed=False,
+                      families=FAMILIES, assets=[dict(asdict(a), family=asset_family(a),
+                          input_width=a.native*2, input_height=a.height*2, mud_pair_required=a.kind == "TSET")
+                          for a in ASSETS if args.families is None or asset_family(a) in args.families])
+    elif args.command == "budget":
+        if args.folder is None:
+            parser.error("budget requires --folder")
+        result = preflight_budget(args.folder, scale=args.scale, target=args.target, families=args.families)
+    elif args.command == "apply":
+        if args.source is None or args.folder is None or args.output is None:
+            parser.error("apply requires source, --folder and --output")
         result = build_image(args.source, args.output, args.folder, scale=args.scale,
-                             target=args.target, overwrite=args.overwrite)
+                             target=args.target, families=args.families, overwrite=args.overwrite)
     else:
-        result = inspect_image(args.source, args.folder, scale=args.scale, target=args.target)
+        if args.source is None:
+            parser.error("inspection requires source")
+        result = inspect_image(args.source, args.folder, scale=args.scale, target=args.target, families=args.families)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 

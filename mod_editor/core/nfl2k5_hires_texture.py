@@ -1,12 +1,13 @@
-"""Bounded P8 compiler for the three EXPERIMENTAL / UNWITNESSED hires pilots.
+"""Bounded P8 family compiler. EXPERIMENTAL / UNWITNESSED.
 
-This is deliberately separate from the fixed-span texture writers. Only the
-two size words in the pinned system object change. No shared TSET, linear
-strip, embedded texture, font, cube map, or runtime allocation is accepted.
+This is separate from the fixed-span writers. Ordinary TXTRs change two
+descriptor words. Pinned two-palette jersey TSETs and appended SCNE midfield
+rasters have separate layout validators. Linear name strips remain refused.
 """
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from functools import lru_cache
 import hashlib
 import io
 import struct
@@ -15,8 +16,9 @@ from PIL import Image
 from tools import nfl_txtr as txtr
 from tools import nfl_tset_png_import as palettes
 
-VERSION = "nfl2k5_hires_texture/v1"
+VERSION = "nfl2k5_hires_texture/v2"
 MAX_SPAN = 2 * 1024**2
+MAX_SCENE_SPAN = 8 * 1024**2
 
 
 def require(ok, message):
@@ -42,14 +44,41 @@ class Asset:
     offset_bits: int
     retail_sha256: str
     system_sha256: str
+    native_height: int = 0
+    family: str = ""
+    kit: str = ""
+    kind: str = "TXTR"
+    system_size: int = 128
+    second_descriptor: int = 0
+    original_video: int = 0
+    original_pixels: int = 0
+    original_palette: int = 0
+    baseline_sha256: str = ""
+
+    @property
+    def height(self):
+        return self.native_height or self.native
+
+    @property
+    def palette_count(self):
+        return 2 if self.kind == "TSET" else 1
+
+    @property
+    def consumer(self):
+        return {"helmets": "helmet", "field_logos": "field_logo", "stock_fields": "stock_fields",
+                "numbers": "numbers", "jerseys": "jerseys", "scorebug": "scorebug"}.get(self.family, self.key)
 
     def dimensions(self, scale):
         require(type(scale) is int and scale in (1, 2), "Only native or 2x output is supported")
-        return [(self.native * scale >> i, self.native * scale >> i) for i in range(self.levels)]
+        return [(self.native * scale >> i, self.height * scale >> i) for i in range(self.levels)]
 
     def format_word(self, scale):
         exponent = (self.native * scale).bit_length() - 1
-        return 0xB29 | (self.levels << 16) | (exponent << 20) | (exponent << 24)
+        height_exponent = (self.height * scale).bit_length() - 1
+        return 0xB29 | (self.levels << 16) | (exponent << 20) | (height_exponent << 24)
+
+    def video_size(self, scale):
+        return sum(w*h for w, h in self.dimensions(scale)) + 1024*self.palette_count
 
 
 ASSETS = (
@@ -63,11 +92,18 @@ ASSETS = (
           "c6f56638ebf3c77993d87f810cd31b6d7abc2b754da8172ed5184e4bc7508725",
           "3204efb25d509873cffe3e0d17c2d43c9fe77010a34d023b4e608bccec70b133"),
 )
+PILOT_ASSETS = ASSETS
+# Generated, reviewable metadata only; no game bytes or runtime research files.
+from .nfl2k5_hires_catalog import ROWS
+ASSETS = ASSETS + tuple(Asset(**row) for row in ROWS)
 BY_KEY = {a.key: a for a in ASSETS}
 
 
 def inspect_span(raw, asset):
     """Validate layout before decode. Structural validity alone is not ownership."""
+    if asset.kind != "TXTR":
+        from .nfl2k5_hires_layouts import inspect_span as inspect_layout
+        return inspect_layout(raw, asset)
     require(isinstance(raw, bytes) and 42 <= len(raw) <= MAX_SPAN, "Texture span exceeds bounds")
     fields = txtr.HEADER.unpack_from(raw)
     kind, stored, system, video, magic, scratch, r0, r1 = fields
@@ -115,17 +151,22 @@ def inspect_span(raw, asset):
 def png_rgba(payload, asset):
     require(isinstance(payload, bytes) and 0 < len(payload) <= 32*1024**2, "PNG exceeds 32 MiB")
     with Image.open(io.BytesIO(payload)) as image:
-        require(image.format == "PNG" and image.size == (asset.native*2, asset.native*2)
-                and getattr(image, "n_frames", 1) == 1, f"{asset.key}: supply an exact {asset.native*2}x{asset.native*2} PNG")
+        require(image.format == "PNG" and image.size == (asset.native*2, asset.height*2)
+                and getattr(image, "n_frames", 1) == 1, f"{asset.key}: supply an exact {asset.native*2}x{asset.height*2} PNG")
         return image.convert("RGBA").tobytes()
 
 
 def _mips(rgba, asset, scale):
+    return _raster_mips(rgba, asset.native, asset.height, asset.levels, scale)
+
+
+@lru_cache(maxsize=4)
+def _raster_mips(rgba, native, native_height, levels, scale):
     """Same round-half-up RGBA box rule as the retail live-helmet importer."""
     result = []
-    width = height = asset.native*2
+    width, height = native*2, native_height*2
     # Native output starts from the retained 2x authoring raster, never P8 output.
-    count = asset.levels + (1 if scale == 1 else 0)
+    count = levels + (1 if scale == 1 else 0)
     current = rgba
     for level in range(count):
         if level >= (1 if scale == 1 else 0):
@@ -147,11 +188,14 @@ def _mips(rgba, asset, scale):
 
 
 def compile_texture(system, rgba, asset, scale):
+    if asset.kind != "TXTR":
+        from .nfl2k5_hires_layouts import compile_texture as compile_layout
+        return compile_layout(system, rgba, asset, scale)
     require(sha(system) == asset.system_sha256, "Compiler requires the pinned native system object")
-    require(len(rgba) == (asset.native*2)**2*4, "Authored raster size differs")
+    require(len(rgba) == asset.native*asset.height*16, "Authored raster size differs")
     asset.dimensions(scale)
     levels = _mips(rgba, asset, scale)
-    palette, indices, quality = palettes.quantize_levels(levels)
+    palette, indices, quality = _quantized(rgba, asset.native, asset.height, asset.levels, scale)
     video = b"".join(txtr.swizzle_2d(ind, mip.width, mip.height, 1)
                      for ind, mip in zip(indices, levels)) + palettes.palette_bytes(palette)
     header = bytearray(system)
@@ -167,6 +211,11 @@ def compile_texture(system, rgba, asset, scale):
     checked, _ = inspect_span(raw, asset)
     for mip, ind, result in zip(levels, indices, checked["mips"]):
         require(result["rgba_sha256"] == sha(palettes.rgba_from_indices(ind, palette)), "Mip read-back differs")
-    return raw, dict(compiler=VERSION, quality=quality, encoder=asdict(compression),
+    return raw, dict(compiler=VERSION, quality=dict(quality), encoder=asdict(compression),
                      mip_policy="retain-retail-count", mip_filter="RGBA box, round half up",
                      decoded=checked, authored_rgba_sha256=sha(rgba))
+
+
+@lru_cache(maxsize=4)
+def _quantized(rgba, width, height, levels, scale):
+    return palettes.quantize_levels(_raster_mips(rgba, width, height, levels, scale))

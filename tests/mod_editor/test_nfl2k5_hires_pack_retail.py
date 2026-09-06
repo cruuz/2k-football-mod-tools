@@ -30,7 +30,7 @@ class RetailTests(unittest.TestCase):
         if not SOURCE.is_file():
             raise unittest.SkipTest("Retail NFL 2K5 XISO absent; set NFL2K5_HIRES_TEST_IMAGE to a retail evidence copy")
         with archive.Disc(SOURCE,descriptors=()) as disc:
-            cls.resources,_ = pack._read(disc,texture.BY_KEY)
+            cls.resources,_ = pack._read(disc,(a.key for a in texture.PILOT_ASSETS))
             entry = disc.entries["default.xbe"]
             if entry.size > 16*archive.BLOCK:
                 raise AssertionError("oversized XBE")
@@ -38,14 +38,14 @@ class RetailTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory()
         cls.addClassCleanup(cls.temp.cleanup)
         cls.folder = Path(cls.temp.name).resolve()
-        for a in pack.ASSETS:
+        for a in texture.PILOT_ASSETS:
             size = a.native*2
             rgba = bytes(c for y in range(size) for x in range(size)
                          for c in (255 if x%2 else 0,255 if y%2 else 0,0,255))
             Image.frombytes("RGBA",(size,size),rgba).save(cls.folder/(a.key+".png"))
 
     def test_exact_pilot_pins_and_selector_names(self):
-        for a in pack.ASSETS:
+        for a in texture.PILOT_ASSETS:
             with self.subTest(asset=a.key):
                 self.assertEqual(texture.sha(self.resources[a.key]),a.retail_sha256)
                 info,_ = texture.inspect_span(self.resources[a.key],a)
@@ -67,7 +67,7 @@ class RetailTests(unittest.TestCase):
         enlarged,receipt = pack.apply(self.resources,self.folder)
         self.assertEqual(receipt["memory"]["selected_video_bytes"],718336)
         self.assertEqual(receipt["memory"]["video_delta"],536448)
-        for a in pack.ASSETS:
+        for a in texture.PILOT_ASSETS:
             raw = enlarged[a.key]
             decoded,_ = texture.txtr.decode_chunk(raw,texture.txtr.parse_chunks(raw)[0])
             original,_ = texture.txtr.decode_chunk(self.resources[a.key],texture.txtr.parse_chunks(self.resources[a.key])[0])
