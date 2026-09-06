@@ -154,7 +154,7 @@ class PatchWriteTests(unittest.TestCase):
             raise AssertionError("abilities owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
-            raise AssertionError("QB spy owner missing from the composed XBE")
+            raise AssertionError("Zone/man/rush QB spy owner missing from the composed XBE")
         # The wider CB tiers remain deferred. Verify the shipped cap, Spy's
         # exclusive callback detours and separate Coverage/catch dependencies
         # on the real complete union in every inherited installation order.
@@ -466,6 +466,13 @@ class PatchWriteTests(unittest.TestCase):
         self.assertTrue(image.runtime_writable(data["va"], data["size"]))
         self.assertEqual(image.read(data["va"], data["size"]), bytes(768))
         self.assertEqual(spy.validate_intent_table(image.read(ro["va"], ro["size"])), 0)
+        # Initializers retain their native dispatch-table destinations. Only
+        # the immediate callback address changes, into this owner's RX span.
+        for name, (va, old) in spy.INITIALIZERS.items():
+            installed = image.read(va, len(old))
+            self.assertEqual(installed[:6], old[:6])
+            target = int.from_bytes(installed[6:], 'little')
+            self.assertEqual(target, code['va']+spy.assembly.LABELS[name])
         writes = absolute_writes(self.patched, [(code["va"], code["va"] + spy.assembly.LABELS["config"])])
         absolute = [w for w in writes if w["target"] is not None]
         self.assertTrue(absolute)

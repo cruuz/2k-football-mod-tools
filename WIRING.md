@@ -7395,3 +7395,129 @@ one union; absent/foreign/applied states in all four dictionaries; exact replay;
 both XBE gates, the three new standalone suites, capability file validation,
 staged runtime closure, regenerated manifest and Noah's paired-snap protocol.
 Do not label the timing values calibrated or gameplay witnessed.
+
+# r62 QB spy from man and rush, 2026-09-06
+
+This section supersedes the earlier zone-only QB-spy handoff. Backend owner
+`nfl2k5_qb_spy` now installs zone, man and rush entry paths atomically through
+`mod_editor/core/nfl2k5_qb_spy_runtime.py`. Keep the existing **`qb_spy`** flag.
+**EXPERIMENTAL / UNWITNESSED.** No protected file was edited in this branch.
+
+## Allocation and source rebuild
+
+The owner's complete requests are now `(code, 2048, 16)`, `(data, 768, 16)` and
+`(read_only, 512, 16)`. This is 512 additional RX bytes and no additional RW/RO.
+The request union, fixture, both gate compositions and manifest builder use
+the same existing owner. Do not add a second owner or duplicate its rows.
+The native callback identities remain retail: seven callback entry detours
+delegate to the same spy dispatcher/table, and three dispatch wrappers execute
+their native initializer once then clear stale records. See the report for why
+replacing callback pointers would break native man exchange comparisons.
+
+An installed 1536-byte revision-1 allocation is immutable and now reports
+`foreign`; apply refuses with an explicit rebuild-from-base message. Rebuild
+from the original supported source with all selected requests, recompile the
+paired intent table and reapply owners. Never upgrade an installed request set
+or copy its old hooks into the new allocation. The loaded PLAY v1 table remains
+unchanged: authored spies use legal shallow-zone fallback, while the native Spy
+command also works on supported man/rush callbacks after initialization.
+
+## Dispatcher, BuildPlan and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, keep the existing
+`qb_spy: bool = False` and `qb_spy_intent_table: bytes | None = None` keyword
+arguments on `_apply_all`, `write_xbe_copy` and `write_image_copy`, with the
+existing table/flag validation and `_qb_spy_adapter`. Its apply must continue
+to call `qb_spy_patch.apply(payload, intent_table=self.table)`.
+
+Update the existing final owners tuple after the allocator entry to:
+
+```python
+(qb_spy, _qb_spy_adapter(qb_spy_intent_table),
+ "qb_spy_patch", "QB spy for zone, man and rush (experimental)"),
+```
+
+Keep `_selected_space_requests`'s `+ (qb_spy_patch.REQUESTS if qb_spy else ())`
+and the existing `qb_spy` argument/condition in `_xbe_space_adapter`. They pick
+up the grown request automatically before the first allocation. Keep the
+`_grown_status_fields` member `"qb_spy": qb_spy_patch.status(payload)` and its
+existing expansion in **all four dictionaries**:
+
+| Dictionary | Status bytes |
+| --- | --- |
+| `read_xbe` | input `payload` |
+| `read_image` | extracted input `payload` |
+| `write_xbe_copy` | completed `patched` |
+| `write_image_copy` | completed `final` |
+
+In protected `mod_editor/core/mod_build.py`, retain `BuildPlan.qb_spy: bool =
+False`; update its comment to zone/man/rush. Basic (`softdrink_basic`), Advanced
+(`softdrink_modern`) and Experimental (`softdrink_experimental`) all explicitly
+keep `qb_spy=False`. Retain wants-XBE detection, `xbe_space` normalization,
+runtime-closure selection, early `qb_spy=False` deferral, the full selected
+request union, and final `qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table`.
+Continue compiling `spy_pairs` before the final pass and preserving table
+receipts. The existing empty table supports command-only builds. No new
+BuildPlan field or preset enablement is needed.
+
+## Gameplay Patches and Build captions
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, replace the existing
+PATCHES row with:
+
+```python
+("qb_spy", "QB spy for zone, man and rush (experimental)",
+ tt.qb_spy_patch.HELP_TEXT),
+```
+
+Keep `"qb_spy"` in `NEEDS_IMAGE`. HELP_TEXT now contains both required words
+**Retail** and **Patch**, explains four-yard tracking and release, retains the
+experimental/unwitnessed label and states that authored plays keep their zone
+fallback. Do not retain the earlier claim that man/rush needs a future patch.
+
+In protected `mod_editor/gui/build_panel_qt.py`, use this existing control:
+
+```python
+self.qb_spy_check = self._option(
+    g, "qb_spy", "QB spy for zone, man and rush (experimental)",
+    tt.qb_spy_patch.HELP_TEXT, badge="EXPERIMENTAL / UNWITNESSED",
+    needs_image=True)
+```
+
+The caption is 44 characters, under the 60-character limit. Keep checkbox
+serialization, source-image gating and BuildPlan forwarding as already wired.
+
+## Packaging, registry and release ownership
+
+These exact protected `packaging/release-allowlist.txt` lines already exist;
+retain them, with no new runtime file required:
+
+```text
+mod_editor/core/nfl2k5_qb_spy_runtime.py
+mod_editor/core/nfl2k5_qb_spy_runtime_code.py
+docs/mod_editor/nfl2k5_qb_spy_runtime_capability.json
+```
+
+Retain these imports in protected
+`packaging/check_2k5_mod_studio_runtime.py` and Build's closure:
+
+```text
+mod_editor.core.nfl2k5_qb_spy_runtime
+mod_editor.core.nfl2k5_qb_spy_runtime_code
+mod_editor.core.nfl2k5_xbe_space
+```
+
+Assembly, GNU as, Capstone and Unicorn remain development/test dependencies.
+Update the existing `nfl2k5.gameplay.qb_spy` capability from the revised
+`docs/mod_editor/nfl2k5_qb_spy_runtime_capability.json`; the existing
+`gameplay_tuning_sliders` surface and default-off classification remain. Both
+commands now use resolvable `python3 -m` modules. The bounded standalone copy
+recipe refuses existing output paths and validates everything before opening
+an output. It does not update an old installed allocation in place.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` after
+merging final sources. The current manifest builder enumerates this owner in
+all its existing lists and observes the additional live hooks/reservations.
+Run both XBE gates, capability file validation and staged runtime closure after
+the text/registry/manifest handoff. Gameplay acceptance remains Noah's witness
+list in `ASTRA_QB_SPY_MAN_RUSH_REPORT.md`.

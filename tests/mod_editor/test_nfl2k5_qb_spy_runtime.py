@@ -9,6 +9,7 @@ import shutil
 import struct
 import subprocess
 import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -45,12 +46,13 @@ class TableTests(unittest.TestCase):
         table, receipt = spy.compile_intent_table()
         self.assertEqual(spy.validate_intent_table(table), 0)
         self.assertEqual(receipt['capacity'], 31)
-        self.assertEqual(spy.CODE_SIZE + spy.TABLE_SIZE, 0x800)
+        self.assertEqual(spy.CODE_SIZE, 0x800)
+        self.assertEqual(spy.TABLE_SIZE, 0x200)
         self.assertEqual(spy.DATA_SIZE, 0x300)
         self.assertLessEqual(len(spy.assembly.CODE), spy.CODE_SIZE)
         budgets = json.loads((ROOT / 'tests/fixtures/nfl2k5_allocator_beta62_requests.json').read_text())
-        requests = [r for r in budgets if r[0] != spy.OWNER] + list(spy.REQUESTS)
-        plan = space.plan(requests)
+        self.assertEqual(sorted(tuple(r) for r in budgets if r[0] == spy.OWNER), sorted(spy.REQUESTS))
+        plan = space.plan(budgets)
         self.assertTrue(plan)
 
     def test_foreign_header_padding_version_rows_and_capacity(self):
@@ -110,6 +112,28 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(self.receipt['changed_bytes'], sum(a != b for a, b in zip(self.retail, self.patched)) + len(self.patched)-len(self.retail))
         for s in _sections(self.patched): self.assertEqual(section_digest(self.patched, s), s.stored_digest)
 
+    def test_module_copy_recipe_refuses_existing_output_and_oversized_input(self):
+        with tempfile.TemporaryDirectory(prefix='spy-copy-') as directory:
+            root = Path(directory).resolve()
+            output = root / 'spy.xbe'
+            command = [sys.executable, '-m', 'mod_editor.core.nfl2k5_qb_spy_runtime', str(XBE), str(output)]
+            result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(output.read_bytes(), self.patched)
+            self.assertEqual(json.loads(result.stdout)['tier'], 'zone-man-rush')
+            original = hashlib.sha256(output.read_bytes()).hexdigest()
+            replay = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+            self.assertNotEqual(replay.returncode, 0)
+            self.assertEqual(hashlib.sha256(output.read_bytes()).hexdigest(), original)
+            oversized = root / 'disc-by-mistake.iso'
+            with oversized.open('wb') as source: source.truncate(12_300_289)
+            refused = root / 'refused.xbe'
+            result = subprocess.run(command[:2]+['mod_editor.core.nfl2k5_qb_spy_runtime', str(oversized), str(refused)],
+                                    cwd=ROOT, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('bounded XBE', result.stderr)
+            self.assertFalse(refused.exists())
+
     def test_authored_table_replay_preserves_omitted_and_refuses_reconfiguration(self):
         _, compiled = compiled_spy()
         table, _ = spy.compile_intent_table([(compiled.replacement, compiled.report)])
@@ -123,7 +147,8 @@ class WriterTests(unittest.TestCase):
     def test_mixed_hook_code_ro_state_and_dependencies_refuse_before_mutation(self):
         locations = spy.allocations(self.patched)
         image = XbeImage(self.patched)
-        spans = [image.offset(va) for va, _old in spy.HOOKS.values()]
+        spans = [image.offset(va+i) for _name, va, old, _new in spy.sites(locations['code']['va'])
+                 for i in range(len(old))]
         spans += [a['raw'] for a in locations.values()]
         spans += [image.offset(0x1A4170)]
         for offset in spans:
@@ -143,6 +168,34 @@ class WriterTests(unittest.TestCase):
     def test_incomplete_union_requires_rebuild(self):
         base, _ = space.apply(self.retail, (("other_spy_probe", 'code', 16, 16),), scaleout=True)
         with self.assertRaisesRegex(spy.QbSpyError, 'allocation missing'): spy.apply(base)
+
+    def test_older_immutable_request_requires_base_rebuild(self):
+        old_requests = tuple((owner, kind, 1536 if kind == 'code' else size, align)
+                             for owner, kind, size, align in spy.REQUESTS)
+        old, _ = space.apply(self.retail, old_requests, scaleout=True)
+        self.assertEqual(spy.status(old), 'foreign')
+        with self.assertRaisesRegex(spy.QbSpyError, 'rebuild from base'):
+            spy.apply(old)
+
+    def test_existing_qb_spy_flag_drives_all_four_status_dictionaries(self):
+        from mod_editor.core import nfl2k5_throw_tuning as tt, mod_build
+        from tests.mod_editor.test_nfl2k5_xbe_space import image_with_xbe
+        with tempfile.TemporaryDirectory(prefix='spy-status-') as directory:
+            root = Path(directory).resolve()
+            for image in (False, True):
+                source = root / ('source.iso' if image else 'source.xbe')
+                target = root / ('output.iso' if image else 'output.xbe')
+                source.write_bytes(image_with_xbe(self.retail) if image else self.retail)
+                source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+                self.assertEqual(tt.read_any(source)['qb_spy'], 'retail')
+                result = (tt.write_image_copy if image else tt.write_xbe_copy)(
+                    source, target, catch_slider=False, qb_spy=True)
+                self.assertEqual(result['qb_spy'], 'applied')
+                self.assertEqual(tt.read_any(target)['qb_spy'], 'applied')
+                payload = mod_build._xbe_bytes(target)
+                self.assertEqual(spy.allocations(payload)['code']['size'], 2048)
+                self.assertEqual(spy.apply(payload)[1]['tier'], 'zone-man-rush')
+                self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), source_hash)
 
     def test_complete_union_both_orders_equal_and_replay(self):
         from tests.nfl2k5_allocator_stack import compose

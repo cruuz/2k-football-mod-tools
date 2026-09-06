@@ -2,29 +2,32 @@
   "backend": {
     "module": "mod_editor/core/nfl2k5_qb_spy_runtime.py",
     "operation": "write",
-    "command": "python3 -c \"from pathlib import Path; from mod_editor.core import nfl2k5_qb_spy_runtime as s; b,r=s.apply(Path('source.xbe').read_bytes())\nwith Path('new-spy.xbe').open('xb') as output: output.write(b)\nprint(r)\""
+    "command": "python3 -m mod_editor.core.nfl2k5_qb_spy_runtime source.xbe new-spy.xbe"
   },
   "classification": "offline-writer-proved",
   "evidence": [
     "ASTRA_QB_SPY_RUNTIME_REPORT.md",
     "tests/mod_editor/test_nfl2k5_qb_spy_runtime.py",
-    "tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py"
+    "tests/mod_editor/test_nfl2k5_qb_spy_unicorn.py",
+    "ASTRA_QB_SPY_MAN_RUSH_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_qb_spy_man_rush.py"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
     "default_enabled": false,
     "expose": true,
     "mode": "edit",
-    "reason": "EXPERIMENTAL / UNWITNESSED. Protected Build and Gameplay integration is specified in WIRING.md; zone-only, all presets off."
+    "reason": "EXPERIMENTAL / UNWITNESSED. Zone, man and rush command spies share the existing opt-in. Protected text updates are specified in WIRING.md; all presets off."
   },
   "id": "nfl2k5.gameplay.qb_spy",
   "input_constraints": [
     "Pinned USA XBE or supported composed source; mixed/foreign bytes refuse before mutation.",
     "Reserve the complete owner union before the first allocation.",
-    "Authored intent requires exact PLAY/compiler receipt pairs; valid empty table enables command spies."
+    "Authored intent requires exact PLAY/compiler receipt pairs; valid empty table enables command spies.",
+    "Revision 1 allocations require rebuilding from base with the grown revision 2 request union."
   ],
   "portme": [
-    "Complete Noah's paired witness list in ASTRA_QB_SPY_RUNTIME_REPORT.md; man/rush is deferred tier 2."
+    "Complete Noah's paired witness list in ASTRA_QB_SPY_MAN_RUSH_REPORT.md."
   ],
   "public_distribution": {
     "game_data": "never-bundle-retail-data",
@@ -34,9 +37,10 @@
   },
   "runtime": {
     "evidence": [
-      "ASTRA_QB_SPY_RUNTIME_REPORT.md"
+      "ASTRA_QB_SPY_RUNTIME_REPORT.md",
+      "ASTRA_QB_SPY_MAN_RUSH_REPORT.md"
     ],
-    "scope": "Bounded spy decisions, target/ABI boundaries and native loader/command/reset instructions. Movement, boot and gameplay are unwitnessed.",
+    "scope": "Bounded shared spy decisions, native man/rush initializer and callback bodies with explicit helper observation boundaries, zone regression, target/ABI and loader/command/reset proofs. Movement, boot and gameplay remain unwitnessed.",
     "status": "not-tested"
   },
   "selectors": {
@@ -47,18 +51,18 @@
         "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in"
       }
     ],
-    "notes": "Zone assignments only; at most 31 authored play/slot records paired with their exact compiler replacement resources. Command spies need no table rows."
+    "notes": "Zone, man and rush commands; authored v1 intent remains a paired shallow-zone fallback with at most 31 records. Command spies need no table rows."
   },
   "source_container": {
     "format": "XBE in XDVDFS",
     "hash_pins": [
       "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
     ],
-    "resource": "five live hooks; owned 1536-byte RX, 768-byte RW and 512-byte RO allocations",
+    "resource": "twelve live entry hooks and three dispatch MOV immediate repoints; owned 2048-byte RX, 768-byte RW and 512-byte RO allocations",
     "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
   },
-  "summary": "Zone defenders retain QB priority, shadow four yards deep and latch pursuit on forward or lateral escape.",
+  "summary": "Zone, man and rush spies share QB priority, four-yard shadowing and latched pursuit on forward or lateral escape. Native man/rush targets and callback identities remain valid for fallback.",
   "surface": "gameplay_tuning_sliders",
-  "title": "QB spy for zone defenders (experimental, unwitnessed)",
-  "validation_command": "python3 tests/mod_editor/test_nfl2k5_qb_spy_runtime.py"
+  "title": "QB spy for zone, man and rush (experimental, unwitnessed)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_qb_spy_man_rush"
 }

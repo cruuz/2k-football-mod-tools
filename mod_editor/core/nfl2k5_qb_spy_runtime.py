@@ -1,12 +1,14 @@
-"""Dedicated zone QB spy, EXPERIMENTAL / UNWITNESSED, pinned USA Xbox XBE.
+"""Zone, man and rush QB spy, EXPERIMENTAL / UNWITNESSED, pinned USA Xbox XBE.
 
 Reserve REQUESTS in the complete union before any grown owner installs bytes.
 Both zone callbacks are intercepted. Authored intent comes only from a sealed
 versioned RO table compiled from paired PLAY resources and authoring receipts;
 the native command's state+0x420 bit 29 is an independent request.
 
-Immutable budget: 1536 RX + 512 RO = 2048 bytes; state: 768 RW. Man/rush
-initializers are tier 2, specified in ASTRA_QB_SPY_RUNTIME_REPORT.md. Runtime
+Revision 2 grows the request to 2048 RX + 512 RO, retaining 768 RW. Older
+1536 RX installations require rebuilding from base; allocation sets are immutable.
+Native man/rush callback pointers stay intact for peer exchange comparisons.
+Their pinned entries delegate to the shared spy decision and intent table. Runtime
 application has no assembler, Capstone, Unicorn, GUI or private-data dependency.
 """
 from __future__ import annotations
@@ -21,7 +23,7 @@ from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_qb_spy"
-CODE_SIZE, DATA_SIZE, TABLE_SIZE = 1536, 768, 512
+CODE_SIZE, DATA_SIZE, TABLE_SIZE = 2048, 768, 512
 MAX_RECORDS = (TABLE_SIZE - 16) // 16
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16),
             (OWNER, "read_only", TABLE_SIZE, 16))
@@ -36,13 +38,25 @@ HOOKS = {
     "zone_later": (0x1A5090, bytes.fromhex("558bec83e4f0")),
     "reset_assignment": (0x1B8570, bytes.fromhex("33c03bd0894104")),
     "reset_command": (0x18AEFC, bytes.fromhex("0fbe412e8b5e0c")),
+    "rush_main": (0x2FDF30, bytes.fromhex("558bec83e4f0")),
+    "rush_delay": (0x2FE130, bytes.fromhex("568bf18b4620")),
+    "rush_lane": (0x2EFDB0, bytes.fromhex("83ec185355")),
+    "man_main": (0x1A4830, bytes.fromhex("558bec83e4f0")),
+    "man_press": (0x1A4DA0, bytes.fromhex("8b41208b9010030000")),
+    "man_release": (0x1A4D70, bytes.fromhex("8b41108b4004")),
+    "man_exchange": (0x1A4DD0, bytes.fromhex("558bec83e4f0")),
+}
+INITIALIZERS = {
+    "init_rush": (0x1B8658, bytes.fromhex("c7053c51be0090e12f00")),
+    "init_lane": (0x1B8662, bytes.fromhex("c7054051be00b0102f00")),
+    "init_man": (0x1B866C, bytes.fromhex("c7054851be00c05b1a00")),
 }
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: Spy widens a zone's sideways tracking "
-    "and can still follow receivers. Patch: a zone spy follows the QB at four "
+    "and can still follow receivers. Patch: a zone, man or rush spy follows the QB at four "
     "yards, then pursues a forward or wide escape. Handoffs and passes end QB "
     "priority. Works with the Spy command and paired authored Spy plays. "
-    "Man and rush assignments need a future patch. All presets keep this off."
+    "Authored Spy plays keep their shallow-zone fallback. All presets keep this off."
 )
 # Full dependency hashes below are generated from inspected retail instructions.
 # Hook bytes are normalized before checking hashes, never arbitrary mutations.
@@ -66,6 +80,18 @@ GUARDS = (
     (0x1ad9c0, 42, "959a0cc681439d31c7ea6b6353bc9a3a191b34799e75dc93e59a6bf922e11086"),
 )
 
+
+# Complete native initializer/callback bodies and the shared state initializer.
+GUARDS += (
+    (0x1b85a0, 465, "f8a0fbe034a9729654fc01c29b815a71146ecc899bff8540656a8c39aec7f01d"),
+    (0x2fdf30, 2149, "1b01e99f79248aa68bbc24d5c4ca286a96a787452e6c2f4a9ceec0599a74b283"),
+    (0x2efdb0, 806, "5b3162aa7089c80350d8ef2dce8a25dd153deef058c2edf3ec8fd638ead18a86"),
+    (0x2f10b0, 398, "54e5e293b4592c3f449f2f46af61678b09c5b3231e083fe3c291a7035d05e612"),
+    (0x1a4830, 2134, "39537972a30b3a4670d6233dd5463475e51b8e0d9e56b1cf8383cc20ed1825ce"),
+    (0x1a5bc0, 1628, "b5698e42d175e12ca737a85d5bae56e06fcdfe0cd0ad3940395c5d1897b36c68"),
+    (0x2fd930, 10, "9f40e7b558edbb86564a174a2f5de3e80bf0a6e99f2a6b32c2ef49995bfe4282"),
+    (0x2c9ab0, 49, "01f937405f55f189812fbd890061db97acc03a0faba9fad973d79e9da7c9d4a5"),
+)
 
 class QbSpyError(ValueError):
     """Unsupported image, mixed owner, stale pairing or invalid lookup."""
@@ -170,6 +196,10 @@ def code_for(code_va, data_va, table_va):
                    resume_first=0x1A5796, resume_later=0x1A5096,
                    resume_assignment=0x1B8577, resume_command=0x18AF03, resume_snap=0xB6FBD,
                    steer=0x1A4170, pursue=0x1ADF90, transition=0x214B90)
+    symbols.update(init_rush_native=0x2FE190, init_lane_native=0x2F10B0, init_man_native=0x1A5BC0,
+                   resume_rush=0x2FDF36, resume_delay=0x2FE136, resume_lane=0x2EFDB5,
+                   resume_man=0x1A4836, resume_press=0x1A4DA9,
+                   resume_release=0x1A4D76, resume_exchange=0x1A4DD6)
     result = bytearray(assembly.CODE)
     for offset, kind, symbol, value in assembly.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<I", result, offset)[0]
@@ -182,14 +212,17 @@ def code_for(code_va, data_va, table_va):
 
 def sites(code_va):
     return [(name, va, old, b"\xe9" + struct.pack("<i", code_va + assembly.LABELS[name] - va - 5)
-             + b"\x90" * (len(old) - 5)) for name, (va, old) in HOOKS.items()]
+             + b"\x90" * (len(old) - 5)) for name, (va, old) in HOOKS.items()] + [
+        (name, va, old, old[:6] + struct.pack("<I", code_va + assembly.LABELS[name]))
+        for name, (va, old) in INITIALIZERS.items()]
 
 
 def allocations(payload):
     result = {a["kind"]: a for a in space.layout(payload)["allocations"] if a["owner"] == OWNER}
     _require(set(result) == {"code", "data", "read_only"}, "Spy allocation missing; rebuild with complete request union")
     for _, kind, size, align in REQUESTS:
-        _require((result[kind]["size"], result[kind]["align"]) == (size, align), "Foreign Spy allocation")
+        _require((result[kind]["size"], result[kind]["align"]) == (size, align),
+                 "Foreign or older Spy allocation; rebuild from base with the complete request union")
     return result
 
 
@@ -245,7 +278,8 @@ def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, 
     if table is None:
         table = compile_intent_table()[0]
     count = validate_intent_table(table)
-    receipt = dict(experimental=True, runtime_witnessed=False, tier="zone-only", model_version=1,
+    receipt = dict(experimental=True, runtime_witnessed=False, tier="zone-man-rush", model_version=2,
+                   native_callback_identity_preserved=True, rebuild_older_allocation=True,
                    authored_spies=count, table_sha256=hashlib.sha256(table).hexdigest(),
                    code_bytes=CODE_SIZE, instruction_bytes=assembly.LABELS['config'],
                    read_only_bytes=TABLE_SIZE, data_bytes=DATA_SIZE, changed_bytes=0)
@@ -275,3 +309,40 @@ def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, 
                     "source_sha256": hashlib.sha256(payload).hexdigest(),
                     "result_sha256": hashlib.sha256(result).hexdigest(),
                     "changed_bytes": sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload)}
+
+
+def main(argv=None):
+    """Bounded standalone copy writer for the existing capability recipe."""
+    import argparse
+    import json
+    from pathlib import Path
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("source", type=Path, help="supported USA default.xbe")
+    parser.add_argument("output", type=Path, help="new output file; existing paths refuse")
+    parser.add_argument("--intent-table", type=Path, help="paired 512-byte authored intent table")
+    args = parser.parse_args(argv)
+    try:
+        # Cap reads even when the caller accidentally names a disc/pack.
+        with args.source.open("rb") as source:
+            payload = source.read(12_300_289)
+        _require(len(payload) <= 12_300_288, "Expected a bounded XBE, not a disc or archive")
+        table = None
+        if args.intent_table is not None:
+            with args.intent_table.open("rb") as source:
+                table = source.read(TABLE_SIZE+1)
+        patched, receipt = apply(payload, intent_table=table)
+        # Open only after full validation. Never overwrite a source/output.
+        output = args.output.open("xb")
+        try:
+            with output:
+                output.write(patched)
+        except BaseException:
+            args.output.unlink()
+            raise
+        print(json.dumps(receipt, sort_keys=True))
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
+
+
+if __name__ == "__main__":
+    main()

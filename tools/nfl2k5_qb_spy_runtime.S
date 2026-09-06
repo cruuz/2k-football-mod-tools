@@ -12,6 +12,8 @@
 .extern state_data, intent_table
 .extern resume_first, resume_later, resume_assignment, resume_command, resume_snap
 .extern steer, pursue, transition
+.extern init_rush_native, init_lane_native, init_man_native
+.extern resume_rush, resume_delay, resume_lane, resume_man, resume_press, resume_release, resume_exchange
 
 zone_first:
     push offset first_original
@@ -21,7 +23,7 @@ zone_later:
 dispatch:
     push ebp
     mov ebp, esp
-    sub esp, 32
+    lea esp, [esp-48] /* save incoming flags before any arithmetic */
     pushfd
     pushad
     and esp, -16
@@ -31,8 +33,25 @@ dispatch:
     mov ebx, ecx
     mov dword ptr [ebp-4], 0 /* handled */
     mov esi, [ebx+0x20]
+    mov dword ptr [ebp-36], 0
     test esi, esi
     jz finish
+    /* Man/rush keeps native callback identities for peer exchange comparisons.
+     * Borrow its target fields only during the spy movement call. On fallback
+     * its native receiver/blocker targets must still be valid. */
+    cmp dword ptr [ebp+4], offset ext_originals
+    jb targets_saved
+    mov eax, [esi+0x310]
+    test eax, eax
+    jz finish
+    mov [ebp-36], eax
+    mov edx, [eax]
+    mov [ebp-40], edx
+    mov edx, [eax+0x40]
+    mov [ebp-44], edx
+    mov edx, [eax+0x48]
+    mov [ebp-48], edx
+targets_saved:
     mov edi, offset state_data+0x40
     xor edx, edx
     mov ecx, 22
@@ -270,16 +289,30 @@ end_spy:
     je finish
     call retire
 finish:
+    mov eax, [ebp-36]
+    test eax, eax
+    jz targets_restored
+    cmp [esi+0x310], eax
+    jne targets_restored
+    mov edx, [ebp-40]
+    cmp [eax], edx
+    jne targets_restored /* a native transition owns the new state */
+    mov edx, [ebp-44]
+    mov [eax+0x40], edx
+    mov edx, [ebp-48]
+    mov [eax+0x48], edx
+targets_restored:
     fxrstor [esp]
-    lea esp, [ebp-68]
-    popad
-    popfd
     cmp dword ptr [ebp-4], 0
+    lea esp, [ebp-84]
+    popad
     jne return_spy
+    popfd
     mov esp, ebp
     pop ebp
     ret /* returns to displaced prologue on the original stack */
 return_spy:
+    popfd
     mov esp, ebp
     pop ebp
     lea esp, [esp+4]
@@ -489,6 +522,83 @@ clear_next:
     add edi, 32
     loop clear_loop
     ret
+
+/* Dispatch-table wrappers. ECX actor, no stack arguments, native return ABI.
+ * Execute each original initializer once, including its early transition.
+ * Clear the old per-assignment latch AFTER initialization, preserving its
+ * return registers, flags and FP state. Never replace a man/rush initializer
+ * with a zone initializer or overwrite its chosen callback. */
+init_rush:
+    push offset init_rush_native
+    jmp initialize
+init_lane:
+    push offset init_lane_native
+    jmp initialize
+init_man:
+    push offset init_man_native
+initialize:
+    push ecx
+    call dword ptr [esp+4]
+    pushfd
+    pushad
+    mov eax, [esp+36]
+    mov edx, [eax+0x20]
+    call clear_state
+    popad
+    popfd
+    lea esp, [esp+8]
+    ret
+
+/* Intercept each supported native callback entry, including internal tail
+ * calls and peer rewrites. Pointer equality in man exchange stays retail.
+ * The exact same dispatcher, intent table and snap records serve every path. */
+.macro extension name
+\name:
+    push offset \name\()_original
+    jmp dispatch
+.endm
+extension rush_main
+extension rush_delay
+extension rush_lane
+extension man_main
+extension man_press
+extension man_release
+extension man_exchange
+
+ext_originals:
+rush_main_original:
+    push ebp
+    mov ebp, esp
+    and esp, -16
+    jmp resume_rush
+rush_delay_original:
+    push esi
+    mov esi, ecx
+    mov eax, [esi+0x20]
+    jmp resume_delay
+rush_lane_original:
+    sub esp, 0x18
+    push ebx
+    push ebp
+    jmp resume_lane
+man_main_original:
+    push ebp
+    mov ebp, esp
+    and esp, -16
+    jmp resume_man
+man_press_original:
+    mov eax, [ecx+0x20]
+    mov edx, [eax+0x310]
+    jmp resume_press
+man_release_original:
+    mov eax, [ecx+0x10]
+    mov eax, [eax+4]
+    jmp resume_release
+man_exchange_original:
+    push ebp
+    mov ebp, esp
+    and esp, -16
+    jmp resume_exchange
 .balign 4, 0xcc
 config:
     .float 365.76, -91.44, 274.32, 0.5, 2164.08, -2164.08

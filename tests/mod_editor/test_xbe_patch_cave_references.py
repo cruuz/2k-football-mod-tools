@@ -127,6 +127,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
         if screen_hooks.status(cls.patched) != "applied":
             raise AssertionError("screen hooks owner missing from the composed XBE")
+            raise AssertionError("Zone/man/rush QB spy owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_screen_hooks as screen
         # This audit allocates nothing. It verifies that neither deferred CB
         # tier has displaced Spy's recognized hooks or the reaction owners.
@@ -495,9 +496,13 @@ class CaveReferenceTests(unittest.TestCase):
         image = XbeImage(self.patched)
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         md = Cs(CS_ARCH_X86, CS_MODE_32)
-        for name, (va, old) in spy.HOOKS.items():
+        for name, (va, old) in {**spy.HOOKS, **spy.INITIALIZERS}.items():
             self.assertEqual(sum(i.size for i in md.disasm(old, va)), len(old), name)
             self.assertEqual(manifest.overlaps(va, va+len(old), exclude_owner=spy.OWNER), [], name)
+            # No retail branch may land inside a displaced callback entry or
+            # the three complete dispatch MOV instructions.
+            for target in range(va+1, va+len(old)):
+                self.assertFalse(self.targets.get(target, []), hex(target))
         for row in spy.reservations(self.patched):
             if int(row["start"], 0) >= space.CODE_VA:
                 self.assertEqual(row["parent_owner"], space.OWNER)
