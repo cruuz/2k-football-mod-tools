@@ -453,3 +453,43 @@ manual_next:
     popad
 manual_done:
     ret
+
+/* All native front-end screens dispatch through 6E4E0, including stack
+ * replacement, push, pop and return. Initialise/activate events (1/3) give
+ * pending background work a turn, with the existing show/loading/preview
+ * exclusions intact. Never start a player before its normal initialisation.
+ * Execute the complete retail dispatcher and its immutable event tables.
+ */
+.global screen_event, draft_shared
+screen_event:
+    pushfd
+    pushad
+    cmp DWORD PTR [state_data], 0
+    je screen_done
+    cmp DWORD PTR [esp+40], 1
+    je screen_queue
+    cmp DWORD PTR [esp+40], 3
+    jne screen_done
+screen_queue:
+    call enqueue
+screen_done:
+    popad
+    popfd
+    push ecx
+    push ebp
+    push edi
+    mov edi, ecx
+    jmp retail_screen_tail
+
+/* Draft policy: join the shared shuffle. Replace the actual draft screen's
+ * timed ambience request (325E22 -> 165BE0, two float arguments). Clear its
+ * optional descriptor so 165CA0 cannot later queue separate draft ambience.
+ * Draft navigation, picks and speech retain their original callbacks.
+ */
+draft_shared:
+    pushad
+    mov DWORD PTR [0xbd9444], 0
+    mov ecx, 0xe6c0c0
+    call context
+    popad
+    ret 8

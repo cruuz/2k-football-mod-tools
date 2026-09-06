@@ -7521,3 +7521,198 @@ all its existing lists and observes the additional live hooks/reservations.
 Run both XBE gates, capability file validation and staged runtime closure after
 the text/registry/manifest handoff. Gameplay acceptance remains Noah's witness
 list in `ASTRA_QB_SPY_MAN_RUSH_REPORT.md`.
+
+# r62 music all modes, tier 4b (2026-09-06)
+
+This section supersedes the tier-4a music routing, selection and persistence
+instructions. Protected sources remain untouched. Apply the reviewable
+`docs/mod_editor/music_all_modes_wiring.patch` to `mod_build.py`,
+`build_panel_qt.py` and `studio_qt.py`. `git apply --check` passes against this
+branch. `test_music_all_modes_wiring.py` applies it in memory and exercises the
+publication wrapper and real offscreen Build/Music widgets with the proposed
+Studio methods. It also accepts already-applied handoff sources.
+
+## Final image validation and Build document
+
+Keep the existing `BuildPlan` fields:
+
+```python
+music_shuffle: bool = False
+music_shuffle_selection: dict | None = None
+```
+
+Basic, advanced and experimental presets all leave `music_shuffle=False` and
+selection `None`. Preset application resets the checkbox; retained personal
+choices may remain available for a later explicit opt-in. Normalize a supplied
+document using `music_playlist_patch.from_options`, accepting schemas 1 and 2.
+The field holds a detached JSON dictionary, never a `Selection` dataclass.
+The old Build setter accidentally stored a `Selection` and fed it back to a
+document validator; the patch corrects that conversion boundary.
+
+Keep the early ordinary-XBE pass deferred with `music_shuffle=False` and
+`music_shuffle_selection=None`. In the final allocator/owner pass:
+
+```python
+library = _core_module("nfl2k5_music_banks")
+preview = library.plan(target, plan.music_library) if plan.music_library else None
+playlist_selection, playlist_preflight = library.playlist_preflight(
+    target, plan.music_shuffle_selection, library_plan=preview)
+```
+
+This reads actual source AUSB counts. Planned counts come from the validated
+plan's `boundaries`, including both jukebox twins; `layout.banks` does not exist
+in the real plan. Keep `revalidated_after_rebuild=False` here. Only the final
+check may set it true.
+
+In outer `build`, after `_build` completes every edit including Hi-res remapping
+and immediately before the final `os.replace`, reopen the private output with
+`library.revalidate_playlist`. Run this when shuffle OR a library rebuild is
+selected, so a pre-existing playlist is checked even when the checkbox is off.
+When shuffle is selected pass the chosen document, or `default_options()` for
+the default 66 records, as `expected`. The reader validates actual installed
+RX/RO/hooks, selected indices, every descriptor extent and jukebox twin geometry.
+Store its receipt as `music_shuffle_validation`, and merge it into each
+`music_shuffle_preflight` step. Every reader must close before publication.
+Any mismatch raises inside the private transaction and preserves the old target.
+
+The unprotected `nfl2k5_music_banks.verify` already invokes the installed-playlist
+check before the library writer publishes its private result. The outer Build
+check is still required after all subsequent changes and for shuffle-only builds.
+No installed playlist reports `installed=False`, zero records and a false
+revalidation flag; it must never be represented as validated installation.
+
+## Project state maps, lazy pages and library previews
+
+This base had no project archive field or session API for Build preferences.
+The unprotected archive/session/facade now persist a validated music map:
+
+```json
+{"music_shuffle": true, "music_shuffle_selection": {"schema": 2}}
+```
+
+The inner object above is abbreviated; persist the complete document returned
+by `MusicPanel.playlist_options()`, including catalogue, checked rows, filters,
+records and enabled indices. `playlist.build_settings` validates the complete
+map. Unknown fields are refused; when more Build settings are introduced,
+extend this validator deliberately. Existing archives without this optional
+field load as `{}`. Named saves, recovery saves and load rollback include it.
+Build-only projects are valid; asset Revert All and its Undo retain preferences.
+
+The protected patch adds `BuildPanel.music_build_settings()` and
+`restore_music_build_settings(state)`. Validation precedes widget mutation;
+snapshots are detached and JSON-compatible. It connects both enable switches
+through Studio and caches choices before the lazy Build page exists. Capture
+the map on the GUI thread before named/fast Save and whenever choices change,
+through `facade.set_project_build_settings`. Restore from
+`facade.project_build_settings` after project open and after either lazy page
+is created. Guard restore/source-inspection signals so transient defaults do
+not overwrite saved preferences or mark the workspace dirty. Old projects
+reset the enable flag and choices instead of inheriting the previous project.
+
+Build's accepted music-library preview emits actual source counts plus its
+validated plan. Studio calls `catalog_for_counts(counts, library_plan=preview)`
+and `MusicPanel.set_playlist_catalog`; cache the catalogue if Music is still
+lazy. Source inspection independently calls `read_playlist_catalog` in the
+worker, reading rebuilt jukebox titles and actual counts. Catalogue-read errors
+show a status message without discarding the other source capability results.
+This allows a grown-library Playlist even when fixed-slot audio editing has no
+service. Existing operation locks still disable controls. The Music page also
+has its own bounded library-image browser and retains its choices JSON files.
+
+## Dispatcher and all four status dictionaries
+
+These entries are already wired; retain them and forward the new receipt scope.
+Import remains `nfl2k5_music_playlist as music_playlist_patch` in protected
+`nfl2k5_throw_tuning.py`. `_apply_all`, `write_xbe_copy` and `write_image_copy`
+retain `music_shuffle: bool = False, music_shuffle_selection=None`. Validate
+the Boolean and a `Selection` instance at the dispatcher boundary. Build alone
+converts the saved dictionary with `playlist_preflight`.
+
+`_selected_space_requests` includes `music_playlist_patch.REQUESTS` when enabled;
+`_xbe_space_adapter` forwards the flag. Keep it in allocator activation,
+scorebug deferral, the full final request union and both nothing-selected checks.
+Keep this final owner tuple after allocation:
+
+```python
+(music_shuffle, music_shuffle_selection or music_playlist_patch.Selection(),
+ "music_shuffle_patch", "experimental music playlist"),
+```
+
+`Selection` is the settings adapter; no extra adapter class is needed.
+`_grown_status_fields(payload)` retains:
+
+```python
+"music_shuffle": music_playlist_patch.status(payload),
+"music_shuffle_state": music_playlist_patch.read_settings(payload),
+```
+
+Ensure all four dictionaries receive it: `read_xbe(payload)`,
+`read_image(payload)`, `write_xbe_copy(result)`, `write_image_copy(after)`.
+Forward through Build inspection and receipts. Preserve `runtime_witnessed=False`
+and `context_proof_scope`; `all_modes_proved` refers ONLY to the 24 bounded
+contracts in the matrix. It does not certify audio or a played game.
+
+## Captions, release closure and owner composition
+
+Retain Build `_option` caption `Shuffle songs in menus, Crib and games`
+(37 characters, below 60), experimental badge, default off, `needs_image=True`.
+Use `music_playlist_patch.HELP_TEXT` for its help. Change the protected Gameplay
+Patches `music_shuffle` PATCHES description to:
+
+> EXPERIMENTAL / UNWITNESSED. Retail: screens choose their own music. Patch:
+> up to 100 selected songs share a shuffle across menus, Crib, draft and game
+> background. Pause and replay keep it playing. Loading, halftime and wrap-up
+> keep their timed music. Stadium clip previews pause and resume the song.
+> Actual playback still needs testing in game. All presets are off.
+
+Keep `music_shuffle` in `NEEDS_IMAGE`. Do not label it witnessed or silently
+enable it in another gameplay panel. No new GUI surface or capability ID is
+needed. This change updates only `nfl2k5.music.playlist` in the registry and
+`docs/mod_editor/nfl2k5_music_playlist_capability.json`, including working
+`python3 -m` commands. The module CLI is a bounded executable-only development
+writer; product image builds must use descriptor validation before publication.
+
+Ensure these existing protected release-allowlist lines remain:
+
+```text
+mod_editor/core/nfl2k5_music_playlist.py
+mod_editor/core/nfl2k5_music_playlist_code.py
+mod_editor/core/nfl2k5_music_banks.py
+mod_editor/core/nfl2k5_practice_squad_screen.py
+mod_editor/gui/music_panel_qt.py
+mod_editor/studio/project_archive.py
+mod_editor/studio/session.py
+mod_editor/studio/facade.py
+reports/music_playlist_contexts.v1.json
+docs/mod_editor/nfl2k5_music_playlist_capability.json
+```
+
+Runtime closure imports must include `mod_editor.core.nfl2k5_music_playlist`,
+`mod_editor.core.nfl2k5_music_playlist_code`, `mod_editor.core.nfl2k5_music_banks`,
+`mod_editor.core.nfl2k5_music_archive`, `mod_editor.core.nfl2k5_music_catalog`,
+`mod_editor.core.nfl2k5_music_metadata`, `mod_editor.core.nfl2k5_xbe_space`,
+`mod_editor.core.nfl2k5_practice_squad_screen`, `mod_editor.gui.music_panel_qt`,
+and the three Studio modules above. Archive persistence now validates playlist
+documents even before the Music page is opened. Existing archive/encoder/section
+digest dependencies remain in closure; GNU assembler, Unicorn, Capstone, tests,
+research memos, this handoff patch and retail bytes are not runtime imports.
+
+The owner is already in `tests/nfl2k5_allocator_stack.py`, all manifest request
+and owner lists, and the committed budget fixture. Requests remain exactly
+2,048 RX / 512 RW / 1,024 RO bytes; code uses 1,689 bytes. Both full XBE gates
+pass in both orders. The unprotected Practice Squad guard now accepts the exact
+validated playlist dispatcher hook and hashes the remaining native routine.
+Do not relax that guard to accept arbitrary jumps.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after applying the final integration.
+The new live hooks are `screen_event` at `0x6E4E0` and the draft call at
+`0x325E22`; no new owner or budget is required. Tier-4a installed code is refused
+as foreign by tier 4b; rebuild from the supported base, including when changing
+the installed selection.
+
+After wiring, run the playlist/context/library/project/UI/handoff tests, both
+full XBE gates, capability validation and staged runtime closure. Follow the
+Noah witness list in `ASTRA_MUSIC_ALL_MODES_REPORT.md`; no gameplay, audible
+playback, full retail-disc acceptance build or final release manifest was
+produced by this task.

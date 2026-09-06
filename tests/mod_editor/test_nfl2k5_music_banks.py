@@ -81,6 +81,13 @@ class MusicBankTests(unittest.TestCase):
         self.source = self.fixture.path
         self.wav = tone(self.root/'tone.wav')
         self.output = self.root/'built.iso'
+        # This archive-only fixture has a 16-byte XBE placeholder. Installed
+        # executable validation is covered with real XBE bytes in the dedicated
+        # playlist-library suite; no invented executable is accepted in production.
+        inspect = patch('mod_editor.core.nfl2k5_music_playlist._inspect', return_value=('retail', None))
+        inspect.start()
+        self.addCleanup(inspect.stop)
+
 
     def recipe(self,count=3):
         return dict(schema=banks.SCHEMA,bank='femusic',tracks=[dict(wav=str(self.wav),title=f'Tone {i}',artist='Test') for i in range(count)])

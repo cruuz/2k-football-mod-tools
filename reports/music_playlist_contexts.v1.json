@@ -1,111 +1,248 @@
 {
   "schema": 1,
-  "all_modes_proved": false,
-  "note": "Transition contract tests are not proof that every named screen reaches that contract. No runtime witness.",
+  "all_modes_proved": true,
+  "note": "Each named routing contract has a bounded native transition test with explicit rendering/resource/streaming stubs. No Xbox, audio or gameplay witness. all_modes_proved describes only the bounded routing matrix, never audible all-mode certification.",
   "contexts": [
     {
       "context": "Main menu",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "PROVED bytes: F5B7C -> F6510(1)",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x515660",
+          "title": "Main Menu",
+          "resource": "main_menu_sub",
+          "sha256": "ea4986ff7a5ff190b7690a598ca2e74eb01e54b30b706897f6dea8aefc029d00"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Quick Game setup",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "PROVED mode-1 caller at 64617; exact setup traversal is HYPOTHESIS",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed. Main Menu Quick Game item 5154C0 points to 52728C.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x52728c",
+          "title": "Team Select",
+          "resource": "spreadsheet",
+          "sha256": "e9ec058da8d3c30df3f8a4d19f8d8a8efcc7d5afc75aafa212be59ea38a43bdd"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Options",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x503288",
+          "title": "Options",
+          "resource": "navigation",
+          "sha256": "a4c49e7b7afed0f1a903ad3720a211ed2f3be67f4bbfc1723c547dbb9a4d7ed2"
+        },
+        {
+          "va": "0x503458",
+          "title": "Options",
+          "resource": "navigation",
+          "sha256": "8d9b6c0c78c3e09c508a8aecfb9c5b07b92e6168b1b86fed2b99effbd3d08851"
+        },
+        {
+          "va": "0x503628",
+          "title": "Options",
+          "resource": "navigation",
+          "sha256": "983761d48e574a862ff24bade5bab789575c49d4fc0b944c4c2f3b7708f1e0ca"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Franchise desk",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x522190",
+          "title": "Coach's Desk",
+          "resource": "coach_desk",
+          "sha256": "584bcf5b47a9a8a9ecf3d33ef3f3abb0ce8f94d768135826c2a4066605ddf9bf"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Franchise calendar",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed. Calendar In callback 142880 installs 522828 at AA2408.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x522828",
+          "title": null,
+          "resource": null,
+          "sha256": "1918a1f773ef4fcf06212e9e66750d431562dfe7a84fc8a684bcd98e86ed70ff"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Franchise rosters",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x555098",
+          "title": "Team Rosters",
+          "resource": "spreadsheet",
+          "sha256": "a29a8606b0adf2752878d98d9d1e58c98fe8dcb2f3ce307050e7b7c98ee642c9"
+        },
+        {
+          "va": "0x5557c0",
+          "title": "Team Rosters",
+          "resource": "spreadsheet",
+          "sha256": "afebf61c997351b9c06818f34467b49d4b7c449c251da22b1fab75a7aeeeb2e9"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Franchise free agency",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x53ec38",
+          "title": "Free-Agent Wire",
+          "resource": "spreadsheet",
+          "sha256": "e23ecdf094ac4a3eb5806dfc9b2dedfb25e1d2046b8d8de72283ca3e6ab4780f"
+        },
+        {
+          "va": "0x583470",
+          "title": "Free-Agent Wire",
+          "resource": "team_needs",
+          "sha256": "ed4e97549fe315582533827f44c46eef202ad54226c16d771ac1bb82edd12937"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Franchise draft menus",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x560168",
+          "title": "NFL Draft",
+          "resource": "spreadsheet",
+          "sha256": "5727ce5c1e3ecf1c597ac0f9fb0d9680e979f2190c2aa95f76af27c306bc6e2f"
+        },
+        {
+          "va": "0x5603e4",
+          "title": "NFL Draft",
+          "resource": "rookie_pane",
+          "sha256": "ef213de0efbfebeb42471fd6e4d7cd29d291fd90ffdb9b073a5f4410c18e8589"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Season entry",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x528660",
+          "title": "Season",
+          "resource": "navigation",
+          "sha256": "c80363faa2ee8db3f6449eeecef3acac35a5ef6afefd7b1362eb781bd1b50e91"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Tournament entry",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x5289c8",
+          "title": "Tournament",
+          "resource": "navigation",
+          "sha256": "bb63eaf3f6cd2d3183f5bbeb7fc3fb5797328a93754b265d833cce82f9411b30"
+        },
+        {
+          "va": "0x52a880",
+          "title": "Tournament",
+          "resource": "navigation",
+          "sha256": "2b14028d10c6d38328ebf37949740e461f477c77e26acd37ace3842e1c07ec2b"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Practice entry",
       "policy": "shared",
-      "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "mode": null,
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x529344",
+          "title": "Practice",
+          "resource": "navigation",
+          "sha256": "5ed3efd0dc3de25491c6603862a8b2b9614c04549e92124a96eef35c57dff600"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Crib entry",
       "policy": "shared",
       "mode": 3,
-      "routing_evidence": "PROVED mode 3 selects UserList; exact Crib scene association is HYPOTHESIS",
+      "routing_evidence": "PROVED bounded: native mode-selection block 27836B -> F6510(3); shared player retained. Full Crib 3D initializer is outside this proof.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
     },
     {
       "context": "Crib exit",
       "policy": "shared",
       "mode": 1,
-      "routing_evidence": "HYPOTHESIS: individual screen caller not recovered; shared controller contract only",
+      "routing_evidence": "PROVED bounded: native 270600 clears AC7444 and selects mode 1; teardown I/O stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
     },
     {
       "context": "Jukebox preview",
@@ -113,71 +250,424 @@
       "mode": 3,
       "routing_evidence": "PROVED bytes: explicit disc/HDD selection at 27FF90; bounded empty guard tested",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
     },
     {
       "context": "Game background",
       "policy": "shared",
       "mode": 4,
-      "routing_evidence": "PROVED bytes: 6489E -> F6510(4); F64CD profile stop intercepted",
+      "routing_evidence": "PROVED bounded: caller 64899 selects mode 4; profile stop F64CD retains shared background.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
     },
     {
       "context": "Pause menu",
-      "policy": "modal",
+      "policy": "shared",
       "mode": null,
-      "routing_evidence": "PROVED modal helpers 27F6B0/27F6F0 and F65F0/F65E0 thunks; pause screen association HYPOTHESIS",
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x4e8d70",
+          "title": "Paused",
+          "resource": "navigation_pause",
+          "sha256": "648bc6618af4c810efa6008b039fc4d850ea0a51e03c305a7008450bfaeab49d"
+        },
+        {
+          "va": "0x4e9078",
+          "title": "Paused",
+          "resource": "navigation_pause_notitle",
+          "sha256": "9e1b72958b289c4d7c4a450832c048fad9877f7eed7816193fe67fac1c38fd98"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Replay",
-      "policy": "modal",
+      "policy": "shared",
       "mode": null,
-      "routing_evidence": "HYPOTHESIS: replay-to-modal-helper routing not fully recovered",
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed. Pause Replay item 4E8DD4 calls 6E870, which pushes 4FAED8; the shared song continues.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "screen_tables": [
+        {
+          "va": "0x4faed8",
+          "title": null,
+          "resource": null,
+          "sha256": "f125e240e8fe8699963d1a37f39ed90c306e5605f16d8e5fa140ca269bad2992"
+        }
+      ],
+      "bounded_route_proved": true
     },
     {
       "context": "Loading",
       "policy": "loading",
       "mode": 2,
-      "routing_evidence": "PROVED F6510(2) and F5430 loadm scheduler, timing untouched",
+      "routing_evidence": "PROVED bounded: 64590 requests mode 2, native F5410 starts loading controller A928A4; native F5430 scheduler remains pinned.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
     },
     {
       "context": "Halftime",
       "policy": "halftime",
       "mode": null,
-      "routing_evidence": "PROVED D90F0 halftimeaudio entry and D9350 release; shared background gated around both",
+      "routing_evidence": "PROVED bounded: nonempty halftimeaudio descriptor through D90F0, real packet/range helpers and separate speech/bed queues; D9350 releases shared exclusion.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
     },
     {
       "context": "Wrap-up",
       "policy": "wrapup",
       "mode": 0,
-      "routing_evidence": "PROVED 28F7F0 calls F6510(0); restoration through the existing mode dispatcher",
+      "routing_evidence": "PROVED bounded: native 28F7F0 saves mode and stops shared music, 28F860 restores it; timed controller initialization retained.",
       "integrated": true,
-      "runtime_witnessed": false
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
     },
     {
       "context": "Draft presentation",
-      "policy": "unresolved_draft",
-      "mode": null,
-      "routing_evidence": "UNRESOLVED: both recovered 165C20 callers actually request coachambience, not drafta",
-      "integrated": false,
-      "runtime_witnessed": false
+      "policy": "draft_shared",
+      "mode": 1,
+      "routing_evidence": "PROVED bounded: real draft entry 325E10, intercepted two-argument call 325E22; scheduled ambience descriptor BD9444 cleared, 165CA0 cannot queue it; shared shuffle continues. This intentionally replaces the draftambience lookup, without assuming it aliases drafta.",
+      "integrated": true,
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
     },
     {
       "context": "Stadium manager and PA",
       "policy": "retail_pa",
       "mode": null,
-      "routing_evidence": "PROVED 254EB0 resolves crib22 through a separate player; background/PA coexistence unwitnessed",
-      "integrated": false,
-      "runtime_witnessed": false
+      "routing_evidence": "PROVED bounded: 3592A0 -> F65F0 / 254EB0; 359280 -> F65E0. This is stadium clip preview, separate from Replay; PA keeps its separate native player.",
+      "integrated": true,
+      "runtime_witnessed": false,
+      "bounded_route_proved": true
+    },
+    {
+      "context": "Create a player",
+      "runtime_witnessed": false,
+      "integrated": true,
+      "policy": "shared",
+      "mode": null,
+      "screen_tables": [
+        {
+          "va": "0x56e9c4",
+          "title": "Create Player",
+          "resource": "options",
+          "sha256": "25133592cc37e61e3c9a0c00aa177913630f5528de818d15fe3574c81290ae7c"
+        },
+        {
+          "va": "0x56a560",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "18f853c887676ca2ab67d723224803a22c3851194e4356ef9d667c2609ba625e"
+        },
+        {
+          "va": "0x56a760",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "bcb72d6ed2663c5c605508f63e29fd847f6e6d84a966c5217b84ca7847eb4c18"
+        },
+        {
+          "va": "0x56a960",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "5d9ad0c317e7582172386ed752f69d8b60cfc52891898dddba35e2ad42a2cfa9"
+        },
+        {
+          "va": "0x56ab60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "1c781c9e6fc34b46ab4c1df78c57a6c78a273c0559511b941f6813420752f656"
+        },
+        {
+          "va": "0x56ad60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "af644516f2b38fbead4f748cc8799ac18ff72c3cf0dc616c66ef5d43df886323"
+        },
+        {
+          "va": "0x56af60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "1d908c2a31477cf4f3f03a865c74b304e5b21512a9132313bb9d98e86e666651"
+        },
+        {
+          "va": "0x56b160",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "bcdb3acd1b8dda2733f4ddd01525a2de0d541163844e3c202147af7349ccacef"
+        },
+        {
+          "va": "0x56b360",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "14b5556fa6e1b53f13ce6e092c55a14f8bfcea0bdaef149d74c1dc00ae2483c3"
+        },
+        {
+          "va": "0x56b560",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "c54e332ba353c87ad4fe75e248e4b61a642c8f1b05f5233574a4c33a1077dc2b"
+        },
+        {
+          "va": "0x56b760",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "13963df20343a4afedae26eaf4bc69870b8978a80225518cf32becb7245c0e30"
+        },
+        {
+          "va": "0x56b960",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "8f5584a8225853685998e9ad8ca622348bfb5ecde4c9b4cd76cc3cc51df24b67"
+        },
+        {
+          "va": "0x56bb60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "720e6d7290be49c1fd92278a4cc084139cf82a0d3dc27d5fa1863f41a8aa543e"
+        },
+        {
+          "va": "0x56bd60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "96248017a1d3fb117d987b09820dca49d5a6484016e6fb4c50f837577e9c0507"
+        },
+        {
+          "va": "0x56bf60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "3b45ce4e18fdc51860ccaa624f25135dd7fb870e6e7110ed5d5d62df0f30016f"
+        },
+        {
+          "va": "0x56c160",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "903e89f5f32086fa9936b9dcaa6033fd55cdb92e18f77b648f94107f91944689"
+        },
+        {
+          "va": "0x56c360",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "ba37d1769f47c980a06f6728861a133b9c420a0a081e58a8531029bac365e488"
+        },
+        {
+          "va": "0x56c560",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "5673835df486bf1b04d2aa1e70a480e792fab459c2d7d749afbbb8950f0d0b12"
+        },
+        {
+          "va": "0x56c760",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "7d77b02b1f1cacd040d3030ec9883d5c1104d206988a4277ce5475ab492f2827"
+        },
+        {
+          "va": "0x56c960",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "b72945c4de5f50d50f3c69d9a242ecd296f7f9fd29b06c85ae4fea32fce0c5b7"
+        },
+        {
+          "va": "0x56cb60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "a80756107bac5ecb5de79473b513c3fa5bc6b6d65faa173c3c2cf5343aa12037"
+        },
+        {
+          "va": "0x56cd60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "4f350fcbd5a3363fd9cbd2e9b01e12557f268740a2ac1f4ddc0a5d0ac8247f7e"
+        },
+        {
+          "va": "0x56cf60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "5856e380923671cd3678d47c5b0f312ba2f0bf877ccd6cf74d088df8be271c1e"
+        },
+        {
+          "va": "0x56d160",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "897b33c646a7a6d10650bc70096827de8357e1a246b6c724a193cc08bcdd702f"
+        },
+        {
+          "va": "0x56d360",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "86c1d7b698495565ef97d0a7c44885b273f03daae412d7f4deb778183704e00c"
+        },
+        {
+          "va": "0x56d560",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "4a9a5dcc790f62857df2ad4aa365a9687501a0cfcfeece2ca12216d9cdf47a38"
+        },
+        {
+          "va": "0x56d760",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "28dc9b5acad92530c273a18c41b2a557c970af45cfa6bca755c16b7cbf354277"
+        },
+        {
+          "va": "0x56d960",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "f16000550d59788d5355cd9b9859b56e293596d91e85be452b4ba50cdd986523"
+        },
+        {
+          "va": "0x56db60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "0b12d141da962603197e7978df18a4607827a3194148af0fdb3f3c275d065950"
+        },
+        {
+          "va": "0x56dd60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "5794685a77f5358515b254b78c55b41af10c5e917167d66ca2853341a969e674"
+        },
+        {
+          "va": "0x56df60",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "c22546754a665da985f415799bcf6279e297323960bc0c62f02120e06c588783"
+        },
+        {
+          "va": "0x56e160",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "ed0eaa3e4fb85969f52e5d364193f89fe63ba777ddaf99f5495a089cf1026874"
+        },
+        {
+          "va": "0x56e360",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "9ecf663ee534c7337b5ba2328adb7949e1c808b4878108ce5e7e1fc34b8c0eb3"
+        },
+        {
+          "va": "0x56e560",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "c1a1bc400a637347efc3d9e00bfcc7cfc42a40635637edf73ecc4ff27b916706"
+        },
+        {
+          "va": "0x56e760",
+          "title": "Player Attributes",
+          "resource": "create_a_player",
+          "sha256": "64e760b8421d1c898cc20bf92cfe1f2b8ff25e14eedc75cf8de98d25d5ebed05"
+        },
+        {
+          "va": "0x56eba0",
+          "title": "Player Equipment",
+          "resource": "create_a_player",
+          "sha256": "6b07fea8e31246e53f65c7951d9851d286504aa08eae95688889b72830772b7b"
+        },
+        {
+          "va": "0x56ed80",
+          "title": "Player Appearance",
+          "resource": "create_a_player",
+          "sha256": "953e1d0b9bef0f50fa9e67cf7994d5f187981b12286585c7ff7d423598d5cf26"
+        },
+        {
+          "va": "0x56f050",
+          "title": "Create Player",
+          "resource": "create_a_player",
+          "sha256": "41c90cf07827cb0e7eea1924569eef6b7785438d184e3496f1c71edc6d883166"
+        },
+        {
+          "va": "0x56f230",
+          "title": "Edit Player",
+          "resource": "create_a_player",
+          "sha256": "ecaf1bc49fb907a8a1a088eef1d154030416ee4fbf1b5402cfac9a258bb9d34d"
+        },
+        {
+          "va": "0x56f410",
+          "title": "Edit Player",
+          "resource": "create_a_player",
+          "sha256": "bd2c711ec413bbe9fe3f80ec29cda719b8e5f42ab8f77a1babd08ad2d7f66a5e"
+        },
+        {
+          "va": "0x56f6e0",
+          "title": "Edit Player",
+          "resource": "create_a_player",
+          "sha256": "1cfadfdbfcc46ebf8336e4e7018daf075c804a3452e41aec19d4c0a4e8d1d09b"
+        },
+        {
+          "va": "0x56f8c0",
+          "title": "Edit Player",
+          "resource": "create_a_player",
+          "sha256": "ccb7f992d82588a568712a2c03fedc707f3ec9ea9cc5fef650cf94f0e4589bdc"
+        },
+        {
+          "va": "0x56faa0",
+          "title": "Edit Player",
+          "resource": "create_a_player",
+          "sha256": "d53a2c8a558b0a8ae37e94f21a1bf9ab1bb6e2c5b58e87a139149dc4f5d82df7"
+        },
+        {
+          "va": "0x56fd70",
+          "title": "Edit Player",
+          "resource": "create_a_player",
+          "sha256": "e349aaf856ea64d3b271d8a9aab1b14458fc9d68bcc3331f82d87b106541484f"
+        }
+      ],
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
+      "bounded_route_proved": true
+    },
+    {
+      "context": "Create a team",
+      "runtime_witnessed": false,
+      "integrated": true,
+      "policy": "shared",
+      "mode": null,
+      "screen_tables": [
+        {
+          "va": "0x57173c",
+          "title": "Team Slots",
+          "resource": "options",
+          "sha256": "903772926e862f14790fc31969b7481b115a08abbc2b470891e80b5c2caeb9f3"
+        },
+        {
+          "va": "0x571ab0",
+          "title": "Choose Logo",
+          "resource": "create_a_team_main",
+          "sha256": "eb35cf44108f7144151797e542c8418a9cbed37033681a1208ba2a2dea452fcf"
+        },
+        {
+          "va": "0x571bd8",
+          "title": "Edit Team Information",
+          "resource": "create_a_team_editnames",
+          "sha256": "8b24992c7953b9da01bb138a8c473dc0715bbf9b8fbe4245a77d7fbb82f55d9a"
+        },
+        {
+          "va": "0x571e58",
+          "title": "Choose Players",
+          "resource": "team_needs",
+          "sha256": "8de2d080c6db7f527a963741f7e360e51eca41ef238a937b76a43421c6639327"
+        },
+        {
+          "va": "0x571f90",
+          "title": "Choose Stadium",
+          "resource": "create_a_team_stadium_select",
+          "sha256": "c53d1fb9bf60b38be9b096427439c11b80d2d83cef958653ed309fe110383cfb"
+        },
+        {
+          "va": "0x572018",
+          "title": "Choose Playbook",
+          "resource": "create_a_team_playbook_select",
+          "sha256": "71bccaef122f6f74f4c60f68f6a6c94c71e46c76444253e2c7a24c662efa157d"
+        }
+      ],
+      "routing_evidence": "PROVED bounded: native 6E390 push / 6E4E0 event 1,3 / 6E400 pop, original screen tables; UI callback bodies stubbed.",
+      "bounded_route_proved": true
     }
   ]
 }

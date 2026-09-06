@@ -5,7 +5,9 @@ import shutil
 import struct
 import subprocess
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from mod_editor.core import nfl2k5_music_playlist as playlist
@@ -88,6 +90,20 @@ class PatchTests(unittest.TestCase):
         self.assertTrue(all(section_digest(self.patched, s) == s.stored_digest for s in _sections(self.patched)))
         with self.assertRaises(playlist.PlaylistError):
             playlist.apply(self.patched, selection=playlist.selection(include_outtakes=False))
+
+    def test_module_command_writes_only_new_bounded_executable(self):
+        with tempfile.TemporaryDirectory() as folder, patch('builtins.print'):
+            root = Path(folder).resolve()
+            source, target = root/'source.xbe', root/'target.xbe'
+            source.write_bytes(self.patched)
+            self.assertEqual(playlist.main(['status',str(source)]), 0)
+            self.assertEqual(playlist.main(['apply',str(source),str(target)]), 0)
+            self.assertEqual(target.read_bytes(),self.patched)
+            with self.assertRaises(FileExistsError):
+                playlist.main(['apply',str(source),str(target)])
+            with source.open('wb') as handle: handle.truncate(16*1024**2+1)
+            with self.assertRaisesRegex(ValueError,'16 MiB'):
+                playlist.main(['status',str(source)])
 
     def test_mixed_hook_code_ro_state_and_dependency_refuse_before_mutation(self):
         image = XbeImage(self.patched)
@@ -209,12 +225,14 @@ class Machine:
         else:
             self._return()
 
-    def run(self, label, *, ecx=0, edx=0, arg=None):
+    def run(self, label, *, ecx=0, edx=0, arg=None, args=()):
         at = self.labels[label] if isinstance(label, str) else label
         sp = self.STACK + 0xf000
         self.write(sp, self.STOP)
-        if arg is not None:
-            self.write(sp + 4, arg)
+        assert arg is None or not args
+        args = (arg,) if arg is not None else args
+        for index, value in enumerate(args):
+            self.write(sp + 4 + index * 4, value)
         uc = self.uc
         preserved = {UC_X86_REG_EBX: 0x11111111, UC_X86_REG_ESI: 0x22222222,
                      UC_X86_REG_EDI: 0x33333333, UC_X86_REG_EBP: 0x44444444}
@@ -225,7 +243,7 @@ class Machine:
         uc.reg_write(UC_X86_REG_EDX, edx)
         uc.emu_start(at, self.STOP + 1, timeout=200000, count=30000)
         assert uc.reg_read(UC_X86_REG_EIP) == self.STOP, 'Bound expired without return'
-        assert uc.reg_read(UC_X86_REG_ESP) == sp + 4 + (4 if arg is not None else 0), 'Stack ABI'
+        assert uc.reg_read(UC_X86_REG_ESP) == sp + 4 + 4 * len(args), 'Stack ABI'
         for reg, value in preserved.items():
             assert uc.reg_read(reg) == value, f'Callee-saved register {reg}'
         return uc.reg_read(UC_X86_REG_EAX)

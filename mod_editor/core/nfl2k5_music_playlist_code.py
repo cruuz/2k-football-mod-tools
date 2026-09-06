@@ -41,7 +41,9 @@ CODE = bytes.fromhex(
     "3000000061e9fcffffff60e8fcffffff830d3800000001e8fcffffff615589e583e4f8e9fcffffff"
     "a1183bb700e8fcffffff60832538000000fee8fcffffff61c3e8fcffffff833d34000000000f8596"
     "fdffff833d14000000007431608b1d18000000e8fcffffff891d18000000c7052400000000000000"
-    "c7052000000001000000c70598d3c5000200000061c3"
+    "c7052000000001000000c70598d3c5000200000061c39c60833d00000000007413837c2428017407"
+    "837c2428037505e8fcffffff619d51555789cfe9fcffffff60c7054494bd0000000000b9c0c0e600"
+    "e8fcffffff61c20800"
 )
 RELOCATIONS = (
     (2, 1, 'state_data', 0),
@@ -179,11 +181,15 @@ RELOCATIONS = (
     (1586, 1, 'state_data', 0),
     (1592, 1, 'state_data', 0),
     (1602, 1, 'state_data', 0),
+    (1626, 1, 'state_data', 0),
+    (1648, 2, 'code', 373),
+    (1681, 2, 'code', 1200),
     (1129, 2, 'retail_pause_tail', 0),
     (1168, 2, 'retail_resume_tail', 0),
     (1196, 2, 'retail_preview_tail', 0),
     (1486, 2, 'retail_player_init', 0),
     (1516, 2, 'retail_halftime_tail', 0),
+    (1660, 2, 'retail_screen_tail', 0),
 )
 LABELS = {
     'advance': 934,
@@ -195,6 +201,7 @@ LABELS = {
     'context': 1200,
     'context_start': 1258,
     'context_stop': 1238,
+    'draft_shared': 1664,
     'enqueue': 373,
     'enqueue_bad': 804,
     'enqueue_empty': 814,
@@ -232,6 +239,9 @@ LABELS = {
     'profile_other': 1418,
     'resume': 1133,
     'resume_tail': 1162,
+    'screen_done': 1652,
+    'screen_event': 1622,
+    'screen_queue': 1647,
     'selected': 502,
     'shared_start': 1288,
     'shuffle': 222,

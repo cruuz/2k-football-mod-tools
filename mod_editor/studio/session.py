@@ -428,6 +428,7 @@ class StudioSession:
         self._audio_edits: dict[str, AudioSessionEdit] = {}
         self._audio_undo: list[_UndoAction] = []
         self._audio_annotations: dict[str, AudioCueAnnotation] = {}
+        self._build_settings: dict[str, object] = {}
         self.crib_catalog: Nfl2k5CribCatalog | None = None
         self.crib_io: Nfl2k5CribIO | None = None
         self._crib_edits: dict[str, SessionEdit] = {}
@@ -545,13 +546,31 @@ class StudioSession:
 
     @property
     def project_metadata_count(self) -> int:
-        """Count non-build metadata stored in the shareable project."""
+        """Count annotations and saved Build preferences beside asset edits."""
 
-        return self.annotation_count
+        return self.annotation_count + bool(self._build_settings)
 
     @property
     def has_project_metadata(self) -> bool:
-        return bool(self._audio_annotations)
+        return bool(self._audio_annotations or self._build_settings)
+
+    @property
+    def build_settings(self):
+        from mod_editor.core.nfl2k5_music_playlist import build_settings
+        return build_settings(self._build_settings)
+
+    def set_build_settings(self, value):
+        from mod_editor.core.nfl2k5_music_playlist import build_settings
+        checked = build_settings(value)
+        if checked == self._build_settings:
+            return
+        previous = self._build_settings
+        self._build_settings = checked
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._build_settings = previous
+            raise
 
     @property
     def labeled_audio_asset_ids(self) -> frozenset[str]:
@@ -4096,6 +4115,7 @@ class StudioSession:
             ),
             audio_edits=archive_audio_edits,
             audio_annotations=self.audio_annotations,
+            build_settings=self.build_settings,
             uniform_colors=(
                 {
                     "selector": selector,
@@ -4121,7 +4141,7 @@ class StudioSession:
     def load_shareable_project(self, source: Path) -> int:
         """Load a completely validated project into a new, empty session."""
 
-        if self.modified_count or self._audio_annotations:
+        if self.modified_count or self._audio_annotations or self._build_settings:
             raise ValidationError(
                 "Projects load into a fresh working session; save or revert current edits first."
             )
@@ -4397,7 +4417,7 @@ class StudioSession:
             previous_state = (
                 self._edits, self.text_edits, self._audio_edits,
                 self._crib_edits, self._stadium_edits,
-                self._audio_annotations, self._unif_colors,
+                self._audio_annotations, self._unif_colors, self._build_settings,
                 self._play_route_edits,
                 self._undo, self._crib_undo,
                 self._stadium_undo, self._audio_undo, self._undo_order,
@@ -4410,6 +4430,7 @@ class StudioSession:
             self._crib_edits = new_crib
             self._stadium_edits = new_stadium
             self._audio_annotations = new_annotations
+            self._build_settings = dict(loaded.build_settings or {})
             self._unif_colors = new_unif_colors
             self._play_route_edits = new_play_routes
             try:
@@ -4418,7 +4439,7 @@ class StudioSession:
                 (
                     self._edits, self.text_edits, self._audio_edits,
                     self._crib_edits, self._stadium_edits,
-                    self._audio_annotations, self._unif_colors,
+                    self._audio_annotations, self._unif_colors, self._build_settings,
                     self._play_route_edits,
                     _old_undo, _old_crib_undo, _old_stadium_undo,
                     _old_audio_undo, _old_undo_order,
@@ -4449,6 +4470,7 @@ class StudioSession:
                 self._crib_edits = new_crib
                 self._stadium_edits = new_stadium
                 self._audio_annotations = new_annotations
+                self._build_settings = dict(loaded.build_settings or {})
                 self._unif_colors = new_unif_colors
                 self._play_route_edits = new_play_routes
                 self._undo = []
@@ -4461,7 +4483,7 @@ class StudioSession:
                 (
                     self._edits, self.text_edits, self._audio_edits,
                     self._crib_edits, self._stadium_edits,
-                    self._audio_annotations, self._unif_colors,
+                    self._audio_annotations, self._unif_colors, self._build_settings,
                     self._play_route_edits,
                     self._undo, self._crib_undo,
                     self._stadium_undo, self._audio_undo, self._undo_order,
@@ -4679,6 +4701,8 @@ class StudioSession:
             "session_id": self.session_id,
             "source_sha256": self.cache.source.sha256,
         }
+        if self._build_settings:
+            document["build_settings"] = self.build_settings
         if self.text_edits is not None:
             document["text_replacements"] = self.text_edits.replacement_document()
         if self._audio_edits:

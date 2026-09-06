@@ -3253,6 +3253,16 @@ class Nfl2k5StudioFacade:
             f"Reverted {count} project change{'s' if count != 1 else ''}."
         )
 
+    def project_build_settings(self):
+        """A detached map for restoring the Build and Music pages."""
+        with self._lock:
+            return self._require_session().build_settings
+
+    def set_project_build_settings(self, value):
+        """Keep personal Build choices with named and recovery project saves."""
+        with self._lock:
+            self._require_session().set_build_settings(value)
+
     def save_project(
         self,
         destination: Path,

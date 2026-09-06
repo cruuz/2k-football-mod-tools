@@ -1,6 +1,6 @@
 {
   "backend": {
-    "command": "Python API: nfl2k5_music_playlist.apply(payload, selection=Selection(...))",
+    "command": "python3 -m mod_editor.core.nfl2k5_music_playlist apply <source.xbe> <new-copy.xbe> --choices <playlist.json>",
     "module": "mod_editor/core/nfl2k5_music_playlist.py",
     "operation": "write"
   },
@@ -10,26 +10,32 @@
     "reports/music_playlist_contexts.v1.json",
     "tests/mod_editor/test_nfl2k5_music_playlist.py",
     "tests/mod_editor/test_nfl2k5_music_playlist_contexts.py",
-    "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py"
+    "tests/mod_editor/test_nfl2k5_music_playlist_manifest.py",
+    "ASTRA_MUSIC_ALL_MODES_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_music_playlist_library.py",
+    "tests/mod_editor/test_music_playlist_project.py",
+    "tests/mod_editor/test_music_all_modes_wiring.py"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
     "default_enabled": false,
     "expose": true,
     "mode": "edit",
-    "reason": "Music tab Playlist page. Default off in all presets. Background disc/HDD playlists are replaced; temporary jukebox previews remain. Individual screen routing and audible output are unwitnessed."
+    "reason": "Music tab Playlist page, default off in all presets. Browse rebuilt libraries and select up to 100 songs. Project save/open and final Build publication integration are supplied in WIRING.md. Audible output is unwitnessed."
   },
   "id": "nfl2k5.music.playlist",
   "input_constraints": [
     "Verified USA XBE and validated source AUSB descriptors. Named allocator union must contain code 2048, data 512 and read_only 1024 bytes for nfl2k5_music_playlist.",
     "Selection has at most 100 unique (bank,index) records. Runtime rejects missing descriptors, invalid indices and empty/reversed ranges before binding/enqueueing.",
-    "Build defaults to 7 menu and 59 jukebox recordings. Outtakes off leaves 54; beds on adds ten. Zero stops and one repeats.",
-    "Rebuild from the supported base for a different installed selection. Publish through the existing image copy transaction. No saved profile, purchase or PA clip mutation."
+    "Defaults to 7 menu and 59 jukebox recordings. Outtakes off leaves 54; beds on adds ten. A larger catalogue can hold up to 400 songs per main bank; at most 100 selected records are installed. Zero stops and one repeats.",
+    "Rebuild from the supported base for a different installed selection. Publish through the existing image copy transaction. No saved profile, purchase or PA clip mutation.",
+    "Actual rebuilt AUSB descriptors and the installed XBE selection must agree before image publication. The executable-only module command does not validate an image.",
+    "Choices schema 2 stores the larger browse catalogue separately from the installed selection. Schema 1 imports remain supported. Projects persist a detached, validated music Build settings map."
   ],
   "portme": [
-    "Complete every individual screen route and Noah witness row before any all-mode claim.",
-    "Recover the actual drafta player. The two 165C20 callers inspected here request coachambience.",
-    "Witness real stream resume, preview completion, volume, stereo/surround and PA/show coexistence."
+    "Apply the protected Build and Studio handoff in WIRING.md and regenerate the cave manifest before release.",
+    "Witness every named route, actual stream resume/completion, volume, stereo/surround and PA/show coexistence.",
+    "Draft intentionally shares the shuffle instead of scheduled ambience. The original draftambience-to-drafta alias remains unproved and is bypassed."
   ],
   "public_distribution": {
     "game_data": "never-bundle-retail-data",
@@ -39,19 +45,19 @@
   },
   "runtime": {
     "evidence": [],
-    "scope": "EXPERIMENTAL / UNWITNESSED. Bounded native instruction tests and byte pins only. No all-modes claim.",
+    "scope": "EXPERIMENTAL / UNWITNESSED. All 24 named routing contracts have bounded native transitions with explicit rendering/resource/streaming stubs. This is not audible all-mode certification.",
     "status": "not-tested"
   },
   "selectors": {
     "fields": [
       {
-        "name": "music_shuffle",
         "allowed": "false or true; defaults false",
+        "name": "music_shuffle",
         "required": true
       },
       {
+        "allowed": "Music Playlist choices schema 1 or 2, or the default 66-song selection; at most 100 installed records",
         "name": "music_shuffle_selection",
-        "allowed": "Music Playlist choices schema 1, or default 66-song Selection",
         "required": false
       }
     ],
@@ -65,8 +71,8 @@
     "resource": "Pinned music controller hooks and newly allocated RX/RW/RO children",
     "retail_file": "default.xbe and vc_53450030/0..F"
   },
-  "summary": "Shuffle 66 original menu and jukebox recordings through the shared background player. Optional spoken outtakes and ten established beds; timed shows retain their music. EXPERIMENTAL / UNWITNESSED.",
+  "summary": "Shared shuffle across 24 bounded named routes, including franchise, create screens and replay. Draft joins the shuffle; timed loading, halftime and wrap-up music remains. Larger libraries support 100 selected records. EXPERIMENTAL / UNWITNESSED.",
   "surface": "audio",
   "title": "Shared music shuffle (experimental)",
-  "validation_command": "python3 tests/mod_editor/test_nfl2k5_music_playlist.py"
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_music_playlist"
 }

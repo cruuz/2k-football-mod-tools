@@ -154,7 +154,15 @@ def _owned_state(payload):
     layout = space.layout(payload)  # section digests and allocator seals
     image = XbeImage(payload)
     for va, size, digest in GUARDS:
-        _require(hashlib.sha256(image.read(va, size)).hexdigest() == digest,
+        content = image.read(va, size)
+        if va == 0x6E4E0 and content[:5] != bytes.fromhex("5155578bf9"):
+            # Playlist tier 4b adapts the shared event-dispatch prologue. Accept
+            # only its complete sealed installation, then pin every remaining
+            # native instruction. Never normalize an arbitrary jump or cave.
+            from . import nfl2k5_music_playlist as playlist
+            _require(playlist.status(payload) == "applied", "foreign music screen-dispatch hook")
+            content = playlist.HOOKS["screen_event"][1] + content[5:]
+        _require(hashlib.sha256(content).hexdigest() == digest,
                  f"foreign Practice Squad screen prerequisite at {va:#x}")
     # Pin the already-composed Schedule/Practice records and other franchise
     # sites, excluding only the row pointer whose ownership we explicitly take.
