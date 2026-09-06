@@ -531,8 +531,13 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         folded_paths.add(folded)
         forbidden = _forbidden_path(relative_path)
         if forbidden is not None:
+            hint = ""
+            if forbidden == "__pycache__":
+                hint = (" (a bytecode cache inside a staged tree means something was run inside it before"
+                        " this check; run the check first, or set PYTHONDONTWRITEBYTECODE=1 for anything"
+                        " you run inside a stage)")
             raise ReleaseCheckError(
-                f"forbidden extracted/build/local-data path component {forbidden!r}: {relative}"
+                f"forbidden extracted/build/local-data path component {forbidden!r}: {relative}{hint}"
             )
         if stat.S_ISLNK(info.st_mode):
             raise ReleaseCheckError(f"release symlinks are forbidden: {relative}")
