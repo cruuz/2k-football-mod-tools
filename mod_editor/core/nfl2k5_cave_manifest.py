@@ -250,6 +250,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_my_career as my_career, nfl2k5_crib_reclaim as crib_reclaim
     # Includes defensive_try's scale-out stat code/RO requests, atomically
     # installed by the existing defensive_try entry in both owner lists below.
+    from . import nfl2k5_screen_hooks as screen_hooks
     all_requests = relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS
     if type(synthetic_owner_bytes) is not int or synthetic_owner_bytes < 0:
         raise OracleError("synthetic owner size must be a nonnegative integer")
