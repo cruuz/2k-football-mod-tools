@@ -2,7 +2,7 @@
  * Rebuild the checked-in Python byte template with tools/nfl2k5_momentum_assemble.py.
  * Runtime patching needs only Python, never an assembler.
  * Slot (64 bytes): entity, state, roster, tick, filtered, run frames, state age,
- * valid, sampled vx/vz, pair, bonus, resolver EBP, reserved[3].
+ * valid, sampled vx/vz, pair, bonus, resolver EBP, contact tick/state/roster.
  * state_data starts with 16 bytes (overflow counter, reserved), then 32 slots.
  */
 .intel_syntax noprefix
@@ -181,6 +181,14 @@ eligible:
     jne no
     cmp dword ptr [ebx+0x1c], 1
     jne no
+    mov eax, [ebx+0x18]
+    inc eax
+    cmp eax, 1
+    jbe no
+    mov eax, [ebx+0x3c]
+    inc eax
+    cmp eax, 1
+    jbe no
     mov esi, [ebx+0x10]
     mov edx, [ebx+0xc]
     lea eax, [esi-1]
@@ -231,6 +239,11 @@ scan:
     je found
     cmp dword ptr [edi], 0
     je candidate
+    /* A collision-only sample also owns its slot through the next tick. */
+    mov eax, [0xb71d10]
+    sub eax, [edi+52]
+    cmp eax, 1
+    jbe next
     mov eax, [0xb71d10]
     sub eax, [edi+12]
     cmp eax, 1
@@ -245,6 +258,7 @@ next:
     jz overflow
     mov [edi], ebx
     mov dword ptr [edi+28], 0
+    mov dword ptr [edi+44], 0
 found:
     ret
 overflow:
@@ -263,7 +277,7 @@ contact_first:
     lea esp, [esp+8]
     pushfd
     pushad
-    sub esp, 112
+    sub esp, 132
     fnsave [esp]
     mov ebx, esi
     call find_slot
@@ -273,19 +287,35 @@ contact_first:
     mov eax, [ebp+8]
     mov [edi+40], eax
     mov [edi+48], ebp
-    call contact_valid
+    call carrier_valid
     jnc contact_done
-    /* Run history is sampled once per tick. At this first resolver read,
-     * sample current pre-resolution velocity and cache the bonus for both reads. */
+    mov eax, [0xb71d10]
+    mov [edi+52], eax
+    mov [edi+56], esi
+    mov eax, [ebx+0x3c]
+    mov [edi+60], eax
+    /* Sample this pair before native resolution changes velocities. A later
+     * attribute read uses the scalar, never re-samples the blended velocity.
+     * Stack floats: carrier speed, dx, dz, length, momentum, integer mass. */
     mov edx, [ebp+8]
+    lea eax, [edx+1]
+    cmp eax, 1
+    jbe contact_done
+    cmp dword ptr [edx+0x1c], 1
+    jne contact_done
     mov edx, [edx+0x18]
+    lea eax, [edx+1]
+    cmp eax, 1
+    jbe contact_done
     mov eax, [ebx+0x18]
     fld dword ptr [edx]
     fsub dword ptr [eax]
+    fst dword ptr [esp+112]
     fld st(0)
     fmul st, st(0)
     fld dword ptr [edx+8]
     fsub dword ptr [eax+8]
+    fst dword ptr [esp+116]
     fld st(0)
     fmul st, st(0)
     faddp st(2), st
@@ -294,28 +324,106 @@ contact_first:
     fmul dword ptr [eax+0x40]
     faddp st(2), st
     fsqrt
+    fst dword ptr [esp+120]
     fdivp st(1), st
-    fsub dword ptr [config+16]
-    fmul dword ptr [config+20]
-    /* Store and integer-check: nonfinite, negative or zero => no bonus. */
     fstp dword ptr [esp+108]
     mov eax, [esp+108]
     test eax, eax
     jle contact_done
     cmp eax, 0x7f800000
     jae contact_done
+    test dword ptr [config], 0x100
+    jz collision
+    call contact_valid
+    jnc collision
+    fld dword ptr [esp+108]
+    fsub dword ptr [config+16]
+    fmul dword ptr [config+20]
+    /* Store and integer-check: nonfinite, negative or zero => no bonus. */
+    fstp dword ptr [esp+124]
+    mov eax, [esp+124]
+    test eax, eax
+    jle collision
+    cmp eax, 0x7f800000
+    jae collision
     cmp eax, 0x3f800000
     jbe bounded
-    mov dword ptr [esp+108], 0x3f800000
+    mov dword ptr [esp+124], 0x3f800000
 bounded:
-    fld dword ptr [esp+108]
+    fld dword ptr [esp+124]
     fmul st, st(0)
     fimul dword ptr [edi+20]
     fmul dword ptr [config+24]
     fstp dword ptr [edi+44]
+collision:
+    test dword ptr [config], 0x200
+    jz contact_done
+    /* p = mc*positive(vc.n) - md*positive(-vd.n). The same lb-to-kg
+     * conversion cancels against 220 lb*vref. No controller or team read.
+     * Only positive carrier approach reaches here; no standstill benefit. */
+    mov eax, [ebp+8]
+    mov ecx, [eax+0x3c]
+    lea edx, [ecx+1]
+    cmp edx, 1
+    jbe contact_done
+    movzx ecx, byte ptr [ecx+0x2a]
+    add ecx, 150
+    mov [esp+128], ecx
+    mov edx, [eax+0x18]
+    fld dword ptr [edx+0x40]
+    fmul dword ptr [esp+112]
+    fld dword ptr [edx+0x48]
+    fmul dword ptr [esp+116]
+    faddp st(1), st
+    fdiv dword ptr [esp+120]
+    fchs
+    fstp dword ptr [esp+124]
+    mov eax, [esp+124]
+    and eax, 0x7fffffff
+    cmp eax, 0x7f800000
+    jae contact_done
+    cmp dword ptr [esp+124], 0
+    jg defender_approaching
+    mov dword ptr [esp+124], 0
+defender_approaching:
+    fld dword ptr [esp+124]
+    fimul dword ptr [esp+128]
+    mov eax, [ebx+0x3c]
+    movzx eax, byte ptr [eax+0x2a]
+    add eax, 150
+    mov [esp+128], eax
+    fld dword ptr [esp+108]
+    fimul dword ptr [esp+128]
+    fsubrp st(1), st
+    fmul dword ptr [config+28]
+    fstp dword ptr [esp+124]
+    mov eax, [esp+124]
+    test eax, eax
+    jle contact_done
+    cmp eax, 0x7f800000
+    jae contact_done
+    cmp eax, 0x3f800000
+    jbe collision_bounded
+    mov dword ptr [esp+124], 0x3f800000
+collision_bounded:
+    fld dword ptr [esp+124]
+    fmul dword ptr [config+32]
+    fadd dword ptr [edi+44]
+    fcomp dword ptr [config+36]
+    fnstsw ax
+    test ah, 0x45
+    jz combined_cap
+    fld dword ptr [esp+124]
+    fmul dword ptr [config+32]
+    fadd dword ptr [edi+44]
+    fstp dword ptr [edi+44]
+    jmp contact_done
+combined_cap:
+    mov eax, [config+36]
+    mov [edi+44], eax
 contact_done:
     frstor [esp]
-    add esp, 112
+    add esp, 132
     popad
     popfd
     jmp add_bonus
@@ -331,8 +439,18 @@ add_bonus:
     call find_slot
     test edi, edi
     jz bonus_end
-    call contact_valid
+    call carrier_valid
     jnc bonus_end
+    cmp dword ptr [edi+44], 0
+    je bonus_end
+    mov eax, [0xb71d10]
+    cmp [edi+52], eax
+    jne bonus_end
+    cmp [edi+56], esi
+    jne bonus_end
+    mov eax, [ebx+0x3c]
+    cmp [edi+60], eax
+    jne bonus_end
     cmp [edi+48], ebp
     jne bonus_end
     mov eax, [ebp+8]
@@ -348,7 +466,7 @@ bonus_end:
     popfd
     ret 4
 contact_valid:
-    call eligible
+    call carrier_valid
     jnc invalid_contact
     cmp dword ptr [edi+28], 1
     jne invalid_contact
@@ -360,10 +478,17 @@ contact_valid:
     mov eax, [0xb71d10]
     cmp [edi+12], eax
     jne invalid_contact
+    stc
+    ret
+carrier_valid:
+    call eligible
+    jnc invalid_contact
     /* Retail attached-player predicate from FUN_001ce280. */
     mov eax, [0xe5fc00]
-    test eax, eax
-    jz invalid_contact
+    inc eax
+    cmp eax, 1
+    jbe invalid_contact
+    dec eax
     cmp [eax], ebx
     jne invalid_contact
     stc
@@ -373,9 +498,10 @@ invalid_contact:
     ret
 .balign 4, 0xcc
 config:
-    .long 0 /* level 1..100, contact in bit 8 */
+    .long 0 /* movement 0..100, runup bit8, collisions bit9, collision level16..22 */
     .float 0.4, 0.12 /* m*.4, m*.12 => t_stop */
     .float 251410.0 /* (.55 * reference_speed)^2, replaced by builder */
     .float 501.411, 0.002437 /* .55*vref, 1/(.45*vref) */
     .float 0.0038095238 /* .08*m /21 */
+    .float 0.000004986, 0.06, 0.08 /* 1/(220*vref), collision cap*level, combined cap */
 code_end:

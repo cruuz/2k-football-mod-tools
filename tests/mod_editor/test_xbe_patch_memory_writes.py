@@ -120,6 +120,10 @@ class PatchWriteTests(unittest.TestCase):
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_momentum as momentum
+        settings = momentum.read_settings(cls.patched)
+        if not settings.get("momentum_collisions") or settings.get("momentum_collision_level") != 100:
+            raise AssertionError("collision momentum missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")

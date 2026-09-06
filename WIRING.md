@@ -4889,3 +4889,207 @@ the existing experimental/unwitnessed classification. Older already-patched
 XBEs containing the previous START are deliberately `foreign`; rebuild from
 retail through the current owner stack instead of silently migrating a mixed
 image. No release-tag, updater, workflow or push change is requested.
+## r62 momentum-contact: model 2 collision extension (2026-09-06)
+
+This section supersedes the model-1 Momentum fields/help where specified.
+EXPERIMENTAL / UNWITNESSED. The existing owner is extended; do not register or
+allocate a second owner. Protected product files and the protected reservation
+JSON are unchanged in this task. `ASTRA_MOMENTUM_CONTACT_REPORT.md` contains the
+calibration, tier A/B audit, test evidence and Noah's pending witness list.
+
+### Dispatcher and the four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, add keyword arguments
+`momentum_collisions: bool = False, momentum_collision_level: int = 0` beside
+`momentum`/`momentum_contact` on `_apply_all`, both public copy writers and every
+forwarding call. Validate with
+`momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)`
+before any copy or mutation. Positive collision level requires the collision
+flag; Boolean levels and integers outside 0..100 refuse. True/0 is a no-op.
+Use `collision_on = momentum_collisions and momentum_collision_level > 0` and
+`momentum_on = momentum > 0 or collision_on` for allocation/application tests.
+Do not require positive movement momentum to enable collisions.
+
+Extend `_selected_space_requests` and `_xbe_space_adapter` with the two new
+keywords. Include `momentum_patch.REQUESTS` exactly once when `momentum_on`.
+Update every call site, including `_defensive_try_adapter` and the runtime
+scorebug extra-request path. Keep old positional arguments in place; append
+new fields as keywords to avoid shifting unrelated options. `_xbe_space_adapter`
+and `_defensive_try_adapter.apply` must use `scaleout=True` when `collision_on`,
+so the full union is reserved before any owner emits code. Other beta-62 owners
+also select v3 through the existing allocator. Missing or legacy preallocation
+refuses before an installed result; rebuild from the supported source.
+
+Extend the existing `_momentum_adapter` as follows:
+
+```python
+class _momentum_adapter:
+    def __init__(self, level, contact, collisions=False, collision_level=0):
+        self.settings = dict(momentum=level, momentum_contact=contact,
+                             momentum_collisions=collisions,
+                             momentum_collision_level=collision_level)
+
+    def status(self, payload):
+        return momentum_patch.status(payload)
+
+    def apply(self, payload):
+        return momentum_patch.apply(payload, **self.settings)
+```
+
+In `_apply_all`'s final owners tuple, after the allocator entry, replace the
+existing Momentum entry with:
+
+```python
+(momentum_on,
+ _momentum_adapter(momentum, momentum_contact,
+                   momentum_collisions, momentum_collision_level),
+ "momentum_patch", "experimental player momentum"),
+```
+
+The allocator activation expression must include
+`collision_on`. Do not install Momentum once per component. For the parity
+profile, extend the existing legacy normalization from `momentum > 0` to
+`momentum_on`: disable a newly selected `accel_ramp` and retain the receipt
+`legacy_accel_ramp_disabled_by_momentum_profile`. The backend continues to
+recognize an independently installed legacy ramp without removing it; such a
+source is not the clean parity baseline.
+
+`_grown_status_fields` currently serves all four status dictionaries:
+`read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy`. Keep calling it
+from all four. Retain `momentum_settings` as the complete `read_settings`
+object, including model_version=2 and the two new keys. Compute component
+statuses separately so collision-only is not shown as installed braking:
+
+```python
+state = momentum_patch.status(payload)
+settings = momentum_patch.read_settings(payload)
+def component(enabled):
+    return "foreign" if state == "foreign" else (
+        "applied" if state == "applied" and enabled else "retail")
+fields = {
+    "momentum": component(settings.get("momentum", 0) > 0),
+    "momentum_contact": component(settings.get("momentum_contact", False)),
+    "momentum_collisions": component(settings.get("momentum_collisions", False)
+                                     and settings.get("momentum_collision_level", 0) > 0),
+    "momentum_settings": settings,
+}
+```
+
+Merge `fields` with the existing unrelated status fields. The backend's
+`momentum_patch.status` remains an owner status for integrity and replay.
+Use `settings['status'] == 'applied'` to lock ALL of this owner's component
+settings on an installed source, including an inactive movement component of
+a collision-only source. Changing component settings requires a clean rebuild;
+otherwise an UI may incorrectly offer to add braking to a sealed collision
+configuration. Model-1 images intentionally report foreign; rebuild, never
+resize/migrate their allocation in place.
+
+### BuildPlan, normalization, presets and final pass
+
+In `mod_editor/core/mod_build.py` add:
+
+```python
+momentum_collisions: bool = False
+momentum_collision_level: int = 0
+```
+
+Basic, Advanced and Experimental (`softdrink_experimental`) all explicitly
+keep **false/0**. Existing movement momentum and run-up defaults stay off/0.
+Opt-in comparison order is movement 0, run-up false, collisions true/50,
+then true/100; combined movement/run-up comes afterward. Recipe round trips
+must preserve unusual valid integers and both new fields.
+
+Add the collision flag to `wants_xbe_patch`, capability availability (same
+`nfl2k5_momentum` backend plus allocator), image state extraction and displayed
+status keys. A true flag at level 0 may still enter normal build validation;
+it must not select a Momentum allocation. Validate all four settings at the
+current Momentum validation call. For positive collision level imply
+`xbe_space=True` and disable a newly selected legacy ramp with the existing
+receipt as described above.
+
+Both `replace(plan, ...)` calls that defer grown features must also pass
+`momentum_collisions=False, momentum_collision_level=0`, to prevent an early
+fixed-size pass from partially installing this owner. Include `collision_on`
+in the final grown-pass condition; forward both fields to `_apply_all` and to
+`_selected_space_requests` in the paired scorebug resource pass. Carry the
+complete settings and component statuses into final rebuilt-image reports.
+The final pass already uses the accepted v3 extent writer; no transport or
+archive change is required.
+
+### Gameplay Patches and Build controls
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add this `PATCHES` row:
+
+```python
+("momentum_collisions", "Weight and speed in contact (experimental, unwitnessed)",
+ "Retail already uses weight and speed in tackles. Patch: a small, capped "
+ "benefit when the ball carrier's weight and speed toward contact outweigh "
+ "the defender's approach. Standing carriers gain no benefit. Ratings still "
+ "matter. Experimental / Unwitnessed. Separate from turning and braking."),
+```
+
+Add `momentum_collisions` to `NEEDS_IMAGE`. Add an independent level control
+for `momentum_collision_level`, with Retail/0, Light/25, Medium/50, Heavy/100
+and honest installed-value display for other valid integers. Check selects
+last positive level (initially 50); uncheck sets flag false and level 0.
+Selecting level 0 clears the flag. Gate editing against the entire owner's
+installed/foreign state, not just this component's status. Do not clear this
+control when movement momentum changes to 0. Retain the existing requirement
+that only the old run-up option needs positive movement momentum.
+
+In `mod_editor/gui/build_panel_qt.py`, add the `_option` caption
+**`Weight and speed in contact (experimental)`** (41 characters, <=60), using
+`momentum_collisions` and `nfl2k5_momentum.COLLISION_HELP_TEXT`. Give it the
+same independent level control and state-lock behavior. Add both fields to
+plan construction, preset loads, status refresh, recipe notes and selected
+feature display. For positive selection clear the legacy ramp checkbox and
+record the profile normalization. Keep implementation addresses, allocation
+terms and the mathematical formula out of the product flow.
+
+### Capability, allowlist and runtime closure
+
+Replace the existing `nfl2k5.gameplay.momentum` object in
+`mod_editor/capabilities/registry.v1.json` with the complete updated object in
+`docs/mod_editor/nfl2k5_momentum_capability.json`. This extends the existing
+surface; no new surface enum, router, owner or duplicate registry ID is needed.
+Both backend.command and validation_command use the schema-resolvable
+`python3 -m mod_editor.core.nfl2k5_momentum ...` form. The backend example
+builds collision-only 50. Classification stays `offline-writer-proved`, runtime
+`not-tested`, GUI default disabled.
+
+Required `packaging/release-allowlist.txt` lines (the first three already exist;
+retain once, append the new report):
+
+```text
+mod_editor/core/nfl2k5_momentum.py
+mod_editor/core/nfl2k5_momentum_code.py
+docs/mod_editor/nfl2k5_momentum_capability.json
+ASTRA_MOMENTUM_CONTACT_REPORT.md
+```
+
+Runtime-closure imports in `packaging/check_2k5_mod_studio_runtime.py` already
+contain `mod_editor.core.nfl2k5_momentum` and
+`mod_editor.core.nfl2k5_momentum_code`; retain them and assert model_version 2,
+`COLLISION_HELP_TEXT`, and the four-argument settings contract. No new runtime
+package or GNU assembler dependency is introduced. The assembler and tests
+remain development tools. Extend the integration validator to run
+`tests/mod_editor/test_nfl2k5_momentum_collisions.py` standalone.
+
+### Manifest and integration acceptance
+
+The existing Momentum owner was already in all three manifest owner lists,
+`all_requests`, and the shared allocator union. Its request is now **1,408 RX /
+2,064 RW**, with no extra RW or RO. The committed budget fixture replaces only
+its code row. Both gate fixtures and both manifest owner probes now explicitly
+install collisions true/100 alongside run-up/movement 100; the manifest also
+records `momentum_settings`. Both orders include the actual abilities owner.
+Claude must regenerate `data/nfl2k5_cave_reservations.json` from final integrated
+sources using the real manifest builder; this task never overwrites it.
+
+After protected wiring, check collision-only 0/false/true/50 builds, both-zero
+byte identity, movement-only old configuration, combined 100/true/true/100,
+all four read/write status dictionaries, model-1/foreign refusal, profile
+normalization, exact replay and changed-setting refusal. Run both XBE gates,
+the Momentum suites and the manifest suite against the fresh private/release
+manifest. Keep source-fingerprint checks enabled. No gameplay witness or
+release enablement is implied by these offline checks.

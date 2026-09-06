@@ -34,7 +34,7 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     payload, policy_receipt = policy.apply(payload, music_unlock=True, music_userlist=True)
     payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
     owners = ((defensive_try, {}), (kickoff, {}), (runtime, {}),
-              (momentum, dict(momentum=100, momentum_contact=True)), (zone_drop, {}),
+              (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}))
     order = tuple(reversed(owners)) if reverse else owners

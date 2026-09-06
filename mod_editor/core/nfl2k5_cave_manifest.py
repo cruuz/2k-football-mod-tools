@@ -319,7 +319,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             final, _ = zone_drop.apply(final)
             final, _ = relocated.apply(final)
             final, _ = runtime.apply(final)
-            final, _ = momentum.apply(final, momentum=100, momentum_contact=True)
+            final, _ = momentum.apply(final, momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)
             final, _ = coverage.apply(final)
             final, _ = scramble.apply(final)
             final, _ = playlist.apply(final)
@@ -355,7 +355,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             progress(f"Building synthetic {synthetic_owner_bytes}-byte owner on the real disposable disc")
             probe, _ = space.apply(allocation_base, all_requests + probe_requests, scaleout=True)
             for module, kwargs in ((defensive_try, {}), (zone_drop, {}), (relocated, {}), (runtime, {}),
-                                   (momentum, dict(momentum=100, momentum_contact=True)),
+                                   (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)),
                                    (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
                                    (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}),
                                    (music, dict(song_records=[dict(title=f'Tone {i+1:03}', artist='Synthetic', frames=256) for i in range(200)]))):
@@ -400,6 +400,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                 "preset_xbe_sha256": hashlib.sha256(preset_xbe).hexdigest(),
                 "stack_xbe_sha256": hashlib.sha256(final).hexdigest(),
                 "section_digests_verified": True, "allocator_layout": space.layout(final),
+                "momentum_settings": momentum.read_settings(final),
                 "synthetic_disc_proof": synthetic_proof,
                 "image_options": {"scorebug_textures": True, "runtime_panel_resources": False,
                                   "reason": "Manifest proves XBE ownership only; panel transport has its own resource tests"},
