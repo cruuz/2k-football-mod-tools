@@ -14,8 +14,6 @@
   "pins": "pins.json",
   "product_modules": [
     "ps2_iso9660",
-    "ps2_iso9660_writer",
-    "ps2_iso9660_verify",
     "mod_editor.games._formats.ea_terf",
     "mod_editor.games._formats.ea_tdb",
     "mod_editor.games.madden09_ps2",
@@ -27,12 +25,16 @@
     "mod_editor.games.madden09_ps2.team_data",
     "mod_editor.games.madden09_ps2.text_lane",
     "mod_editor.games.madden09_ps2.code_patches",
+    "ps2_iso9660_writer",
+    "ps2_iso9660_verify",
     "madden09_ps2_texture_identities",
-    "mod_editor.games.madden09_ps2.playbooks_lane",
     "mod_editor.games.madden09_ps2.identity_lane",
     "mod_editor.games._formats.ea_schl",
     "mod_editor.games.madden09_ps2.audio_lane",
-    "mod_editor.games.madden09_ps2.art_pages"
+    "mod_editor.games.madden09_ps2.playbooks_lane",
+    "mod_editor.games.madden09_ps2.art_pages",
+    "mod_editor.games._formats.xxhash3_64",
+    "mod_editor.games._formats.pcsx2_texture_name"
   ],
   "tool_modules": [],
   "allowlist_patterns": [
@@ -40,12 +42,14 @@
     "tools/validate_madden09_ps2_*",
     "tools/madden09_ps2_*",
     "docs/product/measured/madden09_ps2/*",
-    "mod_editor/games/_formats/ea_tdb.py"
+    "mod_editor/games/_formats/ea_tdb.py",
+    "mod_editor/games/_formats/xxhash3_64.py",
+    "mod_editor/games/_formats/pcsx2_texture_name.py"
   ],
   "page_notes": {
     "field_art": "FIELDART.DAT holds 73 MMAP textures -- 69 at 128x128 and four at 1024x256, all of them decodable -- and this page edits them: preview, export a PNG, give one back at exactly the same size, and Build writes a NEW disc image. The container's other 642 members are SMF geometry, which no decoder here reads. Create-team art has not been located on this disc by this project. No rebuilt Madden 09 container has ever been booted.",
     "stadiums": "STADIUMS.DAT and STADATA.DAT hold 514 MMAP textures -- 581 decodable images -- and this page edits them: preview, export a PNG, give one back at exactly the same size, and Build writes a NEW disc image. The same two containers hold 805 SMF and 2 DMF geometry members: the stadium's shape, its stands and its crowd are in those, no decoder for either format is built anywhere in this repository and none is documented here, so they are listed by format and left alone. Neither container names its members, so which stadium a texture belongs to is not established. No rebuilt Madden 09 container has ever been booted.",
-    "presentation": "The scorebug and the broadcast overlays are drawn by the executable from values it holds, not from a data file, and nothing on this disc has been mapped to them -- so this page does not move a scorebug. What it does edit is the art those screens draw: 7,678 MMAP members across the 48 UIS_*.DAT containers, LOADDATA.DAT and ICONS.DAT, 6,482 of their images decodable. ICONS.DAT carries no MMAP member at all and UIS_MCFL.DAT's 1,188 are stored under EA codec 4 (IPU1), which nothing here decodes; both are listed and refused by name. No rebuilt Madden 09 container has ever been booted.",
+    "presentation": "The scorebug's layout and numbers are drawn by the executable; the overlay art it draws with is on the disc -- UIS_IG.DAT's 66 MMAP textures (36 of them preloaded by GAME.QKL, six seen in the coin-toss dumps) and UIS_FONT.DAT's 10 FNTS fonts -- and no lane edits either yet: the textures wait on the art pages, the fonts on a decoder.",
     "crib": "The Crib is an ESPN NFL 2K5 feature and not a Madden concept, so this page stays empty here on purpose.",
     "audio": "BGM.DAT, SOUNDDAT.DAT and the four speech containers hold 34,046 EA SCHl streams and 301 BNKl banks. 295 of the streams -- all of the music and every sound effect stream -- are EA-XA ADPCM and play, export and can be replaced; the 967 bank sounds are Sony PlayStation ADPCM and play and export. The other 33,751 streams, which is all the speech and commentary, are EA's MicroTalk codec: ffmpeg has no decoder for it either, so they are listed with their rate, channels and length and their audio is refused by name rather than guessed at.",
     "playbooks": "The 102 shipped playbooks are EA TDB databases packed as LZH1 members 0-101 of /DATA/GAMEDATA.DAT, and this page edits the names inside them: formation, set, set-group, play and special-teams-formation names, plus the six numbers the research gives a meaning. No row can be added -- every table on the disc is packed exactly full, 1,944 of 1,944 -- so raising the editor's own caps is the Gameplay page's separate route.",

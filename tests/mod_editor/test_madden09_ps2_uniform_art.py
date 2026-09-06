@@ -222,12 +222,58 @@ class UniformArtLaneTests(unittest.TestCase):
             self.lane.parse_key("not-a-key")
         self.assertIn("<container>:<member>:<image>", str(caught.exception))
 
-    def test_a_texture_no_dump_has_shown_gets_no_identity(self) -> None:
-        """The synthetic disc was never drawn by an emulator, so it has no name."""
-        self.assertIsNone(self.lane.replacement_identity(self.target))
-        self.assertEqual(self.lane.replacement_identities(self.target), {})
-        self.assertIn("texture dump", self.lane.NO_IDENTITY)
+    def test_a_texture_no_dump_has_shown_gets_a_derived_identity(self) -> None:
+        """The synthetic disc was never drawn by an emulator; its name is computed, and says so."""
+        from mod_editor.games._formats import pcsx2_texture_name as identity
+
+        name = self.lane.replacement_identity(self.target)
+        self.assertIsNotNone(name)
+        parsed = identity.parse_name(str(name))
+        self.assertEqual((1 << parsed.tw, 1 << parsed.th),
+                         (self.target.raw["width"], self.target.raw["height"]))
+        self.assertEqual(parsed.tcc, 0, "the single answer is the modern, TCC-clear name")
+        names = self.lane.replacement_identities(self.target)
+        self.assertEqual(sorted(names), ["derived:classic", "derived:modern"])
+        self.assertNotIn("classic", names, "a derived name never poses as a dumped one")
+        self.assertIn(name, names["derived:modern"])
+        # Every classic TCC-clear name is a modern name too, and TCC set doubles them.
+        self.assertTrue(set(names["derived:modern"]) <= set(names["derived:classic"]))
+        self.assertEqual(len(names["derived:classic"]), 2 * len(names["derived:modern"]))
+        note = self.lane.identity_note(self.target)
+        self.assertIn("Derived from this texture's own bytes", note)
+        self.assertIn("computed, not observed", note)
+        self.assertNotIn("Confirmed", note)
         self.assertIn("TEX0", self.lane.NO_IDENTITY)
+        self.assertIn("no pack", self.lane.NO_IDENTITY)
+
+    def test_the_derived_names_are_the_format_module_s_own(self) -> None:
+        from mod_editor.games._formats import pcsx2_texture_name as identity
+
+        container_name, member, image_index = self.lane.parse_key(self.target.key)
+        payload, texture = self.lane._texture_at(self.source, container_name, member)
+        image = texture.images[image_index]
+        derived, note = uniform_art.derive_texture_names(payload, texture, image)
+        self.assertEqual(note, "")
+        self.assertEqual(derived, self.target.raw["derived_names"])
+        surface = texture.surfaces[image.first_surface]
+        indices = mmap_art.unpack_indices(mmap_art.surface_pixels(payload, surface), surface)
+        level = identity.TextureLevel(surface.width, surface.height,
+                                      8 if surface.pixel_layout == 1 else 4, indices)
+        palette = mmap_art.read_palette(payload, texture.palettes[image.first_palette])
+        expected = identity.derive_names([level] if image.mip_count == 1 else [level], palette)
+        if image.mip_count == 1:
+            self.assertEqual(derived["modern"][0], expected[0].name)
+
+    def test_a_texture_the_rule_cannot_name_says_why(self) -> None:
+        """A width that is not a power of two has no GS size word, so no derived name."""
+        target = Target(key=self.target.key, label="x", detail="", budget="", searchable="",
+                        raw={**self.target.raw, "derived_names": {},
+                             "derived_note": "no name is derived: a texture width of 96 is not "
+                                             "a power of two"},
+                        fields=())
+        self.assertIsNone(self.lane.replacement_identity(target))
+        self.assertEqual(self.lane.replacement_identities(target), {})
+        self.assertIn("not a power of two", self.lane.identity_note(target))
 
     def test_an_identity_table_gives_a_texture_its_pcsx2_name(self) -> None:
         """The classic name wins: every PCSX2 build parses one."""
@@ -249,8 +295,15 @@ class UniformArtLaneTests(unittest.TestCase):
         uniform_art.IDENTITY_DOCUMENT = table
         try:
             self.assertEqual(self.lane.replacement_identity(self.target),
-                             "aaaa-bbbb-00005dd3.png")
-            self.assertIn("classic", self.lane.identity_note(self.target))
+                             "aaaa-bbbb-00005dd3.png",
+                             "a dump-confirmed name wins over the derived one")
+            note = self.lane.identity_note(self.target)
+            self.assertIn("Confirmed by a PCSX2 dump", note)
+            self.assertIn("classic", note)
+            self.assertIn("Derived from this texture's own bytes", note)
+            names = self.lane.replacement_identities(self.target)
+            self.assertEqual(sorted(names),
+                             ["classic", "derived:classic", "derived:modern", "modern"])
         finally:
             uniform_art.IDENTITY_DOCUMENT = original
             uniform_art._IDENTITY_CACHE.clear()

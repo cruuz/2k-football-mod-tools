@@ -1866,6 +1866,8 @@ def main() -> int:
         "mod_editor.games.madden09_ps2.audio_lane",
         "mod_editor.games.madden09_ps2.playbooks_lane",
         "mod_editor.games.madden09_ps2.art_pages",
+        "mod_editor.games._formats.xxhash3_64",
+        "mod_editor.games._formats.pcsx2_texture_name",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative

@@ -11,15 +11,19 @@ re-derives.
 to a disc image. Two separate things stand in the way and both are named on
 the page rather than worked around:
 
-* **There is no PCSX2 replacement identity.**  Naming a texture so PCSX2's
-  texture replacement picks it up needs the GS ``TEX0`` and CLUT hashes the
-  emulator computes at draw time, and those come from a **GS dump of Madden 09
-  running**.  No such dump exists.  :meth:`UniformArtLane.replacement_identity`
-  therefore returns ``None`` and the *Write PCSX2 pack* step refuses with that
-  sentence, rather than inventing a filename that would silently never match.
-* **Writing back into the container is not proved.**  A replaced member would
-  have to be stored uncompressed (no ``LZH1`` encoder exists publicly) and no
-  rebuilt Madden 09 container has ever been booted.
+* **The PCSX2 replacement identity is derived, and confirmed where a dump
+  exists; no pack has been loaded.**  Naming a texture so PCSX2's texture
+  replacement picks it up needs the GS ``TEX0`` and CLUT hashes the emulator
+  computes at draw time.  :func:`derive_texture_names` computes both from the
+  texture's own bytes through :mod:`mod_editor.games._formats.pcsx2_texture_name`
+  -- the GS block image of each mip chain, and the image's own palette -- and
+  ``tools/madden09_ps2_texture_identities.py`` records which of those names a
+  real texture dump has shown PCSX2 writing.  :meth:`UniformArtLane.replacement_identity`
+  answers with a confirmed name first and a derived one otherwise, and
+  :meth:`UniformArtLane.identity_note` says which it is.  The *Write PCSX2
+  pack* step is still not offered: nothing here has loaded a pack.
+* **Writing back into the container** is the disc writer's business
+  (:class:`UniformDiscArtWriteLane`), which is proved offline and never booted.
 
 What *is* proved is the decode. See :mod:`.mmap_art` for the layout and the
 evidence: 10,545 of 10,546 images across eight containers of the retail disc
@@ -62,6 +66,7 @@ from mod_editor.games.contract import (
 )
 
 from mod_editor.games._formats import ea_terf
+from mod_editor.games._formats import pcsx2_texture_name as texture_identity
 
 from . import containers, mmap_art
 
@@ -268,6 +273,45 @@ def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+#: Where a derived name sits in :meth:`UniformArtLane.replacement_identities`.
+#: A dump-confirmed name keeps PCSX2's own convention word; a derived one is
+#: prefixed so a caller can never mistake the two.
+DERIVED_PREFIX = "derived:"
+
+
+def derive_texture_names(payload: bytes, texture: mmap_art.MmapTexture,
+                         image: mmap_art.Image) -> Tuple[Dict[str, List[str]], str]:
+    """Every PCSX2 name this image would be looked up under, from its own bytes.
+
+    Returns ``({convention: [names]}, "")`` or ``({}, why not)``.  The names
+    are :mod:`pcsx2_texture_name`'s: the GS block hash of each mip chain the
+    game can draw, and the CLUT hash of the image's **own first palette**.  A
+    draw that borrows an alternate CLUT -- the team recolours a uniform sheet
+    carries as palette-only entries -- has a different second half, and a CLUT
+    the game builds at run time has none this can predict; the note says so.
+    """
+
+    levels: List[texture_identity.TextureLevel] = []
+    for level in range(image.mip_count):
+        surface = texture.surfaces[image.first_surface + level]
+        try:
+            indices = mmap_art.unpack_indices(mmap_art.surface_pixels(payload, surface),
+                                              surface)
+        except mmap_art.MmapError as exc:
+            return {}, f"no name is derived: level {level} could not be read ({exc})"
+        bits = 8 if surface.pixel_layout == mmap_art.PIXELS_INDEXED_8 else 4
+        levels.append(texture_identity.TextureLevel(surface.width, surface.height, bits,
+                                                    indices))
+    if not levels or image.palette_count == 0:
+        return {}, "no name is derived: this image has no pixels or no palette of its own"
+    try:
+        palette = mmap_art.read_palette(payload, texture.palettes[image.first_palette])
+        derived = texture_identity.derive_names(levels, palette)
+    except Refusal as exc:
+        return {}, f"no name is derived: {exc}"
+    return texture_identity.names_by_convention(derived), ""
+
+
 def _key(container: str, member: int, image: int) -> str:
     return f"{container}:{member}:{image}"
 
@@ -324,21 +368,24 @@ class UniformArtLane:
     )
 
     NO_IDENTITY = (
-        "This lane can only name a PCSX2 replacement file for a texture the emulator has "
-        "been seen drawing: the name is built from the GS TEX0 and CLUT hashes PCSX2 "
-        "computes at draw time, so it is learned from a texture dump of Madden 09 running "
-        "and cannot be derived from a disc file alone. "
-        "tools/madden09_ps2_texture_identities.py pairs a dump with this disc by pixels and "
-        "writes the table this lane reads; a texture no dump has shown gets no name."
+        "A PCSX2 replacement file is named from the GS TEX0 and CLUT hashes the emulator "
+        "computes at draw time. This lane derives both from the texture's own bytes -- the "
+        "GS block image of each mip chain and the image's own palette -- and marks a name "
+        "confirmed where a texture dump of Madden 09 running has shown PCSX2 writing it "
+        "(tools/madden09_ps2_texture_identities.py pairs a dump with this disc). A texture "
+        "whose size is not a power of two, or that the game draws with a CLUT it builds at "
+        "run time, gets no derived name, and no pack built from any of these names has been "
+        "loaded by an emulator yet."
     )
 
-    #: What the page says when there is no table at all -- the state before
-    #: anyone dumped anything, and the one a user without a dump is in.
+    #: What the page says for a texture with no derived name and no table at
+    #: all -- the state a user without a dump is in for the few textures the
+    #: derivation cannot name.
     NO_IDENTITY_TABLE = (
-        "No PCSX2 texture dump has been paired with this disc, so no replacement filename is "
-        "known for any texture. Run the game once in PCSX2 with texture dumping on, then "
+        "No PCSX2 texture dump has been paired with this disc and no name could be derived "
+        "for this texture. Run the game once in PCSX2 with texture dumping on, then "
         "tools/madden09_ps2_texture_identities.py --source <your image> --dump-dir <the dump "
-        "folder>, and the names appear here."
+        "folder>, and the names a dump confirms appear here."
     )
 
     # -- catalogue -----------------------------------------------------
@@ -364,7 +411,10 @@ class UniformArtLane:
                 progress(f"{name}…")
             _report, container = containers.describe_container(image, entry, with_formats=False)
             if container is None:
-                skipped[name] = "could not be opened as a TERF container"
+                # The reader's own sentence when it has one: on the Deluxe disc
+                # UNIFORMS.DAT is 137 MB, over the read limit, and "could not
+                # be opened" would misreport a size as a format failure.
+                skipped[name] = _report.note or "could not be opened as a TERF container"
                 continue
             counted = census.setdefault(name, {})
             for index in range(len(container)):
@@ -419,6 +469,9 @@ class UniformArtLane:
                         "file_name": _file_name(name, index, entry_image.index,
                                                 surface.width, surface.height),
                     }
+                    derived, derived_note = derive_texture_names(payload, texture, entry_image)
+                    row["derived_names"] = derived
+                    row["derived_note"] = derived_note
                     rows.append(row)
                     if len(targets) < self.max_targets:
                         targets.append(self._target(row, note))
@@ -591,46 +644,86 @@ class UniformArtLane:
                    if tuple(rgba[position:position + 4]) in palette)
 
     def replacement_identity(self, target: Target) -> Optional[str]:
-        """The PCSX2 filename for this texture, when a dump has shown one.
+        """The PCSX2 filename for this texture.
 
-        ``classic`` in preference to ``modern``: the two differ only in whether
-        the ``bits`` word carries TCC in bit 14, and every PCSX2 build parses a
-        classic name, so one answer is right for both.  ``None`` when no dump
-        has shown this texture, which is not the same as "there is no such
-        thing" -- :attr:`NO_IDENTITY` is the sentence that says which.
+        A name a dump has **confirmed** wins, ``classic`` in preference to
+        ``modern``: the two differ only in whether the ``bits`` word carries
+        TCC in bit 14, and every PCSX2 build parses a classic name, so one
+        answer is right for both.  Otherwise the name **derived** from the
+        texture's own bytes -- the GS block hash of its full mip chain and the
+        CLUT hash of its own palette, under the modern convention that every
+        build looks up -- which on the retail disc reproduces the dumped hash of
+        2,994 of the 3,024 dump-identified textures [M].  ``None`` only
+        when neither exists: :meth:`identity_note` says why.
         """
 
         names = self.replacement_identities(target)
         for convention in IDENTITY_CONVENTIONS:
             if names.get(convention):
                 return names[convention][0]
+        for convention in IDENTITY_CONVENTIONS:
+            derived = names.get(DERIVED_PREFIX + convention)
+            if derived:
+                return derived[0]
         for values in names.values():
             if values:
                 return values[0]
         return None
 
     def replacement_identities(self, target: Target) -> Dict[str, List[str]]:
-        """Every filename this texture was dumped under, by naming convention.
+        """Every filename this texture answers to, by naming convention.
 
-        A pack writer wants both: the classic name for PenguinScreen2 and the
-        legacy packs, the modern one for a stock build that dumped its own.
+        ``classic`` and ``modern`` are names a dump has shown PCSX2 writing for
+        this texture; ``derived:classic`` and ``derived:modern`` are the names
+        derived from its own bytes -- one per mip chain the game can draw, and
+        under classic both TCC values.  A pack writer wants all of them: the
+        dumped names are proved, the derived ones cover the draws no frame
+        captured.
         """
 
-        return {convention: list(values) for convention, values
-                in load_identities().get(str(target.key), {}).items()}
+        out = {convention: list(values) for convention, values
+               in load_identities().get(str(target.key), {}).items()}
+        derived = target.raw.get("derived_names") if isinstance(target.raw, Mapping) else None
+        if isinstance(derived, Mapping):
+            for convention, values in derived.items():
+                if values:
+                    out[DERIVED_PREFIX + str(convention)] = list(values)
+        return out
 
     def identity_note(self, target: Target) -> str:
-        """One sentence about why this texture has a name, or has not."""
+        """One or two sentences about where this texture's name comes from, or why it has none."""
 
-        if not load_identities():
-            return self.NO_IDENTITY_TABLE
         names = self.replacement_identities(target)
-        if not names:
-            return (f"No PCSX2 dump has shown {target.key} being drawn, so no replacement "
-                    f"filename is known for it. Dump the frame that draws it and re-run "
+        confirmed = {convention: values for convention, values in names.items()
+                     if not convention.startswith(DERIVED_PREFIX) and values}
+        derived = {convention[len(DERIVED_PREFIX):]: values
+                   for convention, values in names.items()
+                   if convention.startswith(DERIVED_PREFIX) and values}
+        parts: List[str] = []
+        if confirmed:
+            parts.append("Confirmed by a PCSX2 dump -- " + "; ".join(
+                f"{convention}: {', '.join(values)}"
+                for convention, values in sorted(confirmed.items())) + ".")
+        if derived:
+            total = sum(len(values) for values in derived.values())
+            first = (derived.get("modern") or next(iter(derived.values())))[0]
+            parts.append(
+                f"Derived from this texture's own bytes: {first} is the modern name for its "
+                f"full mip chain, and {total} name(s) in all cover every mip range the game "
+                f"can draw and both TCC values (the rule reproduces the dumped hash of 2,994 "
+                f"of 3,024 dump-identified retail textures; a draw with an alternate CLUT has "
+                f"a different second half).")
+        elif isinstance(target.raw, Mapping) and target.raw.get("derived_note"):
+            parts.append(str(target.raw["derived_note"]) + ".")
+        if not parts:
+            if not load_identities():
+                return self.NO_IDENTITY_TABLE
+            return (f"No PCSX2 dump has shown {target.key} being drawn and no name could be "
+                    f"derived for it. Dump the frame that draws it and re-run "
                     f"tools/madden09_ps2_texture_identities.py.")
-        return "; ".join(f"{convention}: {', '.join(values)}"
-                         for convention, values in sorted(names.items()))
+        if not confirmed and derived:
+            parts.append("No dump has shown this texture; the name is computed, not observed.")
+        return " ".join(parts)
 
     # -- plan / build / verify -----------------------------------------
 
@@ -800,9 +893,10 @@ class UniformArtLane:
             "    cannot be packed back to the size of the one it replaces.\n"
             "\n"
             "  * Load them in PCSX2 as a replacement pack. PCSX2 finds a replacement by a\n"
-            "    name built from hashes it computes while the game draws, and nobody has\n"
-            "    captured a GS dump of Madden 09 to read those hashes from. Until someone\n"
-            "    does, any name this tool wrote would simply never match.\n"
+            "    name built from hashes it computes while the game draws. The studio now\n"
+            "    derives those names from the disc (and a texture dump confirms them), but\n"
+            "    no pack built from them has been loaded by an emulator yet, so the pack\n"
+            "    step is not offered until one has.\n"
             "\n"
             "If you edit one and want to know whether it still fits, import it on the\n"
             "Uniforms page: the studio checks it against the texture's own palette and\n"

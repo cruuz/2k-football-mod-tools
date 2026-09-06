@@ -149,6 +149,22 @@ of 1,780 `LZH1` members in pure Python, and the reason the studio runs a
 catalogue in a child process with progress. Only the *surface* table is at the
 front of an `MMAP` member; the image, palette and name tables are past the
 pixels, so there is no prefix shortcut.
+Whole-disc catalogue: **about five and a half minutes** (5 m 34 s measured)
+now that every image's PCSX2 names are derived on the way, an export and its
+verify on top [M]. That is the honest cost of decoding 1,780 `LZH1` members
+and hashing 7,616 images in pure Python, and the reason the studio runs a
+catalogue in a child process with progress.
+Only the *surface* table is at the front of an `MMAP` member — the image,
+palette and name tables are past the pixels — so there is no prefix shortcut.
+
+**What the page will not do, and says so.**  The *Write PCSX2 pack* step is
+still not offered from this row: no pack has been loaded by an emulator.
+`replacement_identity` now answers for **every texture the rule can name** --
+a name a dump has confirmed first, and otherwise the name **derived** from the
+texture's own bytes (§6.5a) -- and `None`, with a sentence saying why, for a
+texture whose width or height is not a power of two. `identity_note` says
+which of the two it is. Nothing is written back to the disc from *this* row
+either; the writer is §3.1a's.
 
 **Import is checked, not decorative.** A PNG must be exactly the texture's
 size or an exact whole-number multiple, 8-bit, non-interlaced, RGB or RGBA;
@@ -939,6 +955,178 @@ each refusal is a measurement rather than a gap:
   words are the editor-side check only; the runtime capacity comes from the
   table header the disc packed exactly full, and raising it needs new code that
   only a boot could verify. §7 keeps the claim.
+**The four checksums, now computed.** EA stores four CRC-32/MPEG-2 values in
+every TDB — a file-header CRC over the header's first 20 bytes, a *prior-block*
+and a *header* CRC per table, and an end-of-file CRC over the last table's data
+— and a Madden save with a stale one is refused by the game outright [S]. The
+algorithm was proved before anything was written with it: `verify_crcs` was run
+over **every TDB on the retail disc, and the stored value equalled the
+recomputed value at 4,806 of 4,806 checksum slots across 252 databases** [M].
+
+| where | databases | slots | mismatches |
+|---|---|---|---|
+| `DB_TEAMS.DAT` | 235 of 235 members | 3,462 | 0 |
+| `TEMPLATE.DAT` | 14 of 15 members | 902 | 0 |
+| `GAMEDATA.DAT` | 2 of 104 members | 16 | 0 |
+| `STRMDATA.DB` | 1 of 1 | 426 | 0 |
+| **total** | **252** | **4,806** | **0** |
+The 103 members not counted are refused by the *reader*, not the checksum pass:
+each declares a table named `SGF\x00`, and a four-character name with a NUL in
+it fails the reader's printable-name rule [M]. That is a reader limitation, it
+is not worked around here, and none of those members is in what this lane edits.
+**What it writes.** `/DATA/DB_TEAMS.DAT` only, and inside it two tables:
+- `PLAY` — first name, last name, jersey number, age, and twenty ratings
+  (`POVR PSPD PACC PAGI PSTR PAWR PCTH PCAR PTHP PTHA PJMP PTAK PBTK PPBK PRBK
+  PSTA PINJ PKPR PKAC PMOR`). The list is explicit in `PLAYER_FIELDS`, not
+  "whatever is numeric", so what the page offers is something a reader can
+  check. A rating stops at **99** — the scale the game's own data is on — not
+  at the 127 its seven-bit field would hold. A name stops one byte short of its
+  field so the terminator survives.
+- `TEAM` — `TDNA` nickname, `TLNA` city, `TSNA` abbreviation, `TMNC` short
+  name. Which column is which was settled by reading all 32 team records off a
+  retail disc and seeing what each consistently held [M]; no value from that
+  reading is stored in this repository.
+On the retail disc that is **12,499 editable rows** across 235 databases [M].
+Height and weight were absent from the first edition of this page because their
+units were a guess; they are offered now, labelled with the encoding the field
+is stored in, because the units are measured. Over all 12,265 `PLAY` records of
+the retail disc's 235 databases [M]: `PHGT` is seven bits and holds **60 to 84**
+with its mode at 75 — inches, and the executable reads it into the runtime
+height it compares with 75.0 inches [S, the owner's player-struct decode];
+`PWGT` is eight bits and holds **0 to 206** — pounds **less 160** (160 to 366
+lb), the encoding the sibling Madden 08 roster compiler writes into the same
+schema and has seen load in PCSX2 [S], and consistent with the executable's
+runtime weight thresholds of 180, 222 and 310 lb [S]. The spinner is labelled
+*Weight less 160 (lb)* rather than converted, so what is written is what the
+field holds.
+**Why it is a bounded write.** A TDB field owns a fixed run of bits in a
+fixed-stride record, so a record edit **cannot change a length**. The database
+comes back the same size, so the `TERF` member does, so the container does —
+measured: `rewrite_member` handed a member's own bytes reproduces
+`DB_TEAMS.DAT` byte for byte [M] — so the ISO extent is rewritten in place and
+the destination image is the source's exact size. Every one of those four
+invariants is checked at build time and refused rather than approximated.
+**What stays read-only, and why the disc says so.** `/DATA/GAME.QKL` and
+`/DATA/FE.QKL` are preload caches: a `QL01` header, a `FILS` chunk naming 29
+and 28 `/DATA` files, and a body carrying at least some of them verbatim — the
+first 256 bytes of `UIS_BANR.DAT`, `UNIFORMS.DAT`, `PLYRFACE.DAT`,
+`GAMEDATA.DAT`, `TEMPLATE.DAT` and `LOADDATA.DAT` each appear inside the cache
+that names them [M]. Editing one copy and not the other would leave the game
+reading whichever it reached first, so `containers.preload_names` reads that
+list off the user's own image and any container it names is refused.
+`DB_TEAMS.DAT` is named in neither [M]. `STRMDATA.DB` is out of scope: it is a
+5 MB bare database of league and presentation tables with no `PLAY` table [M].
+Not every named file is demonstrably copied — `STADATA.DAT` is named in both
+and its head is in neither [A] — so *what* a cache carries of a file it names
+is not established. The refusal is deliberately the conservative reading.
+**The verifier imports none of the writer.** It runs
+`ps2_iso9660_verify.verify_replacement` for the container-level claim, re-parses
+the destination's member with the plain reader to read every edited value back,
+re-derives all four checksums from the destination's own bytes, and byte-compares
+the edited member against the source requiring every differing byte to fall
+inside a declared field span or a checksum slot. Its tests prove it fails on a
+byte flipped outside the declared ranges, on a record changed behind the
+receipt's back *inside* a declared range, and on a stale checksum.
+Also measured and recorded rather than used as a bound [M]: `lenBits` is
+`lenBytes * 8 - 1` in 561 of 561 tables (it is *not* the last field's end);
+index blocks trail the record array rather than preceding it; and `dbSize` is
+the last table's end plus four, not the file length.
+### 3.4 Menus & UI — the text banks
+**Writer**, `offline-writer-proved`. Finds every `TEXT` member — a member whose
+decompressed bytes are printable strings separated by NULs — measures it (string
+count, longest and mean length, printable ratio, and the SHA-256 of the
+decompressed bytes) and rewrites its strings in place.
+**Measured on the retail disc** [M]:
+```
+14,748 TEXT members
+14,748 strings          (one string per member)
+3,242,117 bytes
+That member count is exactly the whole-disc census in `EA_TERF_FORMAT.md` §4,
+arrived at independently — this lane walks all 101 readable containers rather
+than sampling, so the two numbers agreeing is a real cross-check. Whole-disc
+walk: **about nine seconds** [M].
+**The catalogue carries no string.** The contract's third rule is that a
+catalogue holds names, offsets, lengths and digests and never payload, and a
+catalogue is a file that can be shipped. So the strings are read from the
+*user's own image* on demand, through `TextLane.preview` and the command
+line's `--preview`, and are never stored anywhere.
+**Why it is fast.** A member has to be unpacked before it can be classified,
+but only its **first 32 bytes** — which is all `identify_member` looks at, and
+where the codec stops. Only a member that matches is then unpacked in full.
+Classifying by full decompression instead ran for over ten minutes on the
+retail disc and was abandoned: 36,195 members, 4,269 of them `LZH1` streams
+decoded in pure Python, for an answer the head already gave.
+**What it writes: a string slot.** One run of characters inside a member,
+addressed by its **byte offset** rather than by its position in a split, because
+an edit changes how a split comes out and an offset does not. Its *allocation*
+is the room up to the next string — the NUL padding a previous edit left
+included — so shortening a string does not spend it: the same room is offered
+next time. A shorter replacement is padded with the format's terminator; a
+longer one is refused with the length it has to fit. The member keeps its exact
+byte count, so the container does, so the ISO extent does.
+On this disc a bank is usually **one string with no NUL in it**, so its slot is
+the whole member and replacing it replaces the whole bank; the label shows the
+whole (elided) text and the budget shows the whole allocation, so what is being
+replaced is on screen. A finer unit — the pipe-delimited `KEY=value` pairs
+`OSDKSTRN.DAT` carries, say — would need that inner grammar decoded, and it has
+not been.
+**Six of the eight containers are editable.** `GAMEDATA.DAT`, `LOADDATA.DAT` and
+`STADATA.DAT` are named in the `FE.QKL` / `GAME.QKL` preload caches and are
+refused for the reason §3.3 gives; `OSDKSTRN.DAT`, `STORYMSG.DAT`,
+`STRYCPTN.DAT`, `STRYEMAL.DAT`, `STRYHDLN.DAT` and `STRYTEXT.DAT` are named in
+neither [M].
+**One classifier change, worth 12 members.** `identify_member` calls a member
+`TEXT` when its first 32 bytes are printable, which stops being true of a bank
+this lane has shortened — two printable bytes and thirty NULs. `is_text_member`
+therefore discounts the padding before asking. On the retail disc that finds
+**14,760** banks rather than 14,748, and every one of the twelve extra is a
+NUL-padded name string in `STADATA.DAT` that the stricter rule was missing [M].
+It changes nothing about what the shared reader calls a member; the widened rule
+lives in this lane.
+### 3.5 Gameplay — executable patches, the playbook editor caps translated
+`CodePatchLane`, classification **`offline-writer-proved`** (RC88). One host
+patch is translated, `playbook_editor_caps`: four parameters drive five
+`sltiu` immediates in `SLUS_217.70` — the formation, set, play and
+plays-per-set caps of the in-game playbook editor (20 / 20 / 100 / 60 as
+shipped). Every original word is re-read from the user's own executable at
+plan time and must match; the words are the same on the retail and the Deluxe
+executables [M]. Delivery is a PCSX2 / PenguinScreen2 `.pnach` by default, or
+the five words written into the boot ELF on a rebuilt disc through the
+bounded ISO writer; the independent verifier re-reads either artifact. What
+is **not** shipped, and why: the runtime capacity layer the owner's Madden
+2004 work needed (`table_set_capacity` takes its capacity from the table
+header the disc packed exactly full, and the insert guard refuses) is
+measured but has no immediate to raise, so raising it needs new code that
+only a boot could verify. PCSX2's own patch archive carries no entry for this
+title (4,471 files, none for `38014255` or `084562FF`) [M]. Nothing has been
+booted: the page says so, and the two witnesses the owner runs are named in
+[`MADDEN09_PS2_CODE_PATCHES.md`](MADDEN09_PS2_CODE_PATCHES.md), which carries
+the per-site disassembly and the evidence.
+## 4. Pages with no lane, and why
+Each has one sentence in `game.json`'s `page_notes`, shown under the shell's
+own. In full:
+- **Text & Team Identity** — team names and colours live in the `DB_TEAMS.DAT`
+  databases, which the Names, Numbers & Faces page already lists; a separate
+  identity editor waits on a database writer, and there is none.
+- **Field Art & Create-Team Art** — `FIELDART.DAT` holds 642 `SMF` geometry
+  members and 73 `MMAP` textures [M]; the textures are reachable through the
+  same decoder as the uniforms, and no geometry format is decoded anywhere
+  here.
+- **Stadiums** — `STADIUMS.DAT` holds 651 `SMF` geometry members and 434
+  `MMAP` textures [M]. Same position as field art: the textures are readable,
+  the geometry is not decoded, and there is no editor for either yet.
+- **Presentation** — the scorebug and broadcast overlays are drawn by the
+  executable, and no data file on this disc has been mapped to them.
+- **The Crib** — not a Madden concept; it is an ESPN NFL 2K5 feature and this
+  page stays empty here on purpose.
+- **Audio** — `SOUNDDAT.DAT`, `BGM.DAT` and the speech containers carry EA
+  `SCHl` streams and `BNKl` banks; no decoder for either is built here and no
+  public writer exists.
+- **Playbooks & Plays** — playbook data has not been located on this disc by
+  this project, and the owner's own research records that no playbook is among
+  the members the `GAME.QKL` preload copies [S].
+- **Saves** — a Madden 09 memory-card save is a different repository's
+  tooling; this studio works off the disc.
 
 ---
 
@@ -1218,12 +1406,60 @@ and the tool needs no change to use one.
 
 **What this does not prove.** It records the names PCSX2 *wrote while
 dumping*. Nothing here has loaded a replacement pack, so the *Write PCSX2
-pack* step stays unoffered. The identity is also learned rather than derived:
-the CLUT half of the name **does** reproduce from the disc — XXH3-64 over the
-de-interleaved CLUT reproduces the dumped `clut` field exactly on every pair
-checked [M] — and the TEX0 half does not yet, so the durable
-compute-it-from-the-bytes route is half open and the pixel matcher is what
-works today.
+pack* step stays unoffered.
+
+### 6.5a The identity derived from the bytes [M]
+
+The second edition closes the half the first left open. Both halves of a
+replacement name now **compute from the disc**, in
+`mod_editor/games/_formats/pcsx2_texture_name.py` (with the XXH3-64 it needs
+in `_formats/xxhash3_64.py`, the twin of `tools/xxh3.py`):
+
+* **TEX0.** PCSX2 hashes the texture's **GS block image**: the 256-byte blocks
+  a 16×16 (8-bit) or 32×16 (4-bit) tile occupies, in row-major block order,
+  each block laid out the way the GS stores a column — four 64-byte columns of
+  four texel rows, the rows interleaved in two arrangements that alternate
+  between row pairs and again between odd and even columns. A level smaller
+  than a block hashes its linear texels instead, one byte each. With
+  mipmapping on, the levels a draw can reach go into the **same** hash state
+  after the base, so one texture has one name per `(base level, level count)`
+  chain — a four-level texture has ten.
+* **CLUT.** XXH3-64 over the palette in drawing order, 16 or 256 entries of
+  four bytes — as before.
+
+**Checked against the dumps, not asserted** [M]. Re-deriving every identity the
+pixel matcher had recorded and comparing with the names PCSX2 wrote for it:
+**2,994 of the 3,024 identities reproduce their dumped TEX0 hash** from the
+disc bytes, across 8-bit and 4-bit textures, the block path and the linear
+path, single levels and chains of two, three and four. Of the 30 that do not,
+three are pictures two members share whose dump the pixel matcher attributed
+to the wrong member — the hash tells them apart, which pixels cannot — one is
+a dump whose only name is another surface's of the other index width, and
+**26 are one class**: single-level 128×64 8-bit textures whose CLUT reproduces
+and whose TEX0 does not, an open question recorded in
+[`MADDEN09_PS2_GAPS.md`](MADDEN09_PS2_GAPS.md) §1. The derivation also placed
+**726 dumped names the pixel matcher could not** — textures in containers the
+pixel index never scanned — bringing the dump-identified images to 3,283.
+
+**Over the whole disc** the rule names **12,378 images in 45 containers** —
+162,459 names, one per mip chain and convention; it refuses 3,978 images whose
+width or height is not a power of two, 461 palette-only entries, 625
+direct-colour images with no palette, the 1,188 `IPU1`-packed members of
+`UIS_MCFL.DAT` and 6 it cannot read. The exact counts are in
+`docs/product/measured/madden09_ps2/pcsx2-texture-identity-derivation.json`.
+
+**What a derived name is, and is not.** For a texture a dump has shown, the
+name is *confirmed*; for one no frame drew, it is the same computation and is
+proved to exactly that extent. The lane says which
+(`identity_note`), keeps the dump table as the confirmed layer, and answers
+`replacement_identity` with a confirmed name first and a derived one second.
+Two limits stay: the CLUT half is derived for the image's **own** palette —
+of the dumped names the TEX0 rule identified, 2,106 draw with a palette of the
+same member, 238 with another member's, and 265 with a CLUT that is in no file
+(the game builds it at run time; 263 of those are 4-bit uniform textures) —
+and a **region-clamped** draw (1,824 dumped names) has an offset no file
+carries, so no derived name covers it. The *Write PCSX2 pack* step is still
+not offered: nothing here has loaded a pack.
 
 ---
 
@@ -1308,6 +1544,45 @@ one with fewer pages.
     `PWGT` looks like pounds less 160 on the records sampled [A], and "looks
     like" is not a unit, so height and weight are deliberately absent from
     §3.2.1's editable fields even though the fields are read and catalogued.
+1. **Nothing has been booted.** Four lanes now write — the team databases, the
+   text banks, the uniform art (back onto a rebuilt disc) and the executable
+   patches (a `.pnach`, or the boot ELF on a rebuilt disc) — and all four are
+   `offline-writer-proved`, which is as high as a claim can go from this box.
+   The honest next test is: rebuild a container, put it back in an ISO, boot it
+   in PCSX2, see the game load it and see the change on a screen. **That has not
+   been run.** Every claim in §3 is about bytes.
+2. ~~No `LZH1` encoder exists.~~ One does now (`EA_TERF_FORMAT.md` §5.3), and
+   a replaced member re-packs at about the size EA shipped it [M]. The space
+   question the stored-only fallback created is gone; the boot question is not.
+3. **What the preload caches carry is measured** [M]: `GAME.QKL` and `FE.QKL`
+   hold byte copies of container directories and of particular members (6,270
+   copies across 39 containers, every one compared identical to the disc).
+   `containers.preload_copies` names them, and a writer either keeps every copy
+   in step or refuses the edit; what the game does when a copy and its container
+   disagree is not known and not tested.
+4. **The container checksum question is open** [M/A]. No field in any
+   container header varies with content in any way the reader could find, and
+   the layout rules hold with zero residue across 47,769 members — but that is
+   the whole of the search, and it is not proof. The circumstantial evidence
+   is good (the community's Deluxe disc rewrites five containers, carries two
+   defects the retail disc does not, and still plays [S]); it does not close
+   the question.
+5. **The PCSX2 replacement identity is derived from the bytes and confirmed by
+   a dump where one exists; no pack has been loaded.** The GS TEX0 and CLUT
+   hashes PCSX2 computes at draw time are recomputed from the disc
+   (§6.5a; 2,994 of 3,024 dump-identified textures reproduce, 12,378 images
+   named across the disc), and `tools/madden09_ps2_texture_identities.py`
+   records which names a real dump has confirmed. What is not proved: that an
+   emulator loads a pack built from the names, the CLUT half for a texture
+   the game recolours at run time, and any name for a region-clamped draw. So
+   the *Write PCSX2 pack* step is not offered from either row.
+6. **One gameplay patch is mapped**, the playbook editor caps (§3.5); the
+   runtime capacity layer behind them is measured and not shipped, for the
+   reason `MADDEN09_PS2_CODE_PATCHES.md` gives. The other subject areas remain
+   named questions with no located site.
+7. **`SMF` and `DMF` geometry, `SCHl` audio and `BNKl` banks are identified
+   and not decoded.** Knowing a member's magic is not the same as reading it,
+   and the module does not blur the two.
 
 ---
 

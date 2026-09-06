@@ -658,6 +658,310 @@ def build_document(source: Path, dump_dir: Path, dumps: Sequence[DumpTexture],
 
 
 # --------------------------------------------------------------------------
+# Derivation: the names computed from the disc, checked against the dumps
+# --------------------------------------------------------------------------
+
+DERIVATION_SCHEMA = "madden09_ps2_pcsx2_texture_identity_derivation/v1"
+DERIVATION_OUT = Path("docs/product/measured/madden09_ps2/pcsx2-texture-identity-derivation.json")
+
+#: How many identities whose dumped name the derivation did not reproduce are
+#: listed by key before the document records only how many there were.
+MISS_SAMPLE = 48
+
+
+def _texture_levels(payload: bytes, texture, image):
+    """Every mip level of *image* as :class:`pcsx2_texture_name.TextureLevel`."""
+
+    from mod_editor.games._formats import pcsx2_texture_name as identity
+
+    levels = []
+    for level in range(image.mip_count):
+        surface = texture.surfaces[image.first_surface + level]
+        indices = mmap_art.unpack_indices(mmap_art.surface_pixels(payload, surface), surface)
+        bits = 8 if surface.pixel_layout == mmap_art.PIXELS_INDEXED_8 else 4
+        levels.append(identity.TextureLevel(surface.width, surface.height, bits, indices))
+    return levels
+
+
+def derivation_check(source: Path, document: Mapping, *, progress=None) -> dict:
+    """Re-derive every dump-identified texture's names from the disc and count what agrees.
+
+    For each identity the pixel matcher recorded, the texture's mip levels are
+    read off the user's disc, the GS block hash of every mip chain and the CLUT
+    hash of every palette in the member are computed, and each dumped name is
+    checked against them.  Three outcomes are counted separately:
+
+    * **reproduced** -- the dumped TEX0 hash is one of this texture's chains;
+    * **PSM disagrees** -- the dumped name says 8-bit and the surface is 4-bit
+      (or the reverse).  The pixel matcher paired the dump with every surface
+      that draws the same picture, and a flat 8x8 texture exists in both
+      widths; the dump is another surface's and this one is not wrong;
+    * **not reproduced** -- the same PSM and no chain matches.  Listed by key.
+
+    The CLUT half is counted as: in the image's own palette, in another
+    palette of the same member (an alternate kit CLUT), or in no palette the
+    member carries (a CLUT the game built at run time).
+    """
+
+    from mod_editor.games._formats import pcsx2_texture_name as identity
+
+    identities = document.get("identities") or {}
+    by_container: Dict[str, List[Tuple[str, dict]]] = {}
+    for key, entry in identities.items():
+        by_container.setdefault(str(entry["container"]), []).append((key, entry))
+    image = containers.open_disc(Path(source))
+    present = {entry.name: entry for entry in containers.data_files(image)}
+    counts: Dict[str, int] = {
+        "identities": len(identities), "identities_checked": 0, "identities_not_derivable": 0,
+        "identities_confirmed": 0, "names": 0, "names_psm_disagrees": 0,
+        "names_tex0_reproduced": 0, "names_tex0_not_reproduced": 0,
+        "clut_in_own_palette": 0, "clut_in_another_palette_of_the_member": 0,
+        "clut_not_in_the_member": 0,
+    }
+    per_class: Dict[str, Dict[str, int]] = {}
+    per_container: Dict[str, Dict[str, int]] = {}
+    chains: Dict[str, int] = {}
+    not_derivable: Dict[str, int] = {}
+    misses: List[str] = []
+    for name in sorted(by_container):
+        entry = present.get(name)
+        if entry is None:
+            continue
+        if progress is not None:
+            progress(f"{name}: checking {len(by_container[name])} identit(ies)…")
+        container = ea_terf.parse_terf(containers.read_file(image, entry), allow_size_mismatch=True)
+        for key, row in by_container[name]:
+            payload = container.member(int(row["member"]))
+            texture = mmap_art.parse(payload)
+            image_entry = texture.images[int(row["image"])]
+            try:
+                levels = _texture_levels(payload, texture, image_entry)
+                by_hash = {value: base_count for base_count, value
+                           in identity.tex0_hash_chains(levels).items()}
+            except Exception as exc:  # noqa: BLE001 - a refusal is a count here
+                counts["identities_not_derivable"] += 1
+                reason = str(exc).split(";")[0][:80]
+                not_derivable[reason] = not_derivable.get(reason, 0) + 1
+                continue
+            counts["identities_checked"] += 1
+            own = range(image_entry.first_palette,
+                        image_entry.first_palette + image_entry.palette_count)
+            palettes: Dict[int, int] = {}
+            for palette in texture.palettes:
+                try:
+                    entries = mmap_art.read_palette(payload, palette)
+                    if len(entries) in (16, 256):
+                        palettes.setdefault(identity.clut_hash(entries), palette.index)
+                except mmap_art.MmapError:
+                    continue
+            base = levels[0]
+            label = f"{name} {base.bits}-bit {base.width}x{base.height}"
+            bucket = per_class.setdefault(label, {"reproduced": 0, "not_reproduced": 0})
+            container_bucket = per_container.setdefault(
+                name, {"identities": 0, "confirmed": 0, "names_reproduced": 0,
+                       "names_not_reproduced": 0})
+            container_bucket["identities"] += 1
+            confirmed = False
+            dumped = sorted({value for values in (row.get("names") or {}).values()
+                             for value in values})
+            for dumped_name in dumped:
+                parsed = identity.parse_name(dumped_name)
+                if parsed.psm != base.psm:
+                    counts["names_psm_disagrees"] += 1
+                    continue
+                counts["names"] += 1
+                found = by_hash.get(parsed.tex0)
+                if found is not None:
+                    counts["names_tex0_reproduced"] += 1
+                    bucket["reproduced"] += 1
+                    container_bucket["names_reproduced"] += 1
+                    chain = f"{found[0]}+{found[1]}"
+                    chains[chain] = chains.get(chain, 0) + 1
+                    confirmed = True
+                else:
+                    counts["names_tex0_not_reproduced"] += 1
+                    bucket["not_reproduced"] += 1
+                    container_bucket["names_not_reproduced"] += 1
+                    if len(misses) < MISS_SAMPLE and key not in misses:
+                        misses.append(key)
+                if parsed.clut is None:
+                    continue
+                palette_index = palettes.get(parsed.clut)
+                if palette_index is None:
+                    counts["clut_not_in_the_member"] += 1
+                elif palette_index in own:
+                    counts["clut_in_own_palette"] += 1
+                else:
+                    counts["clut_in_another_palette_of_the_member"] += 1
+            if confirmed:
+                counts["identities_confirmed"] += 1
+                container_bucket["confirmed"] += 1
+    return {
+        "counts": counts,
+        "per_container": per_container,
+        "per_class": dict(sorted(per_class.items())),
+        "lod_chains": dict(sorted(chains.items(), key=lambda item: -item[1])),
+        "not_derivable_reasons": not_derivable,
+        "not_reproduced_sample": misses,
+    }
+
+
+def derivation_census(source: Path, containers_wanted: Optional[Sequence[str]] = None, *,
+                      dumped_names: Optional[Sequence[str]] = None,
+                      already_identified: Optional[Sequence[str]] = None,
+                      progress=None) -> dict:
+    """How many textures on the disc get a derived name at all, container by container.
+
+    Walks every ``MMAP`` member of the named containers -- or of every
+    container under the read limit when none are named -- and derives each
+    image's names, counting the images that get one and, by reason, the ones
+    that do not.  This is the census the lane's catalogue reproduces one
+    texture at a time.
+
+    When *dumped_names* is given -- every filename a PCSX2 dump wrote -- each
+    plain (region-less) name is looked up among the derived TEX0 hashes, and
+    the document records how many the hash alone places, and how many of
+    those the pixel matcher (*already_identified*) could not.  Nothing but the
+    counts and the hashes' membership is kept.
+    """
+
+    from mod_editor.games._formats import pcsx2_texture_name as identity
+    from mod_editor.games.madden09_ps2.uniform_art import derive_texture_names
+
+    image = containers.open_disc(Path(source))
+    out: Dict[str, dict] = {}
+    totals = {"containers": 0, "members": 0, "images": 0, "images_derived": 0,
+              "names_derived": 0, "images_not_derived": 0}
+    reasons: Dict[str, int] = {}
+    derived_tex0: set = set()
+    keys_by_tex0: Dict[int, set] = {}
+    for entry in containers.data_files(image):
+        if containers_wanted is not None and entry.name not in containers_wanted:
+            continue
+        if containers_wanted is None and not entry.name.endswith(".DAT"):
+            continue
+        try:
+            blob = containers.read_file(image, entry)
+        except containers.DiscError:
+            continue
+        if not blob.startswith(ea_terf.TERF_MAGIC):
+            continue
+        try:
+            container = ea_terf.parse_terf(blob, allow_size_mismatch=True)
+        except ea_terf.TerfError:
+            continue
+        row = {"members": 0, "images": 0, "images_derived": 0, "names_derived": 0,
+               "images_not_derived": 0}
+        for member in container.members:
+            try:
+                payload = containers.member_uncached(container, member.index)
+            except Exception:  # noqa: BLE001
+                continue
+            if not payload.startswith(mmap_art.MMAP_MAGIC):
+                continue
+            try:
+                texture = mmap_art.parse(payload)
+            except mmap_art.MmapError:
+                continue
+            row["members"] += 1
+            for image_entry in texture.images:
+                row["images"] += 1
+                if texture.undecodable_reason(image_entry) is not None:
+                    row["images_not_derived"] += 1
+                    reason = str(texture.undecodable_reason(image_entry)).split(":")[0][:60]
+                    reasons[reason] = reasons.get(reason, 0) + 1
+                    continue
+                names, note = derive_texture_names(payload, texture, image_entry)
+                if names:
+                    row["images_derived"] += 1
+                    row["names_derived"] += sum(len(values) for values in names.values())
+                    if dumped_names is not None:
+                        key = f"{entry.name}:{member.index}:{image_entry.index}"
+                        for value in names.get("modern", ()):
+                            tex0 = identity.parse_name(value).tex0
+                            derived_tex0.add(tex0)
+                            keys_by_tex0.setdefault(tex0, set()).add(key)
+                else:
+                    row["images_not_derived"] += 1
+                    reason = note.split("(")[0].split(":")[-1].strip()[:60]
+                    reasons[reason] = reasons.get(reason, 0) + 1
+        if row["members"]:
+            out[entry.name] = row
+            totals["containers"] += 1
+            for field_name in ("members", "images", "images_derived", "names_derived",
+                               "images_not_derived"):
+                totals[field_name] += row[field_name]
+        if progress is not None:
+            progress(f"{entry.name}: {row['members']} MMAP member(s), "
+                     f"{row['images_derived']} image(s) named")
+    document = {"totals": totals, "per_container": out,
+                "not_derived_reasons": dict(sorted(reasons.items(), key=lambda item: -item[1]))}
+    if dumped_names is not None:
+        known = set(already_identified or ())
+        placed: Dict[str, int] = {"plain_names": 0, "plain_names_placed_by_hash": 0,
+                                  "plain_names_placed_that_pixels_could_not": 0,
+                                  "region_names": 0, "region_names_placed_by_hash": 0}
+        images_placed: set = set()
+        for value in sorted(set(dumped_names)):
+            try:
+                parsed = identity.parse_name(value)
+            except Refusal:
+                continue
+            if parsed.region is not None:
+                placed["region_names"] += 1
+                if parsed.tex0 in derived_tex0:
+                    placed["region_names_placed_by_hash"] += 1
+                continue
+            placed["plain_names"] += 1
+            if parsed.tex0 in derived_tex0:
+                placed["plain_names_placed_by_hash"] += 1
+                images_placed.update(keys_by_tex0.get(parsed.tex0, ()))
+                if value not in known:
+                    placed["plain_names_placed_that_pixels_could_not"] += 1
+        placed["images_placed_by_hash"] = len(images_placed)
+        placed_containers: Dict[str, int] = {}
+        for key in images_placed:
+            name = key.split(":", 1)[0]
+            placed_containers[name] = placed_containers.get(name, 0) + 1
+        document["dumped_names_by_hash"] = placed
+        document["images_placed_by_hash_per_container"] = dict(sorted(placed_containers.items()))
+    return document
+
+
+def build_derivation_document(source: Path, check: Mapping, census: Mapping) -> dict:
+    """The evidence file for the derivation: counts, keys and chain labels only."""
+
+    from mod_editor.games._formats import xxhash3_64
+
+    return {
+        "schema": DERIVATION_SCHEMA,
+        "generated_by": "tools/madden09_ps2_texture_identities.py --derive-check",
+        "source": Path(source).name,
+        "method": (
+            "TEX0: XXH3-64 over the texture's GS block image (256-byte blocks in row-major "
+            "order; a level smaller than a block hashes its linear texels), every mip chain "
+            "fed into one hash state. CLUT: XXH3-64 over the palette in drawing order. "
+            "Checked against the names a real PCSX2 dump wrote for the same disc texture."),
+        "hash_implementation": ("xxhash C extension" if xxhash3_64.ACCELERATED
+                                else "pure Python (mod_editor.games._formats.xxhash3_64)"),
+        "dump_check": dict(check),
+        "disc_census": dict(census),
+        "what_this_proves": (
+            "A dumped name that the derivation reproduces was computed by PCSX2 from the same "
+            "bytes this tool hashed, so the rule is the emulator's for that texture class. A "
+            "derived name for a texture no dump has shown is the same computation and is "
+            "proved only to that extent. Nothing here has loaded a replacement pack."),
+        "what_this_does_not_prove": [
+            "that a pack built from these names is loaded by any emulator build",
+            "the second half of a name for a texture the game draws with a CLUT it builds at "
+            "run time, or with another member's palette",
+            "any name for a texture whose width or height is not a power of two, or for a "
+            "region-clamped draw, whose rectangle offset is in no file",
+        ],
+    }
+
+
+# --------------------------------------------------------------------------
 # Self-test: a synthetic member, "dumped" under a synthetic name
 # --------------------------------------------------------------------------
 
@@ -750,6 +1054,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                              '{"colour": TEAM, "white": TEAM}; the operator\'s reading of '
                              "the capture, never inferred here")
     parser.add_argument("--note", default="", help="one line kept in the document")
+    parser.add_argument("--derive-check", action="store_true",
+                        help="re-derive every identity's names from the disc, check them against "
+                             "the dumped names, census the whole disc, and write the derivation "
+                             "document")
+    parser.add_argument("--identities", type=Path, default=DEFAULT_OUT,
+                        help="the identity document --derive-check reads")
+    parser.add_argument("--derive-out", type=Path, default=DERIVATION_OUT,
+                        help="where --derive-check writes its document")
+    parser.add_argument("--census-containers", default="",
+                        help="comma-separated containers for the derivation census; default "
+                             "every container under the read limit")
     parser.add_argument("--selftest", action="store_true")
     arguments = parser.parse_args(list(argv) if argv is not None else None)
 
@@ -763,6 +1078,50 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print(line, file=sys.stderr)
 
     started = time.time()
+    if arguments.derive_check:
+        identities_path = arguments.identities
+        if not identities_path.is_absolute():
+            identities_path = ROOT / identities_path
+        document = json.loads(identities_path.read_text(encoding="utf-8"))
+        check = derivation_check(arguments.source, document, progress=note)
+        census_wanted = tuple(name.strip() for name in arguments.census_containers.split(",")
+                              if name.strip()) or None
+        dumped: List[str] = list(document.get("unmatched") or [])
+        dumped += [row["name"] for row in document.get("ambiguous") or [] if "name" in row]
+        dumped += [row["name"] for row in document.get("rgb_only") or [] if "name" in row]
+        already: List[str] = []
+        for entry in (document.get("identities") or {}).values():
+            for values in (entry.get("names") or {}).values():
+                dumped.extend(values)
+                already.extend(values)
+        census = derivation_census(arguments.source, census_wanted, dumped_names=dumped,
+                                   already_identified=already, progress=note)
+        out = build_derivation_document(arguments.source, check, census)
+        target = arguments.derive_out
+        if not target.is_absolute():
+            target = ROOT / target
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((json.dumps(out, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+        counts = check["counts"]
+        totals = census["totals"]
+        by_hash = census.get("dumped_names_by_hash", {})
+        print("DERIVATION identities=%d checked=%d confirmed=%d names=%d reproduced=%d "
+              "not_reproduced=%d psm_disagrees=%d clut_own=%d clut_other=%d clut_none=%d | "
+              "census containers=%d images=%d derived=%d names=%d not_derived=%d | "
+              "dumped plain=%d placed=%d newly=%d region=%d images_placed=%d seconds=%.0f"
+              % (counts["identities"], counts["identities_checked"],
+                 counts["identities_confirmed"], counts["names"],
+                 counts["names_tex0_reproduced"], counts["names_tex0_not_reproduced"],
+                 counts["names_psm_disagrees"], counts["clut_in_own_palette"],
+                 counts["clut_in_another_palette_of_the_member"],
+                 counts["clut_not_in_the_member"], totals["containers"], totals["images"],
+                 totals["images_derived"], totals["names_derived"],
+                 totals["images_not_derived"], by_hash.get("plain_names", 0),
+                 by_hash.get("plain_names_placed_by_hash", 0),
+                 by_hash.get("plain_names_placed_that_pixels_could_not", 0),
+                 by_hash.get("region_names", 0), by_hash.get("images_placed_by_hash", 0),
+                 time.time() - started))
+        return 0
     if arguments.index:
         written = write_index(arguments.source, arguments.index, wanted, progress=note)
         print(f"INDEX rows={written} file={arguments.index} "
