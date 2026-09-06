@@ -206,6 +206,59 @@ def add_rows(plan: Plan, game: str, row_files: Sequence[Path], new_game: Optiona
     return added, before, after
 
 
+def replace_rows(plan: Plan, game: str, row_files: Sequence[Path]) -> list[dict]:
+    """Replace whole rows that are already in the registry, id for id.
+
+    ``--row`` adds a row that is not there; this is the other half, for a row
+    whose **rung moved** because the lane behind it gained a writer.  A
+    classification is not a count and no pin quotes it, so nothing else has to
+    move with it -- but the edit is still mechanical rather than by hand, for
+    the reason every edit in this tool is: a hand edit of the canonical
+    registry neither rebases cleanly nor conflicts loudly.
+
+    Every assertion ``--row`` makes is made here too, and one more: the row must
+    already exist, exactly once, under this game.  A validator that changed
+    would move a count pin, so that is refused by name rather than written.
+    """
+
+    registry = json.loads(plan.read(REGISTRY))
+    rows = registry["capabilities"]
+    before = counts(rows)
+    by_id = {row["id"]: index for index, row in enumerate(rows)}
+    replaced = []
+    for path in row_files:
+        try:
+            row = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ApplyError(f"{path}: cannot read row JSON: {exc}") from exc
+        if not isinstance(row, dict):
+            raise ApplyError(f"{path}: a row must be a JSON object")
+        row.pop("_DRAFT_NOTE", None)
+        blob = json.dumps(row)
+        if "TODO" in blob or "<N_" in blob or "FILL IN" in blob or "PLACEHOLDER" in blob:
+            raise ApplyError(f"{path}: unfilled placeholder in the row")
+        if row.get("game") != game:
+            raise ApplyError(f"{path}: row game is {row.get('game')!r}, expected {game!r}")
+        if not isinstance(row.get("id"), str) or row["id"] not in by_id:
+            raise ApplyError(
+                f"{path}: {row.get('id')!r} is not already in the registry; use --row to "
+                f"add a row that is not there.")
+        was = rows[by_id[row["id"]]]
+        rows[by_id[row["id"]]] = row
+        replaced.append(row)
+        plan.log.append(
+            f"[row] ~ {row['id']}  ({was['classification']} -> {row['classification']})")
+    rows.sort(key=lambda row: row["id"])
+    after = counts(rows)
+    if before != after:
+        raise ApplyError(
+            f"replacing rows moved a count pin ({before} -> {after}); a replacement may "
+            f"change a row's words and its rung, not how many rows or validators there "
+            f"are. Nothing was written.")
+    plan.stage(REGISTRY, canonical(registry))
+    return replaced
+
+
 def move_count_pins(plan: Plan, before: tuple[int, int, int, int], after: tuple[int, int, int, int]) -> None:
     (rows, covered, validators, k), (n_rows, n_covered, n_validators, n_k) = before, after
     plan.edit(RUNTIME_GATE, [
@@ -475,6 +528,7 @@ def apply(
     *,
     game: str,
     rows: Sequence[Path],
+    replace: Sequence[Path] = (),
     widen_surfaces: Sequence[str] = (),
     modules: Sequence[str] = (),
     new_game: Optional[Path] = None,
@@ -489,8 +543,10 @@ def apply(
 ) -> Plan:
     if _GAME_ID_RE.fullmatch(game) is None:
         raise ApplyError(f"game id {game!r} is not a registry game id")
-    if not rows and new_game is None and allowlist_fragment is None and not modules:
-        raise ApplyError("nothing to do: give --row, --new-game, --module or --allowlist-fragment")
+    if (not rows and not replace and new_game is None and allowlist_fragment is None
+            and not modules):
+        raise ApplyError("nothing to do: give --row, --replace-row, --new-game, --module "
+                         "or --allowlist-fragment")
     plan = Plan(root.resolve())
     entry = None
     if new_game is not None:
@@ -513,6 +569,8 @@ def apply(
             raise ApplyError(f"a new game's rows cover {missing}; pass --widen for each covered surface")
     if before is not None and after is not None and before != after:
         move_count_pins(plan, before, after)
+    if replace:
+        replace_rows(plan, game, list(replace))
     widen(plan, widen_surfaces, game, entry is not None)
     add_modules(plan, modules)
     add_allowlist_lines(plan, allowlist_fragment, game)
@@ -531,6 +589,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--repo-root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--game", required=True, help="registry game id the rows belong to")
     parser.add_argument("--row", action="append", default=[], type=Path, help="a complete registry row as JSON")
+    parser.add_argument("--replace-row", action="append", default=[], type=Path,
+                        metavar="ROW",
+                        help="a complete registry row as JSON, replacing the row already "
+                             "carrying that id -- for a lane whose rung moved")
     parser.add_argument("--widen", action="append", default=[], metavar="SURFACE")
     parser.add_argument("--module", action="append", default=[], metavar="NAME", help="product_modules entry for the runtime gate")
     parser.add_argument("--new-game", type=Path, metavar="ENTRY.json", help="register a new game id with this games[] entry")
@@ -546,7 +608,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(argv)
     try:
         plan = apply(
-            args.repo_root, game=args.game, rows=args.row, widen_surfaces=args.widen, modules=args.module,
+            args.repo_root, game=args.game, rows=args.row, replace=args.replace_row,
+            widen_surfaces=args.widen, modules=args.module,
             new_game=args.new_game, display_name=args.display_name, enum_member=args.enum_member,
             rc=tuple(args.rc) if args.rc else None, changelog_section=args.changelog_section,
             status_heading=args.status_heading, repin_paths=args.repin,
@@ -566,7 +629,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     print("next: python3 mod_editor/capabilities/validate_registry.py --skip-file-checks")
     print("      python3 tools/validate_all_mod_editor_capabilities.py   (needs the evidence tree)")
     print("      PYTHONPATH=. python3 tests/mod_editor/test_phase1_packaging.py")
-    if args.game and (args.row or args.new_game):
+    if args.game and (args.row or args.replace_row or args.new_game):
         print(f"      python -m mod_editor.games fragments {args.game} --write   (if the game is a module)")
     return 0
 
