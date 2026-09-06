@@ -1,4 +1,4 @@
-"""Hor+ widescreen patch (v2, activation hook): pattern-driven, fail-closed, copy-only.
+"""Hor+ widescreen patch (v3, activation hook): pattern-driven, fail-closed, copy-only.
 
 Synthetic fixture: a minimal XBE whose header carries the retail certificate key block at 0x10254
 and whose .text carries the retail bytes of the dead FUN_00046ee0 cave and the hooked ``call`` at
@@ -27,7 +27,7 @@ IMAGE_BASE = strength.IMAGE_BASE
 TABLE_OFF = 0x400                      # section table (retail: 0x370; kept clear of the cave block)
 HEADER_SIZE = 0xCC4
 TEXT_INDEX = 0
-TEXT_VA, TEXT_RAW, TEXT_SIZE = 0x11000, 0x2000, 0x40000        # covers 0x2ACA1 and 0x46EE0..0x47220
+TEXT_VA, TEXT_RAW, TEXT_SIZE = 0x11000, 0x2000, 0x330000      # bounded fixture, including marker hooks
 RETAIL_XBE = Path("/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe")
 RETAIL_SHA256_PREFIX = "73105b17a3161c54"
 
@@ -60,6 +60,11 @@ def build_xbe() -> bytes:
     buf[hook + 5: hook + 7] = bytes.fromhex("85c0")                       # test eax,eax (FUN_0002ac80 continues)
     cave = TEXT_RAW + (wide.CODE_VA - TEXT_VA)
     buf[cave: cave + wide.CODE_CAVE_SIZE] = wide.RETAIL_CODE_CAVE
+    for _label, off, before, _after in wide._sites(bytes(buf), wide.DEFAULT_ASPECT):
+        buf[off:off + len(before)] = before
+    for va, expected in wide.CONTEXT_PINS:
+        off = TEXT_RAW + va - TEXT_VA
+        buf[off:off + len(expected)] = expected
     header = TABLE_OFF + TEXT_INDEX * strength.SECTION_HEADER_SIZE
     buf[header + 36: header + 56] = _digest(bytes(buf), TEXT_RAW, TEXT_SIZE)
     return bytes(buf)
@@ -121,17 +126,18 @@ class WidescreenPatchTests(unittest.TestCase):
         self.assertEqual(code[:6], bytes.fromhex("8d91c0afa600"))          # lea edx,[ecx+0xA6AFC0]
         rebuild = code.index(b"\xe8", 12)
         self.assertEqual(wide.CODE_VA + rebuild + 5 + struct.unpack_from("<i", code, rebuild + 1)[0], wide.REBUILD_VA)
-        self.assertEqual(code[-5], 0xE9)                                     # tail jmp FUN_00028110
-        self.assertEqual(wide.CODE_VA + len(code) + struct.unpack("<i", code[-4:])[0], wide.RENDER_LIST_VA)
-        self.assertEqual(code[-8: -5], bytes.fromhex("83c414"))             # add esp,20 before it
+        tail = labels["done"] - wide.CODE_VA
+        self.assertEqual(code[tail + 3], 0xE9)                              # activation tail jmp FUN_00028110
+        self.assertEqual(wide.CODE_VA + tail + 8 + struct.unpack_from("<i", code, tail + 4)[0], wide.RENDER_LIST_VA)
+        self.assertEqual(code[tail:tail + 3], bytes.fromhex("83c414"))
         for name in ("ortho", "pillarbox", "pb_ortho", "pb_clip", "horplus", "composite", "done"):
             self.assertIn(name, labels)
             self.assertTrue(wide.CODE_VA <= labels[name] < wide.CODE_VA + len(code))
-        self.assertEqual(labels["done"], wide.CODE_VA + len(code) - 8)
+        self.assertEqual(labels["hud_project"], labels["done"] + 8)
         self.assertEqual(wide.code_bytes("16:10"), cave)                     # aspect lives in the constants only
         # constants block addresses referenced by the code all fall inside the 36-byte block
         for va in (wide.STRETCH_VA, wide.INV_STRETCH_VA, wide.SHIFT_VA, wide.X0_VA, wide.X1_VA, wide.FRAME_VA,
-                   wide.UNIT_VA, wide.CENTRE_VA, wide.ONE_VA):
+                   wide.UNIT_VA, wide.CENTRE_VA):
             self.assertIn(struct.pack("<I", va), code)
             self.assertTrue(wide.CAVE_VA <= va < wide.CAVE_VA + wide.DATA_SIZE)
         # hook targets the cave entry
@@ -148,7 +154,8 @@ class WidescreenPatchTests(unittest.TestCase):
         self.assertEqual(wide.status(patched, "16:10"), "foreign")
         self.assertEqual(wide.applied_aspect(patched), "16:9")
         self.assertEqual(receipt["sections_repinned"], [TEXT_INDEX])
-        self.assertEqual([e["label"] for e in receipt["edits"]], ["constants", "code_cave", "hook"])
+        self.assertEqual([e["label"] for e in receipt["edits"]],
+                         [s[0] for s in wide._sites(self.payload, wide.DEFAULT_ASPECT)])
         self.assertEqual(patched[wide.CAVE_VA - IMAGE_BASE:][: wide.DATA_SIZE], wide.cave_bytes())
         self.assertEqual(patched[wide.CAVE_VA - IMAGE_BASE + wide.DATA_SIZE: wide.CAVE_END_VA - IMAGE_BASE],
                          wide.RETAIL_ALT_KEYS[wide.DATA_SIZE:])                 # the throw-tuning tail is untouched
@@ -162,8 +169,9 @@ class WidescreenPatchTests(unittest.TestCase):
         digest_bytes = {header + 36 + k for k in range(20)}
         diff = [i for i, (a, b) in enumerate(zip(self.payload, patched)) if a != b and i not in digest_bytes]
         self.assertEqual(len(diff), receipt["changed_bytes"])
-        with self.assertRaises(wide.WidescreenPatchError):
-            wide.apply(patched)
+        replay, again = wide.apply(patched)
+        self.assertEqual(replay, patched)
+        self.assertEqual((again["changed_bytes"], again["edits"]), (0, []))
 
     def test_other_aspect_and_foreign_bytes(self) -> None:
         patched, receipt = wide.apply(self.payload, aspect="16:10")
@@ -288,6 +296,8 @@ class RetailSmokeTests(unittest.TestCase):
                 struct.pack_into("<I", out, wide.STAMP_OFFSET, wide.STAMP_DIAGRAM)
             if kind == "none":
                 return bytes(out), kind
+            if source_va != wide.DIAGRAM_CAMERA_VA and stamp != wide.STAMP_DIAGRAM:
+                struct.pack_into("<I", out, wide.STAMP_OFFSET, wide.STAMP_WIDE)
             c = wide.constants()
             f32 = lambda v: struct.unpack("<f", struct.pack("<f", v))[0]  # noqa: E731
             F, inv, K = f32(c["stretch"]), f32(c["inv_stretch"]), f32(c["shift"])

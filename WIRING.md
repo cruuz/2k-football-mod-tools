@@ -1,3 +1,152 @@
+# r62 widescreen polish v3 handoff, 2026-09-06
+
+**EXPERIMENTAL / UNWITNESSED.** Backend and tests are complete in
+`mod_editor/core/nfl2k5_widescreen.py`. See
+[ASTRA_WIDESCREEN_POLISH_REPORT.md](ASTRA_WIDESCREEN_POLISH_REPORT.md) and
+[exact receipts](docs/mod_editor/widescreen_polish_receipts.json). This section
+supersedes older widescreen assumptions only; unrelated handoffs below remain.
+Protected files were not edited. The existing `widescreen` flag already
+installs all v3 fixes, and its BuildPlan path has passed a real-XBE test.
+
+## Dispatcher, existing flag and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, retain the import:
+
+```python
+from . import nfl2k5_widescreen as widescreen_patch
+```
+
+Retain `widescreen: bool = False` in `_apply_all`, `write_xbe_copy` and
+`write_image_copy`, every forwarding call, and the nonempty-selection checks.
+The existing owners tuple row remains:
+
+```python
+(widescreen, widescreen_patch, "widescreen_patch", "widescreen"),
+```
+
+Add `"widescreen_patch"` to the existing apply-on-applied key tuple beside
+`"chop_block_toggle_patch"` and `"flatter_deep_ball_patch"`. V3's exact replay
+returns zero edits and explicit experimental/version metadata. This retains
+that metadata on a replay receipt; the existing status guard already refuses
+mixed/foreign/old-v2 bytes. Do not add an old-version migration exception.
+
+All four dictionaries already contain the correct status reader. Keep these
+exact entries in `read_xbe`, `read_image`, `write_xbe_copy` and `write_image_copy`:
+
+```python
+# read_xbe and read_image
+"widescreen": widescreen_patch.status(payload),
+# write_xbe_copy
+"widescreen": widescreen_patch.status(result),
+# write_image_copy
+"widescreen": widescreen_patch.status(after),
+```
+
+`status` now validates eleven sites and 23 context pins. A formerly applied
+v2 image reads foreign and must be rebuilt from a clean source. Retain that
+failure rather than showing it as an applied v3 repair.
+
+## BuildPlan, presets, receipt and allocation
+
+In protected `mod_editor/core/mod_build.py`, retain the existing
+`BuildPlan.widescreen: bool = False`, `wants_xbe_patch`, availability,
+inspection and early XBE-pass forwarding. Replace the stale comment saying
+it is absent from all presets: Basic false, Advanced false, Experimental
+true, as the code already specifies. Keep `widescreen=True` as the single
+selection for the v3 family. There is no `widescreen_hud` field, separate
+fix switch or new aspect selector in this task.
+
+Add `"widescreen_patch"` beside `"widescreen"` in the XBE step's receipt-key
+projection near the existing `receipt["steps"].append` at line 959. Preserve
+the backend dictionary intact, including `version: 3`, `experimental: true`,
+`runtime_witnessed: false`, full `edits`, hashes and section IDs. The Build
+summary currently keeps only the status and drops that dictionary.
+
+Allocation is unchanged: 831 bytes of code in the existing 832-byte
+`46EE0..47220` reservation and 36 immutable bytes at `10254..10278`.
+There is no `REQUESTS` tuple, grown owner, new budget row, adapter,
+`_selected_space_requests` flag, `_xbe_space_adapter` argument,
+`_grown_status_fields` field, deferral or final allocator-pass addition.
+The complete existing owner union composes with this family in both orders.
+Do not reserve another owner's space for it.
+
+## Gameplay Patches and Build text
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, expose the existing
+flag with the same tuple shape as other entries:
+
+```python
+("widescreen", "Widescreen 16:9 (experimental)", tt.widescreen_patch.HELP_TEXT),
+```
+
+`HELP_TEXT` contains both **Retail** and **Patch**, describes field width,
+marker/shadow/sky/interlace fixes in plain words, states EXPERIMENTAL /
+UNWITNESSED and requests a clean-base rebuild. `NEEDS_IMAGE` membership is
+**false**: this is a fixed-length executable patch and the tested standalone
+XBE path is valid. Standard checkbox forwarding via `BuildPlan` applies;
+preserve explicit `widescreen` forwarding wherever this panel maintains a
+manual field list. Refresh Studio's existing shared Build state in the same
+way if its integration adds a manual copy; no new GUI panel is needed.
+
+In protected `mod_editor/gui/build_panel_qt.py`, update the existing `_option`:
+
+```python
+self.widescreen_check = self._option(
+    pl, "widescreen", "Widescreen 16:9 (experimental)",
+    "Shows more of the field; keeps the HUD at its existing size.",
+    badge=NOT_TESTED, details=tt.widescreen_patch.HELP_TEXT,
+)
+```
+
+The caption is 30 characters, below 60. If the panel does not already expose
+`tt`, import the backend module directly and use its `HELP_TEXT`; no new
+runtime dependency is required. Retain the existing flag gates, plan
+construction and preset loading. Widening the regular HUD is not a new
+option here. For the exact clean-base Build recipe and scene criteria, use
+the report. The core tests did not launch Qt or xemu.
+
+## Allowlist, runtime closure, capability and manifest
+
+Protected `packaging/release-allowlist.txt` already has the backend at line
+302. Retain it and include the review/witness documentation with these exact
+lines if packaging this handoff:
+
+```text
+mod_editor/core/nfl2k5_widescreen.py
+ASTRA_WIDESCREEN_POLISH_REPORT.md
+docs/mod_editor/widescreen_polish_receipts.json
+```
+
+In protected `packaging/check_2k5_mod_studio_runtime.py`, include
+`"mod_editor.core.nfl2k5_widescreen"` explicitly in `product_modules` and
+verify `POLISH_VERSION == 3`, `EXPERIMENTAL is True`,
+`RUNTIME_WITNESSED is False`, and the public help text is present. Its only
+new import is standard-library `hashlib`; the existing section/digest helpers
+remain in `nfl2k5_bump_strength`. Unicorn and Capstone are test tools only.
+There is no new backend command, resource format or capability surface, so
+no new registry ID/schema entry is needed for this existing Build flag.
+
+Claude alone regenerates protected `data/nfl2k5_cave_reservations.json` after
+integration. The builder already discovers this module through the existing
+`tt` import and Experimental preset. Its allocator `all_requests` and three
+grown-owner lists need no new row. The backend receipt's added `file_offset`
+lets `Recorder.observe` reserve complete sites, including unchanged bytes.
+Verify the manifest owns all eleven spans in the report under
+`nfl2k5_widescreen`, retains the whole 832-byte cave, has fresh source
+fingerprints and has no overlaps. The local manifest unit test passed.
+
+Use the existing generator only when a disposable full disc and its workspace
+will leave **more than 100 GB free**; it internally uses a TemporaryDirectory:
+
+```text
+python3 tools/nfl2k5_cave_oracle.py manifest RETAIL_DEFAULT_XBE --xiso RETAIL_XISO --work-dir DISPOSABLE_WORK_DIR --json data/nfl2k5_cave_reservations.json
+```
+
+After wiring, rerun the new standalone suite, both XBE gates, protected
+Build/GUI checks and runtime closure. No runtime witness or release-status
+upgrade is implied by these CPU tests. This session did not build a full
+disc or regenerate the protected manifest.
+
 # r62 calendar engine handoff, 2026-09-05
 
 This section supersedes the old season-cap limitation and wave-2 specification

@@ -27,6 +27,26 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     from mod_editor.core import nfl2k5_scorebug_ingame as scene
     from mod_editor.core import nfl2k5_practice_squad as ps, nfl2k5_franchise_practice as fp
     from mod_editor.core import nfl2k5_practice_reserves as pr
+    from mod_editor.core import nfl2k5_widescreen as wide
+    # Both gate seeds already contain widescreen. In reverse mode defer its
+    # complete install until after every allocator owner, so order equivalence
+    # exercises the new marker/sky/culling sites as well as the grown owners.
+    deferred_wide = wide.applied_aspect(payload) if reverse else None
+    if deferred_wide:
+        from mod_editor.core.nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
+        sections = _sections(payload)
+        buf = bytearray(payload)
+        touched = set()
+        for _label, off, retail, _patched in wide._sites(payload, deferred_wide):
+            buf[off:off + len(retail)] = retail
+            if off >= wide._header_size(payload):
+                touched.add(_section_for_offset(sections, off).index)
+        for section in sections:
+            if section.index in touched:
+                buf[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(buf), section)
+        payload = bytes(buf)
+        if wide.status(payload) != "retail":
+            raise AssertionError("reverse gate could not prepare complete retail widescreen sites")
     payload, _ = ps.apply(payload)
     payload, _ = fp.apply(payload)
     payload, _ = pr.apply(payload)
@@ -40,6 +60,8 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     order = tuple(reversed(owners)) if reverse else owners
     for module, kwargs in order:
         payload, _ = module.apply(payload, **kwargs)
+    if deferred_wide:
+        payload, _ = wide.apply(payload, deferred_wide)
     for module, kwargs in owners:
         if module.status(payload) != "applied" or module.apply(payload, **kwargs)[0] != payload:
             raise AssertionError(f"{module.OWNER} failed complete composition/replay")

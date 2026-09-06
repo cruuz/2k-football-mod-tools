@@ -149,6 +149,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_calendar_engine as calendar
         if calendar.status(cls.patched) != "applied":
             raise AssertionError("calendar owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_widescreen as wide
+        if wide.status(cls.patched) != "applied" or wide.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("widescreen v3 sites/context did not compose and replay")
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True

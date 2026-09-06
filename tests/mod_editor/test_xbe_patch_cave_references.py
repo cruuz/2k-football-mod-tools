@@ -105,6 +105,9 @@ class CaveReferenceTests(unittest.TestCase):
         cls.zone_evidence = zone_facing.assess(cls.patched)
         if cls.zone_evidence["states"]["initial_drop"] != "applied":
             raise AssertionError("Initial zone-drop owner missing from tier evidence")
+        from mod_editor.core import nfl2k5_widescreen as wide
+        if wide.status(cls.patched) != "applied" or wide.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("widescreen v3 sites/context did not compose and replay")
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
