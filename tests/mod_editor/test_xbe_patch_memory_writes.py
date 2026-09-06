@@ -128,6 +128,12 @@ class PatchWriteTests(unittest.TestCase):
         if defensive_try.status(cls.patched) != "applied":
             raise AssertionError("defensive conversion stat extension missing from the composed XBE")
         defensive_try._stats_sites(cls.patched)  # both named RX/RO reservations
+        from mod_editor.core import nfl2k5_franchise_2026 as franchise_2026
+        if franchise_2026.status(cls.patched) != "applied":
+            raise AssertionError("franchise rule proof kernel missing from composed XBE")
+        # The owner is dormant: composition is not native franchise enforcement.
+        if franchise_2026.RUNTIME_READY:
+            raise AssertionError("update the franchise shipping-gate evidence before enabling")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")

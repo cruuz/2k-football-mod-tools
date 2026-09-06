@@ -467,6 +467,157 @@ exit path, and preserve the main-drive 100 GB free-space floor. No real disc
 was built in this task because its required temporary copy would cross that
 floor. Do not run the historical beta-60 proof builder for this matrix: it
 requires a canonical whole-disc release baseline and retains large outputs.
+# r62 franchise 2026 handoff, 2026-09-06
+
+**The requested live feature is incomplete and must remain unavailable.** The
+backend supplies host transactions and an installed but dormant native rule
+kernel. `apply()` is for proof/owner composition only: its receipt explicitly
+has `runtime_enforced=False` and `native_hooks=[]`. Connecting it directly to a
+product checkbox would misrepresent what was built. `require_runtime_ready()`
+raises before a disc copy. See `ASTRA_FRANCHISE_2026_REPORT.md` for the measured
+save/writeback blockers and all unimplemented requirements. No protected file
+was edited. This section is additive; earlier owners' instructions remain.
+
+## Protected BuildPlan, allocator, dispatcher and four status dictionaries
+
+Reserve the intended API `franchise_2026_rules: bool = False`. Exact bool only.
+Basic, Advanced and Experimental all explicitly set false. Normalize a true
+request by calling `nfl2k5_franchise_2026.require_runtime_ready()` immediately,
+before a copy, allocation or output mutation. This currently refuses it. Keep
+this same guard in `_apply_all` so callers cannot bypass BuildPlan preflight.
+Recipe load, Studio forwarding, availability and receipts retain the false
+field; no implicit enable from practice squads, calendar or season cap.
+
+The eventual selected union integration belongs in `_selected_space_requests`
+and `_xbe_space_adapter`: add `franchise_2026_rules` to both signatures/flag
+forwarding paths and concatenate `nfl2k5_franchise_2026.REQUESTS` when selected.
+Preflight must refuse first while `RUNTIME_READY` is false. Requests are now
+**5,120 RX / 4,096 RW**, alignment 16, owner `nfl2k5_franchise_2026`; never
+hardcode a VA. The gate union and manifest owner probe already include it.
+
+Add the intended final dispatcher tuple after the allocator and existing
+practice/season owners:
+
+```python
+("franchise_2026_rules", franchise_2026_rules, _franchise_2026_adapter),
+```
+
+Use a guarded adapter; do not substitute the dormant kernel's `apply` directly:
+
+```python
+class _Franchise2026Adapter:
+    @staticmethod
+    def status(payload):
+        return "unavailable"
+
+    @staticmethod
+    def apply(payload):
+        nfl2k5_franchise_2026.require_runtime_ready()
+        return nfl2k5_franchise_2026.apply(payload)
+
+_franchise_2026_adapter = _Franchise2026Adapter()
+```
+
+The adapter must be replaced with the real guarded runtime owner when the
+missing hooks are delivered, rather than merely changing `RUNTIME_READY`.
+Add keyword `franchise_2026_rules=False` to `_apply_all` and forward it at every
+shared executable call. Add it to `wants_xbe_patch`, availability checks and
+normalization/deferral/final-pass handling only with the early readiness guard.
+Early `replace(plan, ...)` passes set it false. The eventual final pass forwards
+`franchise_2026_rules=plan.franchise_2026_rules`. Until the guard is replaced,
+a true flag has no final pass and no output. This is intentional refusal.
+
+In `_grown_status_fields` and **all four dictionaries** (extracted reader,
+image reader, extracted writer result, image writer result), expose:
+
+```python
+"franchise_2026_rules": "unavailable",
+"franchise_2026_kernel": nfl2k5_franchise_2026.status(payload),
+"franchise_2026_runtime_enforced": False,
+```
+
+Use the actual payload variable at each location. A dormant kernel reporting
+`applied` must never mark `franchise_2026_rules` as applied or make the Build
+option checked. False/off preserves the supplied executable normally.
+
+## Gameplay Patches, NEEDS_IMAGE, Build and Coach's Desk
+
+Intended PATCHES key: `franchise_2026_rules`. Caption:
+`2026 franchise rules (unavailable)`.
+
+Exact help, containing the required Retail and Patch words:
+
+> Retail: Owned players form the game roster and IR has no in-season returns. Patch: 2026 franchise rules are not available yet. Saved counters and correct player results still need integration. EXPERIMENTAL / UNWITNESSED.
+
+Include the key in NEEDS_IMAGE. The eventual complete feature requires the
+matching calendar/ROST/save transport; a standalone XBE does not establish
+those. Keep the row disabled with the above reason while unavailable. The
+Build `_option` caption is `2026 franchise rules (unavailable)` (34 characters),
+field `franchise_2026_rules`, with the same help and disabled state. Every
+preset leaves it off. Do not present a working game-rule toggle or a manual
+native roster screen in this revision.
+
+Practice Squad screen coordination: keep its existing Coach's Desk table,
+Active/Reserves tabs, native promote/demote and Free Practice behavior. The
+future Game Day/IR pages should share that destination and identity resolver.
+No additional menu row, callback, staging hook at 61730 or second promote/
+demote implementation is installed here. A future manual page must distinguish
+permanent promotion from standard elevation and charge only on acceptance.
+
+## Allowlist, runtime closure, capability and manifest
+
+Add these source lines to `packaging/release-allowlist.txt` if shipping the host
+API/inspection tooling; no game data or companion payload belongs in a release:
+
+```text
+mod_editor/core/nfl2k5_franchise_2026.py
+mod_editor/core/nfl2k5_franchise_2026_code.py
+docs/mod_editor/nfl2k5_franchise_2026_capability.json
+ASTRA_FRANCHISE_2026_REPORT.md
+```
+
+`nfl2k5_franchise_save.py` is already allowlisted. The C, .S and assembler are
+development sources, not runtime dependencies. Add both new core modules to
+the provider/runtime closure, including the explicit import list in
+`packaging/check_2k5_mod_studio_runtime.py`. Refresh its and the provider's hashes
+for changed `nfl2k5_franchise_save.py` using the existing exact-file process;
+never remove or broaden pins. No GUI import is needed. The companion transport
+uses only the Python standard library and the existing save codec.
+
+Merge the complete schema-valid object in
+`docs/mod_editor/nfl2k5_franchise_2026_capability.json` into the canonical registry.
+It registers **inspection only**, ID
+`nfl2k5.schedules_franchise.rules_2026_inspection`, `read-only-mapped`,
+`gui.mode=view`, `gui.expose=false`. Game enforcement remains unavailable;
+this classification does not certify a writer. Both backend.command and
+validation_command use `python3 -m mod_editor.core.nfl2k5_franchise_2026 ...`.
+Do not promote runtime.status from `not-tested` based on bounded instructions.
+The registry requires `unsafe/deferred` rows to have null backend fields, so a
+working inspection command cannot be classified as an unavailable writer.
+
+The shared gate union, budget fixture and all manifest-builder owner lists are
+updated. Claude alone must regenerate `data/nfl2k5_cave_reservations.json`.
+The scratch manifest is an actual disposable-disc writer observation, not a
+source-fingerprint bypass. It includes the dormant kernel's named allocations;
+it does not certify native rule enforcement or a played save lifecycle.
+
+## Hard gates before enabling the intended feature
+
+1. Implement save-buffer size/allocation, native serializer/loader, wrapper
+   integrity and migration together. No spare fields were allocated here.
+   The memo's proposed ledger is 60,872 bytes at 2,479 players and the three
+   actually unassigned player bits cannot hold the full histories.
+2. Install one shared game-day projection boundary with Practice Reserves,
+   depth/special-role remapping, launch-shortage refusal, and **every** result
+   identity adapter. C5280 and 27DBC0 currently assume matching ownership slots.
+3. Bind native IR entry, completed-team-game events, calendar day advancement,
+   return/medical checks, CPU choices and rollover to the kernel. General IR
+   capacity and all owner/cap consumers need the separate storage migration.
+4. Implement native dated cutdown and both trade predicate/pending purge plus
+   human acceptance guards; calendar predicates alone are insufficient.
+5. Add elevation pay accounting and persistent identity/generation handling,
+   complete native save/load/sim/played-result proofs, and Noah's R1-R5 witnesses.
+   A host companion tied to a save digest cannot replace these steps.
 
 ---
 

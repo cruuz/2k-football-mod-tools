@@ -91,6 +91,12 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_read_option_runtime as read_option
         if read_option.status(cls.patched) != "applied":
             raise AssertionError("read option owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_franchise_2026 as franchise_2026
+        if franchise_2026.status(cls.patched) != "applied":
+            raise AssertionError("franchise rule proof kernel missing from composed XBE")
+        # The owner is dormant: composition is not native franchise enforcement.
+        if franchise_2026.RUNTIME_READY:
+            raise AssertionError("update the franchise shipping-gate evidence before enabling")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")

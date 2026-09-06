@@ -650,7 +650,7 @@ class FranchiseSave:
         field = self.team_offset(team) + 4 * slot
         struct.pack_into("<i", self.buffer, field, 0 if target is None else target - field + 1)
 
-    def place_on_injured_reserve(self, team: int, player_index: int) -> InjuredReserveEntry:
+    def place_on_injured_reserve(self, team: int, player_index: int, *, legacy_marker: bool = True) -> InjuredReserveEntry:
         """Finn's IR move: compact the team's pointer list, count -1, player +0x28 = 0xEE, fill an IR slot.
 
         Reproduces the 17-byte diff between the two 8007Fran fixtures byte for byte (test).  The game
@@ -662,7 +662,9 @@ class FranchiseSave:
         from . import nfl2k5_practice_squad as ps
         count, slots = self._team_slots(team)
         _require(target in slots[:count], f"player {player_index} is not on team {team}")
-        _require(self.buffer[target + 0x28] != IR_MARK, f"player {player_index} is already marked injured reserve")
+        _require(type(legacy_marker) is bool, "legacy_marker must be boolean")
+        _require(not legacy_marker or self.buffer[target + 0x28] != IR_MARK,
+                 f"player {player_index} is already marked injured reserve")
         free = None
         for slot in range(IR_SLOTS):
             offset = FRONT_OFFICE_BLOCK + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY
@@ -673,25 +675,41 @@ class FranchiseSave:
         assert free is not None
         squads = self._validate_ownership()
         candidate = bytearray(self.buffer)
+        removed_slot = slots[:count].index(target)
         active = [self.player_index(o) for o in slots[:count] if o != target]
         self._repack_candidate(candidate, team, active, squads[team])
-        candidate[target + 0x28] = IR_MARK
+        if legacy_marker:
+            candidate[target + 0x28] = IR_MARK
         candidate[target + 0x52] &= ~0x1f
-        struct.pack_into("<H", candidate, free[1], player_index)
-        if candidate[self.team_offset(team) + ps.VERSION_OFFSET] == ps.VERSION:
-            try:
-                candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
-            except ValueError as exc:
-                raise FranchiseSaveError(str(exc)) from exc
+        if not legacy_marker:
+            # Preserve the explicit Finn byte-for-byte import operation; modern
+            # host transactions additionally maintain native special-role slots.
+            for field in range(self.team_offset(team) + 0x194, self.team_offset(team) + 0x19a):
+                value = candidate[field]
+                if value == removed_slot:
+                    candidate[field] = 0xff
+                elif removed_slot < value < 0x80:
+                    candidate[field] -= 1
+        struct.pack_into("<I", candidate, free[1], player_index)
+        try:
+            candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
         self._validate_ownership(bytes(candidate))
         self.buffer = candidate
         self._roster = None
         return InjuredReserveEntry(team, free[0], free[1], player_index, self.player_name(player_index))
 
-    def activate_from_injured_reserve(self, team: int, player_index: int) -> None:
-        """The inverse of ``place_on_injured_reserve`` (HYPOTHESIS: unwitnessed in game)."""
+    def activate_from_injured_reserve(self, team: int, player_index: int, *, clear_legacy_marker: bool = True) -> None:
+        """Legacy host repair, not a modern eligibility decision (UNWITNESSED).
+
+        Preserve real packed injury fields. Only undo the explicit Finn EE marker;
+        compact all five IR slots so native fifth-slot fullness stays correct.
+        Modern return eligibility uses the explicit ``franchise_2026_session``.
+        """
 
         _require(0 <= team < self.league_team_count, f"team {team} is not an NFL team in this arena")
+        _require(type(clear_legacy_marker) is bool, "clear_legacy_marker must be boolean")
         target = self.player_offset(player_index)
         found = None
         for slot in range(IR_SLOTS):
@@ -707,18 +725,40 @@ class FranchiseSave:
         _require(count < limit, f"team {team} has no free roster slot (active limit {limit})")
         assert found is not None
         candidate = bytearray(self.buffer)
-        struct.pack_into("<H", candidate, found, IR_EMPTY)
-        candidate[target + 0x28] = 0
+        ir_base = FRONT_OFFICE_BLOCK + F_INJURED_RESERVE + team * IR_SLOTS * IR_ENTRY
+        remaining = [self.u16(ir_base + slot * IR_ENTRY) for slot in range(IR_SLOTS)
+                     if self.u16(ir_base + slot * IR_ENTRY) not in (IR_EMPTY, player_index)]
+        for slot, index in enumerate(remaining + [IR_EMPTY] * (IR_SLOTS - len(remaining))):
+            struct.pack_into("<I", candidate, ir_base + slot * IR_ENTRY, index)
+        if clear_legacy_marker and candidate[target + 0x28] == IR_MARK:
+            candidate[target + 0x28] = 0
         active = [self.player_index(o) for o in slots[:count]] + [player_index]
         self._repack_candidate(candidate, team, active, squads[team])
-        if candidate[self.team_offset(team) + ps.VERSION_OFFSET] == ps.VERSION:
-            try:
-                candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
-            except ValueError as exc:
-                raise FranchiseSaveError(str(exc)) from exc
+        try:
+            candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
         self._validate_ownership(bytes(candidate))
         self.buffer = candidate
         self._roster = None
+
+    def franchise_2026_session(self, companion: bytes | None = None):
+        """Explicit host-only counters bound to this exact save, never native enforcement.
+
+        With no companion, existing IR migrates as legacy season-ending entries.
+        Export the returned session's companion separately. Native saving does
+        not serialize it; a changed SAVEGAME.DAT refuses an old companion.
+        """
+        from .nfl2k5_franchise_2026 import HostSession
+        return HostSession(self, companion)
+
+    def export_franchise_2026_counters(self, state) -> bytes:
+        from .nfl2k5_franchise_2026 import export_counters
+        return export_counters(self, state)
+
+    def import_franchise_2026_counters(self, companion: bytes):
+        from .nfl2k5_franchise_2026 import import_counters
+        return import_counters(self, companion)
 
     def _validate_ownership(self, payload: bytes | None = None):
         from . import nfl2k5_practice_squad as ps
