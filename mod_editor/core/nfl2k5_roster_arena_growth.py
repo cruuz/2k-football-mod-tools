@@ -214,9 +214,11 @@ def apply(payload, *, reserves_16=True, created_teams_extra=0):
     if space.status(payload) == 'retail':
         payload, _ = space.apply(payload, REQUESTS, scaleout=True)
     site = allocation(payload)
-    payload, _ = ps.apply(payload)
-    payload, _ = fp.apply(payload)
-    payload, _ = pr.apply(payload)
+    for prerequisite in (ps, fp, pr):
+        # an already-installed prerequisite (or one delegated to the Practice Squad screen's
+        # replaced Coach's Desk table) is kept as is; only a retail one is installed here
+        if prerequisite.status(payload) == 'retail':
+            payload, _ = prerequisite.apply(payload)
     require(rdata.status(payload, sites(site['va'])) == 'retail', 'foreign arena prerequisites')
     result, code_receipt = space.install_code(payload, OWNER, code_for(site['va'], flags))
     result, receipt = rdata.apply(result, sites(site['va']), OWNER)
