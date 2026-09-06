@@ -51,6 +51,14 @@ protocol member and constant) is pinned by name in `test_games_contract.py`.
 - `fragments` drift (`test_<game>_module`) — a module's mirrors differ from the canonical registry
   or allowlist: `python -m mod_editor.games fragments <game> --write`.
 
+## The standing rules for an agent working here
+
+`docs/product/MODULE_AGENT_CHARTER.md` carries the rules that are the same for every task on a
+game module: the gates to run before each commit, the retail-free rule, which upstream files are
+shared and which one command edits them, where the already-measured facts live so they are not
+measured twice, how much output to print, and the shape of the report. A task brief references
+it rather than restating it.
+
 ## Adding a game
 
 `python -m mod_editor.games new <game_id> --title "…" --platform "…"`, then follow

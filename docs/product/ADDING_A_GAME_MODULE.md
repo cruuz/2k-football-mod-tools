@@ -5,6 +5,10 @@ This is the how-to. The contract itself is `GAME_MODULE_CONTRACT.md`; the reason
 `mod_editor/games/<game_id>/` and `tests/mod_editor/test_<game_id>_*.py`; the upstream files
 that still carry per-game facts today are edited by one command (step 8), never by hand.
 
+`docs/product/MODULE_AGENT_CHARTER.md` is the standing rules that go with these steps -- the
+gates, the retail-free rule, the shared-file rule, where the measured facts already live, and
+the shape of the report. Read it once; this page assumes it.
+
 ## 0. Before you start
 
 - Python 3.11+, `PyQt5 Pillow` installed, the suite runnable as `CONTRIBUTING.md` says.
@@ -62,9 +66,14 @@ One lane = one registry row. Wrap the trio without changing it, the way
 - `synthetic_source(work_dir)` and `conformance_edits(catalogue)` → what CI proves the lane on.
 
 Set `fixed_allocation=True` when the destination must keep the source's exact size (declare
-byte ranges); `False` for a lane that writes files (declare `Receipt.artifacts`). Put the lane's
-`validate_<lane>.sh/.bat` under the package (CRLF for `.bat`, executable LF for `.sh`) and name
-them in `validators`; the registry row's `validation_command` runs one of them.
+byte ranges); `False` for a lane that writes files (declare `Receipt.artifacts`). The lane's
+validator is **not** a new script: add the lane to `mod_editor/games/<game_id>/validators.json`
+(the sources it compiles, the self-tests it runs, whether it needs the conformance harness) and
+write the two thin wrappers `tools/validate_<game_id>_<lane>.sh/.bat` that call
+`tools/validate_game_lane.py --game <game_id> --lane <lane>` (CRLF for `.bat`, executable LF for
+`.sh`). The pass token is derived as `<GAME_ID>_<LANE>_VALIDATION_PASS`; the registry row's
+`validation_command` runs the `.sh`. `python3 tools/validate_game_lane.py --game <game_id> --all`
+runs every lane with the harness once instead of once per lane.
 
 For executable patches use the `CodePatchLane` shape — see `PS2_CODE_PATCH_PIPELINE.md`. For
 texture art implement `ArtLane` (`decode_png`, `encode`, `replacement_identity`) and for sounds
