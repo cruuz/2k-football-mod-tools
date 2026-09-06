@@ -97,6 +97,9 @@ class CaveReferenceTests(unittest.TestCase):
         # The owner is dormant: composition is not native franchise enforcement.
         if franchise_2026.RUNTIME_READY:
             raise AssertionError("update the franchise shipping-gate evidence before enabling")
+        from mod_editor.core import nfl2k5_senior_bowl as senior_bowl
+        if senior_bowl.status(cls.patched) != "applied":
+            raise AssertionError("Senior Bowl dormant components missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -460,6 +463,18 @@ class CaveReferenceTests(unittest.TestCase):
             # that a linear instruction sweep might misclassify as data.
             for target in range(va+1, va+len(old)):
                 self.assertFalse(self.targets.get(target, []), hex(target))
+    def test_senior_bowl_dormant_components_claim_only_allocator_children(self):
+        from mod_editor.core import nfl2k5_senior_bowl as bowl, nfl2k5_xbe_space as space
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        self.assertEqual(bowl.status(self.patched), "applied")
+        spans = [r for r in space.reservations(self.patched) if r["owner"] == bowl.OWNER]
+        self.assertEqual(len(spans), 2)
+        for row in spans:
+            self.assertEqual(row["parent_owner"], space.OWNER)
+            self.assertGreaterEqual(int(row["start"], 0), space.SCALE_RUNS[0][1])
+            self.assertNotEqual(image.section(int(row["start"], 0)).name, ".text")
+        self.assertFalse(bowl.NATIVE_EVENT_AVAILABLE)
 
     def test_qb_spy_hooks_are_complete_instructions_and_have_no_foreign_owner(self) -> None:
         from mod_editor.core import nfl2k5_qb_spy_runtime as spy, nfl2k5_xbe_space as space

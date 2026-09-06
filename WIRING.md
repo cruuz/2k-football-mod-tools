@@ -5907,6 +5907,75 @@ RPO receiver 6 is explicitly refused because its A button shares the snap hold;
 choose receiver 7 or 8. The existing data-only presets and pack schema stay intact.
 
 ## Dispatcher, allocator and all four status dictionaries
+# r62 Senior Bowl: preparation only, native MVP activation blocked
+
+This section belongs to `astra/r62-senior-bowl`. It is additive to every
+previous handoff above. **EXPERIMENTAL / UNWITNESSED. The requested native
+simulation MVP is incomplete.** `docs/mod_editor/senior_bowl.md` states the
+exact code/ABI/save/sim/menu gaps. Nothing below authorizes treating dormant
+component installation as a working game event. The dedicated Studio panel
+and preview capability can be registered now; all native activation paths
+must remain disabled and reject a programmatically true selection.
+
+No protected product file was edited in this branch. The supplied original
+`.S`, assembler and byte template, host configuration/preview/codec, standalone
+suites, allocator union, both gate owner lists and manifest observer are ready
+for review. No game, kernel, native file I/O or simulator execution is claimed.
+
+## BuildPlan, presets, normalization and availability
+
+In protected `mod_editor/core/mod_build.py`, add these fields next to the
+other optional franchise owners:
+
+```python
+senior_bowl: bool = False
+senior_bowl_settings: dict[str, object] = field(default_factory=lambda: {
+    "scheme": "retail", "away": {"bank": 50, "side": "A", "era": 0},
+    "home": {"bank": 51, "side": "H", "era": 0}})
+senior_bowl_seed: int = 1
+```
+
+Set `senior_bowl=False` explicitly in `softdrink_basic`, `softdrink_advanced`
+and `softdrink_experimental`; no preset enables it. Personal preview choices
+may persist across preset changes, but every preset resets activation false.
+Validate through `senior_bowl_patch.Settings.from_dict` and the panel's seed
+range 0..2147483647; reject bool/noninteger seeds and unknown settings. Keep
+settings/seed in project/BuildPlan serialization and declare them subsettings
+in the existing no-invisible-capability/Build-field coverage table, not as
+separate toggles. Runtime component selection accepts u32 seeds; the panel
+intentionally uses the signed Qt spin-box range and refuses larger project
+seeds instead of silently clamping them.
+
+Before any build output is created, validate that `type(plan.senior_bowl) is
+bool` and refuse true while `NATIVE_EVENT_AVAILABLE` is false:
+
+```python
+if plan.senior_bowl and not senior_bowl_patch.NATIVE_EVENT_AVAILABLE:
+    raise ValueError(senior_bowl_patch.NATIVE_BLOCKER)
+```
+
+Module importability is not runtime availability. `availability()` should
+report the native `senior_bowl` toggle unavailable and the host panel usable.
+Include the flag in `wants_xbe_patch` for future coverage, inspect/status
+projection and final result reporting, without bypassing the early refusal.
+Do not imply that the existing native Practice Squad screen proves this event's
+save/simulator/menu paths.
+
+When the documented native implementation actually becomes ready, normalize
+its dependency flags and construct the complete request union before any owner
+is applied. Its present requests are exactly:
+
+```python
+(("nfl2k5_senior_bowl", "code", 4096, 16),
+ ("nfl2k5_senior_bowl", "data", 65536, 4096))
+```
+
+The budget fixture has these actual rows, replacing the 16384-byte RX estimate.
+Future code/descriptor growth needs an explicit request change within the
+original 16384/65536 allowance and a fresh full union. No borrowed allocator
+tail or arbitrary VA is an allocation.
+
+## Dispatcher tuple, keyword, allocator adapter and four dictionaries
 
 In protected `mod_editor/core/nfl2k5_throw_tuning.py` import:
 
@@ -6035,3 +6104,184 @@ Acceptance after wiring: two paired reads selected, a dormant empty table at
 backend level, no read recipes with the checkbox on (refusal), all presets reset
 off, changed/stale PLAY receipt refusal, two controllers/layouts, both XBE gates,
 capability file check, staged runtime closure, and Noah's pending witness list.
+from . import nfl2k5_senior_bowl as senior_bowl_patch
+```
+
+Add `senior_bowl: bool = False` to `_apply_all`, `write_xbe_copy` and
+`write_image_copy` signatures and forward `senior_bowl=senior_bowl` at every
+call. Validate bool and refuse a true unavailable selection at the beginning
+of each public writer and `_apply_all`, before mutation. Add the same
+`senior_bowl=False` keyword to `_selected_space_requests` and
+`_xbe_space_adapter.__init__`; include
+`+ (senior_bowl_patch.REQUESTS if senior_bowl else ())` and forward the keyword
+at both adapter construction and complete-union planning sites. Those
+functions must also reject a true unavailable selection, before allocation.
+
+Use a guarded adapter, rather than directly exposing the development-only
+component installer as if it launched a native event:
+
+```python
+class _senior_bowl_adapter:
+    def status(self, payload):
+        return senior_bowl_patch.status(payload)
+
+    def apply(self, payload):
+        if not senior_bowl_patch.NATIVE_EVENT_AVAILABLE:
+            raise ValueError(senior_bowl_patch.NATIVE_BLOCKER)
+        return senior_bowl_patch.apply(payload)
+```
+
+Add this exact `_apply_all` final-owners tuple after the allocator entry:
+
+```python
+(senior_bowl, _senior_bowl_adapter(), "senior_bowl_patch",
+ "Senior Bowl native event (unavailable)"),
+```
+
+This tuple is deliberately unreachable for true in this revision. Keep false
+in the initial pass when resources/scorebug defer grown owners, reserve the
+selected union once, and forward the actual flag to the final `_apply_all`
+pass, along with BuildPlan's settings/seed only when a native settings adapter
+exists. **The present `apply(payload)` takes no settings and installs zero
+retail hooks. Do not claim that kit/project choices were installed in-game.**
+The future implementation must add a settings-aware adapter and repinned
+immutable configuration when those settings acquire native consumers.
+
+`_grown_status_fields(payload)` is shared by the four status returns. Add:
+
+```python
+"senior_bowl": senior_bowl_patch.status(payload),
+"senior_bowl_native_available": senior_bowl_patch.NATIVE_EVENT_AVAILABLE,
+```
+
+The `senior_bowl` status is explicitly **component installation status**; pair
+it with the availability bit in displayed text and receipts. The four required
+consumers must read the actual final byte object:
+
+| Dictionary | Entry |
+| --- | --- |
+| `read_xbe` | `senior_bowl_patch.status(payload)` plus false native availability |
+| `read_image` | same, from the read image's XBE payload |
+| `write_xbe_copy` | same, from final `patched` |
+| `write_image_copy` | same, from the post-resource, grown final XBE |
+
+Extend `mod_build.inspect`'s `_grown_status_fields` key allowlist to include
+both fields. Never infer native readiness from applied code or a successful
+allocator seal. Restore the availability bit only after the substantive
+native implementation and its acceptance gates have landed.
+
+## Gameplay Patches PATCHES, NEEDS_IMAGE and Build tab
+
+Protected `gameplay_patches_panel_qt.py`: add the key `senior_bowl` to
+`NEEDS_IMAGE` and the following PATCHES row, then disable its checkbox with
+the blocker text even when a disc is loaded:
+
+```python
+("senior_bowl", "Senior Bowl native event (not available)",
+ senior_bowl_patch.HELP_TEXT),
+```
+
+`HELP_TEXT` contains the required words **Retail** and **Patch**, explains
+preparation, and says in-game simulation/saving/menus are unavailable. Retain
+the EXPERIMENTAL / UNWITNESSED label. A prepared status must not enable the
+checkbox in a refresh or source-change callback.
+
+Protected `build_panel_qt.py`, using its existing gameplay layout:
+
+```python
+self.senior_bowl_check = self._option(
+    gl, "senior_bowl", "Senior Bowl native event (not available)",
+    senior_bowl_patch.HELP_TEXT, badge=NOT_TESTED)
+self.senior_bowl_check.setEnabled(False)
+self.senior_bowl_check.setToolTip(senior_bowl_patch.NATIVE_BLOCKER)
+```
+
+Caption length is 40 characters (under 60). Add the field to checkbox reload,
+reset/preset clearing, selection summaries and `_make_plan`, preserving its
+forced-off state. Persist panel settings/seed independently. Do not add an
+in-game Simulate button, stock modifier or playable toggle to another panel.
+A disabled control alone is insufficient: the backend refusal above is
+required for reopened/manually edited project files.
+
+## Studio tab registration and project/session binding
+
+In protected `studio_qt.py`, import and construct
+`mod_editor.gui.senior_bowl_panel_qt.SeniorBowlPanel`. Register one **Senior
+Bowl** tab alongside the Gameplay page's existing `extra_tabs`, by extending
+the tuple already supplied to `GameplayPanel`, not editing that protected
+panel or colliding with the existing Practice/Practice Squad descriptors:
+
+```python
+self._senior_bowl_panel = SeniorBowlPanel()
+# Existing extra_tabs plus:
+(self._senior_bowl_panel, "Senior Bowl")
+```
+
+`settings_changed` emits `options()` containing exactly `senior_bowl=False`,
+`senior_bowl_settings` and `senior_bowl_seed`. Save those through the normal
+Studio project dictionary/BuildPlan and restore with `set_options`. Connect
+source/session clearing to `set_players((), "")`; avoid retaining a class
+from another franchise. The page can read its own signed SAVEGAME.DAT through
+Open franchise save, with bounded reads of that file and its EXTRA only.
+For a composed Studio roster/save snapshot use
+`prospects_from_document(document)` then `panel.set_players(players, source)`;
+set the known position scheme first. Do not pass a disc as a save or silently
+reclassify records. `selected_player_index` returns the actual identity after
+sorting, not the row ordinal.
+
+Preview projects use `.2k5senior`, schema `nfl2k5_senior_bowl_project/v1`.
+Standalone save/open buttons are already implemented in the owned panel.
+Missing source files load choices and clear stale rosters. A changed embedded
+class identity refuses. None of these writes touch SAVEGAME.DAT/EXTRA or
+constitute the native event persistence path. Keep project/source operation
+guards consistent with other Studio pages during a running build/session edit.
+No displayed GUI was used; five offscreen panel tests cover the supplied API.
+
+## Allowlist, runtime closure, capability and manifest
+
+Add these exact protected `packaging/release-allowlist.txt` entries:
+
+```text
+mod_editor/core/nfl2k5_senior_bowl.py
+mod_editor/core/nfl2k5_senior_bowl_code.py
+mod_editor/gui/senior_bowl_panel_qt.py
+docs/mod_editor/senior_bowl.md
+ASTRA_SENIOR_BOWL_REPORT.md
+```
+
+Add explicit closure imports in protected
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```text
+mod_editor.core.nfl2k5_senior_bowl
+mod_editor.core.nfl2k5_senior_bowl_code
+mod_editor.gui.senior_bowl_panel_qt
+```
+
+Retain transitive closure for roster records, practice squad, franchise save,
+allocator, cave oracle and their existing imports. GNU as, Unicorn, Capstone,
+retail evidence files and the research corpus are development dependencies
+only, not requirements for the preview or byte installer. Pin these new local
+imports through the current provider/staged-closure mechanism; do not bypass
+closure tests or edit release versions/workflows for this feature.
+
+Merge `docs/mod_editor/nfl2k5_senior_bowl_capability.json` into the canonical
+registry using the existing serializer/validator. ID is
+`nfl2k5.franchise.senior_bowl_preview`, existing surface `schedules_franchise`,
+classification `read-only-mapped`, runtime `not-tested`, GUI `view`, default
+false. This truthfully advertises the host preview. It is not a native-event
+capability. Both backend and validation commands use `python3 -m` dotted
+modules so registry file-check mode resolves them. No new surface enum is
+needed. If native activation lands later, add a separately scoped writer
+capability with its actual runtime evidence and revised validation commands.
+
+Already edited unprotected integration: the actual-request budget fixture,
+`tests/nfl2k5_allocator_stack.py` REQUESTS/compose owner tuples, both XBE gates'
+setUpClass owner assertions plus full component write/ownership cases, and
+`nfl2k5_cave_manifest.py` append/reservation/module/extra-owner lists, request
+union, ordinary owner probe and synthetic-probe lists. The manifest probe
+records dormant components only. Claude alone regenerates protected
+`data/nfl2k5_cave_reservations.json` after integration. Keep source fingerprint
+checks and all existing owners. No real-disc build or newly generated complete
+release manifest is claimed by this branch; the added manifest unit proof
+observes this actual writer and its full named RX/RW allocations.

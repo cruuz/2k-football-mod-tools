@@ -165,6 +165,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_read_option_runtime as read_option
         if read_option.status(cls.patched) != "applied":
             raise AssertionError("read option owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_senior_bowl as senior_bowl
+        if senior_bowl.status(cls.patched) != "applied":
+            raise AssertionError("Senior Bowl dormant components missing from the composed XBE")
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
@@ -410,6 +413,21 @@ class PatchWriteTests(unittest.TestCase):
         writes = absolute_writes(self.patched, [(code['va'], code['va']+read_option.assembly.LABELS['config'])])
         self.assertTrue(writes)
         self.assertTrue(all(row['target'] is None for row in writes), writes)
+    def test_senior_bowl_dormant_components_write_only_owned_or_caller_buffers(self):
+        from mod_editor.core import nfl2k5_senior_bowl as bowl, nfl2k5_senior_bowl_code as code
+        places = bowl.allocations(self.patched)
+        rx, rw = places["code"], places["data"]
+        self.assertFalse(image.runtime_writable(rx["va"], rx["size"]))
+        self.assertTrue(image.runtime_writable(rw["va"], rw["size"]))
+        self.assertEqual(image.read(rw["va"], rw["size"]), bytes(rw["size"]))
+        writes = absolute_writes(self.patched, [(rx["va"], rx["va"] + code.LABELS["code_end"])])
+        absolute = [w for w in writes if w["target"] is not None]
+        self.assertTrue(absolute)
+        for write in absolute:
+            self.assertTrue(write["writable"], write)
+            address = int(write["target"], 0)
+            self.assertTrue(rw["va"] <= address < rw["va"]+rw["size"], write)
+        self.assertFalse(bowl.NATIVE_EVENT_AVAILABLE)
 
     def test_qb_spy_complete_code_and_immutable_lookup_permissions(self) -> None:
         from mod_editor.core import nfl2k5_qb_spy_runtime as spy
