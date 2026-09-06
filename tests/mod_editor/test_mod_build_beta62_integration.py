@@ -14,7 +14,10 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'tests')]
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 from mod_editor.core import mod_build as build, nfl2k5_throw_tuning as tt
 from mod_editor.core import nfl2k5_team_names_2026 as names
-from tests.nfl2k5_allocator_stack import REQUESTS  # every owner the protected dispatcher is wired for
+from tests.nfl2k5_allocator_stack import REQUESTS as _ALL_REQUESTS
+from mod_editor.core import nfl2k5_read_option_runtime as _read_option
+# every owner the protected dispatcher is wired for; the read-option runtime joins when integration 3 wires it
+REQUESTS = tuple(r for r in _ALL_REQUESTS if r[0] != _read_option.OWNER)
 from tests.mod_editor.test_nfl2k5_xbe_space import RETAIL, image_with_xbe
 
 FLAGS = ('all_stadiums', 'team_names_2026', 'coverage_slider', 'scramble_tuning',

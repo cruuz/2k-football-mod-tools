@@ -558,6 +558,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_kick_rules.py": "09023a7bf09146877c2bc7ba3ea7c7f9e5037e0090a70394262537192519c8d5",
         "mod_editor/core/nfl2k5_modern_positions.py": "9b6777034a1c373edc1dbb4e2a902a70bfa0012b63042bb7a2a9ba4054be8e21",
         "mod_editor/core/nfl2k5_music_archive.py": "47479bf3c41fb1765b72bdba0384368ba68efc418e8648bfc74263192286baa8",
+        "mod_editor/core/nfl2k5_read_option_runtime.py": "2bca013dffb664b8583341d57f83ea25258d24af6a09d6149f49d0f100d67567",
+        "mod_editor/core/nfl2k5_read_option_runtime_code.py": "7b5839ac862369a86f4230ae23c1d7deab646e2a4b77300fadc1b4ae4b261e2b",
         "mod_editor/core/nfl2k5_abilities_runtime.py": "7d425857b3e96ef03229962812b43ca120f81d7868c8690a221f62519c26918a",
         "mod_editor/core/nfl2k5_abilities_runtime_code.py": "e669415b75928ccbc3fce88fac0435654c87ad7573891274c0d7637f39f9da3b",
         "mod_editor/core/nfl2k5_calendar_engine.py": "b773aa8928dab391560783170171fc24b6223ba642c24af557c2cf24e3c5a613",
