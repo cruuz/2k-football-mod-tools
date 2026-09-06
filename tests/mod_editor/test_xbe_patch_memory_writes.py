@@ -421,6 +421,8 @@ class PatchWriteTests(unittest.TestCase):
         self.assertTrue(all(row['target'] is None for row in writes), writes)
     def test_senior_bowl_dormant_components_write_only_owned_or_caller_buffers(self):
         from mod_editor.core import nfl2k5_senior_bowl as bowl, nfl2k5_senior_bowl_code as code
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
         places = bowl.allocations(self.patched)
         rx, rw = places["code"], places["data"]
         self.assertFalse(image.runtime_writable(rx["va"], rx["size"]))
@@ -436,11 +438,14 @@ class PatchWriteTests(unittest.TestCase):
         self.assertFalse(bowl.NATIVE_EVENT_AVAILABLE)
     def test_guardian_code_is_owned_rx_and_all_runtime_writes_are_indirect(self):
         from mod_editor.core import nfl2k5_guardian_overlay as guardian
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
         owner = guardian.allocation(self.patched)
         self.assertNotEqual(image.section(owner["va"]).name, ".text")
         self.assertFalse(image.runtime_writable(owner["va"], owner["size"]))
         self.assertTrue(image.section(owner["va"]).executable)
         writes = absolute_writes(self.patched, [(owner["va"], owner["va"] + guardian.assembly.LABELS["instructions_end"])])
+        self.assertTrue(writes)
         self.assertTrue(all(write["target"] is None for write in writes), writes)
 
     def test_qb_spy_complete_code_and_immutable_lookup_permissions(self) -> None:
