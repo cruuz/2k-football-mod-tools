@@ -4803,3 +4803,89 @@ its reservation fingerprint intact.
    proofs. All presets still default off until a separate release decision.
 
 No permission request, push or protected-file edit is part of this handoff.
+## r62 Franchise Practice exit correction (2026-09-06)
+
+This is a bug fix under the existing `franchise_practice` switch. The implementation,
+standalone tests and evidence are in `ASTRA_FRANCHISE_PRACTICE_EXIT_REPORT.md`.
+The START stub now pops settings once and pushes the retail game screen so Quit
+can tear that screen down and resume the retained Coach's Desk. No new flag,
+allocator owner, resource, save field or capability surface is introduced.
+
+### Existing dispatcher, status and preset wiring to retain
+
+`nfl2k5_throw_tuning._apply_all` already accepts `franchise_practice: bool = False`
+and contains the exact tuple:
+
+```python
+(franchise_practice, franchise_practice_patch,
+ "franchise_practice_patch", "Franchise-practice"),
+```
+
+Keep that tuple, the existing import and the `franchise_practice=` forwarding.
+The four existing status dictionaries require no new key or adapter:
+
+| Function | Existing entry |
+| --- | --- |
+| `read_xbe` | `"franchise_practice": franchise_practice_patch.status(payload)` |
+| `read_image` | `"franchise_practice": franchise_practice_patch.status(payload)` |
+| `write_xbe_copy` | `"franchise_practice": franchise_practice_patch.status(result)` |
+| `write_image_copy` | `"franchise_practice": franchise_practice_patch.status(after)` |
+
+`BuildPlan.franchise_practice: bool = False` stays as shipped. BASIC is false;
+ADVANCED and EXPERIMENTAL are true. Preserve Practice Squad screen normalization
+and the existing final XBE pass. Both XBE gates and `tests/nfl2k5_allocator_stack.py`
+already include this owner and its dependent reserves/screen patches; the same
+352-byte reservation covers the seven added code bytes. No request-union or
+budget-fixture change is needed.
+
+### Protected UI copy correction
+
+Replace only the existing Gameplay Patches help text for `franchise_practice`.
+Its current description says Practice is above Schedule and attributes the
+return to the one pop alone. Use:
+
+```python
+("franchise_practice", "Free Practice inside Franchise",
+ "Retail: Practice is available from Game Modes. Patch: adds Practice below "
+ "Schedule on the Coach's Desk. Practice uses your franchise roster and "
+ "returns to the Coach's Desk when you quit. EXPERIMENTAL / UNWITNESSED: "
+ "verify the return and unchanged schedule, roster and depth chart."),
+```
+
+Keep `franchise_practice` out of `NEEDS_IMAGE`: this remains an XBE-only patch.
+Keep the Build `_option` caption `Free Practice inside Franchise` (30 characters),
+its `franchise_practice` key and `NOT_TESTED` badge. Its concise help can be:
+`Practice with your franchise team, then return to the Coach's Desk. Experimental.`
+No new checkbox, worker argument or Studio forwarding is needed.
+
+### Protected manifest and release handoff
+
+Claude must regenerate `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after integration. The production manifest
+is unchanged here. Its source guard correctly rejects the old fingerprint of
+`mod_editor/core/nfl2k5_franchise_practice.py`; this is the only stale source.
+Do not update the fingerprint by hand or disable the guard. Run the full oracle
+suite with the regenerated manifest, then both XBE gates. Use a disposable image
+inside `TemporaryDirectory` with cleanup on all paths, sufficient space to keep
+the main drive above 100 GB free, and bounded streaming I/O. This worktree did
+not build or retain a disc or pack copy because space was too close to that floor.
+
+The runtime module is already allowlisted and imported by the runtime closure:
+
+```text
+mod_editor/core/nfl2k5_franchise_practice.py
+mod_editor.core.nfl2k5_franchise_practice
+```
+
+Retain those entries. If the report is included in release documentation, add
+this allowlist line:
+
+```text
+ASTRA_FRANCHISE_PRACTICE_EXIT_REPORT.md
+```
+
+No new runtime-closure import or capability registry entry is needed. Preserve
+the existing experimental/unwitnessed classification. Older already-patched
+XBEs containing the previous START are deliberately `foreign`; rebuild from
+retail through the current owner stack instead of silently migrating a mixed
+image. No release-tag, updater, workflow or push change is requested.
