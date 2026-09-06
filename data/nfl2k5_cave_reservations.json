@@ -78,14 +78,19 @@
     "nfl2k5_roster_storage",
     "nfl2k5_coverage_slider",
     "nfl2k5_scramble_tuning",
-    "nfl2k5_throw_arc"
+    "nfl2k5_throw_arc",
+    "nfl2k5_music_playlist",
+    "nfl2k5_practice_squad_screen",
+    "nfl2k5_abilities_runtime",
+    "nfl2k5_qb_spy",
+    "nfl2k5_calendar"
   ],
   "alternative_flight_probe": "flatter flight on retail; final stack keeps the selected existing flight mode",
   "seven_on_seven_book": "refused: the practice book is foreign, not retail; refusing",
   "disc_size": 6300499968,
   "disc_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
   "preset_xbe_sha256": "7573bdf75f53ccc10fce4963a731a61f20e2b7066eb5f7c79b4784d6a9443534",
-  "stack_xbe_sha256": "b807383b927d3fd8a933a9aba9ba2ade68c39f072386625834be5cf0deafe2ec",
+  "stack_xbe_sha256": "b3b5ea8d8f37bba9d9d49ac0494fd36bfaf2d1df6f142cc524b8a358fb1de0fc",
   "section_digests_verified": true,
   "allocator_layout": {
     "status": "applied",
@@ -228,12 +233,111 @@
         "raw": 12097872
       },
       {
+        "owner": "nfl2k5_abilities_runtime",
+        "kind": "code",
+        "size": 1072,
+        "align": 16,
+        "va": 21864448,
+        "raw": 12099584,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_calendar",
+        "kind": "code",
+        "size": 1024,
+        "align": 16,
+        "va": 21865520,
+        "raw": 12100656,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_calendar",
+        "kind": "read_only",
+        "size": 2048,
+        "align": 16,
+        "va": 22048768,
+        "raw": 12283904,
+        "owner_offset": 0
+      },
+      {
         "owner": "nfl2k5_coverage_slider",
         "kind": "code",
         "size": 16,
         "align": 16,
-        "va": 21864448,
-        "raw": 12099584,
+        "va": 21866544,
+        "raw": 12101680,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_music_playlist",
+        "kind": "code",
+        "size": 2048,
+        "align": 16,
+        "va": 21866560,
+        "raw": 12101696,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_music_playlist",
+        "kind": "data",
+        "size": 512,
+        "align": 16,
+        "va": 21962752,
+        "raw": 12197888,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_music_playlist",
+        "kind": "read_only",
+        "size": 1024,
+        "align": 16,
+        "va": 22050816,
+        "raw": 12285952,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_practice_squad_screen",
+        "kind": "code",
+        "size": 4096,
+        "align": 16,
+        "va": 21868608,
+        "raw": 12103744,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_practice_squad_screen",
+        "kind": "data",
+        "size": 256,
+        "align": 16,
+        "va": 21963264,
+        "raw": 12198400,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_qb_spy",
+        "kind": "code",
+        "size": 1536,
+        "align": 16,
+        "va": 21872704,
+        "raw": 12107840,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_qb_spy",
+        "kind": "data",
+        "size": 768,
+        "align": 16,
+        "va": 21963520,
+        "raw": 12198656,
+        "owner_offset": 0
+      },
+      {
+        "owner": "nfl2k5_qb_spy",
+        "kind": "read_only",
+        "size": 512,
+        "align": 16,
+        "va": 22051840,
+        "raw": 12286976,
         "owner_offset": 0
       },
       {
@@ -241,8 +345,8 @@
         "kind": "code",
         "size": 82,
         "align": 16,
-        "va": 21864464,
-        "raw": 12099600,
+        "va": 21874240,
+        "raw": 12109376,
         "owner_offset": 0
       },
       {
@@ -250,8 +354,8 @@
         "kind": "code",
         "size": 160,
         "align": 16,
-        "va": 21864560,
-        "raw": 12099696,
+        "va": 21874336,
+        "raw": 12109472,
         "owner_offset": 0
       },
       {
@@ -362,22 +466,27 @@
         "raw": 12099584,
         "flags": 54,
         "size": 4096,
-        "free_bytes": 3838,
+        "free_bytes": 0,
         "children": [
           {
-            "owner": "nfl2k5_coverage_slider",
+            "owner": "nfl2k5_abilities_runtime",
             "start": 21864448,
-            "end": 21864464
+            "end": 21865520
           },
           {
-            "owner": "nfl2k5_roster_storage",
-            "start": 21864464,
-            "end": 21864546
+            "owner": "nfl2k5_calendar",
+            "start": 21865520,
+            "end": 21866544
           },
           {
-            "owner": "nfl2k5_scramble_tuning",
-            "start": 21864560,
-            "end": 21864720
+            "owner": "nfl2k5_coverage_slider",
+            "start": 21866544,
+            "end": 21866560
+          },
+          {
+            "owner": "nfl2k5_music_playlist",
+            "start": 21866560,
+            "end": 21868544
           }
         ]
       },
@@ -388,8 +497,19 @@
         "raw": 12103680,
         "flags": 54,
         "size": 4096,
-        "free_bytes": 4096,
-        "children": []
+        "free_bytes": 0,
+        "children": [
+          {
+            "owner": "nfl2k5_music_playlist",
+            "start": 21868544,
+            "end": 21868608
+          },
+          {
+            "owner": "nfl2k5_practice_squad_screen",
+            "start": 21868608,
+            "end": 21872640
+          }
+        ]
       },
       {
         "kind": "code",
@@ -398,8 +518,29 @@
         "raw": 12107776,
         "flags": 54,
         "size": 4096,
-        "free_bytes": 4096,
-        "children": []
+        "free_bytes": 2254,
+        "children": [
+          {
+            "owner": "nfl2k5_practice_squad_screen",
+            "start": 21872640,
+            "end": 21872704
+          },
+          {
+            "owner": "nfl2k5_qb_spy",
+            "start": 21872704,
+            "end": 21874240
+          },
+          {
+            "owner": "nfl2k5_roster_storage",
+            "start": 21874240,
+            "end": 21874322
+          },
+          {
+            "owner": "nfl2k5_scramble_tuning",
+            "start": 21874336,
+            "end": 21874496
+          }
+        ]
       },
       {
         "kind": "code",
@@ -618,8 +759,24 @@
         "raw": 12197888,
         "flags": 3,
         "size": 4096,
-        "free_bytes": 4096,
-        "children": []
+        "free_bytes": 2560,
+        "children": [
+          {
+            "owner": "nfl2k5_music_playlist",
+            "start": 21962752,
+            "end": 21963264
+          },
+          {
+            "owner": "nfl2k5_practice_squad_screen",
+            "start": 21963264,
+            "end": 21963520
+          },
+          {
+            "owner": "nfl2k5_qb_spy",
+            "start": 21963520,
+            "end": 21964288
+          }
+        ]
       },
       {
         "kind": "data",
@@ -834,8 +991,24 @@
         "raw": 12283904,
         "flags": 50,
         "size": 4096,
-        "free_bytes": 4096,
-        "children": []
+        "free_bytes": 512,
+        "children": [
+          {
+            "owner": "nfl2k5_calendar",
+            "start": 22048768,
+            "end": 22050816
+          },
+          {
+            "owner": "nfl2k5_music_playlist",
+            "start": 22050816,
+            "end": 22051840
+          },
+          {
+            "owner": "nfl2k5_qb_spy",
+            "start": 22051840,
+            "end": 22052352
+          }
+        ]
       },
       {
         "kind": "read_only",
@@ -1128,23 +1301,23 @@
       "code": {
         "pages": 26,
         "capacity_bytes": 106496,
-        "requested_bytes": 6759,
-        "free_bytes": 99737,
-        "available_bytes": 98032
+        "requested_bytes": 16535,
+        "free_bytes": 89961,
+        "available_bytes": 88256
       },
       "data": {
         "pages": 21,
         "capacity_bytes": 86016,
-        "requested_bytes": 3242,
-        "free_bytes": 82774,
-        "available_bytes": 81920
+        "requested_bytes": 4778,
+        "free_bytes": 81238,
+        "available_bytes": 80384
       },
       "read_only": {
         "pages": 5,
         "capacity_bytes": 20480,
-        "requested_bytes": 4096,
-        "free_bytes": 16384,
-        "available_bytes": 16384
+        "requested_bytes": 7680,
+        "free_bytes": 12800,
+        "available_bytes": 12800
       }
     }
   },
@@ -1178,10 +1351,14 @@
   ],
   "source_sha256": {
     "mod_editor/core/mod_build.py": "c9cac52dad52680ce43efc6f965f07dc2686fe7426a8bb4c3e1f26900a69872e",
+    "mod_editor/core/nfl2k5_abilities_runtime.py": "7d425857b3e96ef03229962812b43ca120f81d7868c8690a221f62519c26918a",
+    "mod_editor/core/nfl2k5_abilities_runtime_code.py": "e669415b75928ccbc3fce88fac0435654c87ad7573891274c0d7637f39f9da3b",
     "mod_editor/core/nfl2k5_accel_ramp.py": "95014c753d46faed2e75e545d992794bb62965a9bbe6407057d3626395c6e862",
     "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
     "mod_editor/core/nfl2k5_boot_logo.py": "c767db7cdcc7dcf363a3a78547bcc251004980bc696300b3a8a3d283482fbdaa",
     "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
+    "mod_editor/core/nfl2k5_calendar_engine.py": "b773aa8928dab391560783170171fc24b6223ba642c24af557c2cf24e3c5a613",
+    "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
     "mod_editor/core/nfl2k5_camera.py": "5f645e4a104d5660a00ddc07a4ee7721bf08b209258ca91ac8f5bcd140934f24",
     "mod_editor/core/nfl2k5_catch_slider.py": "c69f022b6328abcb0dcb74fef277297ac6d6471a96790559ef43ecc7cae26abe",
     "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",
@@ -1196,7 +1373,7 @@
     "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "11d1712344d058966a78d21e0af1f8b6839dbeb4b889215645a35dc7473b3817",
     "mod_editor/core/nfl2k5_edge_rename.py": "1a47e378e17ca4fe8a2e9440778893826a32905efe64359463ac121110353695",
     "mod_editor/core/nfl2k5_formation_play_writer.py": "114f80e24da91c2f7d22043f659e2ad1ee2bfbc3181c7d8e835d2a4c15791421",
-    "mod_editor/core/nfl2k5_franchise_practice.py": "6d0599d0dbcd173e3975dc31655051c76eae48e24895309b890dd8c94dce0440",
+    "mod_editor/core/nfl2k5_franchise_practice.py": "e40590c99cf4e5649515263f1a589bc1ffb3377442dcfc298c5d16f9d559e046",
     "mod_editor/core/nfl2k5_gameplay_lever.py": "fb69f15c8a070d40458f0997cdcb8dd1beb164afafa9db3fa7a3e7f47977857b",
     "mod_editor/core/nfl2k5_guardian_cap.py": "a99a6f25bb8067f58d4de3a8f8d12312f6fcf7ce20b28bfdb09889f503f3aa0d",
     "mod_editor/core/nfl2k5_hires_pack.py": "a78dea26bd682a492ca0148bf4a613d6f7e04f36051846572fae53822bc32821",
@@ -1212,6 +1389,8 @@
     "mod_editor/core/nfl2k5_music_banks.py": "1e34c2b3c0b2c41543e69279328521bf0437fdb0c56bb00750920ef1c3c0408f",
     "mod_editor/core/nfl2k5_music_build.py": "4660ab7c77b95b410a36afc0ba7ed660e00fb0a0709c6daf9afb1e115f029a0f",
     "mod_editor/core/nfl2k5_music_metadata.py": "c5861fd3466052217c1f5fc8f7daf9dc0947654b8ea26eb07058a41317ca3af3",
+    "mod_editor/core/nfl2k5_music_playlist.py": "c9d9e4e2849838409ff7a260c5f4acbddf2ec443a2d01d8f0c5c9145c4e1e64e",
+    "mod_editor/core/nfl2k5_music_playlist_code.py": "e2f35592fe49f40d72d030617316eaf0b5894579c2e3ec95faa357350086eb99",
     "mod_editor/core/nfl2k5_music_policy.py": "55fd403a150b0350f3d4576a7a5c8187948cbb8daf36ef7426036c6c441dc023",
     "mod_editor/core/nfl2k5_music_storage.py": "db13a224f6e04e2ebbe0f7639946e2e6c9626500939614a44f2539a25137904b",
     "mod_editor/core/nfl2k5_overtime.py": "9621106101e1ce6d0bccb35ab5a2051cc8d68e9ed2fcdf2af87a13342855bbd5",
@@ -1224,16 +1403,20 @@
     "mod_editor/core/nfl2k5_player_star.py": "306162e399a030532758b638784b4d105c2df496ba341afa279091029730f8a7",
     "mod_editor/core/nfl2k5_player_tags.py": "e5d80dac67445dc2d88431e264579af88da9555648d72929e54c6be5f9ce082b",
     "mod_editor/core/nfl2k5_playoff_picture.py": "cc851bca3cd4ac77fdcea03be41db1536c51e3699503cfb227f60f1619b2c441",
-    "mod_editor/core/nfl2k5_playoffs14.py": "ab4e110bed018dd436a667e11cf650a5467db5a295fda7cdd5a73dc93e06b6ed",
+    "mod_editor/core/nfl2k5_playoffs14.py": "d8c490d6d37d118355db80de95c924db52f03ba897b4fbd85432d1840a14051d",
     "mod_editor/core/nfl2k5_position_pools.py": "b48819568be566ed30a93c3ec2420ea66c3c6609d851e845cd4bbf35a72368ab",
     "mod_editor/core/nfl2k5_position_row.py": "0df78f0d7e3af61be8738afe5373925f48ef8a309a35bfcb31ab62008b6be85b",
     "mod_editor/core/nfl2k5_practice_reserves.py": "461493f2d63fdc0e62c6551c6ba3f36b4635763d3a8030efa77b20a81f973d96",
     "mod_editor/core/nfl2k5_practice_squad.py": "232fdea42203dfe3f3322ba88ccdef00d9afd182c9ca494db7981d6209c9bb22",
     "mod_editor/core/nfl2k5_practice_squad_runtime.py": "33041313a6ae071fd48cf28d79b2ad8c11281d9afe2310a5189ec03735da8ccb",
-    "mod_editor/core/nfl2k5_preseason.py": "cb3d4f940eb976dfd54e9bd3f4ae40b8d23735bd7c66130f5598acaaf2e93e3e",
+    "mod_editor/core/nfl2k5_practice_squad_screen.py": "734c39db9d7676a752d164c76125520749ae5fd621460eb63116cc625338b5c7",
+    "mod_editor/core/nfl2k5_practice_squad_screen_code.py": "66c00478b92f1401311a3420efdb38ede5f9cd2288cf84c17a9490b363fb2149",
+    "mod_editor/core/nfl2k5_preseason.py": "5e18c2bba83005798237cc3c85b0e10ee9f7dd8f4e179f52a430f46ed02c951b",
     "mod_editor/core/nfl2k5_probowl_order.py": "17fece44f811d9684b4d10df52219b9d8b9fe7817a82a3708bf93a99afd812d9",
     "mod_editor/core/nfl2k5_progression.py": "a4e978a251fb9a747819c09c3563540229a41afca92458990496915f772d6b94",
     "mod_editor/core/nfl2k5_prospect_names.py": "e92464afcc1b82581551b3092f2aedf8e5bca7d4a1e26f28fa4bdeefd44bf5da",
+    "mod_editor/core/nfl2k5_qb_spy_runtime.py": "8eb554d04476a0595d7e6ca24e68a355e28850377227e2c0e7d2984a6b8446db",
+    "mod_editor/core/nfl2k5_qb_spy_runtime_code.py": "ad2cf89157bbb8772eb6f0911bcd4ed48f0d27808db0a3f24cb883b8c1341faa",
     "mod_editor/core/nfl2k5_rdata_sites.py": "cb422ad49c38a233a8d0e855beae0a9748b1dfef809472bdae84c459865762af",
     "mod_editor/core/nfl2k5_returner_fix.py": "a59cd96b4d639ee4f2d7fa7460e1b8bd61559ca060e7cd5c1a8d65990a3c7dc2",
     "mod_editor/core/nfl2k5_roster_records.py": "2bc793ee7f08a96a3cc7f7d2938b25e846118e1bfbae8ddd00a288a5778ade4e",
@@ -1246,7 +1429,7 @@
     "mod_editor/core/nfl2k5_scramble_tuning.py": "f9e85191b7d93849a92a749385bdd746609465238e776ea0e7f072ac29bf2e92",
     "mod_editor/core/nfl2k5_screen_timing.py": "0627fa31055f019d64d0cc3edd5f550734e59696a196c62882b0c81056c65a88",
     "mod_editor/core/nfl2k5_season_cap.py": "dda1e4d3a11bfe798d837ab8629bfa1d4e90fc233417e39de1974ac1c5b959c6",
-    "mod_editor/core/nfl2k5_season_length.py": "50405025eab3cdba33aaacc4e4fbc978f92df35ddffb38cf8e88bf15531951ae",
+    "mod_editor/core/nfl2k5_season_length.py": "1346dd254f3bddccefe67ee54f9f29cce894f9e89cb279530d995fed86c910bc",
     "mod_editor/core/nfl2k5_seven_on_seven.py": "bf72ea8e464bbb9199bbe9afdccee266c2291366870eafff4b048134a269995f",
     "mod_editor/core/nfl2k5_seven_on_seven_book.py": "d48f15e64e45a196960b247205b4ffdf3ded7e1034fe4a50cad49efe5055f16b",
     "mod_editor/core/nfl2k5_source_cache.py": "db973c02fce5b25fc8ac2fe261023b4c519d94f82b95a878e42af1a5991b4b24",
@@ -1260,7 +1443,7 @@
     "mod_editor/core/nfl2k5_uniform_choice.py": "485a0b64855836d03573381281b079a9cdab814996fa83b894046d8b29f93d6a",
     "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
     "mod_editor/core/nfl2k5_widescreen.py": "e0bf85b15ec89b551f5f470a3beb7e974037a4a3c3e2956a4b5fef808e081718",
-    "mod_editor/core/nfl2k5_xbe_space.py": "44694e0ffa0aa4aca8ed2341538e7f08eed1d7afb4a2ca0489d3fcd9b4d4cfb1",
+    "mod_editor/core/nfl2k5_xbe_space.py": "0e0e08367dbcb48f05922faadf2215391e3c06f3cf0dfb0ff76590344d00200d",
     "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
     "tools/nfl2k5_commentary_swap.py": "d12b0a4595155acf97545b01fa82791b43357e5a07a1569a58b1135e9faa965d",
     "tools/nfl2k5_franchise_schedule.py": "fdba5ff2b8b3cb5a3e39b50365c8bfedb10df57cf08bf2fc0a1e43366040ce07",
@@ -23124,11 +23307,35 @@
       ]
     },
     {
+      "owner": "nfl2k5_practice_squad",
+      "function": "apply",
+      "before_sha256": "df5a755a7dde77e2ffa577be7be53d366110cbd540c5902a98ec2c15828af138",
+      "after_sha256": "df5a755a7dde77e2ffa577be7be53d366110cbd540c5902a98ec2c15828af138",
+      "changed_bytes": 0,
+      "file_runs": []
+    },
+    {
+      "owner": "nfl2k5_franchise_practice",
+      "function": "apply",
+      "before_sha256": "df5a755a7dde77e2ffa577be7be53d366110cbd540c5902a98ec2c15828af138",
+      "after_sha256": "df5a755a7dde77e2ffa577be7be53d366110cbd540c5902a98ec2c15828af138",
+      "changed_bytes": 0,
+      "file_runs": []
+    },
+    {
+      "owner": "nfl2k5_practice_reserves",
+      "function": "apply",
+      "before_sha256": "df5a755a7dde77e2ffa577be7be53d366110cbd540c5902a98ec2c15828af138",
+      "after_sha256": "df5a755a7dde77e2ffa577be7be53d366110cbd540c5902a98ec2c15828af138",
+      "changed_bytes": 0,
+      "file_runs": []
+    },
+    {
       "owner": "nfl2k5_xbe_space",
       "function": "apply",
       "before_sha256": "df5a755a7dde77e2ffa577be7be53d366110cbd540c5902a98ec2c15828af138",
-      "after_sha256": "24184f524c93d4029c2d0805cb6ed56aa1885eb5b4961791e7d9faa92ed7585e",
-      "changed_bytes": 279861,
+      "after_sha256": "5b123cb4e1e7d4d2c176bc212cf8120d4d3ba48335e7a7246558b0fa38177566",
+      "changed_bytes": 279860,
       "file_runs": [
         [
           "0x108",
@@ -23544,10 +23751,10 @@
         ],
         [
           "0x97c",
-          "0x988"
+          "0x983"
         ],
         [
-          "0x989",
+          "0x984",
           "0x99d"
         ],
         [
@@ -23632,6 +23839,10 @@
         ],
         [
           "0xce2",
+          "0xdd3"
+        ],
+        [
+          "0xdd4",
           "0xe6c"
         ],
         [
@@ -23695,8 +23906,8 @@
     {
       "owner": "nfl2k5_roster_storage",
       "function": "apply",
-      "before_sha256": "24184f524c93d4029c2d0805cb6ed56aa1885eb5b4961791e7d9faa92ed7585e",
-      "after_sha256": "cc590fc0372fee6ef0fb01a83ffb827d8e110168a41be272dbc5806ab0feddc1",
+      "before_sha256": "5b123cb4e1e7d4d2c176bc212cf8120d4d3ba48335e7a7246558b0fa38177566",
+      "after_sha256": "d701f4f5ee346d74e88fcac95dbfcb562c6831a59e3f750d40e1512ac6e9b5f0",
       "changed_bytes": 225,
       "file_runs": [
         [
@@ -23756,8 +23967,8 @@
           "0x30aa00"
         ],
         [
-          "0xb8a010",
-          "0xb8a062"
+          "0xb8c640",
+          "0xb8c692"
         ],
         [
           "0xbb600c",
@@ -23768,8 +23979,8 @@
     {
       "owner": "nfl2k5_defensive_try",
       "function": "apply",
-      "before_sha256": "cc590fc0372fee6ef0fb01a83ffb827d8e110168a41be272dbc5806ab0feddc1",
-      "after_sha256": "607e0bb16f67e4927cd563df6c0807e06f3e8635e4fa372bbb16844b1f55970e",
+      "before_sha256": "d701f4f5ee346d74e88fcac95dbfcb562c6831a59e3f750d40e1512ac6e9b5f0",
+      "after_sha256": "ecdc0d7aeed796ed99136a2fc7d0d89b23d75de3c78dd5796b51aed0f5bb6653",
       "changed_bytes": 1034,
       "file_runs": [
         [
@@ -23877,8 +24088,8 @@
     {
       "owner": "nfl2k5_zone_drop",
       "function": "apply",
-      "before_sha256": "607e0bb16f67e4927cd563df6c0807e06f3e8635e4fa372bbb16844b1f55970e",
-      "after_sha256": "30356bdcfa803ec12e0fd21fa95f20aadb5aea2fb6a01157d5888c3832bf1403",
+      "before_sha256": "ecdc0d7aeed796ed99136a2fc7d0d89b23d75de3c78dd5796b51aed0f5bb6653",
+      "after_sha256": "66d4d307403ca4567fd52a38ee22cbb76783f439495a9817a34b763914f04ded",
       "changed_bytes": 206,
       "file_runs": [
         [
@@ -23914,8 +24125,8 @@
     {
       "owner": "nfl2k5_dynamic_kickoff_relocated",
       "function": "apply",
-      "before_sha256": "30356bdcfa803ec12e0fd21fa95f20aadb5aea2fb6a01157d5888c3832bf1403",
-      "after_sha256": "cb0eebb17985b425e9f9d3f645fdb8dccfee893dce3395f793744146864d3e61",
+      "before_sha256": "66d4d307403ca4567fd52a38ee22cbb76783f439495a9817a34b763914f04ded",
+      "after_sha256": "ff648baa23fa4f6bbc656e7bacfe9fc418e2abfcc8f25c919ebbb99d8c86e39c",
       "changed_bytes": 2026,
       "file_runs": [
         [
@@ -23999,25 +24210,25 @@
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "cb0eebb17985b425e9f9d3f645fdb8dccfee893dce3395f793744146864d3e61",
-      "after_sha256": "cb0eebb17985b425e9f9d3f645fdb8dccfee893dce3395f793744146864d3e61",
+      "before_sha256": "ff648baa23fa4f6bbc656e7bacfe9fc418e2abfcc8f25c919ebbb99d8c86e39c",
+      "after_sha256": "ff648baa23fa4f6bbc656e7bacfe9fc418e2abfcc8f25c919ebbb99d8c86e39c",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_ingame",
       "function": "apply_xbe",
-      "before_sha256": "cb0eebb17985b425e9f9d3f645fdb8dccfee893dce3395f793744146864d3e61",
-      "after_sha256": "cb0eebb17985b425e9f9d3f645fdb8dccfee893dce3395f793744146864d3e61",
+      "before_sha256": "ff648baa23fa4f6bbc656e7bacfe9fc418e2abfcc8f25c919ebbb99d8c86e39c",
+      "after_sha256": "ff648baa23fa4f6bbc656e7bacfe9fc418e2abfcc8f25c919ebbb99d8c86e39c",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_runtime",
       "function": "apply",
-      "before_sha256": "cb0eebb17985b425e9f9d3f645fdb8dccfee893dce3395f793744146864d3e61",
-      "after_sha256": "38d3d55ad9b418200c7f9b46a6ca2840fae662a0d2ffecc54444ebf8e51eeee6",
-      "changed_bytes": 1358,
+      "before_sha256": "ff648baa23fa4f6bbc656e7bacfe9fc418e2abfcc8f25c919ebbb99d8c86e39c",
+      "after_sha256": "27993fb616f9dbb03ede97c4d05f9f3282cc5c1e5aab1495b9d3ffe49850db23",
+      "changed_bytes": 1359,
       "file_runs": [
         [
           "0x394",
@@ -24049,14 +24260,10 @@
         ],
         [
           "0xbb600c",
-          "0xbb6016"
+          "0xbb601a"
         ],
         [
-          "0xbb6017",
-          "0xbb6025"
-        ],
-        [
-          "0xbb6026",
+          "0xbb601b",
           "0xbb602c"
         ]
       ]
@@ -24064,9 +24271,9 @@
     {
       "owner": "nfl2k5_momentum",
       "function": "apply",
-      "before_sha256": "38d3d55ad9b418200c7f9b46a6ca2840fae662a0d2ffecc54444ebf8e51eeee6",
-      "after_sha256": "5f83b6bf92868b9cd2738631fc2e8ac2bddb1634214292e86712294c6d843098",
-      "changed_bytes": 1096,
+      "before_sha256": "27993fb616f9dbb03ede97c4d05f9f3282cc5c1e5aab1495b9d3ffe49850db23",
+      "after_sha256": "ce94465cbb56c76fb4a9f36f3d6b34b7ae9f38d8873468c100bc6a68cc149f98",
+      "changed_bytes": 1097,
       "file_runs": [
         [
           "0x394",
@@ -24086,10 +24293,6 @@
         ],
         [
           "0xdb4",
-          "0xdb8"
-        ],
-        [
-          "0xdb9",
           "0xdd4"
         ],
         [
@@ -24142,10 +24345,10 @@
         ],
         [
           "0xbb600c",
-          "0xbb601a"
+          "0xbb600d"
         ],
         [
-          "0xbb601b",
+          "0xbb600e",
           "0xbb602c"
         ]
       ]
@@ -24153,8 +24356,8 @@
     {
       "owner": "nfl2k5_coverage_slider",
       "function": "apply",
-      "before_sha256": "5f83b6bf92868b9cd2738631fc2e8ac2bddb1634214292e86712294c6d843098",
-      "after_sha256": "0f66e16db0fcc5743ffd45b82d123cc8f03236593a9242fb1b098c0f8fec3d85",
+      "before_sha256": "ce94465cbb56c76fb4a9f36f3d6b34b7ae9f38d8873468c100bc6a68cc149f98",
+      "after_sha256": "9d9478cfd77371f5bec09385a318692a7f9f40cd6f37f1ab3ff4efff52f5f7d1",
       "changed_bytes": 140,
       "file_runs": [
         [
@@ -24182,8 +24385,8 @@
           "0x1e4332"
         ],
         [
-          "0xb8a000",
-          "0xb8a008"
+          "0xb8a830",
+          "0xb8a838"
         ],
         [
           "0xbb600c",
@@ -24194,9 +24397,9 @@
     {
       "owner": "nfl2k5_scramble_tuning",
       "function": "apply",
-      "before_sha256": "0f66e16db0fcc5743ffd45b82d123cc8f03236593a9242fb1b098c0f8fec3d85",
-      "after_sha256": "63aa78fd5083575a863a9dad83feb7f8be358af2d85c94c28e350859c04c080b",
-      "changed_bytes": 242,
+      "before_sha256": "9d9478cfd77371f5bec09385a318692a7f9f40cd6f37f1ab3ff4efff52f5f7d1",
+      "after_sha256": "9bb721aeed6bbf38dba241fba9645e43eba3aee35c454a69847d4cefe33cbfdf",
+      "changed_bytes": 241,
       "file_runs": [
         [
           "0x394",
@@ -24219,20 +24422,2517 @@
           "0x1cf1aa"
         ],
         [
-          "0xb8a070",
-          "0xb8a0b7"
+          "0xb8c6a0",
+          "0xb8c6e7"
         ],
         [
-          "0xb8a0e0",
-          "0xb8a0ed"
+          "0xb8c710",
+          "0xb8c71d"
         ],
         [
-          "0xb8a0ee",
-          "0xb8a10c"
+          "0xb8c71e",
+          "0xb8c73c"
+        ],
+        [
+          "0xbb600c",
+          "0xbb6022"
+        ],
+        [
+          "0xbb6023",
+          "0xbb602c"
+        ]
+      ]
+    },
+    {
+      "owner": "nfl2k5_music_playlist",
+      "function": "apply",
+      "before_sha256": "9bb721aeed6bbf38dba241fba9645e43eba3aee35c454a69847d4cefe33cbfdf",
+      "after_sha256": "93797cf61b4081c8f425627edb25f57118be5204cdc1369a8249fe6c3a565ac6",
+      "changed_bytes": 2248,
+      "file_runs": [
+        [
+          "0x394",
+          "0x3a8"
+        ],
+        [
+          "0x90c",
+          "0x920"
+        ],
+        [
+          "0x97c",
+          "0x990"
+        ],
+        [
+          "0xdb4",
+          "0xdcd"
+        ],
+        [
+          "0xdce",
+          "0xdd4"
+        ],
+        [
+          "0xc90f0",
+          "0xc90f6"
+        ],
+        [
+          "0xc9350",
+          "0xc9355"
+        ],
+        [
+          "0xe63cb",
+          "0xe63cf"
+        ],
+        [
+          "0xe64ce",
+          "0xe64d2"
+        ],
+        [
+          "0xe6510",
+          "0xe651a"
+        ],
+        [
+          "0x26f040",
+          "0x26f045"
+        ],
+        [
+          "0x26f6b0",
+          "0x26f6b5"
+        ],
+        [
+          "0x26f6f0",
+          "0x26f6f5"
+        ],
+        [
+          "0x26fec0",
+          "0x26fec5"
+        ],
+        [
+          "0x26ff16",
+          "0x26ff1a"
+        ],
+        [
+          "0x26ff90",
+          "0x26ff96"
+        ],
+        [
+          "0x27016e",
+          "0x270172"
+        ],
+        [
+          "0x2701a0",
+          "0x2701a6"
+        ],
+        [
+          "0x270450",
+          "0x270458"
+        ],
+        [
+          "0x2704c0",
+          "0x2704c5"
+        ],
+        [
+          "0x2706b3",
+          "0x2706b7"
+        ],
+        [
+          "0xb8a840",
+          "0xb8aad4"
+        ],
+        [
+          "0xb8aad5",
+          "0xb8aade"
+        ],
+        [
+          "0xb8aadf",
+          "0xb8aaf3"
+        ],
+        [
+          "0xb8aaf4",
+          "0xb8aafc"
+        ],
+        [
+          "0xb8aafd",
+          "0xb8ab00"
+        ],
+        [
+          "0xb8ab01",
+          "0xb8ab5a"
+        ],
+        [
+          "0xb8ab5b",
+          "0xb8ac81"
+        ],
+        [
+          "0xb8ac82",
+          "0xb8ad55"
+        ],
+        [
+          "0xb8ad56",
+          "0xb8ae96"
+        ],
+        [
+          "0xbb600c",
+          "0xbb604c"
+        ],
+        [
+          "0xbb7800",
+          "0xbb7809"
+        ],
+        [
+          "0xbb7810",
+          "0xbb7819"
+        ],
+        [
+          "0xbb7840",
+          "0xbb7841"
+        ],
+        [
+          "0xbb7842",
+          "0xbb7843"
+        ],
+        [
+          "0xbb7844",
+          "0xbb7845"
+        ],
+        [
+          "0xbb7846",
+          "0xbb7847"
+        ],
+        [
+          "0xbb7848",
+          "0xbb7849"
+        ],
+        [
+          "0xbb784a",
+          "0xbb784b"
+        ],
+        [
+          "0xbb784c",
+          "0xbb784d"
+        ],
+        [
+          "0xbb7850",
+          "0xbb7851"
+        ],
+        [
+          "0xbb7852",
+          "0xbb7853"
+        ],
+        [
+          "0xbb7854",
+          "0xbb7855"
+        ],
+        [
+          "0xbb7856",
+          "0xbb7857"
+        ],
+        [
+          "0xbb7858",
+          "0xbb7859"
+        ],
+        [
+          "0xbb785a",
+          "0xbb785b"
+        ],
+        [
+          "0xbb785c",
+          "0xbb785d"
+        ],
+        [
+          "0xbb785e",
+          "0xbb785f"
+        ],
+        [
+          "0xbb7860",
+          "0xbb7861"
+        ],
+        [
+          "0xbb7864",
+          "0xbb7865"
+        ],
+        [
+          "0xbb7866",
+          "0xbb7867"
+        ],
+        [
+          "0xbb7868",
+          "0xbb7869"
+        ],
+        [
+          "0xbb786a",
+          "0xbb786b"
+        ],
+        [
+          "0xbb786c",
+          "0xbb786d"
+        ],
+        [
+          "0xbb7870",
+          "0xbb7871"
+        ],
+        [
+          "0xbb7872",
+          "0xbb7873"
+        ],
+        [
+          "0xbb7874",
+          "0xbb7875"
+        ],
+        [
+          "0xbb7876",
+          "0xbb7877"
+        ],
+        [
+          "0xbb7878",
+          "0xbb7879"
+        ],
+        [
+          "0xbb787a",
+          "0xbb787b"
+        ],
+        [
+          "0xbb787c",
+          "0xbb787d"
+        ],
+        [
+          "0xbb7880",
+          "0xbb7881"
+        ],
+        [
+          "0xbb7882",
+          "0xbb7883"
+        ],
+        [
+          "0xbb7884",
+          "0xbb7885"
+        ],
+        [
+          "0xbb7886",
+          "0xbb7887"
+        ],
+        [
+          "0xbb7888",
+          "0xbb7889"
+        ],
+        [
+          "0xbb788a",
+          "0xbb788b"
+        ],
+        [
+          "0xbb788c",
+          "0xbb788d"
+        ],
+        [
+          "0xbb788e",
+          "0xbb788f"
+        ],
+        [
+          "0xbb7890",
+          "0xbb7891"
+        ],
+        [
+          "0xbb7892",
+          "0xbb7893"
+        ],
+        [
+          "0xbb7894",
+          "0xbb7895"
+        ],
+        [
+          "0xbb7896",
+          "0xbb7897"
+        ],
+        [
+          "0xbb7898",
+          "0xbb7899"
+        ],
+        [
+          "0xbb789c",
+          "0xbb789d"
+        ],
+        [
+          "0xbb789e",
+          "0xbb789f"
+        ],
+        [
+          "0xbb78a0",
+          "0xbb78a1"
+        ],
+        [
+          "0xbb78a2",
+          "0xbb78a3"
+        ],
+        [
+          "0xbb78a4",
+          "0xbb78a5"
+        ],
+        [
+          "0xbb78a6",
+          "0xbb78a7"
+        ],
+        [
+          "0xbb78c0",
+          "0xbb78c4"
+        ],
+        [
+          "0xbb78c8",
+          "0xbb78cd"
+        ],
+        [
+          "0xbb78d0",
+          "0xbb78d5"
+        ],
+        [
+          "0xbb78d8",
+          "0xbb78dd"
+        ],
+        [
+          "0xbb78e0",
+          "0xbb78e5"
+        ],
+        [
+          "0xbb78e8",
+          "0xbb78ed"
+        ],
+        [
+          "0xbb78f0",
+          "0xbb78f5"
+        ],
+        [
+          "0xbb78f8",
+          "0xbb78fc"
+        ],
+        [
+          "0xbb7900",
+          "0xbb7905"
+        ],
+        [
+          "0xbb7908",
+          "0xbb790d"
+        ],
+        [
+          "0xbb7910",
+          "0xbb7915"
+        ],
+        [
+          "0xbb7918",
+          "0xbb791d"
+        ],
+        [
+          "0xbb7920",
+          "0xbb7925"
+        ],
+        [
+          "0xbb7928",
+          "0xbb792d"
+        ],
+        [
+          "0xbb7930",
+          "0xbb7935"
+        ],
+        [
+          "0xbb7938",
+          "0xbb793d"
+        ],
+        [
+          "0xbb7940",
+          "0xbb7945"
+        ],
+        [
+          "0xbb7948",
+          "0xbb794d"
+        ],
+        [
+          "0xbb7950",
+          "0xbb7955"
+        ],
+        [
+          "0xbb7958",
+          "0xbb795d"
+        ],
+        [
+          "0xbb7960",
+          "0xbb7965"
+        ],
+        [
+          "0xbb7968",
+          "0xbb796d"
+        ],
+        [
+          "0xbb7970",
+          "0xbb7975"
+        ],
+        [
+          "0xbb7978",
+          "0xbb797d"
+        ],
+        [
+          "0xbb7980",
+          "0xbb7985"
+        ],
+        [
+          "0xbb7988",
+          "0xbb798d"
+        ],
+        [
+          "0xbb7990",
+          "0xbb7995"
+        ],
+        [
+          "0xbb7998",
+          "0xbb799d"
+        ],
+        [
+          "0xbb79a0",
+          "0xbb79a5"
+        ],
+        [
+          "0xbb79a8",
+          "0xbb79ad"
+        ],
+        [
+          "0xbb79b0",
+          "0xbb79b5"
+        ],
+        [
+          "0xbb79b8",
+          "0xbb79bd"
+        ],
+        [
+          "0xbb79c0",
+          "0xbb79c5"
+        ],
+        [
+          "0xbb79c8",
+          "0xbb79cd"
+        ],
+        [
+          "0xbb79d0",
+          "0xbb79d5"
+        ],
+        [
+          "0xbb79d8",
+          "0xbb79dd"
+        ],
+        [
+          "0xbb79e0",
+          "0xbb79e5"
+        ],
+        [
+          "0xbb79e8",
+          "0xbb79ed"
+        ],
+        [
+          "0xbb79f0",
+          "0xbb79f5"
+        ],
+        [
+          "0xbb79f8",
+          "0xbb79fd"
+        ],
+        [
+          "0xbb7a00",
+          "0xbb7a05"
+        ],
+        [
+          "0xbb7a08",
+          "0xbb7a0d"
+        ],
+        [
+          "0xbb7a10",
+          "0xbb7a15"
+        ],
+        [
+          "0xbb7a18",
+          "0xbb7a1d"
+        ],
+        [
+          "0xbb7a20",
+          "0xbb7a25"
+        ],
+        [
+          "0xbb7a28",
+          "0xbb7a2d"
+        ],
+        [
+          "0xbb7a30",
+          "0xbb7a35"
+        ],
+        [
+          "0xbb7a38",
+          "0xbb7a3d"
+        ],
+        [
+          "0xbb7a40",
+          "0xbb7a45"
+        ],
+        [
+          "0xbb7a48",
+          "0xbb7a4d"
+        ],
+        [
+          "0xbb7a50",
+          "0xbb7a55"
+        ],
+        [
+          "0xbb7a58",
+          "0xbb7a5d"
+        ],
+        [
+          "0xbb7a60",
+          "0xbb7a65"
+        ],
+        [
+          "0xbb7a68",
+          "0xbb7a6d"
+        ],
+        [
+          "0xbb7a70",
+          "0xbb7a75"
+        ],
+        [
+          "0xbb7a78",
+          "0xbb7a7d"
+        ],
+        [
+          "0xbb7a80",
+          "0xbb7a85"
+        ],
+        [
+          "0xbb7a88",
+          "0xbb7a8d"
+        ],
+        [
+          "0xbb7a90",
+          "0xbb7a95"
+        ],
+        [
+          "0xbb7a98",
+          "0xbb7a9d"
+        ],
+        [
+          "0xbb7aa0",
+          "0xbb7aa5"
+        ],
+        [
+          "0xbb7aa8",
+          "0xbb7aad"
+        ],
+        [
+          "0xbb7ab0",
+          "0xbb7ab5"
+        ],
+        [
+          "0xbb7ab8",
+          "0xbb7abd"
+        ],
+        [
+          "0xbb7ac0",
+          "0xbb7ac5"
+        ],
+        [
+          "0xbb7ac8",
+          "0xbb7acd"
+        ]
+      ]
+    },
+    {
+      "owner": "nfl2k5_practice_squad_screen",
+      "function": "apply",
+      "before_sha256": "93797cf61b4081c8f425627edb25f57118be5204cdc1369a8249fe6c3a565ac6",
+      "after_sha256": "eba08b54ea5f9aaa85ea598f2924c73e897d350326e4252e7980dd86a56d3e3d",
+      "changed_bytes": 3544,
+      "file_runs": [
+        [
+          "0x634",
+          "0x648"
+        ],
+        [
+          "0x90c",
+          "0x920"
+        ],
+        [
+          "0x97c",
+          "0x990"
+        ],
+        [
+          "0xdb4",
+          "0xdc0"
+        ],
+        [
+          "0xdc1",
+          "0xdd4"
+        ],
+        [
+          "0x5176c0",
+          "0x5176c4"
+        ],
+        [
+          "0xb8b040",
+          "0xb8b4f7"
+        ],
+        [
+          "0xb8b4f8",
+          "0xb8b691"
+        ],
+        [
+          "0xb8b692",
+          "0xb8b6a9"
+        ],
+        [
+          "0xb8b6aa",
+          "0xb8b7a9"
+        ],
+        [
+          "0xb8b7aa",
+          "0xb8b7c1"
+        ],
+        [
+          "0xb8b7c2",
+          "0xb8bc4a"
+        ],
+        [
+          "0xb8bc4c",
+          "0xb8bc5a"
+        ],
+        [
+          "0xb8bc5c",
+          "0xb8bc6e"
+        ],
+        [
+          "0xb8bc70",
+          "0xb8bc8e"
+        ],
+        [
+          "0xb8bc90",
+          "0xb8bc9e"
+        ],
+        [
+          "0xb8bca0",
+          "0xb8bda8"
         ],
         [
           "0xbb600c",
           "0xbb602c"
+        ]
+      ]
+    },
+    {
+      "owner": "nfl2k5_abilities_runtime",
+      "function": "apply",
+      "before_sha256": "eba08b54ea5f9aaa85ea598f2924c73e897d350326e4252e7980dd86a56d3e3d",
+      "after_sha256": "b8785c0681f77f50be459ff5b3892fa999c360243c9648636e4ff8508589a388",
+      "changed_bytes": 1221,
+      "file_runs": [
+        [
+          "0x394",
+          "0x3a8"
+        ],
+        [
+          "0x90c",
+          "0x920"
+        ],
+        [
+          "0x97c",
+          "0x990"
+        ],
+        [
+          "0xdb4",
+          "0xdd4"
+        ],
+        [
+          "0x65cc9",
+          "0x65ccd"
+        ],
+        [
+          "0x14647e",
+          "0x146482"
+        ],
+        [
+          "0x17ec6e",
+          "0x17ec72"
+        ],
+        [
+          "0x1bd550",
+          "0x1bd555"
+        ],
+        [
+          "0x2c43f0",
+          "0x2c43f5"
+        ],
+        [
+          "0x2c46d0",
+          "0x2c46d5"
+        ],
+        [
+          "0x2c46d6",
+          "0x2c46d9"
+        ],
+        [
+          "0x2c4740",
+          "0x2c4747"
+        ],
+        [
+          "0xb8a000",
+          "0xb8a424"
+        ],
+        [
+          "0xbb600c",
+          "0xbb602c"
+        ]
+      ]
+    },
+    {
+      "owner": "nfl2k5_qb_spy",
+      "function": "apply",
+      "before_sha256": "b8785c0681f77f50be459ff5b3892fa999c360243c9648636e4ff8508589a388",
+      "after_sha256": "d3632f9274fac73e7ac03cf1660543fb577500793ba065fef344dc0a39bb7298",
+      "changed_bytes": 1679,
+      "file_runs": [
+        [
+          "0x394",
+          "0x3a8"
+        ],
+        [
+          "0x90c",
+          "0x920"
+        ],
+        [
+          "0x97c",
+          "0x990"
+        ],
+        [
+          "0xdb4",
+          "0xdd4"
+        ],
+        [
+          "0xa6fb3",
+          "0xa6fbd"
+        ],
+        [
+          "0x17aefc",
+          "0x17af03"
+        ],
+        [
+          "0x195090",
+          "0x195096"
+        ],
+        [
+          "0x195790",
+          "0x195796"
+        ],
+        [
+          "0x1a8570",
+          "0x1a8577"
+        ],
+        [
+          "0xb8c040",
+          "0xb8c337"
+        ],
+        [
+          "0xb8c338",
+          "0xb8c3e1"
+        ],
+        [
+          "0xb8c3e2",
+          "0xb8c3ec"
+        ],
+        [
+          "0xb8c3ed",
+          "0xb8c5f5"
+        ],
+        [
+          "0xb8c5f8",
+          "0xb8c610"
+        ],
+        [
+          "0xbb600c",
+          "0xbb604c"
+        ],
+        [
+          "0xbb7c00",
+          "0xbb7c05"
+        ]
+      ]
+    },
+    {
+      "owner": "nfl2k5_season_cap",
+      "function": "apply",
+      "before_sha256": "d3632f9274fac73e7ac03cf1660543fb577500793ba065fef344dc0a39bb7298",
+      "after_sha256": "d3632f9274fac73e7ac03cf1660543fb577500793ba065fef344dc0a39bb7298",
+      "changed_bytes": 0,
+      "file_runs": []
+    },
+    {
+      "owner": "nfl2k5_calendar_engine",
+      "function": "apply",
+      "before_sha256": "d3632f9274fac73e7ac03cf1660543fb577500793ba065fef344dc0a39bb7298",
+      "after_sha256": "20a5311fd19bed8060d28eccb8570c23cdda2363e91772f3a26b1f0ec330d72c",
+      "changed_bytes": 3378,
+      "file_runs": [
+        [
+          "0x394",
+          "0x3a8"
+        ],
+        [
+          "0x90c",
+          "0x920"
+        ],
+        [
+          "0x97c",
+          "0x990"
+        ],
+        [
+          "0xdb4",
+          "0xdd4"
+        ],
+        [
+          "0x7b0e8",
+          "0x7b0ec"
+        ],
+        [
+          "0xc22ad",
+          "0xc22b1"
+        ],
+        [
+          "0xc2357",
+          "0xc235b"
+        ],
+        [
+          "0x135d33",
+          "0x135d8d"
+        ],
+        [
+          "0x1b1880",
+          "0x1b1888"
+        ],
+        [
+          "0x1b1941",
+          "0x1b1945"
+        ],
+        [
+          "0x1b19f0",
+          "0x1b19f5"
+        ],
+        [
+          "0x297e57",
+          "0x297e58"
+        ],
+        [
+          "0x297e59",
+          "0x297e5e"
+        ],
+        [
+          "0x297e5f",
+          "0x297e60"
+        ],
+        [
+          "0x297e61",
+          "0x297e74"
+        ],
+        [
+          "0x297e75",
+          "0x297eb0"
+        ],
+        [
+          "0x297eb1",
+          "0x297ec9"
+        ],
+        [
+          "0x297eca",
+          "0x297ef7"
+        ],
+        [
+          "0x297ef8",
+          "0x297f6d"
+        ],
+        [
+          "0x297f6e",
+          "0x297f80"
+        ],
+        [
+          "0x297f81",
+          "0x297f96"
+        ],
+        [
+          "0x297f99",
+          "0x297fa6"
+        ],
+        [
+          "0x297fa7",
+          "0x297fbf"
+        ],
+        [
+          "0x297fc0",
+          "0x297fcc"
+        ],
+        [
+          "0x297fcf",
+          "0x297fd5"
+        ],
+        [
+          "0x297fd6",
+          "0x297fda"
+        ],
+        [
+          "0x297fdb",
+          "0x297fdf"
+        ],
+        [
+          "0x297fe0",
+          "0x297fe1"
+        ],
+        [
+          "0x297fe2",
+          "0x297fed"
+        ],
+        [
+          "0x297fee",
+          "0x298005"
+        ],
+        [
+          "0x298006",
+          "0x29800a"
+        ],
+        [
+          "0x29800b",
+          "0x298020"
+        ],
+        [
+          "0x298021",
+          "0x29803a"
+        ],
+        [
+          "0x29803b",
+          "0x29804d"
+        ],
+        [
+          "0x29804e",
+          "0x29806b"
+        ],
+        [
+          "0x29806c",
+          "0x298152"
+        ],
+        [
+          "0x2aec7d",
+          "0x2aec7e"
+        ],
+        [
+          "0x2aec88",
+          "0x2aec89"
+        ],
+        [
+          "0x2aec91",
+          "0x2aec92"
+        ],
+        [
+          "0x2aeca9",
+          "0x2aecaa"
+        ],
+        [
+          "0x2aecb2",
+          "0x2aecbd"
+        ],
+        [
+          "0x2aecbe",
+          "0x2aecc5"
+        ],
+        [
+          "0x2aecc7",
+          "0x2aecda"
+        ],
+        [
+          "0x2aecdb",
+          "0x2aece2"
+        ],
+        [
+          "0x2aece4",
+          "0x2aece7"
+        ],
+        [
+          "0x2aece8",
+          "0x2aed0c"
+        ],
+        [
+          "0x2aed0e",
+          "0x2aed29"
+        ],
+        [
+          "0x2aed2b",
+          "0x2aed37"
+        ],
+        [
+          "0x2aed3a",
+          "0x2aed42"
+        ],
+        [
+          "0x2aed44",
+          "0x2aedc4"
+        ],
+        [
+          "0x2aedc6",
+          "0x2aedce"
+        ],
+        [
+          "0x2aedf8",
+          "0x2aee00"
+        ],
+        [
+          "0x2af499",
+          "0x2af49a"
+        ],
+        [
+          "0x2af4d1",
+          "0x2af4d2"
+        ],
+        [
+          "0x2af4d5",
+          "0x2af4d6"
+        ],
+        [
+          "0x2af4e1",
+          "0x2af4e2"
+        ],
+        [
+          "0x2af4f8",
+          "0x2af4f9"
+        ],
+        [
+          "0x2af506",
+          "0x2af507"
+        ],
+        [
+          "0x2af520",
+          "0x2af521"
+        ],
+        [
+          "0x2af558",
+          "0x2af559"
+        ],
+        [
+          "0x2af5bb",
+          "0x2af5ca"
+        ],
+        [
+          "0x2af5cb",
+          "0x2af5cf"
+        ],
+        [
+          "0x2af60f",
+          "0x2af613"
+        ],
+        [
+          "0x2af614",
+          "0x2af615"
+        ],
+        [
+          "0x2af61d",
+          "0x2af621"
+        ],
+        [
+          "0x2af647",
+          "0x2af64b"
+        ],
+        [
+          "0x2af662",
+          "0x2af666"
+        ],
+        [
+          "0x2af67d",
+          "0x2af681"
+        ],
+        [
+          "0x2af698",
+          "0x2af69c"
+        ],
+        [
+          "0x2af6a0",
+          "0x2af6a1"
+        ],
+        [
+          "0x3104ad",
+          "0x3104ae"
+        ],
+        [
+          "0x3118a7",
+          "0x3118a8"
+        ],
+        [
+          "0x337715",
+          "0x337719"
+        ],
+        [
+          "0x33772b",
+          "0x33772f"
+        ],
+        [
+          "0x3563e5",
+          "0x3563e9"
+        ],
+        [
+          "0x3563f3",
+          "0x3563f7"
+        ],
+        [
+          "0xb8a430",
+          "0xb8a665"
+        ],
+        [
+          "0xb8a670",
+          "0xb8a6d0"
+        ],
+        [
+          "0xb8a6d1",
+          "0xb8a6dc"
+        ],
+        [
+          "0xb8a6dd",
+          "0xb8a7a6"
+        ],
+        [
+          "0xbb600c",
+          "0xbb604c"
+        ],
+        [
+          "0xbb7000",
+          "0xbb7005"
+        ],
+        [
+          "0xbb7008",
+          "0xbb700a"
+        ],
+        [
+          "0xbb7020",
+          "0xbb71b0"
+        ],
+        [
+          "0xbb71b4",
+          "0xbb71b6"
+        ],
+        [
+          "0xbb71b8",
+          "0xbb71ba"
+        ],
+        [
+          "0xbb71bc",
+          "0xbb71be"
+        ],
+        [
+          "0xbb71c0",
+          "0xbb71c2"
+        ],
+        [
+          "0xbb71c4",
+          "0xbb71c6"
+        ],
+        [
+          "0xbb71c8",
+          "0xbb71ca"
+        ],
+        [
+          "0xbb71cc",
+          "0xbb71ce"
+        ],
+        [
+          "0xbb71d0",
+          "0xbb71d2"
+        ],
+        [
+          "0xbb71d4",
+          "0xbb71d6"
+        ],
+        [
+          "0xbb71d8",
+          "0xbb71da"
+        ],
+        [
+          "0xbb71dc",
+          "0xbb71de"
+        ],
+        [
+          "0xbb71e0",
+          "0xbb71e2"
+        ],
+        [
+          "0xbb71e4",
+          "0xbb71e6"
+        ],
+        [
+          "0xbb71e8",
+          "0xbb71ea"
+        ],
+        [
+          "0xbb71ec",
+          "0xbb71ee"
+        ],
+        [
+          "0xbb71f0",
+          "0xbb71f2"
+        ],
+        [
+          "0xbb71f4",
+          "0xbb71f6"
+        ],
+        [
+          "0xbb71f8",
+          "0xbb71fa"
+        ],
+        [
+          "0xbb71fc",
+          "0xbb71fe"
+        ],
+        [
+          "0xbb7200",
+          "0xbb7202"
+        ],
+        [
+          "0xbb7204",
+          "0xbb7206"
+        ],
+        [
+          "0xbb7208",
+          "0xbb720a"
+        ],
+        [
+          "0xbb720c",
+          "0xbb720e"
+        ],
+        [
+          "0xbb7210",
+          "0xbb7212"
+        ],
+        [
+          "0xbb7214",
+          "0xbb7216"
+        ],
+        [
+          "0xbb7218",
+          "0xbb721a"
+        ],
+        [
+          "0xbb721c",
+          "0xbb721e"
+        ],
+        [
+          "0xbb7220",
+          "0xbb7222"
+        ],
+        [
+          "0xbb7224",
+          "0xbb7226"
+        ],
+        [
+          "0xbb7228",
+          "0xbb722a"
+        ],
+        [
+          "0xbb722c",
+          "0xbb722e"
+        ],
+        [
+          "0xbb7230",
+          "0xbb7232"
+        ],
+        [
+          "0xbb7234",
+          "0xbb7236"
+        ],
+        [
+          "0xbb7238",
+          "0xbb723a"
+        ],
+        [
+          "0xbb723c",
+          "0xbb723e"
+        ],
+        [
+          "0xbb7240",
+          "0xbb7242"
+        ],
+        [
+          "0xbb7244",
+          "0xbb7246"
+        ],
+        [
+          "0xbb7248",
+          "0xbb724a"
+        ],
+        [
+          "0xbb724c",
+          "0xbb724e"
+        ],
+        [
+          "0xbb7250",
+          "0xbb7252"
+        ],
+        [
+          "0xbb7254",
+          "0xbb7256"
+        ],
+        [
+          "0xbb7258",
+          "0xbb725a"
+        ],
+        [
+          "0xbb725c",
+          "0xbb725e"
+        ],
+        [
+          "0xbb7260",
+          "0xbb7262"
+        ],
+        [
+          "0xbb7264",
+          "0xbb7266"
+        ],
+        [
+          "0xbb7268",
+          "0xbb726a"
+        ],
+        [
+          "0xbb726c",
+          "0xbb726e"
+        ],
+        [
+          "0xbb7270",
+          "0xbb7272"
+        ],
+        [
+          "0xbb7274",
+          "0xbb7276"
+        ],
+        [
+          "0xbb7278",
+          "0xbb727a"
+        ],
+        [
+          "0xbb727c",
+          "0xbb727e"
+        ],
+        [
+          "0xbb7280",
+          "0xbb7282"
+        ],
+        [
+          "0xbb7284",
+          "0xbb7286"
+        ],
+        [
+          "0xbb7288",
+          "0xbb728a"
+        ],
+        [
+          "0xbb728c",
+          "0xbb728e"
+        ],
+        [
+          "0xbb7290",
+          "0xbb7292"
+        ],
+        [
+          "0xbb7294",
+          "0xbb7296"
+        ],
+        [
+          "0xbb7298",
+          "0xbb729a"
+        ],
+        [
+          "0xbb729c",
+          "0xbb729e"
+        ],
+        [
+          "0xbb72a0",
+          "0xbb72a2"
+        ],
+        [
+          "0xbb72a4",
+          "0xbb72a6"
+        ],
+        [
+          "0xbb72a8",
+          "0xbb72aa"
+        ],
+        [
+          "0xbb72ac",
+          "0xbb72ae"
+        ],
+        [
+          "0xbb72b0",
+          "0xbb72b2"
+        ],
+        [
+          "0xbb72b4",
+          "0xbb72b6"
+        ],
+        [
+          "0xbb72b8",
+          "0xbb72ba"
+        ],
+        [
+          "0xbb72bc",
+          "0xbb72be"
+        ],
+        [
+          "0xbb72c0",
+          "0xbb72c2"
+        ],
+        [
+          "0xbb72c4",
+          "0xbb72c6"
+        ],
+        [
+          "0xbb72c8",
+          "0xbb72ca"
+        ],
+        [
+          "0xbb72cc",
+          "0xbb72ce"
+        ],
+        [
+          "0xbb72d0",
+          "0xbb72d2"
+        ],
+        [
+          "0xbb72d4",
+          "0xbb72d6"
+        ],
+        [
+          "0xbb72d8",
+          "0xbb72da"
+        ],
+        [
+          "0xbb72dc",
+          "0xbb72de"
+        ],
+        [
+          "0xbb72e0",
+          "0xbb72e2"
+        ],
+        [
+          "0xbb72e4",
+          "0xbb72e6"
+        ],
+        [
+          "0xbb72e8",
+          "0xbb72ea"
+        ],
+        [
+          "0xbb72ec",
+          "0xbb72ee"
+        ],
+        [
+          "0xbb72f0",
+          "0xbb72f2"
+        ],
+        [
+          "0xbb72f4",
+          "0xbb72f6"
+        ],
+        [
+          "0xbb72f8",
+          "0xbb72fa"
+        ],
+        [
+          "0xbb72fc",
+          "0xbb72fe"
+        ],
+        [
+          "0xbb7300",
+          "0xbb7302"
+        ],
+        [
+          "0xbb7304",
+          "0xbb7306"
+        ],
+        [
+          "0xbb7308",
+          "0xbb730a"
+        ],
+        [
+          "0xbb730c",
+          "0xbb730e"
+        ],
+        [
+          "0xbb7310",
+          "0xbb7312"
+        ],
+        [
+          "0xbb7314",
+          "0xbb7316"
+        ],
+        [
+          "0xbb7318",
+          "0xbb731a"
+        ],
+        [
+          "0xbb731c",
+          "0xbb731e"
+        ],
+        [
+          "0xbb7320",
+          "0xbb7322"
+        ],
+        [
+          "0xbb7324",
+          "0xbb7326"
+        ],
+        [
+          "0xbb7328",
+          "0xbb732a"
+        ],
+        [
+          "0xbb732c",
+          "0xbb732e"
+        ],
+        [
+          "0xbb7330",
+          "0xbb7332"
+        ],
+        [
+          "0xbb7334",
+          "0xbb7336"
+        ],
+        [
+          "0xbb7338",
+          "0xbb733a"
+        ],
+        [
+          "0xbb733c",
+          "0xbb733e"
+        ],
+        [
+          "0xbb7340",
+          "0xbb7342"
+        ],
+        [
+          "0xbb7344",
+          "0xbb7346"
+        ],
+        [
+          "0xbb7348",
+          "0xbb734a"
+        ],
+        [
+          "0xbb734c",
+          "0xbb734e"
+        ],
+        [
+          "0xbb7350",
+          "0xbb7352"
+        ],
+        [
+          "0xbb7354",
+          "0xbb7356"
+        ],
+        [
+          "0xbb7358",
+          "0xbb735a"
+        ],
+        [
+          "0xbb735c",
+          "0xbb735e"
+        ],
+        [
+          "0xbb7360",
+          "0xbb7362"
+        ],
+        [
+          "0xbb7364",
+          "0xbb7366"
+        ],
+        [
+          "0xbb7368",
+          "0xbb736a"
+        ],
+        [
+          "0xbb736c",
+          "0xbb736e"
+        ],
+        [
+          "0xbb7370",
+          "0xbb7372"
+        ],
+        [
+          "0xbb7374",
+          "0xbb7376"
+        ],
+        [
+          "0xbb7378",
+          "0xbb737a"
+        ],
+        [
+          "0xbb737c",
+          "0xbb737e"
+        ],
+        [
+          "0xbb7380",
+          "0xbb7382"
+        ],
+        [
+          "0xbb7384",
+          "0xbb7386"
+        ],
+        [
+          "0xbb7388",
+          "0xbb738a"
+        ],
+        [
+          "0xbb738c",
+          "0xbb738e"
+        ],
+        [
+          "0xbb7390",
+          "0xbb7392"
+        ],
+        [
+          "0xbb7394",
+          "0xbb7396"
+        ],
+        [
+          "0xbb7398",
+          "0xbb739a"
+        ],
+        [
+          "0xbb739c",
+          "0xbb739e"
+        ],
+        [
+          "0xbb73a0",
+          "0xbb73a2"
+        ],
+        [
+          "0xbb73a4",
+          "0xbb73a6"
+        ],
+        [
+          "0xbb73a8",
+          "0xbb73aa"
+        ],
+        [
+          "0xbb73ac",
+          "0xbb73ae"
+        ],
+        [
+          "0xbb73b0",
+          "0xbb73b2"
+        ],
+        [
+          "0xbb73b4",
+          "0xbb73b6"
+        ],
+        [
+          "0xbb73b8",
+          "0xbb73ba"
+        ],
+        [
+          "0xbb73bc",
+          "0xbb73be"
+        ],
+        [
+          "0xbb73c0",
+          "0xbb73c2"
+        ],
+        [
+          "0xbb73c4",
+          "0xbb73c6"
+        ],
+        [
+          "0xbb73c8",
+          "0xbb73ca"
+        ],
+        [
+          "0xbb73cc",
+          "0xbb73ce"
+        ],
+        [
+          "0xbb73d0",
+          "0xbb73d2"
+        ],
+        [
+          "0xbb73d4",
+          "0xbb73d6"
+        ],
+        [
+          "0xbb73d8",
+          "0xbb73da"
+        ],
+        [
+          "0xbb73dc",
+          "0xbb73de"
+        ],
+        [
+          "0xbb73e0",
+          "0xbb73e2"
+        ],
+        [
+          "0xbb73e4",
+          "0xbb73e6"
+        ],
+        [
+          "0xbb73e8",
+          "0xbb73ea"
+        ],
+        [
+          "0xbb73ec",
+          "0xbb73ee"
+        ],
+        [
+          "0xbb73f0",
+          "0xbb73f2"
+        ],
+        [
+          "0xbb73f4",
+          "0xbb73f6"
+        ],
+        [
+          "0xbb73f8",
+          "0xbb73fa"
+        ],
+        [
+          "0xbb73fc",
+          "0xbb73fe"
+        ],
+        [
+          "0xbb7400",
+          "0xbb7402"
+        ],
+        [
+          "0xbb7404",
+          "0xbb7406"
+        ],
+        [
+          "0xbb7408",
+          "0xbb740a"
+        ],
+        [
+          "0xbb740c",
+          "0xbb740e"
+        ],
+        [
+          "0xbb7410",
+          "0xbb7412"
+        ],
+        [
+          "0xbb7414",
+          "0xbb7416"
+        ],
+        [
+          "0xbb7418",
+          "0xbb741a"
+        ],
+        [
+          "0xbb741c",
+          "0xbb741e"
+        ],
+        [
+          "0xbb7420",
+          "0xbb7422"
+        ],
+        [
+          "0xbb7425",
+          "0xbb7426"
+        ],
+        [
+          "0xbb7428",
+          "0xbb742a"
+        ],
+        [
+          "0xbb742c",
+          "0xbb742e"
+        ],
+        [
+          "0xbb7430",
+          "0xbb7432"
+        ],
+        [
+          "0xbb7434",
+          "0xbb7436"
+        ],
+        [
+          "0xbb7438",
+          "0xbb743a"
+        ],
+        [
+          "0xbb743c",
+          "0xbb743e"
+        ],
+        [
+          "0xbb7440",
+          "0xbb7442"
+        ],
+        [
+          "0xbb7444",
+          "0xbb7446"
+        ],
+        [
+          "0xbb7448",
+          "0xbb744a"
+        ],
+        [
+          "0xbb744c",
+          "0xbb744e"
+        ],
+        [
+          "0xbb7450",
+          "0xbb7452"
+        ],
+        [
+          "0xbb7454",
+          "0xbb7456"
+        ],
+        [
+          "0xbb7458",
+          "0xbb745a"
+        ],
+        [
+          "0xbb745c",
+          "0xbb745e"
+        ],
+        [
+          "0xbb7460",
+          "0xbb7462"
+        ],
+        [
+          "0xbb7464",
+          "0xbb7466"
+        ],
+        [
+          "0xbb7468",
+          "0xbb746a"
+        ],
+        [
+          "0xbb746c",
+          "0xbb746e"
+        ],
+        [
+          "0xbb7470",
+          "0xbb7472"
+        ],
+        [
+          "0xbb7474",
+          "0xbb7476"
+        ],
+        [
+          "0xbb7478",
+          "0xbb747a"
+        ],
+        [
+          "0xbb747c",
+          "0xbb747e"
+        ],
+        [
+          "0xbb7480",
+          "0xbb7481"
+        ],
+        [
+          "0xbb7482",
+          "0xbb7483"
+        ],
+        [
+          "0xbb7484",
+          "0xbb7487"
+        ],
+        [
+          "0xbb7488",
+          "0xbb748b"
+        ],
+        [
+          "0xbb748c",
+          "0xbb748f"
+        ],
+        [
+          "0xbb7490",
+          "0xbb7493"
+        ],
+        [
+          "0xbb7494",
+          "0xbb7497"
+        ],
+        [
+          "0xbb7498",
+          "0xbb749b"
+        ],
+        [
+          "0xbb749c",
+          "0xbb749f"
+        ],
+        [
+          "0xbb74a0",
+          "0xbb74a3"
+        ],
+        [
+          "0xbb74a4",
+          "0xbb74a7"
+        ],
+        [
+          "0xbb74a8",
+          "0xbb74ab"
+        ],
+        [
+          "0xbb74ac",
+          "0xbb74af"
+        ],
+        [
+          "0xbb74b0",
+          "0xbb74b3"
+        ],
+        [
+          "0xbb74b4",
+          "0xbb74b7"
+        ],
+        [
+          "0xbb74b8",
+          "0xbb74bb"
+        ],
+        [
+          "0xbb74bc",
+          "0xbb74bf"
+        ],
+        [
+          "0xbb74c0",
+          "0xbb74c3"
+        ],
+        [
+          "0xbb74c4",
+          "0xbb74c7"
+        ],
+        [
+          "0xbb74c8",
+          "0xbb74cb"
+        ],
+        [
+          "0xbb74cc",
+          "0xbb74cf"
+        ],
+        [
+          "0xbb74d0",
+          "0xbb74d3"
+        ],
+        [
+          "0xbb74d4",
+          "0xbb74d7"
+        ],
+        [
+          "0xbb74d8",
+          "0xbb74db"
+        ],
+        [
+          "0xbb74dc",
+          "0xbb74df"
+        ],
+        [
+          "0xbb74e0",
+          "0xbb74e3"
+        ],
+        [
+          "0xbb74e4",
+          "0xbb74e7"
+        ],
+        [
+          "0xbb74e8",
+          "0xbb74eb"
+        ],
+        [
+          "0xbb74ec",
+          "0xbb74ef"
+        ],
+        [
+          "0xbb74f0",
+          "0xbb74f3"
+        ],
+        [
+          "0xbb74f4",
+          "0xbb74f7"
+        ],
+        [
+          "0xbb74f8",
+          "0xbb74fb"
+        ],
+        [
+          "0xbb74fc",
+          "0xbb74ff"
+        ],
+        [
+          "0xbb7500",
+          "0xbb7503"
+        ],
+        [
+          "0xbb7504",
+          "0xbb7507"
+        ],
+        [
+          "0xbb7508",
+          "0xbb750b"
+        ],
+        [
+          "0xbb750c",
+          "0xbb750f"
+        ],
+        [
+          "0xbb7510",
+          "0xbb7513"
+        ],
+        [
+          "0xbb7514",
+          "0xbb7517"
+        ],
+        [
+          "0xbb7518",
+          "0xbb751b"
+        ],
+        [
+          "0xbb751c",
+          "0xbb751f"
+        ],
+        [
+          "0xbb7520",
+          "0xbb7523"
+        ],
+        [
+          "0xbb7524",
+          "0xbb7527"
+        ],
+        [
+          "0xbb7528",
+          "0xbb752b"
+        ],
+        [
+          "0xbb752c",
+          "0xbb752f"
+        ],
+        [
+          "0xbb7530",
+          "0xbb7533"
+        ],
+        [
+          "0xbb7534",
+          "0xbb7537"
+        ],
+        [
+          "0xbb7538",
+          "0xbb753b"
+        ],
+        [
+          "0xbb753c",
+          "0xbb753f"
+        ],
+        [
+          "0xbb7540",
+          "0xbb7543"
+        ],
+        [
+          "0xbb7544",
+          "0xbb7547"
+        ],
+        [
+          "0xbb7548",
+          "0xbb754b"
+        ],
+        [
+          "0xbb754c",
+          "0xbb754f"
+        ],
+        [
+          "0xbb7551",
+          "0xbb7553"
+        ],
+        [
+          "0xbb7554",
+          "0xbb7557"
+        ],
+        [
+          "0xbb7558",
+          "0xbb755b"
+        ],
+        [
+          "0xbb755c",
+          "0xbb755f"
+        ],
+        [
+          "0xbb7560",
+          "0xbb7563"
+        ],
+        [
+          "0xbb7564",
+          "0xbb7567"
+        ],
+        [
+          "0xbb7568",
+          "0xbb756b"
+        ],
+        [
+          "0xbb756c",
+          "0xbb756f"
+        ],
+        [
+          "0xbb7570",
+          "0xbb7573"
+        ],
+        [
+          "0xbb7574",
+          "0xbb7577"
+        ],
+        [
+          "0xbb7578",
+          "0xbb757b"
+        ],
+        [
+          "0xbb757c",
+          "0xbb757f"
+        ],
+        [
+          "0xbb7580",
+          "0xbb7583"
+        ],
+        [
+          "0xbb7584",
+          "0xbb7587"
+        ],
+        [
+          "0xbb7588",
+          "0xbb758b"
+        ],
+        [
+          "0xbb758c",
+          "0xbb758f"
+        ],
+        [
+          "0xbb7590",
+          "0xbb7593"
+        ],
+        [
+          "0xbb7594",
+          "0xbb7597"
+        ],
+        [
+          "0xbb7598",
+          "0xbb759b"
+        ],
+        [
+          "0xbb759c",
+          "0xbb759f"
+        ],
+        [
+          "0xbb75a0",
+          "0xbb75a3"
+        ],
+        [
+          "0xbb75a4",
+          "0xbb75a7"
+        ],
+        [
+          "0xbb75a8",
+          "0xbb75ab"
+        ],
+        [
+          "0xbb75ac",
+          "0xbb75af"
+        ],
+        [
+          "0xbb75b0",
+          "0xbb75b3"
+        ],
+        [
+          "0xbb75b6",
+          "0xbb75b7"
+        ],
+        [
+          "0xbb75b8",
+          "0xbb75b9"
+        ],
+        [
+          "0xbb75ba",
+          "0xbb75bb"
+        ],
+        [
+          "0xbb75bc",
+          "0xbb75bd"
+        ],
+        [
+          "0xbb75be",
+          "0xbb75bf"
+        ],
+        [
+          "0xbb75c0",
+          "0xbb75c1"
+        ],
+        [
+          "0xbb75c2",
+          "0xbb75c3"
+        ],
+        [
+          "0xbb75c4",
+          "0xbb75c5"
+        ],
+        [
+          "0xbb75c6",
+          "0xbb75ce"
+        ],
+        [
+          "0xbb75d0",
+          "0xbb75d1"
+        ],
+        [
+          "0xbb75d2",
+          "0xbb75d3"
+        ],
+        [
+          "0xbb75d4",
+          "0xbb75d5"
+        ],
+        [
+          "0xbb75d6",
+          "0xbb75d7"
+        ],
+        [
+          "0xbb75d8",
+          "0xbb75d9"
+        ],
+        [
+          "0xbb75da",
+          "0xbb75db"
+        ],
+        [
+          "0xbb75dc",
+          "0xbb75dd"
+        ],
+        [
+          "0xbb75de",
+          "0xbb75df"
+        ],
+        [
+          "0xbb75e0",
+          "0xbb75e9"
+        ],
+        [
+          "0xbb75ea",
+          "0xbb75eb"
+        ],
+        [
+          "0xbb75ec",
+          "0xbb75ed"
+        ],
+        [
+          "0xbb75ee",
+          "0xbb75ef"
+        ],
+        [
+          "0xbb7602",
+          "0xbb7606"
+        ],
+        [
+          "0xbb7609",
+          "0xbb760e"
+        ],
+        [
+          "0xbb7611",
+          "0xbb7616"
+        ],
+        [
+          "0xbb7619",
+          "0xbb761e"
+        ],
+        [
+          "0xbb7621",
+          "0xbb7626"
+        ],
+        [
+          "0xbb7629",
+          "0xbb762e"
+        ],
+        [
+          "0xbb7630",
+          "0xbb7631"
+        ],
+        [
+          "0xbb7633",
+          "0xbb7635"
+        ],
+        [
+          "0xbb7638",
+          "0xbb763c"
+        ],
+        [
+          "0xbb7640",
+          "0xbb7645"
+        ],
+        [
+          "0xbb7648",
+          "0xbb764c"
+        ],
+        [
+          "0xbb7650",
+          "0xbb7651"
+        ],
+        [
+          "0xbb7652",
+          "0xbb7654"
+        ],
+        [
+          "0xbb7658",
+          "0xbb765c"
+        ],
+        [
+          "0xbb7660",
+          "0xbb7661"
+        ],
+        [
+          "0xbb7662",
+          "0xbb7664"
+        ],
+        [
+          "0xbb766b",
+          "0xbb766d"
+        ],
+        [
+          "0xbb766e",
+          "0xbb7670"
+        ],
+        [
+          "0xbb7673",
+          "0xbb7675"
+        ],
+        [
+          "0xbb7676",
+          "0xbb7678"
+        ],
+        [
+          "0xbb767b",
+          "0xbb767d"
+        ],
+        [
+          "0xbb767e",
+          "0xbb767f"
+        ],
+        [
+          "0xbb7683",
+          "0xbb7685"
+        ],
+        [
+          "0xbb7686",
+          "0xbb7688"
+        ],
+        [
+          "0xbb768b",
+          "0xbb768d"
+        ],
+        [
+          "0xbb768e",
+          "0xbb7690"
+        ],
+        [
+          "0xbb7693",
+          "0xbb7695"
+        ],
+        [
+          "0xbb7696",
+          "0xbb7698"
+        ],
+        [
+          "0xbb769b",
+          "0xbb769d"
+        ],
+        [
+          "0xbb769e",
+          "0xbb76a0"
+        ],
+        [
+          "0xbb76a3",
+          "0xbb76a5"
+        ],
+        [
+          "0xbb76a6",
+          "0xbb76a8"
+        ],
+        [
+          "0xbb76ab",
+          "0xbb76ad"
+        ],
+        [
+          "0xbb76ae",
+          "0xbb76af"
+        ],
+        [
+          "0xbb76b3",
+          "0xbb76b5"
+        ],
+        [
+          "0xbb76b6",
+          "0xbb76b8"
+        ],
+        [
+          "0xbb76bb",
+          "0xbb76bd"
+        ],
+        [
+          "0xbb76be",
+          "0xbb76bf"
+        ],
+        [
+          "0xbb76c3",
+          "0xbb76c5"
+        ],
+        [
+          "0xbb76c6",
+          "0xbb76c8"
+        ],
+        [
+          "0xbb76cb",
+          "0xbb76cd"
+        ],
+        [
+          "0xbb76ce",
+          "0xbb76d1"
+        ],
+        [
+          "0xbb76d4",
+          "0xbb76d5"
+        ],
+        [
+          "0xbb76d8",
+          "0xbb76d9"
+        ],
+        [
+          "0xbb76dc",
+          "0xbb76dd"
+        ],
+        [
+          "0xbb76e0",
+          "0xbb76e1"
+        ],
+        [
+          "0xbb76e4",
+          "0xbb76e5"
+        ],
+        [
+          "0xbb76e8",
+          "0xbb76e9"
+        ],
+        [
+          "0xbb76ec",
+          "0xbb76ed"
+        ],
+        [
+          "0xbb76f0",
+          "0xbb76f1"
+        ],
+        [
+          "0xbb76f4",
+          "0xbb76f5"
+        ],
+        [
+          "0xbb76f8",
+          "0xbb76f9"
+        ],
+        [
+          "0xbb76fc",
+          "0xbb76fd"
+        ],
+        [
+          "0xbb7700",
+          "0xbb7701"
         ]
       ]
     },
@@ -24256,16 +26956,16 @@
     {
       "owner": "nfl2k5_xbe_space",
       "function": "apply",
-      "before_sha256": "63aa78fd5083575a863a9dad83feb7f8be358af2d85c94c28e350859c04c080b",
-      "after_sha256": "63aa78fd5083575a863a9dad83feb7f8be358af2d85c94c28e350859c04c080b",
+      "before_sha256": "20a5311fd19bed8060d28eccb8570c23cdda2363e91772f3a26b1f0ec330d72c",
+      "after_sha256": "20a5311fd19bed8060d28eccb8570c23cdda2363e91772f3a26b1f0ec330d72c",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_music_metadata",
       "function": "apply",
-      "before_sha256": "63aa78fd5083575a863a9dad83feb7f8be358af2d85c94c28e350859c04c080b",
-      "after_sha256": "b807383b927d3fd8a933a9aba9ba2ade68c39f072386625834be5cf0deafe2ec",
+      "before_sha256": "20a5311fd19bed8060d28eccb8570c23cdda2363e91772f3a26b1f0ec330d72c",
+      "after_sha256": "b3b5ea8d8f37bba9d9d49ac0494fd36bfaf2d1df6f142cc524b8a358fb1de0fc",
       "changed_bytes": 20526,
       "file_runs": [
         [
@@ -43133,7 +45833,21 @@
       "start": "0x10394",
       "end": "0x103a8",
       "size": 20,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10394",
+      "end": "0x103a8",
+      "size": 20,
       "owner": "nfl2k5_accel_ramp",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10394",
+      "end": "0x103a8",
+      "size": 20,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -43224,6 +45938,13 @@
       "start": "0x10394",
       "end": "0x103a8",
       "size": 20,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10394",
+      "end": "0x103a8",
+      "size": 20,
       "owner": "nfl2k5_overtime",
       "basis": "observed byte diff"
     },
@@ -43274,6 +45995,13 @@
       "end": "0x103a8",
       "size": 20,
       "owner": "nfl2k5_prospect_names",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10394",
+      "end": "0x103a8",
+      "size": 20,
+      "owner": "nfl2k5_qb_spy",
       "basis": "observed byte diff"
     },
     {
@@ -43708,6 +46436,13 @@
       "end": "0x10648",
       "size": 20,
       "owner": "nfl2k5_position_row",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10634",
+      "end": "0x10648",
+      "size": 20,
+      "owner": "nfl2k5_practice_squad_screen",
       "basis": "observed byte diff"
     },
     {
@@ -44295,7 +47030,42 @@
       "start": "0x1090c",
       "end": "0x10920",
       "size": 20,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1090c",
+      "end": "0x10920",
+      "size": 20,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1090c",
+      "end": "0x10920",
+      "size": 20,
       "owner": "nfl2k5_coverage_slider",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1090c",
+      "end": "0x10920",
+      "size": 20,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1090c",
+      "end": "0x10920",
+      "size": 20,
+      "owner": "nfl2k5_practice_squad_screen",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1090c",
+      "end": "0x10920",
+      "size": 20,
+      "owner": "nfl2k5_qb_spy",
       "basis": "observed byte diff"
     },
     {
@@ -44384,9 +47154,23 @@
     },
     {
       "start": "0x1097c",
-      "end": "0x10988",
-      "size": 12,
+      "end": "0x10983",
+      "size": 7,
       "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1097c",
+      "end": "0x10990",
+      "size": 20,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1097c",
+      "end": "0x10990",
+      "size": 20,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -44421,6 +47205,27 @@
       "start": "0x1097c",
       "end": "0x10990",
       "size": 20,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1097c",
+      "end": "0x10990",
+      "size": 20,
+      "owner": "nfl2k5_practice_squad_screen",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1097c",
+      "end": "0x10990",
+      "size": 20,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1097c",
+      "end": "0x10990",
+      "size": 20,
       "owner": "nfl2k5_roster_storage",
       "basis": "observed byte diff"
     },
@@ -44446,9 +47251,9 @@
       "basis": "observed byte diff"
     },
     {
-      "start": "0x10989",
+      "start": "0x10984",
       "end": "0x1099d",
-      "size": 20,
+      "size": 25,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -44818,8 +47623,8 @@
     },
     {
       "start": "0x10ce2",
-      "end": "0x10e6c",
-      "size": 394,
+      "end": "0x10dd3",
+      "size": 241,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -44874,9 +47679,30 @@
     },
     {
       "start": "0x10db4",
-      "end": "0x10db8",
-      "size": 4,
-      "owner": "nfl2k5_momentum",
+      "end": "0x10dc0",
+      "size": 12,
+      "owner": "nfl2k5_practice_squad_screen",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10db4",
+      "end": "0x10dcd",
+      "size": 25,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10db4",
+      "end": "0x10dd4",
+      "size": 32,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10db4",
+      "end": "0x10dd4",
+      "size": 32,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -44898,6 +47724,20 @@
       "end": "0x10dd4",
       "size": 32,
       "owner": "nfl2k5_dynamic_kickoff_relocated",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10db4",
+      "end": "0x10dd4",
+      "size": 32,
+      "owner": "nfl2k5_momentum",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10db4",
+      "end": "0x10dd4",
+      "size": 32,
+      "owner": "nfl2k5_qb_spy",
       "basis": "observed byte diff"
     },
     {
@@ -44929,17 +47769,31 @@
       "basis": "observed byte diff"
     },
     {
-      "start": "0x10db9",
-      "end": "0x10dd4",
-      "size": 27,
-      "owner": "nfl2k5_momentum",
-      "basis": "observed byte diff"
-    },
-    {
       "start": "0x10dbd",
       "end": "0x10dd9",
       "size": 28,
       "owner": "nfl2k5_scorebug_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10dc1",
+      "end": "0x10dd4",
+      "size": 19,
+      "owner": "nfl2k5_practice_squad_screen",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10dce",
+      "end": "0x10dd4",
+      "size": 6,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10dd4",
+      "end": "0x10e6c",
+      "size": 152,
+      "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
@@ -45363,6 +48217,20 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x75cc8",
+      "end": "0x75ccd",
+      "size": 5,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "declared edit: speed"
+    },
+    {
+      "start": "0x75cc9",
+      "end": "0x75ccd",
+      "size": 4,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x75cd5",
       "end": "0x75cdb",
       "size": 6,
@@ -45374,6 +48242,20 @@
       "end": "0x75cdb",
       "size": 6,
       "owner": "nfl2k5_accel_ramp",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x8b0e7",
+      "end": "0x8b0ec",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: current_grid_weekday"
+    },
+    {
+      "start": "0x8b0e8",
+      "end": "0x8b0ec",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -45605,6 +48487,20 @@
       "end": "0xb65d1",
       "size": 4,
       "owner": "nfl2k5_dynamic_kickoff_relocated",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xb6fb3",
+      "end": "0xb6fbd",
+      "size": 10,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "declared edit: snap"
+    },
+    {
+      "start": "0xb6fb3",
+      "end": "0xb6fbd",
+      "size": 10,
+      "owner": "nfl2k5_qb_spy",
       "basis": "observed byte diff"
     },
     {
@@ -45993,6 +48889,34 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0xd22ac",
+      "end": "0xd22b1",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: current_weekday_accessor"
+    },
+    {
+      "start": "0xd22ad",
+      "end": "0xd22b1",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xd2356",
+      "end": "0xd235b",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_label"
+    },
+    {
+      "start": "0xd2357",
+      "end": "0xd235b",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0xd63a9",
       "end": "0xd63ae",
       "size": 5,
@@ -46018,6 +48942,34 @@
       "end": "0xd63d0",
       "size": 4,
       "owner": "nfl2k5_defensive_try",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xd90f0",
+      "end": "0xd90f6",
+      "size": 6,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: halftime_enter"
+    },
+    {
+      "start": "0xd90f0",
+      "end": "0xd90f6",
+      "size": 6,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xd9350",
+      "end": "0xd9355",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: halftime_exit"
+    },
+    {
+      "start": "0xd9350",
+      "end": "0xd9355",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
       "basis": "observed byte diff"
     },
     {
@@ -46166,6 +49118,48 @@
       "size": 1,
       "owner": "nfl2k5_season_length",
       "basis": "season group site: pro_bowl_ui_cb"
+    },
+    {
+      "start": "0xf63ca",
+      "end": "0xf63cf",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: player_init"
+    },
+    {
+      "start": "0xf63cb",
+      "end": "0xf63cf",
+      "size": 4,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xf64cd",
+      "end": "0xf64d2",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: profile_context"
+    },
+    {
+      "start": "0xf64ce",
+      "end": "0xf64d2",
+      "size": 4,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xf6510",
+      "end": "0xf651a",
+      "size": 10,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: mode"
+    },
+    {
+      "start": "0xf6510",
+      "end": "0xf651a",
+      "size": 10,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
     },
     {
       "start": "0xfc6d5",
@@ -46997,6 +49991,13 @@
       "start": "0x145d20",
       "end": "0x145d90",
       "size": 112,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: moving_birth_year"
+    },
+    {
+      "start": "0x145d20",
+      "end": "0x145d90",
+      "size": 112,
       "owner": "nfl2k5_season_length",
       "basis": "season group site: dob_four_digit_year"
     },
@@ -47005,6 +50006,13 @@
       "end": "0x145d5f",
       "size": 51,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x145d33",
+      "end": "0x145d8d",
+      "size": 90,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -47103,6 +50111,20 @@
       "end": "0x14b494",
       "size": 2,
       "owner": "nfl2k5_catch_slider",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15647d",
+      "end": "0x156482",
+      "size": 5,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "declared edit: decode"
+    },
+    {
+      "start": "0x15647e",
+      "end": "0x156482",
+      "size": 4,
+      "owner": "nfl2k5_abilities_runtime",
       "basis": "observed byte diff"
     },
     {
@@ -47288,6 +50310,20 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x18aefc",
+      "end": "0x18af03",
+      "size": 7,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "declared edit: reset_command"
+    },
+    {
+      "start": "0x18aefc",
+      "end": "0x18af03",
+      "size": 7,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x18b1ad",
       "end": "0x18b1b3",
       "size": 6,
@@ -47341,6 +50377,48 @@
       "end": "0x18b1db",
       "size": 3,
       "owner": "nfl2k5_kick_rules",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x18ec6d",
+      "end": "0x18ec72",
+      "size": 5,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "declared edit: dispatch"
+    },
+    {
+      "start": "0x18ec6e",
+      "end": "0x18ec72",
+      "size": 4,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1a5090",
+      "end": "0x1a5096",
+      "size": 6,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "declared edit: zone_later"
+    },
+    {
+      "start": "0x1a5090",
+      "end": "0x1a5096",
+      "size": 6,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1a5790",
+      "end": "0x1a5796",
+      "size": 6,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "declared edit: zone_first"
+    },
+    {
+      "start": "0x1a5790",
+      "end": "0x1a5796",
+      "size": 6,
+      "owner": "nfl2k5_qb_spy",
       "basis": "observed byte diff"
     },
     {
@@ -47505,6 +50583,20 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x1b8570",
+      "end": "0x1b8577",
+      "size": 7,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "declared edit: reset_assignment"
+    },
+    {
+      "start": "0x1b8570",
+      "end": "0x1b8577",
+      "size": 7,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x1c1847",
       "end": "0x1c1848",
       "size": 1,
@@ -47524,6 +50616,48 @@
       "size": 4,
       "owner": "nfl2k5_season_length",
       "basis": "season group site: date_line_year"
+    },
+    {
+      "start": "0x1c1880",
+      "end": "0x1c1888",
+      "size": 8,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: gregorian_leap"
+    },
+    {
+      "start": "0x1c1880",
+      "end": "0x1c1888",
+      "size": 8,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1c1940",
+      "end": "0x1c1945",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: date_line_weekday"
+    },
+    {
+      "start": "0x1c1941",
+      "end": "0x1c1945",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1c19f0",
+      "end": "0x1c19f5",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: template_ordinal"
+    },
+    {
+      "start": "0x1c19f0",
+      "end": "0x1c19f5",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
     },
     {
       "start": "0x1c8317",
@@ -47579,6 +50713,20 @@
       "end": "0x1cd401",
       "size": 6,
       "owner": "nfl2k5_kick_laces",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1cd550",
+      "end": "0x1cd555",
+      "size": 5,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "declared edit: initialize"
+    },
+    {
+      "start": "0x1cd550",
+      "end": "0x1cd555",
+      "size": 5,
+      "owner": "nfl2k5_abilities_runtime",
       "basis": "observed byte diff"
     },
     {
@@ -50669,6 +53817,160 @@
       "basis": "season group site: momentum_regular_c"
     },
     {
+      "start": "0x27f040",
+      "end": "0x27f045",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: manual_next"
+    },
+    {
+      "start": "0x27f040",
+      "end": "0x27f045",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x27f6b0",
+      "end": "0x27f6b5",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: pause"
+    },
+    {
+      "start": "0x27f6b0",
+      "end": "0x27f6b5",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x27f6f0",
+      "end": "0x27f6f5",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: resume"
+    },
+    {
+      "start": "0x27f6f0",
+      "end": "0x27f6f5",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x27fec0",
+      "end": "0x27fec5",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: suspend"
+    },
+    {
+      "start": "0x27fec0",
+      "end": "0x27fec5",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x27ff15",
+      "end": "0x27ff1a",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: advance"
+    },
+    {
+      "start": "0x27ff16",
+      "end": "0x27ff1a",
+      "size": 4,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x27ff90",
+      "end": "0x27ff96",
+      "size": 6,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: preview"
+    },
+    {
+      "start": "0x27ff90",
+      "end": "0x27ff96",
+      "size": 6,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x28016d",
+      "end": "0x280172",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: hdd_callback"
+    },
+    {
+      "start": "0x28016e",
+      "end": "0x280172",
+      "size": 4,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2801a0",
+      "end": "0x2801a6",
+      "size": 6,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: enqueue"
+    },
+    {
+      "start": "0x2801a0",
+      "end": "0x2801a6",
+      "size": 6,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x280450",
+      "end": "0x280458",
+      "size": 8,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: dispatch"
+    },
+    {
+      "start": "0x280450",
+      "end": "0x280458",
+      "size": 8,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2804c0",
+      "end": "0x2804c5",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: context"
+    },
+    {
+      "start": "0x2804c0",
+      "end": "0x2804c5",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2806b2",
+      "end": "0x2806b7",
+      "size": 5,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "declared edit: frame"
+    },
+    {
+      "start": "0x2806b3",
+      "end": "0x2806b7",
+      "size": 4,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x2890f0",
       "end": "0x2891ff",
       "size": 271,
@@ -51090,6 +54392,20 @@
     },
     {
       "start": "0x2a7e57",
+      "end": "0x2a7e58",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7e57",
+      "end": "0x2a8152",
+      "size": 763,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: postseason_calendar"
+    },
+    {
+      "start": "0x2a7e57",
       "end": "0x2a8152",
       "size": 763,
       "owner": "nfl2k5_playoffs14",
@@ -51103,10 +54419,24 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x2a7e59",
+      "end": "0x2a7e5e",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x2a7e5a",
       "end": "0x2a7e5e",
       "size": 4,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7e5f",
+      "end": "0x2a7e60",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51120,7 +54450,21 @@
       "start": "0x2a7e61",
       "end": "0x2a7e74",
       "size": 19,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7e61",
+      "end": "0x2a7e74",
+      "size": 19,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7e75",
+      "end": "0x2a7eb0",
+      "size": 59,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51134,7 +54478,21 @@
       "start": "0x2a7eb1",
       "end": "0x2a7ec9",
       "size": 24,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7eb1",
+      "end": "0x2a7ec9",
+      "size": 24,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7eca",
+      "end": "0x2a7ef7",
+      "size": 45,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51148,7 +54506,21 @@
       "start": "0x2a7ef8",
       "end": "0x2a7f6d",
       "size": 117,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7ef8",
+      "end": "0x2a7f6d",
+      "size": 117,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7f6e",
+      "end": "0x2a7f80",
+      "size": 18,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51162,7 +54534,21 @@
       "start": "0x2a7f81",
       "end": "0x2a7f96",
       "size": 21,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7f81",
+      "end": "0x2a7f96",
+      "size": 21,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7f99",
+      "end": "0x2a7fa6",
+      "size": 13,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51176,7 +54562,21 @@
       "start": "0x2a7fa7",
       "end": "0x2a7fbf",
       "size": 24,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7fa7",
+      "end": "0x2a7fbf",
+      "size": 24,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7fc0",
+      "end": "0x2a7fcc",
+      "size": 12,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51190,7 +54590,21 @@
       "start": "0x2a7fcf",
       "end": "0x2a7fd5",
       "size": 6,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7fcf",
+      "end": "0x2a7fd5",
+      "size": 6,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7fd6",
+      "end": "0x2a7fda",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51204,7 +54618,21 @@
       "start": "0x2a7fdb",
       "end": "0x2a7fdf",
       "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7fdb",
+      "end": "0x2a7fdf",
+      "size": 4,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7fe0",
+      "end": "0x2a7fe1",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51218,7 +54646,21 @@
       "start": "0x2a7fe2",
       "end": "0x2a7fed",
       "size": 11,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7fe2",
+      "end": "0x2a7fed",
+      "size": 11,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a7fee",
+      "end": "0x2a8005",
+      "size": 23,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51232,7 +54674,21 @@
       "start": "0x2a8006",
       "end": "0x2a800a",
       "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a8006",
+      "end": "0x2a800a",
+      "size": 4,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a800b",
+      "end": "0x2a8020",
+      "size": 21,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51246,7 +54702,21 @@
       "start": "0x2a8021",
       "end": "0x2a803a",
       "size": 25,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a8021",
+      "end": "0x2a803a",
+      "size": 25,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a803b",
+      "end": "0x2a804d",
+      "size": 18,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51260,7 +54730,21 @@
       "start": "0x2a804e",
       "end": "0x2a806b",
       "size": 29,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a804e",
+      "end": "0x2a806b",
+      "size": 29,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2a806c",
+      "end": "0x2a8152",
+      "size": 230,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51729,6 +55213,13 @@
       "start": "0x2bec20",
       "end": "0x2bf1b0",
       "size": 1424,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: preseason_calendar"
+    },
+    {
+      "start": "0x2bec20",
+      "end": "0x2bf1b0",
+      "size": 1424,
       "owner": "nfl2k5_preseason",
       "basis": "season group site: preseason_generator"
     },
@@ -51768,10 +55259,31 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x2bec7d",
+      "end": "0x2bec7e",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x2bec81",
       "end": "0x2bec9b",
       "size": 26,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bec88",
+      "end": "0x2bec89",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bec91",
+      "end": "0x2bec92",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51782,6 +55294,34 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x2beca9",
+      "end": "0x2becaa",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2becb2",
+      "end": "0x2becbd",
+      "size": 11,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2becbe",
+      "end": "0x2becc5",
+      "size": 7,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2becc7",
+      "end": "0x2becda",
+      "size": 19,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x2becc8",
       "end": "0x2bed0f",
       "size": 71,
@@ -51789,10 +55329,52 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x2becdb",
+      "end": "0x2bece2",
+      "size": 7,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bece4",
+      "end": "0x2bece7",
+      "size": 3,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bece8",
+      "end": "0x2bed0c",
+      "size": 36,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bed0e",
+      "end": "0x2bed29",
+      "size": 27,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x2bed10",
       "end": "0x2bed39",
       "size": 41,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bed2b",
+      "end": "0x2bed37",
+      "size": 12,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bed3a",
+      "end": "0x2bed42",
+      "size": 8,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51810,10 +55392,45 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x2bed44",
+      "end": "0x2bedc4",
+      "size": 128,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x2bedc0",
       "end": "0x2bf1b0",
       "size": 1008,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bedc6",
+      "end": "0x2bedce",
+      "size": 8,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bedf8",
+      "end": "0x2bee00",
+      "size": 8,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf498",
+      "end": "0x2bf49d",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf498"
+    },
+    {
+      "start": "0x2bf499",
+      "end": "0x2bf49a",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
       "basis": "observed byte diff"
     },
     {
@@ -51838,6 +55455,104 @@
       "basis": "season group site: generator_thanksgiving_search"
     },
     {
+      "start": "0x2bf4cf",
+      "end": "0x2bf4d2",
+      "size": 3,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf4cf"
+    },
+    {
+      "start": "0x2bf4d1",
+      "end": "0x2bf4d2",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf4d4",
+      "end": "0x2bf4d9",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf4d4"
+    },
+    {
+      "start": "0x2bf4d5",
+      "end": "0x2bf4d6",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf4e0",
+      "end": "0x2bf4e5",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf4e0"
+    },
+    {
+      "start": "0x2bf4e1",
+      "end": "0x2bf4e2",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf4f7",
+      "end": "0x2bf4fc",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf4f7"
+    },
+    {
+      "start": "0x2bf4f8",
+      "end": "0x2bf4f9",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf505",
+      "end": "0x2bf50a",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf505"
+    },
+    {
+      "start": "0x2bf506",
+      "end": "0x2bf507",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf51f",
+      "end": "0x2bf524",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf51f"
+    },
+    {
+      "start": "0x2bf520",
+      "end": "0x2bf521",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf556",
+      "end": "0x2bf559",
+      "size": 3,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf556"
+    },
+    {
+      "start": "0x2bf558",
+      "end": "0x2bf559",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x2bf5a7",
       "end": "0x2bf5a8",
       "size": 1,
@@ -51859,6 +55574,20 @@
       "basis": "season group site: generator_marquee_weeks"
     },
     {
+      "start": "0x2bf5bb",
+      "end": "0x2bf5ca",
+      "size": 15,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: full_regular_year"
+    },
+    {
+      "start": "0x2bf5bb",
+      "end": "0x2bf5ca",
+      "size": 15,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x2bf5c1",
       "end": "0x2bf5c2",
       "size": 1,
@@ -51878,6 +55607,132 @@
       "size": 1,
       "owner": "nfl2k5_season_length",
       "basis": "season group site: regular_season_generator_year"
+    },
+    {
+      "start": "0x2bf5ca",
+      "end": "0x2bf5cf",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: regular_weekday"
+    },
+    {
+      "start": "0x2bf5cb",
+      "end": "0x2bf5cf",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf60e",
+      "end": "0x2bf613",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: regular_thanksgiving"
+    },
+    {
+      "start": "0x2bf60f",
+      "end": "0x2bf613",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf613",
+      "end": "0x2bf618",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: regular_opening_offset"
+    },
+    {
+      "start": "0x2bf614",
+      "end": "0x2bf615",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf61c",
+      "end": "0x2bf621",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: regular_opening"
+    },
+    {
+      "start": "0x2bf61d",
+      "end": "0x2bf621",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf646",
+      "end": "0x2bf64b",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: regular_thursday"
+    },
+    {
+      "start": "0x2bf647",
+      "end": "0x2bf64b",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf661",
+      "end": "0x2bf666",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: regular_saturday"
+    },
+    {
+      "start": "0x2bf662",
+      "end": "0x2bf666",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf67c",
+      "end": "0x2bf681",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: regular_sunday"
+    },
+    {
+      "start": "0x2bf67d",
+      "end": "0x2bf681",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf697",
+      "end": "0x2bf69c",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: regular_monday"
+    },
+    {
+      "start": "0x2bf698",
+      "end": "0x2bf69c",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2bf69e",
+      "end": "0x2bf6a1",
+      "size": 3,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: thanksgiving_week_2bf69e"
+    },
+    {
+      "start": "0x2bf6a0",
+      "end": "0x2bf6a1",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
     },
     {
       "start": "0x2bf6cb",
@@ -52214,6 +56069,55 @@
       "size": 1,
       "owner": "nfl2k5_season_length",
       "basis": "season group site: weekly_prep_stage_bound"
+    },
+    {
+      "start": "0x2d43f0",
+      "end": "0x2d43f5",
+      "size": 5,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "declared edit: generate"
+    },
+    {
+      "start": "0x2d43f0",
+      "end": "0x2d43f5",
+      "size": 5,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2d46d0",
+      "end": "0x2d46d5",
+      "size": 5,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2d46d0",
+      "end": "0x2d46d9",
+      "size": 9,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "declared edit: ai_ready"
+    },
+    {
+      "start": "0x2d46d6",
+      "end": "0x2d46d9",
+      "size": 3,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2d4740",
+      "end": "0x2d4747",
+      "size": 7,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "declared edit: consume"
+    },
+    {
+      "start": "0x2d4740",
+      "end": "0x2d4747",
+      "size": 7,
+      "owner": "nfl2k5_abilities_runtime",
+      "basis": "observed byte diff"
     },
     {
       "start": "0x2d898b",
@@ -52573,6 +56477,34 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x3204ad",
+      "end": "0x3204ae",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x3204ad",
+      "end": "0x3204b1",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: player_history_year"
+    },
+    {
+      "start": "0x3218a7",
+      "end": "0x3218a8",
+      "size": 1,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x3218a7",
+      "end": "0x3218ab",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: player_history_detail_year"
+    },
+    {
       "start": "0x322bb0",
       "end": "0x322bb4",
       "size": 4,
@@ -52860,6 +56792,34 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x347714",
+      "end": "0x347719",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: contract_projection_year"
+    },
+    {
+      "start": "0x347715",
+      "end": "0x347719",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x34772b",
+      "end": "0x34772f",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: contract_year_format"
+    },
+    {
+      "start": "0x34772b",
+      "end": "0x34772f",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x352a53",
       "end": "0x352a54",
       "size": 1,
@@ -52914,6 +56874,34 @@
       "size": 1,
       "owner": "nfl2k5_season_length",
       "basis": "season group site: results_text_sb_row"
+    },
+    {
+      "start": "0x3663e4",
+      "end": "0x3663e9",
+      "size": 5,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: cap_projection_year"
+    },
+    {
+      "start": "0x3663e5",
+      "end": "0x3663e9",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x3663f3",
+      "end": "0x3663f7",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "declared edit: cap_year_format"
+    },
+    {
+      "start": "0x3663f3",
+      "end": "0x3663f7",
+      "size": 4,
+      "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
     },
     {
       "start": "0x368489",
@@ -60754,6 +64742,20 @@
       "size": 4,
       "owner": "nfl2k5_franchise_practice",
       "basis": "declared edit: coach_desk_row_pointer"
+    },
+    {
+      "start": "0x5221a0",
+      "end": "0x5221a4",
+      "size": 4,
+      "owner": "nfl2k5_practice_squad_screen",
+      "basis": "declared edit: practice_squad_menu"
+    },
+    {
+      "start": "0x5221a0",
+      "end": "0x5221a4",
+      "size": 4,
+      "owner": "nfl2k5_practice_squad_screen",
+      "basis": "observed byte diff"
     },
     {
       "start": "0x5322d0",
@@ -100706,23 +104708,16 @@
     },
     {
       "start": "0x14da000",
-      "end": "0x14da008",
-      "size": 8,
+      "end": "0x14da424",
+      "size": 1060,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
       "start": "0x14da000",
-      "end": "0x14da010",
-      "size": 16,
-      "owner": "nfl2k5_coverage_slider",
-      "basis": "declared edit: immutable_allocation"
-    },
-    {
-      "start": "0x14da000",
-      "end": "0x14da010",
-      "size": 16,
-      "owner": "nfl2k5_coverage_slider",
+      "end": "0x14da430",
+      "size": 1072,
+      "owner": "nfl2k5_abilities_runtime",
       "basis": "named code allocation"
     },
     {
@@ -100733,58 +104728,128 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14da010",
-      "end": "0x14da062",
-      "size": 82,
-      "owner": "nfl2k5_roster_storage",
-      "basis": "declared edit: stadium_ids"
+      "start": "0x14da430",
+      "end": "0x14da665",
+      "size": 565,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
     },
     {
-      "start": "0x14da010",
-      "end": "0x14da062",
-      "size": 82,
-      "owner": "nfl2k5_roster_storage",
+      "start": "0x14da430",
+      "end": "0x14da830",
+      "size": 1024,
+      "owner": "nfl2k5_calendar",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14da010",
-      "end": "0x14da062",
-      "size": 82,
+      "start": "0x14da670",
+      "end": "0x14da6d0",
+      "size": 96,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14da070",
-      "end": "0x14da0b7",
-      "size": 71,
+      "start": "0x14da6d1",
+      "end": "0x14da6dc",
+      "size": 11,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14da070",
-      "end": "0x14da110",
-      "size": 160,
-      "owner": "nfl2k5_scramble_tuning",
+      "start": "0x14da6dd",
+      "end": "0x14da7a6",
+      "size": 201,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14da830",
+      "end": "0x14da838",
+      "size": 8,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14da830",
+      "end": "0x14da840",
+      "size": 16,
+      "owner": "nfl2k5_coverage_slider",
       "basis": "declared edit: immutable_allocation"
     },
     {
-      "start": "0x14da070",
-      "end": "0x14da110",
-      "size": 160,
-      "owner": "nfl2k5_scramble_tuning",
+      "start": "0x14da830",
+      "end": "0x14da840",
+      "size": 16,
+      "owner": "nfl2k5_coverage_slider",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14da0e0",
-      "end": "0x14da0ed",
-      "size": 13,
+      "start": "0x14da840",
+      "end": "0x14daad4",
+      "size": 660,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14da0ee",
-      "end": "0x14da10c",
-      "size": 30,
+      "start": "0x14da840",
+      "end": "0x14db040",
+      "size": 2048,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "named code allocation"
+    },
+    {
+      "start": "0x14daad5",
+      "end": "0x14daade",
+      "size": 9,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14daadf",
+      "end": "0x14daaf3",
+      "size": 20,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14daaf4",
+      "end": "0x14daafc",
+      "size": 8,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14daafd",
+      "end": "0x14dab00",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dab01",
+      "end": "0x14dab5a",
+      "size": 89,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dab5b",
+      "end": "0x14dac81",
+      "size": 294,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dac82",
+      "end": "0x14dad55",
+      "size": 211,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dad56",
+      "end": "0x14dae96",
+      "size": 320,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -100796,11 +104861,193 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
+      "start": "0x14db040",
+      "end": "0x14db4f7",
+      "size": 1207,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14db040",
+      "end": "0x14dc040",
+      "size": 4096,
+      "owner": "nfl2k5_practice_squad_screen",
+      "basis": "named code allocation"
+    },
+    {
+      "start": "0x14db4f8",
+      "end": "0x14db691",
+      "size": 409,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14db692",
+      "end": "0x14db6a9",
+      "size": 23,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14db6aa",
+      "end": "0x14db7a9",
+      "size": 255,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14db7aa",
+      "end": "0x14db7c1",
+      "size": 23,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14db7c2",
+      "end": "0x14dbc4a",
+      "size": 1160,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dbc4c",
+      "end": "0x14dbc5a",
+      "size": 14,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dbc5c",
+      "end": "0x14dbc6e",
+      "size": 18,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dbc70",
+      "end": "0x14dbc8e",
+      "size": 30,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dbc90",
+      "end": "0x14dbc9e",
+      "size": 14,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dbca0",
+      "end": "0x14dbda8",
+      "size": 264,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x14dc000",
       "end": "0x14dd000",
       "size": 4096,
       "owner": "nfl2k5_xbe_space",
       "basis": "owned grown code page; all unused bytes reserved"
+    },
+    {
+      "start": "0x14dc040",
+      "end": "0x14dc337",
+      "size": 759,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dc040",
+      "end": "0x14dc640",
+      "size": 1536,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "named code allocation"
+    },
+    {
+      "start": "0x14dc338",
+      "end": "0x14dc3e1",
+      "size": 169,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dc3e2",
+      "end": "0x14dc3ec",
+      "size": 10,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dc3ed",
+      "end": "0x14dc5f5",
+      "size": 520,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dc5f8",
+      "end": "0x14dc610",
+      "size": 24,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dc640",
+      "end": "0x14dc692",
+      "size": 82,
+      "owner": "nfl2k5_roster_storage",
+      "basis": "declared edit: stadium_ids"
+    },
+    {
+      "start": "0x14dc640",
+      "end": "0x14dc692",
+      "size": 82,
+      "owner": "nfl2k5_roster_storage",
+      "basis": "named code allocation"
+    },
+    {
+      "start": "0x14dc640",
+      "end": "0x14dc692",
+      "size": 82,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dc6a0",
+      "end": "0x14dc6e7",
+      "size": 71,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dc6a0",
+      "end": "0x14dc740",
+      "size": 160,
+      "owner": "nfl2k5_scramble_tuning",
+      "basis": "declared edit: immutable_allocation"
+    },
+    {
+      "start": "0x14dc6a0",
+      "end": "0x14dc740",
+      "size": 160,
+      "owner": "nfl2k5_scramble_tuning",
+      "basis": "named code allocation"
+    },
+    {
+      "start": "0x14dc710",
+      "end": "0x14dc71d",
+      "size": 13,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14dc71e",
+      "end": "0x14dc73c",
+      "size": 30,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
     },
     {
       "start": "0x14dd000",
@@ -100951,10 +105198,31 @@
     },
     {
       "start": "0x14f2000",
+      "end": "0x14f2200",
+      "size": 512,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "named data allocation"
+    },
+    {
+      "start": "0x14f2000",
       "end": "0x14f3000",
       "size": 4096,
       "owner": "nfl2k5_xbe_space",
       "basis": "owned grown data page; all unused bytes reserved"
+    },
+    {
+      "start": "0x14f2200",
+      "end": "0x14f2300",
+      "size": 256,
+      "owner": "nfl2k5_practice_squad_screen",
+      "basis": "named data allocation"
+    },
+    {
+      "start": "0x14f2300",
+      "end": "0x14f2600",
+      "size": 768,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "named data allocation"
     },
     {
       "start": "0x14f3000",
@@ -101105,8 +105373,8 @@
     },
     {
       "start": "0x150600c",
-      "end": "0x1506016",
-      "size": 10,
+      "end": "0x150600d",
+      "size": 1,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -101119,15 +105387,29 @@
     },
     {
       "start": "0x150600c",
+      "end": "0x1506022",
+      "size": 22,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150600c",
       "end": "0x150602c",
       "size": 32,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1506017",
-      "end": "0x1506025",
-      "size": 14,
+      "start": "0x150600c",
+      "end": "0x150604c",
+      "size": 64,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150600e",
+      "end": "0x150602c",
+      "size": 30,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -101139,11 +105421,25 @@
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1506026",
+      "start": "0x1506023",
       "end": "0x150602c",
-      "size": 6,
+      "size": 9,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507000",
+      "end": "0x1507005",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507000",
+      "end": "0x1507800",
+      "size": 2048,
+      "owner": "nfl2k5_calendar",
+      "basis": "named read_only allocation"
     },
     {
       "start": "0x1507000",
@@ -101151,6 +105447,3170 @@
       "size": 4096,
       "owner": "nfl2k5_xbe_space",
       "basis": "owned grown read_only page; all unused bytes reserved"
+    },
+    {
+      "start": "0x1507008",
+      "end": "0x150700a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507020",
+      "end": "0x15071b0",
+      "size": 400,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071b4",
+      "end": "0x15071b6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071b8",
+      "end": "0x15071ba",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071bc",
+      "end": "0x15071be",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071c0",
+      "end": "0x15071c2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071c4",
+      "end": "0x15071c6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071c8",
+      "end": "0x15071ca",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071cc",
+      "end": "0x15071ce",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071d0",
+      "end": "0x15071d2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071d4",
+      "end": "0x15071d6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071d8",
+      "end": "0x15071da",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071dc",
+      "end": "0x15071de",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071e0",
+      "end": "0x15071e2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071e4",
+      "end": "0x15071e6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071e8",
+      "end": "0x15071ea",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071ec",
+      "end": "0x15071ee",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071f0",
+      "end": "0x15071f2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071f4",
+      "end": "0x15071f6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071f8",
+      "end": "0x15071fa",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15071fc",
+      "end": "0x15071fe",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507200",
+      "end": "0x1507202",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507204",
+      "end": "0x1507206",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507208",
+      "end": "0x150720a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150720c",
+      "end": "0x150720e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507210",
+      "end": "0x1507212",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507214",
+      "end": "0x1507216",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507218",
+      "end": "0x150721a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150721c",
+      "end": "0x150721e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507220",
+      "end": "0x1507222",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507224",
+      "end": "0x1507226",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507228",
+      "end": "0x150722a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150722c",
+      "end": "0x150722e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507230",
+      "end": "0x1507232",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507234",
+      "end": "0x1507236",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507238",
+      "end": "0x150723a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150723c",
+      "end": "0x150723e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507240",
+      "end": "0x1507242",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507244",
+      "end": "0x1507246",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507248",
+      "end": "0x150724a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150724c",
+      "end": "0x150724e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507250",
+      "end": "0x1507252",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507254",
+      "end": "0x1507256",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507258",
+      "end": "0x150725a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150725c",
+      "end": "0x150725e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507260",
+      "end": "0x1507262",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507264",
+      "end": "0x1507266",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507268",
+      "end": "0x150726a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150726c",
+      "end": "0x150726e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507270",
+      "end": "0x1507272",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507274",
+      "end": "0x1507276",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507278",
+      "end": "0x150727a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150727c",
+      "end": "0x150727e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507280",
+      "end": "0x1507282",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507284",
+      "end": "0x1507286",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507288",
+      "end": "0x150728a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150728c",
+      "end": "0x150728e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507290",
+      "end": "0x1507292",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507294",
+      "end": "0x1507296",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507298",
+      "end": "0x150729a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150729c",
+      "end": "0x150729e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072a0",
+      "end": "0x15072a2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072a4",
+      "end": "0x15072a6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072a8",
+      "end": "0x15072aa",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072ac",
+      "end": "0x15072ae",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072b0",
+      "end": "0x15072b2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072b4",
+      "end": "0x15072b6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072b8",
+      "end": "0x15072ba",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072bc",
+      "end": "0x15072be",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072c0",
+      "end": "0x15072c2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072c4",
+      "end": "0x15072c6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072c8",
+      "end": "0x15072ca",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072cc",
+      "end": "0x15072ce",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072d0",
+      "end": "0x15072d2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072d4",
+      "end": "0x15072d6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072d8",
+      "end": "0x15072da",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072dc",
+      "end": "0x15072de",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072e0",
+      "end": "0x15072e2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072e4",
+      "end": "0x15072e6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072e8",
+      "end": "0x15072ea",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072ec",
+      "end": "0x15072ee",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072f0",
+      "end": "0x15072f2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072f4",
+      "end": "0x15072f6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072f8",
+      "end": "0x15072fa",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15072fc",
+      "end": "0x15072fe",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507300",
+      "end": "0x1507302",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507304",
+      "end": "0x1507306",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507308",
+      "end": "0x150730a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150730c",
+      "end": "0x150730e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507310",
+      "end": "0x1507312",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507314",
+      "end": "0x1507316",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507318",
+      "end": "0x150731a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150731c",
+      "end": "0x150731e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507320",
+      "end": "0x1507322",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507324",
+      "end": "0x1507326",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507328",
+      "end": "0x150732a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150732c",
+      "end": "0x150732e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507330",
+      "end": "0x1507332",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507334",
+      "end": "0x1507336",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507338",
+      "end": "0x150733a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150733c",
+      "end": "0x150733e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507340",
+      "end": "0x1507342",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507344",
+      "end": "0x1507346",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507348",
+      "end": "0x150734a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150734c",
+      "end": "0x150734e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507350",
+      "end": "0x1507352",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507354",
+      "end": "0x1507356",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507358",
+      "end": "0x150735a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150735c",
+      "end": "0x150735e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507360",
+      "end": "0x1507362",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507364",
+      "end": "0x1507366",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507368",
+      "end": "0x150736a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150736c",
+      "end": "0x150736e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507370",
+      "end": "0x1507372",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507374",
+      "end": "0x1507376",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507378",
+      "end": "0x150737a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150737c",
+      "end": "0x150737e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507380",
+      "end": "0x1507382",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507384",
+      "end": "0x1507386",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507388",
+      "end": "0x150738a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150738c",
+      "end": "0x150738e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507390",
+      "end": "0x1507392",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507394",
+      "end": "0x1507396",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507398",
+      "end": "0x150739a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150739c",
+      "end": "0x150739e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073a0",
+      "end": "0x15073a2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073a4",
+      "end": "0x15073a6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073a8",
+      "end": "0x15073aa",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073ac",
+      "end": "0x15073ae",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073b0",
+      "end": "0x15073b2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073b4",
+      "end": "0x15073b6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073b8",
+      "end": "0x15073ba",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073bc",
+      "end": "0x15073be",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073c0",
+      "end": "0x15073c2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073c4",
+      "end": "0x15073c6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073c8",
+      "end": "0x15073ca",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073cc",
+      "end": "0x15073ce",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073d0",
+      "end": "0x15073d2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073d4",
+      "end": "0x15073d6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073d8",
+      "end": "0x15073da",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073dc",
+      "end": "0x15073de",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073e0",
+      "end": "0x15073e2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073e4",
+      "end": "0x15073e6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073e8",
+      "end": "0x15073ea",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073ec",
+      "end": "0x15073ee",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073f0",
+      "end": "0x15073f2",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073f4",
+      "end": "0x15073f6",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073f8",
+      "end": "0x15073fa",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15073fc",
+      "end": "0x15073fe",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507400",
+      "end": "0x1507402",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507404",
+      "end": "0x1507406",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507408",
+      "end": "0x150740a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150740c",
+      "end": "0x150740e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507410",
+      "end": "0x1507412",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507414",
+      "end": "0x1507416",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507418",
+      "end": "0x150741a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150741c",
+      "end": "0x150741e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507420",
+      "end": "0x1507422",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507425",
+      "end": "0x1507426",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507428",
+      "end": "0x150742a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150742c",
+      "end": "0x150742e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507430",
+      "end": "0x1507432",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507434",
+      "end": "0x1507436",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507438",
+      "end": "0x150743a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150743c",
+      "end": "0x150743e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507440",
+      "end": "0x1507442",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507444",
+      "end": "0x1507446",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507448",
+      "end": "0x150744a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150744c",
+      "end": "0x150744e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507450",
+      "end": "0x1507452",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507454",
+      "end": "0x1507456",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507458",
+      "end": "0x150745a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150745c",
+      "end": "0x150745e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507460",
+      "end": "0x1507462",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507464",
+      "end": "0x1507466",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507468",
+      "end": "0x150746a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150746c",
+      "end": "0x150746e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507470",
+      "end": "0x1507472",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507474",
+      "end": "0x1507476",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507478",
+      "end": "0x150747a",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150747c",
+      "end": "0x150747e",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507480",
+      "end": "0x1507481",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507482",
+      "end": "0x1507483",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507484",
+      "end": "0x1507487",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507488",
+      "end": "0x150748b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150748c",
+      "end": "0x150748f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507490",
+      "end": "0x1507493",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507494",
+      "end": "0x1507497",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507498",
+      "end": "0x150749b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150749c",
+      "end": "0x150749f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074a0",
+      "end": "0x15074a3",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074a4",
+      "end": "0x15074a7",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074a8",
+      "end": "0x15074ab",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074ac",
+      "end": "0x15074af",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074b0",
+      "end": "0x15074b3",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074b4",
+      "end": "0x15074b7",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074b8",
+      "end": "0x15074bb",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074bc",
+      "end": "0x15074bf",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074c0",
+      "end": "0x15074c3",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074c4",
+      "end": "0x15074c7",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074c8",
+      "end": "0x15074cb",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074cc",
+      "end": "0x15074cf",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074d0",
+      "end": "0x15074d3",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074d4",
+      "end": "0x15074d7",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074d8",
+      "end": "0x15074db",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074dc",
+      "end": "0x15074df",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074e0",
+      "end": "0x15074e3",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074e4",
+      "end": "0x15074e7",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074e8",
+      "end": "0x15074eb",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074ec",
+      "end": "0x15074ef",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074f0",
+      "end": "0x15074f3",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074f4",
+      "end": "0x15074f7",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074f8",
+      "end": "0x15074fb",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15074fc",
+      "end": "0x15074ff",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507500",
+      "end": "0x1507503",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507504",
+      "end": "0x1507507",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507508",
+      "end": "0x150750b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150750c",
+      "end": "0x150750f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507510",
+      "end": "0x1507513",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507514",
+      "end": "0x1507517",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507518",
+      "end": "0x150751b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150751c",
+      "end": "0x150751f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507520",
+      "end": "0x1507523",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507524",
+      "end": "0x1507527",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507528",
+      "end": "0x150752b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150752c",
+      "end": "0x150752f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507530",
+      "end": "0x1507533",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507534",
+      "end": "0x1507537",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507538",
+      "end": "0x150753b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150753c",
+      "end": "0x150753f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507540",
+      "end": "0x1507543",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507544",
+      "end": "0x1507547",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507548",
+      "end": "0x150754b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150754c",
+      "end": "0x150754f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507551",
+      "end": "0x1507553",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507554",
+      "end": "0x1507557",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507558",
+      "end": "0x150755b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150755c",
+      "end": "0x150755f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507560",
+      "end": "0x1507563",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507564",
+      "end": "0x1507567",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507568",
+      "end": "0x150756b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150756c",
+      "end": "0x150756f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507570",
+      "end": "0x1507573",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507574",
+      "end": "0x1507577",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507578",
+      "end": "0x150757b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150757c",
+      "end": "0x150757f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507580",
+      "end": "0x1507583",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507584",
+      "end": "0x1507587",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507588",
+      "end": "0x150758b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150758c",
+      "end": "0x150758f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507590",
+      "end": "0x1507593",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507594",
+      "end": "0x1507597",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507598",
+      "end": "0x150759b",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150759c",
+      "end": "0x150759f",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075a0",
+      "end": "0x15075a3",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075a4",
+      "end": "0x15075a7",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075a8",
+      "end": "0x15075ab",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075ac",
+      "end": "0x15075af",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075b0",
+      "end": "0x15075b3",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075b6",
+      "end": "0x15075b7",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075b8",
+      "end": "0x15075b9",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075ba",
+      "end": "0x15075bb",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075bc",
+      "end": "0x15075bd",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075be",
+      "end": "0x15075bf",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075c0",
+      "end": "0x15075c1",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075c2",
+      "end": "0x15075c3",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075c4",
+      "end": "0x15075c5",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075c6",
+      "end": "0x15075ce",
+      "size": 8,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075d0",
+      "end": "0x15075d1",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075d2",
+      "end": "0x15075d3",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075d4",
+      "end": "0x15075d5",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075d6",
+      "end": "0x15075d7",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075d8",
+      "end": "0x15075d9",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075da",
+      "end": "0x15075db",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075dc",
+      "end": "0x15075dd",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075de",
+      "end": "0x15075df",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075e0",
+      "end": "0x15075e9",
+      "size": 9,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075ea",
+      "end": "0x15075eb",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075ec",
+      "end": "0x15075ed",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15075ee",
+      "end": "0x15075ef",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507602",
+      "end": "0x1507606",
+      "size": 4,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507609",
+      "end": "0x150760e",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507611",
+      "end": "0x1507616",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507619",
+      "end": "0x150761e",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507621",
+      "end": "0x1507626",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507629",
+      "end": "0x150762e",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507630",
+      "end": "0x1507631",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507633",
+      "end": "0x1507635",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507638",
+      "end": "0x150763c",
+      "size": 4,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507640",
+      "end": "0x1507645",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507648",
+      "end": "0x150764c",
+      "size": 4,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507650",
+      "end": "0x1507651",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507652",
+      "end": "0x1507654",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507658",
+      "end": "0x150765c",
+      "size": 4,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507660",
+      "end": "0x1507661",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507662",
+      "end": "0x1507664",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150766b",
+      "end": "0x150766d",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150766e",
+      "end": "0x1507670",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507673",
+      "end": "0x1507675",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507676",
+      "end": "0x1507678",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150767b",
+      "end": "0x150767d",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150767e",
+      "end": "0x150767f",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507683",
+      "end": "0x1507685",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507686",
+      "end": "0x1507688",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150768b",
+      "end": "0x150768d",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150768e",
+      "end": "0x1507690",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507693",
+      "end": "0x1507695",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507696",
+      "end": "0x1507698",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150769b",
+      "end": "0x150769d",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150769e",
+      "end": "0x15076a0",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076a3",
+      "end": "0x15076a5",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076a6",
+      "end": "0x15076a8",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076ab",
+      "end": "0x15076ad",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076ae",
+      "end": "0x15076af",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076b3",
+      "end": "0x15076b5",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076b6",
+      "end": "0x15076b8",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076bb",
+      "end": "0x15076bd",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076be",
+      "end": "0x15076bf",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076c3",
+      "end": "0x15076c5",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076c6",
+      "end": "0x15076c8",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076cb",
+      "end": "0x15076cd",
+      "size": 2,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076ce",
+      "end": "0x15076d1",
+      "size": 3,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076d4",
+      "end": "0x15076d5",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076d8",
+      "end": "0x15076d9",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076dc",
+      "end": "0x15076dd",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076e0",
+      "end": "0x15076e1",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076e4",
+      "end": "0x15076e5",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076e8",
+      "end": "0x15076e9",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076ec",
+      "end": "0x15076ed",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076f0",
+      "end": "0x15076f1",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076f4",
+      "end": "0x15076f5",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076f8",
+      "end": "0x15076f9",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15076fc",
+      "end": "0x15076fd",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507700",
+      "end": "0x1507701",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507800",
+      "end": "0x1507809",
+      "size": 9,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507800",
+      "end": "0x1507c00",
+      "size": 1024,
+      "owner": "nfl2k5_music_playlist",
+      "basis": "named read_only allocation"
+    },
+    {
+      "start": "0x1507810",
+      "end": "0x1507819",
+      "size": 9,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507840",
+      "end": "0x1507841",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507842",
+      "end": "0x1507843",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507844",
+      "end": "0x1507845",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507846",
+      "end": "0x1507847",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507848",
+      "end": "0x1507849",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150784a",
+      "end": "0x150784b",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150784c",
+      "end": "0x150784d",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507850",
+      "end": "0x1507851",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507852",
+      "end": "0x1507853",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507854",
+      "end": "0x1507855",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507856",
+      "end": "0x1507857",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507858",
+      "end": "0x1507859",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150785a",
+      "end": "0x150785b",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150785c",
+      "end": "0x150785d",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150785e",
+      "end": "0x150785f",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507860",
+      "end": "0x1507861",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507864",
+      "end": "0x1507865",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507866",
+      "end": "0x1507867",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507868",
+      "end": "0x1507869",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150786a",
+      "end": "0x150786b",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150786c",
+      "end": "0x150786d",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507870",
+      "end": "0x1507871",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507872",
+      "end": "0x1507873",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507874",
+      "end": "0x1507875",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507876",
+      "end": "0x1507877",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507878",
+      "end": "0x1507879",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150787a",
+      "end": "0x150787b",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150787c",
+      "end": "0x150787d",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507880",
+      "end": "0x1507881",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507882",
+      "end": "0x1507883",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507884",
+      "end": "0x1507885",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507886",
+      "end": "0x1507887",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507888",
+      "end": "0x1507889",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150788a",
+      "end": "0x150788b",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150788c",
+      "end": "0x150788d",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150788e",
+      "end": "0x150788f",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507890",
+      "end": "0x1507891",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507892",
+      "end": "0x1507893",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507894",
+      "end": "0x1507895",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507896",
+      "end": "0x1507897",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507898",
+      "end": "0x1507899",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150789c",
+      "end": "0x150789d",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150789e",
+      "end": "0x150789f",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078a0",
+      "end": "0x15078a1",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078a2",
+      "end": "0x15078a3",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078a4",
+      "end": "0x15078a5",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078a6",
+      "end": "0x15078a7",
+      "size": 1,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078c0",
+      "end": "0x15078c4",
+      "size": 4,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078c8",
+      "end": "0x15078cd",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078d0",
+      "end": "0x15078d5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078d8",
+      "end": "0x15078dd",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078e0",
+      "end": "0x15078e5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078e8",
+      "end": "0x15078ed",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078f0",
+      "end": "0x15078f5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15078f8",
+      "end": "0x15078fc",
+      "size": 4,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507900",
+      "end": "0x1507905",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507908",
+      "end": "0x150790d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507910",
+      "end": "0x1507915",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507918",
+      "end": "0x150791d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507920",
+      "end": "0x1507925",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507928",
+      "end": "0x150792d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507930",
+      "end": "0x1507935",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507938",
+      "end": "0x150793d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507940",
+      "end": "0x1507945",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507948",
+      "end": "0x150794d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507950",
+      "end": "0x1507955",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507958",
+      "end": "0x150795d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507960",
+      "end": "0x1507965",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507968",
+      "end": "0x150796d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507970",
+      "end": "0x1507975",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507978",
+      "end": "0x150797d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507980",
+      "end": "0x1507985",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507988",
+      "end": "0x150798d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507990",
+      "end": "0x1507995",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507998",
+      "end": "0x150799d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079a0",
+      "end": "0x15079a5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079a8",
+      "end": "0x15079ad",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079b0",
+      "end": "0x15079b5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079b8",
+      "end": "0x15079bd",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079c0",
+      "end": "0x15079c5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079c8",
+      "end": "0x15079cd",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079d0",
+      "end": "0x15079d5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079d8",
+      "end": "0x15079dd",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079e0",
+      "end": "0x15079e5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079e8",
+      "end": "0x15079ed",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079f0",
+      "end": "0x15079f5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x15079f8",
+      "end": "0x15079fd",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a00",
+      "end": "0x1507a05",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a08",
+      "end": "0x1507a0d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a10",
+      "end": "0x1507a15",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a18",
+      "end": "0x1507a1d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a20",
+      "end": "0x1507a25",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a28",
+      "end": "0x1507a2d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a30",
+      "end": "0x1507a35",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a38",
+      "end": "0x1507a3d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a40",
+      "end": "0x1507a45",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a48",
+      "end": "0x1507a4d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a50",
+      "end": "0x1507a55",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a58",
+      "end": "0x1507a5d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a60",
+      "end": "0x1507a65",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a68",
+      "end": "0x1507a6d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a70",
+      "end": "0x1507a75",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a78",
+      "end": "0x1507a7d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a80",
+      "end": "0x1507a85",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a88",
+      "end": "0x1507a8d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a90",
+      "end": "0x1507a95",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507a98",
+      "end": "0x1507a9d",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507aa0",
+      "end": "0x1507aa5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507aa8",
+      "end": "0x1507aad",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507ab0",
+      "end": "0x1507ab5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507ab8",
+      "end": "0x1507abd",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507ac0",
+      "end": "0x1507ac5",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507ac8",
+      "end": "0x1507acd",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507c00",
+      "end": "0x1507c05",
+      "size": 5,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1507c00",
+      "end": "0x1507e00",
+      "size": 512,
+      "owner": "nfl2k5_qb_spy",
+      "basis": "named read_only allocation"
     },
     {
       "start": "0x1508000",
