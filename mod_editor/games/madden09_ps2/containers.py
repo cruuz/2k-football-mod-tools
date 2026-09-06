@@ -970,11 +970,6 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     caller that wants what this built before gets exactly that.
     ``preload_caches=False`` leaves out the two ``QL01`` caches, for a test that
     needs an image with no cache at all.
-    ``preload_caches=False`` leaves out the two ``QL01`` caches, for a test of
-    what a reader answers on an image that has none.  ``uniform_members``
-    replaces the four default members of ``UNIFORMS.DAT`` with the caller's,
-    for a test that needs a member of a particular shape -- two drawable
-    images, say.
     """
 
     if uniform_members is None:

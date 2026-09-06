@@ -1114,34 +1114,6 @@ title (4,471 files, none for `38014255` or `084562FF`) [M]. Nothing has been
 booted: the page says so, and the two witnesses the owner runs are named in
 [`MADDEN09_PS2_CODE_PATCHES.md`](MADDEN09_PS2_CODE_PATCHES.md), which carries
 the per-site disassembly and the evidence.
-## 4. Pages with no lane, and why
-Each has one sentence in `game.json`'s `page_notes`, shown under the shell's
-own. In full:
-- **Text & Team Identity** — team names and colours live in the `DB_TEAMS.DAT`
-  databases, which the Names, Numbers & Faces page already lists; a separate
-  identity editor waits on a database writer, and there is none.
-- **Field Art & Create-Team Art** — `FIELDART.DAT` holds 642 `SMF` geometry
-  members and 73 `MMAP` textures [M]; the textures are reachable through the
-  same decoder as the uniforms, and no geometry format is decoded anywhere
-  here.
-- **Stadiums** — `STADIUMS.DAT` holds 651 `SMF` geometry members and 434
-  `MMAP` textures [M]. Same position as field art: the textures are readable,
-  the geometry is not decoded, and there is no editor for either yet.
-- **Presentation** — the scorebug and broadcast overlays are drawn by the
-  executable, and no data file on this disc has been mapped to them.
-- **The Crib** — not a Madden concept; it is an ESPN NFL 2K5 feature and this
-  page stays empty here on purpose.
-- **Audio** — `SOUNDDAT.DAT`, `BGM.DAT` and the speech containers carry EA
-  `SCHl` streams and `BNKl` banks; no decoder for either is built here and no
-  public writer exists.
-- **Playbooks & Plays** — playbook data has not been located on this disc by
-  this project, and the owner's own research records that no playbook is among
-  the members the `GAME.QKL` preload copies [S].
-- **Saves** — a Madden 09 memory-card save is a different repository's
-  tooling; this studio works off the disc.
-
----
-
 ## 5. What is measured, in one table
 
 Every number this module quotes about a real disc, and the document that
