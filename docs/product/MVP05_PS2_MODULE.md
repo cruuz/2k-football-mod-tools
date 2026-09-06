@@ -37,9 +37,14 @@ string, pixel, sample or palette entry from the disc is in this repository.
 4. **Every writer is proved twice offline** — on the synthetic disc in CI and
    on the retail disc by hand, chained so the last image carries every edit
    (§4) — and **no rebuilt image has been booted**; every receipt says so.
-5. **PCSX2 identities are derived, none confirmed**: 8-bit images with a
-   256-entry palette get names computed from their own bytes through the
-   shared `pcsx2_texture_name`; no texture dump of this game exists here.
+5. **PCSX2 identities are derived everywhere and confirmed where a dump
+   reached**: 8-bit images with a 256-entry palette get names computed from
+   their own bytes through the shared `pcsx2_texture_name`, and a three-frame
+   PCSX2 dump now confirms **1,008 of them** by exact pixel equality — 76
+   distinct pictures, mostly one park texture shared across many ballparks
+   (§4.2). The pairing also found the deriver was wrong for one whole class of
+   draw and fixed it, and it settled the `0x0E` question the only way ground
+   truth can: there is no decoded `0x0E` texture in the dump (§5).
 6. **A second EA `BIG` title costs its page groupings and its identity**
    (§8); the readers, the encoder, the slot writer and the four lane classes
    are shared already.
@@ -55,17 +60,23 @@ string, pixel, sample or palette entry from the disc is in this repository.
 | `disc_write.py` | the one way anything is written: `tools/ps2_iso9660_writer.py` in, `tools/ps2_iso9660_verify.py` out |
 | `database_lane.py` | `CsvTableLane`, three rows: rosters, team identity, tuning |
 | `loch_text.py`, `loch_lane.py` | the `LOCH` string file, measured and written; the UI-strings row |
-| `art_lane.py` | `ShpsArtLane` (three writer rows) and `ShpsBankLane` (three `0x0E` inventories) |
+| `art_lane.py` | `ShpsArtLane` (three writer rows) and `ShpsBankLane` (three `0x0E` inventories); also the PCSX2 identity table it loads and the sentence each texture gets |
+| `tools/mvp05_ps2_texture_identities.py` | pairs a PCSX2 texture dump with the disc on exact pixels and writes the three measured documents (§4.2); `--selftest` proves it on a synthetic bank |
 | `audio_lane.py` | the stream lane (play, export, replace in a bare file) and the bank lane (export) |
 | `inventory_lane.py` | every bank on the disc, one row per archive |
 | `validators.json`, `tools/validate_mvp05_ps2_*.{sh,bat}` | five validators through `tools/validate_game_lane.py` |
-| `tests/mod_editor/test_mvp05_ps2_lanes.py`, `..._module.py` | 20 tests on the synthetic disc, plus the conformance harness |
+| `tests/mod_editor/test_mvp05_ps2_lanes.py`, `..._module.py`, `..._identities.py` | 20 tests on the synthetic disc, 13 on the identities, plus the conformance harness |
 
 Shared code this module added: `ea_big.refpack_compress`, `ea_big.rewrite_entry`
 and `BigArchive.row_offset`; `ea_shps.encode_indexed` and `ea_shps.replace_pixels`;
-`mod_editor/games/_formats/ea_csv_db.py`. `ea_big.py`, `ea_shps.py` and
+`mod_editor/games/_formats/ea_csv_db.py`; and, from this pass,
+`pcsx2_texture_name.PSMT8H` with the linear hashed stream and
+`derive_names(..., extra_psms=...)` (§4.2). `ea_big.py`, `ea_shps.py` and
 `ea_csv_db.py` joined the release allowlist and the runtime closure, which is
-where the plan's §8 said they belonged once a shipped module imported them.
+where the plan's §8 said they belonged once a shipped module imported them;
+`pcsx2_texture_name.py`, `xxhash3_64.py`, the identity tool and the three
+measured documents joined them when the identity table became something the
+art lane reads at catalogue time.
 
 ---
 
@@ -217,6 +228,86 @@ studio's progress line.
 
 ---
 
+### 4.2 PCSX2 replacement identities: what three frames reached [M]
+
+A replacement filename is `<tex0 hash>-<clut hash>-<bits>.png` and both hashes
+are computed by the emulator at draw time, so no disc file carries one. Two
+things can produce it: `pcsx2_texture_name` **derives** it from the texture's
+own bytes, and `tools/mvp05_ps2_texture_identities.py` **confirms** it by
+pairing a texture dump with the disc on **exact pixel equality**, RGBA with the
+CLUT's own 0..128 alpha and no tolerance at all.
+
+The corpus is the one that exists: **three single-frame GS dumps of one
+Cardinals half-inning at Fenway** — two batting frames and a batter
+introduction card — replayed headless with texture dumping and
+`ClassicTextureNames` on. 1,308 dumped files; **228 of them equal a disc image
+exactly**, and because parks share art those 228 identify **1,008 disc images
+carrying 76 distinct pictures**. 988 of the 1,008 share their picture with at
+least one other image, which is not an ambiguity the emulator has — PCSX2
+hashes pixels, so one replacement file covers every one of them — and each
+identity records how many others it shares with.
+
+| page (archives) | images | of them `0x0E` | derived name | **confirmed** | frames that drew one |
+|---|---:|---:|---:|---:|---:|
+| `stadiums.park_textures` (87 parks + 2) | 12,846 | 2,664 | 8,305 | **816** (59 pictures) | 3 of 3 |
+| `menus.widget_textures` (17 + logos + 59 loaders) | 2,400 | 859 | 317 | **13** | 3 of 3 |
+| `presentation.overlay_textures` (3) | 322 | 50 | 40 | **10** | 3 of 3 |
+| `uniforms.kit_banks` (2) | 555 | 555 | 0 | 0 | none |
+| `rosters.face_banks` (2) | 10,791 | 10,791 | 0 | 0 | none |
+| `field_art.banks` (8) | 224 | 224 | 0 | 0 | none |
+| everything else, incl. `MODELS.BIG` | 31,466 | 8,811 | 21,642 | **169** | 3 of 3 |
+| **all 211 archives** (`textures.bank_inventory`) | **58,604** | **23,954** | **30,304** | **1,008** | 3 of 3 |
+
+The zeros are the honest part. **Every image on the uniform, face and field-art
+pages is `0x0E`**, so nothing there can be paired even though two kits and a
+portrait are on screen in these very frames — §5 is why. And 1,008 confirmed of
+58,604 is a fact about a three-frame capture, not about the disc:
+`replacement_identity` answers with the confirmed name where there is one, the
+derived name where there is not, and the page says which of the two it is
+giving you.
+
+**Does the deriver agree with the emulator?** For every confirmed filename, the
+lane's derived names were compared with it string for string [M]:
+
+| GS pixel mode | confirmed names | derived name is the confirmed name | a different name | no name derived |
+|---|---:|---:|---:|---:|
+| `PSMT8` (19) | 2,088 | 1,890 | 0 | 198 |
+| `PSMT8H` (27) | 1,035 | 1,035 | 0 | 0 |
+| `PSMCT16` (2) | 60 | 0 | 0 | 60 |
+| **total** | **3,183** | **2,925** | **0** | **258** |
+
+**The `PSMT8H` row is a finding, and it is the reason the total is clean.**
+Those 1,035 names are of textures the game uploads as a *high-byte* surface —
+the 8-bit index in the top byte of a 32-bit word — and until this run the
+deriver only ever produced the `PSMT8` reading, so **every one of them was a
+disagreement**: a different `bits` word *and* a different TEX0 hash for the same
+pixels. Measured against the dump, the GS-block reading reproduces none of the
+1,035 and the plain **linear** reading reproduces all of them, which is what
+`pcsx2_texture_name.hashed_stream` now does for PSM 27; `derive_names` offers
+both modes because nothing on the disc says which one a draw will use.
+
+**The 258 with no derived name are 33 images, and the missing half is the
+CLUT** [M]. They are small widgets — 29 of the 33 are 8x8 — carrying a palette
+of 1, 2 or 9 entries, and this module derives a name only for an 8-bit image
+with a 256-entry palette, because PCSX2 hashes a 256-entry CLUT and the padding
+is not on the disc. It is not: the same 8x8 widget is dumped under several
+different CLUT hashes across three frames, so the game builds those CLUTs at
+run time and recolours them. The *TEX0* half is ours, though — of the 172
+distinct filenames involved, **132 have a TEX0 hash the disc bytes reproduce
+exactly, and every one of those 132 is a `PSMT8` name**; the 40 that do not are
+`PSMCT16` (PSM 2) draws, where the game uploaded the widget as 16-bit direct
+colour and the emulator hashed something else. So for these the dump is the
+only thing that can name them, and the page says exactly that rather than
+offering a name it cannot build.
+
+The evidence is `docs/product/measured/mvp05_ps2/pcsx2-texture-identities.json`
+(the table the lane reads), `…/pcsx2-texture-identity-derivation.json` (the
+census above) and `…/shps-0x0e-dump-pairing.json` (§5). **Naming a texture is
+not loading a pack**: no pack built from these names has been loaded in an
+emulator, so no lane offers a *Write PCSX2 pack* step.
+
+---
+
 ## 5. `SHPS` code `0x0E`: the verdict
 
 Every kit, portrait, head texture, loading screen and piece of field art on
@@ -248,6 +339,49 @@ back nothing rather than a half-right picture. Whoever picks it up starts at
 the selector semantics with the block map, the endpoint order and the raster
 order settled.
 
+### 5.1 The answer key that is not in the dump [M]
+
+The bounded hour ended on inference from the encoded bytes. The way to end the
+argument instead is an **answer key** — a picture of what one of these images
+decodes to — and a PCSX2 texture dump is one, because the emulator writes out
+the decoded texels of whatever the game drew. The three frames of §4.2 were
+searched for one, by four tests. **There is none in them**, and the last two
+tests are what make that a measurement rather than a failure to look:
+
+| # | test | candidates |
+|---|---|---:|
+| 1 | the dumped filename's CLUT hash equals a `0x0E` image's palette | 1 picture |
+| 2 | every colour a dumped picture uses is in a `0x0E` image's palette, in any order | the same 1 |
+| 3 | the payload can hold the picture (`w*h*3/8` bytes against the dumped texels' compressed size) | **0** |
+| 4 | the true index image has ≤ 4 distinct indices in *some* 16-texel block shape | **0** |
+
+Test 2 is the one with recall — this game does re-order some CLUTs before
+uploading them — and it is calibrated: on **198 pairings already known to be
+right whose CLUT hash differs from the disc palette, the colour-set test holds
+198 of 198** [M]. Across all 23,954 `0x0E` images and all 436 distinct dumped
+textures it finds one pairing, and 939 of the 1,308 dumped files have a size
+some `0x0E` image also has, so it was not starved of candidates.
+
+The one candidate is a 128x128 `PSMT8` texture whose CLUT is byte for byte the
+palette of one `MODELS.BIG` `0x0E` image — the only image on the disc carrying
+that palette. Inverting the palette on it succeeds completely (0 of 16,384
+pixels outside it, 528 ambiguous, 251 distinct indices), so the CLUT is
+certainly that image's; the texels are certainly not its decode. They compress
+to **122,072 bits** and the payload holds **49,152**, and their true index
+image reaches **16** distinct indices in a block where two endpoints and 2-bit
+selectors allow four — in every 16-texel shape tried (4x4, 8x2, 2x8, 16x1,
+1x16).
+
+**What that says is where the decode is not.** MVP's `0x0E` art does not reach
+the GS as an indexed texture PCSX2's dumper writes out, even though these
+frames drew some: one is a batter introduction card with a portrait on it and
+every portrait on the disc is `0x0E`, and both batters are in kits and every
+kit is `0x0E`. **Another scene will not help**; a capture that reaches the
+decoded buffer would. The whole search, with its counts, is
+`docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json`, and the
+endpoint order, block map and selector semantics stand exactly where the
+previous session left them — the dump neither confirms nor refutes them.
+
 ---
 
 ## 6. What still needs a boot
@@ -272,8 +406,11 @@ by these lanes; the trial in §4 is the recipe:
 Until those are recorded every writer row stays `offline-writer-proved` and
 every receipt keeps the sentence that says so.
 
-**Also unproved, and not on the boot list:** whether PCSX2 loads a pack built
-from the derived names — no dump of this game exists, so no name is confirmed.
+**Also unproved, and not on the boot list:** whether PCSX2 *loads* a pack built
+from these names. 1,008 of them are now confirmed against a dump (§4.2), which
+means the emulator wrote those filenames while drawing those pixels; it does
+not mean a pack under them has been put back in and seen on screen. That is a
+separate trial and nobody has run it.
 
 ---
 
@@ -284,12 +421,27 @@ export QT_QPA_PLATFORM=offscreen
 python -m mod_editor.games conformance --game mvp05_ps2          # 453 of 453
 python tools/validate_game_lane.py --game mvp05_ps2 --all         # five PASS tokens
 PYTHONPATH=. python tests/mod_editor/test_mvp05_ps2_lanes.py
+PYTHONPATH=. python tests/mod_editor/test_mvp05_ps2_identities.py
 PYTHONPATH=. python tests/mod_editor/test_ea_big.py tests/mod_editor/test_ea_shps.py
+PYTHONPATH=. python tests/mod_editor/test_pcsx2_texture_name.py
+python tools/mvp05_ps2_texture_identities.py --selftest
 ```
 
 The disc numbers are reproduced by `python -m mod_editor.games.mvp05_ps2.<lane> --source <iso>`
 for each lane module; each prints one line of counts and writes the
-catalogue document with `--out`.
+catalogue document with `--out`. §4.2's three tables are rebuilt in one command
+from the disc and a dump directory — about three minutes, of which the disc
+walk is 188 seconds and everything after it is seconds:
+
+```bash
+python tools/mvp05_ps2_texture_identities.py \
+    --source <iso> --dump-dir <texdumps>/SLUS-21135 \
+    --write-index <scratch>/index.jsonl --frame-labels <scratch>/frames.json
+```
+
+`--index <scratch>/index.jsonl` on a later run reads that index instead of
+walking the disc again; the index carries the palette-join hits too, so the
+`0x0E` verdict is reproduced from it without a second walk.
 
 ---
 

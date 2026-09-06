@@ -30,7 +30,10 @@ no palette entry and no bank name from any game is reproduced here.
    case: code `0x0E` is a **4×4-block codec** at 6 bytes per block — two 8-bit
    palette endpoints per block, whose layout is decoded, and 2-bit per-pixel
    selectors, whose semantics are not — and it holds every uniform, portrait,
-   head texture and loading screen on the disc. §5 is the measurement.
+   head texture and loading screen on the disc. §5 is the measurement, and it
+   now also records the **search of a real PCSX2 dump for an answer key**:
+   there is none in it, by four tests, one of them calibrated at 198 of 198 on
+   pairings already known to be right.
 3. **The palette is the part that is easy to get wrong twice**: a 256-entry
    CLUT is in the GS's CSM1 order and must be un-swapped, and a shorter one is
    padded past its declared length and must not be over-read. Both are settled
@@ -261,6 +264,64 @@ holds and two are corrected here:
    scramble the block map that raster order gets right); half-resolution
    8-bit plus a 1-bit or 4-bit plane, in either order.
 
+#### The ground-truth attempt: a PCSX2 dump was searched for an answer key, and there is none [M]
+
+Everything above is inference from the encoded bytes. The way to end the
+argument is an **answer key** -- a picture of what one of these images decodes
+to -- and a PCSX2 texture dump is exactly that, because the emulator writes out
+the decoded texels of whatever the game drew. One dump of MVP Baseball 2005
+now exists: three single-frame GS dumps replayed headless with texture dumping
+on (1,308 files, 436 distinct textures). It was searched, by
+`tools/mvp05_ps2_texture_identities.py`, with four tests. **It contains no
+decoded `0x0E` texture**, and the fourth test is what makes that a measurement
+rather than a failure to find one.
+
+| # | test | what it finds | result |
+|---|---|---|---:|
+| 1 | the dumped filename's CLUT hash equals a `0x0E` image's palette | a palette the game uploaded to the GS exactly as the disc stores it | 1 picture |
+| 2 | every colour a dumped picture uses is in a `0x0E` image's palette, **in any order** | the same, and also a palette the game re-ordered first | the same 1 |
+| 3 | the payload can hold the picture: `w*h*3/8` bytes against what the dumped texels compress to | whether a candidate could be a decode of that payload at all | **0** |
+| 4 | the true index image, palette inverted, has ≤ 4 distinct indices in **some** 16-texel block shape | whether two endpoints and sixteen 2-bit selectors could describe it | **0** |
+
+Test 2 is the one with recall, and it is calibrated rather than assumed: on
+**198 (dump, disc image) pairs that pair on exact pixels and whose CLUT hash
+differs from the disc palette** -- the game does re-order some CLUTs before
+uploading them -- the colour-set test holds **198 of 198** [M]. Across all
+23,954 `0x0E` images and all 436 distinct dumped textures it finds exactly one
+pairing, and 939 of the 1,308 dumped files have a size some `0x0E` image also
+has, so the search was not starved of candidates.
+
+**The one candidate, and why it is not a decode.** A 128x128 `PSMT8` texture
+whose CLUT is, byte for byte, the palette of one `0x0E` image (`MODELS.BIG`,
+128x128, a 6,144-byte payload -- the only image on the disc carrying that
+palette). Inverting that palette on it succeeds completely: **0 of 16,384
+pixels fall outside the palette**, 528 are ambiguous because their colour sits
+at more than one entry, and 251 distinct indices are used. So the CLUT is
+certainly that image's. The texels are not:
+
+* **capacity.** The dumped texel image compresses to 122,072 bits. The payload
+  is 6,144 bytes = **49,152 bits**. A decoder is a function of its input, so it
+  cannot emit more information than its input carries, whatever the codec is.
+* **block geometry.** Two endpoints and sixteen 2-bit selectors put **at most
+  four** distinct indices in a block. The true index image reaches **16** and
+  exceeds four in 1,010 to 1,019 of the 1,024 blocks under *every* 16-texel
+  shape tried -- 4x4, 8x2, 2x8, 16x1, 1x16.
+
+So the game uploaded that image's CLUT to the GS and PCSX2 read a texel page at
+that TEX0 which was not the decoded picture. **What the dump therefore says is
+where the decode is not, not what it is:** MVP's `0x0E` art does not reach the
+GS as an indexed texture the emulator's dumper writes out, even though the
+three frames demonstrably drew some -- one is a batter introduction card with a
+portrait on it and every portrait on the disc is `0x0E`, and both batters are
+in kits and every kit is `0x0E`. A different scene will not fix that; a capture
+method that reaches the decoded buffer would. `docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json`
+is the whole search with its counts.
+
+**None of this confirms or refutes the two-stream reading above.** With no
+answer key the endpoint order, the block map and the selector semantics stand
+exactly where the previous session left them: the first two by the
+flat-endpoint render, the third undecoded.
+
 So the reader names the code, quotes this measurement, and still hands back
 nothing: a half-right picture exported as if it were the texture is how a
 modder ships a corrupted uniform. The next person starts at the selector
@@ -319,7 +380,12 @@ block.
 
 - **`0x0E`'s per-pixel selectors**, §5. The block map, the endpoint order
   and the raster order are settled; the 2-bit selector semantics are not,
-  and they decide how much of an EA BIG disc's art a studio can show.
+  and they decide how much of an EA BIG disc's art a studio can show. The
+  cheapest way to settle them is still an answer key, and §5 records what a
+  three-frame PCSX2 dump of MVP Baseball 2005 did and did not supply — no
+  decoded `0x0E` texel reaches the GS as an indexed texture the emulator's
+  dumper writes out, so the next attempt needs a capture that reaches the
+  decoded buffer rather than another scene.
 - **`0x01`'s layout**, §5, and it may never be knowable from this disc.
 - **The four `misc` u16s** of a pixel block. Zero in every pixel block
   measured; `0x0E` blocks carry `(0, 0, 8196, 2)` and palettes `(entries, 0,

@@ -18,11 +18,16 @@ Two lane classes share one catalogue walker:
   entirely ``0x0E``: every bank and image listed with its dimensions and the
   measured refusal, nothing drawn and nothing written.
 
-PCSX2 replacement identities are **derived** for 8-bit images with a
-256-entry palette and power-of-two sides through the shared
-:mod:`~mod_editor.games._formats.pcsx2_texture_name`; no PCSX2 dump of this
-game exists in this project, so no identity is *confirmed*, and the page says
-so.  **Evidence tags.**  **[M]** measured on the retail disc.
+PCSX2 replacement identities come from two places.  They are **derived** for
+8-bit images with a 256-entry palette and power-of-two sides through the shared
+:mod:`~mod_editor.games._formats.pcsx2_texture_name` -- a computation over the
+texture's own bytes -- and they are **confirmed** for the images a PCSX2
+texture dump of this game has actually shown, by pairing that dump with the
+disc on exact pixel equality (``tools/mvp05_ps2_texture_identities.py``, table
+at :data:`IDENTITY_DOCUMENT`).  A confirmed name is what the emulator wrote; a
+derived one is what it would write.  :meth:`ShpsArtLane.replacement_identity`
+answers with the confirmed name where there is one and says which it is either
+way.  **Evidence tags.**  **[M]** measured on the retail disc.
 """
 
 from __future__ import annotations
@@ -46,8 +51,92 @@ from . import containers, disc_write
 
 MAX_TARGETS = 4000
 DERIVED_PREFIX = "derived:"
-NO_DUMP = ("No PCSX2 texture dump of MVP Baseball 2005 exists in this project, so no name here "
-           "is confirmed; the names offered are derived from the texture's own bytes.")
+CONFIRMED_PREFIX = "confirmed:"
+
+#: The tool that writes the identity table, and where it writes it.  The lane
+#: owns both because the lane is what reads the table.
+IDENTITY_TOOL = "tools/mvp05_ps2_texture_identities.py"
+IDENTITY_SCHEMA = "mvp05_ps2_pcsx2_texture_identities/v1"
+IDENTITY_DOCUMENT = Path("docs/product/measured/mvp05_ps2/pcsx2-texture-identities.json")
+
+#: What the whole corpus is, said once.  Three frames is three frames: it names
+#: the images those frames drew and nothing else, and every sentence below is
+#: careful to say which of the two kinds of name it is offering.
+DUMP_CORPUS = ("The one PCSX2 texture dump of this game here is three frames -- a Cardinals "
+               "game at Fenway -- so a confirmed name exists only for what those frames drew; "
+               "the table is docs/product/measured/mvp05_ps2/pcsx2-texture-identities.json.")
+NOT_CONFIRMED = ("No frame of that dump drew this texture, so the name offered is derived from "
+                 "the texture's own bytes and is not confirmed. " + DUMP_CORPUS)
+NO_DUMP = NOT_CONFIRMED
+
+#: The GS modes an 8-bit image on this disc is known to be drawn in.  The dump
+#: shows both: 8-bit textures uploaded as ``PSMT8`` and, for eighteen of the
+#: park textures it reached, as the high-byte ``PSMT8H`` -- a different ``bits``
+#: word *and* a different TEX0 hash for the same pixels [M].  Nothing on the
+#: disc says which a draw will use, so both names are offered.
+EXTRA_PSMS: Tuple[int, ...] = (pcsx2_texture_name.PSMT8H,)
+
+#: Cache: one parsed identity table per resolved path, read once per process.
+_IDENTITY_CACHE: Dict[str, Dict[str, Dict[str, Any]]] = {}
+
+
+def _identity_table(path: Optional[Path]) -> Dict[str, Dict[str, Any]]:
+    """``<archive>:<entry>:<image> -> {"names": {...}, "frames": [...]}``, or nothing at all.
+
+    An empty mapping is the honest answer when the table is absent, and it is
+    the state this lane shipped in: no name is invented and every sentence
+    falls back to the derived one.
+    """
+
+    if path is None:
+        return {}
+    resolved = Path(path)
+    if not resolved.is_absolute():
+        resolved = Path(__file__).resolve().parents[3] / resolved
+    cached = _IDENTITY_CACHE.get(str(resolved))
+    if cached is not None:
+        return cached
+    out: Dict[str, Dict[str, Any]] = {}
+    try:
+        document = json.loads(resolved.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        document = {}
+    if isinstance(document, Mapping) and document.get("schema") == IDENTITY_SCHEMA:
+        for key, entry in (document.get("identities") or {}).items():
+            names = entry.get("names") if isinstance(entry, Mapping) else None
+            if isinstance(names, Mapping) and names:
+                out[str(key)] = {
+                    "names": {str(convention): list(values)
+                              for convention, values in names.items() if values},
+                    "frames": list(entry.get("frames") or ()),
+                    # What the image *is*, so a name cannot land on a different
+                    # image that happens to sit at the same key.  A key is a
+                    # position -- archive, entry, image -- and a position is not
+                    # an identity: the synthetic disc the tests run on reuses
+                    # the real archive names on purpose.
+                    "shape": (int(entry.get("width") or 0), int(entry.get("height") or 0),
+                              str(entry.get("code") or "")),
+                }
+    _IDENTITY_CACHE[str(resolved)] = out
+    return out
+
+
+def load_identities(path: Optional[Path] = IDENTITY_DOCUMENT
+                    ) -> Dict[str, Dict[str, List[str]]]:
+    """``<archive>:<entry>:<image> -> {convention: [filenames]}`` a dump confirmed."""
+
+    return {key: entry["names"] for key, entry in _identity_table(path).items()}
+
+
+def _coverage_sentence(totals: Mapping[str, Any]) -> str:
+    """What this page's own numbers say about naming, said without rounding up."""
+
+    images = int(totals.get("images", 0))
+    named = int(totals.get("named", 0))
+    confirmed = int(totals.get("confirmed", 0))
+    return (f"{confirmed:,} of this page's {images:,} image(s) have a name a PCSX2 dump "
+            f"confirmed and {named:,} have one derived from their own bytes; the rest have "
+            f"neither. {DUMP_CORPUS}")
 
 
 def _key(archive: str, entry: int, image: int) -> str:
@@ -171,7 +260,7 @@ def _identities(bank: ea_shps.ShpsBank, image: ea_shps.ShpsImage) -> Tuple[Dict[
         levels = levels[:1]
     try:
         palette = ea_shps.read_palette(bank, image.palette, raw_alpha=True)
-        derived = pcsx2_texture_name.derive_names(levels, palette)
+        derived = pcsx2_texture_name.derive_names(levels, palette, extra_psms=EXTRA_PSMS)
     except Refusal as exc:
         return {}, f"no name is derived: {exc}"
     return pcsx2_texture_name.names_by_convention(derived), ""
@@ -196,14 +285,17 @@ class _Walker:
         return out
 
     def walk(self, source: Path, progress: Optional[Callable[[str], None]], *,
-             with_identities: bool) -> Dict[str, Any]:
+             with_identities: bool,
+             identities: Optional[Mapping[str, Mapping[str, Sequence[str]]]] = None
+             ) -> Dict[str, Any]:
+        confirmed_table = identities or {}
         rows: List[Dict[str, Any]] = []
         archives_out: List[Dict[str, Any]] = []
         refusals: List[Dict[str, str]] = []
         reasons: Dict[str, int] = {}
         codes: Dict[str, int] = {}
         scripts: List[Dict[str, Any]] = []
-        totals = {"banks": 0, "images": 0, "decodable": 0, "named": 0}
+        totals = {"banks": 0, "images": 0, "decodable": 0, "named": 0, "confirmed": 0}
         with containers.Disc(Path(source)) as disc:
             for name, entry in self.entries(disc):
                 if progress is not None:
@@ -215,7 +307,8 @@ class _Walker:
                     continue
                 summary = {"archive": name, "path": entry.path, "bytes": int(entry.length),
                            "entries": len(archive), "banks": 0, "images": 0, "decodable": 0,
-                           "named": 0, "packed": archive.compressed_count(), "codes": {}}
+                           "named": 0, "confirmed": 0, "packed": archive.compressed_count(),
+                           "codes": {}}
                 for row in archive.entries:
                     if row.size == 0 or archive.entry_format(row.index) != "SHPS":
                         continue
@@ -240,6 +333,16 @@ class _Walker:
                             "mip_bytes": image.mip_bytes, "packed": archive.is_compressed(row.index),
                             "slot_bytes": archive.slot_bytes(row.index), "stored_bytes": row.size,
                         }
+                        confirmed = confirmed_table.get(_key(name, row.index, image.index))
+                        if confirmed and confirmed.get("shape") not in (
+                                None, (image.width, image.height, code)):
+                            confirmed = None
+                        if confirmed:
+                            record["confirmed_names"] = {
+                                str(convention): list(values)
+                                for convention, values in (confirmed.get("names") or {}).items()}
+                            record["frames"] = list(confirmed.get("frames") or ())
+                            summary["confirmed"] += 1
                         if reason is None:
                             summary["decodable"] += 1
                             if with_identities:
@@ -254,7 +357,7 @@ class _Walker:
                             reasons[short] = reasons.get(short, 0) + 1
                             record["reason"] = reason
                         rows.append(record)
-                for key in ("banks", "images", "decodable", "named"):
+                for key in ("banks", "images", "decodable", "named", "confirmed"):
                     totals[key] += summary[key]
                 archives_out.append(summary)
             for name, entry in containers.archives_named(disc, self.script_archives):
@@ -298,15 +401,18 @@ class ShpsArtLane:
 
     def build_catalogue(self, source: Path, *,
                         progress: Optional[Callable[[str], None]] = None) -> Catalogue:
-        walked = self.walker.walk(Path(source), progress, with_identities=True)
+        walked = self.walker.walk(Path(source), progress, with_identities=True,
+                                  identities=_identity_table(IDENTITY_DOCUMENT))
         targets = [self._target(row) for row in walked["rows"][:self.max_targets]]
+        totals = walked["totals"]
         document = {
             "schema": self.catalogue_schema, "source": str(source),
             "archives": walked["archives"], "scripts": walked["scripts"],
             "codes": walked["codes"], "refused_by_reason": walked["reasons"],
-            "refusals": walked["refusals"], **walked["totals"],
+            "refusals": walked["refusals"], **totals,
             "targets_listed": len(targets), "targets_cap": self.max_targets,
-            "identity_note": NO_DUMP, "runtime_note": disc_write.NOT_BOOTED,
+            "identity_note": _coverage_sentence(totals), "identity_tool": IDENTITY_TOOL,
+            "identity_document": str(IDENTITY_DOCUMENT), "runtime_note": disc_write.NOT_BOOTED,
             "rows": [{k: v for k, v in row.items() if k != "derived_names"} for row in walked["rows"]],
         }
         return Catalogue(self.catalogue_schema, self.lane_id, str(source), tuple(targets), document)
@@ -383,30 +489,74 @@ class ShpsArtLane:
                                 f"entry and {len(indices):,} index byte(s) would be written. "
                                 f"{disc_write.NOT_BOOTED}"))
 
-    def replacement_identity(self, target: Target) -> Optional[str]:
-        names = target.raw.get("derived_names") if isinstance(target.raw, Mapping) else None
-        if isinstance(names, Mapping):
-            for convention in (pcsx2_texture_name.CONVENTION_MODERN, pcsx2_texture_name.CONVENTION_CLASSIC):
-                values = names.get(convention)
-                if values:
-                    return values[0]
-        return None
-
-    def replacement_identities(self, target: Target) -> Dict[str, List[str]]:
-        names = target.raw.get("derived_names") if isinstance(target.raw, Mapping) else None
+    @staticmethod
+    def _names(target: Target, field_name: str) -> Dict[str, List[str]]:
+        names = target.raw.get(field_name) if isinstance(target.raw, Mapping) else None
         if not isinstance(names, Mapping):
             return {}
-        return {DERIVED_PREFIX + str(k): list(v) for k, v in names.items() if v}
+        return {str(convention): list(values) for convention, values in names.items() if values}
+
+    @staticmethod
+    def _first(names: Mapping[str, Sequence[str]]) -> Optional[str]:
+        for convention in (pcsx2_texture_name.CONVENTION_MODERN,
+                           pcsx2_texture_name.CONVENTION_CLASSIC):
+            values = names.get(convention)
+            if values:
+                return values[0]
+        for values in names.values():
+            if values:
+                return values[0]
+        return None
+
+    def replacement_identity(self, target: Target) -> Optional[str]:
+        """The confirmed name where a dump has shown one, the derived name otherwise.
+
+        A confirmed name wins because it is a measurement of what the emulator
+        wrote and a derived one is a computation of what it would write; where
+        the two agree it makes no difference, and where they disagree the
+        measurement is the one a pack has to carry.
+        """
+
+        return (self._first(self._names(target, "confirmed_names"))
+                or self._first(self._names(target, "derived_names")))
+
+    def replacement_identities(self, target: Target) -> Dict[str, List[str]]:
+        out = {CONFIRMED_PREFIX + convention: values
+               for convention, values in self._names(target, "confirmed_names").items()}
+        out.update({DERIVED_PREFIX + convention: values
+                    for convention, values in self._names(target, "derived_names").items()})
+        return out
 
     def identity_note(self, target: Target) -> str:
-        names = self.replacement_identities(target)
-        if names:
-            first = next(iter(names.values()))[0]
+        confirmed = self._names(target, "confirmed_names")
+        derived = self._names(target, "derived_names")
+        if confirmed:
+            first = self._first(confirmed)
+            frames = ""
+            raw_frames = target.raw.get("frames") if isinstance(target.raw, Mapping) else None
+            if isinstance(raw_frames, Sequence) and not isinstance(raw_frames, str):
+                frames = f" in {len(raw_frames)} frame(s) of the capture"
+            if not derived:
+                why = (target.raw.get("derived_note") if isinstance(target.raw, Mapping) else "") or ""
+                tail = ("Nothing is derived for this image, so the dump is the only thing that "
+                        "names it" + (f" ({why[len('no name is derived: '):]})" if why.startswith(
+                            "no name is derived: ") else "") + ". ")
+            elif (first in (derived.get(pcsx2_texture_name.CONVENTION_MODERN) or ())
+                    or first in (derived.get(pcsx2_texture_name.CONVENTION_CLASSIC) or ())):
+                tail = "The deriver produces that same name from the disc bytes. "
+            else:
+                tail = ("The deriver produces a different name from the disc bytes, so the "
+                        "confirmed one is the one to use. ")
+            return (f"Confirmed by a PCSX2 dump{frames}: {first} is the name the emulator wrote, "
+                    f"{sum(len(v) for v in confirmed.values())} name(s) in all. "
+                    + tail + DUMP_CORPUS)
+        if derived:
+            first = self._first(derived)
             return (f"Derived from this texture's own bytes: {first} is the modern name; "
-                    f"{sum(len(v) for v in names.values())} name(s) cover every mip range and both "
-                    f"TCC values. {NO_DUMP}")
+                    f"{sum(len(v) for v in derived.values())} name(s) cover every mip range, both "
+                    f"TCC values and both GS pixel modes. {NOT_CONFIRMED}")
         note = target.raw.get("derived_note") if isinstance(target.raw, Mapping) else None
-        return f"{note or 'No name is derived for this image'}. {NO_DUMP}"
+        return f"{note or 'No name is derived for this image'}. {NOT_CONFIRMED}"
 
     # editing -----------------------------------------------------------------
 
@@ -528,7 +678,7 @@ class ShpsArtLane:
                     {"schema": self.recipe_schema, "textures": composed["textures"],
                      "entries": composed["rewrites"],
                      "declared_bytes": sum(r.length for r in ranges),
-                     "identity_note": NO_DUMP, "runtime_note": disc_write.NOT_BOOTED})
+                     "identity_note": DUMP_CORPUS, "runtime_note": disc_write.NOT_BOOTED})
 
     def build(self, source: Path, destination: Path, recipe: Mapping[str, Any],
               catalogue: Catalogue, *, work_dir: Optional[Path] = None) -> Receipt:
@@ -543,7 +693,7 @@ class ShpsArtLane:
                     "archives": [{"name": n, "path": composed["paths"][n], "bytes": len(b),
                                   "sha256": disc_write.sha256(b)}
                                  for n, b in sorted(composed["written"].items())],
-                    "iso_report": report, "identity_note": NO_DUMP,
+                    "iso_report": report, "identity_note": DUMP_CORPUS,
                     "runtime_note": disc_write.NOT_BOOTED}
         return Receipt(self.write_schema, self.lane_id, str(source), str(destination), ranges, document)
 
@@ -666,7 +816,8 @@ class ShpsBankLane:
 
     def build_catalogue(self, source: Path, *,
                         progress: Optional[Callable[[str], None]] = None) -> Catalogue:
-        walked = self.walker.walk(Path(source), progress, with_identities=False)
+        walked = self.walker.walk(Path(source), progress, with_identities=False,
+                                  identities=_identity_table(IDENTITY_DOCUMENT))
         targets = []
         for row in walked["rows"][:self.max_targets]:
             targets.append(Target(
@@ -684,7 +835,8 @@ class ShpsBankLane:
                     "archives": walked["archives"], "codes": walked["codes"],
                     "refused_by_reason": walked["reasons"], "refusals": walked["refusals"],
                     **walked["totals"], "targets_listed": len(targets), "targets_cap": self.max_targets,
-                    "why": self.REFUSAL,
+                    "why": self.REFUSAL, "identity_note": _coverage_sentence(walked["totals"]),
+                    "identity_tool": IDENTITY_TOOL, "identity_document": str(IDENTITY_DOCUMENT),
                     "rows": [{k: v for k, v in row.items() if k != "derived_names"} for row in walked["rows"]]}
         return Catalogue(self.catalogue_schema, self.lane_id, str(source), tuple(targets), document)
 
@@ -805,6 +957,8 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 __all__ = ["ART_VALIDATORS", "BLOCK_CODEC_REFUSAL", "FACE_LANE", "FIELD_ART_LANE", "LANES_BY_NAME",
+           "CONFIRMED_PREFIX", "DUMP_CORPUS", "IDENTITY_DOCUMENT", "IDENTITY_SCHEMA",
+           "IDENTITY_TOOL", "load_identities", "NOT_CONFIRMED",
            "MAX_TARGETS", "MENU_LANE", "NO_DUMP", "PRESENTATION_LANE", "STADIUM_LANE",
            "ShpsArtLane", "ShpsBankLane", "UNIFORM_LANE", "parse_key", "read_rgba_png"]
 

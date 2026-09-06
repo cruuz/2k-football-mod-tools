@@ -1,0 +1,256 @@
+{
+ "block_image_sizes": [
+  "32x256",
+  "64x32",
+  "64x64",
+  "64x128",
+  "128x32",
+  "128x64",
+  "128x128",
+  "128x256",
+  "256x32",
+  "256x64",
+  "256x128",
+  "256x256",
+  "256x512",
+  "512x32",
+  "512x64",
+  "512x128",
+  "512x256",
+  "512x512",
+  "1024x256"
+ ],
+ "block_images": 23954,
+ "block_images_with_a_256_entry_clut": 23831,
+ "clut_hash_candidates": [
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "classic",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  },
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "classic",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00005dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  },
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "modern",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  }
+ ],
+ "disc_images_paired_to_a_dumped_texture": 1008,
+ "dump_directory": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/wp-identities/texdumps-20260905/SLUS-21135",
+ "dump_files": 1308,
+ "dump_files_whose_size_a_block_image_also_has": 939,
+ "dump_textures": 436,
+ "generated_by": "tools/mvp05_ps2_texture_identities.py",
+ "ground_truth_probes": [
+  {
+   "block_image": "MODELS.BIG:470:10",
+   "block_shapes": [
+    {
+     "block": "4x4",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "8x2",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "2x8",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "16x1",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1019,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "1x16",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1010,
+     "most_distinct_indices_in_a_block": 16
+    }
+   ],
+   "convention": "classic",
+   "distinct_true_indices": 251,
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_pixels_outside_the_palette": 0,
+   "dumped_pixels_whose_colour_is_at_more_than_one_index": 528,
+   "palette_distinct_colours": 251,
+   "palette_entries": 256,
+   "reading": "Two 8-bit endpoints and sixteen 2-bit selectors put at most four distinct indices in a block. A shape with blocks above four rules that reading out for that shape; every shape ruled out rules the pairing out.",
+   "size": "128x128"
+  },
+  {
+   "block_image": "MODELS.BIG:470:10",
+   "block_shapes": [
+    {
+     "block": "4x4",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "8x2",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "2x8",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "16x1",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1019,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "1x16",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1010,
+     "most_distinct_indices_in_a_block": 16
+    }
+   ],
+   "convention": "classic",
+   "distinct_true_indices": 251,
+   "dump": "c614023431f1a62d-25da022c848a6e78-00005dd3.png",
+   "dumped_pixels_outside_the_palette": 0,
+   "dumped_pixels_whose_colour_is_at_more_than_one_index": 528,
+   "palette_distinct_colours": 251,
+   "palette_entries": 256,
+   "reading": "Two 8-bit endpoints and sixteen 2-bit selectors put at most four distinct indices in a block. A shape with blocks above four rules that reading out for that shape; every shape ruled out rules the pairing out.",
+   "size": "128x128"
+  }
+ ],
+ "palette_hunt_ran": true,
+ "palette_subset_candidates": [
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "classic",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  },
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "classic",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00005dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  },
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "modern",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  }
+ ],
+ "question": "Does this texture dump carry the decoded pixels of any SHPS code-0x0E image, which would be the answer key the codec needs?",
+ "schema": "mvp05_ps2_shps_0x0e_dump_pairing/v1",
+ "source": "mvp05.iso",
+ "tests": [
+  {
+   "candidates": 3,
+   "finds": "a palette the game uploaded to the GS exactly as the disc stores it",
+   "test": "the CLUT hash in the dumped filename equals a 0x0E image's palette"
+  },
+  {
+   "candidates": 3,
+   "finds": "the same, and also a palette the game re-ordered before uploading it",
+   "ran": true,
+   "test": "every colour a dumped picture uses is in a 0x0E image's palette, in any order"
+  },
+  {
+   "candidates": 0,
+   "finds": "whether a candidate could be a decode of that payload at all",
+   "test": "the payload can hold the picture: w*h*3/8 bytes against what the dumped texels compress to"
+  },
+  {
+   "candidates": 0,
+   "finds": "whether two endpoints and sixteen 2-bit selectors could describe it",
+   "probed": 2,
+   "test": "the true index image, palette inverted, has at most four distinct indices in some 16-texel block shape"
+  }
+ ],
+ "verdict": "no dumped texture is a decoded 0x0E image: the 3 candidate(s) a palette join finds carry more information than the 0x0E payload can hold, and their true index images have far more than four distinct indices in every 16-texel block shape, so no decoder could have produced them from it"
+}
