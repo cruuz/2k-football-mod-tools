@@ -183,6 +183,7 @@ class PatchWriteTests(unittest.TestCase):
         if screen_hooks.status(cls.patched) != "applied":
             raise AssertionError("screen hooks owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_modern_naming as modern_naming
+        cls.patched, _ = modern_naming.apply(cls.patched)
         if modern_naming.status(cls.patched) != "applied":
             raise AssertionError("Modern mode text missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
