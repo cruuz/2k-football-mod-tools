@@ -1,3 +1,44 @@
+# r62 community stadium Blender add-ons review, 2026-09-06
+
+**Decision: DO NOT SHIP Importer v0.11.1 / Exporter v0.3.0.** Real Blender
+4.0.2 and retail Models checks are in `ASTRA_STADIUM_BLENDER_ADDONS_REPORT.md`.
+The supplied scripts remain private review inputs in `.scratch/community/`;
+there are no approved copies under `tools/blender/community/` and no version
+bump suggesting the defects were repaired.
+
+Add exactly these documentation paths to protected
+`packaging/release-allowlist.txt` (deduplicate if another handoff added one):
+
+```text
+ASTRA_STADIUM_BLENDER_ADDONS_REPORT.md
+docs/mod_editor/nfl2k5_stadium_blender_workflow.md
+docs/mod_editor/nfl2k5_stadium_community_addons_proof.json
+```
+
+The guide link is
+`docs/mod_editor/nfl2k5_stadium_blender_workflow.md#community-stadium-add-ons-withheld-from-beta-62`.
+Do not add either community `.py`, its upstream README, or a
+`tools/blender/community/` glob to the release allowlist. The new proof tool
+and standalone audit tests are developer tools, not product dependencies.
+The pre-existing Stadiums texture helper handoff remains separate.
+
+| Integration point required by the brief | This review |
+| --- | --- |
+| Dispatcher `_apply_all` tuple / kwarg / four status dictionaries | No change; no patch or dispatcher participant |
+| `BuildPlan` field / basic, advanced, experimental presets | No field; no preset enables these add-ons |
+| Gameplay Patches PATCHES text containing Retail and Patch / NEEDS_IMAGE | No row or image dependency; no Retail Patch introduced |
+| Build `_option` caption (at most 60 chars) | No checkbox |
+| Runtime closure imports | None; never import `bpy` in Mod Studio |
+| Capability registry | No new product surface or capability; no count changes |
+| XBE owners / cave manifest / both gates | No change |
+
+Do not present successful Models compilation as validation of Blender output:
+the Models writer can accept the incorrectly rotated geometry. A future
+community revision needs exact no-op bytes, correct handle axes, original-row
+preservation, ambiguity refusal and safe output publication before it can be
+reconsidered. Credit the community, not the submitted `author: OpenAI` label.
+All protected files were left unchanged in this task.
+
 # r62 calendar continuation: remaining integration, 2026-09-06
 
 **EXPERIMENTAL / UNWITNESSED.** This section updates the calendar handoff

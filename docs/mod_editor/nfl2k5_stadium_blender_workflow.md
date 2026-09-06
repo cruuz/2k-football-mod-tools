@@ -107,3 +107,27 @@ That directory contains game-derived bytes and is not a distributable modpack.
 Use Mod Studio's normal project/build/modpack flow for distribution. The proof
 JSON contains no game bytes; glTFs, stock PNGs, `.blend` files and compiled SCNE
 spans remain private user assets.
+
+## Community stadium add-ons: withheld from beta 62
+
+The community **Stadium Importer v0.11.1** and **Round-Trip Exporter v0.3.0**
+were tested in Blender 4.0.2 with a real Models export. They are **not approved
+or bundled**. An untouched Fast Template Export changed 148,712 BIN bytes,
+including positions in the wrong coordinate axes. Moving a handle also used
+the wrong axes. The exporter can overwrite the original template and does
+not write its two output files transactionally. See the
+[review and byte evidence](../../ASTRA_STADIUM_BLENDER_ADDONS_REPORT.md).
+
+These add-ons target **Models > Export, then Models > Import**. The Stadiums
+export has textures and UVs but does not supply their required vertex-ID
+attribute. A shared unit root does not make the two return paths compatible.
+Do not feed these versions' Fast Template outputs back into Models. Retain
+your original export and saved Blender scene while awaiting a corrected,
+validated community release. Continue using the texture workflow above for
+Stadiums image edits; for the existing Models workflow, follow the README
+generated beside each Models export and review its import receipt.
+
+Any future bundled version must credit the community contributor. The
+submitted `author: OpenAI` metadata does not establish OpenAI authorship or
+endorsement. Game appearance, visibility, collision and loading remain
+**EXPERIMENTAL / UNWITNESSED** until Noah performs the report's witness checks.
