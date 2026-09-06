@@ -1,0 +1,66 @@
+{
+  "backend": {
+    "module": "mod_editor/core/nfl2k5_read_option_runtime.py",
+    "operation": "write",
+    "command": "python3 -m mod_editor.core.nfl2k5_read_option_runtime apply source.xbe --output new-read-option.xbe --table compiled-intent.bin"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_READ_OPTION_RUNTIME_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_read_option_runtime.py",
+    "tests/mod_editor/test_nfl2k5_read_option_unicorn.py",
+    "tools/nfl2k5_read_option_runtime.S"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. No in-game prompt or live replacement-edge search in this bounded first runtime. Protected integration is in WIRING.md."
+  },
+  "id": "nfl2k5.gameplay.read_option_runtime",
+  "input_constraints": [
+    "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes.",
+    "At most two authored read plays, bound to exact PLAY/compiler receipt pairs. Empty table is dormant.",
+    "RPO receiver must be slot 7 or 8; receiver slot 6 shares the snap button. Native speed options are excluded."
+  ],
+  "portme": [
+    "Complete the pending prompt and live unblocked-edge fallback before describing the full brief as implemented.",
+    "Run Noah's paired witness list in ASTRA_READ_OPTION_RUNTIME_REPORT.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Bounded installed instructions, native loader, held input tables, receiver readiness, synchronization and branch exits proved. Game boot, movement, mesh/throw animation and defensive responsibility unwitnessed.",
+    "evidence": [
+      "ASTRA_READ_OPTION_RUNTIME_REPORT.md"
+    ]
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "read_option_runtime",
+        "required": true,
+        "allowed": "false in Basic, Advanced and Experimental; explicit opt-in"
+      }
+    ],
+    "notes": "Two paired authored reads. Human release to give, hold to keep; RPO uses its receiver button during the .35-second logical snap window."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "one pinned 9-byte live hook, 960 RX bytes and 64 RO bytes; no new RW allocation",
+    "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+  },
+  "summary": "Paired custom reads latch give, keep or pass with modern hold-to-keep controls and a CPU edge read.",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Read option mesh controls (experimental, unwitnessed)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_runtime"
+}

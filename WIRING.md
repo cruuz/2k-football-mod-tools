@@ -5514,3 +5514,182 @@ not claim a witnessed runtime outcome.
 Run both new standalone Rules test files, the existing authoring/writer,
 defense/read-option and pack suites, and protected Studio/runtime closure
 checks after wiring. No updater, tag, workflow or push change is requested.
+# r62 read-option runtime handoff, 2026-09-06
+
+This section is the handoff for `astra/r62-read-option-runtime`. It supersedes
+only earlier deferred-runtime notes for this feature. EXPERIMENTAL / UNWITNESSED.
+All three presets remain OFF. No protected file was edited in this branch.
+
+The delivered core has modern hold/release input, a versioned read-only table,
+a CPU position/velocity policy, a native receiver-readiness gate, and a
+single condition-task decision shared through the native QB/back cache. The
+requested in-game prompt and live search for a replacement unblocked EDGE are
+NOT implemented. Do not call this a finished dependable-read feature or enable
+it automatically. The report describes the exact limits and pending work.
+
+## BuildPlan and paired PLAY artifacts
+
+In protected `mod_editor/core/mod_build.py` add:
+
+```python
+read_option_runtime: bool = False
+```
+
+Add it to `wants_xbe_patch()`, the Boolean normalization/validation list, inspect
+and availability/status forwarding, and every grow-owner deferral/final-pass
+condition alongside `qb_spy`. Explicitly set it False in `softdrink_basic`,
+`softdrink_advanced` and `softdrink_experimental`; changing presets must clear a
+prior true value. No independent acceleration-ramp or defensive setting changes.
+
+As with the existing `spy_pairs`, retain each final PLAY replacement and its
+complete compiler receipt for authored reads. After ALL edits to that resource,
+call the new `nfl2k5_play_library.compile_read_option_intent_table(read_pairs)`.
+Its input is a sequence of `(exact_replacement_bytes, compiler_report)` tuples.
+It verifies `replacement_sha256`, the option schema, both participant scripts,
+formation/personnel intent, capacity and unique identity before allocating or
+writing the output. It excludes every native speed option. A selected Build
+checkbox requires at least one read row; fail clearly if none was authored.
+
+Do not feed a receipt from an intermediate gun, defense, clone, mirror, retarget
+or import pass to this compiler after another pass has changed its resource.
+Carry the authored intents into the FINAL writer invocation or reject the stale
+pair and require a recompile. Never regenerate a matching hash on a stale receipt.
+Persist this table's receipt in the build output as `read_option_intent_table`,
+beside the paired PLAY receipts. An empty table is supported for dormant owner
+composition and lower-level XBE tests, not a successful selected UI feature.
+
+Pass `read_option_runtime=False` in the early ordinary-XBE pass, and reserve its
+REQUESTS in the final complete union. In the final owner pass forward the real
+Boolean and `read_option_intent_table=read_table`. Do not add a new PLAY opcode.
+RPO receiver 6 is explicitly refused because its A button shares the snap hold;
+choose receiver 7 or 8. The existing data-only presets and pack schema stay intact.
+
+## Dispatcher, allocator and all four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py` import:
+
+```python
+from . import nfl2k5_read_option_runtime as read_option_patch
+```
+
+Add keyword arguments to `_apply_all`, `write_xbe_copy`, and `write_image_copy`
+and forward them through every caller:
+
+```python
+read_option_runtime: bool = False,
+read_option_intent_table: bytes | None = None,
+```
+
+Validate an actual Boolean. A table must be bytes, validate with
+`read_option_patch.validate_intent_table`, and require the Boolean when a table
+is supplied. Omitted table on replay preserves the installed table; a different
+explicit table refuses and requires rebuilding from a supported source.
+
+Extend `_selected_space_requests`, `_xbe_space_adapter`, the inherited
+`_defensive_try_adapter`, their signatures/callers, and grow-owner conditions:
+
+```python
++ (read_option_patch.REQUESTS if read_option_runtime else ())
+```
+
+Include `or read_option_runtime` in the allocator entry and both writers'
+nothing-requested conditions. Add this adapter and tuple in the final owners
+AFTER the allocator tuple, beside the existing QB spy adapter:
+
+```python
+class _read_option_adapter:
+    def __init__(self, table):
+        self.table = table
+
+    @staticmethod
+    def status(payload):
+        return read_option_patch.status(payload)
+
+    def apply(self, payload):
+        return read_option_patch.apply(payload, intent_table=self.table)
+
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+```
+
+In `_grown_status_fields(payload)` add:
+
+```python
+"read_option_runtime": read_option_patch.status(payload),
+"read_option_runtime_settings": read_option_patch.read_settings(payload),
+```
+
+Ensure these land in ALL FOUR dictionaries: `read_xbe` and `read_image` use
+`payload`, `write_xbe_copy` uses `result`, `write_image_copy` uses `after`.
+Forward them through `mod_build.inspect`, `_allocator_feature_status`, build
+receipts and output inspection. The settings report actual installed row count,
+table hash and mesh policy. Foreign/uninstalled settings are None. Preserve the
+exact owner receipt including full hook span, allocation, hashes, changed bytes,
+zero RW budget and `experimental=True`, `runtime_witnessed=False`.
+
+## Gameplay Patches and Build tab
+
+In protected `mod_editor/gui/gameplay_patches_panel_qt.py`, add a PATCHES row
+with key `read_option_runtime`, title `Read option mesh controls (experimental)`,
+and description `read_option_patch.HELP_TEXT`. The exact text is:
+
+> EXPERIMENTAL / UNWITNESSED. Retail: option plays use the original pitch and
+> position rules. Patch: paired authored reads use release to give and hold the
+> snap button to keep at the mesh. CPU QBs read the selected edge. RPO throws
+> require the intended receiver to be ready. The in-game prompt and a replacement
+> defender search are not included. All presets are off.
+
+This contains the required words Retail and Patch. Add the key to NEEDS_IMAGE
+because an enabled product build needs its paired PLAY resource. Preserve the
+normal foreign-image refusal and receipt read-back, rather than reporting the
+checkbox as proof of installation.
+
+In protected `mod_editor/gui/build_panel_qt.py` add the Boolean `_option` using
+caption `Read option mesh controls (experimental)` (40 characters), default
+False. Bind it to BuildPlan collection, preset application, reset and post-build
+status; use HELP_TEXT for its description. Show the two-read capacity/refusal
+before building. Do not present this box as authoring new plays automatically.
+Any existing Studio or Gameplay forwarding lists in the other protected panels
+need the same key. No new feature-specific GUI panel is necessary.
+
+## Release allowance, closure, capability and manifest
+
+Add exactly these lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+```
+
+Add these explicit runtime-closure imports to protected
+`packaging/check_2k5_mod_studio_runtime.py` and the gameplay provider closure:
+
+```text
+mod_editor.core.nfl2k5_read_option_runtime
+mod_editor.core.nfl2k5_read_option_runtime_code
+```
+
+The already-shipped play library, inspector, codec, allocator, cave reader and
+section-digest helper remain dependencies. No GNU assembler, Unicorn, Capstone,
+private research file, test module or generated game bytes are runtime assets.
+The .S and assembler are development sources; end-user application uses the
+checked-in reproducible Python byte template.
+
+Merge `docs/mod_editor/nfl2k5_read_option_runtime_capability.json` into the
+capability registry by ID `nfl2k5.gameplay.read_option_runtime`, on the existing
+`gameplay_tuning_sliders` surface. Both commands use `python3 -m dotted.module`
+so file-check validation resolves them. Keep `offline-writer-proved`, runtime
+`not-tested`, explicit limitations and all presets off.
+
+The unprotected complete-owner stack, both XBE gates, all manifest owner lists
+and the budget fixture are already updated in this branch. Claude must regenerate
+protected `data/nfl2k5_cave_reservations.json` after merging final sources and this
+wiring. The scratch manifest is verification evidence, not a replacement for
+that protected release artifact. Add `read_option_runtime=False` to the manifest
+builder's dormant-base BuildPlan replacement once the protected BuildPlan field
+exists, so future preset changes cannot preallocate an incomplete request union.
+
+Acceptance after wiring: two paired reads selected, a dormant empty table at
+backend level, no read recipes with the checkbox on (refusal), all presets reset
+off, changed/stale PLAY receipt refusal, two controllers/layouts, both XBE gates,
+capability file check, staged runtime closure, and Noah's pending witness list.

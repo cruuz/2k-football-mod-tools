@@ -1462,7 +1462,8 @@ RETAIL_DEFENSE_PERSONNEL_FINGERPRINTS = {
 }
 
 
-# Native option authoring: data only, no runtime target resolver or mesh timer.
+# Native option authoring. Existing presets remain usable as the data tier;
+# the separate, explicitly selected runtime consumes paired compiler receipts.
 OPTION_PRESETS = ('Speed option', 'Zone read (experimental)', 'RPO (experimental)')
 OPTION_INTENT_SCHEMA = 'nfl2k5_option_intent/v1'
 OPTION_NOTICE = ('EXPERIMENTAL / UNWITNESSED. The read is position/velocity based; '
@@ -1624,6 +1625,106 @@ def option_intent_from(value: object) -> dict | None:
     if 'receiver_slot' in value and (type(value['receiver_slot']) is not int or value['receiver_slot'] not in (6, 7, 8)):
         raise ValueError('RPO receiver must be slot 6, 7 or 8')
     return json.loads(json.dumps(value))
+
+
+def compile_read_option_intent_table(compilations=()) -> tuple[bytes, dict]:
+    """Bind the opt-in runtime to exact PLAY outputs and versioned receipts.
+
+    This is a separate build artifact; it never mutates PLAY or turns on a
+    runtime merely because an experimental data preset was authored. Two
+    reads fit the fixed 1 KiB runtime budget. Native speed options are excluded.
+    Names and both participant scripts are checked again after native pointer
+    relocation. Full resource SHA-256 pairing is checked here, before a build.
+    """
+    import hashlib
+    from collections.abc import Mapping
+    from . import nfl2k5_read_option_runtime as runtime
+    from .nfl2k5_playbook_inspector import parse_playbook_resource
+
+    def require(ok, message):
+        if not ok:
+            raise runtime.ReadOptionError(message)
+
+    def fingerprint(content):
+        value = 0x811C9DC5
+        for octet in content:
+            value = ((value ^ octet) * 0x01000193) & 0xFFFFFFFF
+        return value
+
+    def name(body, field):
+        relative = struct.unpack_from('<i', body, field)[0]
+        start = field + relative - 1
+        require(relative != 0 and 0x10840 <= start <= 0x13390 - 128 and start % 2 == 0,
+                'Read option identity name is outside the bounded string pool')
+        for end in range(start, start + 126, 2):
+            if body[end:end+2] == b'\0\0':
+                require(end > start, 'Read option names must be nonempty')
+                return body[start:end]
+        raise runtime.ReadOptionError('Read option identity name is too long')
+
+    rows, records, identities = [], [], set()
+    for resource, receipt in compilations:
+        require(isinstance(resource, bytes) and isinstance(receipt, Mapping),
+                'Expected exact PLAY bytes and compiler receipt')
+        require(hashlib.sha256(resource).hexdigest() == receipt.get('replacement_sha256'),
+                'Stale read option PLAY/receipt pairing')
+        intents = receipt.get('option_intent')
+        require(isinstance(intents, Mapping) and set(intents) == {'schema', 'records'}
+                and intents['schema'] == OPTION_INTENT_SCHEMA and isinstance(intents['records'], list),
+                'Expected versioned option compiler records')
+        book = parse_playbook_resource(resource, asset_id=receipt.get('asset_id', 'read:book'))
+        body = resource[32:]
+        book_hash = fingerprint(name(body, 0x30))
+        for record in intents['records']:
+            require(isinstance(record, Mapping), 'Invalid option compiler record')
+            intent = option_intent_from(record.get('intent'))
+            require(intent is not None, 'Missing option intent')
+            if intent['preset'] == OPTION_PRESETS[0]:
+                continue
+            pi = record.get('play_index')
+            require(type(pi) is int and 0 <= pi < len(book.plays), 'Invalid read option play index')
+            require(book.plays[pi].family_id == 0, 'Read option requires an offensive play')
+            flags, assignments = play_chains(body, pi)
+            codec.validate_sync(assignments)
+            validate_option_intent(intent, assignments, book, body)
+            require(codec.Node.from_bytes(assignments[0][1][2]).operands[6] == 13,
+                    'Runtime read needs condition argument 13 to initialize its decision state')
+            receiver = intent.get('receiver_slot', 0)
+            require(receiver in (0, 7, 8),
+                    'Runtime RPO needs receiver slot 7 or 8; slot 6 shares the snap button')
+            info = defense_personnel(book, body, intent['opponent']['formation_index'])
+            kinds = [code & 31 for code in info['codes']]
+            formation = formation_record(body, intent['opponent']['formation_index'])
+            selected = intent['opponent']['slot']
+            # v1 RPO fixtures selected a linebacker. The modern runtime uses
+            # the authored formation's EDGE on the run side for every read.
+            edge_slots = [slot for slot, kind in enumerate(kinds)
+                          if kind == DE or (kind == OLB and abs(formation.slots[slot].z[0]) <= 2 * YD)]
+            require(edge_slots, 'Authored defensive fixture has no EDGE')
+            if selected not in edge_slots:
+                side = 1 if intent['weak'] else -1
+                selected = max(edge_slots, key=lambda slot: side * formation.slots[slot].x[0])
+            offset = 0x3404 + pi * 96
+            key = (book_hash, offset)
+            require(key not in identities, 'Duplicate or colliding read option book/play identity')
+            identities.add(key)
+            back = intent['back_slot']
+            row = runtime.RECORD.pack(book_hash, offset,
+                fingerprint(b''.join(assignments[0][1])),
+                fingerprint(b''.join(assignments[back][1])),
+                fingerprint(name(body, offset - 8)), back, selected, receiver, 0)
+            rows.append(row)
+            records.append(dict(asset_id=receipt.get('asset_id'), book=book.book_name,
+                play_index=pi, back_slot=back, authored_read_slot=selected,
+                original_fixture_slot=intent['opponent']['slot'], receiver_slot=receiver or None,
+                resource_sha256=receipt['replacement_sha256'], record=row.hex()))
+    require(len(rows) <= runtime.MAX_RECORDS,
+            f'Read option capacity is {runtime.MAX_RECORDS} authored reads; rebuild with fewer reads')
+    table = (runtime.HEADER.pack(b'RDO1', 1, len(rows), 0) + b''.join(sorted(rows))).ljust(runtime.TABLE_SIZE, b'\0')
+    runtime.validate_intent_table(table)
+    return table, dict(schema=runtime.TABLE_SCHEMA, count=len(rows), capacity=runtime.MAX_RECORDS,
+        records=sorted(records, key=lambda record: record['record']),
+        table_sha256=hashlib.sha256(table).hexdigest(), experimental=True, runtime_witnessed=False)
 
 
 def validate_option_intent(intent: dict | None, assignments: Sequence,

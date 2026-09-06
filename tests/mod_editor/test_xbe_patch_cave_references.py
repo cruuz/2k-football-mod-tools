@@ -88,6 +88,9 @@ class CaveReferenceTests(unittest.TestCase):
         if defensive_try.status(cls.patched) != "applied":
             raise AssertionError("defensive conversion stat extension missing from the composed XBE")
         defensive_try._stats_sites(cls.patched)  # both named RX/RO reservations
+        from mod_editor.core import nfl2k5_read_option_runtime as read_option
+        if read_option.status(cls.patched) != "applied":
+            raise AssertionError("read option owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
@@ -438,6 +441,19 @@ class CaveReferenceTests(unittest.TestCase):
                 self.assertTrue(any(r.detail.startswith(abilities.OWNER + ":") for r in manifest.overlaps(start, end)))
             else:
                 self.assertEqual(record["parent_owner"], space.OWNER)
+
+    def test_read_option_hook_has_no_interior_entry_or_foreign_owner(self) -> None:
+        from mod_editor.core import nfl2k5_read_option_runtime as read_option
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(Path(os.environ.get('NFL2K5_CAVE_MANIFEST', DEFAULT_MANIFEST)), XbeImage(self.retail))
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for name, (va, old) in read_option.HOOKS.items():
+            self.assertEqual(sum(i.size for i in md.disasm(old, va)), len(old), name)
+            self.assertEqual(manifest.overlaps(va, va+len(old), exclude_owner=read_option.OWNER), [])
+            # Complete byte-granular direct E8/E9 candidates, including bytes
+            # that a linear instruction sweep might misclassify as data.
+            for target in range(va+1, va+len(old)):
+                self.assertFalse(self.targets.get(target, []), hex(target))
 
     def test_qb_spy_hooks_are_complete_instructions_and_have_no_foreign_owner(self) -> None:
         from mod_editor.core import nfl2k5_qb_spy_runtime as spy, nfl2k5_xbe_space as space

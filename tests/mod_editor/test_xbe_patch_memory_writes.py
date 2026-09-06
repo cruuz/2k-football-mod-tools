@@ -156,6 +156,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_widescreen as wide
         if wide.status(cls.patched) != "applied" or wide.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("widescreen v3 sites/context did not compose and replay")
+        from mod_editor.core import nfl2k5_read_option_runtime as read_option
+        if read_option.status(cls.patched) != "applied":
+            raise AssertionError("read option owner missing from the composed XBE")
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
@@ -386,6 +389,21 @@ class PatchWriteTests(unittest.TestCase):
         self.assertTrue(writes)
         self.assertTrue(all(write["target"] is None for write in writes), writes)
         # Actual indirect destinations are bounded in the instruction suite.
+
+    def test_read_option_immutable_code_table_and_indirect_runtime_writes(self) -> None:
+        from mod_editor.core import nfl2k5_read_option_runtime as read_option
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        places = read_option.allocations(self.patched)
+        self.assertEqual(set(places), {'code', 'read_only'})
+        for row in places.values():
+            self.assertFalse(image.runtime_writable(row['va'], row['size']))
+            self.assertNotEqual(image.section(row['va']).name, '.text')
+        code = places['code']
+        self.assertTrue(image.section(code['va']).executable)
+        writes = absolute_writes(self.patched, [(code['va'], code['va']+read_option.assembly.LABELS['config'])])
+        self.assertTrue(writes)
+        self.assertTrue(all(row['target'] is None for row in writes), writes)
 
     def test_qb_spy_complete_code_and_immutable_lookup_permissions(self) -> None:
         from mod_editor.core import nfl2k5_qb_spy_runtime as spy

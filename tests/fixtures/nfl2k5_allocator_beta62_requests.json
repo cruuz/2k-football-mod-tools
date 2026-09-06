@@ -152,7 +152,13 @@
  [
   "nfl2k5_read_option_runtime",
   "code",
-  1024,
+  960,
+  16
+ ],
+ [
+  "nfl2k5_read_option_runtime",
+  "read_only",
+  64,
   16
  ],
  [
