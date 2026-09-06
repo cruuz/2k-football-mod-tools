@@ -514,8 +514,8 @@ class Nfl2k5UnifiedVisualProvider:
     backend_module_sha256 = "3e60888ae7e26d87cc9ce80744969cebcf71788838986c957a0c94f1bb02745f"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defensive_try.py": "df4bd5c453fc9efbdf3922d5abab73839ca9766e611be59042baf4f51f87ee9d",
-        "mod_editor/core/nfl2k5_momentum.py": "ec7828e80fc926c5323ceb872f24c449bed59271cad4f127cebd37b5263f5dff",
-        "mod_editor/core/nfl2k5_momentum_code.py": "4333fb5260b489f3295c9d4341331a33ad857add20f98dc42e423b337000cc1e",
+        "mod_editor/core/nfl2k5_momentum.py": "7039d43258bdb88fbf7e4206d8a44558eafa30e79613f15ee23eded36b5eb58f",
+        "mod_editor/core/nfl2k5_momentum_code.py": "a56830bdfaf46ac987b0699f926745c177be183754baa422bbe192fc9e305b08",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",
         "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",
@@ -549,7 +549,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_edge_rename.py": "1a47e378e17ca4fe8a2e9440778893826a32905efe64359463ac121110353695",
         "mod_editor/core/nfl2k5_extended_visual_catalog.py": "03e838de98c626322f30df461c91bb9f648617fcc472eb8a7a1024cbb9957708",
         "mod_editor/core/nfl2k5_extended_visual_io.py": "77be6c1f7a830b9b413ba3a8fd6abf0bdd2df8f41f1af131f2c0693f4c6bc901",
-        "mod_editor/core/nfl2k5_franchise_practice.py": "e40590c99cf4e5649515263f1a589bc1ffb3377442dcfc298c5d16f9d559e046",
+        "mod_editor/core/nfl2k5_franchise_practice.py": "ca2463bca7cea232dcc0982d79d191492e1610dfdaefce86a4546819870024eb",
         "mod_editor/core/nfl2k5_franchise_save.py": "04c937ce610c682e211559d2592be6e3b8957d6422d524211bd5ab4a8da6f96e",
         "mod_editor/core/nfl2k5_guardian_cap.py": "a99a6f25bb8067f58d4de3a8f8d12312f6fcf7ce20b28bfdb09889f503f3aa0d",
         "mod_editor/core/nfl2k5_hud_layout.py": "6072ada85b0e59132226fa060c59d3a8e8249062a63682939aab7db54e0c7abd",
