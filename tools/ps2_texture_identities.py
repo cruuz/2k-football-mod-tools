@@ -177,6 +177,65 @@ PROFILES: Dict[str, GameProfile] = {
         synthetic_container="UNIFORM.DAT",
         selftest_token="NCAA09_PS2_TEXTURE_IDENTITIES_SELFTEST_PASS",
     ),
+    "nflstreet1_ps2": GameProfile(
+        game_id="nflstreet1_ps2",
+        serial="SLUS-20841",
+        title="NFL Street (PlayStation 2)",
+        module="mod_editor.games.nflstreet1_ps2.containers",
+        # Every container this module's art rows read, stored ones first and
+        # the LZH1 kit container last.  MOVIEDAT.DAT (1.0 GB), CHATDATA.DAT
+        # (280 MB), PATHFIND.DAT (207 MB), AMBSTRM.DAT (165 MB) and
+        # FEMUSIC.DAT (141 MB) are not here: they are past the module's read
+        # limit and carry no MMAP member [M].
+        default_containers=("UIS_CRTM.DAT", "UIS_TMLO.DAT", "UIS_PORT.DAT",
+                            "UIS_FSEL.DAT", "UIS_ONRE.DAT", "UIS_MOVI.DAT",
+                            "UIS_INGM.DAT", "UIS_FRON.DAT", "UIS_BUTT.DAT",
+                            "UIS_COMN.DAT", "UIS_BGPL.DAT", "UIS_BGMP.DAT",
+                            "UIS_CHAL.DAT", "UIS_GABR.DAT", "UIS_CTRL.DAT",
+                            "UIS_CWIN.DAT", "STATMOD.DAT", "ENVRNMT.DAT",
+                            "OBJMODEL.DAT", "LOADDATA.DAT", "IGDATA.DAT",
+                            "PLATEX.DAT"),
+        identity_schema="nflstreet1_ps2_pcsx2_texture_identities/v1",
+        identity_document=Path(
+            "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json"),
+        derivation_schema="nflstreet1_ps2_pcsx2_texture_identity_derivation/v1",
+        derivation_document=Path(
+            "docs/product/measured/nflstreet1_ps2/"
+            "pcsx2-texture-identity-derivation.json"),
+        attribution_container="PLATEX.DAT",
+        team_attribution_note='No kit is attributed to a team on this disc. The one frame captured here is the Select Field screen, which draws no player and no kit at all; PLATEX.DAT names none of its members, and nothing else on the disc says which baller a member belongs to. So the teams block is empty on purpose rather than filled with a guess.',
+        synthetic_container="PLATEX.DAT",
+        selftest_token="NFLSTREET1_PS2_TEXTURE_IDENTITIES_SELFTEST_PASS",
+    ),
+    "nflstreet3_ps2": GameProfile(
+        game_id="nflstreet3_ps2",
+        serial="SLUS-21482",
+        title="NFL Street 3 (PlayStation 2)",
+        module="mod_editor.games.nflstreet3_ps2.containers",
+        # As above for this disc.  CHATDATA.DAT (551 MB) and MOVIEDAT.DAT
+        # (283 MB) are past the module's read limit and carry no MMAP member
+        # [M]; PLATEX.DAT at 88 MB is inside it and comes last.
+        default_containers=("UIS_CRTM.DAT", "UIS_TMLO.DAT", "UIS_BNRT.DAT",
+                            "UIS_PORT.DAT", "UIS_FSEL.DAT", "UIS_FOOT.DAT",
+                            "UIS_CMAP.DAT", "UIS_ONRE.DAT", "UIS_MOVI.DAT",
+                            "UIS_INGM.DAT", "UIS_POST.DAT", "UIS_FRON.DAT",
+                            "UIS_BUTT.DAT", "UIS_COMN.DAT", "UIS_CHAL.DAT",
+                            "UIS_CTRL.DAT", "UIS_MPIC.DAT", "MINIGAMP.DAT",
+                            "CHNL_IMG.DAT", "STATMOD.DAT", "ENVRNMT.DAT",
+                            "OBJMODEL.DAT", "LOADDATA.DAT", "IGDATA.DAT",
+                            "PLATEX.DAT"),
+        identity_schema="nflstreet3_ps2_pcsx2_texture_identities/v1",
+        identity_document=Path(
+            "docs/product/measured/nflstreet3_ps2/pcsx2-texture-identities.json"),
+        derivation_schema="nflstreet3_ps2_pcsx2_texture_identity_derivation/v1",
+        derivation_document=Path(
+            "docs/product/measured/nflstreet3_ps2/"
+            "pcsx2-texture-identity-derivation.json"),
+        attribution_container="PLATEX.DAT",
+        team_attribution_note='No kit is attributed to a team on this disc. The five frames captured here are a loading screen and gameplay, and the capture does not name the two sides; PLATEX.DAT names none of its 16,259 members. So the teams block is empty on purpose rather than filled with a guess.',
+        synthetic_container="PLATEX.DAT",
+        selftest_token="NFLSTREET3_PS2_TEXTURE_IDENTITIES_SELFTEST_PASS",
+    ),
 }
 
 
