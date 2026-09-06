@@ -192,9 +192,18 @@ class ChooserDialogTests(unittest.TestCase):
         row = dialog.selected_row()
         self.assertEqual(row.studio_label, "PS2 NFL 2K5 Studio")
         self.assertEqual(row.studio_window, "studio")
-        # Every hosted game is one row, sorted by console, game, year.
-        self.assertEqual([dialog.table.item(index, 0).text() for index in range(dialog.table.rowCount())],
-                         ["PS2 Madden 09 Studio", "PS2 NFL 2K5 Studio"])
+        # Every hosted game is one row, sorted by console, game, year.  The
+        # assertion is the *rule* and not a list of the games that happen to be
+        # hosted today: enumerating them made the arrival of each new module an
+        # edit to this frozen file, which is what the second game found and the
+        # third one hit again.
+        labels = [dialog.table.item(index, 0).text() for index in range(dialog.table.rowCount())]
+        self.assertEqual(len(labels), len(games.discover().games),
+                         "one row per discovered game")
+        self.assertIn("PS2 NFL 2K5 Studio", labels)
+        self.assertIn("PS2 Madden 09 Studio", labels)
+        keys = [row.sort_key for row in dialog.rows()]
+        self.assertEqual(keys, sorted(keys), "rows are sorted by console, game, year, id")
         # The studio window's own menu_label is what it is called from inside
         # itself; every row that offers it from outside reads the composed one.
         studio_row = [window for window in row.windows if window.window_id == row.studio_window]

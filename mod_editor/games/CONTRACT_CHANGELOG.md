@@ -8,7 +8,7 @@ refuses pins that do not match the entry for the current `CONTRACT_VERSION`.
 `python -m mod_editor.games pins --release` drops the marker when the version ships.
 
 ## 1.0 (unreleased)
-pins: 9fb9276500da18df24bef3c1e1903d85623ec59363936986f73c9d32b3650193
+pins: 4b247d823a8edb02d724a303fa32dac5c91cf31f03bf9f8ca27e597929cb0de9
 
 First version. A game is a directory `mod_editor/games/<game>/` with a `game.json`
 manifest, a registry fragment, an allowlist fragment, its own pins and a module-level
@@ -80,3 +80,11 @@ A module written against 1.0 before this entry no longer loads unchanged: it mus
 manifest fields and a `studio_window`. That is a breaking change to an *unreleased* version,
 taken deliberately — `nfl2k5_ps2` is the only module in existence, the scaffold writes the new
 shape, and a game without a studio has nowhere to appear.
+
+Also in 1.0, when the **third** game arrived (`ncaa09_ps2`): the chooser test asserted the
+studio list by enumerating the games hosted that day, so the second game had to edit this frozen
+file and the third hit the same wall. `test_games_chooser.py` now asserts the *rule* it always
+meant — one row per discovered game, the two known PS2 rows present, and the rows in the order
+`ChooserRow.sort_key` defines — so a fourth game is not a frozen-file edit. Nothing about the
+chooser's behaviour changed; only what the test says about it. `MADDEN09_PS2_MODULE.md` §8.1
+named this fix and left it undone; this is it.

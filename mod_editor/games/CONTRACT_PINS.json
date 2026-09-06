@@ -10,7 +10,7 @@
     "mod_editor/games/registry_merge.py": "4407313c47a62f25ec2a651f2b0045fde47052b5abfac813135ebc5c6ef0facf",
     "mod_editor/games/studio_qt.py": "f58865818b1aa4a6bc7046b52c908862e8b009121b5eef967c8f6b0a3cf4d34f",
     "tests/mod_editor/games_fakes.py": "da40bbefc402bca1070652f8655313edfb5e5c03524b10fb94a5065d65689d4c",
-    "tests/mod_editor/test_games_chooser.py": "748f5af2878902f379dbe0f95b1d3c2d9882a16deff773fcc9496d8542981af2",
+    "tests/mod_editor/test_games_chooser.py": "35ea3a472b9e5f661e5bfab5257e772caa5792a838dcd1a4c035554645572842",
     "tests/mod_editor/test_games_conformance.py": "9053271d82659dab867116068098dbced300aeaaa0b5cb79e4d3b883dc2cd304",
     "tests/mod_editor/test_games_contract.py": "113fc8edda21b211488999409bc5c768cf2fe0c22172ef54a8f4c8cdeb4765a7",
     "tests/mod_editor/test_games_contract_frozen.py": "c32deb7ed8faf546515dbbddfb11db8697791c86b43dad0779dbff4d69a4dc98"
