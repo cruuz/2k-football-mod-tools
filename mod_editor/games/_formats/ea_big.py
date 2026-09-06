@@ -67,7 +67,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import struct
-from typing import Callable, Dict, Iterator, List, Mapping, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
 from mod_editor.games.contract import Refusal
 from mod_editor.games._formats import ea_terf
