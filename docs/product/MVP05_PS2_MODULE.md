@@ -623,9 +623,11 @@ column 6, `team_artid`, runs 1..126 across the table's 126 rows, and the `u`
 and `f` families each carry exactly the bank numbers 0..125: **`team_artid` − 1
 is the bank number, and the map is a bijection** [M]. So a bank names its club
 by rule, and this repository carries the rule rather than a table of club names,
-which would be disc payload. `<v>` is the uniform variant, `a`..`p`: 32 of the
-126 clubs (the two top leagues) carry 6 to 12 variants each and the rest carry
-1 or 2 [M]. **The four named banks belong to no club** — `umpire` and `umpirec`
+which would be disc payload. `<v>` is the uniform variant, `a`..`p`. 32 of the
+126 rows sit in the two top leagues by `team_league`; **30 of those carry 6 to
+12 variants each**, and every other row on the disc carries 1 or 2 [M] — which
+is what a top-league club with home, away, alternate and throwback kits looks
+like beside a farm club with two. **The four named banks belong to no club** — `umpire` and `umpirec`
 are officials' kits, `uniform` a create-a-team base, `teamfont` a shared
 lowercase-and-digits sheet — which is why the page names banks and lets the rule
 name clubs, instead of claiming a team attribution per row.
