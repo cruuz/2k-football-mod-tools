@@ -168,6 +168,55 @@ class BothGsModesAreNamed(unittest.TestCase):
                              & by_mode[pcsx2_texture_name.PSMT8H]), 0)
 
 
+class TheStructuralPairing(unittest.TestCase):
+    """The picture-to-picture leg, on pictures this test builds."""
+
+    @staticmethod
+    def _checker(phase: int, size: int = 16) -> bytes:
+        out = bytearray()
+        for y in range(size):
+            for x in range(size):
+                value = 255 if ((x // 4) + (y // 4) + phase) % 2 else 0
+                out += bytes((value, value, value, 128))
+        return bytes(out)
+
+    def test_a_picture_correlates_with_itself_and_not_with_its_opposite(self) -> None:
+        first, contrast = identities.normalise(identities.block_means(self._checker(0), 16, 16))
+        second, _ = identities.normalise(identities.block_means(self._checker(1), 16, 16))
+        self.assertIsNotNone(first)
+        self.assertGreater(contrast, identities.STRUCTURAL_CONTRAST_FLOOR)
+        self.assertAlmostEqual(sum(a * b for a, b in zip(first, first)), 1.0, places=4)
+        self.assertLess(sum(a * b for a, b in zip(first, second)), -0.99)
+
+    def test_a_flat_picture_is_refused_rather_than_correlated(self) -> None:
+        """Two flat thumbnails correlate perfectly and mean nothing, so neither is offered."""
+
+        vector, contrast = identities.normalise(identities.block_means(bytes(16 * 16 * 4), 16, 16))
+        self.assertIsNone(vector)
+        self.assertEqual(contrast, 0.0)
+
+    def test_the_endpoint_thumbnail_reads_the_stream_the_format_documents(self) -> None:
+        """One 32-bit word per two blocks, [i1(x), i1(x+1), i0(x), i0(x+1)]."""
+
+        palette = [(index, 0, 0, 128) for index in range(256)]
+        payload = bytes((10, 20, 30, 40)) + bytes((50, 60, 70, 80))
+        thumb = identities.endpoint_thumbnail(payload, palette, 16, 4)
+        self.assertIsNotNone(thumb)
+        self.assertEqual(len(thumb), 4 * 3)
+        # block 0: i0=30, i1=10 -> red 20; block 1: i0=40, i1=20 -> red 30.
+        self.assertAlmostEqual(thumb[0], 20.0)
+        self.assertAlmostEqual(thumb[3], 30.0)
+        self.assertAlmostEqual(thumb[6], 60.0)
+        self.assertAlmostEqual(thumb[9], 70.0)
+        self.assertIsNone(identities.endpoint_thumbnail(b"\x00", palette, 16, 4))
+
+    def test_the_report_reads_its_scores_against_the_null(self) -> None:
+        report = identities.structural_report([], {}, [], {})
+        self.assertEqual(report["probe_pictures"], 0)
+        self.assertIsNone(report["null_ceiling"])
+        self.assertEqual(report["above_the_null_ceiling"], 0)
+
+
 class TheToolProvesItself(unittest.TestCase):
     def test_selftest(self) -> None:
         self.assertEqual(identities.selftest(), 0)
@@ -237,11 +286,26 @@ class TheMeasuredDocuments(unittest.TestCase):
             self.skipTest("no block-codec pairing document is shipped yet")
         document = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(document["schema"], identities.BLOCK_SCHEMA)
-        self.assertEqual(len(document["tests"]), 4)
+        self.assertEqual(len(document["tests"]), 5)
         self.assertTrue(document["verdict"])
         # Whatever the verdict, it must follow from the tables in the document.
         verdict, _tests = identities.block_codec_verdict(document)
         self.assertEqual(verdict, document["verdict"])
+        # The two tests that do not go through the palette have to have run:
+        # a palette join alone would miss a rebuilt CLUT or a colour-space
+        # decoder, which is the whole reason they exist.
+        structure = document["structural_pairing"]
+        self.assertGreater(structure["probe_pictures"], 0)
+        self.assertGreater(structure["block_images_with_contrast"], 0)
+        self.assertIsNotNone(structure["null_ceiling"])
+        self.assertEqual(structure["above_the_null_ceiling"],
+                         sum(1 for row in structure["ranking"]
+                             if not row["already_paired_to_a_decoded_image"]
+                             and row["best"][0]["ncc"] > structure["null_ceiling"]))
+        # Every candidate that cleared the null was put to the residual test.
+        self.assertEqual(len(document["lerp_residuals"]), structure["above_the_null_ceiling"])
+        for row in document["lerp_residuals"]:
+            self.assertEqual(sorted(row["sets"]), sorted(identities.LERP_SETS))
 
 
 if __name__ == "__main__":

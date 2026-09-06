@@ -28,7 +28,11 @@ repository:
     for every confirmed name, whether ``pcsx2_texture_name`` derives that same
     name from the disc bytes, and which GS mode explains it when it does not.
 ``shps-0x0e-dump-pairing.json``
-    whether the dump answers the ``0x0E`` block codec, and by what test.
+    whether the dump answers the ``0x0E`` block codec, and by what test.  Two
+    of those tests go through the palette and would miss a decoder that
+    rebuilt the CLUT or interpolated in colour space; the last two do not --
+    one correlates the two pictures at block resolution and the other asks
+    whether the pixels lie between their block's endpoints.
 
 Usage::
 
@@ -43,8 +47,10 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import array
 from dataclasses import dataclass, field
 import hashlib
+import math
 import json
 from pathlib import Path
 import re
@@ -93,6 +99,15 @@ CONVENTIONS = (pcsx2_texture_name.CONVENTION_CLASSIC, pcsx2_texture_name.CONVENT
 #: that many bits of decoded picture, whatever the codec turns out to be.
 BLOCK_CODEC_BITS_PER_PIXEL = 3
 
+#: How much contrast a thumbnail needs before a correlation between two of them
+#: means anything.  A near-flat picture correlates with every other near-flat
+#: picture, and on this dump the unfiltered ranking is entirely such pairs [M].
+#: Standard deviation over the thumbnail's channel values, 0..255.
+STRUCTURAL_CONTRAST_FLOOR = 20.0
+
+#: How many correlated candidates each probe keeps.
+STRUCTURAL_KEEP = 3
+
 
 class IdentityError(ValueError):
     """The tool could not do what it was asked; the sentence says why."""
@@ -130,6 +145,12 @@ class DumpTexture:
     #: information the picture carries, and a codec cannot produce more
     #: information than its payload holds.
     index_zlib_bytes: int = 0
+    #: The picture at 4x4-block resolution, mean RGB per block, zero-mean and
+    #: unit-norm, or ``None`` when it is too flat for a correlation to mean
+    #: anything.  This is what pairs a decoded ``0x0E`` texture with its source
+    #: **without going through the palette** -- see :func:`structural_scores`.
+    block_thumbnail: Optional[array.array] = None
+    block_contrast: float = 0.0
 
     @property
     def psm(self) -> int:
@@ -227,6 +248,72 @@ def _digests(rgba: bytes) -> Tuple[str, str]:
     return hashlib.sha256(rgba).hexdigest(), hashlib.sha256(bytes(rgb)).hexdigest()
 
 
+def block_means(rgba: bytes, width: int, height: int) -> array.array:
+    """Mean R, G, B of every 4x4 block, row-major: the picture at block resolution."""
+
+    out = array.array("f", bytes(4 * 3 * (width // 4) * (height // 4)))
+    position = 0
+    for block_y in range(height // 4):
+        for block_x in range(width // 4):
+            red = green = blue = 0
+            for y in range(4):
+                start = ((block_y * 4 + y) * width + block_x * 4) * 4
+                for x in range(4):
+                    pixel = start + x * 4
+                    red += rgba[pixel]
+                    green += rgba[pixel + 1]
+                    blue += rgba[pixel + 2]
+            out[position] = red / 16.0
+            out[position + 1] = green / 16.0
+            out[position + 2] = blue / 16.0
+            position += 3
+    return out
+
+
+def endpoint_thumbnail(payload: bytes, palette: Sequence[Sequence[int]],
+                       width: int, height: int) -> Optional[array.array]:
+    """The ``0x0E`` picture at block resolution, from its endpoint stream alone.
+
+    The first ``w*h/8`` bytes are one 32-bit word per two horizontally adjacent
+    blocks, ``[i1(x), i1(x+1), i0(x), i0(x+1)]``, block-raster order [M]; a
+    block's value here is the midpoint of its two endpoint colours.  Rendering
+    this for a portrait bank gives recognisable faces, which is what makes it a
+    fingerprint the palette does not have to agree on.
+    """
+
+    blocks = (width // 4) * (height // 4)
+    stream = payload[:width * height // 8]
+    if len(stream) != 2 * blocks or blocks % 2 or len(palette) < 256:
+        return None
+    out = array.array("f", bytes(4 * 3 * blocks))
+    for pair in range(blocks // 2):
+        word = stream[pair * 4:pair * 4 + 4]
+        for side in (0, 1):
+            first = palette[word[2 + side]]
+            second = palette[word[side]]
+            position = (pair * 2 + side) * 3
+            out[position] = (first[0] + second[0]) * 0.5
+            out[position + 1] = (first[1] + second[1]) * 0.5
+            out[position + 2] = (first[2] + second[2]) * 0.5
+    return out
+
+
+def normalise(values: array.array) -> Tuple[Optional[array.array], float]:
+    """``(zero-mean unit-norm copy, standard deviation)``, or ``(None, sd)`` if too flat."""
+
+    count = len(values)
+    if count == 0:
+        return None, 0.0
+    mean = math.fsum(values) / count
+    centred = array.array("f", (value - mean for value in values))
+    total = math.fsum(value * value for value in centred)
+    deviation = math.sqrt(total / count)
+    if deviation < STRUCTURAL_CONTRAST_FLOOR or total <= 0.0:
+        return None, deviation
+    scale = 1.0 / math.sqrt(total)
+    return array.array("f", (value * scale for value in centred)), deviation
+
+
 def _index_image(rgba: bytes) -> Tuple[frozenset, bytes]:
     """``(every distinct RGBA value, the picture relabelled by first appearance)``.
 
@@ -284,6 +371,9 @@ def scan_dump(directory: Path) -> List[DumpTexture]:
         alphas = rgba[3::4]
         clut = match.group("clut")
         colours, indices = _index_image(rgba)
+        thumbnail = contrast = None
+        if width % 4 == 0 and height % 4 == 0 and width >= 4 and height >= 4:
+            thumbnail, contrast = normalise(block_means(rgba, width, height))
         seen[key] = {
             "name": path.name, "convention": convention, "width": width, "height": height,
             "tex0": int(match.group("tex0"), 16),
@@ -297,6 +387,8 @@ def scan_dump(directory: Path) -> List[DumpTexture]:
             "frames": [stamp] if stamp else [],
             "colours": colours,
             "index_zlib_bytes": len(zlib.compress(indices, 9)),
+            "block_thumbnail": thumbnail,
+            "block_contrast": float(contrast or 0.0),
         }
     return [DumpTexture(**{**row, "frames": tuple(sorted(row["frames"]))})
             for row in seen.values()]
@@ -339,7 +431,8 @@ def _rgba_from_indices(indices: bytes, palette: Sequence[Tuple[int, int, int, in
 def index_disc(source: Path, *, progress: Optional[Any] = None,
                dumps: Sequence[DumpTexture] = ()
                ) -> Tuple[List[DiscTexture], List[BlockImage], Dict[str, Any],
-                          Dict[Tuple[str, str], List[str]]]:
+                          Dict[Tuple[str, str], List[str]],
+                          Dict[Tuple[str, str], List[Dict[str, Any]]]]:
     """Walk every ``BIG`` archive on the disc and index every ``SHPS`` image.
 
     Two lists come back: the mip levels of every image that decodes, digested
@@ -361,6 +454,17 @@ def index_disc(source: Path, *, progress: Optional[Any] = None,
     wanted = [(dump, dump.colours, frozenset(colour[:3] for colour in dump.colours))
               for dump in dumps if dump.colours]
     palette_hits: Dict[Tuple[str, str], List[str]] = {}
+    # The structural probes: one per distinct picture with enough contrast for a
+    # correlation to mean anything, grouped by the block size they would pair at.
+    probes: Dict[Tuple[int, int], List[DumpTexture]] = {}
+    seen_pictures = set()
+    for dump in dumps:
+        if dump.block_thumbnail is None or dump.rgba_digest in seen_pictures:
+            continue
+        seen_pictures.add(dump.rgba_digest)
+        probes.setdefault((dump.width, dump.height), []).append(dump)
+    structural: Dict[Tuple[str, str], List[Tuple[float, str]]] = {}
+    structural_seen = {"candidates": 0, "candidates_with_contrast": 0}
 
     def walk(archive: ea_big.BigArchive, label: str, path: str) -> None:
         for row in archive.entries:
@@ -418,8 +522,11 @@ def index_disc(source: Path, *, progress: Optional[Any] = None,
                     first = image.blocks[0]
                     clut: Optional[int] = None
                     entries = distinct = 0
+                    first_bytes = b""
+                    palette = ()
                     if image.palette is not None:
                         try:
+                            first_bytes = bank.block_bytes(first)
                             palette = ea_shps.read_palette(bank, image.palette, raw_alpha=True)
                             entries, distinct = len(palette), len(set(palette))
                             if len(palette) in (16, ea_shps.CSM1_ENTRIES):
@@ -441,6 +548,22 @@ def index_disc(source: Path, *, progress: Optional[Any] = None,
                                 hits = palette_hits.setdefault((dump.convention, dump.name), [])
                                 if key not in hits:
                                     hits.append(key)
+                    here = probes.get((image.width, image.height))
+                    if here and image.palette is not None and entries >= 256:
+                        structural_seen["candidates"] += 1
+                        thumbnail = endpoint_thumbnail(first_bytes, palette,
+                                                       image.width, image.height)
+                        vector = normalise(thumbnail)[0] if thumbnail is not None else None
+                        if vector is not None:
+                            structural_seen["candidates_with_contrast"] += 1
+                            for dump in here:
+                                score = math.fsum(a * b for a, b in
+                                                  zip(vector, dump.block_thumbnail))
+                                best = structural.setdefault((dump.convention, dump.name), [])
+                                if len(best) < STRUCTURAL_KEEP or score > best[-1][0]:
+                                    best.append((score, key))
+                                    best.sort(key=lambda row: -row[0])
+                                    del best[STRUCTURAL_KEEP:]
 
     with containers.Disc(Path(source)) as disc:
         for entry in disc.big_files():
@@ -454,12 +577,17 @@ def index_disc(source: Path, *, progress: Optional[Any] = None,
             if progress is not None:
                 progress(f"{label}…")
             walk(archive, label, entry.path)
-    return levels, blocks, counts, palette_hits
+    counts.update(structural_seen)
+    return levels, blocks, counts, palette_hits, {
+        key: [{"ncc": round(score, 4), "key": name} for score, name in best]
+        for key, best in structural.items()}
 
 
 def write_index(path: Path, source: Path, levels: Sequence[DiscTexture],
                 blocks: Sequence[BlockImage], counts: Mapping[str, Any],
-                palette_hits: Optional[Mapping[Tuple[str, str], Sequence[str]]] = None) -> None:
+                palette_hits: Optional[Mapping[Tuple[str, str], Sequence[str]]] = None,
+                structural: Optional[Mapping[Tuple[str, str], Sequence[Mapping[str, Any]]]] = None
+                ) -> None:
     """The disc index as JSONL, so a second run does not re-walk 4.3 GB."""
 
     with Path(path).open("w", encoding="utf-8", newline="\n") as handle:
@@ -472,14 +600,19 @@ def write_index(path: Path, source: Path, levels: Sequence[DiscTexture],
         for (convention, name), keys in sorted((palette_hits or {}).items()):
             handle.write(json.dumps({"kind": "palette_hit", "convention": convention,
                                      "dump": name, "keys": list(keys)}, sort_keys=True) + "\n")
+        for (convention, name), best in sorted((structural or {}).items()):
+            handle.write(json.dumps({"kind": "structural", "convention": convention,
+                                     "dump": name, "best": list(best)}, sort_keys=True) + "\n")
 
 
 def read_index(path: Path) -> Tuple[List[DiscTexture], List[BlockImage], Dict[str, Any],
-                                    Dict[Tuple[str, str], List[str]]]:
+                                    Dict[Tuple[str, str], List[str]],
+                                    Dict[Tuple[str, str], List[Dict[str, Any]]]]:
     levels: List[DiscTexture] = []
     blocks: List[BlockImage] = []
     counts: Dict[str, Any] = {}
     palette_hits: Dict[Tuple[str, str], List[str]] = {}
+    structural: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
     with Path(path).open("r", encoding="utf-8") as handle:
         for line in handle:
             row = json.loads(line)
@@ -495,11 +628,13 @@ def read_index(path: Path) -> Tuple[List[DiscTexture], List[BlockImage], Dict[st
                     clut=int(row["clut"], 16) if row.get("clut") else None))
             elif kind == "palette_hit":
                 palette_hits[(row["convention"], row["dump"])] = list(row.get("keys") or ())
+            elif kind == "structural":
+                structural[(row["convention"], row["dump"])] = list(row.get("best") or ())
             elif row.get("schema") == INDEX_SCHEMA:
                 counts = dict(row.get("counts") or {})
             else:
                 raise IdentityError(f"{path} is not a disc index this tool wrote.")
-    return levels, blocks, counts, palette_hits
+    return levels, blocks, counts, palette_hits, structural
 
 
 # --------------------------------------------------------------------------
@@ -719,6 +854,137 @@ def tex0_only_check(source: Path, report: MatchReport,
                     "several CLUT hashes across the capture, so it is recoloured at run time. "
                     "Those names can be confirmed by a dump and cannot be derived."),
     }
+
+
+#: The value sets a two-endpoint block codec could pick from, in colour space.
+#: If the decoder lerps between ``pal[i0]`` and ``pal[i1]`` rather than working
+#: in index space, every decoded pixel is one of these points on that segment.
+LERP_SETS: Mapping[str, Tuple[float, ...]] = {
+    "DXT weights {0, 1/3, 2/3, 1}": (0.0, 1.0 / 3.0, 2.0 / 3.0, 1.0),
+    "linear {0, 1/2, 1}": (0.0, 0.5, 1.0),
+    "endpoints only {0, 1}": (0.0, 1.0),
+}
+
+
+def structural_report(dumps: Sequence[DumpTexture],
+                      scores: Mapping[Tuple[str, str], Sequence[Mapping[str, Any]]],
+                      matched_names: Iterable[str], counts: Mapping[str, Any]) -> Dict[str, Any]:
+    """Rank the picture-to-picture correlation, against a null that cannot be a pair.
+
+    The null is the dumped pictures that already pair to a decoded ``0x02``
+    image: those are *known* not to be ``0x0E``, so whatever they score is what
+    an unrelated pair scores here.  A candidate that does not clear the null's
+    maximum has said nothing.
+    """
+
+    paired = set(matched_names)
+    by_name = {(row.convention, row.name): row for row in dumps}
+    rows: List[Dict[str, Any]] = []
+    for key, best in scores.items():
+        dump = by_name.get(tuple(key))
+        if dump is None or not best:
+            continue
+        rows.append({"dump": dump.name, "convention": dump.convention,
+                     "size": f"{dump.width}x{dump.height}", "psm": dump.psm,
+                     "contrast": round(dump.block_contrast, 1),
+                     "already_paired_to_a_decoded_image": dump.name in paired,
+                     "frames": list(dump.frames), "best": list(best)})
+    rows.sort(key=lambda row: -row["best"][0]["ncc"])
+    null = [row["best"][0]["ncc"] for row in rows if row["already_paired_to_a_decoded_image"]]
+    live = [row["best"][0]["ncc"] for row in rows if not row["already_paired_to_a_decoded_image"]]
+    ceiling = max(null) if null else None
+    above = [row for row in rows if not row["already_paired_to_a_decoded_image"]
+             and ceiling is not None and row["best"][0]["ncc"] > ceiling]
+    return {
+        "method": ("Normalised cross-correlation of two pictures at 4x4-block resolution: the "
+                   "dumped texture's block means against the 0x0E image's endpoint thumbnail, "
+                   "which is the midpoint of each block's two endpoint colours. It goes nowhere "
+                   "near the palette, so it finds a pair whose CLUT the game rebuilt, and it "
+                   "finds one whose decoder interpolated in colour space, both of which the "
+                   "palette joins miss."),
+        "contrast_floor": STRUCTURAL_CONTRAST_FLOOR,
+        "contrast_note": ("Both sides are filtered on it. A near-flat thumbnail correlates with "
+                          "every other near-flat thumbnail, and unfiltered the whole top of this "
+                          "ranking is such pairs."),
+        "probe_pictures": len(rows),
+        "block_images_correlated": int(counts.get("candidates", 0)),
+        "block_images_with_contrast": int(counts.get("candidates_with_contrast", 0)),
+        "null_pictures": len(null),
+        "null_ceiling": round(ceiling, 4) if ceiling is not None else None,
+        "null_median": round(sorted(null)[len(null) // 2], 4) if null else None,
+        "candidate_pictures": len(live),
+        "candidate_best": round(max(live), 4) if live else None,
+        "candidate_median": round(sorted(live)[len(live) // 2], 4) if live else None,
+        "above_the_null_ceiling": len(above),
+        "ranking": rows[:20],
+    }
+
+
+def lerp_residual(source: Path, dump_dir: Path, dump: DumpTexture, block_key: str
+                  ) -> Dict[str, Any]:
+    """How far a candidate's dumped pixels lie from the segment between its endpoints.
+
+    The test that settles a correlation: under a two-endpoint codec every pixel
+    of a block sits on the line from ``pal[i0]`` to ``pal[i1]``, so the residual
+    is quantisation -- within 8 of 255 for a 16-bit target and less for a 32-bit
+    one -- and adding the interior points to the value set has to reduce it. A
+    residual that neither is small nor improves when the interior points are
+    offered is a correlation that means nothing.
+    """
+
+    archive_name, entry, image_index = art_lane.parse_key(block_key)
+    with containers.Disc(Path(source)) as disc:
+        archive = disc.archive(disc.find(archive_name.split("!")[0]))
+        for part in archive_name.split("!")[1:]:
+            archive = archive.nested(next(row.index for row in archive.entries
+                                          if row.name == part))
+        bank = ea_shps.parse(archive.member(entry), archive.entry(entry).name)
+        image = bank.image(image_index)
+        palette = ea_shps.read_palette(bank, image.palette, raw_alpha=True)
+        payload = bank.block_bytes(image.blocks[0])
+    width, height = image.width, image.height
+    path = Path(dump_dir) / (dump.frames[0] if dump.frames else "") / dump.convention / dump.name
+    if not path.exists():
+        matches = list(Path(dump_dir).rglob(dump.name))
+        if not matches:
+            raise IdentityError(f"{dump.name} is not under {dump_dir} any more.")
+        path = matches[0]
+    dumped_w, dumped_h, rgba = art_lane.read_rgba_png(path.read_bytes())
+    if (dumped_w, dumped_h) != (width, height):
+        raise IdentityError(f"{dump.name} is {dumped_w}x{dumped_h} and {block_key} is "
+                            f"{width}x{height}.")
+    blocks = (width // 4) * (height // 4)
+    stream = payload[:width * height // 8]
+    out: Dict[str, Any] = {"dump": dump.name, "block_image": block_key,
+                           "size": f"{width}x{height}", "sets": {}}
+    for label, weights in LERP_SETS.items():
+        total = 0.0
+        within = samples = 0
+        for pair in range(blocks // 2):
+            word = stream[pair * 4:pair * 4 + 4]
+            for side in (0, 1):
+                index = pair * 2 + side
+                block_x, block_y = index % (width // 4), index // (width // 4)
+                first = palette[word[2 + side]]
+                second = palette[word[side]]
+                points = [tuple(first[channel] + (second[channel] - first[channel]) * weight
+                                for channel in range(3)) for weight in weights]
+                for y in range(4):
+                    start = ((block_y * 4 + y) * width + block_x * 4) * 4
+                    for x in range(4):
+                        pixel = start + x * 4
+                        best = min(math.dist(point, (rgba[pixel], rgba[pixel + 1],
+                                                     rgba[pixel + 2])) for point in points)
+                        total += best
+                        samples += 1
+                        if best <= 8.0:
+                            within += 1
+        out["sets"][label] = {"mean_residual": round(total / max(samples, 1), 2),
+                              "pixels_within_quantisation_pct": round(100.0 * within / max(samples, 1), 1)}
+    out["reading"] = ("A true pair puts nearly every pixel within quantisation and improves "
+                      "markedly when the interior points are offered. One that does neither is "
+                      "not a pair, whatever it correlated at.")
+    return out
 
 
 #: Block shapes a 6-byte-per-16-texel codec could be using.  Every one of them
@@ -1018,7 +1284,7 @@ def build_derivation_document(source: Path, check: Mapping[str, Any],
 
 
 def block_codec_verdict(report: Mapping[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
-    """One sentence, and the four tests behind it, from the block report alone."""
+    """One sentence, and the five tests behind it, from the block report alone."""
 
     clut = list(report.get("clut_hash_candidates") or ())
     subset = list(report.get("palette_subset_candidates") or ())
@@ -1027,6 +1293,11 @@ def block_codec_verdict(report: Mapping[str, Any]) -> Tuple[str, List[Dict[str, 
     joined = {(row["convention"], row["dump"]): row for row in clut + subset}
     payable = [row for row in joined.values() if row.get("payload_can_hold_it")]
     probes = list(report.get("ground_truth_probes") or ())
+    structure = dict(report.get("structural_pairing") or {})
+    residuals = list(report.get("lerp_residuals") or ())
+    convincing = [row for row in residuals
+                  if max(entry["pixels_within_quantisation_pct"]
+                         for entry in row["sets"].values()) >= 90.0]
     workable = [probe for probe in probes
                 if any(shape["blocks_with_more_than_four"] == 0
                        for shape in probe.get("block_shapes") or ())]
@@ -1045,15 +1316,33 @@ def block_codec_verdict(report: Mapping[str, Any]) -> Tuple[str, List[Dict[str, 
                  "some 16-texel block shape",
          "candidates": len(workable), "probed": len(probes),
          "finds": "whether two endpoints and sixteen 2-bit selectors could describe it"},
+        {"test": "the picture correlates with a 0x0E image's endpoint thumbnail, above what a "
+                 "dumped texture already known not to be 0x0E scores",
+         "candidates": int(structure.get("above_the_null_ceiling", 0)),
+         "probes": int(structure.get("probe_pictures", 0)),
+         "null_ceiling": structure.get("null_ceiling"),
+         "finds": "a pair the palette joins miss -- a rebuilt CLUT, or a decoder that "
+                  "interpolates in colour space and never uses the palette as a codebook"},
     ]
+    survivors = int(structure.get("above_the_null_ceiling", 0))
+    if not clut and not subset and not survivors:
+        return ("no dumped texture is a decoded 0x0E image: no dumped picture draws its colours "
+                "from any 0x0E image's palette, and none correlates with a 0x0E image's own "
+                "picture above what a texture known not to be one scores", tests)
+    if not clut and not subset and survivors and not convincing:
+        return ("no dumped texture is a decoded 0x0E image: no dumped picture draws its colours "
+                "from any 0x0E image's palette, and the %d that clear the correlation null do "
+                "not put their pixels on the segment between their block's endpoints" % survivors,
+                tests)
     if not clut and not subset:
         return ("no dumped texture is a decoded 0x0E image: no dumped picture draws its colours "
                 "from any 0x0E image's palette", tests)
-    if not payable and not workable:
+    if not payable and not workable and not convincing:
         return ("no dumped texture is a decoded 0x0E image: the %d candidate(s) a palette join "
-                "finds carry more information than the 0x0E payload can hold, and their true "
-                "index images have far more than four distinct indices in every 16-texel block "
-                "shape, so no decoder could have produced them from it" % len(joined), tests)
+                "finds carry more information than the 0x0E payload can hold and have far more "
+                "than four distinct indices in every 16-texel block shape, and the %d that clear "
+                "the picture-correlation null do not put their pixels on the segment between "
+                "their block's endpoints" % (len(joined), survivors), tests)
     if not payable:
         return ("no dumped texture is a decoded 0x0E image: the %d candidate(s) a palette join "
                 "finds carry more information than the 0x0E payload can hold, so no decoder "
@@ -1155,13 +1444,39 @@ def selftest(tmp: Optional[Path] = None) -> int:
         blocks = [BlockImage(key="SYNTH.BIG:1:0", archive="SYNTH.BIG", width=16, height=16,
                              payload_bytes=96, palette_entries=256, palette_distinct=250,
                              clut=0x1234)]
+        # The structural leg, on pictures this file builds: one probe correlates
+        # perfectly with itself and near zero with an unrelated picture.
+        def checker(phase: int) -> bytes:
+            out = bytearray()
+            for y in range(16):
+                for x in range(16):
+                    value = 255 if ((x // 4) + (y // 4) + phase) % 2 else 0
+                    out += bytes((value, value, value, 128))
+            return bytes(out)
+
+        first, contrast = normalise(block_means(checker(0), 16, 16))
+        second, _ = normalise(block_means(checker(1), 16, 16))
+        assert first is not None and second is not None, contrast
+        # Opposite phases: a perfect anti-correlation, which is as far from a
+        # pair as this measure goes.
+        assert math.fsum(a * b for a, b in zip(first, second)) < -0.99
+        assert abs(math.fsum(a * b for a, b in zip(first, first)) - 1.0) < 1e-5
+        flat, flat_contrast = normalise(block_means(bytes(16 * 16 * 4), 16, 16))
+        assert flat is None and flat_contrast == 0.0, flat_contrast
+        synthetic_palette = [(index, 255 - index, (index * 3) & 0xFF, 128) for index in range(256)]
+        thumb = endpoint_thumbnail(bytes(range(32)), synthetic_palette, 16, 4)
+        assert thumb is not None and len(thumb) == 4 * 3, thumb
+
         block_report = block_codec_report(dumps, blocks, [], {})
+        block_report["structural_pairing"] = structural_report(dumps, {}, [], {})
+        block_report["lerp_residuals"] = []
+        assert block_report["structural_pairing"]["probe_pictures"] == 0, block_report
         assert block_report["clut_hash_candidates"] == [], block_report
         assert block_report["palette_subset_candidates"] == [], block_report
         assert block_report["palette_hunt_ran"] is True, block_report
         verdict, tests = block_codec_verdict(block_report)
         assert "no" in verdict.lower(), verdict
-        assert len(tests) == 4, tests
+        assert len(tests) == 5, tests
         json.dumps(build_block_document(Path("synthetic.iso"), tmp, block_report, verdict, tests))
 
         document = build_document(Path("synthetic.iso"), tmp, dumps, disc, blocks, report)
@@ -1206,20 +1521,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.dump_dir is not None:
         dumps = scan_dump(args.dump_dir)
         say(f"dump scanned: {len(dumps):,} texture(s)")
-    palette_hits: Optional[Dict[str, List[str]]] = None
+    palette_hits: Optional[Dict[Tuple[str, str], List[str]]] = None
+    structural: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
     if args.index and args.index.exists():
-        levels, blocks, counts, palette_hits = read_index(args.index)
+        levels, blocks, counts, palette_hits, structural = read_index(args.index)
         say(f"disc index read from {args.index}: {len(levels):,} level(s), {len(blocks):,} block "
             f"codec image(s)")
     else:
         if args.source is None:
             parser.error("give --source, or an --index a previous run wrote")
-        levels, blocks, counts, palette_hits = index_disc(
+        levels, blocks, counts, palette_hits, structural = index_disc(
             args.source, progress=None if args.quiet else say, dumps=dumps)
         say(f"disc walked in {time.time() - started:.0f}s: {counts}")
         target = args.write_index or args.index
         if target is not None:
-            write_index(target, args.source, levels, blocks, counts, palette_hits)
+            write_index(target, args.source, levels, blocks, counts, palette_hits, structural)
             say(f"disc index written to {target}")
     if args.dump_dir is None:
         if args.write_index:
@@ -1261,6 +1577,32 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 except (IdentityError, containers.DiscError, ea_shps.ShpsError, OSError) as exc:
                     probes.append({"dump": row["dump"], "block_image": key, "error": str(exc)})
     block["ground_truth_probes"] = probes
+    block["structural_pairing"] = structural_report(
+        dumps, structural, {name for entry in report.matched.values()
+                            for names in entry["names"].values() for name in names}, counts)
+    residuals: List[Dict[str, Any]] = []
+    if args.source is not None:
+        ceiling = block["structural_pairing"]["null_ceiling"]
+        for row in block["structural_pairing"]["ranking"]:
+            if row["already_paired_to_a_decoded_image"]:
+                continue
+            if ceiling is not None and row["best"][0]["ncc"] <= ceiling:
+                continue
+            dump = next((d for d in dumps if d.name == row["dump"]
+                         and d.convention == row["convention"]), None)
+            if dump is None:
+                continue
+            try:
+                residuals.append(lerp_residual(args.source, args.dump_dir, dump,
+                                               row["best"][0]["key"]))
+            except (IdentityError, containers.DiscError, ea_shps.ShpsError, OSError) as exc:
+                residuals.append({"dump": row["dump"], "block_image": row["best"][0]["key"],
+                                  "error": str(exc)})
+    block["lerp_residuals"] = residuals
+    say("structure: %d probe picture(s), null ceiling %s, %d above it, %d residual probe(s)"
+        % (block["structural_pairing"]["probe_pictures"],
+           block["structural_pairing"]["null_ceiling"],
+           block["structural_pairing"]["above_the_null_ceiling"], len(residuals)))
     verdict, tests = block_codec_verdict(block)
     say("block codec: " + verdict)
 

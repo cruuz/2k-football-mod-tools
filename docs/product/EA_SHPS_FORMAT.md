@@ -272,9 +272,10 @@ to -- and a PCSX2 texture dump is exactly that, because the emulator writes out
 the decoded texels of whatever the game drew. One dump of MVP Baseball 2005
 now exists: three single-frame GS dumps replayed headless with texture dumping
 on (1,308 files, 436 distinct textures). It was searched, by
-`tools/mvp05_ps2_texture_identities.py`, with four tests. **It contains no
-decoded `0x0E` texture**, and the fourth test is what makes that a measurement
-rather than a failure to find one.
+`tools/mvp05_ps2_texture_identities.py`, with six tests -- two through the
+palette and four that do not need it. **It contains no decoded `0x0E`
+texture**, and the last four tests are what make that a measurement rather than
+a failure to find one.
 
 | # | test | what it finds | result |
 |---|---|---|---:|
@@ -282,14 +283,53 @@ rather than a failure to find one.
 | 2 | every colour a dumped picture uses is in a `0x0E` image's palette, **in any order** | the same, and also a palette the game re-ordered first | the same 1 |
 | 3 | the payload can hold the picture: `w*h*3/8` bytes against what the dumped texels compress to | whether a candidate could be a decode of that payload at all | **0** |
 | 4 | the true index image, palette inverted, has ≤ 4 distinct indices in **some** 16-texel block shape | whether two endpoints and sixteen 2-bit selectors could describe it | **0** |
+| 5 | the picture correlates with a `0x0E` image's **endpoint thumbnail**, above what a texture known not to be `0x0E` scores | a pair neither palette test can see | **0** |
+| 6 | that candidate's pixels lie on the segment between its block's two endpoint colours | whether a correlation is a codec or a coincidence | **0** |
 
-Test 2 is the one with recall, and it is calibrated rather than assumed: on
-**198 (dump, disc image) pairs that pair on exact pixels and whose CLUT hash
-differs from the disc palette** -- the game does re-order some CLUTs before
-uploading them -- the colour-set test holds **198 of 198** [M]. Across all
-23,954 `0x0E` images and all 436 distinct dumped textures it finds exactly one
-pairing, and 939 of the 1,308 dumped files have a size some `0x0E` image also
-has, so the search was not starved of candidates.
+**Tests 1 and 2 both go through the palette, and two real decoders would escape
+them**: one that rebuilds or re-orders the CLUT at upload (this game does that
+for its small widgets), and one that interpolates in *colour* space between
+`pal[i0]` and `pal[i1]` and never hands the palette to the GS at all — which is
+exactly what two endpoint bytes instead of four RGB565 words buys. Tests 5 and
+6 do not go near the palette.
+
+**Test 5 pairs the two pictures instead.** The endpoint stream already renders
+as the picture, so every `0x0E` image gets an **endpoint thumbnail**: `(w/4) x
+(h/4)`, each block the midpoint of its two endpoint colours. Rendered for a
+portrait bank these are unmistakably faces at block resolution, which is what
+makes the thumbnail a fingerprint the palette does not have to agree on. Every
+dumped picture gets the same thing — the mean of each 4x4 block — and the two
+are compared by normalised cross-correlation. Both sides are filtered on
+contrast (standard deviation ≥ 20 of 255): a near-flat thumbnail correlates
+with every other near-flat thumbnail, and without the filter the entire top of
+the ranking is flat-against-flat.
+
+**And it is read against a null, not against 1.0.** The dumped pictures that
+already pair to a decoded `0x02` image are *known* not to be `0x0E`, so what
+they score is what an unrelated pair scores here. 47 probe pictures passed the
+contrast floor, against 11,618 `0x0E` thumbnails of matching size [M]:
+
+| population | pictures | median NCC | best NCC |
+|---|---:|---:|---:|
+| null — already paired to a `0x02` image, so **cannot** be `0x0E` | 28 | 0.421 | **0.842** |
+| everything else | 19 | 0.265 | 0.943 |
+
+The candidates score *below* the null. Exactly one clears the null's ceiling
+(0.943, a 64x64 texture against an image in `INITSTAZ.BIG`), and **test 6 disposes of it**: under
+a two-endpoint codec every pixel of a block sits on the segment between
+`pal[i0]` and `pal[i1]`, so the residual is quantisation. Measured, the mean
+residual is **25.5 of 255 with 5.3% of pixels within 8** — and offering the two
+interior points barely moves it (25.5 against 26.1 for the endpoints alone),
+where a real interpolating codec would improve sharply. It is a low-contrast
+texture correlating with a low-contrast texture.
+
+Test 2 is calibrated rather than assumed: on **198 (dump, disc image) pairs
+that pair on exact pixels and whose CLUT hash differs from the disc palette** --
+the game does re-order some CLUTs before uploading them -- the colour-set test
+holds **198 of 198** [M]. Across all 23,954 `0x0E` images and all 436 distinct
+dumped textures it finds exactly one pairing, and 939 of the 1,308 dumped files
+have a size some `0x0E` image also has, so the search was not starved of
+candidates.
 
 **The one candidate, and why it is not a decode.** A 128x128 `PSMT8` texture
 whose CLUT is, byte for byte, the palette of one `0x0E` image (`MODELS.BIG`,
@@ -310,17 +350,30 @@ certainly that image's. The texels are not:
 So the game uploaded that image's CLUT to the GS and PCSX2 read a texel page at
 that TEX0 which was not the decoded picture. **What the dump therefore says is
 where the decode is not, not what it is:** MVP's `0x0E` art does not reach the
-GS as an indexed texture the emulator's dumper writes out, even though the
-three frames demonstrably drew some -- one is a batter introduction card with a
+GS as an indexed texture the emulator's dumper writes out, and tests 5 and 6
+say it does not reach it as a direct-colour one either -- not under a rebuilt
+CLUT, not under colour-space interpolation. That is so even though the three
+frames demonstrably drew some: one is a batter introduction card with a
 portrait on it and every portrait on the disc is `0x0E`, and both batters are
-in kits and every kit is `0x0E`. A different scene will not fix that; a capture
-method that reaches the decoded buffer would. `docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json`
-is the whole search with its counts.
+in kits and every kit is `0x0E`. **A different scene will not fix that.**
+`docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json` is the whole
+search with its counts, and `tools/mvp05_ps2_texture_identities.py` rebuilds
+every number in it.
 
-**None of this confirms or refutes the two-stream reading above.** With no
-answer key the endpoint order, the block map and the selector semantics stand
-exactly where the previous session left them: the first two by the
-flat-endpoint render, the third undecoded.
+**What would answer it is a savestate, not another frame** [A]. The decoded
+buffer exists somewhere in EE RAM while the kits are on screen, and a savestate
+holds EE RAM; the same endpoint-thumbnail correlation finds it there at every
+`0x0E` size, scanning at stride `w` for an 8-bit buffer and `4w` for RGBA. No
+savestate of SLUS-21135 is in the fixtures today, so that is a capture to ask
+for rather than a search to run.
+
+**What this does settle is the front half of the reading above.** Building the
+endpoint thumbnails is the same decode as the flat-endpoint render and it holds
+across all 23,831 `0x0E` images with a 256-entry palette, not the handful the
+previous session looked at: a portrait bank's thumbnails are faces, so the
+endpoint stream's word order and the block-raster map are right [M]. **The
+selector semantics are still undecoded**, and with no answer key nothing here
+moves them.
 
 So the reader names the code, quotes this measurement, and still hands back
 nothing: a half-right picture exported as if it were the texture is how a

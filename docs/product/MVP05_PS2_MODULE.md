@@ -345,8 +345,8 @@ The bounded hour ended on inference from the encoded bytes. The way to end the
 argument instead is an **answer key** — a picture of what one of these images
 decodes to — and a PCSX2 texture dump is one, because the emulator writes out
 the decoded texels of whatever the game drew. The three frames of §4.2 were
-searched for one, by four tests. **There is none in them**, and the last two
-tests are what make that a measurement rather than a failure to look:
+searched for one, by six tests. **There is none in them**, and the last four
+are what make that a measurement rather than a failure to look:
 
 | # | test | candidates |
 |---|---|---:|
@@ -354,6 +354,8 @@ tests are what make that a measurement rather than a failure to look:
 | 2 | every colour a dumped picture uses is in a `0x0E` image's palette, in any order | the same 1 |
 | 3 | the payload can hold the picture (`w*h*3/8` bytes against the dumped texels' compressed size) | **0** |
 | 4 | the true index image has ≤ 4 distinct indices in *some* 16-texel block shape | **0** |
+| 5 | the picture correlates with a `0x0E` image's endpoint thumbnail, above the null | **0** |
+| 6 | that candidate's pixels lie between its block's two endpoint colours | **0** |
 
 Test 2 is the one with recall — this game does re-order some CLUTs before
 uploading them — and it is calibrated: on **198 pairings already known to be
@@ -372,15 +374,48 @@ image reaches **16** distinct indices in a block where two endpoints and 2-bit
 selectors allow four — in every 16-texel shape tried (4x4, 8x2, 2x8, 16x1,
 1x16).
 
+**Tests 1 and 2 go through the palette and two real decoders would escape
+them** — one that rebuilds the CLUT at upload, which this game does for its
+small widgets, and one that interpolates in *colour* space between `pal[i0]`
+and `pal[i1]` and never uses the palette as a codebook, which is what two
+endpoint bytes rather than four RGB565 words buys. Tests 5 and 6 do not.
+Test 5 pairs the two **pictures**: every `0x0E` image gets an *endpoint
+thumbnail* — `(w/4) x (h/4)`, each block the midpoint of its two endpoint
+colours, which for a portrait bank renders as unmistakable faces — every dumped
+picture gets its 4x4-block means, and the two are cross-correlated, both sides
+filtered on contrast because flat thumbnails correlate with each other. It is
+read against a **null**: the dumped pictures that already pair to a `0x02`
+image cannot be `0x0E`, so what they score is what an unrelated pair scores.
+47 probe pictures against 11,618 contrast-carrying `0x0E` thumbnails [M]:
+
+| population | pictures | median | best |
+|---|---:|---:|---:|
+| null — already paired, so **cannot** be `0x0E` | 28 | 0.421 | **0.842** |
+| everything else | 19 | 0.265 | 0.943 |
+
+The candidates score *below* the null. One clears its ceiling, and test 6
+disposes of it: under a two-endpoint codec every pixel sits on the segment
+between its block's endpoint colours, so the residual is quantisation — and the
+measured residual is **25.5 of 255 with 5.3% of pixels within 8**, barely
+better than snapping to the endpoints alone (26.1), where a real interpolating
+codec improves sharply.
+
 **What that says is where the decode is not.** MVP's `0x0E` art does not reach
-the GS as an indexed texture PCSX2's dumper writes out, even though these
-frames drew some: one is a batter introduction card with a portrait on it and
-every portrait on the disc is `0x0E`, and both batters are in kits and every
-kit is `0x0E`. **Another scene will not help**; a capture that reaches the
-decoded buffer would. The whole search, with its counts, is
-`docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json`, and the
-endpoint order, block map and selector semantics stand exactly where the
-previous session left them — the dump neither confirms nor refutes them.
+the GS as an indexed texture PCSX2's dumper writes out, and not as a
+direct-colour one either, even though these frames drew some: one is a batter
+introduction card with a portrait on it and every portrait on the disc is
+`0x0E`, and both batters are in kits and every kit is `0x0E`. **Another scene
+will not help.** The whole search is
+`docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json`. The endpoint
+word order and the block-raster map are re-confirmed by the thumbnails across
+all 23,831 `0x0E` images with a 256-entry palette; the selector semantics are
+untouched.
+
+**What would answer it is a savestate** [A]. The decoded buffer is in EE RAM
+while the kits are on screen and a savestate holds EE RAM; the same thumbnail
+correlation finds it there at every `0x0E` size, at stride `w` for an 8-bit
+buffer and `4w` for RGBA. None exists in the fixtures, so it is a capture to
+ask the owner for, not a search to run here.
 
 ---
 
