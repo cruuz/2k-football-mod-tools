@@ -612,7 +612,7 @@ class Nfl2k5UnifiedVisualProvider:
 
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
-        "mod_editor/core/model.py": "33749451485c16ef9867361f97746781155ae9c84123eabcc996621dd1fb395e",
+        "mod_editor/core/model.py": "dbf18c79be8a4395d3a6e6499d1cbdda806c683aec3715bdb6f1712608e4781f",
         "mod_editor/core/nfl2k5_audio_catalog.py": "be1dbafb7077a4aab9c8ce5ff9ba9f0c5da9dd54c86464b4d97304aaf44a4efc",
         "mod_editor/core/nfl2k5_audo_family_labels.py": "b4d699da1a1d58b32a1bbd0e49b62d69c9ae89a2c24d450a26d7b8831e49cef8",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py": "da564ae30a18e9bfc7a3006b2422bceef0d0078d3cb9a919671ade23eda5f146",

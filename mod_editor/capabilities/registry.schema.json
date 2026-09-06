@@ -162,7 +162,8 @@
             "ncaa09_ps2",
             "nfl2k5_ps2",
             "nfl2k5_xbox",
-            "nflblitz2002_ps2"
+            "nflblitz2002_ps2",
+            "nflblitz2003_ps2"
           ]
         },
         "gui": {
@@ -267,7 +268,8 @@
             "ncaa09_ps2",
             "nfl2k5_ps2",
             "nfl2k5_xbox",
-            "nflblitz2002_ps2"
+            "nflblitz2002_ps2",
+            "nflblitz2003_ps2"
           ]
         },
         "platform": {

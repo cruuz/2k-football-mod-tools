@@ -1,0 +1,25 @@
+{
+  "capability_rows": 8,
+  "game_id": "nflblitz2003_ps2",
+  "hidden_disc_writers": 4,
+  "lanes_on_contract": 8,
+  "product_modules": 14,
+  "retail_identity": {
+    "content_sha256": "7927f812724eb7c30d672903c5c277b5358d25d20b61b1590d376a796270d513",
+    "executable_sha256": "57cba3a86145a8c315e60b04089ba5d0e7c31d58859096fb0f85c4b2771039a0"
+  },
+  "save_writer_ids": [],
+  "schema": "vc_game_module_pins/v1",
+  "shipped_files": 26,
+  "surfaces": [
+    "colors",
+    "gameplay_tuning_sliders",
+    "menus",
+    "players_rosters",
+    "scorebug_presentation",
+    "scripts_config",
+    "textures",
+    "uniforms"
+  ],
+  "windows": 1
+}

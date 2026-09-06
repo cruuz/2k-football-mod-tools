@@ -1,0 +1,34 @@
+{
+  "camera_header_word1_census": {
+    "1": 20,
+    "3": 3,
+    "5": 19,
+    "7": 46
+  },
+  "camera_paths": 88,
+  "camera_records": 42718,
+  "clump_library_versions": {
+    "0x00000310": 593,
+    "0x0401ffff": 843
+  },
+  "clump_members": 1436,
+  "clump_top_level_sequences": {
+    "0x10": 149,
+    "0x10 0x0 0x3f800000": 30,
+    "0x10 0x2": 9,
+    "0x10 0x3": 1145,
+    "0x10 0x401ffff": 12,
+    "0x10 0x5": 12
+  },
+  "clumps_whose_walk_consumes_the_member": 1167,
+  "note": "Counts and header words only. No container's payload is here.",
+  "produced_by": "python3 -m mod_editor.games.nflblitz2003_ps2.camera_lane",
+  "refusals": 0,
+  "schema": "nflblitz_ps2_containers_measured/v1",
+  "wiff_forms": {
+    "WIPS": 181,
+    "WOM ": 7,
+    "WOMS": 21
+  },
+  "wiff_members": 209
+}
