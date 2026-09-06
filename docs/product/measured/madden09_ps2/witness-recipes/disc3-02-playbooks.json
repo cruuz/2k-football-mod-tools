@@ -1,0 +1,9 @@
+{
+  "schema": "madden09_ps2_playbook_edit/v1",
+  "edits": [
+    {"target": "row:/DATA/GAMEDATA.DAT#67:PBFM:1",  "values": {"name": "WITNESS FORM"}, "note": "the book's own name for this formation"},
+    {"target": "row:/DATA/GAMEDATA.DAT#67:FORM:0",  "values": {"name": "WITNESS FORM"}, "note": "the same formation in the book's shared formation table"},
+    {"target": "row:/DATA/GAMEDATA.DAT#67:PBST:1",  "values": {"name": "WITNESS SET"},  "note": "the book's own name for this set"},
+    {"target": "row:/DATA/GAMEDATA.DAT#67:SETL:22", "values": {"name": "WITNESS SET"},  "note": "the same set in the book's shared set table"}
+  ]
+}

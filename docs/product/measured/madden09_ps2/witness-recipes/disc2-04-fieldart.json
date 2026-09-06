@@ -1,0 +1,7 @@
+{
+  "schema": "madden09_ps2_field_art_recipe/v1",
+  "textures": [
+    {"texture": "FIELDART.DAT:647:0", "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/fieldart/FIELDART.DAT_647_0.png", "note": "frame 20260905152031; the art-pages real-disc trial used this member"},
+    {"texture": "FIELDART.DAT:677:0", "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/fieldart/FIELDART.DAT_677_0.png", "note": "frame 20260905145305"}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "madden09_ps2_team_database_edit/v1",
+  "edits": [
+    {
+      "target": "row:/DATA/DB_TEAMS.DAT#0:PLAY:48",
+      "values": {
+        "PFNA": "WITNESS",
+        "PLNA": "ROSTER",
+        "PJEN": 77
+      }
+    }
+  ]
+}

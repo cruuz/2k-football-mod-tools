@@ -1,0 +1,12 @@
+{
+  "schema": "madden09_ps2_team_identity_edit/v1",
+  "edits": [
+    {
+      "target": "team:/DATA/DB_TEAMS.DAT#0:0",
+      "values": {
+        "TSNA": "WIT",
+        "primary": "#00FF00"
+      }
+    }
+  ]
+}

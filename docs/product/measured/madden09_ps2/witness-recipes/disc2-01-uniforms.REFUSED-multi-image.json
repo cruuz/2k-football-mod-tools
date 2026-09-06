@@ -1,0 +1,14 @@
+{
+  "schema": "madden09_ps2_uniform_disc_art_recipe/v1",
+  "textures": [
+    {"texture": "UNIFORMS.DAT:11:2",  "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_11_2.png",  "note": "Bears-vs-Vikings coin toss, Bears in the coloured kit (frame 20260905152031)"},
+    {"texture": "UNIFORMS.DAT:11:1",  "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_11_1.png",  "note": "same frame"},
+    {"texture": "UNIFORMS.DAT:11:6",  "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_11_6.png",  "note": "same frame"},
+    {"texture": "UNIFORMS.DAT:11:0",  "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_11_0.png",  "note": "same frame"},
+    {"texture": "UNIFORMS.DAT:11:13", "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_11_13.png", "note": "same frame"},
+    {"texture": "UNIFORMS.DAT:7:6",   "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_7_6.png",   "note": "same frame"},
+    {"texture": "UNIFORMS.DAT:13:6",  "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_13_6.png",  "note": "same frame"},
+    {"texture": "UNIFORMS.DAT:15:6",  "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_15_6.png",  "note": "same frame"},
+    {"texture": "UNIFORMS.DAT:17:6",  "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/uniforms/UNIFORMS.DAT_17_6.png",  "note": "same frame"}
+  ]
+}
