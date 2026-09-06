@@ -1047,6 +1047,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         pack_receipt = packs.apply_packs_to_image(
             target, offense_packs,
             progress=lambda msg: progress(msg, 0, 0),
+            collector=spy_pairs,
         )
         receipt["steps"].append({"step": "playbook_packs", **pack_receipt})
     if plan.depth_roles:
@@ -1057,7 +1058,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise RuntimeError("the depth-role module is not available in this build")
         progress("Assigning X / Z / SLOT receivers and nickel / dime corners in the playbooks", 0, 0)
         role_receipt = roles.apply(target, allow_custom=bool(plan.playbook_packs or plan.seven_on_seven or plan.kickoff_alignment),
-                                   progress=lambda msg: progress(msg, 0, 0), collector=spy_pairs)
+                                   progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "depth_roles", **role_receipt})
     for level, module, key, label in (
         (plan.screen_timing, _core_module("nfl2k5_screen_timing"),
