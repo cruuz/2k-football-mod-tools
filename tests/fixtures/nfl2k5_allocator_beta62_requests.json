@@ -162,6 +162,30 @@
   16
  ],
  [
+  "nfl2k5_franchise_2026",
+  "code",
+  5120,
+  16
+ ],
+ [
+  "nfl2k5_franchise_2026",
+  "data",
+  4096,
+  16
+ ],
+ [
+  "nfl2k5_senior_bowl",
+  "code",
+  4096,
+  16
+ ],
+ [
+  "nfl2k5_senior_bowl",
+  "data",
+  65536,
+  4096
+ ],
+ [
   "nfl2k5_guardian_cap_overlay",
   "code",
   2048,
@@ -180,18 +204,6 @@
   16
  ],
  [
-  "nfl2k5_senior_bowl",
-  "code",
-  4096,
-  16
- ],
- [
-  "nfl2k5_senior_bowl",
-  "data",
-  65536,
-  4096
- ],
- [
   "nfl2k5_my_career",
   "code",
   8192,
@@ -199,18 +211,6 @@
  ],
  [
   "nfl2k5_my_career",
-  "data",
-  4096,
-  16
- ],
- [
-  "nfl2k5_franchise_2026",
-  "code",
-  5120,
-  16
- ],
- [
-  "nfl2k5_franchise_2026",
   "data",
   4096,
   16
