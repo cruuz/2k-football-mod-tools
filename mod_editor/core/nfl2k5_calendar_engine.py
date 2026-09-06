@@ -335,3 +335,46 @@ def _guards(payload, base_year):
             if va <= operand and operand + len(original) <= va + size:
                 blob[operand - va:operand - va + len(original)] = original
         _require(hashlib.sha256(blob).hexdigest() == digest, f"foreign calendar context at {va:#x}")
+
+
+def main(argv=None) -> int:
+    """Write a new executable copy; external schedule templates remain a build dependency."""
+    import argparse
+    import json
+    from pathlib import Path
+    import sys
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--xbe", required=True, type=Path,
+                        help="extracted default.xbe with a recognized 2004 or 2026 starting year")
+    parser.add_argument("--output", required=True, type=Path,
+                        help="new executable copy; must not already exist")
+    args = parser.parse_args(argv)
+    created = False
+    try:
+        # Bound the actual read, even for a growing file or a mistakenly supplied disc.
+        with args.xbe.open("rb") as stream:
+            payload = stream.read(space.SCALE_FILE_SIZE + 1)
+        _require(len(payload) <= space.SCALE_FILE_SIZE,
+                 "input exceeds the supported default.xbe size; extract the executable first")
+        result, receipt = apply(payload)
+        with args.output.open("x+b") as stream:
+            created = True
+            _require(stream.write(result) == len(result), "short executable write")
+            stream.flush()
+            stream.seek(0)
+            _require(stream.read(len(result) + 1) == result, "executable copy verification failed")
+    except BaseException as exc:
+        # The handle is closed before cleanup, including on Windows and interruption.
+        if created:
+            args.output.unlink()
+        if not isinstance(exc, (OSError, ValueError)):
+            raise
+        print(f"Calendar engine refused: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(receipt, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

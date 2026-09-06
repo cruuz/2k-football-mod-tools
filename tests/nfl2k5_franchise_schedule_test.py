@@ -133,6 +133,12 @@ class SyntheticPackTests(unittest.TestCase):
         with self.assertRaises(fs.ScheduleError):
             fs.apply_pack(self.pack, bytes(bad), ROST)
 
+    def test_receipt_counts_actual_changed_bytes_at_both_input_sizes(self) -> None:
+        template = fs.synthetic_season(2026, 17, 18)
+        for payload in (self.pack, self.pack + bytes(1 << 20)):
+            patched, receipt = fs.apply_pack(payload, template, ROST)
+            self.assertEqual(receipt["changed_bytes"], sum(a != b for a, b in zip(payload, patched)))
+
 
 def _synthetic_preseason_block(year: int) -> bytes:
     """HOF game (teams 0 v 1, Thursday) + three 16-game rounds a week apart (Thu/Fri/Sat mix)."""
@@ -216,28 +222,34 @@ class ScheduleJsonTests(unittest.TestCase):
 @unittest.skipUnless((RETAIL_DISC / fs.PACK_REL).is_file(), "retail extraction not present")
 class RetailPackSmokeTests(unittest.TestCase):
     def test_retail_pack_decodes_the_2004_season(self) -> None:
-        payload = (RETAIL_DISC / fs.PACK_REL).read_bytes()
-        status = fs.pack_status(payload)
+        # Only this fixed ROST span is consumed. The containing archive pack is
+        # several gigabytes and must never become an in-memory test fixture.
+        with (RETAIL_DISC / fs.PACK_REL).open("rb") as stream:
+            stream.seek(fs.PACK_ROST_OFFSET)
+            payload = stream.read(fs.ROST_OUTER_SIZE)
+        self.assertEqual(len(payload), fs.ROST_OUTER_SIZE)
+        status = fs.pack_status(payload, rost=0)
         self.assertEqual(status["state"], "retail")
-        count, ptr, hdr = fs.schedule_location(payload, fs.PACK_ROST_OFFSET)
-        self.assertEqual((count, ptr, hdr), (256, 0x404FD4, 0x392860))
+        count, ptr, hdr = fs.schedule_location(payload, 0)
+        self.assertEqual((count, ptr + fs.PACK_ROST_OFFSET, hdr + fs.PACK_ROST_OFFSET),
+                         (256, 0x404FD4, 0x392860))
         records = fs.decode_records(payload, ptr, count)
         self.assertEqual((records[0]["date"], records[0]["away_name"], records[0]["home_name"]), ("2004-09-09", "Colts", "Patriots"))
         check = fs.validate_schedule(records, 16)
         self.assertEqual((check["weeks"], check["home_games"]), (17, [8]))
         self.assertEqual(check["week_table"][2]["byes"], ["Bills", "Jets", "Panthers", "Patriots"])
-        self.assertFalse(any(payload[fs.PACK_ROST_OFFSET + fs.TAIL_FREE_REL: fs.PACK_ROST_OFFSET + fs.ROST_OUTER_SIZE]))
+        self.assertFalse(any(payload[fs.TAIL_FREE_REL:fs.ROST_OUTER_SIZE]))
         if SCHEDULE_JSON.is_file():
             doc = json.loads(SCHEDULE_JSON.read_text())
             template, _ = fs.encode_schedule(doc)
             block, _ = fs.encode_preseason(doc)
-            patched, receipt = fs.apply_pack(payload, template, preseason=block)
+            patched, receipt = fs.apply_pack(payload, template, rost=0, preseason=block)
             self.assertEqual(receipt["status_after"]["state"], "applied")
             self.assertEqual(receipt["preseason_games"], 49)
-            self.assertEqual(receipt["changed_bytes"], 8 + sum(1 for b in template + block if b))
-            start = fs.PACK_ROST_OFFSET + fs.TAIL_PLACEMENT_REL
+            self.assertEqual(receipt["changed_bytes"], sum(a != b for a, b in zip(payload, patched)))
+            start = fs.TAIL_PLACEMENT_REL
             self.assertEqual(patched[start + len(template): start + len(template) + len(block)], block)
-            self.assertLess(start + len(template) + len(block), fs.PACK_ROST_OFFSET + fs.ROST_OUTER_SIZE)
+            self.assertLess(start + len(template) + len(block), fs.ROST_OUTER_SIZE)
 
 
 if __name__ == "__main__":

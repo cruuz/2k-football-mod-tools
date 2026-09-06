@@ -32,7 +32,7 @@ class Machine:
     DATE, POOL, PLAYER = HEAP + 0x100, HEAP + 0x10000, HEAP + 0x1000
     SP = STACK + 0x8000
 
-    def __init__(self, payload, year=2026):
+    def __init__(self, payload, year=None):
         import unicorn as u
         from unicorn import x86_const as x
         self.x, self.u = x, u
@@ -52,8 +52,9 @@ class Machine:
         self.uc.mem_map(self.STACK, 0x10000)
         self.uc.mem_map(self.STOP, 4096)
         a = c._allocations(payload)
-        self.labels = c.code_for(a["code"]["va"], a["read_only"]["va"], 2026)[1]
-        self.put(0xE576B8, year - 2026)
+        self.base_year = season.read_year(payload)
+        self.labels = c.code_for(a["code"]["va"], a["read_only"]["va"], self.base_year)[1]
+        self.put(0xE576B8, 0 if year is None else year - self.base_year)
         # Retail mode getter's actual global, pinned by the patch's dependent context.
         self.stub = {}
         self.visits, self.writes = [], []
@@ -148,6 +149,29 @@ class NativeTests(unittest.TestCase):
             raise AssertionError("retail hash mismatch")
         seed, _ = season.apply(retail)
         cls.payload, _ = c.apply(seed)
+        cls.payload_2004, _ = c.apply(retail)
+
+    def test_all_128_season_anchors_and_final_postseason_at_both_bases(self):
+        for payload, base in ((self.payload_2004, 2004), (self.payload, 2026)):
+            m = Machine(payload)
+            for index in range(128):
+                year = base + index
+                m.put(0xE576B8, index)
+                # Independent fourth-Thursday oracle; do not reuse opening_date().
+                thanksgiving = next(dt.date(year, 11, day) for day in range(22, 29)
+                                    if dt.date(year, 11, day).weekday() == 3)
+                opening = thanksgiving - dt.timedelta(days=77)
+                self.assertEqual(m.call("opening_day"), (opening - c.EPOCH).days, (base, index))
+                m.date(dt.date(year, 11, 1))
+                self.assertEqual(m.call("regular_anchor", ecx=m.DATE), year - 2000)
+                self.assertEqual(m.read_date(), dt.date(year, 11, 1))
+                for offset in (-35, 0, 77, 122, 128, 149, 157):
+                    self.assertEqual(m.call("redate", ecx=m.DATE, edx=offset), 1)
+                    self.assertEqual(m.read_date(), opening + dt.timedelta(days=offset), (base, index, offset))
+                # At index 127 the championship remains in the following year.
+                if index == 127:
+                    m.call("redate", ecx=m.DATE, edx=c.POSTSEASON_OFFSETS[-1])
+                    self.assertEqual(m.read_date().year, base + 128)
 
     def test_full_year_leap_ordinal_weekday_and_inverse(self):
         m = Machine(self.payload)
@@ -189,6 +213,11 @@ class NativeTests(unittest.TestCase):
         m.date(dt.date(2100, 2, 28))
         m.call("add_days", ecx=m.DATE, edx=1)
         self.assertEqual(m.read_date(), dt.date(2100, 3, 1))
+        m.date(dt.date(2104, 2, 28))
+        m.call("add_days", ecx=m.DATE, edx=1)
+        self.assertEqual(m.read_date(), dt.date(2104, 2, 29))
+        m.call("add_days", ecx=m.DATE, edx=1)
+        self.assertEqual(m.read_date(), dt.date(2104, 3, 1))
 
     def test_historical_templates_keep_1999_epoch_and_week_break(self):
         m = Machine(self.payload, 2100)

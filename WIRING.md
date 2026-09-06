@@ -1,3 +1,169 @@
+# r62 calendar continuation: remaining integration, 2026-09-06
+
+**EXPERIMENTAL / UNWITNESSED.** This section updates the calendar handoff
+below against stack `288ba65`. The engine, complete allocator union, combined
+option, presets, PATCHES row, Build checkbox and closure imports are already
+landed. Do not duplicate those additions. The new deliverables are
+`ASTRA_CALENDAR_ENGINE_REPORT.md`, the completed
+`docs/mod_editor/nfl2k5_calendar_engine_capability.json`, a working bounded
+module CLI, expanded proofs and the repaired Franchise explanation.
+
+## Required registry merge and synchronized counts
+
+Merge the **one object** in the capability JSON into
+`mod_editor/capabilities/registry.v1.json`, sorted by ID. The ID is now
+`nfl2k5.schedules_franchise.calendar_engine`; `surface` is
+`schedules_franchise`, not the invalid `franchise`. Preserve the existing
+gate-only primitive row as a separate diagnostic capability. The new row is
+`offline-writer-proved` with runtime `not-tested`, never `runtime-proved`.
+Its complete source identity, selector notes, porting limits and empty played
+evidence array are present. Both commands are executable package forms:
+
+```text
+python3 -m mod_editor.core.nfl2k5_calendar_engine --xbe <source.xbe> --output <new-copy.xbe>
+python3 -m tests.mod_editor.test_nfl2k5_calendar_engine
+```
+
+The first command writes only a new extracted executable copy, retains its
+recognized 2004/2026 base, and cannot certify/install external schedule
+templates. The combined 2026 image-build control remains the product path.
+
+Apply these count changes **together with the registry merge**:
+
+| File / exact old text | Required replacement |
+| --- | --- |
+| Protected `packaging/check_2k5_mod_studio_runtime.py`: `len(registry.capabilities) == 95` | `len(registry.capabilities) == 96` |
+| Same file: `len(product_catalog.capabilities) == 57` | `len(product_catalog.capabilities) == 58` |
+| Same file's success marker: `registry=95 sections=12 nfl2k5_capabilities=57` | `registry=96 sections=12 nfl2k5_capabilities=58` |
+| `tests/mod_editor/test_phase1_packaging.py`: `registry has 95 cross-title rows` | `registry has 96 cross-title rows` |
+| Same packaging test's runtime marker | `registry=96 sections=12 nfl2k5_capabilities=58` |
+| `docs/mod_editor/2k5_mod_studio_getting_started.md`: `registry has 95 cross-title rows, including 53 Xbox NFL 2K5` | `registry has 96 cross-title rows, including 58 Xbox NFL 2K5` |
+
+The doc's 53 is already stale: current metadata is 95 total = 57 Xbox NFL 2K5
++ 37 APF + 1 PS2. The candidate is 96 = 58 + 37 + 1. Product sections stay 12.
+The packaging test also pins release labels, so it was left for this joint
+protected integration rather than edited ahead of the live counts.
+
+The new delivery suite validates the exact calendar object through the real
+validator's file-check mode in an explicit 42-row test coverage envelope.
+The full 96-row candidate passes schema and runtime catalog validation.
+Full-registry **file checks still refuse on the pre-existing missing
+`docs/research/apf_audio.md`** in this checkout, including before the merge.
+Restore the historical evidence set in the integration checkout before
+claiming that the whole registry passes file checks. Do not add dummy evidence
+or change the validator to hide that failure. The public runtime probe also
+requires the missing reviewed target metadata directory in a proper stage.
+
+## Retain the landed dispatcher, Build and UI wiring
+
+Keep import `from . import nfl2k5_calendar_engine as calendar_engine_patch`,
+the `calendar_engine: bool = False` kwarg in `_apply_all`, `write_xbe_copy`
+and `write_image_copy`, all forwarding and allocator adapters, and this final
+owners tuple after the allocator:
+
+```python
+(calendar_engine, calendar_engine_patch,
+ "calendar_engine_patch", "128-season calendar (experimental)"),
+```
+
+Keep `calendar_engine_patch.REQUESTS` in `_selected_space_requests` and the
+scorebug resource lane's full union before allocation. Keep calendar deferred
+out of early XBE passes and applied after the 2026 resource step. The four
+status dictionaries use the existing shared `_grown_status_fields` helper:
+`read_xbe(payload)`, `read_image(payload)`, `write_xbe_copy(result)` and
+`write_image_copy(after)` must each include
+`"calendar_engine": calendar_engine_patch.status(<those bytes>)`. Preserve
+both the `calendar_engine_patch` receipt and `calendar_engine` final status.
+
+Retain `BuildPlan.calendar_engine: bool = False`, its recipe/status/availability
+paths, and normalization of either public `season_cap` or `calendar_engine`
+to all four true: `season_cap`, `calendar_engine`, `season_2026`, `xbe_space`.
+Basic false/false, Advanced false/false, Experimental true/true are the landed
+cap/calendar preset values. If final integration gates fail, hold both
+Experimental values false together until repaired, as the original handoff
+requires; do not relabel the gate alone as a full repair.
+
+**Additional review finding, protected fix:** `_build` validates the calendar
+implementation flag but silently normalizes `season_cap=1` or `"yes"`. Add
+the public flag to the existing boolean validation call, before normalization:
+
+```python
+tt._validate_lever_flags(plan.music_shuffle, plan.practice_squad_screen,
+                         plan.abilities, plan.qb_spy,
+                         plan.calendar_engine, plan.season_cap)
+```
+
+Also replace the stale comment on `BuildPlan.season_cap` with
+`# combined 128-season franchise option; experimental/unwitnessed`.
+The candidate function was compiled from the actual protected `_build`
+source with only the extra argument and executed: all eight invalid cases
+(`1`, `0`, `"yes"`, `None` for each flag) refuse with `boolean` before input
+access. The live source still has the public-flag gap. Retain/add that
+regression to `test_mod_build_beta62_integration.py` when wiring the fix.
+
+Retain PATCHES text containing **Retail** and **Patch**, the exact
+`calendar_engine_patch.UI_TEXT`, and `NEEDS_IMAGE` entries for `season_cap`
+and `calendar_engine`. The landed Build option is:
+
+```python
+self.season_cap_check = self._option(
+    f, "season_cap", "128-season franchise (experimental)",
+    tt.calendar_engine_patch.UI_TEXT, badge=NOT_TESTED, needs_image=True)
+```
+
+The caption is 35 characters. The Build panel's plan already forwards both
+checkbox values; preserve Studio/recipe forwarding with default false. No
+second calendar checkbox or new Franchise save field is needed.
+
+**Franchise wording is now applied in this branch**, with its existing
+offscreen copy/reload/terminal-index regression updated:
+
+> EXPERIMENTAL / UNWITNESSED. Use the calendar patch with your build's starting
+> year for long franchises. A save alone does not identify that patch. Editing
+> this year does not simulate seasons.
+
+The separate gate-only module retains its truthful primitive limitations.
+
+## Allowlist, runtime closure, manifest and final integration
+
+Keep the already present allowlist lines for both calendar core modules and
+the capability JSON. Add the previously requested missing report line:
+
+```text
+ASTRA_CALENDAR_ENGINE_REPORT.md
+```
+
+The Franchise panel and `tools/nfl2k5_franchise_schedule.py` already have
+allowlist entries; retain their updated source. The latter's receipt now
+counts actual differing header bytes, independent of enclosing buffer size.
+No generated XBE, disc, `.scratch/`, assembler, development test or retail
+fixture belongs in the runtime artifact.
+
+Keep the landed closure imports
+`mod_editor.core.nfl2k5_calendar_engine` and
+`mod_editor.core.nfl2k5_calendar_engine_code`. The CLI adds only standard-library
+`argparse`, `json`, `pathlib` and `sys`; no compiler/Unicorn/Capstone runtime
+dependency is added. Existing preseason/playoffs14/season-length/season-cap/
+allocator/rdata/bump-strength/cave-oracle and draft assembler imports remain.
+
+Regenerate the protected cave manifest from final integrated sources with
+Claude's normal manifest command and run both XBE gates and the oracle. The
+gate/request/manifest owner lists already contain `nfl2k5_calendar`; do not
+change its budget or rename the recorder's `nfl2k5_calendar_engine` owner.
+No protected JSON or source fingerprint was manually changed here. Rebuild
+the clean release stage with its reviewed metadata, run the runtime/packaging
+checks with the new counts, and rerun the full registry file checks once
+historical evidence is present. The report gives all local passing and
+refused commands and Noah's precise outstanding witnesses.
+
+Local final gates: memory writes **59 passed**; cave references **71 passed**
+with `NFL2K5_CAVE_MANIFEST=.scratch/calendar-continuation/xbe-only-manifest-v2.json`.
+The latter is an observed executable-only fixture (83 writer calls, 9,445
+reservations, 75 checked source hashes, no image steps). It does not replace
+the protected production manifest or claim a real-disc acceptance build.
+
+---
+
 # r62 widescreen polish v3 handoff, 2026-09-06
 
 **EXPERIMENTAL / UNWITNESSED.** Backend and tests are complete in

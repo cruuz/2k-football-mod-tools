@@ -62,7 +62,6 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import nfl2k5_franchise_save as fs
 from mod_editor.core import nfl2k5_roster_records as rr
-from mod_editor.core.nfl2k5_season_cap import UI_LABEL as SEASON_CAP_LABEL
 
 # the coach numbers Finn's Statistics group edits, in his order, then the two ids and the playcalling split
 COACH_STATS: tuple[tuple[str, str], ...] = (
@@ -288,9 +287,10 @@ class FranchisePanel(QWidget):
         self.year_rule_label.setWordWrap(True)
         year_row.addWidget(self.year_rule_label, 1)
         form.addRow("Season year", year_row)
-        self.season_cap_label = QLabel("EXPERIMENTAL / UNWITNESSED. " + SEASON_CAP_LABEL +
-            " The Patch is required to pass the Retail completion gate. "
-            "Game birth dates can already be wrong in 2053. Editing this year does not simulate seasons.")
+        self.season_cap_label = QLabel(
+            "EXPERIMENTAL / UNWITNESSED. Use the calendar patch with your build's starting year "
+            "for long franchises. A save alone does not identify that patch. "
+            "Editing this year does not simulate seasons.")
         self.season_cap_label.setWordWrap(True)
         form.addRow(self.season_cap_label)
         self.stage_label = QLabel("")
