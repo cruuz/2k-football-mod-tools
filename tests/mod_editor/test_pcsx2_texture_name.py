@@ -215,6 +215,44 @@ class NameGrammarTests(unittest.TestCase):
         tcc_set = [names.parse_name(item.name).tcc for item in classic]
         self.assertEqual(sorted(set(tcc_set)), [0, 1])
 
+    def test_a_high_byte_texture_is_hashed_linearly_and_named_apart(self) -> None:
+        """PSM 27 shares its blocks with a 32-bit surface, so PCSX2 expands instead.
+
+        Measured on the MVP Baseball 2005 dump: eighteen dumped names carry PSM
+        27, the block reading reproduces none of them and the linear reading
+        reproduces every one.  A high-byte name therefore differs from the
+        PSMT8 name of the same pixels in *both* halves -- the ``bits`` word and
+        the TEX0 hash -- so a caller that has measured both modes asks for both.
+        """
+
+        indices = bytes((p * 7 + (p // 32)) & 0xFF for p in range(64 * 32))
+        level = names.TextureLevel(64, 32, 8, indices)
+        palette = [(i, 255 - i, (i * 3) & 0xFF, 128) for i in range(256)]
+        blocks, path = names.hashed_stream(indices, 64, 32, 8)
+        linear, high_path = names.hashed_stream(indices, 64, 32, 8, psm=names.PSMT8H)
+        self.assertEqual((path, high_path), (names.PATH_BLOCKS, names.PATH_LINEAR))
+        self.assertEqual(linear, indices)
+        self.assertNotEqual(blocks, linear)
+        self.assertEqual(names.tex0_hash((level,), psm=names.PSMT8H),
+                         xxhash3_64.xxh3_64(indices))
+
+        plain = names.derive_names((level,), palette)
+        both = names.derive_names((level,), palette, extra_psms=(names.PSMT8H,))
+        self.assertEqual([item.name for item in plain], [item.name for item in both[:len(plain)]])
+        added = [item for item in both if item.psm == names.PSMT8H]
+        self.assertEqual(len(added), len(plain))
+        self.assertTrue(all(item.psm == names.PSMT8 for item in plain))
+        high = names.parse_name(added[0].name)
+        low = names.parse_name(plain[0].name)
+        self.assertEqual((high.psm, low.psm), (names.PSMT8H, names.PSMT8))
+        self.assertEqual((high.tw, high.th), (low.tw, low.th))
+        self.assertEqual(high.clut, low.clut)
+        self.assertNotEqual(high.tex0, low.tex0)
+        # A 4-bit level has no high-byte mode, and asking for one is refused.
+        nibble = names.TextureLevel(32, 16, 4, bytes(512))
+        with self.assertRaises(Refusal):
+            names.derive_names((nibble,), [(0, 0, 0, 0)] * 16, extra_psms=(names.PSMT8H,))
+
     def test_derive_refuses_a_chain_that_does_not_halve(self) -> None:
         base = names.TextureLevel(32, 32, 8, bytes(1024))
         odd = names.TextureLevel(8, 8, 8, bytes(64))

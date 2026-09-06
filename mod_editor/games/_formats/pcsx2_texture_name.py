@@ -59,7 +59,7 @@ from mod_editor.games._formats import xxhash3_64
 from mod_editor.games.contract import Refusal
 
 __all__ = [
-    "PSMT8", "PSMT4", "BLOCK_BYTES", "BLOCK_SIZE", "PSM_FOR_BITS", "BITS_FOR_PSM",
+    "PSMT8", "PSMT4", "PSMT8H", "BLOCK_BYTES", "BLOCK_SIZE", "PSM_FOR_BITS", "BITS_FOR_PSM",
     "TextureLevel", "DerivedName", "ParsedName", "NameError",
     "block_offset_8", "block_nibble_4", "block_image", "hashed_stream",
     "tex0_hash", "tex0_hash_chains", "clut_hash", "texture_bits",
@@ -72,6 +72,14 @@ __all__ = [
 PSMT8 = 19
 PSMT4 = 20
 
+#: The GS's *high-byte* 8-bit mode: the index lives in the top byte of a
+#: 32-bit word, so the surface is a ``PSMCT32`` one and its 256-byte blocks
+#: interleave the index with three bytes of whatever else shares the page.
+#: PCSX2 cannot hash those blocks meaningfully and takes its expansion path
+#: instead, which is why a ``PSMT8H`` name is derived from the **linear**
+#: texel stream at any size [M].  See :func:`hashed_stream`.
+PSMT8H = 27
+
 #: Every GS block is 256 bytes whatever the format [S].
 BLOCK_BYTES = 256
 
@@ -79,7 +87,10 @@ BLOCK_BYTES = 256
 BLOCK_SIZE: Mapping[int, Tuple[int, int]] = {8: (16, 16), 4: (32, 16)}
 
 PSM_FOR_BITS: Mapping[int, int] = {8: PSMT8, 4: PSMT4}
-BITS_FOR_PSM: Mapping[int, int] = {PSMT8: 8, PSMT4: 4}
+BITS_FOR_PSM: Mapping[int, int] = {PSMT8: 8, PSMT4: 4, PSMT8H: 8}
+
+#: Index widths that also have a high-byte mode, and the mode they take.
+HIGH_BYTE_PSM: Mapping[int, int] = {8: PSMT8H}
 
 #: The two naming conventions a dump can be written under.  ``modern`` is stock
 #: PCSX2, whose ``bits`` word carries no TCC; ``classic`` is the older grammar
@@ -205,15 +216,32 @@ def log2_exact(value: int, what: str = "a texture dimension") -> int:
     return value.bit_length() - 1
 
 
-def hashed_stream(indices: Sequence[int], width: int, height: int, bits: int) -> Tuple[bytes, str]:
+def hashed_stream(indices: Sequence[int], width: int, height: int, bits: int,
+                  *, psm: Optional[int] = None) -> Tuple[bytes, str]:
     """The bytes PCSX2 hashes for one level, and which of its two paths produced them.
 
     Smaller than a block in either dimension: the unswizzled rectangle, one
     byte per texel (the emulator's expansion path).  Otherwise the block image.
+
+    ``psm=PSMT8H`` takes the linear path **at every size** [M].  A high-byte
+    texture shares its 256-byte blocks with a 32-bit surface, so three of every
+    four bytes of a block belong to something else and the emulator expands the
+    rectangle rather than hashing memory it would have to invent.  Measured on
+    the MVP Baseball 2005 dump: eighteen dumped names carry ``PSM`` 27 and the
+    block reading reproduces none of them, while the linear reading reproduces
+    every one, at 128x64, 128x128, 256x128, 256x256 and 512x256.
     """
 
     log2_exact(width, "a texture width")
     log2_exact(height, "a texture height")
+    if psm == PSMT8H:
+        _require(bits == 8, f"PSM {PSMT8H} carries an 8-bit index and this level is {bits}-bit.")
+        _require(len(indices) == width * height,
+                 f"{len(indices)} texel(s) were given for a {width}x{height} texture, which "
+                 f"needs {width * height}.")
+        return bytes(index & 0xFF for index in indices), PATH_LINEAR
+    _require(psm in (None, PSM_FOR_BITS.get(bits)),
+             f"PSM {psm} is not a mode this module derives a name for.")
     _require(bits in BLOCK_SIZE, f"an index width of {bits} bits is neither 8 nor 4.")
     block_w, block_h = BLOCK_SIZE[bits]
     if width < block_w or height < block_h:
@@ -238,7 +266,7 @@ class TextureLevel:
         return PSM_FOR_BITS[self.bits]
 
 
-def tex0_hash(levels: Sequence[TextureLevel]) -> int:
+def tex0_hash(levels: Sequence[TextureLevel], *, psm: Optional[int] = None) -> int:
     """XXH3-64 over the levels' hashed streams, in order, as one state.
 
     PCSX2 feeds the base level and then each further level of the draw's LOD
@@ -248,10 +276,11 @@ def tex0_hash(levels: Sequence[TextureLevel]) -> int:
 
     _require(len(levels) > 0, "a texture name needs at least one level to hash.")
     return xxhash3_64.xxh3_64(b"".join(hashed_stream(level.indices, level.width, level.height,
-                                                     level.bits)[0] for level in levels))
+                                                     level.bits, psm=psm)[0] for level in levels))
 
 
-def tex0_hash_chains(levels: Sequence[TextureLevel]) -> Dict[Tuple[int, int], int]:
+def tex0_hash_chains(levels: Sequence[TextureLevel], *,
+                     psm: Optional[int] = None) -> Dict[Tuple[int, int], int]:
     """``(base level, level count) -> TEX0 hash`` for every chain the game could draw.
 
     A texture with *n* levels has ``n (n + 1) / 2`` chains: any base level, and
@@ -261,7 +290,7 @@ def tex0_hash_chains(levels: Sequence[TextureLevel]) -> Dict[Tuple[int, int], in
     """
 
     _require(len(levels) > 0, "a texture name needs at least one level to hash.")
-    streams = [hashed_stream(level.indices, level.width, level.height, level.bits)[0]
+    streams = [hashed_stream(level.indices, level.width, level.height, level.bits, psm=psm)[0]
                for level in levels]
     out: Dict[Tuple[int, int], int] = {}
     for base in range(len(streams)):
@@ -399,14 +428,15 @@ class DerivedName:
     tcc: int
     tex0: int
     clut: int
-
-    def as_dict(self) -> Dict[str, object]:
-        return {"name": self.name, "convention": self.convention, "base_level": self.base_level,
-                "level_count": self.level_count, "tcc": self.tcc}
+    #: Which GS pixel mode the draw this name belongs to used.  A texture the
+    #: game uploads as a high-byte surface has a different ``bits`` word *and*
+    #: a different TEX0 hash, so it is a separate name for the same pixels.
+    psm: int = PSMT8
 
 
 def derive_names(levels: Sequence[TextureLevel],
-                 palette: Sequence[Tuple[int, int, int, int]]) -> Tuple[DerivedName, ...]:
+                 palette: Sequence[Tuple[int, int, int, int]],
+                 *, extra_psms: Sequence[int] = ()) -> Tuple[DerivedName, ...]:
     """Every name PCSX2 would look this texture up under, from its own bytes.
 
     One name per ``(base level, level count)`` chain and per convention:
@@ -414,6 +444,14 @@ def derive_names(levels: Sequence[TextureLevel],
     the classic TCC-clear name are the same string; both are listed so a caller
     can pick by convention without knowing that.  The first entry is the one a
     single-answer caller wants: the full chain from the base level, modern.
+
+    *extra_psms* adds the names a **second GS mode** would be looked up under.
+    Which mode a game uploads an indexed texture in is the game's choice and no
+    disc byte records it, so a caller whose dump has shown both asks for both
+    rather than picking one: an 8-bit texture drawn as ``PSMT8H`` has neither
+    the same ``bits`` word nor the same TEX0 hash as the same texture drawn as
+    ``PSMT8``.  Default is empty, so nothing changes for a caller that has not
+    measured a second mode.
     """
 
     _require(len(levels) > 0, "a texture name needs at least one level.")
@@ -425,28 +463,38 @@ def derive_names(levels: Sequence[TextureLevel],
         _require(level.bits == previous.bits,
                  f"level {number} is {level.bits}-bit after a {previous.bits}-bit level; a "
                  f"chain keeps one format.")
-    chains = tex0_hash_chains(levels)
     clut = clut_hash(palette)
     _require(len(palette) == (256 if levels[0].bits == 8 else 16),
              f"a {levels[0].bits}-bit texture draws from a "
              f"{256 if levels[0].bits == 8 else 16}-entry CLUT and this palette has "
              f"{len(palette)} entries.")
+    modes: List[Optional[int]] = [None]
+    for psm in extra_psms:
+        _require(BITS_FOR_PSM.get(psm) == levels[0].bits,
+                 f"PSM {psm} does not carry a {levels[0].bits}-bit index, so it is not a mode "
+                 f"this texture could be drawn in.")
+        if psm != levels[0].psm and psm not in modes:
+            modes.append(psm)
     out: List[DerivedName] = []
-    order = sorted(chains, key=lambda key: (key[0], -key[1]))
-    for base, count in order:
-        level = levels[base]
-        tw, th = log2_exact(level.width), log2_exact(level.height)
-        tex0 = chains[(base, count)]
-        out.append(DerivedName(replacement_name(tex0, clut, texture_bits(level.psm, tw, th, 0)),
-                               CONVENTION_MODERN, base, count, 0, tex0, clut))
-    for base, count in order:
-        level = levels[base]
-        tw, th = log2_exact(level.width), log2_exact(level.height)
-        tex0 = chains[(base, count)]
-        for tcc in (0, 1):
-            out.append(DerivedName(
-                replacement_name(tex0, clut, texture_bits(level.psm, tw, th, tcc)),
-                CONVENTION_CLASSIC, base, count, tcc, tex0, clut))
+    for mode in modes:
+        chains = tex0_hash_chains(levels, psm=mode)
+        order = sorted(chains, key=lambda key: (key[0], -key[1]))
+        for base, count in order:
+            level = levels[base]
+            psm = level.psm if mode is None else mode
+            tw, th = log2_exact(level.width), log2_exact(level.height)
+            tex0 = chains[(base, count)]
+            out.append(DerivedName(replacement_name(tex0, clut, texture_bits(psm, tw, th, 0)),
+                                   CONVENTION_MODERN, base, count, 0, tex0, clut, psm))
+        for base, count in order:
+            level = levels[base]
+            psm = level.psm if mode is None else mode
+            tw, th = log2_exact(level.width), log2_exact(level.height)
+            tex0 = chains[(base, count)]
+            for tcc in (0, 1):
+                out.append(DerivedName(
+                    replacement_name(tex0, clut, texture_bits(psm, tw, th, tcc)),
+                    CONVENTION_CLASSIC, base, count, tcc, tex0, clut, psm))
     return tuple(out)
 
 
