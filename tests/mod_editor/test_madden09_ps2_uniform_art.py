@@ -264,6 +264,37 @@ class UniformArtLaneTests(unittest.TestCase):
         if image.mip_count == 1:
             self.assertEqual(derived["modern"][0], expected[0].name)
 
+    def test_a_second_gs_mode_is_offered_only_where_a_dump_measured_one(self) -> None:
+        """``extra_psms`` is per game and empty here, because this dump wrote no PSM 27 name.
+
+        An 8-bit texture the game uploads as the high-byte ``PSMT8H`` surface
+        is looked up under a different ``bits`` word *and* a different TEX0
+        hash, so offering that reading is a claim about how the game draws.
+        The 33-frame retail dump wrote 9,620 names and none of them declares
+        PSM 27 [M, ``pcsx2-texture-identity-derivation.json``], so this lane
+        leaves the switch off; the plumbing is proved here rather than the
+        claim.
+        """
+
+        from mod_editor.games._formats import pcsx2_texture_name as identity
+
+        self.assertEqual(self.lane.extra_psms, ())
+        container_name, member, image_index = self.lane.parse_key(self.target.key)
+        payload, texture = self.lane._texture_at(self.source, container_name, member)
+        image = texture.images[image_index]
+        plain, _ = uniform_art.derive_texture_names(payload, texture, image)
+        both, _ = uniform_art.derive_texture_names(payload, texture, image,
+                                                   extra_psms=(identity.PSMT8H,))
+        surface = texture.surfaces[image.first_surface]
+        if surface.pixel_layout != 1:
+            self.skipTest("the fixture's first image is not 8-bit")
+        self.assertEqual(len(both["modern"]), 2 * len(plain["modern"]))
+        self.assertEqual(both["modern"][:len(plain["modern"])], plain["modern"])
+        added = both["modern"][len(plain["modern"]):]
+        self.assertTrue(all(identity.parse_name(name).psm == identity.PSMT8H
+                            for name in added))
+        self.assertFalse(set(added) & set(plain["modern"]))
+
     def test_a_texture_the_rule_cannot_name_says_why(self) -> None:
         """A width that is not a power of two has no GS size word, so no derived name."""
         target = Target(key=self.target.key, label="x", detail="", budget="", searchable="",

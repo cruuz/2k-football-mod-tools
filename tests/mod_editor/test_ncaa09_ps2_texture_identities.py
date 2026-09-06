@@ -36,8 +36,11 @@ if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
 import ps2_texture_identities as tool  # noqa: E402
+from mod_editor.games._formats import ea_terf, mmap_art, xxhash3_64  # noqa: E402
+from mod_editor.games._formats import pcsx2_texture_name as names  # noqa: E402
 from mod_editor.games._lanes import terf_art  # noqa: E402
 from mod_editor.games.ncaa09_ps2 import art_pages  # noqa: E402
+from mod_editor.games.ncaa09_ps2 import containers  # noqa: E402
 from mod_editor.games.ncaa09_ps2 import texture_lane  # noqa: E402
 
 KEY = r"^[A-Z0-9_.]+:\d+:\d+$"
@@ -244,6 +247,138 @@ class ShippedDerivationTests(unittest.TestCase):
         evidence = texture_lane.TextureLane.derivation_evidence
         self.assertIn(f"{counts['names_tex0_reproduced']:,}", evidence)
         self.assertIn(f"{counts['names']:,}", evidence)
+
+    def test_the_dump_carried_no_high_byte_name_so_the_second_reading_answered_nothing(self):
+        """The measured answer to "is any of this a ``PSMT8H`` draw": no.
+
+        The check tries the high-byte reading for every 8-bit surface now, so
+        the document records the GS mode of every dumped name it saw.  On this
+        disc's two frames those modes are 19 and 20 only, which is why the
+        high-byte counts are zero and why nothing in the shipped numbers moved
+        when the second reading was added [M].
+        """
+
+        check = self.payload["dump_check"]
+        by_psm = check["dumped_names_by_psm"]
+        counts = check["counts"]
+        self.assertNotIn(str(names.PSMT8H), by_psm)
+        self.assertEqual(sorted(by_psm, key=int), [str(names.PSMT8), str(names.PSMT4)])
+        self.assertEqual(counts["names_high_byte_checked"], 0)
+        self.assertEqual(counts["names_high_byte_reproduced"], 0)
+        self.assertEqual(sum(row["names"] for row in by_psm.values()), counts["names"])
+        self.assertEqual(sum(row["not a reading of this surface"] for row in by_psm.values()),
+                         counts["names_psm_disagrees"])
+        self.assertEqual(sum(row["tex0 reproduced"] for row in by_psm.values()),
+                         counts["names_tex0_reproduced"])
+        self.assertEqual(sum(row["tex0 not reproduced"] for row in by_psm.values()),
+                         counts["names_tex0_not_reproduced"])
+
+    def test_the_cross_member_chain_probe_accounts_for_every_unreproduced_name(self) -> None:
+        chain = self.payload["dump_check"]["cross_member_chain"]
+        self.assertEqual(chain["names_explained"] + chain["names_still_unexplained"],
+                         self.payload["dump_check"]["counts"]["names_tex0_not_reproduced"])
+        for row in chain["chains"]:
+            self.assertGreaterEqual(row["levels"], 2)
+            self.assertEqual(row["last_member"], row["member"] + row["levels"] - 1)
+
+
+class HighByteAndChainTests(unittest.TestCase):
+    """Two readings and one probe, proved on a disc these tests build.
+
+    ``derivation_check`` used to dismiss a name whose ``bits`` word declared a
+    GS mode other than the surface's own as "another surface's", which silently
+    hid the high-byte ``PSMT8H`` reading of an 8-bit texture -- a different
+    ``bits`` word *and* a different TEX0 hash for the same pixels.  It also had
+    one hypothesis for a name it could not reproduce and no way to test it: a
+    mip pyramid stored as a run of consecutive one-level members, which PCSX2
+    hashes as one chain.  Both are exercised here on a synthetic disc.
+    """
+
+    def setUp(self) -> None:
+        self.room = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.room, ignore_errors=True)
+        run = [containers.synthetic_texture_member(64, 64, seed=3),
+               containers.synthetic_texture_member(32, 32, seed=3),
+               containers.synthetic_texture_member(16, 16, seed=3)]
+        self.disc = self.room / "synthetic.iso"
+        self.disc.write_bytes(containers.build_synthetic_disc(art_members=run))
+        self.container = "UIS_GEAR.DAT"
+        image = containers.open_disc(self.disc)
+        entry = {row.name: row for row in containers.data_files(image)}[self.container]
+        terf = ea_terf.parse_terf(containers.read_file(image, entry), allow_size_mismatch=True)
+        self.streams = []
+        for member in range(3):
+            payload = terf.member(member)
+            texture = mmap_art.parse(payload)
+            picture = texture.images[0]
+            surface = texture.surfaces[picture.first_surface]
+            indices = mmap_art.unpack_indices(mmap_art.surface_pixels(payload, surface), surface)
+            self.streams.append(indices)
+            if member == 0:
+                self.clut = names.clut_hash(
+                    mmap_art.read_palette(payload, texture.palettes[picture.first_palette]))
+
+    def _document(self, filenames):
+        return {"identities": {f"{self.container}:0:0": {
+            "container": self.container, "member": 0, "image": 0,
+            "names": {"modern": list(filenames)}}}}
+
+    def _name(self, tex0: int, psm: int) -> str:
+        return names.replacement_name(tex0, self.clut, names.texture_bits(psm, 6, 6, 0))
+
+    def test_a_high_byte_name_is_checked_against_the_linear_reading_not_dismissed(self) -> None:
+        level = names.TextureLevel(64, 64, 8, self.streams[0])
+        high = self._name(names.tex0_hash((level,), psm=names.PSMT8H), names.PSMT8H)
+        low = self._name(names.tex0_hash((level,)), names.PSMT8)
+        check = tool.derivation_check(self.disc, self._document([high, low]),
+                                      discs=containers)
+        counts = check["counts"]
+        self.assertEqual(counts["names_high_byte_checked"], 1)
+        self.assertEqual(counts["names_high_byte_reproduced"], 1)
+        self.assertEqual(counts["names_psm_disagrees"], 0)
+        self.assertEqual(counts["names_tex0_reproduced"], 2)
+        self.assertEqual(counts["names_tex0_not_reproduced"], 0)
+        self.assertEqual(check["dumped_names_by_psm"], {
+            str(names.PSMT8): {"names": 1, "tex0 reproduced": 1, "tex0 not reproduced": 0,
+                               "not a reading of this surface": 0},
+            str(names.PSMT8H): {"names": 1, "tex0 reproduced": 1, "tex0 not reproduced": 0,
+                                "not a reading of this surface": 0}})
+
+    def test_a_name_of_a_mode_this_surface_has_no_reading_for_still_disagrees(self) -> None:
+        """A 4-bit name on an 8-bit surface is the sibling's, and stays counted as one."""
+
+        level = names.TextureLevel(64, 64, 8, self.streams[0])
+        check = tool.derivation_check(
+            self.disc, self._document([self._name(names.tex0_hash((level,)), names.PSMT4)]),
+            discs=containers)
+        self.assertEqual(check["counts"]["names_psm_disagrees"], 1)
+        self.assertEqual(check["counts"]["names"], 0)
+        self.assertEqual(check["dumped_names_by_psm"][str(names.PSMT4)]
+                         ["not a reading of this surface"], 1)
+
+    def test_a_pyramid_split_across_members_is_named_by_the_chain_probe(self) -> None:
+        """Member 0 hashed alone reproduces nothing; members 0..2 as one chain do."""
+
+        chained = xxhash3_64.xxh3_64(b"".join(
+            names.hashed_stream(indices, 64 >> step, 64 >> step, 8)[0]
+            for step, indices in enumerate(self.streams)))
+        check = tool.derivation_check(self.disc,
+                                      self._document([self._name(chained, names.PSMT8)]),
+                                      discs=containers)
+        self.assertEqual(check["counts"]["names_tex0_not_reproduced"], 1)
+        chain = check["cross_member_chain"]
+        self.assertEqual(chain["names_explained"], 1)
+        self.assertEqual(chain["names_still_unexplained"], 0)
+        self.assertEqual(chain["chains"][0]["member"], 0)
+        self.assertEqual(chain["chains"][0]["levels"], 3)
+        self.assertEqual(chain["chains"][0]["base"], "64x64")
+
+    def test_a_name_no_chain_explains_is_counted_as_still_unexplained(self) -> None:
+        check = tool.derivation_check(self.disc, self._document([self._name(0x1234, names.PSMT8)]),
+                                      discs=containers)
+        self.assertEqual(check["counts"]["names_tex0_not_reproduced"], 1)
+        self.assertEqual(check["cross_member_chain"]["names_explained"], 0)
+        self.assertEqual(check["cross_member_chain"]["names_still_unexplained"], 1)
 
 
 if __name__ == "__main__":

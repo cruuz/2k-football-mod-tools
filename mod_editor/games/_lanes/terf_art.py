@@ -276,7 +276,8 @@ DERIVED_PREFIX = "derived:"
 
 
 def derive_texture_names(payload: bytes, texture: mmap_art.MmapTexture,
-                         image: mmap_art.Image) -> Tuple[Dict[str, List[str]], str]:
+                         image: mmap_art.Image,
+                         *, extra_psms: Sequence[int] = ()) -> Tuple[Dict[str, List[str]], str]:
     """Every PCSX2 name this image would be looked up under, from its own bytes.
 
     Returns ``({convention: [names]}, "")`` or ``({}, why not)``.  The names
@@ -285,6 +286,15 @@ def derive_texture_names(payload: bytes, texture: mmap_art.MmapTexture,
     draw that borrows an alternate CLUT -- the team recolours a uniform sheet
     carries as palette-only entries -- has a different second half, and a CLUT
     the game builds at run time has none this can predict; the note says so.
+
+    *extra_psms* adds a second GS pixel mode's reading.  An 8-bit texture the
+    game uploads as the high-byte ``PSMT8H`` surface has a different ``bits``
+    word *and* a different TEX0 hash for the same pixels, and no disc byte says
+    which mode a draw will use -- only a dump does.  So a game passes what its
+    own dump measured and nothing else: the mode census of every dumped name is
+    in that game's ``pcsx2-texture-identity-derivation.json`` under
+    ``dump_check.dumped_names_by_psm``.  Default empty, because a name that no
+    draw would ever look up is a file in a pack that never loads.
     """
 
     levels: List[texture_identity.TextureLevel] = []
@@ -302,7 +312,7 @@ def derive_texture_names(payload: bytes, texture: mmap_art.MmapTexture,
         return {}, "no name is derived: this image has no pixels or no palette of its own"
     try:
         palette = mmap_art.read_palette(payload, texture.palettes[image.first_palette])
-        derived = texture_identity.derive_names(levels, palette)
+        derived = texture_identity.derive_names(levels, palette, extra_psms=tuple(extra_psms))
     except Refusal as exc:
         return {}, f"no name is derived: {exc}"
     return texture_identity.names_by_convention(derived), ""
@@ -367,6 +377,17 @@ class TerfArtLane:
     derivation_evidence: str = (
         "the rule reproduces the dumped hash of 2,994 of 3,024 dump-identified retail "
         "textures")
+    #: Which **second** GS pixel mode this game's textures are known to be
+    #: uploaded in, on top of the mode the surface's own index width implies.
+    #: An 8-bit texture drawn as the high-byte ``PSMT8H`` surface is looked up
+    #: under a different name entirely, and nothing on a disc records which
+    #: mode a draw uses -- so this is set from a game's **own** dump, from
+    #: ``dump_check.dumped_names_by_psm`` in its derivation document, and stays
+    #: empty until one shows the mode.  Neither Madden 09's 33-frame dump
+    #: (9,620 names) nor NCAA 09's two-frame dump (1,100 names) wrote a single
+    #: ``PSMT8H`` name [M], so both leave it empty and offer the ``PSMT8``
+    #: reading alone.
+    extra_psms: Tuple[int, ...] = ()
     #: How many textures the catalogue offers as targets.
     max_targets = MAX_TARGETS
     #: How many targets ONE container may take of that cap, or ``None`` for no
@@ -504,7 +525,8 @@ class TerfArtLane:
                         "file_name": _file_name(name, index, entry_image.index,
                                                 surface.width, surface.height),
                     }
-                    derived, derived_note = derive_texture_names(payload, texture, entry_image)
+                    derived, derived_note = derive_texture_names(
+                        payload, texture, entry_image, extra_psms=self.extra_psms)
                     row["derived_names"] = derived
                     row["derived_note"] = derived_note
                     rows.append(row)

@@ -814,6 +814,11 @@ def build_document(source: Path, dump_dir: Path, dumps: Sequence[DumpTexture],
 #: listed by key before the document records only how many there were.
 MISS_SAMPLE = 48
 
+#: How many members after a miss the cross-member mip-chain probe will walk.
+#: A GS mip chain is at most seven levels, and this disc's split pyramids are
+#: four to six members long, so seven is one more than anything real.
+CHAIN_PROBE_MEMBERS = 7
+
 
 def _texture_levels(payload: bytes, texture, image):
     """Every mip level of *image* as :class:`pcsx2_texture_name.TextureLevel`."""
@@ -827,6 +832,89 @@ def _texture_levels(payload: bytes, texture, image):
         bits = 8 if surface.pixel_layout == mmap_art.PIXELS_INDEXED_8 else 4
         levels.append(identity.TextureLevel(surface.width, surface.height, bits, indices))
     return levels
+
+
+def _single_level(container, member: int):
+    """``(hashed stream, width, height, bits, CLUT hash)`` for a one-image one-level member.
+
+    ``None`` for anything else.  This is the shape a mip pyramid split across
+    consecutive ``TERF`` members takes: each member holds one image with one
+    surface, and the run shares a palette.  A surface whose stored block is
+    padded past its own texel count -- an 8x4 4-bit level is stored in 32 bytes
+    and needs 16 -- is trimmed to the texels it declares rather than refused,
+    because the padding is storage and not picture.
+    """
+
+    from mod_editor.games._formats import pcsx2_texture_name as identity
+
+    try:
+        payload = container.member(member)
+        texture = mmap_art.parse(payload)
+    except Exception:                                  # noqa: BLE001 - absence is the answer
+        return None
+    if len(texture.images) != 1:
+        return None
+    image = texture.images[0]
+    if image.mip_count != 1 or image.palette_count == 0:
+        return None
+    surface = texture.surfaces[image.first_surface]
+    bits = 8 if surface.pixel_layout == mmap_art.PIXELS_INDEXED_8 else 4
+    try:
+        raw = bytes(mmap_art.surface_pixels(payload, surface))
+        needed = surface.width * surface.height * bits // 8
+        raw = raw[:needed]
+        if len(raw) != needed:
+            return None
+        if bits == 8:
+            indices = list(raw)
+        else:
+            indices = []
+            for byte in raw:
+                indices.append(byte & 0x0F)
+                indices.append((byte >> 4) & 0x0F)
+        stream = identity.hashed_stream(indices, surface.width, surface.height, bits)[0]
+        clut = identity.clut_hash(mmap_art.read_palette(payload,
+                                                        texture.palettes[image.first_palette]))
+    except Exception:                                  # noqa: BLE001 - absence is the answer
+        return None
+    return stream, surface.width, surface.height, bits, clut
+
+
+def _cross_member_chain(container, member: int, parsed, cache: Dict[int, Any]) -> Optional[dict]:
+    """Is the dumped ``TEX0`` the hash of this member **and the members after it**?
+
+    A ``TERF`` container can hold one texture's mip pyramid as a run of
+    consecutive one-level members -- ``64x64, 32x32, 16x16, 8x8`` under one
+    palette -- and PCSX2 feeds every level of the draw's LOD range into one hash
+    state.  The deriver hashes a member on its own, so every name of such a run
+    is a miss.  This walks forward while the size halves and the palette holds,
+    hashing the growing chain, and answers with the run that reproduces the name
+    or ``None`` [M].
+    """
+
+    from mod_editor.games._formats import xxhash3_64
+
+    first = cache.setdefault(member, _single_level(container, member))
+    if first is None:
+        return None
+    stream, width, height, bits, clut = first
+    if parsed.clut is not None and clut != parsed.clut:
+        return None
+    joined = stream
+    for step in range(1, CHAIN_PROBE_MEMBERS):
+        following = cache.setdefault(member + step, _single_level(container, member + step))
+        if following is None:
+            return None
+        if following[1] != max(1, width >> step) or following[2] != max(1, height >> step):
+            return None
+        if following[3] != bits or following[4] != clut:
+            return None
+        joined += following[0]
+        if xxhash3_64.xxh3_64(joined) == parsed.tex0:
+            return {"member": member, "levels": step + 1,
+                    "last_member": member + step,
+                    "base": f"{width}x{height}"}
+    return None
 
 
 def derivation_check(source: Path, document: Mapping, *, discs, progress=None) -> dict:
@@ -843,6 +931,18 @@ def derivation_check(source: Path, document: Mapping, *, discs, progress=None) -
       that draws the same picture, and a flat 8x8 texture exists in both
       widths; the dump is another surface's and this one is not wrong;
     * **not reproduced** -- the same PSM and no chain matches.  Listed by key.
+
+    An 8-bit surface is checked against **two** readings, because a game may
+    upload an 8-bit texture as the high-byte ``PSMT8H`` surface instead, and
+    that has a different ``bits`` word *and* a different TEX0 hash for the same
+    pixels: the ordinary block reading for a ``PSMT8`` (19) name and the linear
+    reading for a ``PSMT8H`` (27) one.  ``dumped_names_by_psm`` records how many
+    names of each GS mode the dump actually wrote, so a later reader can see
+    whether the second reading had anything to answer.
+
+    A name that no reading reproduces is put to one more question: is it the
+    hash of this member **and the members after it**?  See
+    :func:`_cross_member_chain`.
 
     The CLUT half is counted as: in the image's own palette, in another
     palette of the same member (an alternate kit CLUT), or in no palette the
@@ -861,6 +961,7 @@ def derivation_check(source: Path, document: Mapping, *, discs, progress=None) -
         "identities": len(identities), "identities_checked": 0, "identities_not_derivable": 0,
         "identities_confirmed": 0, "names": 0, "names_psm_disagrees": 0,
         "names_tex0_reproduced": 0, "names_tex0_not_reproduced": 0,
+        "names_high_byte_checked": 0, "names_high_byte_reproduced": 0,
         "clut_in_own_palette": 0, "clut_in_another_palette_of_the_member": 0,
         "clut_not_in_the_member": 0,
     }
@@ -869,6 +970,10 @@ def derivation_check(source: Path, document: Mapping, *, discs, progress=None) -
     chains: Dict[str, int] = {}
     not_derivable: Dict[str, int] = {}
     misses: List[str] = []
+    by_psm: Dict[str, Dict[str, int]] = {}
+    chain_hits: List[dict] = []
+    chain_cache: Dict[str, Dict[int, Any]] = {}
+    chain_misses = 0
     for name in sorted(by_container):
         entry = present.get(name)
         if entry is None:
@@ -910,13 +1015,32 @@ def derivation_check(source: Path, document: Mapping, *, discs, progress=None) -
             confirmed = False
             dumped = sorted({value for values in (row.get("names") or {}).values()
                              for value in values})
+            high_byte_psm = identity.HIGH_BYTE_PSM.get(base.bits)
+            by_hash_high: Dict[int, Tuple[int, int]] = {}
             for dumped_name in dumped:
                 parsed = identity.parse_name(dumped_name)
+                mode = by_psm.setdefault(str(parsed.psm), {
+                    "names": 0, "tex0 reproduced": 0, "tex0 not reproduced": 0,
+                    "not a reading of this surface": 0})
+                table = by_hash
                 if parsed.psm != base.psm:
-                    counts["names_psm_disagrees"] += 1
-                    continue
+                    if high_byte_psm is None or parsed.psm != high_byte_psm:
+                        counts["names_psm_disagrees"] += 1
+                        mode["not a reading of this surface"] += 1
+                        continue
+                    if not by_hash_high:
+                        by_hash_high = {value: base_count for base_count, value
+                                        in identity.tex0_hash_chains(
+                                            levels, psm=high_byte_psm).items()}
+                    table = by_hash_high
+                    counts["names_high_byte_checked"] += 1
                 counts["names"] += 1
-                found = by_hash.get(parsed.tex0)
+                mode["names"] += 1
+                found = table.get(parsed.tex0)
+                mode["tex0 reproduced" if found is not None
+                     else "tex0 not reproduced"] += 1
+                if found is not None and table is by_hash_high:
+                    counts["names_high_byte_reproduced"] += 1
                 if found is not None:
                     counts["names_tex0_reproduced"] += 1
                     bucket["reproduced"] += 1
@@ -930,6 +1054,12 @@ def derivation_check(source: Path, document: Mapping, *, discs, progress=None) -
                     container_bucket["names_not_reproduced"] += 1
                     if len(misses) < MISS_SAMPLE and key not in misses:
                         misses.append(key)
+                    chain = _cross_member_chain(container, int(row["member"]), parsed,
+                                                chain_cache.setdefault(name, {}))
+                    if chain is None:
+                        chain_misses += 1
+                    else:
+                        chain_hits.append({"container": name, "key": key, **chain})
                 if parsed.clut is None:
                     continue
                 palette_index = palettes.get(parsed.clut)
@@ -949,6 +1079,27 @@ def derivation_check(source: Path, document: Mapping, *, discs, progress=None) -
         "lod_chains": dict(sorted(chains.items(), key=lambda item: -item[1])),
         "not_derivable_reasons": not_derivable,
         "not_reproduced_sample": misses,
+        "dumped_names_by_psm": {psm: by_psm[psm] for psm in sorted(by_psm, key=int)},
+        "dumped_names_by_psm_note": (
+            "Every dumped name of every identity, by the GS pixel mode its bits word "
+            "declares: 19 is PSMT8, 20 is PSMT4, 27 is the high-byte PSMT8H. 'not a reading "
+            "of this surface' is a name of a mode this surface has none -- a 4-bit name on an "
+            "8-bit surface, which the pixel matcher paired because a picture exists at both "
+            "depths -- and those are the psm_disagrees count, split by mode. A mode absent "
+            "from this table is a mode no draw in this capture used, so the reading for it "
+            "had nothing to answer."),
+        "cross_member_chain": {
+            "names_explained": len(chain_hits),
+            "names_still_unexplained": chain_misses,
+            "chains": chain_hits[:MISS_SAMPLE],
+            "question": ("A TERF container can hold one texture's mip pyramid as a run of "
+                         "consecutive one-level members under a single palette, and PCSX2 "
+                         "hashes every level of the draw's LOD range into one state, so a "
+                         "member hashed on its own reproduces none of the run's names. Each "
+                         "unreproduced name is re-checked against the chain that starts at "
+                         "its own member and walks forward while the size halves and the "
+                         "palette holds."),
+        },
     }
 
 

@@ -112,9 +112,12 @@ IDENTITY_TOOL = "tools/ps2_texture_identities.py --game ncaa09_ps2"
 #: ``docs/product/measured/ncaa09_ps2/pcsx2-texture-identity-derivation.json``:
 #: of the 1,106 dumped names whose PSM matches the surface they paired with,
 #: 1,094 are reproduced from the disc bytes and 12 are not, and all twelve are
-#: on six members of ``FLDDATA.DAT`` [M].  The base's default is Madden 09's
-#: number, and quoting one disc's measurement on another is the thing this
-#: attribute exists to stop.
+#: on six members of ``FLDDATA.DAT`` [M].  Four of those twelve are a mip
+#: pyramid stored as a run of consecutive members, which PCSX2 hashes as one
+#: chain; eight are still open.  The dump declares GS modes 19 and 20 only --
+#: no ``PSMT8H`` name -- which is why :attr:`TerfArtLane.extra_psms` stays
+#: empty here.  The base's default is Madden 09's number, and quoting one
+#: disc's measurement on another is the thing this attribute exists to stop.
 DERIVATION_EVIDENCE = (
     "the rule reproduces the dumped hash of 1,094 of the 1,106 names a two-frame dump "
     "wrote for this disc")
