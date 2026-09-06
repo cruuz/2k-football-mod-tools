@@ -171,6 +171,35 @@ class NewGameTests(unittest.TestCase):
         self.root = _scratch()
         self.addCleanup(shutil.rmtree, self.root, True)
 
+    def test_registering_a_game_re_pins_the_provider_hash_of_model_py(self) -> None:
+        """``providers.py`` pins ``model.py`` by sha256 and the runtime closure refuses a stale pin.
+        Registering a game edits ``model.py``, so the pin must move with it -- two module
+        registrations fixed this by hand before the tool owned the edit."""
+        import hashlib
+        providers = self.root / tool.PROVIDERS
+        providers.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / tool.PROVIDERS, providers)
+        stale = hashlib.sha256((self.root / tool.MODEL).read_bytes()).hexdigest()
+        self.assertIn(f'"{tool.MODEL}": "', providers.read_text(encoding="utf-8"))
+        entry = {
+            "id": "demo_ps2", "platform": "PlayStation 2", "title": "Demo Game (USA, PlayStation 2)",
+            "public_input": "User supplies a legally obtained image; nothing is bundled.",
+            "retail_identity": {"content_sha256": "1" * 64, "executable_sha256": "2" * 64},
+        }
+        entry_path = self.root / "entry.json"
+        entry_path.write_text(json.dumps(entry, indent=2) + "\n", encoding="utf-8", newline="\n")
+        row = _row_like(self.root, "nfl2k5ps2.menus.text_banks", id="demo_ps2.menus.text", game="demo_ps2",
+                        title="Demo text", validation_command="bash tools/validate_demo_text.sh")
+        row_path = self.root / "menus.json"
+        row_path.write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8", newline="\n")
+        plan = tool.apply(self.root, game="demo_ps2", rows=[row_path], new_game=entry_path,
+                          display_name="Demo Game (PS2)", widen_surfaces=["menus"])
+        fresh = hashlib.sha256((self.root / tool.MODEL).read_bytes()).hexdigest()
+        self.assertNotEqual(stale, fresh, "the registration must have edited model.py for this test to mean anything")
+        self.assertIn(f'"{tool.MODEL}": "{fresh}"', providers.read_text(encoding="utf-8"))
+        self.assertNotIn(stale, providers.read_text(encoding="utf-8"))
+        self.assertTrue(any("[repin] " + tool.PROVIDERS in line for line in plan.log), plan.log)
+
     def test_another_game_registers_everywhere_and_validates(self) -> None:
         entry = {
             "id": "demo_ps2", "platform": "PlayStation 2", "title": "Demo Game (USA, PlayStation 2)",

@@ -36,7 +36,8 @@ What it edits, for rows of an existing game:
 * ``--rc OLD NEW --changelog-section FILE --status-heading TEXT``: the RC bump
   every registry commit carries (version, its asserted spellings, the
   changelog section, the STATUS heading);
-* ``--repin PATH``: re-hash a dict-shaped runtime pin (the RC29 dict).
+* ``--repin PATH``: re-hash a dict-shaped runtime pin (the RC29 dict). ``providers.py``'s pin of
+  ``model.py`` is re-hashed automatically whenever this tool edits ``model.py``.
 
 ``--new-game ENTRY.json --display-name TEXT`` additionally registers a game
 id that does not exist yet: the ``games[]`` entry, the ``GameId`` enum member
@@ -72,6 +73,7 @@ REGISTRY = "mod_editor/capabilities/registry.v1.json"
 VALIDATOR = "mod_editor/capabilities/validate_registry.py"
 CAPABILITIES = "mod_editor/core/capabilities.py"
 MODEL = "mod_editor/core/model.py"
+PROVIDERS = "mod_editor/core/providers.py"  # pins model.py by sha256; re-pinned whenever MODEL is staged
 REGISTRY_SCHEMA = "mod_editor/capabilities/registry.schema.json"
 PROJECT_SCHEMA = "mod_editor/project.schema.json"
 RUNTIME_GATE = "packaging/check_2k5_mod_studio_runtime.py"
@@ -492,20 +494,31 @@ def bump_rc(plan: Plan, old: str, new: str, section_path: Path, status_heading: 
     plan.log.append(f"[rc] RC{old} -> RC{new}; STATUS Beta {beta}")
 
 
+def repin_dict_entry(plan: Plan, pin_file: str, relative: str) -> None:
+    """Re-hash ``relative`` and rewrite the one ``"relative": "<sha256>"`` entry that names it in ``pin_file``.
+
+    The hash is taken from the *staged* content when the file is pending, so a file this tool
+    itself edited is pinned as it will be written, not as it was."""
+    current = hashlib.sha256(plan.read(relative).encode("utf-8")).hexdigest()
+    text = plan.read(pin_file)
+    pattern = re.compile(r'("' + re.escape(relative) + r'"\s*:\s*\n?\s*")([0-9a-f]{64})(")')
+    found = pattern.findall(text)
+    if len(found) != 1:
+        raise ApplyError(f"{relative}: expected one dict pin in {pin_file}, found {len(found)}")
+    if found[0][1] != current:
+        text = pattern.sub(lambda match: match.group(1) + current + match.group(3), text)
+        plan.log.append(f"[repin] {pin_file}: {relative} {found[0][1][:12]} -> {current[:12]}")
+        plan.stage(pin_file, text)
+
+
 def repin(plan: Plan, paths: Sequence[str]) -> None:
-    if not paths:
-        return
-    text = plan.read(RUNTIME_GATE)
     for relative in paths:
-        current = hashlib.sha256((plan.root / relative).read_bytes()).hexdigest()
-        pattern = re.compile(r'("' + re.escape(relative) + r'"\s*:\s*\n?\s*")([0-9a-f]{64})(")')
-        found = pattern.findall(text)
-        if len(found) != 1:
-            raise ApplyError(f"{relative}: expected one dict pin in {RUNTIME_GATE}, found {len(found)}")
-        if found[0][1] != current:
-            text = pattern.sub(lambda match: match.group(1) + current + match.group(3), text)
-            plan.log.append(f"[repin] {relative}: {found[0][1][:12]} -> {current[:12]}")
-    plan.stage(RUNTIME_GATE, text)
+        repin_dict_entry(plan, RUNTIME_GATE, relative)
+    # ``providers.py`` pins ``model.py`` by sha256 and the runtime closure refuses a stale pin.
+    # Registering a game edits ``model.py`` (the GameId display map), so the pin moved on every
+    # new module and two agents fixed it by hand; the tool owns that edit now.
+    if (plan.root / MODEL) in plan.pending and (plan.root / PROVIDERS).is_file():
+        repin_dict_entry(plan, PROVIDERS, MODEL)
 
 
 def _tuple_literal(text: str, name: str) -> tuple:
