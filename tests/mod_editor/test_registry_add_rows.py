@@ -135,6 +135,29 @@ class ExistingGameRowsTests(unittest.TestCase):
         with self.assertRaisesRegex(tool.ApplyError, "already lists"):
             tool.apply(self.root, game="zz_game", rows=[], allowlist_fragment=fragment)
 
+    def test_allowlist_paths_are_struck_with_their_empty_section(self) -> None:
+        # The other half of the append: a file that has left the tree must leave
+        # the allowlist too, or the stager fails on a missing input.
+        before = (self.root / tool.ALLOWLIST).read_text(encoding="utf-8")
+        fragment = self.root / "allowlist.fragment.txt"
+        fragment.write_text("# header\nmod_editor/games/zz/__init__.py\nmod_editor/games/zz/game.json\n",
+                            encoding="utf-8", newline="\n")
+        tool.apply(self.root, game="zz_game", rows=[], allowlist_fragment=fragment)
+        tool.apply(self.root, game="zz_game", rows=[],
+                   drop_allowlist=["mod_editor/games/zz/__init__.py", "mod_editor/games/zz/game.json"])
+        # Both paths went, and so did the section comment that had nothing left under it.
+        self.assertEqual((self.root / tool.ALLOWLIST).read_text(encoding="utf-8"), before)
+
+    def test_dropping_an_allowlist_path_that_is_not_listed_writes_nothing(self) -> None:
+        snapshot = {relative: (self.root / relative).read_bytes() for relative in COPIED}
+        with self.assertRaisesRegex(tool.ApplyError, "listed 0 times"):
+            tool.apply(self.root, game="zz_game", rows=[], drop_allowlist=["docs/product/NOT_HERE.md"])
+        with self.assertRaisesRegex(tool.ApplyError, "repeats a path"):
+            tool.apply(self.root, game="zz_game", rows=[],
+                       drop_allowlist=["packaging/stage_release.py", "packaging/stage_release.py"])
+        for relative, payload in snapshot.items():
+            self.assertEqual((self.root / relative).read_bytes(), payload, relative)
+
     def test_widening_a_surface_lands_with_its_row(self) -> None:
         # portraits_faces has no PS2 row today; a PS2 row there needs the widening.
         registry = _registry(self.root)

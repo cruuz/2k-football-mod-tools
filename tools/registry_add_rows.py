@@ -2,8 +2,8 @@
 """Add capability-registry rows for a game and move every count pin with them, atomically.
 
 Until the registry validator derives its game list and coverage from the game
-modules' fragments (docs/product/MULTI_GAME_INTERFACES_PLAN.md, section 5),
-a game PR still has to edit the upstream files that hard-code them.  This
+modules' fragments, a game PR still has to edit the upstream files that
+hard-code them.  This
 tool is the one command that does so mechanically, so a PR never hunts for
 the thirteen count-pin sites by hand:
 
@@ -33,6 +33,12 @@ What it edits, for rows of an existing game:
 * ``--module NAME``: a ``product_modules`` entry in the 2K5 runtime gate;
 * ``--allowlist-fragment FILE``: the module's ``allowlist.fragment.txt`` lines appended to
   ``packaging/release-allowlist.txt`` (a duplicate is fatal);
+* ``--drop-allowlist-path PATH``: the other half of the same edit -- one shipped
+  path struck from ``packaging/release-allowlist.txt`` because the file is no
+  longer in the tree.  The path must be listed exactly once or nothing is
+  written, and a section comment left with no paths under it goes with them.
+  Re-derive the module mirrors afterwards with
+  ``python -m mod_editor.games fragments <game> --write``;
 * ``--rc OLD NEW --changelog-section FILE --status-heading TEXT``: the RC bump
   every registry commit carries (version, its asserted spellings, the
   changelog section, the STATUS heading);
@@ -381,6 +387,62 @@ def add_allowlist_lines(plan: Plan, fragment: Optional[Path], game: str) -> None
     plan.log.append(f"[allowlist] + {len(lines)} lines")
 
 
+def drop_allowlist_lines(plan: Plan, paths: Sequence[str]) -> None:
+    """Strike shipped paths from the release allowlist; an absent path is fatal.
+
+    The allowlist is the list of files a release copies, so a path whose file
+    has left the tree makes the stager fail on a missing input.  Removing it by
+    hand is the failure mode this whole tool exists to avoid, so removal is a
+    mode here rather than an edit: each path must be listed exactly once, and a
+    section comment whose paths have all gone is struck with them so the file
+    does not accumulate headers over nothing.
+    """
+
+    if not paths:
+        return
+    text = plan.read(ALLOWLIST)
+    lines = text.split("\n")
+    trailing_newline = lines and lines[-1] == ""
+    if trailing_newline:
+        lines = lines[:-1]
+    wanted = list(dict.fromkeys(paths))
+    if len(wanted) != len(paths):
+        raise ApplyError(f"{ALLOWLIST}: --drop-allowlist-path repeats a path")
+    for path in wanted:
+        count = sum(1 for line in lines if line.strip() == path)
+        if count != 1:
+            raise ApplyError(
+                f"{ALLOWLIST}: {path} is listed {count} times, expected exactly once. "
+                f"Nothing was written.")
+    doomed = set(wanted)
+    # Sections are a run of comment lines and the paths under them.  A section
+    # whose every path is going goes with them; a section that keeps a path, and
+    # the file's own header block, are left exactly as they are.
+    kept: list[str] = []
+    struck_sections = 0
+    index = 0
+    while index < len(lines):
+        if not lines[index].startswith("#"):
+            kept.append(lines[index])
+            index += 1
+            continue
+        head = index
+        while index < len(lines) and lines[index].startswith("#"):
+            index += 1
+        body = index
+        while index < len(lines) and not lines[index].startswith("#"):
+            index += 1
+        paths = [line for line in lines[body:index] if line.strip()]
+        survivors = [line for line in lines[body:index] if line.strip() not in doomed]
+        if paths and not [line for line in survivors if line.strip()]:
+            struck_sections += 1
+            continue
+        kept.extend(lines[head:body])
+        kept.extend(survivors)
+    plan.stage(ALLOWLIST, "\n".join(kept) + ("\n" if trailing_newline else ""))
+    plan.log.append(f"[allowlist] - {len(wanted)} paths, {struck_sections} emptied sections")
+
+
 def register_new_game(plan: Plan, game: str, display_name: str, enum_member: str, title: str) -> None:
     """The sites only a new game id touches; each located exactly once."""
 
@@ -552,14 +614,15 @@ def apply(
     status_heading: Optional[str] = None,
     repin_paths: Sequence[str] = (),
     allowlist_fragment: Optional[Path] = None,
+    drop_allowlist: Sequence[str] = (),
     dry_run: bool = False,
 ) -> Plan:
     if _GAME_ID_RE.fullmatch(game) is None:
         raise ApplyError(f"game id {game!r} is not a registry game id")
     if (not rows and not replace and new_game is None and allowlist_fragment is None
-            and not modules):
-        raise ApplyError("nothing to do: give --row, --replace-row, --new-game, --module "
-                         "or --allowlist-fragment")
+            and not modules and not drop_allowlist):
+        raise ApplyError("nothing to do: give --row, --replace-row, --new-game, --module, "
+                         "--allowlist-fragment or --drop-allowlist-path")
     plan = Plan(root.resolve())
     entry = None
     if new_game is not None:
@@ -587,6 +650,7 @@ def apply(
     widen(plan, widen_surfaces, game, entry is not None)
     add_modules(plan, modules)
     add_allowlist_lines(plan, allowlist_fragment, game)
+    drop_allowlist_lines(plan, list(drop_allowlist))
     if rc is not None:
         if changelog_section is None or status_heading is None:
             raise ApplyError("--rc needs --changelog-section and --status-heading")
@@ -617,6 +681,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--repin", action="append", default=[], metavar="PATH")
     parser.add_argument("--allowlist-fragment", type=Path, metavar="FILE",
                         help="append this module allowlist fragment to packaging/release-allowlist.txt")
+    parser.add_argument("--drop-allowlist-path", action="append", default=[], metavar="PATH",
+                        help="strike this shipped path from packaging/release-allowlist.txt "
+                             "because the file has left the tree")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     try:
@@ -626,7 +693,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             new_game=args.new_game, display_name=args.display_name, enum_member=args.enum_member,
             rc=tuple(args.rc) if args.rc else None, changelog_section=args.changelog_section,
             status_heading=args.status_heading, repin_paths=args.repin,
-            allowlist_fragment=args.allowlist_fragment, dry_run=args.dry_run,
+            allowlist_fragment=args.allowlist_fragment,
+            drop_allowlist=args.drop_allowlist_path, dry_run=args.dry_run,
         )
     except ApplyError as exc:
         print(f"REGISTRY_ADD_ROWS_REFUSED: {exc}", file=sys.stderr)
