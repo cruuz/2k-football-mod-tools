@@ -105,11 +105,11 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "9e53ff74c87926bdb54f5329abefb5090e0915a4bdf194db0d570dd4e638aa93",
+        "9ce1b1c1e0dca8075e43ca8706125f75e1c8dc22300bba8928ab2bd05350459a",
     "mod_editor/studio/project_archive.py":
-        "cdda01f3ef5341d7a238cae0c0d98c15fbfed37d5011710e406c97cc963c3d36",
+        "db3145204a9a68c5adc68d8d52b44c3e38f681e3d10271f4ad18a29073331186",
     "mod_editor/studio/session.py":
-        "8ad359de6df43093836b26d0d4301f4b108221fb2fde775ebd048da28bf4e679",
+        "b7f93ac0cccecb82ad1248d633cbccad52865d2b9f466ff877ca5adcf720f9fb",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
