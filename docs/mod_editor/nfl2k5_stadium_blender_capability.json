@@ -1,0 +1,67 @@
+[
+  {
+    "backend": {
+      "command": "python3 -m tools.nfl_stadium_texture_bundle --gltf <textures.gltf> --index <archive/0> --inventory <resources.json> --output <new-private-directory>",
+      "module": "tools/nfl_stadium_texture_bundle.py",
+      "operation": "write"
+    },
+    "classification": "offline-writer-proved",
+    "evidence": [
+      "ASTRA_STADIUM_EDITOR_REPORT.md",
+      "docs/mod_editor/nfl2k5_stadium_blender_workflow.md",
+      "docs/mod_editor/nfl2k5_stadium_editor_retail_proof.json",
+      "tests/mod_editor/test_nfl2k5_stadium_editor_roundtrip.py"
+    ],
+    "game": "nfl2k5_xbox",
+    "gui": {
+      "default_enabled": false,
+      "expose": true,
+      "mode": "edit",
+      "reason": "EXPERIMENTAL / UNWITNESSED. Explicit Stadiums edit, not a preset."
+    },
+    "id": "nfl2k5.stadiums_fields.blender_textures",
+    "input_constraints": [
+      "A privately indexed NFL 2K5 USA source and its verified Stadiums cache.",
+      "Canonical texture IDs, one scene per bundle, original image dimensions, fixed P8 allocations and bounded lossless compression.",
+      "No new topology, UV, transform, material or collision write-back."
+    ],
+    "portme": [
+      "MisterAlex must inspect material preview and actual Blender image export. Noah must play the witness list in ASTRA_STADIUM_EDITOR_REPORT.md."
+    ],
+    "public_distribution": {
+      "game_data": "never-bundle-retail-data",
+      "mod_payload": "user-authored-inputs-and-recipes",
+      "rule": "Ship tooling only. Exported glTFs, PNGs and compiled SCNE spans contain private user-owned game data.",
+      "tooling": "source-and-schemas-only"
+    },
+    "runtime": {
+      "evidence": [
+        "ASTRA_STADIUM_EDITOR_REPORT.md"
+      ],
+      "scope": "Offline source replay, UV equation checks, complete no-op spans and changed P8 round trips. bpy is mocked. No Blender UI or played-game witness.",
+      "status": "not-tested"
+    },
+    "selectors": {
+      "fields": [
+        {
+          "allowed": "Canonical nfl2k5.stadium.oNNNN.cNNNN.sceneNNNN.textureNNNN IDs from the selected source scene.",
+          "name": "nfl2k5_texture_id",
+          "required": true
+        }
+      ],
+      "notes": "The helper stores IDs on materials and images. Shared texture users change together."
+    },
+    "source_container": {
+      "format": "SCNE in VC-LZ archive packs 8 and 9 in XDVDFS",
+      "hash_pins": [
+        "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
+      ],
+      "resource": "Source-bound P8 index chains and BGRA palettes in fixed SCNE spans.",
+      "retail_file": "User-owned ESPN NFL 2K5 USA XISO"
+    },
+    "summary": "Export embedded textures with source UV coordinates; stage Blender-painted images through the fixed P8 writer. Preserve unchanged pixels and complete unchanged SCNE spans.",
+    "surface": "stadiums_fields",
+    "title": "Blender Stadium textures (experimental, unwitnessed)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_stadium_editor_roundtrip"
+  }
+]

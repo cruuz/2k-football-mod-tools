@@ -371,6 +371,9 @@ class _SessionStadiumDelegate:
     def replace(self, texture: StadiumTexture, supplied_png: Path) -> ReplaceResult:
         return self.session.replace_stadium_texture(texture, supplied_png)
 
+    def replace_many(self, replacements: tuple) -> tuple[ReplaceResult, ...]:
+        return self.session.replace_stadium_textures(replacements)
+
     def revert(self, texture: StadiumTexture) -> bool:
         return self.session.revert_stadium_texture(texture)
 
@@ -1195,6 +1198,72 @@ class StudioSession:
         ))
         self._write_manifest()
         return True
+
+    def replace_stadium_textures(self, replacements: tuple) -> tuple[ReplaceResult, ...]:
+        """One composed fit and one undo action for a Blender texture bundle.
+
+        Existing edits in this scene participate in the fit. All authored and
+        preview files are staged before changing the session manifest. A failed
+        fit, write or manifest publication leaves the earlier edit set intact.
+        """
+        if not replacements:
+            return ()
+        writer = self._require_stadium_writer()
+        scene_ids = {texture.scene_id for texture, _path in replacements}
+        ids = [texture.texture_id for texture, _path in replacements]
+        if len(scene_ids) != 1 or len(ids) != len(set(ids)):
+            raise ValidationError("Choose distinct textures from one Stadium scene.")
+        scene_id = next(iter(scene_ids))
+        combined = {
+            asset_id: (self._stadium_texture_for_id(asset_id), edit.replacement_path)
+            for asset_id, edit in self._stadium_edits.items()
+            if self._stadium_texture_for_id(asset_id).scene_id == scene_id
+        }
+        combined.update({texture.texture_id: (texture, path) for texture, path in replacements})
+        geometry = getattr(self, "_stadium_geometry_edit", None)
+        geometry_recipe = (geometry.recipe_path if geometry is not None and geometry.scene_id == scene_id
+                           else None)
+        compiled = {row.texture_id: row for row in writer.compile_many(
+            tuple(combined.values()), geometry_recipe=geometry_recipe)}
+        old_edits = dict(self._stadium_edits)
+        undo_length, order_length = len(self._stadium_undo), len(self._undo_order)
+        staged, snapshots, items, results = {}, [], [], []
+        try:
+            for texture, path in replacements:
+                payload, rgba = writer.read_validated_png(path, texture)
+                proof = compiled[texture.texture_id]
+                if sha256_bytes(payload) != proof.replacement_png_sha256:
+                    raise ValidationError("Stadium PNG changed after the combined fit.")
+                previous = self._snapshot_stadium(texture.texture_id)
+                if previous is not None:
+                    snapshots.append(previous)
+                items.append(_UndoItem(texture.texture_id, previous))
+                original = sha256_bytes(rgba) == texture.rgba_sha256
+                if not original:
+                    staged[texture.texture_id] = self._stage_stadium_edit(
+                        texture, payload, rgba, proof)
+                results.append(ReplaceResult(texture.texture_id, not original,
+                    "Stadium texture restored." if original else "Stadium texture is ready to build."))
+            for texture, _path in replacements:
+                self._stadium_edits.pop(texture.texture_id, None)
+            self._stadium_edits.update(staged)
+            label = "Import Blender stadium textures"
+            self._stadium_undo.append(_UndoAction(label, tuple(items)))
+            self._undo_order.append(_SessionUndo("stadium", label))
+            self._write_manifest()
+        except BaseException:
+            self._stadium_edits = old_edits
+            del self._stadium_undo[undo_length:]
+            del self._undo_order[order_length:]
+            for edit in staged.values():
+                self._remove_stadium_edit_files(edit)
+            for snapshot in snapshots:
+                snapshot.unlink(missing_ok=True)
+            raise
+        for asset_id in ids:
+            if asset_id in old_edits:
+                self._remove_stadium_edit_files(old_edits[asset_id])
+        return tuple(results)
 
     def supports_stadium_geometry(self, scene: StadiumScene) -> bool:
         return bool(

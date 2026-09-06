@@ -34,6 +34,76 @@ def align4(data: bytearray) -> None:
     data.extend(b"\0" * ((-len(data)) & 3))
 
 
+def append_stadium_texcoords(
+    document: dict, binary: bytes, decoded: bytes, scene: dict,
+) -> bytes:
+    """Append shader-proved UVs, retaining every existing geometry byte.
+
+    The caller supplies a freshly parsed source SCNE. Match the cached shape
+    identity AND position bytes before attaching its UV lane. This deliberately
+    exports no native matrix: node/selector ownership is a separate gate.
+    """
+    from mod_editor.core.nfl2k5_models import (
+        _shape_lanes, read_lane_2h, read_positions, uv_to_gltf,
+    )
+
+    result = bytearray(binary)
+    shapes = {shape["index"]: shape for shape in scene["shapes"]}
+    views, accessors = document["bufferViews"], document["accessors"]
+    count = 0
+    for mesh in document["meshes"]:
+        extras = mesh.get("extras", {})
+        shape_id = extras.get("source_shape_index")
+        if type(shape_id) is not int or shape_id not in shapes:
+            raise ScneError("Stadium export has an unknown source shape")
+        shape = shapes[shape_id]
+        lanes = _shape_lanes(scene, shape, decoded)
+        if lanes.texcoord is None:
+            raise ScneError(f"Stadium shape {shape_id} has no proved UV lane")
+        positions = read_positions(decoded, shape, lanes)
+        expected = b"".join(struct.pack("<3f", *point) for point in positions)
+        for primitive in mesh["primitives"]:
+            accessor = accessors[primitive["attributes"]["POSITION"]]
+            view = views[accessor["bufferView"]]
+            if (accessor["componentType"], accessor["type"], accessor["count"]) != (
+                5126, "VEC3", lanes.vertex_count
+            ) or view.get("buffer", 0) != 0:
+                raise ScneError("Stadium cached position layout differs from its source")
+            offset = view.get("byteOffset", 0) + accessor.get("byteOffset", 0)
+            stride = view.get("byteStride", 12)
+            actual = b"".join(binary[offset + i * stride:offset + i * stride + 12]
+                              for i in range(lanes.vertex_count))
+            if actual != expected:
+                raise ScneError("Stadium cached positions differ from the source SCNE")
+            if "TEXCOORD_0" in primitive["attributes"]:
+                raise ScneError("Stadium cached mesh already declares UV coordinates")
+        pairs = read_lane_2h(decoded, shape, lanes.texcoord, lanes.vertex_count)
+        uvs = [uv_to_gltf(u, v, lanes.uv_scale, lanes.uv_offset) for u, v in pairs]
+        if not all(math.isfinite(value) for uv in uvs for value in uv):
+            raise ScneError("Stadium source UV coordinates are not finite")
+        align4(result)
+        view_index, accessor_index = len(views), len(accessors)
+        views.append({"buffer": 0, "byteOffset": len(result),
+                      "byteLength": len(uvs) * 8, "target": 34962})
+        for uv in uvs:
+            result.extend(struct.pack("<2f", *uv))
+        accessors.append({"bufferView": view_index, "componentType": 5126,
+                          "count": len(uvs), "type": "VEC2"})
+        for primitive in mesh["primitives"]:
+            primitive["attributes"]["TEXCOORD_0"] = accessor_index
+        extras["nfl2k5_uv_scale"] = list(lanes.uv_scale)
+        extras["nfl2k5_uv_offset"] = list(lanes.uv_offset)
+        count += len(uvs)
+    document["buffers"][0]["byteLength"] = len(result)
+    document.setdefault("extras", {})["nfl2k5_texcoord_contract"] = {
+        "equation": "uv = normshort2(register 6) * shape[+0x30].xy + shape[+0x30].zw",
+        "v_flipped": False, "vertex_count": count,
+        "geometry_bytes_preserved": True, "uv_write_back": False,
+        "runtime_visibility": "EXPERIMENTAL / UNWITNESSED",
+    }
+    return bytes(result)
+
+
 def decode_batches(data: bytes, offset: int, word_count: int) -> list[tuple[int, list[int]]]:
     end = offset + word_count * 4
     cursor = offset

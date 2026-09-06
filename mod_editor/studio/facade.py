@@ -3582,6 +3582,7 @@ class Nfl2k5StudioFacade:
             result.texture_root,
             geometry_catalog=_STADIUM_GEOMETRY_CATALOG,
             edit_delegate=session.stadium_delegate,
+            scene_source=writer.scene_source,
         )
 
     def _require_stadium_studio(self) -> Nfl2k5StadiumStudio:

@@ -16,6 +16,11 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 import unittest
+import sys
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -44,6 +49,10 @@ class Nfl2k5StadiumSceneListTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        evidence = _REPO_ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not evidence.is_file():
+            raise unittest.SkipTest(
+                "NFL Stadium window needs the developer-only uniform inventory: " + str(evidence))
         cls.app = QApplication.instance() or QApplication([])
 
     def _window(self):

@@ -1,6 +1,17 @@
 # NFL 2K5 Stadium P8 Texture Writer
 
-Date: 2026-07-18
+Date: 2026-07-18; Blender workflow updated 2026-09-06.
+
+## Blender workflow update
+
+**EXPERIMENTAL / UNWITNESSED.** See
+[nfl2k5_stadium_blender_workflow.md](nfl2k5_stadium_blender_workflow.md) for the
+helper, source UV export and atomic multi-texture import. Identical base pixels
+now preserve the original palette, all mip allocations and the original
+compressed scene when nothing else changed. Very short edited streams can be
+filled with equivalent literal tokens within the existing scratch bound.
+No topology, UV or transform writer is added. The historical experiments below
+remain evidence for the earlier encoder, not a promise that a new edit fits.
 
 ## Product result
 

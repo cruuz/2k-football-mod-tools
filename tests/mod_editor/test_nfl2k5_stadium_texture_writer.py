@@ -7,6 +7,12 @@ from pathlib import Path
 from types import SimpleNamespace
 import tempfile
 import unittest
+import sys
+
+_ROOT = Path(__file__).resolve().parents[2]
+for _path in (_ROOT, _ROOT / "tools"):
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
 
 from mod_editor.core.nfl2k5_stadium_studio import StadiumTexture
 from mod_editor.core.nfl2k5_stadium_texture_delegate import (

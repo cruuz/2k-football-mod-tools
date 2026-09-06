@@ -784,6 +784,181 @@ it does not certify native rule enforcement or a played save lifecycle.
 5. Add elevation pay accounting and persistent identity/generation handling,
    complete native save/load/sim/played-result proofs, and Noah's R1-R5 witnesses.
    A host companion tied to a save digest cannot replace these steps.
+# r62 Stadium editor handoff, 2026-09-06
+
+**EXPERIMENTAL / UNWITNESSED.** See `ASTRA_STADIUM_EDITOR_REPORT.md` and
+`docs/mod_editor/nfl2k5_stadium_blender_workflow.md`. This section precedes and
+preserves the older handoffs. No protected file was edited by this task.
+
+## Implemented integration outside protected files
+
+`Nfl2k5StudioFacade._studio_for_session` supplies `writer.scene_source` to the
+Stadium backend. Existing Export 3D model and Apply images from a 3D file calls
+therefore reach the improved export/import already. `_SessionStadiumDelegate`
+now supplies `replace_many`; the session preflights the full selected scene,
+including earlier texture edits and its bounded position recipe, publishes
+one edit set and retains one grouped undo action.
+
+No new XBE owner, allocator request, patch flag or automatic preset action is
+part of this resource editor. The existing unified Stadium texture/geometry
+writer remains the build route.
+
+| Required wiring location | Disposition for this job |
+| --- | --- |
+| Dispatcher `_apply_all` owner tuple and keyword forwarding | No addition; this is a user-authored SCNE resource edit. |
+| Four status dictionaries `read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy` | No new XBE status key; do not imply an installed texture from executable bytes. |
+| `BuildPlan` field, normalization, deferral, final pass | No new field. Existing session-to-unified-project Stadium texture edits supply the build. |
+| Basic / Advanced / Experimental presets | No enablement in any preset. A user explicitly imports artwork. |
+| Gameplay Patches `PATCHES` and `NEEDS_IMAGE` | No row/key. Suggested informational text only if needed: “Retail: Stadium artwork uses the original images. Patch: Applies the Stadium textures saved in your project. EXPERIMENTAL / UNWITNESSED.” |
+| Build `_option` caption, at most 60 characters | No checkbox. If a build summary caption is required, use `Stadium textures from project` (29 characters). |
+| Both XBE safety gates and allocator/cave union | No owner addition or manifest regeneration for this job. Existing code/data allocations are untouched. |
+
+## Stadiums page in protected `mod_editor/gui/studio_qt.py`
+
+Import:
+
+```python
+from mod_editor.gui.stadium_blender_panel_qt import (
+    StadiumBlenderPanel, texture_import_summary,
+)
+```
+
+The owned, offscreen-tested `StadiumBlenderPanel` is complete. Place it in the
+Stadiums page's existing layout, preferably in a scrollable help area so the
+477-scene list retains useful height. Its `exportRequested` signal connects
+to `_export_stadium_scene_gltf`; its `importRequested` signal connects to
+`_apply_stadium_textures_from_gltf`. Both existing slots perform the ready,
+busy and selected-scene checks. The card's Save Blender helper action copies
+the shipped Python script using the existing exclusive export writer.
+Do not make a second backend or run Blender from Mod Studio.
+
+Keep the existing bounded geometry button separately labelled. Rename the
+texture action to `Import Blender textures`. Its ready tooltip is:
+
+> Import the texture file saved by the Blender Stadium helper. Original image
+> sizes are required. Shared surfaces change together. Unchanged images are
+> skipped. The whole import must fit before any edits are staged.
+
+Replace the success callback in `_apply_stadium_textures_from_gltf`. Receipts
+now include `changed: bool`. An unchanged row has `write_result=None` and must
+not be presented as “written” or mark the project dirty:
+
+```python
+receipts = result if isinstance(result, tuple) else ()
+summary, changed = texture_import_summary(receipts)
+box = QMessageBox(self)
+box.setWindowTitle("Stadium texture import")
+box.setIcon(QMessageBox.Information)
+box.setText(summary)
+box.setInformativeText(
+    "EXPERIMENTAL / UNWITNESSED. Review the texture preview. "
+    "Save your project and build a new game copy to test it. "
+    "Undo restores the whole import."
+)
+box.addButton("Close", QMessageBox.RejectRole)
+box.exec_()
+self._set_status(summary)
+if changed:
+    self._mark_workspace_changed()
+    self._select_stadium_texture(state.texture_list.currentItem(), None)
+```
+
+Update both construction and dynamic tooltips for model export: PNGs and
+source-derived UV coordinates are appended after the unchanged position/index
+buffer prefix. The whole buffer is longer, not byte-identical. The 0.01 unit
+root is retained. After export, the success dialog should direct users to the
+helper's File > Import entry and remind them to keep `.gltf` and `.bin`
+together. All new copy uses plain words and no em dashes.
+
+## Protected release allowlist
+
+Add these exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/gui/stadium_blender_panel_qt.py
+tools/blender/nfl2k5_stadium.py
+tools/nfl_stadium_texture_bundle.py
+tools/nfl_stadium_editor_proof.py
+docs/mod_editor/nfl2k5_stadium_blender_workflow.md
+docs/mod_editor/nfl2k5_stadium_blender_capability.json
+docs/mod_editor/nfl2k5_stadium_part_ownership.json
+docs/mod_editor/nfl2k5_stadium_editor_retail_proof.json
+ASTRA_STADIUM_EDITOR_REPORT.md
+```
+
+Existing allowlisted modules changed in place: `nfl2k5_stadium_studio.py`,
+`nfl2k5_stadium_texture_writer.py`, `mod_editor/studio/session.py`,
+`mod_editor/studio/facade.py`, and `tools/nfl_scne_gltf.py`. Keep
+`tools/nfl_vc_lz_fill.py` in the shipped dependency set. The Blender helper is
+standard-library-only until Blender calls `register`, `import_stadium` or
+`export_textures`; do not add bpy to Mod Studio's runtime dependencies.
+
+## Protected runtime closure and provider fingerprints
+
+In `packaging/check_2k5_mod_studio_runtime.py`, include import probes for:
+
+```text
+mod_editor.gui.stadium_blender_panel_qt
+tools.blender.nfl2k5_stadium
+tools.nfl_stadium_texture_bundle
+tools.nfl_stadium_editor_proof
+```
+
+Retain the existing writer, Studio backend, Models UV decoder and
+`nfl_scne_gltf`, `nfl_scne_inventory`, `nfl_txtr`, `nfl_tset_png_import`,
+`nfl_vc_lz_fill` probes. The new writer imports the existing VC-LZ token
+parser/serializer lazily to fill overly short streams without raising the
+loader scratch beyond the retail-observed bound. The export tool imports
+Models' existing UV decode helpers lazily. No network, image generator,
+external process, capstone or bpy is a runtime dependency of these operations.
+
+Refresh the exact SHA-256 values in the sealed provider closure for these
+changed existing entries after reviewing this patch:
+
+```text
+mod_editor/core/nfl2k5_stadium_texture_writer.py
+mod_editor/core/nfl2k5_stadium_studio.py
+mod_editor/studio/session.py
+tools/nfl_scne_gltf.py
+```
+
+SHA-256 values for this delivered source revision:
+
+| Path | SHA-256 |
+| --- | --- |
+| `mod_editor/core/nfl2k5_stadium_texture_writer.py` | `dc1bf06c20c86411ff4c91e09003c9f561f3c7aada142ed522ca237d7d0d18f5` |
+| `mod_editor/core/nfl2k5_stadium_studio.py` | `7ec5b2b65b3e6be605e91ae772dd15c3eb71ac46398e2ecab0a1c181cf4fef7d` |
+| `mod_editor/studio/session.py` | `0b612dca07442ad0b0e1bdb19d38b1bf32ea78100804278a3736bb2f2ff95841` |
+| `tools/nfl_scne_gltf.py` | `afeb666595742e2a96075fb9d0edb4d8ac913b9e1c2ebfa6ed3ba04496a57207` |
+
+`mod_editor/core/providers.py` already lists these entries, and already lists
+`tools/nfl_vc_lz_fill.py` and `mod_editor/core/nfl2k5_models.py`. The new helper,
+workflow card and developer proof/compiler CLIs do not become executable
+inputs to the sealed unified span subprocess; do not add that UI dependency
+to its closure. Keep its current required bytes and imports narrowly scoped.
+Refresh runtime-checker pinned constants only where they include these paths.
+Until this is done, the sealed provider correctly refuses the changed files.
+The task leaves these closure edits to Claude as requested in the brief.
+
+## Capability registry
+
+Merge the one row from
+`docs/mod_editor/nfl2k5_stadium_blender_capability.json` into the canonical
+registry, sorted by ID. ID: `nfl2k5.stadiums_fields.blender_textures`;
+classification: `offline-writer-proved`; runtime: `not-tested`; GUI: edit,
+explicit opt-in. It has `python3 -m ...` backend and validation commands.
+Add the following entry to `_WORKSPACE_CAPABILITIES` in the protected
+`mod_editor/gui/studio_qt.py`, so capability navigation opens this workflow:
+
+```python
+"nfl2k5.stadiums_fields.blender_textures": "Stadiums",
+```
+
+Do not add a gameplay patch or a second image-build path.
+Run the registry validator with file checks after merging, update runtime
+closure pins and exercise the existing Stadium export/import actions through
+an actual packaged offscreen window. The checked-in source-free window test
+skips explicitly when its developer uniform inventory is absent.
 
 ---
 
