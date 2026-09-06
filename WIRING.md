@@ -8261,3 +8261,64 @@ handoff is `docs/mod_editor/nfl2k5_hires_pack_capability.json`. Its backend
 and validation command both use `python3 -m <dotted.module> ...`. Preserve
 `runtime.status=not-tested` and default false. Do not turn static compilation
 or budget arithmetic into a witnessed/compatible capability classification.
+
+# r62 read-option / screen-hooks composition repair, 2026-09-06
+
+See `ASTRA_READOPTION_SCREENHOOKS_COMPOSE_REPORT.md`. Both Python owners must
+ship together: each now validates the other's exact installation before
+normalizing its disjoint hook in native `0x19C740`. No assembly, runtime policy,
+allocation request, new flag or new product surface is introduced by this fix.
+The fixture's read-option rows now match the already landed v2 REQUESTS.
+
+The earlier screen-hooks and read-option-controls-v2 sections remain the
+concrete product wiring contract. Retain these `_apply_all` entries after the
+complete-union allocator:
+
+```python
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+(screen_hooks, screen_hooks_patch, "screen_hooks_patch",
+ "screen pass timing hooks (second experiment)"),
+```
+
+Keep `read_option_runtime=False`, `read_option_intent_table=None` and
+`screen_hooks=False` kwargs and their existing request-selection/forwarding
+contract. All four status dictionaries (`read_xbe`, `read_image`,
+`write_xbe_copy`, `write_image_copy`) need the existing `read_option_runtime`,
+`read_option_runtime_settings`, `screen_hooks`, and `screen_hooks_settings`
+entries. BuildPlan fields remain the existing two Boolean flags and paired
+read-option table/recipe fields; Basic, Advanced and Experimental defaults
+remain off for both owners. There is no extra composition switch.
+
+Gameplay Patches retains each module's HELP_TEXT, including the literal words
+"Retail" and "Patch", and both keys in NEEDS_IMAGE. Build `_option` captions
+remain `Read option mesh controls (experimental)` and
+`Screen pass timing hooks (second experiment)`, both under 60 characters.
+Keep the two existing capability IDs and surfaces from the earlier handoffs;
+there is no new registry surface or runtime-witness claim.
+
+Protected `packaging/release-allowlist.txt` must contain all four paths:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+mod_editor/core/nfl2k5_screen_hooks.py
+mod_editor/core/nfl2k5_screen_hooks_code.py
+```
+
+Protected runtime-closure probes must import all four corresponding dotted
+modules. In particular, a Spy/read-option provider now also needs screen hooks
+and its template even when the screen-hooks option is off. The local imports
+occur at inspection time, after both modules have initialized; neither owner
+recursively calls the other's public status. No new wheel is required.
+
+Integration is still blocked on the separately assigned MyCareer/playlist/
+Practice Squad composition repair. Both XBE gates pass this pair and then
+fail there. Do not remove an owner, skip a gate or loosen its guards. Merge
+that companion repair, regenerate protected
+`data/nfl2k5_cave_reservations.json` using the existing manifest builder, then
+rerun both full gates in ordinary/explicit-scaleout and forward/reverse modes.
+The current manifest already has six stale source fingerprints at the base
+commit; this fix adds the screen-hooks source change. Refresh through actual
+writer observation, not a manual hash substitution. The bounded screen-hook
+projection correctly refuses this stale parent and is not a release manifest.

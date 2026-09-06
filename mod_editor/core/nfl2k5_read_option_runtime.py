@@ -127,9 +127,12 @@ def allocations(payload):
     return result
 
 
-def _inspect(payload):
-    _require(space.status(payload) != "foreign", "Foreign XBE geometry, owner seal or section digest")
-    image = XbeImage(payload)
+def _inspect_owner(payload, image):
+    """Check owned bytes without dependencies; caller validates the allocator.
+
+    Screen hooks uses this first phase to validate our exact detours without
+    recursively entering status while checking the shared pass initializer.
+    """
     owned = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
     installed, table, code_va = False, None, 0
     if owned:
@@ -151,12 +154,33 @@ def _inspect(payload):
             installed = True
     for name, va, before, after in sites(code_va):
         _require(image.read(va, len(before)) == (after if installed else before), f"Mixed/foreign Read option {name}")
+    return installed, table, sites(code_va)
+
+
+def _check_dependencies(image, checked_sites):
+    """Normalize only hook spans already checked against their complete owner."""
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
-        for _name, address, before, _after in sites(code_va):
+        for _name, address, before, _after in checked_sites:
             if va <= address and address + len(before) <= va + size:
                 content[address-va:address-va+len(before)] = before
         _require(hashlib.sha256(content).hexdigest() == digest, f"Foreign Read option dependency at {va:#x}")
+
+
+def _inspect(payload):
+    _require(space.status(payload) != "foreign", "Foreign XBE geometry, owner seal or section digest")
+    image = XbeImage(payload)
+    installed, table, checked_sites = _inspect_owner(payload, image)
+    from . import nfl2k5_screen_hooks as screen
+    va, before = screen.HOOKS["qb"]
+    if image.read(va, len(before)) != before:
+        # Disjoint timer store at 0x19c7e9, before our callback store at
+        # 0x19c849. Validate both owners before normalizing either detour.
+        neighbor_installed, neighbor_sites = screen._inspect_owner(payload, image)
+        _require(neighbor_installed, "Foreign screen hooks pass initializer neighbor")
+        checked_sites += neighbor_sites
+        screen._check_dependencies(image, checked_sites)
+    _check_dependencies(image, checked_sites)
     return "applied" if installed else "retail", table
 
 
@@ -231,7 +255,8 @@ def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, 
                     "changed_bytes": sum(a != b for a, b in zip(payload, result)) + len(result) - len(payload)}
 
 
-# Pinned dependency slices and controller tables, normalized only at our hook.
+# Pinned dependency slices and controller tables. Only validated owner hooks
+# (including the screen timer store in the shared initializer) are normalized.
 GUARDS = (
     (0x64670, 63, "8982b6527e0545f7fddf26e6ecb1aa2d39411bf3c520b4bfb925a46509080de5"),
     (0xf97f0, 345, "c89e3adfe3227a7c7d450a322434a30f147b4bb0057993d51fcfca97ec1541d0"),

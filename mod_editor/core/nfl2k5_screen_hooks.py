@@ -68,9 +68,12 @@ def allocation(payload):
     return row
 
 
-def _inspect(payload):
-    _require(space.status(payload) != "foreign", "Foreign XBE geometry, owner seal or section digest")
-    image = XbeImage(payload)
+def _inspect_owner(payload, image):
+    """Check owned bytes without dependencies; caller validates the allocator.
+
+    Read option uses this phase to check the exact timer detour without a
+    recursive status call through the shared pass initializer.
+    """
     owned = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     installed, code_va = False, 0
     if owned:
@@ -82,13 +85,34 @@ def _inspect(payload):
     for name, va, before, after in sites(code_va):
         _require(image.read(va, len(before)) == (after if installed else before),
                  f"Mixed/foreign screen hooks {name}")
+    return installed, sites(code_va)
+
+
+def _check_dependencies(image, checked_sites):
+    """Normalize only hook spans already checked against their complete owner."""
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
-        for _name, address, before, _after in sites(code_va):
+        for _name, address, before, _after in checked_sites:
             if va <= address and address + len(before) <= va + size:
                 content[address-va:address-va+len(before)] = before
         _require(hashlib.sha256(content).hexdigest() == digest,
                  f"Foreign screen hooks dependency at {va:#x}")
+
+
+def _inspect(payload):
+    _require(space.status(payload) != "foreign", "Foreign XBE geometry, owner seal or section digest")
+    image = XbeImage(payload)
+    installed, checked_sites = _inspect_owner(payload, image)
+    from . import nfl2k5_read_option_runtime as read_option
+    va, before = read_option.HOOKS["pass_init"]
+    if image.read(va, len(before)) != before:
+        # Read option runs at callback assignment after our timer store.
+        # Its code, initial state, table, prompt and all five hooks must match.
+        neighbor_installed, _table, neighbor_sites = read_option._inspect_owner(payload, image)
+        _require(neighbor_installed, "Foreign Read option pass initializer neighbor")
+        checked_sites += neighbor_sites
+        read_option._check_dependencies(image, checked_sites)
+    _check_dependencies(image, checked_sites)
     return "applied" if installed else "retail"
 
 
@@ -146,8 +170,9 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
                     "changed_bytes": sum(a != b for a, b in zip(payload, result)) + len(result)-len(payload)}
 
 
-# Whole native dependencies, normalized only at the two hooks. Generated from
-# pinned USA evidence; no dependency is called or modified by the classifier.
+# Whole native dependencies, normalized only at validated owner hooks, including
+# read option's callback store in the shared initializer. Generated from pinned
+# USA evidence; no dependency is called or modified by the classifier.
 GUARDS = (
     (0x161e30, 497, "775282ba400cb00b05892157089d8c02855ea49eaf7d764bc4fe3e7cd6abfa3f"),
     (0x19c740, 275, "661ab0647ceb5ff1e2243adccfc36dba60829f8d04caede6d74c2db0f86dab72"),
