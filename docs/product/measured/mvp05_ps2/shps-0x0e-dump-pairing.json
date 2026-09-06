@@ -247,6 +247,207 @@
    "size": "128x128"
   }
  ],
+ "per_draw_dump": {
+  "cluts_by_the_pixel_code_of_the_disc_image_that_owns_them": {
+   "0x0e": 44
+  },
+  "disc_0x02_images_identified": 2874,
+  "distinct_8bit_uploads": 135,
+  "distinct_cluts_uploaded": 44,
+  "frames": [
+   "142559",
+   "142723",
+   "142725"
+  ],
+  "method": "A per-draw GS dump writes every texture a draw uses whatever its source and every EE-to-GS upload, so the replacement dumper's filter -- it writes only textures sourced from a plain transfer -- is gone. A P_8 upload's PNG carries the uploaded byte in its red channel, which is the index image itself: no palette is involved in reading it, so what follows is palette-free.",
+  "reading": "Two endpoints and sixteen 2-bit selectors put at most four distinct indices in a 4x4 block. An upload that exceeds that is not a decode of a 0x0E image whatever its palette, and this test needs no palette at all.",
+  "uploads_that_are_a_disc_0x02_image_byte_for_byte": 117,
+  "uploads_where_every_4x4_block_has_at_most_four_indices": 6,
+  "uploads_with_no_disc_twin": 18,
+  "uploads_without_a_twin": [
+   {
+    "block_codec_budget_bytes": 49152,
+    "blocks": 8192,
+    "blocks_over_four_distinct": 1520,
+    "file": "00599_transfer00_EE_to_GS_3580_8_P_8_0_0_512_256.png",
+    "frame": "142559",
+    "index_zlib_bytes": 16620,
+    "most_distinct_in_a_block": 15,
+    "size": "512x256"
+   },
+   {
+    "block_codec_budget_bytes": 6144,
+    "blocks": 1024,
+    "blocks_over_four_distinct": 1024,
+    "file": "00011_transfer03_EE_to_GS_34e0_2_P_8_0_0_128_128.png",
+    "frame": "142559",
+    "index_zlib_bytes": 10168,
+    "most_distinct_in_a_block": 16,
+    "size": "128x128"
+   },
+   {
+    "block_codec_budget_bytes": 3072,
+    "blocks": 512,
+    "blocks_over_four_distinct": 211,
+    "file": "00533_transfer00_EE_to_GS_3d00_4_P_8_0_0_256_32.png",
+    "frame": "142559",
+    "index_zlib_bytes": 2437,
+    "most_distinct_in_a_block": 16,
+    "size": "256x32"
+   },
+   {
+    "block_codec_budget_bytes": 3072,
+    "blocks": 512,
+    "blocks_over_four_distinct": 142,
+    "file": "00137_transfer00_EE_to_GS_3620_4_P_8_0_0_256_32.png",
+    "frame": "142723",
+    "index_zlib_bytes": 1745,
+    "most_distinct_in_a_block": 16,
+    "size": "256x32"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 256,
+    "file": "00011_transfer04_EE_to_GS_3520_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 2152,
+    "most_distinct_in_a_block": 12,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 84,
+    "file": "00147_transfer02_EE_to_GS_35c0_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1053,
+    "most_distinct_in_a_block": 16,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 47,
+    "file": "00147_transfer05_EE_to_GS_3600_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 671,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 112,
+    "file": "00176_transfer00_EE_to_GS_3b40_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1277,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 226,
+    "file": "00271_transfer02_EE_to_GS_37a0_1_P_8_0_0_32_128.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1623,
+    "most_distinct_in_a_block": 15,
+    "size": "32x128"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 234,
+    "file": "00271_transfer04_EE_to_GS_37e0_1_P_8_0_0_32_128.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1643,
+    "most_distinct_in_a_block": 16,
+    "size": "32x128"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 81,
+    "file": "00370_transfer02_EE_to_GS_39c0_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1014,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 150,
+    "file": "00543_transfer00_EE_to_GS_3e00_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 849,
+    "most_distinct_in_a_block": 14,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 116,
+    "file": "00075_transfer00_EE_to_GS_38e0_1_P_8_0_0_64_64.png",
+    "frame": "142723",
+    "index_zlib_bytes": 745,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 131,
+    "file": "00145_transfer00_EE_to_GS_3720_1_P_8_0_0_64_64.png",
+    "frame": "142723",
+    "index_zlib_bytes": 1291,
+    "most_distinct_in_a_block": 14,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 73,
+    "file": "00064_transfer02_EE_to_GS_3ac0_1_P_8_0_0_64_64.png",
+    "frame": "142725",
+    "index_zlib_bytes": 834,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 104,
+    "file": "00479_transfer02_EE_to_GS_3bc0_1_P_8_0_0_64_64.png",
+    "frame": "142725",
+    "index_zlib_bytes": 1200,
+    "most_distinct_in_a_block": 16,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 384,
+    "blocks": 64,
+    "blocks_over_four_distinct": 63,
+    "file": "00011_transfer05_EE_to_GS_3540_1_P_8_0_0_32_32.png",
+    "frame": "142559",
+    "index_zlib_bytes": 488,
+    "most_distinct_in_a_block": 9,
+    "size": "32x32"
+   },
+   {
+    "block_codec_budget_bytes": 96,
+    "blocks": 16,
+    "blocks_over_four_distinct": 10,
+    "file": "00011_transfer06_EE_to_GS_3560_1_P_8_0_0_16_16.png",
+    "frame": "142559",
+    "index_zlib_bytes": 123,
+    "most_distinct_in_a_block": 6,
+    "size": "16x16"
+   }
+  ],
+  "uploads_without_a_twin_that_could_be_a_block_decode": 0
+ },
  "question": "Does this texture dump carry the decoded pixels of any SHPS code-0x0E image, which would be the answer key the codec needs?",
  "schema": "mvp05_ps2_shps_0x0e_dump_pairing/v1",
  "source": "mvp05.iso",
@@ -809,6 +1010,13 @@
    "test": "the true index image, palette inverted, has at most four distinct indices in some 16-texel block shape"
   },
   {
+   "already_a_disc_0x02_image": 117,
+   "candidates": 6,
+   "finds": "a decoded 0x0E texture wherever it reaches the GS, with no palette involved",
+   "test": "no 8-bit texture the game hands the GS -- from a per-draw dump, which has no source filter -- has more than four distinct indices in a 4x4 block",
+   "uploads": 135
+  },
+  {
    "candidates": 1,
    "finds": "a pair the palette joins miss -- a rebuilt CLUT, or a decoder that interpolates in colour space and never uses the palette as a codebook",
    "null_ceiling": 0.8416,
@@ -816,5 +1024,5 @@
    "test": "the picture correlates with a 0x0E image's endpoint thumbnail, above what a dumped texture already known not to be 0x0E scores"
   }
  ],
- "verdict": "no dumped texture is a decoded 0x0E image: the 3 candidate(s) a palette join finds carry more information than the 0x0E payload can hold and have far more than four distinct indices in every 16-texel block shape, and the 1 that clear the picture-correlation null do not put their pixels on the segment between their block's endpoints"
+ "verdict": "no dumped texture is a decoded 0x0E image: the 3 candidate(s) a palette join finds carry more information than the 0x0E payload can hold and have far more than four distinct indices in every 16-texel block shape, and the 1 that clear the picture-correlation null do not put their pixels on the segment between their block's endpoints; and with the dumper's source filter removed, 117 of the 135 distinct 8-bit textures the game hands the GS are a disc 0x02 image byte for byte and 0 of the rest could be a block decode"
 }

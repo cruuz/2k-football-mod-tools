@@ -345,8 +345,8 @@ The bounded hour ended on inference from the encoded bytes. The way to end the
 argument instead is an **answer key** — a picture of what one of these images
 decodes to — and a PCSX2 texture dump is one, because the emulator writes out
 the decoded texels of whatever the game drew. The three frames of §4.2 were
-searched for one, by six tests. **There is none in them**, and the last four
-are what make that a measurement rather than a failure to look:
+searched for one, by seven tests — two through the palette, which turn out to
+prove nothing here, and five that do not need it. **There is none in them:**
 
 | # | test | candidates |
 |---|---|---:|
@@ -356,6 +356,7 @@ are what make that a measurement rather than a failure to look:
 | 4 | the true index image has ≤ 4 distinct indices in *some* 16-texel block shape | **0** |
 | 5 | the picture correlates with a `0x0E` image's endpoint thumbnail, above the null | **0** |
 | 6 | that candidate's pixels lie between its block's two endpoint colours | **0** |
+| 7 | **no** 8-bit texture the game hands the GS, from a dump with no source filter, exceeds four indices in a 4x4 block (§5.2) | **0** |
 
 Test 2 is the one with recall — this game does re-order some CLUTs before
 uploading them — and it is calibrated: on **198 pairings already known to be
@@ -411,11 +412,48 @@ word order and the block-raster map are re-confirmed by the thumbnails across
 all 23,831 `0x0E` images with a 256-entry palette; the selector semantics are
 untouched.
 
-**What would answer it is a savestate** [A]. The decoded buffer is in EE RAM
-while the kits are on screen and a savestate holds EE RAM; the same thumbnail
-correlation finds it there at every `0x0E` size, at stride `w` for an 8-bit
-buffer and `4w` for RGBA. None exists in the fixtures, so it is a capture to
-ask the owner for, not a search to run here.
+### 5.2 The dumper's filter came off, and the answer did not change [M]
+
+All of §5.1 rests on a *replacement* texture dump, and that dumper writes only
+a texture whose source is a plain transfer — so a texture the game builds on
+the GS never appears in it. The same three frames were replayed through the
+**per-draw** dumper, which writes every texture a draw uses whatever its
+source, every render target and every EE-to-GS upload. A `P_8` upload's PNG
+carries the uploaded byte in its red channel, so it **is** the index image and
+no palette has to be identified to read it:
+
+| | |
+|---|---:|
+| distinct 8-bit textures the game hands the GS | 135 |
+| **byte-identical to a `0x02` image on the disc** | 117 |
+| with no disc twin | 18 |
+| of those, any that could be a two-endpoint block decode | **0** |
+| distinct CLUTs uploaded, and how many a `0x0E` image owns | 44 / **44** |
+| the same, for a `0x02` image | **0** |
+| disc `0x02` images the uploads identify byte-exactly | 2,874 |
+
+**The CLUT test was never evidence about `0x0E`.** Every CLUT these frames
+upload is a `0x0E` image's palette and none is a `0x02` image's, while nearly
+every texture drawn with them is a `0x02` image — so an `0x0E` block's palette
+is the CLUT its **bank** draws with, shared across the bank. The single "hit"
+§5.1 reports is that and nothing more.
+
+**Nothing the game draws is a block decode.** Of the 18 uploads with no disc
+twin, every one runs to 12–16 distinct indices in a 4x4 block where two
+endpoints and 2-bit selectors allow four.
+
+**And the reason is the LOD.** The kit on the batter is `MODELS.BIG:990:0`,
+matched byte for byte; its bank tags it **`llod`**, and the same bank's `0x0E`
+images are the high-detail parts (`jers`, `jerk`, `msk1`, `slvl`, `slvr`,
+`lega`, `shoe`). These frames draw the low LOD. **An on-screen kit is
+therefore an editable `0x02` image in `MODELS.BIG`, not one of the `0x0E`
+images the uniforms page lists** — and `MODELS.BIG` is on no writer page today,
+which is a gap this pass found and did not close.
+
+**The capture to ask for is a close-up** [A] — a replay or cutscene camera on a
+player, or a portrait at full size — where the game has a reason to load the
+high-detail LOD. A savestate would serve too, since EE RAM holds the decoded
+buffer whenever one is built. Neither is in the fixtures.
 
 ---
 

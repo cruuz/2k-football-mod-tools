@@ -272,8 +272,8 @@ to -- and a PCSX2 texture dump is exactly that, because the emulator writes out
 the decoded texels of whatever the game drew. One dump of MVP Baseball 2005
 now exists: three single-frame GS dumps replayed headless with texture dumping
 on (1,308 files, 436 distinct textures). It was searched, by
-`tools/mvp05_ps2_texture_identities.py`, with six tests -- two through the
-palette and four that do not need it. **It contains no decoded `0x0E`
+`tools/mvp05_ps2_texture_identities.py`, with seven tests -- two through the
+palette, which turn out to prove nothing here, and five that do not need it. **It contains no decoded `0x0E`
 texture**, and the last four tests are what make that a measurement rather than
 a failure to find one.
 
@@ -285,6 +285,7 @@ a failure to find one.
 | 4 | the true index image, palette inverted, has ≤ 4 distinct indices in **some** 16-texel block shape | whether two endpoints and sixteen 2-bit selectors could describe it | **0** |
 | 5 | the picture correlates with a `0x0E` image's **endpoint thumbnail**, above what a texture known not to be `0x0E` scores | a pair neither palette test can see | **0** |
 | 6 | that candidate's pixels lie on the segment between its block's two endpoint colours | whether a correlation is a codec or a coincidence | **0** |
+| 7 | **no** 8-bit texture the game hands the GS, from a dump with no source filter, has more than four distinct indices in a 4x4 block | a decode wherever it reaches the GS, palette-free | **0** |
 
 **Tests 1 and 2 both go through the palette, and two real decoders would escape
 them**: one that rebuilds or re-orders the CLUT at upload (this game does that
@@ -360,12 +361,61 @@ in kits and every kit is `0x0E`. **A different scene will not fix that.**
 search with its counts, and `tools/mvp05_ps2_texture_identities.py` rebuilds
 every number in it.
 
-**What would answer it is a savestate, not another frame** [A]. The decoded
-buffer exists somewhere in EE RAM while the kits are on screen, and a savestate
-holds EE RAM; the same endpoint-thumbnail correlation finds it there at every
-`0x0E` size, scanning at stride `w` for an 8-bit buffer and `4w` for RGBA. No
-savestate of SLUS-21135 is in the fixtures today, so that is a capture to ask
-for rather than a search to run.
+#### The filter came off, and the answer did not change [M]
+
+Everything above rests on a *replacement* texture dump, and that dumper has a
+filter: it writes only a texture whose source is a plain transfer, so a texture
+a game builds on the GS never appears in it. The same three frames were
+replayed through the **per-draw** dumper, which writes every texture a draw
+uses whatever its source, every render target, and every EE-to-GS upload with
+its format and rectangle. That is the one hole in the negative above, and it
+is now closed.
+
+**The reading needs no palette at all.** A `P_8` upload's dumped PNG carries
+the uploaded byte in its red channel, so it *is* the index image; nothing has
+to be inverted and no CLUT has to be identified. Across the three frames [M]:
+
+| | |
+|---|---:|
+| distinct 8-bit textures the game hands the GS | 135 |
+| of those, **byte-identical to a `0x02` image on the disc** | 117 |
+| with no disc twin | 18 |
+| of those 18, any that could be a two-endpoint block decode | **0** |
+| distinct CLUTs uploaded | 44 |
+| of those, owned by a `0x0E` image | **44** |
+| of those, owned by a `0x02` image | **0** |
+| distinct disc `0x02` images the uploads identify byte-exactly | 2,874 |
+
+Two of those rows change what the earlier tests were worth.
+
+**The CLUT test was never evidence about `0x0E`.** Every CLUT the game uploads
+in these frames is a `0x0E` image's palette and none is a `0x02` image's, while
+almost every *texture* drawn with them is a `0x02` image. So an `0x0E` block's
+attached palette is the CLUT its **bank** draws with, shared with the bank's
+other images — which is why a CLUT match found an image whose pixels were
+nowhere on screen. Tests 1 and 2 are retired as evidence about this code.
+
+**And nothing the game draws is a block decode.** Two endpoints and sixteen
+2-bit selectors put at most four distinct indices in a 4x4 block. Of the 18
+uploads with no disc twin, every one runs to 12–16 distinct indices in a block,
+with 47 to 1,024 of its blocks over four; the six uploads that do satisfy "four
+everywhere" are all small flat ones that are already `0x02` images off the disc.
+
+**What the frames actually drew, and why.** The kit on the batter is
+`MODELS.BIG:990:0`, matched byte for byte — and its bank tags it **`llod`**.
+The same bank's `0x0E` images are the high-detail parts: `jers`, `jerk`,
+`msk1`, `slvl`, `slvr`, `lega`, `shoe`. **These frames draw the low LOD**, and
+that is the whole reason no `0x0E` pixel is in them; the introduction-card
+frame is no different (71 of its 80 uploads are disc `0x02` images, and its one
+128x128 upload without a twin is uploaded identically in all three frames, so
+it is not the portrait). It also means an on-screen kit is an editable `0x02`
+image in `MODELS.BIG` and not one of the `0x0E` images in `UNIFORMS.BIG`.
+
+**So the capture to ask for is a close-up** [A] — a replay or cutscene camera
+on a player, or a screen that shows a portrait at full size — where the game
+has a reason to load the high-detail LOD. A savestate would do as well, since
+EE RAM holds the decoded buffer whenever one is built; neither exists in the
+fixtures today.
 
 **What this does settle is the front half of the reading above.** Building the
 endpoint thumbnails is the same decode as the flat-endpoint render and it holds

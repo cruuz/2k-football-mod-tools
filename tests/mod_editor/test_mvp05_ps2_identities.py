@@ -286,7 +286,7 @@ class TheMeasuredDocuments(unittest.TestCase):
             self.skipTest("no block-codec pairing document is shipped yet")
         document = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(document["schema"], identities.BLOCK_SCHEMA)
-        self.assertEqual(len(document["tests"]), 5)
+        self.assertEqual(len(document["tests"]), 6)
         self.assertTrue(document["verdict"])
         # Whatever the verdict, it must follow from the tables in the document.
         verdict, _tests = identities.block_codec_verdict(document)

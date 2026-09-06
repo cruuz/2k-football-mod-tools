@@ -47149,7 +47149,7 @@
   }
  },
  "method": "exact pixel equality, RGBA with the CLUT's own 0..128 alpha",
- "note": "Three single-frame GS dumps of the retail SLUS-21135 disc (PCSX2 ELF CRC 0544E001) replayed headless with texture dumping and ClassicTextureNames on: two batting frames at Fenway and one batter introduction card, all of one Cardinals half-inning.",
+ "note": "Three single-frame GS dumps of the retail SLUS-21135 disc (PCSX2 ELF CRC 0544E001): two batting frames at Fenway and one batter introduction card. Replayed twice -- once through the replacement texture dumper for the names, once through the per-draw dumper, which has no source filter, for the block-codec search.",
  "region_note": "A name carrying -r<W>x<H> is a region: the game drew a sub-rectangle of a larger texture and the PNG is that rectangle, so it cannot equal a whole image on the disc unless the region is the whole of one. Those are counted, not treated as a failure.",
  "rgb_only": [
   {

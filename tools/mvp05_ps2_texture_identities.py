@@ -429,10 +429,13 @@ def _rgba_from_indices(indices: bytes, palette: Sequence[Tuple[int, int, int, in
 
 
 def index_disc(source: Path, *, progress: Optional[Any] = None,
-               dumps: Sequence[DumpTexture] = ()
+               dumps: Sequence[DumpTexture] = (),
+               uploads: Optional[Mapping[str, Any]] = None,
+               cluts: Optional[Mapping[str, Sequence[str]]] = None
                ) -> Tuple[List[DiscTexture], List[BlockImage], Dict[str, Any],
                           Dict[Tuple[str, str], List[str]],
-                          Dict[Tuple[str, str], List[Dict[str, Any]]]]:
+                          Dict[Tuple[str, str], List[Dict[str, Any]]],
+                          Dict[str, List[str]], Dict[str, Dict[str, List[str]]]]:
     """Walk every ``BIG`` archive on the disc and index every ``SHPS`` image.
 
     Two lists come back: the mip levels of every image that decodes, digested
@@ -465,6 +468,8 @@ def index_disc(source: Path, *, progress: Optional[Any] = None,
         probes.setdefault((dump.width, dump.height), []).append(dump)
     structural: Dict[Tuple[str, str], List[Tuple[float, str]]] = {}
     structural_seen = {"candidates": 0, "candidates_with_contrast": 0}
+    upload_owners: Dict[str, List[str]] = {}
+    clut_owners: Dict[str, Dict[str, List[str]]] = {}
 
     def walk(archive: ea_big.BigArchive, label: str, path: str) -> None:
         for row in archive.entries:
@@ -495,6 +500,9 @@ def index_disc(source: Path, *, progress: Optional[Any] = None,
             for image in bank.images:
                 counts["images"] += 1
                 code = "0x%02x" % image.code
+                if uploads or cluts:
+                    _match_draw_dump(bank, image, f"{label}:{row.index}:{image.index}",
+                                     uploads, cluts, upload_owners, clut_owners)
                 if bank.undecodable_reason(image.index) is None:
                     counts["decodable"] += 1
                     names, _note = art_lane._identities(bank, image)
@@ -580,14 +588,48 @@ def index_disc(source: Path, *, progress: Optional[Any] = None,
     counts.update(structural_seen)
     return levels, blocks, counts, palette_hits, {
         key: [{"ncc": round(score, 4), "key": name} for score, name in best]
-        for key, best in structural.items()}
+        for key, best in structural.items()}, upload_owners, clut_owners
+
+
+def _match_draw_dump(bank: ea_shps.ShpsBank, image: ea_shps.ShpsImage, key: str,
+                     uploads: Optional[Mapping[str, Any]],
+                     cluts: Optional[Mapping[str, Sequence[str]]],
+                     upload_owners: Dict[str, List[str]],
+                     clut_owners: Dict[str, Dict[str, List[str]]]) -> None:
+    """Is this disc image the source of an upload, or the owner of a CLUT the game used?"""
+
+    code = "0x%02x" % image.code
+    if cluts and image.palette is not None and image.palette.width == ea_shps.CSM1_ENTRIES:
+        try:
+            palette = ea_shps.read_palette(bank, image.palette, raw_alpha=True)
+        except (ea_shps.ShpsError, ValueError):
+            palette = ()
+        if len(palette) == ea_shps.CSM1_ENTRIES:
+            raw = bytearray()
+            for entry in palette:
+                raw += bytes((entry[0], entry[1], entry[2]))
+            digest = hashlib.sha256(bytes(raw)).hexdigest()
+            if digest in cluts:
+                clut_owners.setdefault(digest, {}).setdefault(code, []).append(key)
+    if uploads and image.pixels is not None and image.pixels.code == ea_shps.CODE_INDEXED8:
+        try:
+            payload = bank.block_bytes(image.pixels)
+        except (ea_shps.ShpsError, ValueError):
+            return
+        level0 = payload[:image.width * image.height]
+        if len(level0) != image.width * image.height:
+            return
+        digest = hashlib.sha256(level0).hexdigest()
+        if digest in uploads:
+            upload_owners.setdefault(digest, []).append(key)
 
 
 def write_index(path: Path, source: Path, levels: Sequence[DiscTexture],
                 blocks: Sequence[BlockImage], counts: Mapping[str, Any],
                 palette_hits: Optional[Mapping[Tuple[str, str], Sequence[str]]] = None,
-                structural: Optional[Mapping[Tuple[str, str], Sequence[Mapping[str, Any]]]] = None
-                ) -> None:
+                structural: Optional[Mapping[Tuple[str, str], Sequence[Mapping[str, Any]]]] = None,
+                upload_owners: Optional[Mapping[str, Sequence[str]]] = None,
+                clut_owners: Optional[Mapping[str, Mapping[str, Sequence[str]]]] = None) -> None:
     """The disc index as JSONL, so a second run does not re-walk 4.3 GB."""
 
     with Path(path).open("w", encoding="utf-8", newline="\n") as handle:
@@ -603,16 +645,26 @@ def write_index(path: Path, source: Path, levels: Sequence[DiscTexture],
         for (convention, name), best in sorted((structural or {}).items()):
             handle.write(json.dumps({"kind": "structural", "convention": convention,
                                      "dump": name, "best": list(best)}, sort_keys=True) + "\n")
+        for digest, keys in sorted((upload_owners or {}).items()):
+            handle.write(json.dumps({"kind": "upload_owner", "digest": digest,
+                                     "keys": list(keys)}, sort_keys=True) + "\n")
+        for digest, owners in sorted((clut_owners or {}).items()):
+            handle.write(json.dumps({"kind": "clut_owner", "digest": digest,
+                                     "owners": {k: list(v) for k, v in owners.items()}},
+                                    sort_keys=True) + "\n")
 
 
 def read_index(path: Path) -> Tuple[List[DiscTexture], List[BlockImage], Dict[str, Any],
                                     Dict[Tuple[str, str], List[str]],
-                                    Dict[Tuple[str, str], List[Dict[str, Any]]]]:
+                                    Dict[Tuple[str, str], List[Dict[str, Any]]],
+                                    Dict[str, List[str]], Dict[str, Dict[str, List[str]]]]:
     levels: List[DiscTexture] = []
     blocks: List[BlockImage] = []
     counts: Dict[str, Any] = {}
     palette_hits: Dict[Tuple[str, str], List[str]] = {}
     structural: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
+    upload_owners: Dict[str, List[str]] = {}
+    clut_owners: Dict[str, Dict[str, List[str]]] = {}
     with Path(path).open("r", encoding="utf-8") as handle:
         for line in handle:
             row = json.loads(line)
@@ -630,11 +682,15 @@ def read_index(path: Path) -> Tuple[List[DiscTexture], List[BlockImage], Dict[st
                 palette_hits[(row["convention"], row["dump"])] = list(row.get("keys") or ())
             elif kind == "structural":
                 structural[(row["convention"], row["dump"])] = list(row.get("best") or ())
+            elif kind == "upload_owner":
+                upload_owners[row["digest"]] = list(row.get("keys") or ())
+            elif kind == "clut_owner":
+                clut_owners[row["digest"]] = {k: list(v) for k, v in (row.get("owners") or {}).items()}
             elif row.get("schema") == INDEX_SCHEMA:
                 counts = dict(row.get("counts") or {})
             else:
                 raise IdentityError(f"{path} is not a disc index this tool wrote.")
-    return levels, blocks, counts, palette_hits, structural
+    return levels, blocks, counts, palette_hits, structural, upload_owners, clut_owners
 
 
 # --------------------------------------------------------------------------
@@ -853,6 +909,147 @@ def tex0_only_check(source: Path, report: MatchReport,
                     "with something no disc byte records -- the same image is dumped under "
                     "several CLUT hashes across the capture, so it is recoloured at run time. "
                     "Those names can be confirmed by a dump and cannot be derived."),
+    }
+
+
+#: A per-draw GS dump names its files this way.  ``itex`` is a draw's input
+#: texture, ``itpx`` its palette, ``transferNN`` an EE-to-GS upload with its
+#: format and rectangle in the name.  A ``P_8`` upload's PNG carries the raw
+#: uploaded byte in the red channel, so it *is* the index image [M].
+_DRAW_UPLOAD = re.compile(r"^\d+_transfer\d+_EE_to_GS_[0-9a-f]+_\d+_P_8_0_0_(\d+)_(\d+)\.png$")
+_DRAW_CLUT = re.compile(r"^\d+_f\d+_itpx_[0-9a-f]+_C_32\.png$")
+
+
+@dataclass(frozen=True)
+class DrawUpload:
+    """One distinct 8-bit texture the game handed the GS, and what it looks like."""
+
+    frame: str
+    file: str
+    width: int
+    height: int
+    digest: str
+    blocks: int
+    blocks_over_four: int
+    most_distinct_in_a_block: int
+    index_zlib_bytes: int
+
+    @property
+    def block_codec_budget(self) -> int:
+        """Bytes a ``0x0E`` payload of this size would hold."""
+        return self.width * self.height * 3 // 8
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {"frame": self.frame, "file": self.file,
+                "size": f"{self.width}x{self.height}", "blocks": self.blocks,
+                "blocks_over_four_distinct": self.blocks_over_four,
+                "most_distinct_in_a_block": self.most_distinct_in_a_block,
+                "index_zlib_bytes": self.index_zlib_bytes,
+                "block_codec_budget_bytes": self.block_codec_budget}
+
+
+def scan_draw_dump(directories: Sequence[Path]) -> Tuple[List[DrawUpload], Dict[str, List[str]]]:
+    """Every distinct 8-bit upload and every distinct CLUT a per-draw dump holds.
+
+    A per-draw dump is what a *replacement* texture dump is not: it writes every
+    texture a draw uses whatever its source, and every raw EE-to-GS transfer.
+    That removes the filter the replacement dumper applies -- it only writes a
+    texture sourced from a plain transfer -- which is the one thing that could
+    have hidden a decoded ``0x0E`` texture from the earlier search.
+    """
+
+    uploads: Dict[str, DrawUpload] = {}
+    cluts: Dict[str, List[str]] = {}
+    # The same texture is uploaded in draw after draw and frame after frame, and
+    # decoding a 512x512 PNG in Python is not free; identical uploads are
+    # identical files, so the file's own digest skips the decode.
+    seen_files: Dict[str, None] = {}
+    for directory in directories:
+        directory = Path(directory)
+        if not directory.is_dir():
+            raise IdentityError(f"{directory} is not a directory; give a per-draw dump folder.")
+        frame = directory.name
+        for path in sorted(directory.iterdir()):
+            upload = _DRAW_UPLOAD.match(path.name)
+            if upload is not None:
+                payload = path.read_bytes()
+                file_key = hashlib.sha256(payload).hexdigest()
+                if file_key in seen_files:
+                    continue
+                seen_files[file_key] = None
+                png_w, png_h, rgba = art_lane.read_rgba_png(payload)
+                indices = bytes(rgba[0::4])
+                key = hashlib.sha256(indices).hexdigest()
+                if key in uploads:
+                    continue
+                worst = over = blocks = 0
+                if png_w % 4 == 0 and png_h % 4 == 0 and png_w >= 4 and png_h >= 4:
+                    for block_y in range(png_h // 4):
+                        for block_x in range(png_w // 4):
+                            seen = set()
+                            for y in range(4):
+                                start = (block_y * 4 + y) * png_w + block_x * 4
+                                seen.update(indices[start:start + 4])
+                            blocks += 1
+                            worst = max(worst, len(seen))
+                            if len(seen) > 4:
+                                over += 1
+                uploads[key] = DrawUpload(frame=frame, file=path.name, width=png_w, height=png_h,
+                                          digest=key, blocks=blocks, blocks_over_four=over,
+                                          most_distinct_in_a_block=worst,
+                                          index_zlib_bytes=len(zlib.compress(indices, 9)))
+                continue
+            if _DRAW_CLUT.match(path.name):
+                payload = path.read_bytes()
+                file_key = hashlib.sha256(payload).hexdigest()
+                if file_key in seen_files:
+                    continue
+                seen_files[file_key] = None
+                png_w, png_h, rgba = art_lane.read_rgba_png(payload)
+                if png_w * png_h != 256:
+                    continue
+                raw = bytearray()
+                for position in range(0, len(rgba), 4):
+                    raw += rgba[position:position + 3]
+                cluts.setdefault(hashlib.sha256(bytes(raw)).hexdigest(), []).append(
+                    f"{frame}/{path.name}")
+    return list(uploads.values()), cluts
+
+
+def draw_dump_report(uploads: Sequence[DrawUpload], clut_owners: Mapping[str, Dict[str, List[str]]],
+                     upload_owners: Mapping[str, List[str]], cluts: Mapping[str, List[str]]
+                     ) -> Dict[str, Any]:
+    """What the per-draw dump says about where the game's 8-bit pixels come from."""
+
+    plain = [u for u in uploads if upload_owners.get(u.digest)]
+    other = [u for u in uploads if not upload_owners.get(u.digest)]
+    blocky = [u for u in uploads if u.blocks and u.blocks_over_four == 0]
+    by_code: Dict[str, int] = {}
+    for digest in cluts:
+        owners = clut_owners.get(digest) or {}
+        label = "+".join(sorted(owners)) or "no disc image"
+        by_code[label] = by_code.get(label, 0) + 1
+    return {
+        "method": ("A per-draw GS dump writes every texture a draw uses whatever its source and "
+                   "every EE-to-GS upload, so the replacement dumper's filter -- it writes only "
+                   "textures sourced from a plain transfer -- is gone. A P_8 upload's PNG carries "
+                   "the uploaded byte in its red channel, which is the index image itself: no "
+                   "palette is involved in reading it, so what follows is palette-free."),
+        "frames": sorted({u.frame for u in uploads}),
+        "distinct_8bit_uploads": len(uploads),
+        "uploads_that_are_a_disc_0x02_image_byte_for_byte": len(plain),
+        "uploads_with_no_disc_twin": len(other),
+        "disc_0x02_images_identified": len({key for keys in upload_owners.values() for key in keys}),
+        "distinct_cluts_uploaded": len(cluts),
+        "cluts_by_the_pixel_code_of_the_disc_image_that_owns_them": dict(sorted(by_code.items())),
+        "uploads_where_every_4x4_block_has_at_most_four_indices": len(blocky),
+        "uploads_without_a_twin_that_could_be_a_block_decode": sum(
+            1 for u in other if u.blocks and u.blocks_over_four == 0),
+        "uploads_without_a_twin": [u.as_dict() for u in
+                                   sorted(other, key=lambda u: -u.width * u.height)[:24]],
+        "reading": ("Two endpoints and sixteen 2-bit selectors put at most four distinct indices "
+                    "in a 4x4 block. An upload that exceeds that is not a decode of a 0x0E image "
+                    "whatever its palette, and this test needs no palette at all."),
     }
 
 
@@ -1284,7 +1481,7 @@ def build_derivation_document(source: Path, check: Mapping[str, Any],
 
 
 def block_codec_verdict(report: Mapping[str, Any]) -> Tuple[str, List[Dict[str, Any]]]:
-    """One sentence, and the five tests behind it, from the block report alone."""
+    """One sentence, and the tests behind it, from the block report alone."""
 
     clut = list(report.get("clut_hash_candidates") or ())
     subset = list(report.get("palette_subset_candidates") or ())
@@ -1294,6 +1491,7 @@ def block_codec_verdict(report: Mapping[str, Any]) -> Tuple[str, List[Dict[str, 
     payable = [row for row in joined.values() if row.get("payload_can_hold_it")]
     probes = list(report.get("ground_truth_probes") or ())
     structure = dict(report.get("structural_pairing") or {})
+    per_draw = dict(report.get("per_draw_dump") or {})
     residuals = list(report.get("lerp_residuals") or ())
     convincing = [row for row in residuals
                   if max(entry["pixels_within_quantisation_pct"]
@@ -1316,6 +1514,13 @@ def block_codec_verdict(report: Mapping[str, Any]) -> Tuple[str, List[Dict[str, 
                  "some 16-texel block shape",
          "candidates": len(workable), "probed": len(probes),
          "finds": "whether two endpoints and sixteen 2-bit selectors could describe it"},
+        {"test": "no 8-bit texture the game hands the GS -- from a per-draw dump, which has no "
+                 "source filter -- has more than four distinct indices in a 4x4 block",
+         "candidates": int(per_draw.get("uploads_where_every_4x4_block_has_at_most_four_indices", 0)),
+         "uploads": int(per_draw.get("distinct_8bit_uploads", 0)),
+         "already_a_disc_0x02_image": int(
+             per_draw.get("uploads_that_are_a_disc_0x02_image_byte_for_byte", 0)),
+         "finds": "a decoded 0x0E texture wherever it reaches the GS, with no palette involved"},
         {"test": "the picture correlates with a 0x0E image's endpoint thumbnail, above what a "
                  "dumped texture already known not to be 0x0E scores",
          "candidates": int(structure.get("above_the_null_ceiling", 0)),
@@ -1325,15 +1530,24 @@ def block_codec_verdict(report: Mapping[str, Any]) -> Tuple[str, List[Dict[str, 
                   "interpolates in colour space and never uses the palette as a codebook"},
     ]
     survivors = int(structure.get("above_the_null_ceiling", 0))
+    unfiltered = int(per_draw.get("uploads_without_a_twin_that_could_be_a_block_decode", 0))
+    per_draw_line = ""
+    if per_draw:
+        per_draw_line = (
+            "; and with the dumper's source filter removed, %d of the %d distinct 8-bit textures "
+            "the game hands the GS are a disc 0x02 image byte for byte and %d of the rest could "
+            "be a block decode" % (
+                per_draw.get("uploads_that_are_a_disc_0x02_image_byte_for_byte", 0),
+                per_draw.get("distinct_8bit_uploads", 0), unfiltered))
     if not clut and not subset and not survivors:
         return ("no dumped texture is a decoded 0x0E image: no dumped picture draws its colours "
                 "from any 0x0E image's palette, and none correlates with a 0x0E image's own "
-                "picture above what a texture known not to be one scores", tests)
+                "picture above what a texture known not to be one scores" + per_draw_line, tests)
     if not clut and not subset and survivors and not convincing:
         return ("no dumped texture is a decoded 0x0E image: no dumped picture draws its colours "
                 "from any 0x0E image's palette, and the %d that clear the correlation null do "
-                "not put their pixels on the segment between their block's endpoints" % survivors,
-                tests)
+                "not put their pixels on the segment between their block's endpoints"
+                % survivors + per_draw_line, tests)
     if not clut and not subset:
         return ("no dumped texture is a decoded 0x0E image: no dumped picture draws its colours "
                 "from any 0x0E image's palette", tests)
@@ -1342,7 +1556,7 @@ def block_codec_verdict(report: Mapping[str, Any]) -> Tuple[str, List[Dict[str, 
                 "finds carry more information than the 0x0E payload can hold and have far more "
                 "than four distinct indices in every 16-texel block shape, and the %d that clear "
                 "the picture-correlation null do not put their pixels on the segment between "
-                "their block's endpoints" % (len(joined), survivors), tests)
+                "their block's endpoints" % (len(joined), survivors) + per_draw_line, tests)
     if not payable:
         return ("no dumped texture is a decoded 0x0E image: the %d candidate(s) a palette join "
                 "finds carry more information than the 0x0E payload can hold, so no decoder "
@@ -1470,13 +1684,40 @@ def selftest(tmp: Optional[Path] = None) -> int:
         block_report = block_codec_report(dumps, blocks, [], {})
         block_report["structural_pairing"] = structural_report(dumps, {}, [], {})
         block_report["lerp_residuals"] = []
+        # The per-draw leg, on an upload this file writes: a checkerboard has
+        # two indices in a block and passes; a ramp has sixteen and does not.
+        holder_dir = tmp / "drawdump" / "20260101010101"
+        holder_dir.mkdir(parents=True, exist_ok=True)
+        flat = bytearray()
+        ramp = bytearray()
+        for y in range(16):
+            for x in range(16):
+                value = 255 if ((x // 4) + (y // 4)) % 2 else 0
+                flat += bytes((value, value, value, 255))
+                step = (y * 16 + x) & 0xFF
+                ramp += bytes((step, step, step, 255))
+        (holder_dir / "00001_transfer00_EE_to_GS_1000_1_P_8_0_0_16_16.png").write_bytes(
+            ea_shps.encode_png(16, 16, bytes(flat)))
+        (holder_dir / "00002_transfer00_EE_to_GS_2000_1_P_8_0_0_16_16.png").write_bytes(
+            ea_shps.encode_png(16, 16, bytes(ramp)))
+        found, found_cluts = scan_draw_dump([holder_dir])
+        assert len(found) == 2 and found_cluts == {}, (found, found_cluts)
+        checker = next(u for u in found if u.most_distinct_in_a_block == 1)
+        steps = next(u for u in found if u.most_distinct_in_a_block == 16)
+        assert checker.blocks_over_four == 0 and steps.blocks_over_four == steps.blocks
+        assert steps.block_codec_budget == 16 * 16 * 3 // 8
+        drawn = draw_dump_report(found, {}, {}, found_cluts)
+        assert drawn["distinct_8bit_uploads"] == 2, drawn
+        assert drawn["uploads_where_every_4x4_block_has_at_most_four_indices"] == 1, drawn
+        assert drawn["uploads_with_no_disc_twin"] == 2, drawn
+        block_report["per_draw_dump"] = drawn
         assert block_report["structural_pairing"]["probe_pictures"] == 0, block_report
         assert block_report["clut_hash_candidates"] == [], block_report
         assert block_report["palette_subset_candidates"] == [], block_report
         assert block_report["palette_hunt_ran"] is True, block_report
         verdict, tests = block_codec_verdict(block_report)
         assert "no" in verdict.lower(), verdict
-        assert len(tests) == 5, tests
+        assert len(tests) == 6, tests
         json.dumps(build_block_document(Path("synthetic.iso"), tmp, block_report, verdict, tests))
 
         document = build_document(Path("synthetic.iso"), tmp, dumps, disc, blocks, report)
@@ -1505,6 +1746,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--note", default="", help="one sentence about the capture")
     parser.add_argument("--frame-labels", type=Path,
                         help="JSON mapping a frame stamp to what that frame shows")
+    parser.add_argument("--draw-dump", type=Path, nargs="*", default=(),
+                        help="per-draw GS dump directories, one per frame; a replacement dump "
+                             "writes only textures sourced from a plain transfer and these "
+                             "write everything")
     parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--selftest", action="store_true")
     args = parser.parse_args(argv)
@@ -1523,19 +1768,31 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         say(f"dump scanned: {len(dumps):,} texture(s)")
     palette_hits: Optional[Dict[Tuple[str, str], List[str]]] = None
     structural: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
+    draw_uploads: List[DrawUpload] = []
+    draw_cluts: Dict[str, List[str]] = {}
+    upload_owners: Dict[str, List[str]] = {}
+    clut_owners: Dict[str, Dict[str, List[str]]] = {}
+    if args.draw_dump:
+        draw_uploads, draw_cluts = scan_draw_dump(args.draw_dump)
+        say("per-draw dump: %d distinct 8-bit upload(s), %d distinct CLUT(s)"
+            % (len(draw_uploads), len(draw_cluts)))
     if args.index and args.index.exists():
-        levels, blocks, counts, palette_hits, structural = read_index(args.index)
+        (levels, blocks, counts, palette_hits, structural, upload_owners,
+         clut_owners) = read_index(args.index)
         say(f"disc index read from {args.index}: {len(levels):,} level(s), {len(blocks):,} block "
             f"codec image(s)")
     else:
         if args.source is None:
             parser.error("give --source, or an --index a previous run wrote")
-        levels, blocks, counts, palette_hits, structural = index_disc(
-            args.source, progress=None if args.quiet else say, dumps=dumps)
+        (levels, blocks, counts, palette_hits, structural, upload_owners,
+         clut_owners) = index_disc(
+            args.source, progress=None if args.quiet else say, dumps=dumps,
+            uploads={u.digest: u for u in draw_uploads} or None, cluts=draw_cluts or None)
         say(f"disc walked in {time.time() - started:.0f}s: {counts}")
         target = args.write_index or args.index
         if target is not None:
-            write_index(target, args.source, levels, blocks, counts, palette_hits, structural)
+            write_index(target, args.source, levels, blocks, counts, palette_hits, structural,
+                        upload_owners, clut_owners)
             say(f"disc index written to {target}")
     if args.dump_dir is None:
         if args.write_index:
@@ -1599,6 +1856,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 residuals.append({"dump": row["dump"], "block_image": row["best"][0]["key"],
                                   "error": str(exc)})
     block["lerp_residuals"] = residuals
+    if draw_uploads:
+        block["per_draw_dump"] = draw_dump_report(draw_uploads, clut_owners, upload_owners,
+                                                  draw_cluts)
+        say("per-draw: %d of %d upload(s) are a disc 0x02 image; %d upload(s) could be a block "
+            "decode" % (block["per_draw_dump"]["uploads_that_are_a_disc_0x02_image_byte_for_byte"],
+                        block["per_draw_dump"]["distinct_8bit_uploads"],
+                        block["per_draw_dump"]["uploads_where_every_4x4_block_has_at_most_four_indices"]))
     say("structure: %d probe picture(s), null ceiling %s, %d above it, %d residual probe(s)"
         % (block["structural_pairing"]["probe_pictures"],
            block["structural_pairing"]["null_ceiling"],
