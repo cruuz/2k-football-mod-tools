@@ -277,11 +277,18 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                         stack.enter_context(patch.object(module, name, recorder.wrapper(module, name)))
             receipt = build.build(plan, progress=lambda message, *_: progress(message))
             preset_xbe = build._xbe_bytes(target)
-            if plan.scorebug_runtime:
+            # The dormant-owner probe needs an XBE WITHOUT an allocator directory: an installed request
+            # set is immutable, so every preset option that selects an allocator owner is turned off
+            # here and the complete union is installed below by the probe itself.
+            if plan.scorebug_runtime or space.status(preset_xbe) != "retail":
                 target.unlink()
                 progress("Building the separate dormant-owner allocation probe")
-                build.build(replace(plan, scorebug_runtime=False, xbe_space=False,
-                                    kickoff_relocated=False, scorebug=True),
+                build.build(replace(plan, scorebug_runtime=False, xbe_space=False, kickoff_relocated=False,
+                                    scorebug=bool(plan.scorebug or plan.scorebug_runtime),
+                                    season_cap=False, calendar_engine=False, momentum=0, momentum_contact=False,
+                                    defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False,
+                                    scramble_tuning=False, music_shuffle=False, music_shuffle_selection=None,
+                                    practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
