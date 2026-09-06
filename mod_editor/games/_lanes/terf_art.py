@@ -358,6 +358,15 @@ class TerfArtLane:
     #: exists.  Empty when none has been written yet, and the identity note
     #: says so instead of naming a tool a user cannot run.
     identity_tool: str = ""
+    #: How well the derivation reproduces the names a real dump wrote, as one
+    #: clause the identity note reads out.  It is a **measurement of one
+    #: disc**, and every game that has paired a dump should set its own from
+    #: its ``pcsx2-texture-identity-derivation.json``: the base's default is
+    #: Madden 09's, which is the number this sentence carried when it was a
+    #: literal in the note and the only measurement there was.
+    derivation_evidence: str = (
+        "the rule reproduces the dumped hash of 2,994 of 3,024 dump-identified retail "
+        "textures")
     #: How many textures the catalogue offers as targets.
     max_targets = MAX_TARGETS
     #: How many targets ONE container may take of that cap, or ``None`` for no
@@ -741,9 +750,8 @@ class TerfArtLane:
             parts.append(
                 f"Derived from this texture's own bytes: {first} is the modern name for its "
                 f"full mip chain, and {total} name(s) in all cover every mip range the game "
-                f"can draw and both TCC values (the rule reproduces the dumped hash of 2,994 "
-                f"of 3,024 dump-identified retail textures; a draw with an alternate CLUT has "
-                f"a different second half).")
+                f"can draw and both TCC values ({self.derivation_evidence}; a draw with an "
+                f"alternate CLUT has a different second half).")
         elif isinstance(target.raw, Mapping) and target.raw.get("derived_note"):
             parts.append(str(target.raw["derived_note"]) + ".")
         if not parts:
