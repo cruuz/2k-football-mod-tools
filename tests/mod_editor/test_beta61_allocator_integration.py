@@ -82,8 +82,8 @@ class CompleteOwnerTests(unittest.TestCase):
         layout = space.layout(self.full)
         regions = layout["regions"]
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 16535  # complete beta-62 union incl. the boot logo)
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 3242)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 16535)  # complete beta-62 union incl. the boot logo
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 4778)  # complete beta-62 union RW state
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])

@@ -165,7 +165,7 @@ class SyntheticTests(unittest.TestCase):
             self.assertEqual(section_digest(self.grown, section), section.stored_digest)
 
     def test_sealed_code_ro_replay_and_changed_request_refusal(self):
-        code = b'\x90' * (90 * 1024)
+        code = b'\x90' * (64 * 1024)
         grown, _ = space.install_code(self.grown, 'synthetic_scaleout', code)
         grown, _ = space.install_read_only(grown, 'synthetic_scaleout', b'R' * 1024)
         self.assertEqual(space.status(grown), 'applied')

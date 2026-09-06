@@ -454,18 +454,19 @@ def allocation_evidence(retail: bytes, manifest, *, allocated: bytes | None = No
     _validate(retail)
     _require(image.base + image.image_size <= CODE_VA and all(s.end <= CODE_VA for s in image.sections), "new pages overlap retail")
     _require(special.TABLE_VA + special.TABLE_SIZE <= CODE_VA, "new pages overlap SPECIAL")
-    from . import nfl2k5_dynamic_kickoff_relocated as relocated
-    from . import nfl2k5_momentum as momentum, nfl2k5_defensive_try as defensive_try
-    from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_zone_drop as zone_drop
-    from . import nfl2k5_roster_storage as roster_storage
-    from . import nfl2k5_coverage_slider as coverage, nfl2k5_scramble_tuning as scramble
-    from . import nfl2k5_music_playlist as playlist
     # Match the manifest builder's complete dormant-owner request set. This is
     # an ownership proof only; apply() still allocates exactly its caller's set.
-    children = (layout(allocated)["allocations"] if allocated is not None
-                else _allocations(relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS))
-    proof_regions = ([r for r in layout(allocated)["regions"] if not r.get("music")] if allocated is not None
-                     else _regions([(a["owner"], a["kind"], a["size"], a["align"]) for a in children if a["kind"] != "read_only"]))
+    dormant = dormant_union()
+    if allocated is not None:
+        children = layout(allocated)["allocations"]
+        proof_regions = [r for r in layout(allocated)["regions"] if not r.get("music")]
+    elif _needs_scaleout(dormant):
+        # Beta-62 owners put the dormant union on the v3 page pools.
+        children = _scale_allocations(dormant)
+        proof_regions = [r for r in _scale_regions() if r["kind"] != "read_only"]
+    else:
+        children = _allocations(dormant)
+        proof_regions = _regions([(a["owner"], a["kind"], a["size"], a["align"]) for a in children if a["kind"] != "read_only"])
     for region in proof_regions:
         r = dict(start=hex(region["va"]), end=hex(region["va"] + region["size"]))
         overlaps = manifest.overlaps(int(r["start"], 0), int(r["end"], 0), exclude_owner=OWNER)
@@ -505,7 +506,7 @@ def allocation_evidence(retail: bytes, manifest, *, allocated: bytes | None = No
                         legacy_hits.append(hits[-1])
             # Operand-size-overridden near transfers truncate EIP to 16 bits;
             # they cannot encode either page above 16 MiB.
-    scaled = allocated is not None and is_scaleout(allocated)
+    scaled = is_scaleout(allocated) if allocated is not None else _needs_scaleout(dormant)
     _require(not (legacy_hits if scaled else hits), f"retail reference encodings into legacy owned pages: {hits[:8]}")
     return {"allocation": "new_preloaded_sections", "start": hex(CODE_VA), "end": hex(max(r["va"] + r["size"] for r in proof_regions)),
             "regions": proof_regions,
@@ -546,6 +547,21 @@ MAX_REQUEST_BYTES = 96 * PAGE
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
+
+
+def dormant_union():
+    """Every allocator owner the manifest builder installs on its disposable disc (beta 61 + beta 62)."""
+    from . import nfl2k5_dynamic_kickoff_relocated as relocated
+    from . import nfl2k5_momentum as momentum, nfl2k5_defensive_try as defensive_try
+    from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_zone_drop as zone_drop
+    from . import nfl2k5_roster_storage as roster_storage
+    from . import nfl2k5_coverage_slider as coverage, nfl2k5_scramble_tuning as scramble
+    from . import nfl2k5_music_playlist as playlist, nfl2k5_practice_squad_screen as practice_screen
+    from . import nfl2k5_abilities_runtime as abilities, nfl2k5_qb_spy_runtime as qb_spy
+    from . import nfl2k5_calendar_engine as calendar
+    return (relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS
+            + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
+            + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS)
 
 
 def is_scaleout(payload):

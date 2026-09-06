@@ -14,7 +14,11 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'tests')]
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 from mod_editor.core import mod_build as build, nfl2k5_throw_tuning as tt
 from mod_editor.core import nfl2k5_team_names_2026 as names
-from tests.nfl2k5_allocator_stack import REQUESTS
+from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS
+from mod_editor.core import nfl2k5_roster_storage as _storage, nfl2k5_coverage_slider as _coverage, nfl2k5_scramble_tuning as _scramble
+# The owners the protected dispatcher is wired for. The wave-A owners (playlist, Practice Squad screen,
+# abilities, QB spy, calendar) join this union when their WIRING sections land.
+REQUESTS = LEGACY_REQUESTS + _storage.REQUESTS + _coverage.REQUESTS + _scramble.REQUESTS
 from tests.mod_editor.test_nfl2k5_xbe_space import RETAIL, image_with_xbe
 
 FLAGS = ('all_stadiums', 'team_names_2026', 'coverage_slider', 'scramble_tuning',
