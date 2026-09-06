@@ -120,6 +120,8 @@ _SAMPLE_REGISTRY: dict[str, Any] = {
         {"id": "mvp05_ps2", "title": "MVP Baseball 2005 (USA, PlayStation 2)"},
         {"id": "nflblitz2002_ps2", "title": "NFL Blitz 2002 (USA, PlayStation 2)"},
         {"id": "nflblitz2003_ps2", "title": "NFL Blitz 2003 (USA, PlayStation 2)"},
+        {"id": "nflstreet1_ps2", "title": "NFL Street (USA, PlayStation 2)"},
+        {"id": "nflstreet3_ps2", "title": "NFL Street 3 (USA, PlayStation 2)"},
     ],
     "capabilities": [
         {
@@ -245,7 +247,7 @@ class CapabilityRegistryLoader:
             except ValueError as exc:
                 raise RegistryError(f"Unsupported registry game id: {row['id']!r}") from exc
             seen.add(row["id"])
-        required = {"nfl2k5_xbox", "apf2k8_xbox360", "nfl2k5_ps2", "madden09_ps2", "ncaa09_ps2", "mvp05_ps2", "nflblitz2002_ps2", "nflblitz2003_ps2"}
+        required = {"nfl2k5_xbox", "apf2k8_xbox360", "nfl2k5_ps2", "madden09_ps2", "ncaa09_ps2", "mvp05_ps2", "nflblitz2002_ps2", "nflblitz2003_ps2", "nflstreet1_ps2", "nflstreet3_ps2"}
         if seen != required:
             raise RegistryError(f"Registry game ids must be exactly {sorted(required)}")
 
@@ -350,6 +352,8 @@ class CapabilityRegistryLoader:
             "mvp05_ps2": GameId.MVP05_PS2,
             "nflblitz2002_ps2": GameId.NFLBLITZ2002_PS2,
             "nflblitz2003_ps2": GameId.NFLBLITZ2003_PS2,
+            "nflstreet1_ps2": GameId.NFLSTREET1_PS2,
+            "nflstreet3_ps2": GameId.NFLSTREET3_PS2,
         }
         try:
             return mapping[registry_id]
