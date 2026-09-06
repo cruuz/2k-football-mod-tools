@@ -2913,7 +2913,7 @@ Export-only boundary instead of pretending that registry status is an action.
 
 | Product surface | Exact release-candidate coverage |
 | --- | ---: |
-| Capability registry | 125 rows total; 45 Xbox NFL 2K5 rows; 9 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, PCSX2 replacement-pack export, six on-disc writers (PS2 NFL 2K5 Studio tabs): text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
+| Capability registry | 133 rows total; 45 Xbox NFL 2K5 rows; 9 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, PCSX2 replacement-pack export, six on-disc writers (PS2 NFL 2K5 Studio tabs): text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
 | Sidebar tabs | 11 |
 | Specialized visual assets | 63,592 total; all 63,592 Editable, including 28,530 package-local equipment P8 palettes |
 | Text banks | 716 |
