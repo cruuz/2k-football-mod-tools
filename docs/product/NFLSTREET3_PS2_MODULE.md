@@ -199,13 +199,29 @@ receipt declared [M]:
 | `identity.team_records` | 160 | 7 | 3 | 2 | yes | yes | **PASS** |
 | `menus.text_members` | 3,448 | 718 | 1 | 2 | yes | yes | **PASS** |
 | `playbooks.play_databases` | 900 | 69,195 | 594 | 22 | yes | yes | **PASS** |
+| `identity.logo_art` | 346 | 15,998 | 155 | 2 | yes | yes | **PASS** |
+| `rosters.portrait_art` | 693 | 2,804 | 162 | 2 | yes | yes | **PASS** |
+| `field_art.create_team_art` | 140 | 4,015 | 29 | 2 | yes | yes | **PASS** |
+| `stadiums.playfield_art` | 112 | 120 | 8 | 2 | yes | yes | **PASS** |
+| `presentation.screen_art` | 313 | 10,306,912 | 42589 | 24 | yes | yes | **PASS** |
+| `menus.front_end_art` | 114 | 1,014 | 10 | 2 | yes | yes | **PASS** |
+| `textures.mmap_census` | 1,425 | 2,804 | 162 | 2 | yes | yes | **PASS** |
 
-`playbooks` moves more bytes because `IGDATA.DAT`'s members are `LZH1`-packed and
-a rename re-packs the whole member; `DB_TEAMS.DAT`'s members are stored, so a
-roster edit moves 13 bytes.
+An art trial is not a round trip: the exported PNG is edited first -- every pixel
+of one colour already in the image repainted with another already in it -- so the
+writer has to land a real difference inside its declared ranges.
+
+`presentation.screen_art` moves 10.3 MB because the member it reached is in
+`LOADDATA.DAT`, a 10,537,856-byte `LZH1` container: a change re-packs the member,
+moves the directory, and every cached copy moves with it. `stadiums.playfield_art`
+moves 120 bytes because the member it reached is stored. Both are inside their
+declared ranges and both leave the image the exact length it went in.
 
 **None of the six `TEXT` containers is named by any of the eleven `QL01` caches**
 [M], which makes a text edit the cheapest write in the module.
+
+The full receipt for every row is
+`docs/product/measured/nflstreet3_ps2/real-disc-writer-trials.json`.
 
 ---
 

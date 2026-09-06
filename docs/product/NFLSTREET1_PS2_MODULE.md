@@ -196,16 +196,40 @@ the receipt declared. Run on `/turret/builds/discs/ps2/NFL Street (USA).iso` [M]
 | `identity.team_records` | 160 | 10 | 4 | 2 | yes | yes | **PASS** |
 | `menus.text_members` | 4,000 | 1,717 | 1 | 2 | yes | yes | **PASS** |
 | `playbooks.play_databases` | 310 | 57,411 | 480 | 20 | yes | yes | **PASS** |
+| `identity.logo_art` | 102 | 147,141 | 324 | 18 | yes | yes | **PASS** |
+| `rosters.portrait_art` | 549 | 3,865 | 123 | 2 | yes | yes | **PASS** |
+| `field_art.create_team_art` | 97 | 4,015 | 29 | 2 | yes | yes | **PASS** |
+| `stadiums.playfield_art` | 34 | 142,695 | 603 | 18 | yes | yes | **PASS** |
+| `presentation.screen_art` | 155 | 130,704 | 323 | 2 | yes | yes | **PASS** |
+| `menus.front_end_art` | 103 | 21,098 | 1397 | 20 | yes | yes | **PASS** |
+| `textures.mmap_census` | 891 | 3,865 | 123 | 2 | yes | yes | **PASS** |
 
-`playbooks` changes more bytes than the others because `IGDATA.DAT`'s members are
-`LZH1`-packed: a one-character rename re-packs the whole member, and the writer
-prices the re-pack before writing and refuses one that would not fit its slot.
+An art trial is not a round trip: the exported PNG is edited first -- every pixel
+of one colour already in the image repainted with another colour already in the
+image, which re-indexes cleanly against the member's own CLUT -- so the writer
+has to land a real difference inside its declared ranges. A plain round trip
+re-encodes byte-identically on this stack, which proves the encoder is a faithful
+inverse and proves nothing about where a change goes.
+
+Two things the numbers say. `playbooks` and the `LZH1` art containers move far
+more bytes than the stored ones because a change re-packs the whole member and
+the container's directory and every cached copy of it move with it;
 `DB_TEAMS.DAT`'s members are **stored**, which is why a roster edit moves 16
-bytes and nothing else.
+bytes and nothing else. And a **cached** `LZH1` member cannot be rewritten at
+all: the first `LOADDATA.DAT` member this trial reached is copied into `FE.QKL`
+and its re-pack came back 156,223 bytes against the 153,488 it replaced, so the
+lane refused it by name -- *"a cached copy is a fixed slot, so this member cannot
+be rewritten at a different size; nothing was written"* -- and the trial moved to
+the next target. That refusal is the writer working, and it is why the shared
+`mmap_art` encoder not reproducing EA's exact `LZH1` packing is a bound on which
+members are writable rather than a bug.
 
 **None of the four `TEXT` containers is named by any of the nine `QL01` caches**
 [M], which makes a text edit the cheapest write in the module: no cached
 directory and no cached member moves with it.
+
+The full receipt for every row is
+`docs/product/measured/nflstreet1_ps2/real-disc-writer-trials.json`.
 
 ---
 
