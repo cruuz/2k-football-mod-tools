@@ -19,8 +19,11 @@ refusals                                                     0           0
 
 **Three rows.**  ``textures.dictionary_inventory`` walks every dictionary on the
 disc and writes nothing.  ``uniforms.team_textures`` and ``menus.screen_textures``
-are the same walker over two selections -- the ``<two letters>_glogo.rtd`` team
-dictionaries and everything else -- and each exports a decoded raster as PNG.
+are the same walker over two selections -- the 594 dictionaries whose name is
+``<a team prefix>_...`` and the 167 that are not -- and each exports a decoded
+raster as PNG (2,408 of 8,434 rasters and 1,781 of 1,986 respectively) [M].  The team prefixes are read
+off the disc's own ``<two letters>_crowd.ini`` members, so the selection is a
+measurement of the disc in hand and never a table to keep in step with it.
 None of the three writes: putting a raster back means re-swizzling into the GS
 memory image and rewriting the member at its own length, which this module can
 do for 8-bit rasters and has **not** proved, so it is not offered.
@@ -154,13 +157,24 @@ class TextureDictionaryLane:
                            f"tools/validate_{GAME_ID}_{validator}.bat")
 
     def members(self, disc: containers.Disc) -> Tuple[Any, ...]:
+        """Which dictionaries this row owns.
+
+        A team's dictionaries are the ones named ``<a team prefix>_...``, and the
+        prefixes come off the disc's own crowd tables (:meth:`Disc.team_prefixes`)
+        rather than a list this module would have to keep in step: 594 of the 2002
+        disc's 761 dictionaries and 653 of the 2003 disc's 840 carry one [M].
+        """
+
         every = disc.members_named(suffix=containers.TEXTURE_SUFFIX)
         if self.selection == "all":
             return every
-        team = set(disc.members_named(suffix=containers.TEAM_TEXTURE_SUFFIXES[0]))
+        prefixes = disc.team_prefixes()
+        team = tuple(member for member in every
+                     if disc.is_team_member(member.name, prefixes))
         if self.selection == "team":
-            return tuple(member for member in every if member in team)
-        return tuple(member for member in every if member not in team)
+            return team
+        owned = {member.name for member in team}
+        return tuple(member for member in every if member.name not in owned)
 
     def build_catalogue(self, source: Path, *,
                         progress: Optional[Callable[[str], None]] = None) -> Catalogue:

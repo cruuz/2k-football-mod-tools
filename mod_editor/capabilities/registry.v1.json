@@ -10244,10 +10244,10 @@
           "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
           "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
         ],
-        "resource": "730 dictionaries",
+        "resource": "167 dictionaries, 1986 rasters",
         "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "Export any 8-bit or 32-bit raster of the 730 texture dictionaries that are not a team's, with a derived PCSX2 replacement name. Same walker and same measured refusal for 4-bit as the team row.",
+      "summary": "Export any 8-bit or 32-bit raster of the 167 texture dictionaries that carry no team prefix as PNG, with a derived PCSX2 replacement name: 1781 of 1986 rasters decode and 1758 names are derived. Same walker and same measured refusal for the 205 4-bit rasters as the team row.",
       "surface": "menus",
       "title": "NFL Blitz 2002 (PS2) every texture dictionary that is not a team's",
       "validation_command": "bash tools/validate_nflblitz2002_ps2_art.sh"
@@ -10565,7 +10565,7 @@
       ],
       "portme": [
         "Prove a writer. Re-swizzling an 8-bit raster into the GS memory image and rewriting the member at its own length is within this module's readers and is not proved.",
-        "Establish the 4-bit GS upload layout, and 6,231 more rasters are drawn."
+        "Establish the 4-bit GS upload layout, and 6026 more rasters on this page are drawn."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -10594,10 +10594,10 @@
           "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
           "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
         ],
-        "resource": "31 dictionaries",
+        "resource": "594 dictionaries, 8434 rasters",
         "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "Export any 8-bit or 32-bit raster of the 31 per-team texture dictionaries as PNG, with a derived PCSX2 replacement name. The 4-bit rasters are listed with the measured reason nothing is drawn: seven candidate GS layouts were scored on the retail disc and none separated from reading the bytes linearly, where the 8-bit answer beat it by 232%.",
+      "summary": "Export any 8-bit or 32-bit raster of the 594 texture dictionaries whose name carries a team prefix as PNG, with a derived PCSX2 replacement name: 2408 of 8434 rasters decode. The prefixes are read off the disc's own crowd tables, never listed here. The remaining 6026 are 4-bit and are listed with the measured reason nothing is drawn: seven candidate GS layouts were scored on the retail disc and none separated from reading the bytes linearly, where the 8-bit answer beat it by 232%.",
       "surface": "uniforms",
       "title": "NFL Blitz 2002 (PS2) the per-team texture dictionaries",
       "validation_command": "bash tools/validate_nflblitz2002_ps2_art.sh"
@@ -10804,10 +10804,10 @@
           "57cba3a86145a8c315e60b04089ba5d0e7c31d58859096fb0f85c4b2771039a0",
           "7927f812724eb7c30d672903c5c277b5358d25d20b61b1590d376a796270d513"
         ],
-        "resource": "808 dictionaries",
+        "resource": "230 dictionaries, 3241 rasters",
         "retail_file": "User-owned NFL Blitz 2003 (USA) PlayStation 2 ISO, SLUS-20474 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "Export any 8-bit or 32-bit raster of the 808 texture dictionaries that are not a team's, with a derived PCSX2 replacement name. Same walker and same measured refusal for 4-bit as the team row.",
+      "summary": "Export any 8-bit or 32-bit raster of the 230 texture dictionaries that carry no team prefix as PNG, with a derived PCSX2 replacement name: 3007 of 3241 rasters decode and 2980 names are derived. Same walker and same measured refusal for the 234 4-bit rasters as the team row.",
       "surface": "menus",
       "title": "NFL Blitz 2003 (PS2) every texture dictionary that is not a team's",
       "validation_command": "bash tools/validate_nflblitz2003_ps2_art.sh"
@@ -11125,7 +11125,7 @@
       ],
       "portme": [
         "Prove a writer. Re-swizzling an 8-bit raster into the GS memory image and rewriting the member at its own length is within this module's readers and is not proved.",
-        "Establish the 4-bit GS upload layout, and 5,436 more rasters are drawn."
+        "Establish the 4-bit GS upload layout, and 5202 more rasters on this page are drawn."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -11154,10 +11154,10 @@
           "57cba3a86145a8c315e60b04089ba5d0e7c31d58859096fb0f85c4b2771039a0",
           "7927f812724eb7c30d672903c5c277b5358d25d20b61b1590d376a796270d513"
         ],
-        "resource": "32 dictionaries",
+        "resource": "610 dictionaries, 8587 rasters",
         "retail_file": "User-owned NFL Blitz 2003 (USA) PlayStation 2 ISO, SLUS-20474 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "Export any 8-bit or 32-bit raster of the 32 per-team texture dictionaries as PNG, with a derived PCSX2 replacement name. The 4-bit rasters are listed with the measured reason nothing is drawn: seven candidate GS layouts were scored on the retail disc and none separated from reading the bytes linearly, where the 8-bit answer beat it by 232%.",
+      "summary": "Export any 8-bit or 32-bit raster of the 610 texture dictionaries whose name carries a team prefix as PNG, with a derived PCSX2 replacement name: 3385 of 8587 rasters decode. The prefixes are read off the disc's own crowd tables, never listed here. The remaining 5202 are 4-bit and are listed with the measured reason nothing is drawn: seven candidate GS layouts were scored on the retail disc and none separated from reading the bytes linearly, where the 8-bit answer beat it by 232%.",
       "surface": "uniforms",
       "title": "NFL Blitz 2003 (PS2) the per-team texture dictionaries",
       "validation_command": "bash tools/validate_nflblitz2003_ps2_art.sh"

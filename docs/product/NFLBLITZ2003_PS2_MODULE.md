@@ -86,8 +86,7 @@ block arithmetic earns, and it is the same on both discs.
 ## 3. The fourteen pages
 
 Identical to the 2002 module's table, with this disc's counts: 32 crowd tables
-rather than 31, 32 team dictionaries rather than 31, 808 other dictionaries
-rather than 730, 42 roster blocks and 756 records rather than 41 and 738, 88
+rather than 31, 610 team-prefixed dictionaries rather than 594 and 230 others rather than 167, 42 roster blocks and 756 records rather than 41 and 738, 88
 camera paths, 209 `WIFF` containers, 1,436 clumps, and a 41st text member,
 `credits.txt`, which joins the trivia row because it is CRLF ASCII like the
 rest. See `docs/product/NFLBLITZ2002_PS2_MODULE.md` §3 for what each row writes

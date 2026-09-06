@@ -258,6 +258,25 @@ class Disc:
                 out.append(member)
         return tuple(sorted(out, key=lambda member: member.name))
 
+    def team_prefixes(self) -> Tuple[str, ...]:
+        """The disc's own team codes, read off its crowd tables rather than listed here.
+
+        Every NFL team on the disc owns one ``<two letters>_crowd.ini`` -- 31 on the
+        2002 disc and 32 on the 2003 disc, the extra being ``ht`` for the Houston
+        Texans [M] -- so the set of prefixes is a measurement of the disc in hand and
+        never a table this module would have to keep in step with it.
+        """
+
+        return tuple(sorted({member.name[:2].lower()
+                             for member in self.members_named(suffix=CROWD_SUFFIX)
+                             if len(member.name) > len(CROWD_SUFFIX)}))
+
+    def is_team_member(self, name: str, prefixes: Sequence[str]) -> bool:
+        """Whether ``name`` is ``<a team prefix>_...``."""
+
+        lowered = name.lower()
+        return len(lowered) > 3 and lowered[2] == "_" and lowered[:2] in prefixes
+
     def texture_dictionary(self, name: str) -> rw_txd.Dictionary:
         try:
             return rw_txd.read_dictionary(self.member_bytes(name), name)

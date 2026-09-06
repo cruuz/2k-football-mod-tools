@@ -46,11 +46,30 @@
     "0x0401ffff": 761
   },
   "note": "Counts and sizes only. No pixel, palette entry or texture name is here.",
+  "per_lane": {
+    "menus.screen_textures": {
+      "dictionaries": 167,
+      "identities_derived": 1758,
+      "rasters": 1986,
+      "rasters_decoded_to_rgba": 1781,
+      "rasters_listed_and_not_drawn": 205,
+      "refusals": 0
+    },
+    "uniforms.team_textures": {
+      "dictionaries": 594,
+      "identities_derived": 2408,
+      "rasters": 8434,
+      "rasters_decoded_to_rgba": 2408,
+      "rasters_listed_and_not_drawn": 6026,
+      "refusals": 0
+    }
+  },
   "produced_by": "python3 -m mod_editor.games.nflblitz2002_ps2.texture_lane --lane inventory",
   "rasters": 10420,
   "rasters_decoded_to_rgba": 4189,
   "rasters_listed_and_not_drawn": 6231,
   "rasters_whose_tex0_agrees_with_the_header": 10420,
   "refusals": 0,
-  "schema": "nflblitz_ps2_texture_dictionaries_measured/v1"
+  "schema": "nflblitz_ps2_texture_dictionaries_measured/v1",
+  "team_selection": "A dictionary belongs to a team when its name is <a team prefix>_..., and the prefixes are read off the disc's own <two letters>_crowd.ini members rather than listed in this module."
 }

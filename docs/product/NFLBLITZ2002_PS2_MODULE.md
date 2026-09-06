@@ -66,13 +66,13 @@ native rasters). Both joined the release allowlist and the runtime closure.
 
 | page | lane (row) | classification | what it writes, or why not |
 |---|---|---|---|
-| Uniforms & Equipment | `uniforms.team_textures` | `extract-only` | exports any 8-bit or 32-bit raster of the 31 team dictionaries as PNG, with a derived PCSX2 name; 4-bit listed, §4 |
+| Uniforms & Equipment | `uniforms.team_textures` | `extract-only` | exports any 8-bit or 32-bit raster of the 594 team-prefixed dictionaries as PNG, with a derived PCSX2 name: 2,408 of 8,434 rasters decode; the other 6,026 are 4-bit and listed, §4 |
 | Names, Numbers & Faces | `rosters.player_names` | `offline-writer-proved` | either 32-byte name field of any of the 738 records of `roster.rst` |
 | Text & Team Identity | `identity.crowd_tables` | `offline-writer-proved` | any line of the 31 `*_crowd.ini` tables, inside its own span |
 | Field Art & Create-Team Art | — | page note | the disc's field is `field.tab`, edited on Gameplay; every other art member is a texture dictionary |
 | Stadiums | — | page note | stadium geometry is in the 1,272 `.dff` clumps; reading a clump is a different reader (§5) |
 | Presentation | `presentation.camera_paths` | `read-only-mapped` | lists 85 camera paths, 190 `WIFF` containers and 1,272 clumps; a camera record's fields are not measured |
-| Menus & UI | `menus.screen_textures` | `extract-only` | exports any 8-bit or 32-bit raster of the other 730 dictionaries |
+| Menus & UI | `menus.screen_textures` | `extract-only` | exports any 8-bit or 32-bit raster of the other 167 dictionaries: 1,781 of 1,986 rasters decode |
 | The Crib | — | page note | not an NFL Blitz concept |
 | Audio | — | page note | all of it is one 137,538,180-byte `mslasset.ms2`, a Midway sound bank another module owns |
 | Gameplay | `gameplay.field_table` | `offline-writer-proved` | any line of `field.tab`, inside its own span |
@@ -122,7 +122,10 @@ roster and requires every record to still carry its block's ordinal at byte +68.
 ### 3.3 The art (two exports, one inventory, one walker)
 
 One walker parses every dictionary of a selection and lists every raster with
-its size, depth, raster format, GS pixel mode and section sizes. An export lane
+its size, depth, raster format, GS pixel mode and section sizes. A dictionary
+belongs to a team when its name is `<a team prefix>_...`, and the prefixes are
+read off the disc's own `*_crowd.ini` members rather than listed in the module:
+594 of the 761 dictionaries carry one [M]. An export lane
 adds `decode_png` and `replacement_identity`; `encode` refuses by name. The
 inventory lane is the same walker over every dictionary on the disc, read-only.
 
