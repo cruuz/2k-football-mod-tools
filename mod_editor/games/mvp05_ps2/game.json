@@ -39,7 +39,11 @@
     "tools/validate_mvp05_ps2_*",
     "mod_editor/games/_formats/ea_big.py",
     "mod_editor/games/_formats/ea_shps.py",
-    "mod_editor/games/_formats/ea_csv_db.py"
+    "mod_editor/games/_formats/ea_csv_db.py",
+    "mod_editor/games/_formats/pcsx2_texture_name.py",
+    "mod_editor/games/_formats/xxhash3_64.py",
+    "tools/mvp05_ps2_texture_identities.py",
+    "docs/product/measured/mvp05_ps2/*"
   ],
   "page_notes": {
     "uniforms": "UNIFORMS.BIG (555 banks) and COOPUNIS.BIG (124) are every kit on the disc, and every one of their images is SHPS code 0x0e: a 4x4-block codec at 6 bytes per block whose two 8-bit palette endpoints per block are decoded and whose per-pixel 2-bit selectors are not, after every reading tried left noise inside the blocks. The page lists every kit with its size and palette and draws none; the measurement is in docs/product/EA_SHPS_FORMAT.md section 5. No kit has a PCSX2 replacement name of either kind: a name is derived from decoded pixels and none of these decode, and the three-frame dump that exists confirms none of them either -- both batters in it are wearing kits and not one dumped texture is a decoded code-0x0e image (docs/product/EA_SHPS_FORMAT.md section 5).",

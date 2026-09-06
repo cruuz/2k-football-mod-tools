@@ -683,3 +683,8 @@ tools/ps2_texture_identities.py
 # ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
 docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json
 docs/product/measured/ncaa09_ps2/pcsx2-texture-identity-derivation.json
+# mvp05_ps2: shipped by the game module (mod_editor/games/mvp05_ps2/allowlist.fragment.txt).
+tools/mvp05_ps2_texture_identities.py
+docs/product/measured/mvp05_ps2/pcsx2-texture-identities.json
+docs/product/measured/mvp05_ps2/pcsx2-texture-identity-derivation.json
+docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json
