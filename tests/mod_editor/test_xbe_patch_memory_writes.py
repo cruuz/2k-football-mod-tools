@@ -124,6 +124,10 @@ class PatchWriteTests(unittest.TestCase):
         settings = momentum.read_settings(cls.patched)
         if not settings.get("momentum_collisions") or settings.get("momentum_collision_level") != 100:
             raise AssertionError("collision momentum missing from the composed XBE")
+        from mod_editor.core import nfl2k5_defensive_try as defensive_try
+        if defensive_try.status(cls.patched) != "applied":
+            raise AssertionError("defensive conversion stat extension missing from the composed XBE")
+        defensive_try._stats_sites(cls.patched)  # both named RX/RO reservations
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")

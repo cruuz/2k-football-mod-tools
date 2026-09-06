@@ -84,6 +84,10 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_calendar_engine as calendar
         if calendar.status(cls.patched) != "applied":
             raise AssertionError("calendar owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_defensive_try as defensive_try
+        if defensive_try.status(cls.patched) != "applied":
+            raise AssertionError("defensive conversion stat extension missing from the composed XBE")
+        defensive_try._stats_sites(cls.patched)  # both named RX/RO reservations
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")

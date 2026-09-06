@@ -146,6 +146,138 @@ After wiring, rerun the new standalone suite, both XBE gates, protected
 Build/GUI checks and runtime closure. No runtime witness or release-status
 upgrade is implied by these CPU tests. This session did not build a full
 disc or regenerate the protected manifest.
+# r62 defensive try box score handoff, 2026-09-06
+
+This supersedes the defensive-try missing-stat handoff below. The existing
+`defensive_try` flag now installs the rules and native stat extension together.
+**EXPERIMENTAL / UNWITNESSED.** See `ASTRA_DEFENSIVE_TRY_BOXSCORE_REPORT.md`.
+No protected file was edited. The box row, player-card callbacks, season
+writer/readers and roster relocation have bounded native proofs; console
+rendering and played franchise saves remain Noah witnesses.
+
+## Dispatcher, complete union and four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, retain the existing
+`from . import nfl2k5_defensive_try as defensive_try_patch` and exact-bool
+`defensive_try: bool = False` keyword in `_apply_all`, `write_xbe_copy`,
+`write_image_copy`, their forwarding and selection guards. No new flag or
+separate stat adapter is needed. `_selected_space_requests` already appends
+`defensive_try_patch.REQUESTS` when selected; that now means **all four** rows.
+Both `_xbe_space_adapter` and `_defensive_try_adapter` must use that union.
+Retain the existing final tuple, with its complete companion argument list:
+
+```python
+(defensive_try,
+ _defensive_try_adapter(kickoff_relocated, scorebug_runtime, momentum,
+                       defensive_try, zone_drop_cap, all_stadiums,
+                       coverage_slider, scramble_tuning, music_shuffle,
+                       practice_squad_screen, abilities, qb_spy,
+                       calendar_engine),
+ "defensive_try_patch", "experimental defensive try")
+```
+
+It currently precedes the allocator tuple because its adapter itself allocates
+the complete union before installing the try writer. Preserve this behavior.
+The later allocator entry is an idempotent replay. Retain
+`"defensive_try": defensive_try_patch.status(payload)` in `_grown_status_fields`.
+All four dictionaries already expand this helper: XBE inspection around line
+639, disc inspection around 764, XBE write result around 1489, and disc write
+result around 1765. Keep `defensive_try_patch` receipts in both write paths,
+including `stats_install`, `table_install`, limits and `runtime_witnessed=False`.
+Do not keep an old two-request snapshot in any caller.
+
+The scorebug image installer's `extra_requests`, the final grown pass and all
+other first allocators must include the extension before growth. The existing
+manifest builder's request expression and three owner/application lists use
+this single module; its Recorder emits both named owners. The two XBE gates
+use the updated complete union in `tests/nfl2k5_allocator_stack.py` and assert
+the extension is installed. There is no separate runtime Python stats module.
+
+## BuildPlan, presets and presentation
+
+Protected `mod_editor/core/mod_build.py`: retain `defensive_try: bool = False`,
+bool validation, recipe/Studio forwarding, `wants_xbe_patch`, normalization to
+grown space, early-pass `defensive_try=False`, final-pass condition and final
+`_apply_all(... defensive_try=plan.defensive_try ...)`. **Basic false, Advanced
+false, Experimental false.** Explicit witness selection enables the complete
+feature. The selected request union now automatically chooses allocator v3.
+
+Protected `mod_editor/gui/gameplay_patches_panel_qt.py`: retain the PATCHES row
+using `tt.defensive_try_patch.UI_TEXT` and retain `defensive_try` in NEEDS_IMAGE.
+Its replacement text is supplied by the backend and contains both required
+words:
+
+> Retail: Defensive possession ends a try. Patch: Allows defensive returns,
+> two points for a return score and one point for a try safety. Adds defensive
+> conversion totals to the box score and player season stats. EXPERIMENTAL /
+> UNWITNESSED. Suspended saves do not retain these game counts.
+
+The old "box-score row not implemented" limitation can now be removed from
+this surface. Retain the concrete suspended-save limitation. Do not replace
+it with an implication that reload merely needs testing. The archive of old
+per-game franchise box scores is also not extended. Protected
+`mod_editor/gui/build_panel_qt.py` keeps its existing `_option` caption,
+`Defensive two-point returns (experimental)` (42 characters), this UI_TEXT,
+`badge="EXPERIMENTAL / UNWITNESSED"`, `needs_image=True`, and existing checkbox
+load/reset/BuildPlan forwarding. Other GUI panels need no new control.
+
+## Allowlist, closure, capability and production manifest
+
+Protected `packaging/release-allowlist.txt` already contains these lines; retain
+them without duplicates:
+
+```text
+mod_editor/core/nfl2k5_defensive_try.py
+docs/mod_editor/nfl2k5_defensive_try_capability.json
+```
+
+The extension is in the same module. Its runtime imports are `hashlib`,
+`struct`, `nfl2k5_xbe_space`, `nfl2k5_bump_strength`, `nfl2k5_draft_ai` and now
+`nfl2k5_team_column` (native card definitions and recognized hook state).
+The optional module CLI uses stdlib `argparse`, `json`, `pathlib`. All imported
+core modules are already in the release closure. Protected
+`packaging/check_2k5_mod_studio_runtime.py` retains its defensive-try import and
+API checks; also require `STATS_OWNER`, all four REQUESTS, `stats_code_for`,
+`stat_tables`, and the team-column dependency. Keep runtime evidence false.
+Re-run the closure/import and protected integrated validation checks after
+integration; update any release source fingerprints through their usual flow.
+No updater, release tag, CI, or new library dependency change is required.
+
+Replace the existing canonical capability row
+`nfl2k5.gameplay_tuning_sliders.defensive_try` with the supplied
+`docs/mod_editor/nfl2k5_defensive_try_capability.json`. It is the same surface,
+with module commands that pass the registry's file-check mode:
+
+```text
+python3 -m mod_editor.core.nfl2k5_defensive_try apply <source.xbe> <new-copy.xbe>
+python3 -m tests.mod_editor.test_nfl2k5_defensive_try_stats
+```
+
+Keep classification `offline-writer-proved` and runtime `not-tested`.
+The replacement row's structure, file references and module commands pass.
+The complete registry file gate currently stops at the unrelated missing
+`docs/research/apf_audio.md`; restore that baseline evidence during integration.
+Update the integrated validation runner to include the new stats and manifest
+suites beside the existing rules suite. It is supplied as a row for Claude's
+canonical merge, not silently applied to the shared registry.
+
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` with
+`tools/nfl2k5_cave_oracle.py manifest` after integration and sufficient free
+disk space. This session's scratch manifest is explicitly a **bounded XBE
+projection**, with new hooks and all four children observed through Recorder,
+unchanged owners inherited only after checking every source fingerprint, and
+new full-union allocations replacing old child addresses. It never claims a
+new disc build. The default production source-drift guard remains intact.
+The report gives exact gate commands using `NFL2K5_CAVE_MANIFEST` for this
+projection. Re-run them against the freshly generated production manifest.
+
+Existing beta-61 applied discs lack the new owner and must be rebuilt from
+base. The original 1,440-byte RX and 1,040-byte RW allocations stay fixed.
+The new `nfl2k5_defensive_try_stats` child reserves 2,048 RX and 4,096 RO with
+16-byte alignment and zero additional RW. The brief authorizes scale-out but
+has no separate planned stat row; this is the documented budget decision,
+preserving every other committed budget. The complete plan leaves 4,096 RW
+bytes available to new owners. Do not shrink others to accommodate it.
 
 # r62 calendar engine handoff, 2026-09-05
 

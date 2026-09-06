@@ -17,9 +17,10 @@ from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
 from mod_editor.core import nfl2k5_calendar_engine as calendar
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
-                   + defensive_try.REQUESTS + zone_drop.REQUESTS)
+                   + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS)
 REQUESTS = (LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
-            + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS)
+            + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
+            + defensive_try.REQUESTS[2:])
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -53,6 +54,7 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     payload, _ = scene.apply_xbe(payload)
     payload, policy_receipt = policy.apply(payload, music_unlock=True, music_userlist=True)
     payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
+    # One apply/status transaction owns both try rules and the stat extension.
     owners = ((defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),

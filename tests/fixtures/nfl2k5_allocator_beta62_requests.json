@@ -196,5 +196,17 @@
   "data",
   4096,
   16
+ ],
+ [
+  "nfl2k5_defensive_try_stats",
+  "code",
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_defensive_try_stats",
+  "read_only",
+  4096,
+  16
  ]
 ]
