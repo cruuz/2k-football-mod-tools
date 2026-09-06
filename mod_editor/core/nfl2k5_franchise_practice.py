@@ -442,7 +442,15 @@ def _pins_are_retail(payload: bytes) -> bool:
             off = rdata.offset_of(payload, va)
         except (rdata.RdataSiteError, ValueError, struct.error):
             return False
-        if payload[off: off + len(expected)] != expected:
+        actual = payload[off: off + len(expected)]
+        if va == SCREEN_PUSH_VA and actual != expected:
+            # MyCareer owns only the ten-byte PUSH prologue. Validate its full
+            # sealed installation and retain the complete native tail pin.
+            from . import nfl2k5_my_career as career
+            if career.status(payload) != "applied":
+                return False
+            actual = expected[:10] + actual[10:]
+        if actual != expected:
             return False
     return True
 

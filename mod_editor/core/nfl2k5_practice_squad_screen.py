@@ -160,6 +160,8 @@ def _owned_state(payload):
             # Playlist tier 4b adapts the shared event-dispatch prologue. Accept
             # only its complete sealed installation, then pin every remaining
             # native instruction. Never normalize an arbitrary jump or cave.
+            # Playlist in turn validates MyCareer's separate PUSH detour at
+            # 0x6E390; MyCareer touches none of our guards or cloned templates.
             from . import nfl2k5_music_playlist as playlist
             _require(playlist.status(payload) == "applied", "foreign music screen-dispatch hook")
             content = playlist.HOOKS["screen_event"][1] + content[5:]

@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib
 import json
+import os
 import sys
 import unittest
 
@@ -30,7 +31,8 @@ class ManifestTests(unittest.TestCase):
         retail = XBE.read_bytes()
         if hashlib.sha256(retail).hexdigest() != RETAIL_SHA256:
             self.skipTest("retail XBE differs from USA evidence pin")
-        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(retail))
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)),
+                                            XbeImage(retail))
         allocated = c.space.apply(retail, stack.REQUESTS, scaleout=True)[0]
         allocated = stack.music.apply(allocated, song_records=stack.SONGS)[0]
         projected = stack.manifest_for_allocated_union(manifest, retail, allocated)

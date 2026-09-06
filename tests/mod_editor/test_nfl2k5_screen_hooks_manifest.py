@@ -9,6 +9,7 @@ import ast
 import copy
 import hashlib
 import json
+import os
 import sys
 import unittest
 
@@ -28,8 +29,15 @@ OBSERVED_SOURCES = (
 )
 
 
+def parent_document():
+    # Accept independently observed current XBE evidence just like both gates.
+    # Source fingerprint validation remains mandatory in bounded_projection.
+    path = Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST))
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def bounded_projection(retail, document=None):
-    parent = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8")) if document is None else document
+    parent = parent_document() if document is None else document
     historical = ReservationManifest(parent, XbeImage(retail), source_root=ROOT)
     fingerprints = builder.source_fingerprints()
     # Never refresh historical evidence to bless an unobserved changed writer.
@@ -92,7 +100,7 @@ class ManifestTests(unittest.TestCase):
         self.assertEqual([s["owner"] for s in self.document["bounded_projection"]["observed_steps"]], [space.OWNER, patch.OWNER])
 
     def test_unobserved_source_drift_cannot_be_recertified(self):
-        parent = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
+        parent = parent_document()
         parent["source_sha256"]["mod_editor/core/nfl2k5_team_column.py"] = "0"*64
         with self.assertRaisesRegex(OracleError, "stale reservation source|unobserved source"):
             bounded_projection(self.retail, parent)

@@ -72,7 +72,8 @@ SYMBOLS = {
     "retail_preview_tail": 0x27FF96, "string_equal": 0x30CF0,
     "game_music_switch": 0x1C4210, "loading_start": 0xF5410,
 }
-# Hashes of complete inspected routines, normalized only at the hooks above.
+# Hashes of complete inspected routines, normalized at verified own hooks and
+# the sealed MyCareer screen-push hook below.
 # Populated from the pinned USA retail executable; no developer input at runtime.
 GUARDS = (
     (451808, 324, '9b184e02b254bf133c599afa7fd720b5fd4dc68cb41f5c6a6ebca2dbab55eb2f'),
@@ -387,9 +388,18 @@ def _inspect(payload):
     for name, va, retail, replacement in edits(labels):
         _require(image.read(va, len(retail)) == (replacement if installed else retail),
                  f"Foreign or mixed playlist hook: {name}")
+    # MyCareer owns the PUSH prologue, while our event hook owns the separate
+    # dispatcher. Keep the full native PUSH guard: only a complete, sealed
+    # MyCareer installation may supply its exact relocated detour. Its status
+    # does not delegate back to playlist or Practice Squad, so this is acyclic.
+    from . import nfl2k5_my_career as my_career
+    neighbors = [(va, bytes.fromhex(pin)) for name, va, pin, _, _ in my_career.HOOKS
+                 if name == "screen_dispatch"]
+    if any(image.read(va, len(retail)) != retail for va, retail in neighbors):
+        _require(my_career.status(payload) == "applied", "Foreign MyCareer screen-push hook")
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
-        for _, (hook, retail) in HOOKS.items():
+        for hook, retail in tuple(HOOKS.values()) + tuple(neighbors):
             if va <= hook and hook + len(retail) <= va + size:
                 content[hook - va:hook - va + len(retail)] = retail
         _require(hashlib.sha256(content).hexdigest() == digest, f"Foreign playlist dependency {va:#x}")

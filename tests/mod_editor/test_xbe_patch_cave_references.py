@@ -574,7 +574,8 @@ class ReverseOwnerOrderTests(CaveReferenceTests):
 
     def test_both_installation_orders_are_byte_identical(self):
         from tests.nfl2k5_allocator_stack import compose
-        self.assertEqual(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0], self.patched)
+        from mod_editor.core import nfl2k5_modern_naming as modern_naming
+        self.assertEqual(modern_naming.apply(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
 
 
 class ScaleoutOwnerTests(CaveReferenceTests):
