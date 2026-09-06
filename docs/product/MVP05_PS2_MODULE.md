@@ -157,7 +157,23 @@ afterwards. Every edit is a value this project chose — a fixture name, a
 fixture string, diagonal bands of the image's own palette, a synthetic tone —
 so any pixel or byte difference would be the writer's.
 
-TRIALS_TABLE
+| lane | what was written | ranges / declared bytes | verdict | catalogue / build / verify s |
+|---|---|---:|---|---:|
+| `rosters.database_tables` | `DATABASE.BIG!attrib.dat` line 1: 751,834 plain → 176,947 stored in a 185,628-byte slot (re-packed; was 185,628) | 2 / 1,010,686 | PASS | 2 / 224 / 57 |
+| `identity.team_tables` | `DATABASE.BIG!team.dat` line 1: 38,323 plain → 6,107 stored in a 6,440-byte slot (re-packed; was 6,439) | 2 / 1,010,686 | PASS | 0 / 203 / 78 |
+| `playbooks.tuning_tables` | `PROGRESS.BIG!stadium.csv` line 1: 1,675 plain → 1,675 stored in a 1,676-byte slot (stored; was 1,675) | 2 / 17,856 | PASS | 4 / 71 / 10 |
+| `identity.ui_strings` | `FEENG.LOC` string 0, span 26 bytes at +50,868 | 2 / 415,516 | PASS | 1 / 90 / 6 |
+| `stadiums.park_textures` | `A001DAY.BIG!cram.ssh` image 1, 64x32, 2,048/2,048 exact; bank 832,160 → 548,715 stored in 551,016 (was 551,013) | 2 / 2,144,689 | PASS | 43 / 66 / 5 |
+| `presentation.overlay_textures` | `IGONLY.BIG!ingameov.ssh` image 15, 64x32, 1,436/2,048 exact; bank 123,712 → 48,340 stored in 49,896 (was 49,893) | 2 / 114,474 | PASS | 0 / 99 / 36 |
+| `menus.widget_textures` | `FEONLY.BIG!sdoodads.ssh` image 0, 128x32, 3,840/4,096 exact; bank 358,304 → 156,927 stored in 158,444 (was 158,444) | 2 / 523,012 | PASS | 6 / 90 / 5 |
+| `audio.streams` | `BATDIT.AST` stream 0: 68,908 encoded, padded to 324,156; 64,000 samples at 32,000 Hz × 2 | 2 / 26,717,064 | PASS | 1 / 68 / 9 |
+
+The declared bytes are the ISO writer's own accounting: the whole extent of
+the rewritten file plus its 8-byte directory-record length, which is a
+superset of the two ranges the archive writer changed (a size word and one
+entry's span; the receipt names both). Build time is the 4.3 GB copy; the
+edit itself is seconds. The audio step's 26.7 MB is `BATDIT.AST`, the first
+bare stream file in path order.
 
 Every destination is 4,300,275,712 bytes, the length of the source. The
 independent verifier ran three checks on each: `tools/ps2_iso9660_verify.py`
@@ -265,7 +281,7 @@ from the derived names — no dump of this game exists, so no name is confirmed.
 
 ```bash
 export QT_QPA_PLATFORM=offscreen
-python -m mod_editor.games conformance --game mvp05_ps2          # N of N
+python -m mod_editor.games conformance --game mvp05_ps2          # 453 of 453
 python tools/validate_game_lane.py --game mvp05_ps2 --all         # five PASS tokens
 PYTHONPATH=. python tests/mod_editor/test_mvp05_ps2_lanes.py
 PYTHONPATH=. python tests/mod_editor/test_ea_big.py tests/mod_editor/test_ea_shps.py
