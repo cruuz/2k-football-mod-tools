@@ -8,13 +8,25 @@ refuses pins that do not match the entry for the current `CONTRACT_VERSION`.
 `python -m mod_editor.games pins --release` drops the marker when the version ships.
 
 ## 1.0 (unreleased)
-pins: 4b247d823a8edb02d724a303fa32dac5c91cf31f03bf9f8ca27e597929cb0de9
+pins: 39330e2a1c8cc5caafa993a6fa2f54272b4fba7f479d803fdab1dbdd4727c061
 
 First version. A game is a directory `mod_editor/games/<game>/` with a `game.json`
 manifest, a registry fragment, an allowlist fragment, its own pins and a module-level
 `GAME`; the core discovers it, merges its fragments, proves it with the conformance
 harness on its own synthetic source, and lists it in the "Select other games…" chooser.
 Frozen surface: see `docs/product/GAME_MODULE_CONTRACT.md`.
+
+Also in 1.0, for the same reason — shared **lane** bases (RC90, NCAA 09 work package):
+
+- **`SHARED_LANES_PACKAGE`** (`mod_editor.games._lanes`) joins `SHARED_FORMATS_PACKAGE` in
+  what a game may import at module level. `_formats` is a reader that knows a container and
+  nothing about a game; `_lanes` is the layer above — the lane *shapes* two games on the same
+  stack would otherwise write twice (a TDB-record lane, a TERF-member art lane, a text-bank
+  lane, the ISO writer/verifier shims, the preload-cache coherence rule). A base takes
+  everything game-specific as data, including the game's own disc-access module, so it is not
+  a game and discovery skips it for the same reason `_formats` is skipped. Nothing about a
+  hosted module's behaviour changed: the boundary check now admits one more prefix, and a
+  module that imported nothing from it is byte-identical.
 
 Also in 1.0, not 1.1: the executable-patch lane kind (`CodePatch`, `MipsWord`, `MipsPatch`,
 `CodePatchLane`) and `Receipt.artifacts` for lanes whose output is a file rather than an

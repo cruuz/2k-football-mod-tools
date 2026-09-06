@@ -86,6 +86,16 @@ ALLOWED_CORE_IMPORTS = (
 #: Concepts outer-pack stack the NFL 2K5 PS2 lanes read, which an ESPN NBA 2K5
 #: module would measure against before reusing), ``ea_tdb``, ``ps2_memcard``.
 SHARED_FORMATS_PACKAGE = "mod_editor.games._formats"
+#: Shared **lane** bases live here.  ``_formats`` is a reader that knows a
+#: container and nothing about a game; this is the layer above -- the lane
+#: *shapes* two games on the same stack would otherwise write twice: how a
+#: record edit becomes a plan, a build and an independent verdict; how a
+#: texture member is exported and put back; how a string slot is rewritten in
+#: place.  A base takes everything game-specific as data, including the game's
+#: own disc-access module, so it is not a game either and discovery skips it
+#: for the same reason.  A game composes a lane base exactly as it composes a
+#: format package, and still never imports a sibling game.
+SHARED_LANES_PACKAGE = "mod_editor.games._lanes"
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _GAME_ID_RE = re.compile(r"^[a-z0-9][a-z0-9_]{2,63}$")
@@ -1237,6 +1247,7 @@ __all__ = [
     "ArtLane",
     "AudioLane",
     "SHARED_FORMATS_PACKAGE",
+    "SHARED_LANES_PACKAGE",
     "CONTRACT_MAJOR",
     "CONTRACT_MINOR",
     "CONTRACT_SCHEMA",

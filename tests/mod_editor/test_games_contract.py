@@ -83,6 +83,7 @@ EXPECTED_SURFACE = {
     "Receipt": ("schema", "lane_id", "source", "destination", "declared_ranges", "document", "artifacts"),
     "Refusal": ("exception",),
     "SHARED_FORMATS_PACKAGE": ("constant",),
+    "SHARED_LANES_PACKAGE": ("constant",),
     "SURFACE_PAGES": ("constant",),
     "SourceIdentifier": ("accepted_suffixes", "identify"),
     "SourceIdentity": (

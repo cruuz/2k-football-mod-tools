@@ -34,6 +34,7 @@ from .contract import (
     ALLOWED_CORE_IMPORTS,
     PAGE_ORDER,
     SHARED_FORMATS_PACKAGE,
+    SHARED_LANES_PACKAGE,
     SURFACE_PAGES,
     Catalogue,
     ContractError,
@@ -288,8 +289,9 @@ def _import_allowed(name: str, level: int, package_name: str) -> bool:
         return True  # stdlib, tools/, third party: not the core's business
     if name in ALLOWED_CORE_IMPORTS:
         return True
-    if name == SHARED_FORMATS_PACKAGE or name.startswith(SHARED_FORMATS_PACKAGE + "."):
-        return True
+    for shared in (SHARED_FORMATS_PACKAGE, SHARED_LANES_PACKAGE):
+        if name == shared or name.startswith(shared + "."):
+            return True
     if name == package_name or name.startswith(package_name + "."):
         return True
     return False
