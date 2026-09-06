@@ -192,6 +192,8 @@ offset from the archive's own local headers and compares — and reports:
 
 | identity | 2002 | 2003 |
 |---|---:|---|
+| `offset - 30 - len(name)` is a `PK\x03\x04` header | 2,426 | 2,695 |
+| … whose stored name equals the index's name | 2,426 | 2,695 |
 | index names equal the archive's, as sets | 2,426 | 2,695 |
 | index sizes equal the central directory's | 2,426 | 2,695 |
 | index offsets equal the archive's own local-data offsets | 2,426 | 2,695 |
@@ -199,6 +201,10 @@ offset from the archive's own local headers and compares — and reports:
 | recomputed CRC-32 over the stored bytes agrees | **600 of 600** | no column |
 | index order is by name | true | true |
 | archive order is by data offset | true | true |
+
+The first two rows are the arithmetic above, measured on each disc and recorded
+in the reader's own identity table; the rest are what `cross_check` returns on
+each disc today [M].
 
 **The CRC recomputation is bounded on purpose.** `cross_check(..., crc_sample=n)`
 recomputes the CRC-32 of the `n` **smallest** members under `CRC_CHECK_LIMIT`

@@ -4,9 +4,11 @@ NFL Blitz 2002 (`SLUS-20051`) and NFL Blitz 2003 (`SLUS-20474`) keep **every**
 texture in a RenderWare binary stream whose one top-level section is a
 **texture dictionary**, section id `0x16`: 761 such members on the 2002 disc and
 840 on the 2003 disc, holding 10,420 and 11,828 PlayStation 2 native rasters
-[M]. Nothing else on either disc is art; there is no `MMAP`, no `SHPS`, no
-`TSET`. Midway wrote no variant — the ids are RenderWare's own and the library
-version words are RenderWare 3.x [M].
+[M]. Nothing else on either disc is art: the member census of both archives
+lists no `MMAP`, no `SHPS` and no `TSET`, and the only other RenderWare on
+either disc is 2,708 `.dff` clump streams, which are geometry (§2.1) [M].
+Midway wrote no variant — the ids are RenderWare's own and the library version
+words are RenderWare 3.x [M].
 
 The implementation is `mod_editor/games/_formats/rw_txd.py` (pure Python,
 Qt-free, standard library only), with `tests/mod_editor/test_formats_rw_txd.py`
@@ -223,11 +225,15 @@ GIF tag   u64 low, u64 regs        16 bytes
 ```
 
 Both discs write the same two-packet shape [M]: a `PACKED` A+D packet setting
-`BITBLTBUF` (`0x50`), `TRXPOS` (`0x51`), `TRXREG` (`0x52`) and `TRXDIR`
-(`0x53`), then an **`IMAGE`-mode tag whose `NLOOP * 16` bytes are the upload
-itself**. `_gif_image_payload` walks the chain, skips `PACKED` packets by
-`NLOOP * NREG * 16`, and returns the first `IMAGE` payload's `(offset, length)`;
-anything else in the chain ends the walk and the raster is refused by sentence.
+`TRXPOS` (`0x51`), `TRXREG` (`0x52`) and `TRXDIR` (`0x53`), then an
+**`IMAGE`-mode tag whose `NLOOP * 16` bytes are the upload itself**.
+`_gif_image_payload` walks the chain, skips a `PACKED` packet by
+`NLOOP * NREG * 16` bytes (`NREG` of 0 meaning 16, as the GIF tag defines it
+[S]), and returns the first `IMAGE` payload's `(offset, length)`; a `REGLIST`
+packet, or a chain with no `IMAGE` tag in it, ends the walk and the raster is
+refused by sentence. That never happens on either Blitz disc — 22,248 of 22,248
+rasters yield an `IMAGE` payload [M] — and happens twice on NFL Blitz Pro
+(§9.3).
 
 **The upload is the GS's memory image, not the texture.** The `TRXREG`
 rectangle is *not* the texture's size: an 8-bit texture is transferred as
