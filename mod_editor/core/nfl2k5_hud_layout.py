@@ -1,6 +1,7 @@
 """Move the NFL 2K5 kick meter up and/or switch off the pre-snap lineup insert (executable patch, xemu-only).
 
-Both elements collide with the bottom-centre ESPN bar (root at screen (320, 424)).  Retail
+Both elements collide with the bottom-centre ESPN bar (v8 scene root (320,408),
+projected y=424 after the native 16-pixel HUD inset). Retail
 ``default.xbe`` facts (VAs, image base 0x10000):
 
 Kick meter.  The kick HUD init ``FUN_000ba940`` loads the ``KickArrow`` (outer 346 chunk 75),

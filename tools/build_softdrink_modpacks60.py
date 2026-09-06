@@ -4,6 +4,12 @@
 Private inputs and outputs are never committed. Run from this checkout:
   python3 tools/build_softdrink_modpacks60.py --retail '/path/to/retail.xiso.iso'
 The report contains whole-image and individual XDVDFS-file SHA-256 evidence.
+
+This is a canonical release reproduction, so its baseline includes the exact
+XDVDFS layout, padding, image length and whole-disc digest. Pack-hash acceptance
+by the source cache proves logical resources, not that release baseline. Use
+Studio Build or nfl2k5_scorebug_reference.py for a supported padded source;
+see ASTRA_SCOREBUG_FIX_REPORT.md. This historical tool is not needed for probes.
 """
 from __future__ import annotations
 
@@ -68,7 +74,9 @@ def main():
     before = base.stat()
     base_sha = modpack.hash_file(base)
     if before.st_size != modpack.RETAIL_XISO_SIZE or base_sha != modpack.RETAIL_XISO_SHA256:
-        raise SystemExit("Proof requires the pinned retail XISO")
+        raise SystemExit("Release proof requires the canonical whole-disc size and SHA-256. "
+                         "Pack-verified padded rips remain usable in Studio Build or "
+                         "tools/nfl2k5_scorebug_reference.py; see ASTRA_SCOREBUG_FIX_REPORT.md.")
     base_files = files(base)
     report_path = work / "proof.json"
     proof = json.loads(report_path.read_text()) if report_path.exists() else {

@@ -23,20 +23,27 @@ import nfl_vc_lz_fill as fill
 import nfl2k5_scorebug_layout as layout
 from . import nfl2k5_bump_strength as bs
 
-VERSION = "espn-reference-v7"
+VERSION = "espn-reference-v8"
 PACK_SIZE = 193710080
-ROOT = (320.0, 424.0)
+# FUN_00066670 insets a 720x480 framebuffer by (40,16). The reference
+# describes the active 640-column image. Its intended root y=424 therefore
+# requires 408 in the scene, before the native +16 viewport translation.
+HUD_INSET = (40.0, 16.0)
+HUD_SIZE = (640.0, 448.0)
+ROOT = (320.0, 424.0 - HUD_INSET[1])
 FRAME = (-240.0, -5.0, 240.0, 43.0)
-PANELS = {"away": (-236.0, -3.0, -66.0, 41.0), "home": (66.0, -3.0, 236.0, 41.0)}
-PILL = (-59.0, 23.0, 53.0, 41.0)  # native slide adds 0..6 units
-STRIP = (-59.0, -3.0, 59.0, 18.0)
+PANELS = {"away": (-236.0, -3.0, -86.0, 41.0), "home": (86.0, -3.0, 236.0, 41.0)}
+PILL = (-75.0, 23.0, 69.0, 41.0)  # native slide adds 0..6 units
+# Native text defaults to 2x glyph scale (46920). Leave space for its clock
+# strings instead of designing against the old preview's 9-pixel font.
+STRIP = (-79.0, -3.0, 79.0, 18.0)
 WATERMARK = (188.0, 367.0, 284.0, 391.0)
 REGIONS = {"frame": (0, 0, 64, 16), "panel": (0, 16, 64, 32),
            "down": (0, 32, 64, 40), "strip": (0, 40, 64, 48), "mark": (0, 48, 64, 64)}
 ANCHORS = {"away_city": (-218, 14, -64), "home_city": (127, 14, -64),
-           "away_score": (-91, 10, -59), "home_score": (91, 10, -59),
-           "quarter": (-42, 2, -4), "clock_a": (26, 2, -4), "clock_b": (26, 2, -4),
-           "drop_down": (-3, 27, -4), "drop_clock": (44, 2, -4)}
+           "away_score": (-101, 10, -59), "home_score": (101, 10, -59),
+           "quarter": (-57, 2, -4), "clock_a": (31, 2, -4), "clock_b": (31, 2, -4),
+           "drop_down": (-3, 27, -4), "drop_clock": (61, 2, -4)}
 
 
 class ScorebugError(ValueError):
@@ -79,11 +86,14 @@ def atlas(inputs: dict[str, bytes]):
     from PIL import Image, ImageDraw
     im = Image.new("RGBA", (64, 64))
     d = ImageDraw.Draw(im)
-    d.rounded_rectangle((0, 0, 63, 15), 2, fill=(19, 20, 25, 255), outline=(122, 124, 132, 255))
-    d.line((3, 1, 60, 1), fill=(190, 190, 196, 255))
+    d.rounded_rectangle((0, 0, 63, 15), 2, fill=(12, 13, 17, 255), outline=(74, 76, 84, 255))
+    d.line((3, 1, 60, 1), fill=(152, 154, 162, 255))
     for x in range(64):
         value = round(75 * (1 - x / 63) + 17 * x / 63)
         d.line((x, 16, x, 31), fill=(value, value, value + 5, 255))
+    # A distinct dark score cell on the inner side of each mirrored panel.
+    d.rectangle((43, 16, 63, 31), fill=(10, 11, 15, 255))
+    d.line((43, 17, 43, 29), fill=(91, 93, 100, 255))
     # Decorative until timeout state is bound. Never described as a live counter.
     for x in (48, 53, 58):
         d.line((x, 30, x + 2, 30), fill=(230, 230, 232, 255))
@@ -143,7 +153,15 @@ def uv(region, x, y):
     return ((a + .5 + x * (c - a - 1)) / 32 - 1, (b + .5 + y * (d - b - 1)) / 32 - 1)
 
 
-def mesh(retail: bytes):
+def mesh(retail: bytes, *, baseline_v7: bool = False):
+    # The old design is retained only to reproduce hash-pinned before images.
+    panels, pill, strip, anchors = PANELS, PILL, STRIP, ANCHORS
+    if baseline_v7:
+        panels = {"away": (-236,-3,-66,41), "home": (66,-3,236,41)}
+        pill, strip = (-59,23,53,41), (-59,-3,59,18)
+        anchors = {**ANCHORS, "away_score": (-91,10,-59), "home_score": (91,10,-59),
+                   "quarter": (-42,2,-4), "clock_a": (26,2,-4), "clock_b": (26,2,-4),
+                   "drop_clock": (44,2,-4)}
     m = layout.Mesh(retail)
     original = [p[:] for p in m.pos]
     layout.legacy_espn_layout(m)
@@ -156,7 +174,7 @@ def mesh(retail: bytes):
             m.uv_edit[v] = uv("frame", (nx + 240) / 480, (43 - ny) / 48)
         elif ti in (23, 26):
             side = "away" if ti == 23 else "home"
-            x0, y0, x1, y1 = PANELS[side]
+            x0, y0, x1, y1 = panels[side]
             left, right = -32.733, 2.367
             bottom, top = (-4.449, 16.14) if ti == 23 else (-26.052, -6.126)
             u = min(1, max(0, (x - left) / (right - left)))
@@ -164,7 +182,7 @@ def mesh(retail: bytes):
             m.pos[v] = [x0 + u * (x1 - x0), y1 - vv * (y1 - y0), z]
             m.uv_edit[v] = uv("panel", u if side == "away" else 1 - u, vv)
         elif ti in (11, 15):
-            box = PILL if ti == 11 else STRIP
+            box = pill if ti == 11 else strip
             group = [p for i, p in enumerate(original) if m.tindex[i] == ti]
             xs, ys = [p[0] for p in group], [p[1] for p in group]
             u, vv = (x - min(xs)) / (max(xs) - min(xs)), (max(ys) - y) / (max(ys) - min(ys))
@@ -181,7 +199,7 @@ def mesh(retail: bytes):
                 m.pos[v] = [a, d, -63.5]
         elif ti in (13, 17, 19, 21):
             m.pos[v] = [-300, -150, z]
-    for name, xyz in ANCHORS.items():
+    for name, xyz in anchors.items():
         i = layout.T[name]
         leaf = layout.T.get(name + "_l")
         delta = [b-a for a,b in zip(m.world[i], m.world[leaf])] if leaf is not None else None
@@ -200,7 +218,7 @@ def serialize(m) -> bytes:
     struct.pack_into("<f", buf, layout.SHAPE + 0x10, scale)
     struct.pack_into("<3f", buf, layout.SHAPE + 0x20, *offset)
     for v, p in enumerate(m.pos):
-        q = [round((c-o) / scale * 32767) for c,o in zip(p, offset)]
+        q = [round((c-o) / scale * (32768 if c < o else 32767)) for c,o in zip(p, offset)]
         if any(abs(n) > 32767 for n in q):
             raise ScorebugError("reference vertex exceeds quantization range")
         struct.pack_into("<3h", buf, layout.S0 + v*6, *q)
@@ -485,8 +503,8 @@ def preview_data(source: Path):
         if size != PACK_SIZE:
             raise ScorebugError("pack 0 size changed")
         spans={n:layout._pread(fd,r["span_size"],base+r["pack_offset"]) for n,r in RESOURCES.items()}
-    # Preview requires the retail scene to construct transformed positions.
-    m=mesh(pinned(spans["score_bug"],RESOURCES["score_bug"]))
+    replacement_scene,_=apply(spans["score_bug"],"score_bug")
+    m=layout.Mesh(decode(replacement_scene)[1], static=True)
     replacement,_=apply(spans["score_buga"],"score_buga",inputs=spans)
     chunk,decoded,_=decode(replacement)
     from PIL import Image
@@ -495,7 +513,7 @@ def preview_data(source: Path):
     return m,image
 
 
-def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()):
+def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=(), probe="full"):
     """Preflight both files before any write; use the generalized extent reader."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, nfl2k5_dynamic_kickoff_relocated as kickoff
@@ -504,27 +522,33 @@ def runtime_image_plan(fd: int, *, with_kickoff: bool = False, extra_requests=()
     pack_entry, xbe_entry = entries.get("vc_53450030/0"), entries.get("default.xbe")
     if pack_entry is None or xbe_entry is None:
         raise ScorebugError("missing scorebug disc files")
-    if pack_entry.size not in (PACK_SIZE, PACK_SIZE + resources.RUNTIME_GROWTH) or xbe_entry.size not in (
+    _, _, growth = resources.probe_sizes(probe)
+    hooks = resources.probe_has_hooks(probe)
+    if pack_entry.size not in (PACK_SIZE, PACK_SIZE + growth) or xbe_entry.size not in (
             space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE, *space.accepted_file_sizes()):
         raise ScorebugError("unknown scorebug disc extents")
-    pack = io.pread(fd, pack_entry.size, pack_entry.byte_offset)
+    pack = resources.PackView.from_fd(fd, pack_entry.byte_offset, pack_entry.size)
     xbe = io.pread(fd, xbe_entry.size, xbe_entry.byte_offset)
-    states = (resources.runtime_pack_status(pack), runtime.status(xbe))
+    xs = runtime.status(xbe) if hooks else xbe_status(xbe)
+    if not hooks and runtime.status(xbe) != "retail":
+        xs = "foreign"
+    states = (resources.runtime_pack_status(pack, probe=probe), xs)
     if "foreign" in states or len(set(states)) != 1:
         raise ScorebugError("runtime scorebug files are mixed or foreign; rebuild from base")
-    requests = runtime.REQUESTS + (kickoff.REQUESTS if with_kickoff else ()) + tuple(extra_requests)
-    prepared, _ = space.apply(xbe, requests)
+    requests = (runtime.REQUESTS if hooks else ()) + (kickoff.REQUESTS if with_kickoff else ()) + tuple(extra_requests)
+    prepared = space.apply(xbe, requests)[0] if requests else xbe
     if with_kickoff:
         prepared, _ = kickoff.apply(prepared)
-    new_xbe, xr = runtime.apply(prepared)
-    new_pack, pr = resources.compile_runtime_collection(pack)
+    new_xbe, xr = runtime.apply(prepared) if hooks else apply_xbe(prepared)
+    new_pack, pr = resources.compile_runtime_collection(pack, probe=probe)
     return ((pack_entry, pack, new_pack), (xbe_entry, xbe, new_xbe)), dict(
         version=resources.RUNTIME_VERSION, status=states[0], experimental=True,
-        runtime_witnessed=False, runtime_team_logos=True, timeout_dimming=True,
-        score_flash=True, down_refresh=True, under_5_color=True, resources=pr, xbe=xr)
+        probe=probe, hooks_installed=hooks, runtime_witnessed=False,
+        runtime_team_logos=hooks and probe in ("full", "pair"), timeout_dimming=hooks and probe != "hooks",
+        score_flash=hooks, down_refresh=hooks, under_5_color=hooks, resources=pr, xbe=xr)
 
 
-def runtime_image_status(path):
+def runtime_image_status(path, *, probe="full"):
     """Recognize the complete owned HUD and XBE, resolving current archive offsets."""
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_scorebug_resources as resources
     from . import nfl2k5_xbe_space as space, platform_compat as io
@@ -536,11 +560,15 @@ def runtime_image_status(path):
             if x.size not in (space.special.RETAIL_FILE_SIZE, space.special.FILE_SIZE,
                               *space.accepted_file_sizes()):
                 return "foreign"
-            xbe_state = runtime.status(io.pread(fd, x.size, x.byte_offset))
+            xbe = io.pread(fd, x.size, x.byte_offset)
+            hooks = resources.probe_has_hooks(probe)
+            xbe_state = runtime.status(xbe) if hooks else xbe_status(xbe)
+            if not hooks and runtime.status(xbe) != "retail":
+                return "foreign"
             resource_state = "foreign"
-            if p.size in (PACK_SIZE, PACK_SIZE + resources.RUNTIME_GROWTH):
-                resource_state = resources.runtime_pack_status(io.pread(fd, p.size, p.byte_offset))
-        if resource_state == "foreign" and xbe_state == "applied":
+            if p.size in (PACK_SIZE, PACK_SIZE + resources.probe_sizes(probe)[2]):
+                resource_state = resources.runtime_pack_status(resources.PackView.from_fd(fd, p.byte_offset, p.size), probe=probe)
+        if resource_state == "foreign" and xbe_state == "applied" and probe == "full":
             # A later music transaction may move this entire owner. Resolve its
             # current outer range through the validated archive, then retain the
             # exact full HUD and appended-texture pins. No installation gate changes.
@@ -558,7 +586,7 @@ def runtime_image_status(path):
         return "foreign"
 
 
-def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=()):
+def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=(), probe="full"):
     """Transactional resource growth and allocator XBE transport on an output copy.
 
     Pack 0 is appended intact, then its existing XDVDFS node is switched. The
@@ -567,18 +595,22 @@ def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=()):
     is outside this guarantee; apply_copy publishes only a closed verified copy.
     """
     from . import nfl2k5_depth_chart_storage as storage, platform_compat as io
+    from . import nfl2k5_scorebug_resources as resources
     with Path(path).open("r+b") as stream:
         fd = stream.fileno()
-        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff, extra_requests=extra_requests)
+        jobs, receipt = runtime_image_plan(fd, with_kickoff=with_kickoff, extra_requests=extra_requests, probe=probe)
         original_size = os.fstat(fd).st_size
         nodes = []
         for entry, before, _after in jobs:
             node, sector, length = storage.image_file_node(
                 lambda count, offset: io.pread(fd, count, offset), entry.base_offset, original_size, entry.path)
-            if (sector, length) != (entry.sector, entry.size) or io.pread(fd, len(before), entry.byte_offset) != before:
+            current = resources.PackView.from_fd(fd, entry.byte_offset, entry.size)
+            expected = (receipt["resources"]["sha256_before"] if entry is jobs[0][0]
+                        and "sha256_before" in receipt["resources"] else resources.pack_digest(before))
+            if (sector, length) != (entry.sector, entry.size) or resources.pack_digest(current) != expected:
                 raise ScorebugError("disc changed after runtime scorebug preflight")
             nodes.append((node, io.pread(fd, 8, node)))
-        if all(before == after for _, before, after in jobs):
+        if jobs[0][1] is jobs[0][2] and jobs[1][1] == jobs[1][2]:
             return {**receipt, "status": "already_applied", "image_growth": 0}
         def write(data, at):
             if io.pwrite(fd, data, at) != len(data):
@@ -586,15 +618,30 @@ def runtime_apply_in_place(path, *, with_kickoff=False, extra_requests=()):
         xbe_attempted = False
         try:
             entry, before, after = jobs[0]
-            offset = (original_size + 2047) & -2048
-            if offset > original_size:
-                write(bytes(offset-original_size), original_size)
-            write(after, offset)
-            if io.pread(fd, len(after), offset) != after:
-                raise ScorebugError("runtime pack readback failed")
-            write(struct.pack("<II", (offset-entry.base_offset)//2048, len(after)), nodes[0][0])
+            offset = entry.byte_offset
+            if before is not after:
+                offset = (original_size + 2047) & -2048
+                if offset > original_size:
+                    write(bytes(offset-original_size), original_size)
+                cursor = offset
+                for block in resources.pack_blocks(after):
+                    write(block, cursor)
+                    cursor += len(block)
+                if resources.pack_digest(resources.PackView.from_fd(fd, offset, len(after))) != receipt["resources"]["sha256_after"]:
+                    raise ScorebugError("runtime pack readback failed")
+                write(struct.pack("<II", (offset-entry.base_offset)//2048, len(after)), nodes[0][0])
             xbe_attempted = True
-            xr = storage.write_image_xbe(fd, jobs[1][2])
+            xbe_entry, old_xbe, new_xbe = jobs[1]
+            if len(old_xbe) == len(new_xbe):
+                # Resource/transport controls keep a retail-sized executable.
+                # The generalized growth writer intentionally rejects that size.
+                write(new_xbe, xbe_entry.byte_offset)
+                if io.pread(fd, len(new_xbe), xbe_entry.byte_offset) != new_xbe:
+                    raise ScorebugError("runtime XBE readback failed")
+                xr = dict(status="applied", transport="existing extent", size=len(new_xbe),
+                          byte_offset=xbe_entry.byte_offset, sha256=digest(new_xbe))
+            else:
+                xr = storage.write_image_xbe(fd, new_xbe)
             entries, _ = layout.xc.parse_xdvdfs(fd, os.fstat(fd).st_size)
             if entries["vc_53450030/0"].byte_offset != offset or entries["vc_53450030/0"].size != len(after):
                 raise ScorebugError("runtime pack directory readback failed")

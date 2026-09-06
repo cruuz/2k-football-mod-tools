@@ -278,6 +278,197 @@ The new `nfl2k5_defensive_try_stats` child reserves 2,048 RX and 4,096 RO with
 has no separate planned stat row; this is the documented budget decision,
 preserving every other committed budget. The complete plan leaves 4,096 RW
 bytes available to new owners. Do not shrink others to accommodate it.
+# r62 scorebug fix and freeze diagnostics, 2026-09-06
+
+This section supersedes earlier scorebug shipping and preset advice below.
+See `ASTRA_SCOREBUG_FIX_REPORT.md`. The static compiler is
+`espn-reference-v8`; the runtime resource compiler is
+`scorebug-runtime-v2-probes`. **EXPERIMENTAL / UNWITNESSED.** The earlier
+runtime build has a community-witnessed entry-to-game freeze. Native bounded
+tests do not reproduce that freeze; do not describe this revision as a proved
+runtime hang fix. The severe static clipping also still needs a fresh witness.
+
+The diagnostic surface is implemented in the existing CLI:
+
+```text
+python3 -m tools.nfl2k5_scorebug_reference apply SOURCE TARGET --runtime-probe PROFILE
+python3 -m tools.nfl2k5_scorebug_reference status TARGET --runtime-probe PROFILE
+```
+
+Profiles are `transport`, `hooks`, `resources`, `neutral`, `pair`, `full`.
+`--runtime` remains shorthand for `full`. Use a clean source for every
+profile. `pair` means TB/NE plus neutral, in both orientations. This chooses
+the brief's CLI option: **do not add a `scorebug_runtime_probe` BuildPlan
+field or a probe dropdown.** The five non-full controls are not cosmetic
+features. The extra transport control separates the binding scene and pack
+relocation from hooks and additional texture loading.
+
+## Dispatcher, allocation and four status dictionaries (protected)
+
+Keep the existing imports `scorebug_reference` and `scorebug_runtime_patch`.
+The `_apply_all` tuple remains:
+
+```python
+(scorebug_runtime, scorebug_runtime_patch,
+ "scorebug_runtime_patch", "experimental scorebug effects"),
+```
+
+Keep `scorebug_runtime: bool = False` in `_apply_all`, `write_xbe_copy`,
+`write_image_copy`, validation and all forwarding calls. No probe kwarg is
+added to these dispatchers. Their default calls still select `probe="full"`.
+Keep the existing `runtime` argument to `_selected_space_requests` and
+`_xbe_space_adapter`, and the contribution
+`scorebug_runtime_patch.REQUESTS if runtime else ()`. The owner is unchanged:
+1,408 bytes of RX code, 128 bytes of RW state, no new RO allocation. Both
+gate unions and all three manifest owner lists already enumerate it; do not
+add a second owner or another budget row.
+
+Keep resource installation deferred until the complete selected union is
+known. Forward the entire union as `extra_requests` to
+`runtime_apply_in_place`; realize other selected owners in the existing final
+XBE pass. Its returned lazy `PackView` objects are internal compiler values;
+receipts remain ordinary JSON dictionaries. Do not materialize a pack in a
+dispatcher. The descriptor must remain open while a view is consumed.
+
+Retain these exact entries in all four public status dictionaries:
+
+| Dictionary | Runtime entry | Placement entry |
+| --- | --- | --- |
+| `read_xbe` | `"scorebug_runtime": scorebug_runtime_patch.status(payload)` | `"scorebug_xbe": scorebug_reference.xbe_status(payload)` |
+| `read_image` | `"scorebug_runtime": scorebug_runtime_patch.status(payload)` | `"scorebug_xbe": scorebug_reference.xbe_status(payload)` |
+| `write_xbe_copy` | `"scorebug_runtime": scorebug_runtime_patch.status(result)` | `"scorebug_xbe": scorebug_reference.xbe_status(result)` |
+| `write_image_copy` | `"scorebug_runtime": scorebug_runtime_patch.status(after)` | `"scorebug_xbe": scorebug_reference.xbe_status(after)` |
+
+For the two image dictionaries, also retain
+`"scorebug_runtime_resources": scorebug_reference.runtime_image_status(path)`
+on read and `runtime_image_status(target)` after write. These are full-profile
+checks. CLI controls must use the matching `--runtime-probe` status command;
+the normal GUI may report them as foreign. An XBE-only status is never proof
+that its resource appendix was installed. Old v7/v1 or mixed bytes refuse;
+rebuild from a clean source, without an implicit migration.
+
+## BuildPlan, presets and GUI wording (protected)
+
+Keep existing fields `scorebug: bool = False` and
+`scorebug_runtime: bool = False`. Keep runtime normalization to
+`scorebug=True, xbe_space=True`, image-only eligibility, Hi-res scorebug
+conflict rejection, early-pass deferral and final receipt/status forwarding.
+Set explicit preset values:
+
+| Preset | `scorebug` | `scorebug_runtime` |
+| --- | --- | --- |
+| Basic | false | false |
+| Advanced | false | false |
+| Experimental | true | **false** |
+
+The required behavior change is clearing Experimental's current automatic
+runtime selection. Manual runtime opt-in remains available for diagnostics.
+Preset selection must clear a previously selected runtime checkbox. Keep
+Studio forwarding both existing booleans; there is no additional option.
+
+Replace the two Gameplay Patches descriptions and corresponding help maps:
+
+```python
+("scorebug", "Experimental ESPN scorebar",
+ "Retail: Uses the original scoreboard. Patch: Repositions the ESPN bar "
+ "using the game's safe area, with dark score cells and a clear clock strip. "
+ "Team names stay live; the timeout marks are decorative. Moves the kick "
+ "meter up and hides the lineup strip. EXPERIMENTAL / UNWITNESSED v8; "
+ "the previous version was clipped in a tester's game."),
+("scorebug_runtime", "Scorebug effects (diagnostic only)",
+ "Retail: Uses the original team panels and timeout display. Patch: Adds "
+ "team logos, remaining timeout marks, score flashes, down refresh and a "
+ "red play clock below five seconds. The previous version froze when a "
+ "tester entered a game. EXPERIMENTAL / UNWITNESSED v2; use the report's "
+ "CLI probes on a separate disc copy."),
+```
+
+Keep both keys in `NEEDS_IMAGE`. Build tab `_option` captions are exactly
+`"Experimental ESPN scorebar"` (26 characters) and
+`"Scorebug effects (diagnostic only)"` (34 characters), both below 60.
+Keep `badge=NOT_TESTED`; use the same descriptions for help/details. Do not
+translate offline test success into a gameplay-tested badge. The CLI profiles
+are intentionally absent from the product's everyday flow.
+
+## Allowlist, runtime closure and capability registry (protected)
+
+Existing allowlist lines that must remain, with the updated source files:
+
+```text
+mod_editor/core/nfl2k5_hud_layout.py
+mod_editor/core/nfl2k5_scorebug_ingame.py
+mod_editor/core/nfl2k5_scorebug_resources.py
+mod_editor/core/nfl2k5_scorebug_runtime.py
+tools/nfl2k5_scorebug_layout.py
+tools/nfl2k5_scorebug_position_patch.py
+tools/nfl2k5_scorebug_reference.py
+```
+
+Add these explicit documentation/capability lines:
+
+```text
+ASTRA_SCOREBUG_FIX_REPORT.md
+docs/mod_editor/nfl2k5_scorebug_runtime_capability.json
+docs/scorebug_ingame/probe_capability.json
+```
+
+Do not add the new native projection tool or its test fixtures to the product
+allowlist: `tools/nfl2k5_scorebug_projection.py` deliberately imports the
+development-only Unicorn fixture. Its PNGs, witness attachments and detailed
+receipts belong to the repository handoff, not the application runtime.
+
+Keep the protected runtime-closure import probe's existing
+`mod_editor.core.nfl2k5_scorebug_ingame`,
+`mod_editor.core.nfl2k5_scorebug_resources`,
+`mod_editor.core.nfl2k5_scorebug_runtime`,
+`mod_editor.core.nfl2k5_hud_layout`, `tools.nfl2k5_scorebug_layout`,
+`tools.nfl2k5_scorebug_position_patch` and `tools.nfl2k5_scorebug_reference`
+coverage (add any missing direct import entries). New compiler dependencies
+are standard-library `functools.lru_cache` and the existing `platform_compat`.
+Pillow remains the existing image-build dependency. Unicorn and Capstone are
+proof dependencies, never product imports.
+
+In the protected runtime probe, assert both new version strings, the six
+profile names, counts `(0, 0, 264, 8, 24, 264)`, and the documented default
+`full` behavior. Retain the existing static-source-art and runtime-owner
+checks. No resource compilation should read a whole pack into memory.
+
+Replace registry row `nfl2k5.scorebug_presentation.runtime` using
+`docs/mod_editor/nfl2k5_scorebug_runtime_capability.json`, and merge new row
+`nfl2k5.scorebug_presentation.runtime_probes` from
+`docs/scorebug_ingame/probe_capability.json`. The new row is CLI-only and
+hidden from the GUI. Both objects have exact schema keys and module-based
+`python3 -m ...` backend/validation commands. Validate the merged, ID-sorted
+registry with file checks. The handoff rows pass schema and their own file
+checks; whole-registry file checking currently stops at the pre-existing
+missing `docs/research/apf_audio.md`. Registry integration may require the usual
+capability-count/closure fingerprint refresh; preserve unrelated rows.
+
+## Protected cave manifest regeneration
+
+Both XBE gates pass with this revision's existing owner in both composition
+orders. The production manifest intentionally remains untouched and detects
+six changed source fingerprints. A private conservative candidate retained
+the released reservations, reobserved affected XBE writers in legacy and v3
+layouts (530 spans), and passed the 28-test manifest suite. That candidate is
+not a canonical disc rebuild and must not be copied into production.
+
+Claude must perform the normal regeneration after protected integration:
+
+```text
+python3 tools/nfl2k5_cave_oracle.py manifest '/path/to/retail/default.xbe' --xiso '/path/to/retail.xiso.iso' --work-dir '/path/to/disposable-work' --json data/nfl2k5_cave_reservations.json
+python3 tests/mod_editor/test_nfl2k5_cave_oracle.py
+python3 tests/mod_editor/test_xbe_patch_memory_writes.py
+python3 tests/mod_editor/test_xbe_patch_cave_references.py
+```
+
+Use a disposable temporary directory, remove all acceptance discs on every
+exit path, and preserve the main-drive 100 GB free-space floor. No real disc
+was built in this task because its required temporary copy would cross that
+floor. Do not run the historical beta-60 proof builder for this matrix: it
+requires a canonical whole-disc release baseline and retains large outputs.
+
+---
 
 # r62 calendar engine handoff, 2026-09-05
 

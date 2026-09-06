@@ -9,7 +9,12 @@ This patch repoints those four `fadd dword ptr [imm32]` operands (0x0FCFFC, 0x0F
 0x0FD0EB for x; 0x0FD15E for y) at two private floats stored in the XBE boot-logo bitmap
 region (0x10A40 x, 0x10A44 y; the catch-slider cave uses 0x10A10..0x10A3F).  The .text
 thunk tables are live; never use them.
-Geometry (measured): the frame's left edge sits at x-105 and it is ~166 units wide; its top
+These are scene-root coordinates, before the game's HUD projection. On the
+720x480 path FUN_00066670 adds a 40-pixel horizontal and 16-pixel vertical inset.
+The v8 refitted scene uses (320,408), projecting to y=424; install that coherent
+scene/atlas/XBE set through nfl2k5_scorebug_reference.py, not this retail-only tool.
+
+Retail geometry (measured): the frame's left edge sits at x-105 and it is ~166 units wide; its top
 sits at about y-41 and the tall pre-snap state ("Ball on ...") is ~150 units high, on a 640
 wide screen.  Centred bottom = --x 342 --y 340.  Retail = --x 120 --y 65.  xemu-only (RSA
 signature stale).  Copy-only.

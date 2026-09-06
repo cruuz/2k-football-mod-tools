@@ -228,11 +228,14 @@ def sha(b: bytes) -> str:
 
 
 class Mesh:
-    def __init__(self, data: bytes, *, runtime: bool = False):
+    def __init__(self, data: bytes, *, runtime: bool = False, static: bool = False):
         expected = SCNE_SHA
         if runtime:
             from mod_editor.core.nfl2k5_scorebug_resources import RUNTIME_SCENE_SHA256
             expected = RUNTIME_SCENE_SHA256
+        elif static:
+            from mod_editor.core.nfl2k5_scorebug_resources import STATIC_SCENE_SHA256
+            expected = STATIC_SCENE_SHA256
         if len(data) != SCNE_SIZE or sha(data) != expected:
             raise SystemExit(f"not the pinned decoded score_bug SCNE ({len(data)} bytes, {sha(data)[:12]})")
         self.buf = bytearray(data)
@@ -243,7 +246,7 @@ class Mesh:
         self.tindex = []
         for v in range(VCOUNT):
             q = struct.unpack_from("<3h", data, S0 + v * S0_STRIDE)
-            self.pos.append([c / 32767.0 * self.scale + o for c, o in zip(q, self.offset)])
+            self.pos.append([c / (32768.0 if (runtime or static) and c < 0 else 32767.0) * self.scale + o for c, o in zip(q, self.offset)])
             u, vv = struct.unpack_from("<2h", data, S1 + v * S1_STRIDE + 4)
             self.uv.append((u / 32767.0, vv / 32767.0))
             self.tindex.append(struct.unpack_from("<h", data, S1 + v * S1_STRIDE + 8)[0] // 3)
@@ -858,7 +861,8 @@ def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool =
 
 def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: bool = False,
                       team_panels: dict | None = None, samples: dict | None = None,
-                      slide: float = 1.0, runtime: bool = False, text_colors: dict | None = None) -> None:
+                      slide: float = 1.0, runtime: bool = False, text_colors: dict | None = None,
+                      projection: dict | None = None) -> None:
     """Render actual SCNE strips, patched P8 texels and measured text anchors.
 
     Fonts approximate the game. Optional staged team panels are labelled as a target
@@ -875,10 +879,12 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
     if runtime:
         order["hscore_buga"] = 1
     def point(v):
+        if projection:
+            return tuple(c*scale for c in projection['positions'][v])
         x,y,_=m.pos[v]
         if m.tindex[v] == 11:
             x+=6*slide
-        return ((r.ROOT[0]+x)*scale,(r.ROOT[1]-y)*scale)
+        return ((r.ROOT[0]+x)*scale,(r.ROOT[1]+r.HUD_INSET[1]-y)*scale)
     for k,indices in sorted(strips(bytes(m.buf)),key=lambda item:order.get(SUBMESHES[item[0]][2],99)):
         mat=SUBMESHES[k][2]
         if mat not in order:
@@ -895,7 +901,7 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
         for side,panel in team_panels.items():
             a,b,c,d=r.PANELS[side]
             im.alpha_composite(panel.resize((round((c-a)*scale),round((d-b)*scale)),Image.Resampling.LANCZOS),
-                               (round((320+a)*scale),round((424-d)*scale)))
+                               (round((r.ROOT[0]+a)*scale),round((r.ROOT[1]+r.HUD_INSET[1]-d)*scale)))
     values={"away_city":"OAK","home_city":"HOU","away_score":"0","home_score":"0",
             "quarter":"1ST","clock_a":"13:10","drop_down":"1st & 10","drop_clock":":12"}
     if widest:
@@ -907,26 +913,37 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
     for name,(x,y,z) in r.ANCHORS.items():
         if name not in values or (team_panels and not runtime and name.endswith("city")):
             continue
-        if runtime:
-            x, y, z = m.world[T[name]]
+        x, y, z = m.world[T[name]]
         text=values[name]
-        size=18 if name.endswith("score") else 9
+        size=18 if name.endswith("score") else 16
         font=getfont(FONT_BOLD,size*scale)
-        width=dr.textlength(text,font=font)
-        px=(320+x+(6*slide if name=="drop_down" else 0))*scale
+        text_scale_x=projection.get('text_scale_x',1) if projection else 1
+        width=dr.textlength(text,font=font)*text_scale_x
+        px=(r.ROOT[0]+x+(6*slide if name=="drop_down" else 0))*scale
+        py=(r.ROOT[1]+r.HUD_INSET[1]-y)*scale
+        if projection:
+            px,py=(c*scale for c in projection['anchors'][name])
         if name.endswith("city"):
             pass
         elif name.startswith("clock"):
             px-=width
         else:
             px-=width/2
-        py=(424-y)*scale
         color=(255,255,255,255) if name in ("away_city","home_city","away_score","home_score","drop_down") else (17,17,24,255)
         color = (text_colors or {}).get(name, color)
-        dr.text((px,py),text,font=font,fill=color,anchor="ls")
+        if text_scale_x == 1:
+            dr.text((px,py),text,font=font,fill=color,anchor="ls")
+        else:
+            left,top,right,bottom=font.getbbox(text,anchor='ls')
+            glyph=Image.new('RGBA',(right-left,bottom-top))
+            ImageDraw.Draw(glyph).text((-left,-top),text,font=font,fill=color,anchor='ls')
+            glyph=glyph.resize((max(1,round(glyph.width*text_scale_x)),glyph.height),Image.Resampling.LANCZOS)
+            im.alpha_composite(glyph,(round(px+left*text_scale_x),round(py+top)))
     label="TARGET WITH STAGED LOGOS / RUNTIME HOOK REQUIRED" if team_panels else "INSTALLABLE DATA / NEUTRAL TEAM FALLBACK"
     if runtime:
         label = "COMPILED RUNTIME STATE / STATIC PREVIEW"
+    if projection:
+        label = "NATIVE PROJECTION / APPROXIMATE GLYPHS"
     dr.text((14*scale,12*scale),label,fill="white",font=getfont(FONT_BOLD,10*scale))
     dr.text((14*scale,453*scale),"EXPERIMENTAL / UNWITNESSED / FONT APPROXIMATION",fill="white",font=getfont(FONT_BOLD,8*scale))
     path.parent.mkdir(parents=True,exist_ok=True)

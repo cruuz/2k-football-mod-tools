@@ -1,29 +1,29 @@
 [
   {
     "backend": {
-      "command": "python3 -m tools.nfl2k5_scorebug_reference apply --runtime",
+      "command": "python3 -m tools.nfl2k5_scorebug_reference apply --runtime-probe full",
       "module": "tools/nfl2k5_scorebug_reference.py",
       "operation": "write"
     },
     "classification": "offline-writer-proved",
     "evidence": [
       "ASTRA_SCOREBUG_FIX_REPORT.md",
-      "tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "docs/scorebug_ingame/fix_receipts.json",
       "tests/mod_editor/test_nfl2k5_scorebug_resources.py",
       "tests/mod_editor/test_nfl2k5_scorebug_native.py"
     ],
     "game": "nfl2k5_xbox",
     "gui": {
       "default_enabled": false,
-      "expose": true,
+      "expose": false,
       "mode": "edit",
-      "reason": "EXPERIMENTAL / UNWITNESSED v2. A tester reports a v1 entry-to-game freeze; keep runtime off in all presets pending the diagnostic matrix."
+      "reason": "CLI-only diagnostics; no new BuildPlan field or GUI option."
     },
-    "id": "nfl2k5.scorebug_presentation.runtime",
+    "id": "nfl2k5.scorebug_presentation.runtime_probes",
     "input_constraints": [
-      "User-owned pinned NFL 2K5 USA disc with retail HUD resources, or a completely recognized runtime installation.",
-      "Use a disposable output copy; reserve the selected allocator owner union before installing hooks.",
-      "An XBE alone cannot install the required 264 native panel textures. Rebuild from base when changing the owner set."
+      "User-owned USA XISO with pinned retail HUD resources; padded images are read through logical XDVDFS extents.",
+      "Use a separate output copy and a clean retail source for each profile. v7/v1 and different profiles refuse rather than migrating mixed bytes.",
+      "Pair includes TB, NE and neutral fallback in both orientations; transport and resources install no runtime hooks."
     ],
     "portme": [
       "Apply the r62 scorebug section of WIRING.md, disable automatic runtime selection and regenerate the protected reservation manifest.",
@@ -46,12 +46,12 @@
     "selectors": {
       "fields": [
         {
-          "allowed": "false in every preset; manual true implies scorebug and xbe_space and selects the full diagnostic profile",
-          "name": "scorebug_runtime",
+          "allowed": "transport | hooks | resources | neutral | pair | full",
+          "name": "runtime_probe",
           "required": true
         }
       ],
-      "notes": "Implies scorebug and xbe_space. Relocated kickoff is independent and requires its existing alignment prerequisites."
+      "notes": "CLI --runtime-probe selects the profile. --runtime is shorthand for full. Pair is TB/NE plus neutral. Status requires the matching profile. No additional allocator owner."
     },
     "source_container": {
       "format": "XBE and native TXTR/SCNE resources in XDVDFS pack 0",
@@ -63,9 +63,9 @@
       "resource": "owned RX/RW hook allocations plus HUD outer 346 and its archive index",
       "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
     },
-    "summary": "Native team panels and scorebug events, with reduced-resource CLI probes for a reported entry-to-game freeze.",
+    "summary": "Make independent transport, hooks, resources, neutral, TB/NE pair and full diagnostic disc copies.",
     "surface": "scorebug_presentation",
-    "title": "Scorebug effects (diagnostic only)",
-    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_runtime"
+    "title": "Scorebug freeze probes (experimental, unwitnessed)",
+    "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scorebug_resources"
   }
 ]
