@@ -156,6 +156,7 @@
           1
         ]
       ],
+      "dictionaries_whose_declared_count_equals_the_rasters_found": 0,
       "dictionaries_whose_one_section_accounts_for_the_file": 0,
       "disc": {
         "id": "madden06_ps2",
@@ -179,6 +180,7 @@
           }
         ]
       },
+      "header_word_15_census": {},
       "how_the_members_were_reached": "the ISO9660 directory under /BURNOUT, then every file whose extension is a RenderWare one. Madden NFL 06's own art is EA TERF/MMAP and SHPS and carries no RenderWare at all; the RenderWare on this disc is a bundled Burnout 3 demo.",
       "identities_derived": 0,
       "library_versions": {},
@@ -186,10 +188,14 @@
       "raster_decode_failures": [],
       "raster_depths": {},
       "raster_dimensions_top": {},
+      "raster_format_words": {},
+      "rasters_by_palette_flag": {},
       "rasters_decoded_to_rgba": 0,
       "rasters_listed_and_not_drawn": [],
       "rasters_read": 0,
+      "rasters_whose_gpu_aligned_word_equals_width_times_height": 0,
       "rasters_whose_tex0_agrees_with_the_header": 0,
+      "rasters_with_the_mipmap_flag": 0,
       "refusals_by_member_extension": {
         ".awd": {
           "no RenderWare section could be read from this member.": 59,
