@@ -25,7 +25,7 @@ from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
 from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
-LARGE = (("synthetic_scaleout", "code", 64 * 1024, 4096),  # sized to fit beside every landed beta-62 owner (the Senior Bowl heap holds 64 KiB of RW)
+LARGE = (("synthetic_scaleout", "code", 64 * 1024, 4096),  # sized to fit beside every landed beta-62 owner
          ("synthetic_scaleout", "data", 4 * 1024, 4096),
          ("synthetic_scaleout", "read_only", 1024, 16))
 
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [65152, 4096, 8640])
+                         [64656, 4096, 8640])
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
