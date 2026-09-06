@@ -80,6 +80,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import struct
 import sys
 import tempfile
 from typing import Dict, List, Optional, Sequence
@@ -515,8 +516,12 @@ def patch(*, source_iso, destination_iso, edits: Sequence[dict],
 # ---------------------------------------------------------------------------
 
 def selftest(tmp: Optional[Path] = None) -> int:
-    """Exercise resolution and every refusal against a synthetic catalog."""
+    """Every claim the lane's validator makes, against synthetic bytes only."""
     failures: List[str] = []
+
+    def check(condition: object, message: str) -> None:
+        if not condition:
+            failures.append(message)
 
     def refuses(edits, why: str) -> None:
         try:
@@ -586,11 +591,236 @@ def selftest(tmp: Optional[Path] = None) -> int:
     except TextPatchError:
         pass
 
+    # --- end to end, on a whole synthetic disc ----------------------------
+    # These claims used to live in tests/mod_editor/test_nfl2k5_ps2_text.py,
+    # which the release stage does not carry, so the lane's validator could not
+    # make them in a shipped tree.  Nothing here reads game data: the image is
+    # built by the catalog's own builder.
+    import shutil
+
+    import nfl2k5_ps2_text_verify as verifier
+    import ps2_iso9660_verify as iso_verify
+
+    def recipe_for(*pairs):
+        return {"edits": [{"bank": catalog.SYNTHETIC_BANK_ID, "index": index,
+                           "new_text": text} for index, text in pairs]}
+
+    owned = tmp is None
+    root = Path(tmp or tempfile.mkdtemp(prefix="ps2-text-patch-selftest-"))
+    source = root / "source.iso"
+    counter = [0]
+
+    def fresh(image: Optional[bytes] = None) -> Path:
+        """A source disc and an unused destination path."""
+        source.write_bytes(image if image is not None
+                           else catalog.build_synthetic_iso())
+        counter[0] += 1
+        return root / ("output-%d.iso" % counter[0])
+
+    def run(destination, recipe):
+        return patch(source_iso=source, destination_iso=destination,
+                     edits=recipe["edits"])
+
+    def confirm(destination, recipe, report):
+        return verifier.verify(source_iso=source, destination_iso=destination,
+                               recipe=recipe, patch_report=report,
+                               iso_write_report=report.get("iso_write_report"))
+
+    def refuses_run(recipe, fragment, image=None):
+        destination = fresh(image)
+        try:
+            run(destination, recipe)
+        except TextPatchError as exc:
+            check(fragment in str(exc).lower(),
+                  "refusal for %r said %r" % (fragment, str(exc)))
+        else:
+            failures.append("accepted: %s" % fragment)
+        check(not destination.exists(),
+              "a refused run left a destination behind (%s)" % fragment)
+
+    try:
+        # A same-length edit writes an image of the same size and verifies.
+        destination = fresh()
+        same = recipe_for((catalog.SYNTHETIC_MENU_INDEX, "PLAY"))
+        report = run(destination, same)
+        check(destination.exists(), "a same-length edit wrote nothing")
+        check(destination.stat().st_size == source.stat().st_size,
+              "the patched image changed length")
+        result = confirm(destination, same, report)
+        check(result["verdict"] == "pass", "verdict %r" % result["verdict"])
+        check(len(result["edits"]) == 1, "declared edit count")
+        check(result["checks"]["iso9660_verifier_passed"],
+              "the ISO-level verifier did not pass")
+        check(iso_verify.verify_replacement(str(source), str(destination),
+                                            report["iso_write_report"]),
+              "the ISO writer's own verifier refused a bounded write")
+        check(iso_verify.inspect(str(source))["entries"]
+              == iso_verify.inspect(str(destination))["entries"],
+              "the directory tree moved")
+        untouched = source.read_bytes()
+
+        # A shorter edit zero-fills the rest of its allocation, in the image.
+        destination = fresh()
+        shorter = recipe_for((catalog.SYNTHETIC_OPTIONS_INDEX, "OFF"))
+        report = run(destination, shorter)
+        check(source.read_bytes() == untouched, "the source image was modified")
+        result = confirm(destination, shorter, report)
+        check(result["verdict"] == "pass", "shorter-edit verdict")
+        edit = result["edits"][0]
+        check(edit["allocation_bytes"] == len("OPTIONS") * 2 + 2,
+              "allocation size %d" % edit["allocation_bytes"])
+        check(edit["new_code_units"] == 3, "new code units")
+        with destination.open("rb") as stream:
+            stream.seek(edit["iso_byte_offset"])
+            written = stream.read(edit["allocation_bytes"])
+        check(written == "OFF".encode("utf-16le") + b"\0\0" + bytes(8),
+              "a shorter edit did not zero-fill its tail in the image")
+
+        # The last allocation has no following pointer to bound it: a verifier
+        # that derives its end from the destination alone reads a shortened
+        # final string as "the pool shrank" and fails a legitimate edit.
+        destination = fresh()
+        last = recipe_for((len(catalog.SYNTHETIC_TEXTS) - 1, "GO"))
+        report = run(destination, last)
+        result = confirm(destination, last, report)
+        check(result["verdict"] == "pass", "last-string verdict")
+        check(result["edits"][0]["new_code_units"] == 2, "last-string code units")
+
+        # Several edits in one run all land, and an edit may carry its token.
+        destination = fresh()
+        several = recipe_for((catalog.SYNTHETIC_MENU_INDEX, "PLAY"),
+                             (catalog.SYNTHETIC_OPTIONS_INDEX, "SETUP"))
+        report = run(destination, several)
+        result = confirm(destination, several, report)
+        check({item["pool_index"] for item in result["edits"]}
+              == {catalog.SYNTHETIC_MENU_INDEX, catalog.SYNTHETIC_OPTIONS_INDEX},
+              "two edits in one run")
+        destination = fresh()
+        carried = recipe_for((catalog.SYNTHETIC_TOKEN_INDEX, "Tap |CROSS| now"))
+        report = run(destination, carried)
+        result = confirm(destination, carried, report)
+        check(result["edits"][0]["tokens"] == ["|CROSS|"], "carried token")
+
+        # Every refusal, and none of them leaves a destination behind.
+        refuses_run(recipe_for((catalog.SYNTHETIC_MENU_INDEX, "PLAYS")),
+                    "code units")
+        refuses_run(recipe_for((catalog.SYNTHETIC_MENU_INDEX, "")), "empty")
+        refuses_run(recipe_for((catalog.SYNTHETIC_TOKEN_INDEX,
+                                "Press start to go")), "drops")
+        refuses_run(recipe_for((catalog.SYNTHETIC_MENU_INDEX, "|L1|")),
+                    "introduces")
+        refuses_run(recipe_for((catalog.SYNTHETIC_PRINTF_INDEX, "Score")), "drops")
+        refuses_run(recipe_for((catalog.SYNTHETIC_EMPTY_INDEX, "X")), "read-only")
+        refuses_run(recipe_for((catalog.SYNTHETIC_MENU_INDEX, "MENU")),
+                    "would not change")
+        refuses_run({"edits": [{"bank": "nfl2k5.ps2.text-bank.strg.9.9",
+                                "index": 0, "new_text": "X"}]}, "does not have")
+        refuses_run(recipe_for((999, "X")), "does not have")
+        two = recipe_for((catalog.SYNTHETIC_MENU_INDEX, "PLAY"))
+        two["edits"].append({"bank": catalog.SYNTHETIC_BANK_ID,
+                             "index": catalog.SYNTHETIC_MENU_INDEX,
+                             "new_text": "QUIT"})
+        refuses_run(two, "both target")
+        stale = recipe_for((catalog.SYNTHETIC_MENU_INDEX, "PLAY"))
+        stale["edits"][0]["expect_sha256"] = "0" * 64
+        refuses_run(stale, "expected the string")
+        # No text bank on the retail disc is LZ-compressed, so rather than
+        # carry an unexercised recompress-to-fit path the patcher refuses.
+        refuses_run(recipe_for((catalog.SYNTHETIC_MENU_INDEX, "PLAY")),
+                    "compressed", image=catalog.build_synthetic_iso(compressed=True))
+
+        occupied = fresh()
+        occupied.write_bytes(b"not an iso")
+        try:
+            run(occupied, recipe_for((catalog.SYNTHETIC_MENU_INDEX, "PLAY")))
+            failures.append("accepted: a destination that already exists")
+        except TextPatchError:
+            pass
+        check(occupied.read_bytes() == b"not an iso",
+              "an existing destination was overwritten")
+
+        # --- a verifier that cannot fail is a rubber stamp ----------------
+        destination = fresh()
+        good = recipe_for((catalog.SYNTHETIC_MENU_INDEX, "PLAY"))
+        report = run(destination, good)
+        check(confirm(destination, good, report)["verdict"] == "pass",
+              "the clean image did not verify")
+        clean = destination.read_bytes()
+        document = catalog.build_catalog(str(source))
+        bank = document["banks"][0]
+        rows = {row["pool_index"]: row for row in document["strings"]}
+
+        def forged(mutate, why, fragment=None):
+            data = bytearray(clean)
+            mutate(data)
+            destination.write_bytes(bytes(data))
+            try:
+                confirm(destination, good, report)
+            except verifier.TextVerifyError as exc:
+                if fragment is not None:
+                    check(fragment in str(exc), "%s said %r" % (why, str(exc)))
+            else:
+                failures.append("the verifier passed %s" % why)
+
+        # The hardest place to hide a stray byte is the file the writer
+        # replaced: the ISO writer declares the whole pack extent as written,
+        # so only a byte-for-byte comparison of the two images catches it.
+        forged(lambda data: data.__setitem__(
+                   bank["iso_byte_offset"] + bank["stored_size"] + 4,
+                   data[bank["iso_byte_offset"] + bank["stored_size"] + 4] ^ 0xFF),
+               "a byte changed elsewhere in the replaced pack",
+               "outside the edited allocations")
+        forged(lambda data: data.__setitem__(len(data) - 1, data[-1] ^ 0xFF),
+               "a byte changed elsewhere in the image",
+               "outside the edited allocations")
+
+        # The subtle one, and the failure this whole surface exists to
+        # prevent: an exactly-same-length overwrite of a string the recipe
+        # never named.  The pool still tiles and every pointer still resolves.
+        neighbour = rows[catalog.SYNTHETIC_OPTIONS_INDEX]
+        offset = bank["iso_byte_offset"] + neighbour["body_offset"]
+        replacement = "SETTING".encode("utf-16le") + b"\0\0"
+        check(len(replacement) == neighbour["allocation_bytes"],
+              "the forgery is not exactly the same length")
+
+        def overwrite(data):
+            data[offset:offset + len(replacement)] = replacement
+
+        forged(overwrite, "a same-length overwrite of an unnamed string",
+               "does not name it")
+
+        record_field = bank["iso_byte_offset"] + bank["descriptor_offset"] + 4 + 8
+        forged(lambda data: struct.pack_into("<I", data, record_field, 1),
+               "a moved pointer")
+        forged(lambda data: data.extend(bytes(2048)), "a resized image",
+               "different sizes")
+
+        destination.write_bytes(clean)
+        try:
+            confirm(destination, recipe_for((catalog.SYNTHETIC_MENU_INDEX, "QUIT")),
+                    report)
+            failures.append("the verifier passed a recipe the output does not match")
+        except verifier.TextVerifyError:
+            pass
+        disagreeing = json.loads(json.dumps(report))
+        disagreeing["edits"][0]["allocation_bytes"] = 4
+        try:
+            verifier.verify(source_iso=source, destination_iso=destination,
+                            recipe=good, patch_report=disagreeing,
+                            iso_write_report=report.get("iso_write_report"))
+            failures.append("the verifier passed a patch report that disagrees")
+        except verifier.TextVerifyError as exc:
+            check("disagree" in str(exc), "disagreeing report said %r" % str(exc))
+    finally:
+        if owned:
+            shutil.rmtree(str(root), ignore_errors=True)
+
     for line in failures:
         print("FAIL: %s" % line, file=sys.stderr)
     if failures:
         return 1
-    print("NFL2K5_PS2_TEXT_PATCH_SELFTEST_PASS refusals=13")
+    print("NFL2K5_PS2_TEXT_PATCH_SELFTEST_PASS refusals=26 verified_edits=6 "
+          "verifier_failures_forced=7")
     return 0
 
 

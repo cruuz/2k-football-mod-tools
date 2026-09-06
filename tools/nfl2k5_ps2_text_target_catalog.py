@@ -95,6 +95,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import struct
 import sys
 from typing import Dict, List, Optional, Sequence, Tuple
@@ -1047,6 +1048,68 @@ def build_synthetic_strg_body(texts: Sequence[str], name: str = "strings") -> by
     return bytes(body)
 
 
+#: The strings the synthetic bank holds.  Chosen to exercise the shapes that
+#: matter: a plain label, one carrying an inline token, one carrying a printf
+#: conversion, an allocation with room for nothing but its terminator, and a
+#: string that is a strict prefix of another so a mis-sized write would be
+#: visible.  The last one is last on purpose: the final allocation has no
+#: following pointer to bound it.
+SYNTHETIC_TEXTS = ("MENU", "Press |CROSS| to go", "Score %d", "", "OPTIONS", "OPT")
+SYNTHETIC_MENU_INDEX = 0
+SYNTHETIC_TOKEN_INDEX = 1
+SYNTHETIC_PRINTF_INDEX = 2
+SYNTHETIC_EMPTY_INDEX = 3
+SYNTHETIC_OPTIONS_INDEX = 4
+SYNTHETIC_BANK_ID = "nfl2k5.ps2.text-bank.strg.0.0"
+LZ_MAGIC = 0xFEEDBEEF
+
+
+def _synthetic_chunk(fourcc: bytes, body: bytes, compressed: bool = False) -> bytes:
+    header = bytearray(CHUNK_HEADER_SIZE)
+    header[0:4] = fourcc
+    struct.pack_into("<IIII", header, 4, len(body), 0, 0,
+                     LZ_MAGIC if compressed else 0)
+    return bytes(header) + body
+
+
+def build_synthetic_iso(texts: Sequence[str] = SYNTHETIC_TEXTS, *,
+                        compressed: bool = False,
+                        second_bank: bool = False) -> bytes:
+    """An ISO9660 volume holding a one-pack /VC_20919 archive with a STRG bank.
+
+    The patcher's and the verifier's self-tests build their disc with this, so
+    the lane can be proved in a shipped tree -- ``tests/`` is not shipped, and a
+    validator that runs ``python -m unittest`` cannot pass in a release.
+    """
+    payloads = [_synthetic_chunk(b"STRG", build_synthetic_strg_body(list(texts)),
+                                 compressed)]
+    if second_bank:
+        payloads.append(_synthetic_chunk(
+            b"STRG", build_synthetic_strg_body(["ALT"])))
+
+    table_size = OUTER_HEADER_SIZE + len(payloads) * 12
+    cursor = (table_size + ALIGNMENT - 1) // ALIGNMENT
+    records = []
+    for ordinal, payload in enumerate(payloads):
+        records.append((0x2000_0000 + ordinal, len(payload), cursor))
+        cursor += (len(payload) + ALIGNMENT - 1) // ALIGNMENT
+    pack = bytearray(cursor * ALIGNMENT)
+    struct.pack_into("<III", pack, 0, len(records), 0, 1)
+    struct.pack_into("<I", pack, 12, cursor)
+    for index, record in enumerate(records):
+        struct.pack_into("<III", pack, OUTER_HEADER_SIZE + index * 12, *record)
+    for (_name_id, size, offset_blocks), payload in zip(records, payloads):
+        start = offset_blocks * ALIGNMENT
+        pack[start:start + size] = payload
+
+    return iso.build_synthetic_iso(
+        files=[(b"SYSTEM.CNF;1",
+                b"BOOT2 = cdrom0:\\SLUS_209.19;1\r\nVER = 1.01\r\nVMODE = NTSC\r\n"),
+               (b"SLUS_209.19;1", b"\x7fELF" + bytes(2044))],
+        sub_name=b"VC_20919",
+        sub_files=[(b"0.;1", bytes(pack))])
+
+
 def selftest() -> int:
     failures: List[str] = []
 
@@ -1112,11 +1175,64 @@ def selftest() -> int:
     except CatalogError:
         pass
 
+    # --- the catalogue, read off a whole synthetic disc -------------------
+    import tempfile
+
+    scratch = tempfile.mkdtemp(prefix="ps2-text-catalog-selftest-")
+    try:
+        image = os.path.join(scratch, "source.iso")
+        with open(image, "wb") as handle:
+            handle.write(build_synthetic_iso())
+        catalog = build_catalog(image)
+        check(catalog["summary"]["bank_count"] == 1, "synthetic bank count")
+        check(catalog["summary"]["decoded_bank_count"] == 1, "decoded bank count")
+        check(catalog["summary"]["string_count"] == len(SYNTHETIC_TEXTS),
+              "catalogued string count")
+        bank = catalog["banks"][0]
+        check(bank["bank_id"] == SYNTHETIC_BANK_ID, "bank id %r" % bank["bank_id"])
+        check(bank["encoding"] == "utf-16le", "bank encoding")
+        check(bank["rebuild_byte_identical"],
+              "the synthetic bank did not rebuild byte-identically")
+        check(not bank["compressed"], "the synthetic bank was called compressed")
+        check(not bank["crosses_pack_boundary"], "the bank crossed a pack boundary")
+
+        rows = {row["pool_index"]: row for row in catalog["strings"]}
+        check(not rows[SYNTHETIC_EMPTY_INDEX]["editable"],
+              "a terminator-only allocation was offered for edit")
+        check(rows[SYNTHETIC_EMPTY_INDEX]["reason_code"] == "terminator_only",
+              "terminator-only reason code")
+        check(rows[SYNTHETIC_MENU_INDEX]["editable"],
+              "an editable allocation was refused")
+        check(rows[SYNTHETIC_TOKEN_INDEX]["tokens"] == ["|CROSS|"],
+              "inline token census")
+        check(rows[SYNTHETIC_PRINTF_INDEX]["tokens"] == ["%d"],
+              "printf token census")
+
+        # The catalogue is a map of editable capacity, never a copy of the
+        # game's text.
+        blob = json.dumps(catalog)
+        for text in SYNTHETIC_TEXTS:
+            if len(text) > 3 and "|" not in text and "%" not in text:
+                check(text not in blob, "the catalog leaked %r" % text)
+
+        compressed_image = os.path.join(scratch, "compressed.iso")
+        with open(compressed_image, "wb") as handle:
+            handle.write(build_synthetic_iso(compressed=True))
+        compressed_catalog = build_catalog(compressed_image)
+        compressed_bank = compressed_catalog["banks"][0]
+        check(compressed_bank["compressed"], "an LZ bank was not reported compressed")
+        check(not compressed_bank["decoded"], "an LZ bank was decoded anyway")
+        check(compressed_catalog["summary"]["string_count"] == 0,
+              "an LZ bank yielded strings")
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+
     for line in failures:
         print("FAIL: %s" % line, file=sys.stderr)
     if failures:
         return 1
-    print("NFL2K5_PS2_TEXT_CATALOG_SELFTEST_PASS checks=%d" % 15)
+    print("NFL2K5_PS2_TEXT_CATALOG_SELFTEST_PASS checks=%d banks=1 "
+          "read_only_allocations=1 leaked_strings=0" % 35)
     return 0
 
 

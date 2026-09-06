@@ -711,11 +711,25 @@ def selftest(tmp: Optional[Path] = None) -> int:
     except TextVerifyError:
         pass
 
+    # The verifier must not lean on the code it is checking: a bug shared
+    # between the patcher and the writer's own reader could hide behind an
+    # import.  This is the claim the lane's validator used to make by running
+    # the test suite, which a shipped tree does not carry.  Every import line
+    # is read, so a lazy one inside a function is caught too.
+    imported = set()
+    for line in Path(__file__).read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("import ") or stripped.startswith("from "):
+            imported.add(stripped.split()[1].split(".")[0])
+    for forbidden in ("nfl2k5_ps2_text_patch", "nfl2k5_ps2_text_target_catalog",
+                      "ps2_iso9660_writer", "ps2_iso9660"):
+        check(forbidden not in imported, "the verifier imports %s" % forbidden)
+
     for line in failures:
         print("FAIL: %s" % line, file=sys.stderr)
     if failures:
         return 1
-    print("NFL2K5_PS2_TEXT_VERIFY_SELFTEST_PASS checks=6")
+    print("NFL2K5_PS2_TEXT_VERIFY_SELFTEST_PASS checks=11 independent=true")
     return 0
 
 

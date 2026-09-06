@@ -43,68 +43,20 @@ import ps2_iso9660 as iso  # noqa: E402
 import ps2_iso9660_verify as iso_verify  # noqa: E402
 
 
-ALIGNMENT = 0x800
-CHUNK_HEADER = 0x20
-LZ_MAGIC = 0xFEEDBEEF
+# The synthetic disc lives in the tool, not here: the lane's validator has to
+# prove itself in a shipped tree, where ``tests/`` does not exist, so the
+# builder and the claims it supports are reachable as
+# ``nfl2k5_ps2_text_target_catalog.py --selftest`` and the patcher's own.  These
+# tests drive the same builder, so the two cannot drift.
+build_synthetic_iso = text_catalog.build_synthetic_iso
+BANK_TEXTS = text_catalog.SYNTHETIC_TEXTS
+MENU_INDEX = text_catalog.SYNTHETIC_MENU_INDEX
+TOKEN_INDEX = text_catalog.SYNTHETIC_TOKEN_INDEX
+PRINTF_INDEX = text_catalog.SYNTHETIC_PRINTF_INDEX
+EMPTY_INDEX = text_catalog.SYNTHETIC_EMPTY_INDEX
+OPTIONS_INDEX = text_catalog.SYNTHETIC_OPTIONS_INDEX
 
-# The strings the synthetic bank holds.  Chosen to exercise the shapes that
-# matter: a plain label, one carrying an inline token, one carrying a printf
-# conversion, an allocation with room for nothing but its terminator, and a
-# string that is a strict prefix of another so a mis-sized write would be
-# visible.
-BANK_TEXTS = ("MENU", "Press |CROSS| to go", "Score %d", "", "OPTIONS", "OPT")
-MENU_INDEX = 0
-TOKEN_INDEX = 1
-PRINTF_INDEX = 2
-EMPTY_INDEX = 3
-OPTIONS_INDEX = 4
-
-
-def _chunk(fourcc: bytes, body: bytes, compressed: bool = False) -> bytes:
-    header = bytearray(CHUNK_HEADER)
-    header[0:4] = fourcc
-    struct.pack_into("<IIII", header, 4, len(body), 0, 0,
-                     LZ_MAGIC if compressed else 0)
-    return bytes(header) + body
-
-
-def build_synthetic_iso(texts=BANK_TEXTS, *, compressed: bool = False,
-                        second_bank: bool = False) -> bytes:
-    """An ISO9660 volume holding a one-pack /VC_20919 archive with a STRG bank."""
-    body = text_catalog.build_synthetic_strg_body(list(texts))
-    payloads = [_chunk(b"STRG", body, compressed)]
-    if second_bank:
-        payloads.append(_chunk(b"STRG",
-                               text_catalog.build_synthetic_strg_body(["ALT"])))
-
-    table_size = text_catalog.OUTER_HEADER_SIZE + len(payloads) * 12
-    cursor = (table_size + ALIGNMENT - 1) // ALIGNMENT
-    records = []
-    for ordinal, payload in enumerate(payloads):
-        records.append((0x2000_0000 + ordinal, len(payload), cursor))
-        cursor += (len(payload) + ALIGNMENT - 1) // ALIGNMENT
-    pack = bytearray(cursor * ALIGNMENT)
-    struct.pack_into("<III", pack, 0, len(records), 0, 1)
-    struct.pack_into("<I", pack, 12, cursor)
-    for index, record in enumerate(records):
-        struct.pack_into("<III", pack,
-                         text_catalog.OUTER_HEADER_SIZE + index * 12, *record)
-    for (_name_id, size, offset_blocks), payload in zip(records, payloads):
-        start = offset_blocks * ALIGNMENT
-        pack[start:start + size] = payload
-
-    return iso.build_synthetic_iso(
-        files=[
-            (b"SYSTEM.CNF;1",
-             b"BOOT2 = cdrom0:\\SLUS_209.19;1\r\nVER = 1.01\r\nVMODE = NTSC\r\n"),
-            (b"SLUS_209.19;1", b"\x7fELF" + bytes(2044)),
-        ],
-        sub_name=b"VC_20919",
-        sub_files=[(b"0.;1", bytes(pack))],
-    )
-
-
-BANK_ID = "nfl2k5.ps2.text-bank.strg.0.0"
+BANK_ID = text_catalog.SYNTHETIC_BANK_ID
 
 
 def _recipe(*edits) -> dict:
