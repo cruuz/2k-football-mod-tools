@@ -123,6 +123,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
         if animation_xbe.status(cls.patched) != "applied":
             raise AssertionError("Embedded animation owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_guardian_overlay as guardian
+        if guardian.status(cls.patched) != "applied":
+            raise AssertionError("Guardian overlay missing from the composed XBE")
         from mod_editor.core import nfl2k5_momentum as momentum
         settings = momentum.read_settings(cls.patched)
         if not settings.get("momentum_collisions") or settings.get("momentum_collision_level") != 100:
@@ -431,6 +434,14 @@ class PatchWriteTests(unittest.TestCase):
             address = int(write["target"], 0)
             self.assertTrue(rw["va"] <= address < rw["va"]+rw["size"], write)
         self.assertFalse(bowl.NATIVE_EVENT_AVAILABLE)
+    def test_guardian_code_is_owned_rx_and_all_runtime_writes_are_indirect(self):
+        from mod_editor.core import nfl2k5_guardian_overlay as guardian
+        owner = guardian.allocation(self.patched)
+        self.assertNotEqual(image.section(owner["va"]).name, ".text")
+        self.assertFalse(image.runtime_writable(owner["va"], owner["size"]))
+        self.assertTrue(image.section(owner["va"]).executable)
+        writes = absolute_writes(self.patched, [(owner["va"], owner["va"] + guardian.assembly.LABELS["instructions_end"])])
+        self.assertTrue(all(write["target"] is None for write in writes), writes)
 
     def test_qb_spy_complete_code_and_immutable_lookup_permissions(self) -> None:
         from mod_editor.core import nfl2k5_qb_spy_runtime as spy

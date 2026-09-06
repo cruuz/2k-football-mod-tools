@@ -559,9 +559,10 @@ def dormant_union():
     from . import nfl2k5_music_playlist as playlist, nfl2k5_practice_squad_screen as practice_screen
     from . import nfl2k5_abilities_runtime as abilities, nfl2k5_qb_spy_runtime as qb_spy
     from . import nfl2k5_calendar_engine as calendar
+    from . import nfl2k5_guardian_overlay as guardian
     return (relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS + zone_drop.REQUESTS
             + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
-            + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS)
+            + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + guardian.REQUESTS)
 
 
 def is_scaleout(payload):

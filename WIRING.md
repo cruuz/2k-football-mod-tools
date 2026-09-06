@@ -6318,6 +6318,59 @@ tail or arbitrary VA is an allocation.
 
 ## Dispatcher tuple, keyword, allocator adapter and four dictionaries
 
+## r62 Guardian overlay, route A (2026-09-06)
+
+This is the integration handoff for `ASTRA_GUARDIAN_OVERLAY_REPORT.md`.
+**EXPERIMENTAL / UNWITNESSED.** All protected files remain unchanged in this
+branch. The executable, paired resource/ROST transaction, allocation union,
+manifest recorder, standalone proofs and capability handoff are implemented.
+Do not advertise the old C replacement as this feature.
+
+### Record ownership and the Rosters session
+
+Reserve physical **record +0x53 bit 5 (0x20)** for `guardian_cap`. The complete
+little-endian word map at +0x52 is: locks `0x001F`, abilities `0x1EE0`, Star Tag
+`0x0100`, Guardian cap `0x2000`, unassigned `0xC000`. The abilities runtime's
+mask excludes Guardian. There is no spare helmet enum: keep Helmet 0/1 (A/C).
+The new native clone hook at `0xC16CD` copies only `0x2000`; do not replace it
+with an uncoordinated full-word copy in another owner's clone patch.
+`nfl2k5_player_tags.apply_body` now masks star bit 0 and preserves its neighbors.
+
+The parallel Rosters owner should wire its **Guardian cap** control separately
+from Helmet, Star Tag and abilities. The existing record codec already preserves
+the bit through `unknown_53_high`; Guardian is **0x10 in that shifted field**.
+A document operation reads `bool(record.values['unknown_53_high'] & 0x10)` and
+sets/clears only that mask through the document's normal edit/journal transaction.
+The byte-level APIs `guardian.record_selected(raw84)` and
+`guardian.set_record_selected(raw84, bool)` enforce the physical format.
+Add `guardian_cap` as a derived `Record.get`/`Record.set` property (same pattern
+as abilities), boolean CSV column with explicit 0/1 validation, and bulk edit
+choice. Preserve `unknown_53_high` as the backing field so the existing ability
+and unknown-bit round trip remains intact. Binary roster/save export/import
+already preserves the complete record. Clone/import via document transactions
+must retain this bit or explicitly clear it for a genuinely new identity.
+
+Store the edited bit in the composed roster document before exporting its
+resource. For normal GUI builds use `guardian_players=None` below, retaining
+those authored selections. Do not persist a roster index as player identity.
+For controlled CLI/project snapshots, the optional `guardian_players` array
+contains `{pool, index, record_sha256}` entries, where the SHA-256 is of that
+exact 84-byte record with only the Guardian bit cleared. Null means retain;
+`[]` explicitly clears all. The writer rejects mismatched/duplicate identities
+before opening a writer. Refresh a pin only after the owning document has
+resolved the same player through its existing identity/provenance mechanism.
+A changed name, star, ability or other record field invalidates an old pin.
+Never silently relax this into fuzzy matching.
+
+UI help: `Guardian cap requires the experimental Guardian overlay image.
+Existing saves need their own player selections. Practice does not save caps
+onto players.` The cap artwork is one shared neutral quilt texture. Label it
+**Global Guardian cap artwork** under Uniforms & Equipment, with a shared-art
+explanation. The compiler currently owns the fixed neutral profile; do not
+expose unsupported per-uniform art or an arbitrary artwork upload operation.
+
+### Dispatcher, allocator and all four status dictionaries
+
 In protected `mod_editor/core/nfl2k5_throw_tuning.py` import:
 
 ```python
@@ -6769,3 +6822,188 @@ round trip and edited clip through start/blend/loop/end/mirror/replay, then both
 LODs, head/hands/equipment, body profiles, planted feet, hand-to-ball and opponent
 contact for the limb. Throws/tackles need both actors and release/contact timing;
 this revision does not expose paired-action or throw-style authoring.
+from . import nfl2k5_guardian_overlay as guardian_overlay_patch
+from . import nfl2k5_guardian_resources as guardian_resources
+```
+
+Add `guardian_overlay: bool = False`,
+`guardian_everyone_practice: bool = True`, and the image-only optional
+`guardian_players=None` through `_apply_all`, `write_xbe_copy`,
+`write_image_copy` and forwarded `write_copy` kwargs as applicable. Validate
+both switches as actual booleans; roster recipes are meaningful only for
+image operations. Raw XBE writes are a component operation and must retain
+explicit matching-resource dependency text in their receipt.
+
+Extend `_selected_space_requests(..., guardian_overlay=False)` with
+`guardian_overlay_patch.REQUESTS if guardian_overlay else ()`, extend
+`_xbe_space_adapter` and every selected-owner predicate with this flag, and
+include it in complete request unions passed to the scorebug installer.
+The actual owner is `nfl2k5_guardian_overlay`, **496 bytes RX, zero RW/RO**.
+It replaces the planned `nfl2k5_guardian_cap_overlay` 2048/336 rows in the budget
+fixture. It requires v3 automatically. There is no bitmap: stored record flags
+and fresh native texture lookup remove the proposed persistent cache.
+
+Settings adapter and final `_apply_all` tuple after the allocator entry:
+
+```python
+class _guardian_overlay_adapter:
+    def __init__(self, everyone_practice):
+        self.everyone_practice = everyone_practice
+    @staticmethod
+    def status(payload):
+        return guardian_overlay_patch.status(payload)
+    def apply(self, payload):
+        return guardian_overlay_patch.apply(
+            payload, guardian_everyone_practice=self.everyone_practice)
+
+(guardian_overlay,
+ _guardian_overlay_adapter(guardian_everyone_practice),
+ 'guardian_overlay_patch', 'experimental Guardian cap overlay'),
+```
+
+Add to `_grown_status_fields(payload)`:
+
+```python
+'guardian_overlay': guardian_overlay_patch.status(payload),
+'guardian_overlay_settings': guardian_overlay_patch.read_settings(payload),
+```
+
+Verify the helper expands into **all four** output dictionaries: `read_xbe`
+(with `payload`), `read_image` (with `payload`), `write_xbe_copy` (with `result`),
+and `write_image_copy` (with its final re-read `patched` XBE). Image readers
+also expose `guardian_resources.image_status(image_path)` as
+`guardian_overlay_resources`, so a resource/XBE mismatch cannot appear ready.
+The executable `status` by itself never proves resources are installed.
+
+### BuildPlan, presets, deferral and the paired resource pass
+
+In protected `mod_editor/core/mod_build.py` add these fields:
+
+```python
+guardian_overlay: bool = False
+guardian_everyone_practice: bool = True
+guardian_players: list[dict] | None = None
+```
+
+Set Guardian overlay **false in Basic, Advanced and Experimental**. The
+practice preference is true within the explicitly enabled feature. Preserve
+it in project normalization/serialization. Require that `guardian_cap` (the
+existing route B option) and `guardian_overlay` are mutually exclusive. Reject
+a non-null `guardian_players` recipe with the overlay disabled. Include new
+fields in the recognized project keys and CLI forwarding.
+
+Use `defer_grown = plan.scorebug_runtime or plan.guardian_overlay` in the
+initial image pass. As in the existing scorebug path, defer the allocator and
+all selected owners until the complete request union is known; always defer
+Guardian's executable until its paired resources can be staged. All selected
+owners must be reserved once on the supported base. Never append a new request
+to an already-sealed allocator directory.
+
+After fixed resource and authored roster passes, run existing runtime scorebug
+resource installation first when selected, reserving Guardian's request in
+that same union. Then run:
+
+```python
+rec = guardian_resources.apply_to_image(
+    target,
+    guardian_everyone_practice=plan.guardian_everyone_practice,
+    guardian_players=plan.guardian_players,
+    extra_requests=tuple(r for r in all_selected_requests
+                         if r[0] != guardian_overlay_patch.OWNER),
+)
+receipt['steps'].append({'step': 'guardian_overlay', **rec})
+```
+
+The module reserves its own request on an ungrown base and installs into a
+pre-reserved union otherwise. Exclude its own row from `extra_requests` because
+the allocator rejects duplicate owner/kind rows. It stages both B models, one
+TXTR, optional ROST bit edits and executable before mutation; pack and XBE
+transports share an ordinary-I/O rollback boundary. Its in-place target must
+be the private build copy. The final dispatcher pass replays Guardian with the
+same settings and installs every other selected owner into the reserved union.
+Re-read the final XBE for every status receipt. `write_image_copy` needs the
+same sequencing, deferral and final pass as `mod_build`.
+
+The append grows outer 3 by 88,544 bytes and pack 0 by 88,064 sector-aligned
+bytes. Every subsequent outer virtual offset moves by 43 sectors; physical
+bytes in packs 1..F remain fixed. Current archive/XDVDFS locations are resolved
+fresh. This path also handles an already-moved pack after earlier scorebug or
+music writes. The old scorebug **installer** pins retail pack geometry, so do
+not run it after Guardian; its status reader has a moved-archive fallback.
+Music's later streaming rebuild can consume the updated common group. Continue
+to use the existing build's `file_grow` v2 export chain for both appended pack
+and XBE extents, and verify export/reapply after this handoff is wired.
+
+### Gameplay Patches and Build tab
+
+In protected `gameplay_patches_panel_qt.py`, add a `PATCHES` row keyed
+`guardian_overlay`, title **Guardian caps (experimental)**, using this exact
+plain help (also `guardian_overlay_patch.HELP_TEXT`):
+
+`EXPERIMENTAL / UNWITNESSED. Retail has no separate Guardian cap. Patch:
+selected players wear a padded cover over either helmet. Caps for everyone
+in practice is optional. A missing cap texture keeps the normal helmet.
+Requires the matching models and global cap artwork.`
+
+Add `guardian_overlay` to `NEEDS_IMAGE`. Do not offer a resource-free raw-XBE
+GUI switch. Route A and the old route B checkbox must not be simultaneously
+selectable. Add the dependent **Caps for everyone in practice** preference to
+project controls; disable that control while the overlay is disabled.
+
+In protected `build_panel_qt.py`, `_option` captions (both <=60 characters):
+
+- `guardian_overlay`: **Guardian caps (experimental)**
+- `guardian_everyone_practice`: **Caps for everyone in practice**
+
+Include both in plan extraction, loaded-project restoration and change signals.
+Rosters selects individual people; the practice option does not bulk-edit them.
+
+### Packaging, runtime closure and capability
+
+Add exact allowlist lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_guardian_overlay.py
+mod_editor/core/nfl2k5_guardian_overlay_code.py
+mod_editor/core/nfl2k5_guardian_resources.py
+mod_editor/core/nfl2k5_resource_growth.py
+docs/mod_editor/nfl2k5_guardian_overlay_capability.json
+```
+
+Retain the existing shipped `nfl2k5_guardian_cap.py`, `nfl2k5_models.py`,
+`nfl2k5_p8_texture_writer.py`, `nfl2k5_player_tags.py`, music archive,
+XBE storage/allocator and their existing texture/model tool closure. Add the
+four new dotted core modules to the import list in protected
+`packaging/check_2k5_mod_studio_runtime.py`. The generated byte module removes
+GNU `as` from runtime requirements; `.S`, assembler and tests are development
+sources and need not ship. No retail binary, disc, texture span or scratch proof
+belongs in an allowlist.
+
+Merge `docs/mod_editor/nfl2k5_guardian_overlay_capability.json` into the canonical
+registry, without changing its `offline-writer-proved` classification or
+`runtime.status = not-tested`. The schema-valid backend command is
+`python3 -m mod_editor.core.nfl2k5_guardian_resources apply <private-build-copy.iso>`;
+validation is `python3 -m mod_editor.core.nfl2k5_guardian_resources check <image.iso>`.
+Both resolve a dotted module in registry file-check mode.
+
+### Manifest and acceptance after wiring
+
+The generator's owner lists, allocator dormant union and gate union are updated
+locally. When protected
+BuildPlan fields land, also set `guardian_overlay=False` and
+`guardian_players=None` in its separate dormant-owner base build, just like
+scorebug/abilities deferral, to avoid pre-sealing the request directory there.
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` using the
+normal manifest command against the fully wired stack. The private manifest
+used here comes from `test_nfl2k5_guardian_manifest.py`, which observes every
+actual XBE writer and requires complete changed-byte attribution, but expressly
+records **no disc/resource build**. It is not a replacement release manifest.
+
+Run all four Guardian test files, both complete XBE gates in both orders, the
+normal release-manifest suite after regeneration, capability/runtime closure,
+and integrated opt-in image + modpack export/reapply acceptance. The current
+system drive was already below Noah's 100 GB free target, so no full disc copy
+was made in this session. Use sufficient free capacity and disposable temporary
+directories for those final integrated images. Noah's required played witness
+is in the report; offline proofs do not establish GPU appearance or saved-game
+lifecycle coverage.

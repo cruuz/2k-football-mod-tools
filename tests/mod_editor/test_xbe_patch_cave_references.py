@@ -80,6 +80,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
         if animation_xbe.status(cls.patched) != "applied":
             raise AssertionError("Embedded animation owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_guardian_overlay as guardian
+        if guardian.status(cls.patched) != "applied":
+            raise AssertionError("Guardian overlay missing from the composed XBE")
         from mod_editor.core import nfl2k5_momentum as momentum
         settings = momentum.read_settings(cls.patched)
         if not settings.get("momentum_collisions") or settings.get("momentum_collision_level") != 100:
@@ -492,6 +495,18 @@ class CaveReferenceTests(unittest.TestCase):
             if int(row["start"], 0) >= space.CODE_VA:
                 self.assertEqual(row["parent_owner"], space.OWNER)
         self.assertEqual(spy.status(self.patched), "applied")
+
+    def test_guardian_has_complete_live_hooks_and_only_owned_grown_code(self):
+        from mod_editor.core import nfl2k5_guardian_overlay as guardian, nfl2k5_xbe_space as space
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for name, (va, before) in guardian.HOOKS.items():
+            self.assertEqual(sum(i.size for i in md.disasm(before, va)), len(before), name)
+            self.assertEqual(manifest.overlaps(va, va+len(before), exclude_owner=guardian.OWNER), [], name)
+        for row in guardian.reservations(self.patched):
+            if int(row["start"], 0) >= space.CODE_VA:
+                self.assertEqual(row["parent_owner"], space.OWNER)
 
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
