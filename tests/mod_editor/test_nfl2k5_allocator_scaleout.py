@@ -165,7 +165,7 @@ class SyntheticTests(unittest.TestCase):
             self.assertEqual(section_digest(self.grown, section), section.stored_digest)
 
     def test_sealed_code_ro_replay_and_changed_request_refusal(self):
-        code = b'\x90' * (64 * 1024)
+        code = b'\x90' * LARGE[0][2]
         grown, _ = space.install_code(self.grown, 'synthetic_scaleout', code)
         grown, _ = space.install_read_only(grown, 'synthetic_scaleout', b'R' * 1024)
         self.assertEqual(space.status(grown), 'applied')
@@ -220,8 +220,8 @@ class SyntheticTests(unittest.TestCase):
     def test_music_both_orders_and_all_legacy_bytes_stay_identical(self):
         data = b'synthetic music metadata'
         first, _ = music.install(self.grown, data)
-        first, _ = space.install_code(first, 'synthetic_scaleout', b'\x90' * 65536)
-        second, _ = space.install_code(self.grown, 'synthetic_scaleout', b'\x90' * 65536)
+        first, _ = space.install_code(first, 'synthetic_scaleout', b'\x90' * LARGE[0][2])
+        second, _ = space.install_code(self.grown, 'synthetic_scaleout', b'\x90' * LARGE[0][2])
         second, _ = music.install(second, data)
         self.assertEqual(first, second)
         self.assertEqual(music.unwrap(first)[1], data)
