@@ -43,6 +43,21 @@ its evidence tag, and say in your report that you added it. Three agents measure
 preload-cache semantics of the same disc separately in one day; that is three times the tokens
 for one fact, and three chances to record it differently.
 
+### Measure to a file, then reason over the file
+
+When a measurement is expensive to make and cheap to store -- an index of every image on a
+disc, a census of every member of every container, a table of hashes -- **write it out before
+you reason over it**, under `docs/product/measured/<game>/` if it is a fact about the product or
+beside your scratch work if it is a step on the way. Reasoning is where a run gets interrupted,
+runs long, is stopped or hits a limit; measuring is where the wall time went. A fact that lives
+in a file survives all of that and belongs to the next agent as much as to you. A fact that
+lives only in your context dies with the run.
+
+This is not hypothetical. One agent's 40,423-row index of a disc's images survived that agent
+being stopped mid-task, purely because it had been written to disk first; the replacement read
+it in a second and spent its budget on the question instead of the census. Separate the two
+passes on purpose: measure, persist, then think.
+
 **Evidence tags are not decoration.** `[M]` measured, by you, on the artefact named. `[S]`
 sourced from a named document. `[A]` assumed. A claim with no tag is read as `[A]`.
 
