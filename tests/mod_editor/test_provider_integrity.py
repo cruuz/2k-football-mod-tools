@@ -194,7 +194,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [177, 9, 8, 9, 8, 9],
+            [193, 9, 8, 9, 8, 9]  # +10 wave-A runtime modules and their byte templates; the hi-res and 2026-name modules load via mod_build, not the backend closure,
         )
         for provider in providers:
             entries = [provider.backend_module]

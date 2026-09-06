@@ -33,6 +33,13 @@ from nfl2k5_throw_tuning_test import _build_synthetic_xbe  # noqa: E402
 
 # BuildPlan fields the page does not expose as a control, and why.
 NOT_A_CONTROL = {
+    # sub-settings bound through another control on the page or elsewhere in the shell
+    "abilities_off_week": "the Week with abilities off combo next to the Player abilities option",
+    "music_shuffle_selection": "the Music page's playlist document, delivered by the shell",
+    "calendar_engine": "carried by the combined 128-season franchise option (season_cap)",
+    "hires_folder": "the Hi-res folder field of the hi-res pack option",
+    "hires_scale": "fixed at 2x by the hi-res pack option",
+    "hires_target": "fixed at xemu-64 by the hi-res pack option",
     "source": "the disc / executable field (filled by the open-disc hook or Choose…)",
     "target": "the Save disc copy as field",
     "overwrite": "decided by the existing replacement confirmation, never a default-on box",
