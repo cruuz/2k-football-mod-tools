@@ -74,6 +74,11 @@ NOT_PNG_IMPORTERS = frozenset({
     "tools/nfl_tset_png_import.py",
     "mod_editor/core/nfl2k5_stadium_texture_writer.py",
     "tools/nfl_crib_bar_monitor_png_xiso.py",
+    # The 2x hi-res compiler (beta 62) recomputes the wrapper, stored and scratch
+    # sizes and publishes through the archive growth transaction, so its VC-LZ
+    # stream has no fixed span to overflow; the plain 256-entry quantizer is the
+    # intended output and the bounded ladder would lower quality for no reason.
+    "mod_editor/core/nfl2k5_hires_texture.py",
 })
 
 
