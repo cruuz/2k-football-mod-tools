@@ -27,9 +27,9 @@ pixel, palette entry or record from the disc is in this repository.
    and all three are data, not shape (§2).
 3. **Every gate is green on this disc's own numbers**: 296 of 296 conformance
    checks, five validators, 24 lane tests, and the shared readers' 31 tests.
-4. **No writer has been proved on this retail disc and no image has been
-   booted** (§4). That is the one thing the 2002 module has that this one does
-   not, and it is stated rather than borrowed.
+4. **The writers are proved on this retail disc too** (§4), and every build
+   declares **two** ranges where the 2002 disc declares four — the shape
+   difference showing up in a receipt. **No image has been booted.**
 
 ## 2. What differs from NFL Blitz 2002, in numbers [M]
 
@@ -106,13 +106,27 @@ a round trip through both index shapes.
 **Measured on the retail disc**: every identity in §2, produced by the shipped
 lanes and recorded in `docs/product/measured/nflblitz2003_ps2/`.
 
-**Not proved on this retail disc**: no writer has been run against the
-SLUS-20474 image. The 2002 module's four chained real-disc builds
-(`docs/product/measured/nflblitz2002_ps2/writer-trial.json`) exercise the same
-code on the *other* disc and the *other* index shape, and the CRC column that
-trial rewrote is the column this disc does not have — so the trial is evidence
-for the shared writer and is **not** evidence for this disc. Running it here is
-one command and is the next thing this module needs.
+**Proved on the retail disc**: four chained builds on the owner's own
+SLUS-20474 image, read-only source, scratch destinations, each verified against
+its own source, every image deleted afterwards
+(`docs/product/measured/nflblitz2003_ps2/writer-trial.json`).
+
+| step | lane | declared ranges / bytes | verdict |
+|---|---|---:|---|
+| 1 | `identity.crowd_tables` | 2 / 439,045,798 | PASS |
+| 2 | `gameplay.field_table` | 2 / 439,045,798 | PASS |
+| 3 | `playbooks.trivia_banks` | 2 / 439,045,798 | PASS |
+| 4 | `rosters.player_names` | 2 / 439,045,798 | PASS |
+
+Every destination is 1,029,144,576 bytes, the length of the source, and the
+verifier found all 2,695 members present at their original offsets and lengths
+with 2,694 byte-identical by streaming digest at every step.
+
+**Two ranges, where the 2002 disc declares four.** That is the whole shape
+difference showing up in a receipt: this index carries no CRC-32 column, so a
+build rewrites the ZIP and never touches the `.ZIH`. The three-place rule
+collapses to two because the index's own record shape says it should, not
+because the module knows which disc it is looking at.
 
 **Not booted.** No image built by this module has been booted in an emulator or
 on hardware, and no receipt claims otherwise.

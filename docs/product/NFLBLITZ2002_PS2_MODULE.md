@@ -239,6 +239,13 @@ local header, the central directory and the index now all carry, and handed the
 image-level claim to `tools/ps2_iso9660_verify.py`'s own ISO9660 decoder.
 `docs/product/measured/nflblitz2002_ps2/writer-trial.json` carries the run.
 
+The same four steps ran on the NFL Blitz 2003 disc and passed
+(`docs/product/measured/nflblitz2003_ps2/writer-trial.json`), and there each
+build declares **two** ranges rather than four: that disc's index carries no
+CRC-32 column, so the ZIP is rewritten and the `.ZIH` is not touched. The
+three-place rule and its two-place collapse are therefore both proved on real
+discs, and which one applies is decided by the index's own record shape.
+
 **No rebuilt image has been booted** in an emulator or on hardware. The game's
 acceptance of a rewritten member is not claimed anywhere.
 
