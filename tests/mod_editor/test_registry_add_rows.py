@@ -197,7 +197,25 @@ class NewGameTests(unittest.TestCase):
         # Relative to whatever the fixture already registers (today: four games, madden09_ps2 the first newcomer).
         self.assertEqual(validator.GAMES, tuple(sorted(before.GAMES + ("demo_ps2",))))
         self.assertEqual(validator._ESTABLISHED_GAMES, before._ESTABLISHED_GAMES, "a later newcomer never changes the established set")
-        self.assertEqual(validator.SURFACE_GAMES["saves"], validator._ESTABLISHED_GAMES, "GAMES-wide rules no longer demand the newcomer")
+        # **A surface the newcomer did not claim never gains it.**  This used
+        # to be asserted by naming "saves" -- a surface that had no explicit
+        # rule on the day the test was written -- and reading it back as
+        # _ESTABLISHED_GAMES.  NCAA Football 09 claimed that surface and the
+        # tool wrote it a rule, so the example stopped being an example; and
+        # every surface now has one, so there is no replacement to name.  The
+        # property is the same and is now asserted over every surface at once,
+        # which is also stronger than the one it replaced.
+        for surface in before.SURFACES:
+            if surface in ("menus", "portraits_faces"):
+                continue
+            self.assertNotIn(
+                "demo_ps2",
+                validator.SURFACE_GAMES.get(surface, validator._ESTABLISHED_GAMES),
+                f"{surface}: a newcomer must not appear in a surface it did not claim")
+            self.assertEqual(
+                validator.SURFACE_GAMES.get(surface),
+                before.SURFACE_GAMES.get(surface),
+                f"{surface}: an unwidened surface's rule must not move")
         self.assertEqual(validator.SURFACE_GAMES["menus"], before.SURFACE_GAMES["menus"] + ("demo_ps2",))
         self.assertEqual(validator.SURFACE_GAMES["portraits_faces"], before.SURFACE_GAMES.get("portraits_faces", validator._LEGACY_GAMES) + ("demo_ps2",))
         registry = _registry(self.root)

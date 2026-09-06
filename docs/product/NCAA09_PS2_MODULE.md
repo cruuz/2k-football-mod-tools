@@ -731,7 +731,23 @@ Neither is a change to the shell, the contract or any game's behaviour. Both are
 listed here because they are edits outside this module's directory, which a game
 PR owes an account of.
 
-### 8a.3 Every file outside this module that changed
+### 8a.4 A test that named one surface
+
+`tests/mod_editor/test_registry_add_rows.py` asserted that a newcomer does not
+appear in a surface it did not claim, and it asserted it by naming **`saves`** —
+a surface that had no explicit rule on the day the test was written, so its rule
+read back as `_ESTABLISHED_GAMES`. NCAA Football 09's Saves row claimed that
+surface, `registry_add_rows.py` wrote it a rule, and the example stopped being
+an example. **Every surface now has an explicit rule**, so there is no
+replacement to name either.
+
+**Done now**: the property is asserted over *every* surface at once — a
+newcomer is in none it did not claim, and no unwidened surface's rule moved.
+That is both stronger than the assertion it replaces and free of a name the
+next module has to come back and change. Same defect as §8a.1 and §8a.2 in a
+third costume: a test that hard-codes what the registry happened to hold.
+
+### 8a.5 Every file outside this module that changed
 
 Twenty-one of them, and **all but four are `tools/registry_add_rows.py`'s own
 mechanical output** — the registry, its two schemas, the `GameId` enum and its
@@ -757,6 +773,11 @@ The four that were **not** the tool's output, each with its reason:
 | `tests/mod_editor/test_games_chooser.py` | §8a.1 |
 | `mod_editor/games/CONTRACT_PINS.json`, `CONTRACT_CHANGELOG.md` | the procedure that goes with it |
 | `tests/mod_editor/test_nfl2k3_2k4_compatibility_boundary.py` | §8a.2 |
+| `tests/mod_editor/test_registry_add_rows.py` | §8a.4 |
+| `tests/mod_editor/test_madden09_ps2_uniform_art.py` | the art lane moved into `_lanes` and now says where its identity table is, so a test that patched a module constant sets the lane's attribute instead |
+| `mod_editor/games/contract.py`, `conformance.py`, `CONTRACT_PINS.json`, `CONTRACT_CHANGELOG.md`, `tests/mod_editor/test_games_contract.py` | `SHARED_LANES_PACKAGE`: a game may compose a shared lane base as it composes a shared format. Committed alone, under the version procedure. |
+| `tools/registry_add_rows.py` | `--replace-row`, for a row whose rung moved. Three of this module's rows needed it and the tool could only add. Committed alone. |
+| `mod_editor/games/madden09_ps2/{team_data,text_lane,uniform_art,containers}.py` | the three bases only pay if both games instantiate them |
 
 Nothing in `mod_editor/gui/studio_qt.py` or `mod_editor/__main__.py` changed, and
 no `_formats` reader changed: **the shared readers opened this disc unmodified**,
