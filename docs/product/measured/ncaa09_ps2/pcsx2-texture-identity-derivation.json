@@ -1,0 +1,461 @@
+{
+  "disc_census": {
+    "dumped_names_by_hash": {
+      "images_placed_by_hash": 2068,
+      "plain_names": 617,
+      "plain_names_placed_by_hash": 309,
+      "plain_names_placed_that_pixels_could_not": 161,
+      "region_names": 94,
+      "region_names_placed_by_hash": 0
+    },
+    "images_placed_by_hash_per_container": {
+      "FLDDATA.DAT": 3,
+      "GCDATA.DAT": 12,
+      "PLADATA.DAT": 4,
+      "PLYDATA.DAT": 23,
+      "PLYRFACE.DAT": 5,
+      "STADATA.DAT": 19,
+      "UIS_COMN.DAT": 3,
+      "UNIFORM.DAT": 1999
+    },
+    "not_derived_reasons": {
+      "a palette-only entry": 979,
+      "a texture height of 192 is not a power of two, and the GS de": 1,
+      "a texture width of 1576 is not a power of two, and the GS de": 1,
+      "a texture width of 211 is not a power of two, and the GS des": 4,
+      "a texture width of 427 is not a power of two, and the GS des": 1,
+      "a texture width of 528 is not a power of two, and the GS des": 409,
+      "a texture width of 640 is not a power of two, and the GS des": 1,
+      "a texture width of 854 is not a power of two, and the GS des": 30,
+      "level 0 could not be read": 2,
+      "level 1 is 3840x84 after a 7680x169 level; a mip chain halve": 1,
+      "level 1 is 741x16 after a 1483x32 level; a mip chain halves ": 748,
+      "level 1 is 9216x125 after a 18432x251 level; a mip chain hal": 1,
+      "level 2 is 1152x22 after a 2304x45 level; a mip chain halves": 1,
+      "not an indexed texture -- it declares no palette and pixel l": 234
+    },
+    "per_container": {
+      "CMNTDATA.DAT": {
+        "images": 30,
+        "images_derived": 12,
+        "images_not_derived": 18,
+        "members": 27,
+        "names_derived": 36
+      },
+      "COACFACE.DAT": {
+        "images": 18,
+        "images_derived": 18,
+        "images_not_derived": 0,
+        "members": 18,
+        "names_derived": 162
+      },
+      "FANDATA.DAT": {
+        "images": 342,
+        "images_derived": 341,
+        "images_not_derived": 1,
+        "members": 244,
+        "names_derived": 1023
+      },
+      "FLDDATA.DAT": {
+        "images": 37,
+        "images_derived": 32,
+        "images_not_derived": 5,
+        "members": 31,
+        "names_derived": 744
+      },
+      "GAMEDATA.DAT": {
+        "images": 7,
+        "images_derived": 2,
+        "images_not_derived": 5,
+        "members": 7,
+        "names_derived": 6
+      },
+      "GCDATA.DAT": {
+        "images": 121,
+        "images_derived": 68,
+        "images_not_derived": 53,
+        "members": 29,
+        "names_derived": 234
+      },
+      "LOADDATA.DAT": {
+        "images": 46,
+        "images_derived": 2,
+        "images_not_derived": 44,
+        "members": 46,
+        "names_derived": 6
+      },
+      "MSCTDATA.DAT": {
+        "images": 1920,
+        "images_derived": 1920,
+        "images_not_derived": 0,
+        "members": 240,
+        "names_derived": 9600
+      },
+      "PLADATA.DAT": {
+        "images": 908,
+        "images_derived": 691,
+        "images_not_derived": 217,
+        "members": 888,
+        "names_derived": 3096
+      },
+      "PLYDATA.DAT": {
+        "images": 152,
+        "images_derived": 48,
+        "images_not_derived": 104,
+        "members": 8,
+        "names_derived": 174
+      },
+      "PLYRFACE.DAT": {
+        "images": 64,
+        "images_derived": 64,
+        "images_not_derived": 0,
+        "members": 64,
+        "names_derived": 576
+      },
+      "STADATA.DAT": {
+        "images": 1281,
+        "images_derived": 1224,
+        "images_not_derived": 57,
+        "members": 1195,
+        "names_derived": 4677
+      },
+      "UIS_BGSP.DAT": {
+        "images": 689,
+        "images_derived": 689,
+        "images_not_derived": 0,
+        "members": 689,
+        "names_derived": 2067
+      },
+      "UIS_CALI.DAT": {
+        "images": 17,
+        "images_derived": 17,
+        "images_not_derived": 0,
+        "members": 17,
+        "names_derived": 51
+      },
+      "UIS_CLBG.DAT": {
+        "images": 20,
+        "images_derived": 20,
+        "images_not_derived": 0,
+        "members": 20,
+        "names_derived": 60
+      },
+      "UIS_COMN.DAT": {
+        "images": 88,
+        "images_derived": 88,
+        "images_not_derived": 0,
+        "members": 88,
+        "names_derived": 264
+      },
+      "UIS_CRSC.DAT": {
+        "images": 23,
+        "images_derived": 23,
+        "images_not_derived": 0,
+        "members": 23,
+        "names_derived": 69
+      },
+      "UIS_FE.DAT": {
+        "images": 56,
+        "images_derived": 56,
+        "images_not_derived": 0,
+        "members": 56,
+        "names_derived": 168
+      },
+      "UIS_GEAR.DAT": {
+        "images": 396,
+        "images_derived": 396,
+        "images_not_derived": 0,
+        "members": 396,
+        "names_derived": 1188
+      },
+      "UIS_HEIS.DAT": {
+        "images": 13,
+        "images_derived": 13,
+        "images_not_derived": 0,
+        "members": 13,
+        "names_derived": 39
+      },
+      "UIS_IG.DAT": {
+        "images": 23,
+        "images_derived": 23,
+        "images_not_derived": 0,
+        "members": 23,
+        "names_derived": 69
+      },
+      "UIS_MAGT.DAT": {
+        "images": 67,
+        "images_derived": 67,
+        "images_not_derived": 0,
+        "members": 67,
+        "names_derived": 201
+      },
+      "UIS_MCFL.DAT": {
+        "images": 409,
+        "images_derived": 0,
+        "images_not_derived": 409,
+        "members": 409,
+        "names_derived": 0
+      },
+      "UIS_MMBG.DAT": {
+        "images": 18,
+        "images_derived": 14,
+        "images_not_derived": 4,
+        "members": 18,
+        "names_derived": 42
+      },
+      "UIS_PDST.DAT": {
+        "images": 74,
+        "images_derived": 74,
+        "images_not_derived": 0,
+        "members": 74,
+        "names_derived": 222
+      },
+      "UIS_RCIC.DAT": {
+        "images": 8,
+        "images_derived": 8,
+        "images_not_derived": 0,
+        "members": 8,
+        "names_derived": 24
+      },
+      "UIS_SHPH.DAT": {
+        "images": 117,
+        "images_derived": 117,
+        "images_not_derived": 0,
+        "members": 117,
+        "names_derived": 351
+      },
+      "UIS_SMAP.DAT": {
+        "images": 52,
+        "images_derived": 52,
+        "images_not_derived": 0,
+        "members": 52,
+        "names_derived": 156
+      },
+      "UIS_STAD.DAT": {
+        "images": 244,
+        "images_derived": 244,
+        "images_not_derived": 0,
+        "members": 244,
+        "names_derived": 732
+      },
+      "UIS_STIM.DAT": {
+        "images": 120,
+        "images_derived": 120,
+        "images_not_derived": 0,
+        "members": 120,
+        "names_derived": 360
+      },
+      "UIS_SWOI.DAT": {
+        "images": 1,
+        "images_derived": 1,
+        "images_not_derived": 0,
+        "members": 1,
+        "names_derived": 3
+      },
+      "UIS_TMLO.DAT": {
+        "images": 399,
+        "images_derived": 399,
+        "images_not_derived": 0,
+        "members": 399,
+        "names_derived": 1197
+      },
+      "UIS_TRPH.DAT": {
+        "images": 127,
+        "images_derived": 127,
+        "images_not_derived": 0,
+        "members": 127,
+        "names_derived": 381
+      },
+      "UIS_UGBG.DAT": {
+        "images": 20,
+        "images_derived": 20,
+        "images_not_derived": 0,
+        "members": 20,
+        "names_derived": 60
+      },
+      "UNIFORM.DAT": {
+        "images": 11689,
+        "images_derived": 10193,
+        "images_not_derived": 1496,
+        "members": 1200,
+        "names_derived": 207684
+      }
+    },
+    "totals": {
+      "containers": 35,
+      "images": 19596,
+      "images_derived": 17183,
+      "images_not_derived": 2413,
+      "members": 6978,
+      "names_derived": 235722
+    }
+  },
+  "dump_check": {
+    "counts": {
+      "clut_in_another_palette_of_the_member": 13,
+      "clut_in_own_palette": 1093,
+      "clut_not_in_the_member": 0,
+      "identities": 510,
+      "identities_checked": 510,
+      "identities_confirmed": 500,
+      "identities_not_derivable": 0,
+      "names": 1106,
+      "names_psm_disagrees": 88,
+      "names_tex0_not_reproduced": 12,
+      "names_tex0_reproduced": 1094
+    },
+    "lod_chains": {
+      "0+1": 965,
+      "0+3": 2,
+      "0+4": 22,
+      "1+1": 12,
+      "1+2": 3,
+      "1+3": 26,
+      "2+1": 4,
+      "2+2": 34,
+      "3+1": 26
+    },
+    "not_derivable_reasons": {},
+    "not_reproduced_sample": [
+      "FLDDATA.DAT:75:0",
+      "FLDDATA.DAT:76:0",
+      "FLDDATA.DAT:79:0",
+      "FLDDATA.DAT:80:0",
+      "FLDDATA.DAT:81:0",
+      "FLDDATA.DAT:82:0"
+    ],
+    "per_class": {
+      "FLDDATA.DAT 4-bit 128x64": {
+        "not_reproduced": 2,
+        "reproduced": 0
+      },
+      "FLDDATA.DAT 4-bit 16x8": {
+        "not_reproduced": 2,
+        "reproduced": 0
+      },
+      "FLDDATA.DAT 4-bit 256x256": {
+        "not_reproduced": 0,
+        "reproduced": 4
+      },
+      "FLDDATA.DAT 4-bit 32x16": {
+        "not_reproduced": 2,
+        "reproduced": 0
+      },
+      "FLDDATA.DAT 4-bit 32x32": {
+        "not_reproduced": 2,
+        "reproduced": 0
+      },
+      "FLDDATA.DAT 4-bit 64x32": {
+        "not_reproduced": 2,
+        "reproduced": 0
+      },
+      "FLDDATA.DAT 4-bit 64x64": {
+        "not_reproduced": 2,
+        "reproduced": 8
+      },
+      "PLADATA.DAT 8-bit 128x128": {
+        "not_reproduced": 0,
+        "reproduced": 2
+      },
+      "PLADATA.DAT 8-bit 64x64": {
+        "not_reproduced": 0,
+        "reproduced": 4
+      },
+      "PLYRFACE.DAT 8-bit 128x128": {
+        "not_reproduced": 0,
+        "reproduced": 10
+      },
+      "STADATA.DAT 4-bit 128x128": {
+        "not_reproduced": 0,
+        "reproduced": 6
+      },
+      "STADATA.DAT 4-bit 32x32": {
+        "not_reproduced": 0,
+        "reproduced": 8
+      },
+      "STADATA.DAT 4-bit 64x64": {
+        "not_reproduced": 0,
+        "reproduced": 4
+      },
+      "STADATA.DAT 8-bit 128x128": {
+        "not_reproduced": 0,
+        "reproduced": 8
+      },
+      "STADATA.DAT 8-bit 128x64": {
+        "not_reproduced": 0,
+        "reproduced": 8
+      },
+      "UNIFORM.DAT 4-bit 128x128": {
+        "not_reproduced": 0,
+        "reproduced": 3
+      },
+      "UNIFORM.DAT 4-bit 128x64": {
+        "not_reproduced": 0,
+        "reproduced": 54
+      },
+      "UNIFORM.DAT 4-bit 256x256": {
+        "not_reproduced": 0,
+        "reproduced": 7
+      },
+      "UNIFORM.DAT 4-bit 32x32": {
+        "not_reproduced": 0,
+        "reproduced": 876
+      },
+      "UNIFORM.DAT 8-bit 256x128": {
+        "not_reproduced": 0,
+        "reproduced": 36
+      },
+      "UNIFORM.DAT 8-bit 256x256": {
+        "not_reproduced": 0,
+        "reproduced": 44
+      },
+      "UNIFORM.DAT 8-bit 64x64": {
+        "not_reproduced": 0,
+        "reproduced": 12
+      }
+    },
+    "per_container": {
+      "FLDDATA.DAT": {
+        "confirmed": 3,
+        "identities": 9,
+        "names_not_reproduced": 12,
+        "names_reproduced": 12
+      },
+      "PLADATA.DAT": {
+        "confirmed": 3,
+        "identities": 3,
+        "names_not_reproduced": 0,
+        "names_reproduced": 6
+      },
+      "PLYRFACE.DAT": {
+        "confirmed": 5,
+        "identities": 5,
+        "names_not_reproduced": 0,
+        "names_reproduced": 10
+      },
+      "STADATA.DAT": {
+        "confirmed": 17,
+        "identities": 17,
+        "names_not_reproduced": 0,
+        "names_reproduced": 34
+      },
+      "UNIFORM.DAT": {
+        "confirmed": 472,
+        "identities": 476,
+        "names_not_reproduced": 0,
+        "names_reproduced": 1032
+      }
+    }
+  },
+  "generated_by": "tools/ps2_texture_identities.py --derive-check",
+  "hash_implementation": "xxhash C extension",
+  "method": "TEX0: XXH3-64 over the texture's GS block image (256-byte blocks in row-major order; a level smaller than a block hashes its linear texels), every mip chain fed into one hash state. CLUT: XXH3-64 over the palette in drawing order. Checked against the names a real PCSX2 dump wrote for the same disc texture.",
+  "schema": "ncaa09_ps2_pcsx2_texture_identity_derivation/v1",
+  "source": "ncaa09.iso",
+  "what_this_does_not_prove": [
+    "that a pack built from these names is loaded by any emulator build",
+    "the second half of a name for a texture the game draws with a CLUT it builds at run time, or with another member's palette",
+    "any name for a texture whose width or height is not a power of two, or for a region-clamped draw, whose rectangle offset is in no file"
+  ],
+  "what_this_proves": "A dumped name that the derivation reproduces was computed by PCSX2 from the same bytes this tool hashed, so the rule is the emulator's for that texture class. A derived name for a texture no dump has shown is the same computation and is proved only to that extent. Nothing here has loaded a replacement pack."
+}

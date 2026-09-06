@@ -113,24 +113,135 @@ how art containers are laid out, not of NCAA Football.
 
 ---
 
-## 5. The PCSX2 replacement identity: derived, never confirmed
+## 5. The PCSX2 replacement identity: two frames confirmed, the rest derived
 
-Naming a texture so PCSX2's replacement picks it up needs the GS `TEX0` and CLUT
-hashes the emulator computes at draw time. `derive_texture_names` computes both
-from the texture's own bytes — the GS block image of each mip chain and the
-image's own palette — through
-`mod_editor/games/_formats/pcsx2_texture_name.py`.
+A replacement filename is `<tex0 hash>-<clut hash>-<bits>.png`, and both hashes
+are computed by the emulator at draw time. No disc file carries either, so
+`tools/ps2_texture_identities.py --game ncaa09_ps2` learns them by pairing a
+texture dump with the disc on **exact pixel equality** — the same tool, and the
+same matcher, that Madden 09's five art rows use.
 
-**No PCSX2 texture dump has been paired with `SLUS-21752`.** So every name these
-six rows offer is **derived** and none is **confirmed**, and
-`identity_note` says which. Madden 09 has a paired dump and an identity document
-(`docs/product/measured/madden09_ps2/pcsx2-texture-identities.json`); this game's
-`identity_document` is `None`, which is the honest value — a document that does
-not exist is not a document to read.
+**The corpus is two frames**, both from the owner's own capture of the retail
+`SLUS-21752` disc (PCSX2 ELF CRC `B0157E6C`), replayed headless through
+pcsx2-gsrunner with texture dumping on, each frame dumped under both naming
+conventions — `ClassicTextureNames` on and off [M]:
 
-**Pairing one dump with this disc is the single cheapest thing that lifts all six
-rows at once.** Until then, *Write PCSX2 pack* is not offered from any of them,
-and no pack built from these names has been loaded in an emulator.
+| frame | what it shows | textures it named |
+|---|---|---:|
+| `20260905142332` | a midfield fumble, both kits and the end zone on screen | 495 |
+| `20260905142337` | a helmet-camera close-up of one player | 468 |
+
+That is 1,458 PNG files, **1,100 distinct names**, of which 188 are region
+draws — a name carrying `-r<W>x<H>` is a sub-rectangle of a larger texture and
+cannot equal a whole surface on the disc unless the region is the whole of one.
+Against them the index decoded **40,085 surfaces** in the twelve art containers,
+covering **16,308 distinct textures** (`container:member:image`).
+
+**Result: 268 dumped files paired, naming 510 disc textures** [M]. Thirty-four
+more agreed on RGB and not on alpha and are listed as near misses rather than
+matched — `TCC` lets the game ignore a CLUT's alpha, so that is a real reason
+for two to differ and not a reason to guess.
+
+### Coverage per container [M]
+
+The last column is measured, not guessed: it is how many of the two frames were
+drawing at least one texture of that container when PCSX2 dumped them. What
+those textures *depict* is not established by any of this.
+
+| container | textures indexed | named | frames that drew one |
+|---|---:|---:|---:|
+| `UNIFORM.DAT` | 10,941 | 476 | 2 of 2 |
+| `STADATA.DAT` | 1,224 | 17 | 2 of 2 |
+| `FLDDATA.DAT` | 35 | 9 | 2 of 2 |
+| `PLYRFACE.DAT` | 64 | 5 | 2 of 2 |
+| `PLADATA.DAT` | 691 | 3 | 2 of 2 |
+| `MSCTDATA.DAT` | 1,920 | 0 | none |
+| `UIS_GEAR.DAT` | 396 | 0 | none |
+| `UIS_TMLO.DAT` | 399 | 0 | none |
+| `FANDATA.DAT` | 342 | 0 | none |
+| `UIS_STAD.DAT` | 244 | 0 | none |
+| `LOADDATA.DAT` | 34 | 0 | none |
+| `COACFACE.DAT` | 18 | 0 | none |
+
+**510 of 16,308 textures have a confirmed name — 3.1%.** That is a fact about
+the capture, not about the disc: both frames are one matchup in progress, so
+they reach the kits, the field, the stadium bowl, the equipment and a face, and
+**seven of the twelve containers were drawn by neither frame** and have no
+confirmed name at all. `replacement_identity` falls back to the derived name
+for those, and `identity_note` says the name was computed rather than observed.
+
+Two more honesties about the 476 in `UNIFORM.DAT`. They come from **66
+distinct pictures** — 178 filenames across the two conventions — spread over
+**243 of that container's 1,200 members**, and **466 of the 476 are a
+picture more than one member carries** — one dump in this corpus equals the same
+surface in 182 members. That is not a mistake and it is not padding: PCSX2 names
+a texture after its pixels, so one replacement file covers every member that
+carries the picture, and the table says on each row how many others it shares
+with. Only **10** of the 476 are a picture unique to their member.
+
+### What the two frames could not reach, and which screens would
+
+Each of these would confirm a container that today has nothing [A] — the
+capture is the owner's, and which screen draws what is a prediction until a
+frame proves it:
+
+| capture this | reaches | why it is worth doing first |
+|---|---|---|
+| the equipment / gear select screen | `UIS_GEAR.DAT` (396) | the one container **no preload cache names**, so it is the cheapest thing on the disc to rewrite |
+| a school-logo menu (team select, schedule) | `UIS_TMLO.DAT` (399) | 399 school marks, and the Field Art page's other half |
+| the stadium select screen | `UIS_STAD.DAT` (244) | a directory copy and no member copy — nearly free to rewrite |
+| a loading screen, dumped while it is up | `LOADDATA.DAT` (34) | 30 of its 46 members are 854×480 full-screen art |
+| a mascot, trophy or celebration cut-scene | `MSCTDATA.DAT` (1,920) | the largest unreached container on the disc |
+| a sideline or coach close-up | `COACFACE.DAT` (18) | 18 textures, and the smallest container to finish outright |
+| a wide crowd or blimp camera | `FANDATA.DAT` (342) | the helmet-cam frame has stands behind it and named **no** `FANDATA` texture, so which container draws the crowd is worth settling |
+| **more matchups**, and a second stadium | `UNIFORM.DAT`, `STADATA.DAT` | one matchup reached 243 of 1,200 kit members; another two schools reach another set |
+
+### The derivation, checked against the dump [M]
+
+`derive_texture_names` computes both hashes from the texture's own bytes — the
+GS block image of each mip chain and the image's own palette — through
+`mod_editor/games/_formats/pcsx2_texture_name.py`. Every name this disc offers
+for a texture no frame drew comes from that rule, so the rule itself was checked
+against the names the emulator really wrote:
+
+* **1,094 of the 1,106** dumped names whose PSM matches the surface they paired
+  with are **reproduced** from the disc bytes, and **500 of the 510** identities
+  have at least one name reproduced.
+* The **CLUT half agrees on all 1,106**: 1,093 hash the image's own palette and
+  13 an alternate palette the same member carries. None needed a palette the
+  member does not have.
+* **88 further names disagree on PSM** — the dumped name says 4-bit where the
+  surface is 8-bit, or the reverse. Those are not errors: the matcher pairs a
+  dump with every surface that draws the same picture, and a picture can exist
+  at both depths, so the name belongs to the sibling surface.
+* **12 names are not reproduced**, and all twelve are on **six members of
+  `FLDDATA.DAT`** (75, 76, 79, 80, 81, 82). On each of the six the dumped CLUT
+  hash, the dumped `bits` word and the decoded picture all agree with the
+  member, and only the `TEX0` half differs. The member's palette holds sixteen
+  distinct colours, so the index bytes are forced by the picture and the two
+  sides are hashing the same bytes in a different order. **Why is not
+  established.** Two explanations were tested and refused: the six are not a mip
+  chain split across consecutive members (hashing 79+80+81+82 as one chain
+  produces none of the four names), and single-surface members are not a class
+  that fails (223 single-surface `UNIFORM.DAT` textures and 9 in `STADATA.DAT`
+  reproduce). This is a finding about the derivation, not about the dump.
+
+Across the whole disc the same rule names **17,183 of 19,596 images** in 35
+containers, 235,722 names in all; the 2,413 it will not name are palette-only
+entries (979), mip chains that do not halve (751), textures whose width or
+height is not a power of two (447), members that declare no palette at all (234)
+and two whose level 0 could not be read [M]. Running those derived hashes back
+against the dump places **309 of the 617 plain dumped names**, including **161
+the pixel matcher could not place** — so the derivation reaches textures the
+pixel pairing missed, and neither method is a superset of the other.
+
+The measured tables are
+`docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json` and
+`docs/product/measured/ncaa09_ps2/pcsx2-texture-identity-derivation.json`. They
+carry names, counts, dimensions and member indexes — **no pixel**.
+
+**No pack built from any of these names, confirmed or derived, has been loaded
+in an emulator**, so *Write PCSX2 pack* is still offered from no row.
 
 ---
 
@@ -179,9 +290,15 @@ mod_editor/games/_lanes/preload_coherence.py     the cache rule
 mod_editor/games/_lanes/synthetic_art.py         the fixtures both games use
 mod_editor/games/ncaa09_ps2/texture_lane.py      the two uniforms rows
 mod_editor/games/ncaa09_ps2/art_pages.py         the other four
+tools/ps2_texture_identities.py                  the dump/disc pixel matcher, both games
+tools/madden09_ps2_texture_identities.py         the same tool, --game madden09_ps2
 tools/validate_ncaa09_ps2_textures.sh            the census row
 tools/validate_ncaa09_ps2_uniform_disc_art.sh    the uniforms writer
 tools/validate_ncaa09_ps2_art_pages.sh           the other four, in one run
+
+docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json
+docs/product/measured/ncaa09_ps2/pcsx2-texture-identity-derivation.json
+tests/mod_editor/test_ncaa09_ps2_texture_identities.py
 ```
 
 ```
@@ -190,4 +307,10 @@ python3 -m mod_editor.games.ncaa09_ps2.texture_lane --source "<your>.iso" \
 python3 -m mod_editor.games.ncaa09_ps2.art_pages --page stadiums \
     --source "<your>.iso" --out catalogue.json
 python3 -m mod_editor.games.ncaa09_ps2.art_pages --selftest
+python3 tools/ps2_texture_identities.py --game ncaa09_ps2 --selftest
+python3 tools/ps2_texture_identities.py --game ncaa09_ps2 --source "<your>.iso" \
+    --index disc-index.jsonl --dump-dir "<PCSX2 textures/dumps>" --coverage \
+    --out docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json
+python3 tools/ps2_texture_identities.py --game ncaa09_ps2 --source "<your>.iso" \
+    --derive-check
 ```

@@ -52,9 +52,15 @@ refused by name, because a cached copy is a fixed slot.
 proved against the user's own bytes offline.  **No rebuilt NCAA Football 09
 container has been booted**, so no row here says the game loads the result.
 
-**No PCSX2 texture dump has been paired with ``SLUS-21752``**, so every
-replacement identity on these pages is derived from the texture's own bytes and
-none is confirmed.  The page says which.
+**A PCSX2 texture dump has been paired with ``SLUS-21752``, and these four
+pages are where its limits show.**  The corpus is two frames -- a midfield
+fumble and a helmet-camera close-up -- so a texture one of them drew has a
+**confirmed** name and everything else on these pages has a **derived** one.
+A stadium bowl, a load screen or a mascot that neither frame was drawing has no
+confirmed name and the page says so rather than inventing one.  Which
+containers the two frames reached, and how many textures of each they named, is
+in ``docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json`` under
+``coverage``.
 
 Run one without a window::
 
@@ -77,7 +83,13 @@ from mod_editor.games._lanes.terf_art import TerfArtWriteLane
 from mod_editor.games.contract import Edit, Refusal
 
 from . import containers
-from .texture_lane import GAME_TITLE
+from .texture_lane import (
+    DERIVATION_EVIDENCE,
+    GAME_TITLE,
+    IDENTITY_DOCUMENT,
+    IDENTITY_SCHEMA,
+    IDENTITY_TOOL,
+)
 
 #: A container a lane here points at: ``(file name, group, structure)``.  The
 #: third column is what the container itself says, measured on the retail disc
@@ -141,10 +153,15 @@ class ArtPageLane(TerfArtWriteLane):
     discs = containers
     classification = "offline-writer-proved"
     game_title = GAME_TITLE
-    #: No PCSX2 texture dump has been paired with this disc, so every name is
-    #: derived and none is confirmed.
-    identity_document = None
-    identity_tool = ""
+    #: One identity document serves all six art rows, because one captured
+    #: frame reaches several pages at once: a frame of a game in progress
+    #: draws a kit, a field, a stadium and a scoreboard together, and splitting
+    #: the table by page would file each of those under a different document
+    #: for no reason the capture knows about.
+    identity_document = IDENTITY_DOCUMENT
+    identity_schema = IDENTITY_SCHEMA
+    identity_tool = IDENTITY_TOOL
+    derivation_evidence = DERIVATION_EVIDENCE
     #: Every texture in the lane's containers is addressable.  These pages hold
     #: between 300 and 1,600 images and a writer that could only reach the first
     #: few thousand would refuse the rest for no reason a user can see.
@@ -339,7 +356,9 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 __all__ = ["ART_PAGE_LANES", "ArtPageLane", "ContainerSpec", "FACE_CONTAINERS",
-           "FIELD_ART_CONTAINERS", "FaceArtLane", "FieldArtLane", "LANES_BY_PAGE",
+           "FIELD_ART_CONTAINERS", "FaceArtLane", "FieldArtLane",
+           "DERIVATION_EVIDENCE", "IDENTITY_DOCUMENT", "IDENTITY_SCHEMA",
+           "IDENTITY_TOOL", "LANES_BY_PAGE",
            "PRESENTATION_CONTAINERS", "PresentationArtLane", "STADIUM_CONTAINERS",
            "StadiumArtLane"]
 

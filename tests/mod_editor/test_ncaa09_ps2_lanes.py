@@ -589,15 +589,28 @@ class ArtPageTests(unittest.TestCase):
                 verdict = lane.verify(source, destination, receipt)
                 self.assertTrue(verdict.passed, f"{lane.page}: {verdict.summary}")
 
-    def test_no_identity_is_confirmed_because_no_dump_is_paired_with_this_disc(self) -> None:
+    def test_a_texture_no_frame_drew_is_named_by_derivation_and_says_so(self) -> None:
+        """The four pages read a real identity table now, and it is a small one.
+
+        Two frames were paired with this disc, so a texture one of them drew has
+        a confirmed name.  A synthetic texture is not one of them -- it is not on
+        the retail disc at all -- so what this asserts is the other half of the
+        rule: the lane still answers, from the derivation, and the note says the
+        name was computed rather than observed.
+        """
+
         lane = art_pages.StadiumArtLane()
-        self.assertIsNone(lane.identity_document)
+        self.assertEqual(lane.identity_document,
+                         Path("docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json"))
         room = self.work / "identity"
         room.mkdir(parents=True, exist_ok=True)
         source = lane.synthetic_source(room)
         catalogue = lane.build_catalogue(source)
-        note = lane.identity_note(catalogue.targets[0])
+        target = catalogue.targets[0]
+        note = lane.identity_note(target)
         self.assertNotIn("Confirmed by a PCSX2 dump", note)
+        self.assertIn("Derived from this texture's own bytes", note)
+        self.assertIsNotNone(lane.replacement_identity(target))
 
 
 class SharedLaneBaseTests(unittest.TestCase):

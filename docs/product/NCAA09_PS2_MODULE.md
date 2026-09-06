@@ -235,11 +235,16 @@ about 15,600 images between them, so 4,000 targets never reached
 `UIS_GEAR.DAT` — the one container a user should reach first. The base now
 takes a per-container share and this row sets it to 1,500 [M].
 
-**Every replacement identity here is derived and none is confirmed.** No PCSX2
-texture dump has been paired with `SLUS-21752`. `derive_texture_names` computes
-the GS `TEX0` and CLUT hashes from the texture's own bytes, and the page says
-which kind of name it is showing. **No pack built from these names has been
-loaded in an emulator.**
+**510 replacement identities are dump-confirmed; the rest are derived.** A
+two-frame PCSX2 texture dump of `SLUS-21752` was paired with the disc on exact
+pixel equality, naming 510 of the 16,308 textures the six art rows reach; for
+every other texture `derive_texture_names` computes the GS `TEX0` and CLUT
+hashes from the texture's own bytes, and the page says which kind of name it is
+showing. Seven of the twelve art containers were drawn by neither frame and
+have no confirmed name at all — see
+[`NCAA09_PS2_ART_PAGES.md`](NCAA09_PS2_ART_PAGES.md) §5 for the per-container
+table and the frames worth capturing next. **No pack built from either kind of
+name has been loaded in an emulator.**
 
 ### 3.2 Names, Numbers & Faces — the 432 rosters, edited
 
@@ -645,9 +650,11 @@ second, and should say so.
    this disc has been run**, in an emulator or on hardware. Everything in §3a is
    a verifier re-deriving a claim from two files, and that is a different thing
    from a game loading a disc.
-2. **No PCSX2 replacement pack has been loaded.** Every texture identity this
-   module offers is **derived** from the texture's own bytes; none is confirmed
-   by a dump, because no dump has been paired with `SLUS-21752`.
+2. **No PCSX2 replacement pack has been loaded.** A two-frame dump has been
+   paired with `SLUS-21752` and confirms 510 of the 16,308 textures the art
+   rows reach; every other identity is **derived** from the texture's own
+   bytes. Naming a texture is not loading a pack, and no pack built from either
+   kind of name has been run in an emulator.
 3. **No rating scale is known** — only its **bound**. The five bits hold 0..31
    and every value is in use; what the game draws from them is not established
    and no control says.

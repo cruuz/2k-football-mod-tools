@@ -37,11 +37,20 @@ one a first edit should use.  Every copy an edit disturbs is rewritten from the
 container's own new bytes, and a *carried* member whose stored size changed is
 refused by name rather than written past the end of somebody else's copy.
 
-**No PCSX2 texture dump has been paired with this disc.**  So every replacement
-identity here is **derived** -- computed from the texture's own bytes through
+**A PCSX2 texture dump has been paired with this disc, and it is small.**  Two
+captured frames -- a midfield fumble and a helmet-camera close-up -- were
+replayed with texture dumping on, and
+``tools/ps2_texture_identities.py --game ncaa09_ps2`` paired what they wrote
+with the disc on exact pixel equality.  So a texture those two frames drew has
+a **confirmed** name, read off a dump, and every other texture on the disc has
+a **derived** one -- computed from its own bytes through
 :mod:`mod_editor.games._formats.pcsx2_texture_name`, the GS block image of each
-mip chain and the image's own palette -- and none is confirmed.  The page says
-which it is, and no pack built from these names has been loaded in an emulator.
+mip chain and the image's own palette.  :meth:`identity_note` says which of the
+two a name is, on every texture.  Two frames confirm far less than Madden 09's
+thirty-three: the counts, container by container, are in
+``docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json`` and in
+`NCAA09_PS2_ART_PAGES.md` §5.  No pack built from any of these names has been
+loaded in an emulator.
 
 Run it without a window::
 
@@ -60,6 +69,7 @@ from pathlib import Path
 import sys
 from typing import Optional, Sequence, Tuple
 
+from mod_editor.games._lanes import terf_art
 from mod_editor.games._lanes.terf_art import (
     MAX_TARGETS,
     TerfArtLane,
@@ -82,6 +92,43 @@ DISC_WRITE_SCHEMA = "ncaa09_ps2_uniform_disc_art_write/v1"
 
 #: What a sentence calls this game.
 GAME_TITLE = "NCAA Football 09 (PlayStation 2)"
+
+#: The schema ``tools/ps2_texture_identities.py``'s document declares for this
+#: disc.  The lane is what reads the table, so it owns what the table must say.
+IDENTITY_SCHEMA = "ncaa09_ps2_pcsx2_texture_identities/v1"
+
+#: The evidence document that tool writes: which texture on the disc PCSX2 saw,
+#: and under what filename.  Counts, dimensions, filenames and member indexes;
+#: no pixel.  Every one of this module's six art rows reads it, because one
+#: capture's frames reach several pages at once -- a single frame of a game in
+#: progress draws a kit, a field, a stadium and a scoreboard together.
+IDENTITY_DOCUMENT = Path("docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json")
+
+#: What a refusal names when it asks for another capture.
+IDENTITY_TOOL = "tools/ps2_texture_identities.py --game ncaa09_ps2"
+
+#: How well the derivation reproduces the names the paired dump actually wrote,
+#: for THIS disc.  Measured by ``--derive-check`` and recorded in
+#: ``docs/product/measured/ncaa09_ps2/pcsx2-texture-identity-derivation.json``:
+#: of the 1,106 dumped names whose PSM matches the surface they paired with,
+#: 1,094 are reproduced from the disc bytes and 12 are not, and all twelve are
+#: on six members of ``FLDDATA.DAT`` [M].  The base's default is Madden 09's
+#: number, and quoting one disc's measurement on another is the thing this
+#: attribute exists to stop.
+DERIVATION_EVIDENCE = (
+    "the rule reproduces the dumped hash of 1,094 of the 1,106 names a two-frame dump "
+    "wrote for this disc")
+
+
+def load_identities(path: Optional[Path] = None):
+    """This disc's confirmed PCSX2 names, or an empty map when none is paired.
+
+    The shared loader takes the document to read; this one supplies NCAA 09's,
+    so a caller in this package keeps the call short.
+    """
+
+    return terf_art.load_identities(IDENTITY_DOCUMENT if path is None else path,
+                                    IDENTITY_SCHEMA)
 
 #: The kit, equipment and gear containers, and what the disc itself says about
 #: each.  Only the first column is a fact about *this* module; the rest is what
@@ -122,11 +169,13 @@ class TextureLane(TerfArtLane):
     classification = "extract-only"
     game_title = GAME_TITLE
     art_containers = ART_CONTAINERS
-    #: No PCSX2 texture dump has been paired with SLUS-21752, so every name
-    #: this lane offers is derived and none is confirmed.  The absence is the
-    #: honest value: a document that does not exist is not a document to read.
-    identity_document = None
-    identity_tool = ""
+    #: Two frames of a real capture have been paired with SLUS-21752, so a
+    #: name this lane offers is confirmed where one of those frames drew the
+    #: texture and derived everywhere else.
+    identity_document = IDENTITY_DOCUMENT
+    identity_schema = IDENTITY_SCHEMA
+    identity_tool = IDENTITY_TOOL
+    derivation_evidence = DERIVATION_EVIDENCE
     max_targets = MAX_TARGETS
     #: UNIFORM.DAT's 1,200 members carry about 15,600 images between them, so a
     #: flat cap spent on the first container leaves UIS_GEAR.DAT -- 396 gear
@@ -166,8 +215,10 @@ class UniformDiscArtWriteLane(TerfArtWriteLane):
     classification = "offline-writer-proved"
     game_title = GAME_TITLE
     art_containers = ART_CONTAINERS
-    identity_document = None
-    identity_tool = ""
+    identity_document = IDENTITY_DOCUMENT
+    identity_schema = IDENTITY_SCHEMA
+    identity_tool = IDENTITY_TOOL
+    derivation_evidence = DERIVATION_EVIDENCE
     max_targets = MAX_TARGETS
     max_targets_per_container = 1500
     catalog_schema = CATALOG_SCHEMA
@@ -249,10 +300,12 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
     return 0
 
 
-__all__ = ["ART_CONTAINERS", "CAPABILITY_ID", "CATALOG_SCHEMA", "DISC_CAPABILITY_ID",
+__all__ = ["ART_CONTAINERS", "CAPABILITY_ID", "CATALOG_SCHEMA", "DERIVATION_EVIDENCE",
+           "DISC_CAPABILITY_ID",
            "DISC_LANE_ID", "DISC_RECIPE_SCHEMA", "DISC_WRITE_SCHEMA", "GAME_TITLE",
+           "IDENTITY_DOCUMENT", "IDENTITY_SCHEMA", "IDENTITY_TOOL",
            "LANE_ID", "NO_KIT_TABLE_NOTE", "RECIPE_SCHEMA", "TextureLane",
-           "UniformDiscArtWriteLane", "WRITE_SCHEMA"]
+           "UniformDiscArtWriteLane", "WRITE_SCHEMA", "load_identities"]
 
 
 if __name__ == "__main__":
