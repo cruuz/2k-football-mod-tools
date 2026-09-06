@@ -686,21 +686,29 @@ class TdbRecordLane:
                 priced = ea_terf.plan_member_rewrite(
                     working, member, new_payload, codecs=(codec,),
                     allow_short_tail=writable.recorded_short)
-                if not priced.fits_slot:
+                # ``fits_slot`` is the stronger claim -- nothing after this
+                # member moves at all -- and it is not the bound a
+                # fixed-allocation writer has.  A member that packs SMALLER
+                # than its slot shifts the members after it up and the
+                # container gets shorter, which the ISO writer handles inside
+                # the extent the file already owns; a member that packs bigger
+                # than the whole container's spare alignment is the one case
+                # that really would have to grow the file.
+                if priced.grows_container:
                     raise self.refuse(
                         f"the rewritten member {member} of {iso_path} packs to "
-                        f"{len(priced.packed):,} byte(s) under {priced.codec_name} and "
-                        f"the slot it owns holds {priced.slot_bytes:,}; it is "
-                        f"{len(priced.packed) - priced.slot_bytes:,} byte(s) over, and "
-                        f"growing it would move every member after it. Make the "
-                        f"replacement text shorter, or write fewer rows in one recipe."
+                        f"{len(priced.packed):,} byte(s) under {priced.codec_name}, which "
+                        f"would grow the container from {priced.previous_length:,} to "
+                        f"{priced.new_length:,} bytes -- past the space the disc gives it. "
+                        f"Make the replacement text shorter, or write fewer rows in one "
+                        f"recipe."
                     )
                 working = ea_terf.rewrite_member(
                     working, member, new_payload, codec=codec,
                     allow_short_tail=writable.recorded_short)
-                if len(working) != len(original):
+                if len(working) > len(original):
                     raise self.refuse(
-                        f"rewriting member {member} changed {iso_path} from "
+                        f"rewriting member {member} grew {iso_path} from "
                         f"{len(original):,} to {len(working):,} bytes; this lane writes "
                         f"only inside the space a file already owns."
                     )

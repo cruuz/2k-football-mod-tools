@@ -130,6 +130,8 @@ class UniformArtLane(TerfArtLane):
     page = "uniforms"
     title = "Uniform, face and tattoo textures"
     classification = "extract-only"
+    game_title = "Madden NFL 09 (PlayStation 2)"
+    identity_tool = "tools/madden09_ps2_texture_identities.py"
     art_containers = ART_CONTAINERS
     identity_document = IDENTITY_DOCUMENT
     identity_schema = IDENTITY_SCHEMA
@@ -165,6 +167,8 @@ class UniformDiscArtWriteLane(TerfArtWriteLane):
     page = "uniforms"
     title = "Write uniform, face and tattoo textures back to a new disc image"
     classification = "offline-writer-proved"
+    game_title = "Madden NFL 09 (PlayStation 2)"
+    identity_tool = "tools/madden09_ps2_texture_identities.py"
     art_containers = ART_CONTAINERS
     identity_document = IDENTITY_DOCUMENT
     identity_schema = IDENTITY_SCHEMA

@@ -133,12 +133,16 @@ def load_identities(path: Optional[Path] = None,
 #: organised.  Only the first column is a fact about *this* module; the rest is
 #: what the containers reveal, with an honest label on each.
 #:
-#: ``group`` is what a page can sort by today.  ``UNIFORMS.DAT`` names nothing
+#: ``group`` is what a page can sort by today, and a container that names
+#: nothing (``UNIFORMS.DAT`` on Madden 09, ``UNIFORM.DAT`` on NCAA 09) offers
 #: -- every one of its 455 members carries 15 unnamed images -- so the member
 #: index is the only structure it offers, and which team a member belongs to is
 #: **not established here** [A].  ``PLYRFACE`` and ``COACFACE`` name their one
 #: image ``FACE`` and ``TATTOOS`` names its own, so those groups are read from
 #: the file [M].
+#: What a sentence calls the identity tool when a game has not written one.
+IDENTITY_TOOL_UNKNOWN = "this game's identity tool"
+
 #: How many textures a catalogue offers as targets by default.  A page
 #: whose containers hold more says so in its document either way.
 MAX_TARGETS = 4000
@@ -346,15 +350,21 @@ class TerfArtLane:
     #: The schema that document declares.  Each game's shipped document names
     #: its own, so a lane says which rather than the base assuming one.
     identity_schema: str = IDENTITY_SCHEMA
+    #: What a sentence calls this game.  Every refusal and every receipt line
+    #: that names a game reads it from here, so a base's wording is the lane's
+    #: game and not the game the base was written for.
+    game_title: str = "this game"
+    #: The tool that pairs a PCSX2 texture dump with this disc, when one
+    #: exists.  Empty when none has been written yet, and the identity note
+    #: says so instead of naming a tool a user cannot run.
+    identity_tool: str = ""
     #: How many textures the catalogue offers as targets.
     max_targets = MAX_TARGETS
     catalog_schema = ""
     recipe_schema = ""
     write_schema = ""
-    validators = (
-        "tools/validate_madden09_ps2_uniform_art.sh",
-        "tools/validate_madden09_ps2_uniform_art.bat",
-    )
+    #: A lane sets its own; a base cannot know them.
+    validators: Tuple[str, ...] = ()
     #: The lane publishes files rather than rewriting the source, so it
     #: declares artifacts instead of byte ranges.
     fixed_allocation = False
@@ -377,8 +387,8 @@ class TerfArtLane:
         "A PCSX2 replacement file is named from the GS TEX0 and CLUT hashes the emulator "
         "computes at draw time. This lane derives both from the texture's own bytes -- the "
         "GS block image of each mip chain and the image's own palette -- and marks a name "
-        "confirmed where a texture dump of Madden 09 running has shown PCSX2 writing it "
-        "(tools/madden09_ps2_texture_identities.py pairs a dump with this disc). A texture "
+        "confirmed where a texture dump of the game running has shown PCSX2 writing it. "
+        "A texture "
         "whose size is not a power of two, or that the game draws with a CLUT it builds at "
         "run time, gets no derived name, and no pack built from any of these names has been "
         "loaded by an emulator yet."
@@ -389,9 +399,9 @@ class TerfArtLane:
     #: derivation cannot name.
     NO_IDENTITY_TABLE = (
         "No PCSX2 texture dump has been paired with this disc and no name could be derived "
-        "for this texture. Run the game once in PCSX2 with texture dumping on, then "
-        "tools/madden09_ps2_texture_identities.py --source <your image> --dump-dir <the dump "
-        "folder>, and the names a dump confirms appear here."
+        "for this texture. Run the game once in PCSX2 with texture dumping on, then pair the "
+        "dump with your image using this game's identity tool, and the names a dump confirms "
+        "appear here."
     )
 
     # -- catalogue -----------------------------------------------------
@@ -639,7 +649,7 @@ class TerfArtLane:
             note=(f"{wanted}, indexed against this texture's own {len(entries)}-colour palette: "
                   f"{exact:,} of {width * height:,} pixels land on an exact entry, and "
                   f"{len(indices):,} index byte(s) would be written. There is nowhere to write "
-                  f"them yet -- no Madden 09 container has been rebuilt and booted."),
+                  f"them yet -- no {self.game_title} container has been rebuilt and booted."),
         )
 
     @staticmethod
@@ -726,7 +736,7 @@ class TerfArtLane:
                 return self.NO_IDENTITY_TABLE
             return (f"No PCSX2 dump has shown {target.key} being drawn and no name could be "
                     f"derived for it. Dump the frame that draws it and re-run "
-                    f"tools/madden09_ps2_texture_identities.py.")
+                    f"{self.identity_tool or IDENTITY_TOOL_UNKNOWN}.")
         if not confirmed and derived:
             parts.append("No dump has shown this texture; the name is computed, not observed.")
         return " ".join(parts)
@@ -882,7 +892,7 @@ class TerfArtLane:
 
     def _how_to(self, count: int) -> str:
         return (
-            "Madden NFL 09 (PlayStation 2) — exported textures\n"
+            f"{self.game_title} — exported textures\n"
             "================================================\n"
             "\n"
             f"{count} PNG file(s), decoded from your own disc image. Your image was opened\n"
@@ -893,7 +903,7 @@ class TerfArtLane:
             "What you cannot do yet, and why:\n"
             "\n"
             "  * Put them back on the disc. Replacing a texture means rebuilding the\n"
-            "    container it lives in, and no rebuilt Madden 09 container has ever been\n"
+            f"    container it lives in, and no rebuilt {self.game_title} container has ever been\n"
             "    booted in an emulator to prove the game still loads it. On top of that,\n"
             "    the compression EA used has no public encoder, so an edited texture\n"
             "    cannot be packed back to the size of the one it replaces.\n"
@@ -958,7 +968,7 @@ class TerfArtLane:
     # -- what CI proves it on ------------------------------------------
 
     def synthetic_source(self, work_dir: Path) -> Path:
-        path = Path(work_dir) / "madden09-ps2-art-synthetic.iso"
+        path = Path(work_dir) / f"{self.capability_id or 'terf'}-art-synthetic.iso"
         path.write_bytes(self.discs.build_synthetic_disc())
         return path
 
@@ -1018,8 +1028,8 @@ class TerfArtWriteLane(TerfArtLane):
 
     **What it does not claim.**  ``offline-writer-proved`` is the whole of it:
     every step is proved against the user's own bytes by a verifier that
-    rebuilds the answer from the two images, and **no rebuilt Madden 09
-    container has ever been booted**.  Nothing here says the game loads the
+    rebuilds the answer from the two images, and **no rebuilt container of
+    either game has ever been booted**.  Nothing here says the game loads the
     result; the receipt says so too.
     """
 
@@ -1031,10 +1041,7 @@ class TerfArtWriteLane(TerfArtLane):
     classification = "offline-writer-proved"
     recipe_schema = ""
     write_schema = ""
-    validators = (
-        "tools/validate_madden09_ps2_uniform_disc_art.sh",
-        "tools/validate_madden09_ps2_uniform_disc_art.bat",
-    )
+    validators: Tuple[str, ...] = ()
     #: The image keeps its length whenever the rebuilt container fits its
     #: extent, which is the ordinary case -- our ``LZH1`` streams come out at
     #: about EA's size.  It is not guaranteed, so the honest answer is False
@@ -1042,7 +1049,7 @@ class TerfArtWriteLane(TerfArtLane):
     fixed_allocation = False
 
     NOT_BOOTED = (
-        "No rebuilt Madden 09 container has been booted. Every step here is proved against "
+        "No rebuilt container of this game has been booted. Every step here is proved against "
         "your own bytes offline -- the member decodes back to the pixels you gave it, the "
         "container follows the layout rules the retail discs follow, and every byte outside "
         "the declared ranges is unchanged -- but whether the game loads the result is not "
@@ -1314,7 +1321,7 @@ class TerfArtWriteLane(TerfArtLane):
     def _max_error(rgba: bytes, entries: Sequence[Tuple[int, int, int, int]]) -> int:
         """The worst channel a pixel can move by, riding this CLUT.
 
-        Reported rather than refused: a Madden 09 texture carries its own
+        Reported rather than refused: an MMAP texture carries its own
         palette, so a colour it does not hold has to land on the nearest one it
         does, and a number is more use than a warning.
         """
@@ -1591,7 +1598,7 @@ class TerfArtWriteLane(TerfArtLane):
         """
 
         work_dir = Path(work_dir)
-        path = work_dir / "madden09-ps2-disc-art-synthetic.iso"
+        path = work_dir / f"{self.capability_id or 'terf'}-disc-art-synthetic.iso"
         path.write_bytes(self.discs.build_synthetic_disc())
         catalogue = self.build_catalogue(path)
         target = catalogue.targets[0]
