@@ -44,7 +44,7 @@ class PublicTests(unittest.TestCase):
         from mod_editor.capabilities.validate_registry import validate_data
         registry = json.loads((ROOT / "mod_editor/capabilities/registry.v1.json").read_text())
         entry = json.loads((ROOT / "docs/mod_editor/nfl2k5_practice_squad_screen_capability.json").read_text())[0]
-        registry["capabilities"].append(entry)
+        registry["capabilities"] = [row for row in registry["capabilities"] if row["id"] != entry["id"]] + [entry]  # merged since integration 2
         registry["capabilities"].sort(key=lambda row: row["id"])
         # Unrelated registry evidence is private/absent in lean worktrees.
         validate_data(registry, check_files=False)
