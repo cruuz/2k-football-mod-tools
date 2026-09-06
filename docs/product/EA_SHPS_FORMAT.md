@@ -29,8 +29,16 @@ no palette entry and no bank name from any game is reproduced here.
    images sampled — and **two are refused**, one of which is not a corner
    case: code `0x0E` is a **4×4-block codec** at 6 bytes per block — two 8-bit
    palette endpoints per block, whose layout is decoded, and 2-bit per-pixel
-   selectors, whose semantics are not — and it holds every uniform, portrait,
-   head texture and loading screen on the disc. §5 is the measurement, and it
+   selectors, whose semantics are not. What it holds is **narrower than this
+   document first said** [M, corrected 2026-09-06]: the preview swatches in
+   `UNIFORMS.BIG`, every face, and the *high-detail half* of a worn kit — the
+   jersey, trousers, shoes, arm sleeves, chest and shin pieces. The kit a
+   player actually wears is mostly **`0x02` and writable today**: 21,767 of
+   `MODELS.BIG`'s 30,535 images, including the whole low-detail kit, both
+   helmets, the cap, sleeves, batting gloves, wristband, laces, the small
+   masks, and all 16,110 nameplate letters and squad-number digits. See
+   `MVP05_PS2_MODULE.md` §9 and
+   `docs/product/measured/mvp05_ps2/models-big-parts.json`. §5 is the measurement, and it
    now also records the **search of a real PCSX2 dump for an answer key**:
    there is none in it, by four tests, one of them calibrated at 198 of 198 on
    pairings already known to be right.
@@ -177,7 +185,12 @@ so a matcher pairing a dump with a bank asks for it.
 ### `0x0E` — 7,996 images: a block codec, half decoded
 
 **This is the single largest gap in this format, and it is not a corner
-case.** Code `0x0E` holds, on MVP Baseball 2005 [M]:
+case** — though it is a smaller one than first stated. Inside a kit bank the
+split by part tag is total: a tag is `0x02` in every bank or `0x0E` in every
+bank, never mixed, so `0x0E` costs the high-detail jersey, trousers, shoes,
+arm sleeves, chest and shin pieces and every face, while the rest of the kit
+is editable without it [M, `models-big-parts.json`]. Code `0x0E` holds, on MVP
+Baseball 2005 [M]:
 
 The counts below come from a second pass that sampled up to 200 banks per
 archive and recorded each image's first block code (20,973 images) [M].
