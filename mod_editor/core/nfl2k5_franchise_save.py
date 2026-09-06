@@ -184,6 +184,7 @@ STAGE_NAMES = {7: "preseason", 8: "regular season", 9: "postseason"}
 DISPLAY_YEAR_BASE = 2004
 GAME_SCHEDULED, GAME_PLAYED, GAME_FILLER = 0, 3, 7
 ROW_NAMES = {17: "wild card", 18: "divisional", 19: "conference", 20: "super bowl", 21: "pro bowl"}
+POSTSEASON_ROUNDS = tuple(ROW_NAMES.values())
 IR_EMPTY = 0xFFFF
 IR_MARK = 0xEE                                                          # player +0x28 while on injured reserve
 
@@ -247,10 +248,25 @@ class Game:
     minute: int
     flags: int              # the u16 at S_GRID_FLAGS for this cell
     scores: tuple[tuple[int, ...], tuple[int, ...]] | None       # (first five bytes, last five) when played
+    regular_season_weeks: int = 17
 
     @property
     def row_name(self) -> str:
-        return ROW_NAMES.get(self.row, f"week {self.row + 1}")
+        round_index = self.row - self.regular_season_weeks
+        return (POSTSEASON_ROUNDS[round_index] if 0 <= round_index < len(POSTSEASON_ROUNDS)
+                else f"week {self.row + 1}")
+
+    @property
+    def exists(self) -> bool:
+        return self.kind in (GAME_SCHEDULED, GAME_PLAYED) and bool(self.home or self.away or self.month)
+
+    @property
+    def home_known(self) -> bool:
+        return self.played or self.row < self.regular_season_weeks or bool(self.flags & 0xFF)
+
+    @property
+    def away_known(self) -> bool:
+        return self.played or self.row < self.regular_season_weeks or bool(self.flags >> 8)
 
     @property
     def played(self) -> bool:
@@ -519,6 +535,40 @@ class FranchiseSave:
         return tuple(self.buffer[SEASON_BLOCK + S_TEAM_ORDER:SEASON_BLOCK + S_TEAM_ORDER + LEAGUE_SLOTS])
 
     # ------------------------------------------------------------------ the grid
+    @property
+    def regular_season_weeks(self) -> int:
+        """Recognize the shipped 17/18-week layouts without guessing from the display year.
+
+        The regular-stage bound and saved 256/272-game template are durable evidence.
+        In a save without either, use the occupied tail: a Pro Bowl is retail, an NFL
+        championship in row 21 or extra games in the earlier rounds means 18 weeks.
+        An empty/ambiguous tail defaults to retail. Never extend the 22-row grid.
+        """
+        header = self.header
+        if header.stage == 8 and header.stage_weeks in (17, 18):
+            return header.stage_weeks
+        count, table = self.template_table
+        if table and table + count * GAME_SIZE <= ARENA_END and count in (256, 272):
+            return 18 if count == 272 else 17
+
+        def records(row: int) -> list[bytearray]:
+            start = SEASON_BLOCK + S_GRID + row * GRID_SLOTS * GAME_SIZE
+            return [raw for slot in range(GRID_SLOTS)
+                    if (raw := self.buffer[start + slot * GAME_SIZE:start + (slot + 1) * GAME_SIZE])
+                    and raw[0] in (GAME_SCHEDULED, GAME_PLAYED) and (raw[1] or raw[2] or raw[3])]
+
+        final = records(21)
+        if any({raw[1], raw[2]} == {32, 33} for raw in final):
+            return 17
+        if final or len(records(20)) > 1 or len(records(18)) > 4 or len(records(17)) > 6:
+            return 18
+        return 17
+
+    def schedule_row_name(self, row: int) -> str:
+        self.cell(row, 0)
+        round_index = row - self.regular_season_weeks
+        return (POSTSEASON_ROUNDS[round_index] if round_index >= 0 else f"week {row + 1}")
+
     @staticmethod
     def cell(row: int, slot: int) -> int:
         _require(0 <= row < GRID_ROWS and 0 <= slot < GRID_SLOTS, f"grid cell ({row}, {slot}) is outside 22 x 17")
@@ -534,43 +584,56 @@ class FranchiseSave:
             score_offset = SEASON_BLOCK + S_SCORES + index * SCORE_BYTES
             block = self.buffer[score_offset:score_offset + SCORE_BYTES]
             scores = (tuple(block[:5]), tuple(block[5:]))
-        return Game(row, slot, offset, raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], flags, scores)
+        return Game(row, slot, offset, raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], flags, scores,
+                    self.regular_season_weeks)
 
     def games(self, *, rows: Sequence[int] | None = None) -> list[Game]:
-        """Every real game in the grid (fillers and empty cells skipped), row by row."""
+        """Every saved game, including undecided matchups and cells after a filler.
+
+        Visit all 17 slots in each bounded row; a filler is not a safe end-of-row
+        assumption for edited saves. Preserve physical row/slot order and identity.
+        """
 
         out: list[Game] = []
         for row in (rows if rows is not None else range(GRID_ROWS)):
             for slot in range(GRID_SLOTS):
                 game = self.game(row, slot)
-                if game.kind == GAME_FILLER:
-                    break
-                if game.kind in (GAME_SCHEDULED, GAME_PLAYED) and (game.home or game.away or game.month):
+                if game.exists:
                     out.append(game)
         return out
 
     def set_game(self, row: int, slot: int, *, home: int | None = None, away: int | None = None,
                  month: int | None = None, day: int | None = None, hour: int | None = None,
                  minute: int | None = None, slot_code: int | None = None, allow_played: bool = False) -> Game:
-        """Edit a scheduled grid cell in place.  Played cells are refused unless ``allow_played``."""
+        """Atomically edit one existing grid cell; played cells need ``allow_played``.
+
+        Postseason flags distinguish a real team zero from an undecided matchup.
+        Undecided teams stay untouched, but do not block date and kickoff edits.
+        """
 
         current = self.game(row, slot)
         _require(current.kind != GAME_FILLER, f"({row}, {slot}) is the row filler, not a game")
+        _require(current.exists, f"({row}, {slot}) is empty or has an unsupported game type")
         _require(allow_played or current.kind != GAME_PLAYED, f"({row}, {slot}) has been played; pass allow_played")
         values = {"home": home, "away": away, "month": month, "day": day, "hour": hour, "minute": minute,
                   "slot_code": slot_code}
         limits = {"home": (0, LEAGUE_SLOTS - 1), "away": (0, LEAGUE_SLOTS - 1), "month": (1, 12), "day": (1, 31),
                   "hour": (0, 12), "minute": (0, 59), "slot_code": (0, 255)}
         offsets = {"home": 1, "away": 2, "month": 3, "day": 4, "slot_code": 5, "hour": 6, "minute": 7}
+        record = bytearray(self.buffer[current.offset:current.offset + GAME_SIZE])
         for name, value in values.items():
             if value is None:
                 continue
             low, high = limits[name]
             _require(isinstance(value, int) and low <= value <= high, f"{name}: {value!r} is outside {low}..{high}")
-            self.buffer[current.offset + offsets[name]] = value
-        updated = self.game(row, slot)
-        _require(updated.home != updated.away, "a team cannot play itself")
-        return updated
+            if name in ("home", "away") and value != getattr(current, name):
+                _require(getattr(current, f"{name}_known"), f"the {name} team is still to be decided")
+            record[offsets[name]] = value
+        if current.home_known and current.away_known:
+            _require(record[1] != record[2], "a team cannot play itself")
+        # All validation precedes the one bounded write, including for direct codec callers.
+        self.buffer[current.offset:current.offset + GAME_SIZE] = record
+        return self.game(row, slot)
 
     # ------------------------------------------------------------------ the template (arena)
     @property
