@@ -54,12 +54,6 @@
   16
  ],
  [
-  "nfl2k5_screen_hooks",
-  "code",
-  640,
-  16
- ],
- [
   "nfl2k5_roster_storage",
   "code",
   82,
@@ -158,13 +152,19 @@
  [
   "nfl2k5_read_option_runtime",
   "code",
-  960,
+  2048,
+  16
+ ],
+ [
+  "nfl2k5_read_option_runtime",
+  "data",
+  256,
   16
  ],
  [
   "nfl2k5_read_option_runtime",
   "read_only",
-  64,
+  88,
   16
  ],
  [
@@ -207,6 +207,12 @@
   "nfl2k5_my_career",
   "data",
   4096,
+  16
+ ],
+ [
+  "nfl2k5_screen_hooks",
+  "code",
+  640,
   16
  ],
  [
