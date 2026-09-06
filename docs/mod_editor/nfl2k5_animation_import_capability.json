@@ -1,0 +1,76 @@
+{
+  "backend": {
+    "operation": "write",
+    "module": "mod_editor/core/nfl2k5_animation_import.py",
+    "command": "python3 -m mod_editor.core.nfl2k5_animation_import --index <vc_53450030/0> --inventory <resource-inventory.json> import <archive:outer/chunk> --gltf <primary.gltf> --source <source.iso> --output <new-copy.iso>"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_BONE_IMPORT_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_animation_import.py",
+    "tests/mod_editor/test_nfl2k5_animation_import_retail.py",
+    "tests/mod_editor/test_animations_panel_qt.py",
+    "tests/mod_editor/test_xbe_patch_memory_writes.py",
+    "tests/mod_editor/test_xbe_patch_cave_references.py"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": true,
+    "expose": true,
+    "mode": "edit",
+    "reason": "Experimental output-copy imports become available only after per-bundle source, pose and byte-range preflight. Gameplay remains unwitnessed."
+  },
+  "id": "nfl2k5.animations.inspect_export",
+  "input_constraints": [
+    "Archive import is limited to referee 3107/27 and player 3092/163 with their matching skeletons; MMCD/paired roots and unresolved archive families remain inspection-only.",
+    "primary.gltf/bin retain canonical layout, channels, frames and native times. Mandatory sidecar is checked against freshly read source bytes; only rotation values may change.",
+    "Events, trajectory, auxiliary records, identity, duration, flags and slack retain their original bytes. Pose comparison limits are 0.75 degrees against requested native poses and 1.0 degree against sampled glTF poses; no continuous bound.",
+    "Two pinned occupied embedded .rdata roots create a new XBE with exact key spans and a repinned section digest. Family and football selection meaning are unresolved. No cave or runtime storage.",
+    "Left forearm scale 0.98 through 1.02 must fit each original compressed span/scratch budget. Both LODs, derived pivots, geometry and normals are coordinated; original SKEL directions and conservative native position bounds are retained.",
+    "Only new output copies are written. Source image, directory, all resource spans and changed bundle hashes must pass before mutation. This does not add clip identities, bone counts, selectors or arbitrary Blender re-export support."
+  ],
+  "portme": [
+    "Record Noah's start/blend/loop/end/mirror/replay and both-LOD/contact/body-profile witness before promising gameplay import.",
+    "Resolve embedded and additional archive family binding, live actor root, high-body proportions, morphs and accessories; support broader DCC interchange only with new reviewed gates."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Ship source and tests only. Native sidecars and inspection exports contain original game data and stay with the user's local extraction.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Offline compilation, compact output-copy transport and recovered C numerical comparisons only. No played game, live actor root, continuous interpolation bound, contact or body-profile acceptance.",
+    "evidence": [
+      "ASTRA_BONE_IMPORT_REPORT.md"
+    ]
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "archive:<outer>/<chunk> or one of xbe:0086dfe0 and xbe:008528e8",
+        "name": "identity",
+        "required": true
+      }
+    ],
+    "notes": "Multi-root resources are separate selectable parts; packed channel count alone never assigns a skeleton family."
+  },
+  "source_container": {
+    "format": "Uncompressed SMCD/MMCD archive roots, compressed SCNE player body resources, SKEL axes and pinned absolute-pointer XBE roots",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "75b67ce8f338943a8cc6bdc46718f61c7c2d9c4945d186983796a090aa31363f",
+      "a86c827b09db69990c4070cbb59d5c989db420a9d03427acd814823361a82e52",
+      "2a89df4b2e83dee4c7937194e5cd885c4b3662720bf976d8440ab5c3fb423e56",
+      "43c95e150c72805b419e05db3cff6cacc69c56791c349caa2f0456782775893b",
+      "c0892cd00a6819031c5cc6e7e4392548cc72e665e27f7dc14c928fc860feed3d"
+    ],
+    "resource": "5,198 catalogued archive animations, two embedded roots, coordinated player resources 3/113, 3/114 and 3/116",
+    "retail_file": "vc_53450030/0 and optional default.xbe"
+  },
+  "summary": "Inspect/export native clips and import fixed-channel primary glTF with a mandatory native sidecar. Coordinate a left forearm length edit at both body detail levels. Author a modest referee gesture within its existing identity and span.",
+  "surface": "models_shap_scne",
+  "title": "Animations and limb edits (EXPERIMENTAL / UNWITNESSED)",
+  "validation_command": "python3 -m mod_editor.core.nfl2k5_animation_import --help"
+}

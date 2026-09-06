@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 REPO = Path(__file__).resolve().parents[2]
@@ -17,6 +18,7 @@ try:
 except ImportError:
     HAVE_QT = False
 from mod_editor.core import nfl2k5_animation as A
+from mod_editor.core import nfl2k5_animation_import as I
 from animation_test_support import make_clip,simple_skeleton
 
 
@@ -124,6 +126,66 @@ class PanelTests(unittest.TestCase):
         self.app.sendPostedEvents(None,QEvent.DeferredDelete)
         self.app.processEvents()
         self.assertEqual(delivered,[])
+
+    def prepare_import(self,folder):
+        clip=make_clip(family='referee')
+        self.panel.apply_clip(clip,simple_skeleton())
+        source=Path(folder)/'source';source.write_bytes(clip.original)
+        export=Path(folder)/'export';A.export_clip(clip,export,simple_skeleton())
+        self.panel.image_field.setText(str(source))
+        self.panel.keys_field.setText(str(export/'primary.gltf'))
+        return clip,source,export
+
+    @staticmethod
+    def compact_mapping(image,plans):
+        edits=tuple(I.SpanEdit(p.clip.identity,p.replacement.before,p.replacement.after,
+                              ((0,0,len(p.replacement.before)),)) for p in plans)
+        I.preflight_file(image,edits)
+        return edits
+
+    def test_gltf_and_source_preflight_arms_real_transactional_copy(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(I,'image_edits',side_effect=self.compact_mapping):
+            clip,source,export=self.prepare_import(folder)
+            self.assertFalse(self.panel.import_button.isEnabled())
+            self.panel.check_changes();self.settle()
+            self.assertTrue(self.panel.import_button.isEnabled(),self.panel.status_label.text())
+            output=Path(folder)/'output'
+            self.panel.import_to(output);self.settle()
+            self.assertEqual(output.read_bytes(),clip.original)
+            self.assertEqual(source.read_bytes(),clip.original)
+            self.assertFalse(self.panel.import_button.isEnabled())
+            self.assertTrue(output.with_name('output.animation-receipt.json').is_file())
+
+    def test_bundle_change_after_preflight_refuses_and_disarms(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(I,'image_edits',side_effect=self.compact_mapping):
+            _,_,export=self.prepare_import(folder)
+            self.panel.check_changes();self.settle();self.assertTrue(self.panel.import_button.isEnabled())
+            (export/'primary.bin').write_bytes(b'foreign')
+            output=Path(folder)/'output';self.panel.import_to(output);self.settle()
+            self.assertFalse(output.exists());self.assertFalse(self.panel.import_button.isEnabled())
+
+    def test_source_change_after_preflight_refuses_without_output(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(I,'image_edits',side_effect=self.compact_mapping):
+            _,source,_=self.prepare_import(folder)
+            self.panel.check_changes();self.settle()
+            source.write_bytes(b'foreign')
+            output=Path(folder)/'output';self.panel.import_to(output);self.settle()
+            self.assertFalse(output.exists());self.assertFalse(self.panel.import_button.isEnabled())
+
+    def test_path_or_selection_change_invalidates_a_successful_preflight(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(I,'image_edits',side_effect=self.compact_mapping):
+            self.prepare_import(folder);self.panel.check_changes();self.settle()
+            self.assertTrue(self.panel.import_button.isEnabled())
+            self.panel.image_field.setText('new-source')
+            self.assertFalse(self.panel.import_button.isEnabled())
+            self.panel.apply_clip(make_clip(kind='MMCD'))
+            self.assertFalse(self.panel.import_button.isEnabled())
+
+    def test_changed_path_while_checking_cannot_arm_stale_result(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(I,'image_edits',side_effect=self.compact_mapping):
+            self.prepare_import(folder);self.panel.check_changes()
+            self.panel.keys_field.setText('different/primary.gltf');self.settle()
+            self.assertFalse(self.panel.import_button.isEnabled())
 
 
 if __name__ == '__main__':

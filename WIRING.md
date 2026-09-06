@@ -6451,3 +6451,146 @@ records dormant components only. Claude alone regenerates protected
 checks and all existing owners. No real-disc build or newly generated complete
 release manifest is claimed by this branch; the added manifest unit proof
 observes this actual writer and its full named RX/RW allocations.
+
+# r62-bone-import handoff, 2026-09-06
+
+This section supersedes the r61b Animations import-disabled handoff. The core,
+Animations panel, standalone tests and owner-composition helpers are implemented.
+EXPERIMENTAL / UNWITNESSED. Protected files remain untouched. No gameplay or
+DCC/Blender acceptance is implied. See `ASTRA_BONE_IMPORT_REPORT.md` and
+`docs/mod_editor/nfl2k5_animation_import.md` for scope and witness requirements.
+
+## Protected integration decisions
+
+This is an explicit per-resource output-copy editor, not a preset executable
+patch. An arbitrary user's sidecar, source resource and edited rotations cannot
+be represented by a boolean BuildPlan setting. Do not silently apply the default
+embedded one-word composition witness to user builds.
+
+| Required integration point | Concrete decision |
+| --- | --- |
+| `nfl2k5_throw_tuning._apply_all` dispatcher tuple and kwarg | No new production tuple or kwarg. Do not add `animation_xbe.apply` with no Replacement: that default is only the safety-gate witness. Explicit user imports go through `nfl2k5_animation_import.write_import_copy` or `nfl2k5_animation_xbe.write_import_copy`. |
+| `_selected_space_requests` / `_xbe_space_adapter` | No flags or adapter; animation XBE `REQUESTS = ()`. No allocation, page expansion, code or runtime state. |
+| Four status dictionaries (loose-XBE inspection, disc inspection, `_apply_all` result, final apply result) and `_grown_status_fields` | No boolean status entry. A clip's original/applied/foreign state depends on its compiled Replacement and must not be reported as one universal patch state. The panel displays the actual preflight and output receipt. |
+| `BuildPlan` field, normalization, deferral and final pass | None. No automatic clip or body mutation during the shared build pass. |
+| Presets `basic` / `advanced` / `experimental` | None enable an animation or limb edit. The dedicated panel requires a selected source, edit and successful preflight. |
+| Gameplay Patches `PATCHES` text and `NEEDS_IMAGE` | No row and no NEEDS_IMAGE entry. If a discoverability cross-link is desired, exact copy: **Retail: original motions and limb lengths. Patch: open Animations to check an edit and write a new copy.** Do not turn the cross-link into a toggle. |
+| Build tab `_option` caption | No `_option`. Reserved cross-link caption if one is wanted: **Animation import (Experimental)** (31 characters including the space before the parenthesis; comfortably below 60). |
+| Studio navigation | Keep the existing Animations registration. No new panel is necessary. |
+
+In `studio_qt.py`, in the source-follow block immediately before the existing
+`self._animations_panel.set_source_paths(*paths)` / `.reload()`, set:
+
+```python
+self._animations_panel.image_field.setText(str(source))
+```
+
+Set it whenever the source disc changes, even while resource paths are still
+being prepared. The field's signal invalidates pending import preflight. The
+panel's **Choose source disc** control already works without this convenience
+wiring. Embedded imports explicitly use the optional retail XBE field and write
+a new standalone XBE; they do not silently install it into a disc.
+
+## Release allowlist and runtime closure
+
+Add these exact lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_animation_import.py
+mod_editor/core/nfl2k5_animation_bones.py
+mod_editor/core/nfl2k5_animation_xbe.py
+docs/mod_editor/nfl2k5_animation_import.md
+docs/mod_editor/nfl2k5_animation_import_capability.json
+```
+
+The existing core animation/math/panel, Models, XBE helpers and tools are already
+allowlisted. In `packaging/check_2k5_mod_studio_runtime.py`, add these module names
+to the runtime import list beside the existing animation entries:
+
+```python
+"mod_editor.core.nfl2k5_animation_import",
+"mod_editor.core.nfl2k5_animation_bones",
+"mod_editor.core.nfl2k5_animation_xbe",
+```
+
+Expand its animation lazy-tool loop to include `nfl_vc_lz_fill`,
+`nfl_scne_gltf`, and `nfl_uniform_color_xiso_direct_patch`; all three files already
+appear on the allowlist. Retain `nfl_outer`, `nfl_motion_inventory`,
+`nfl_scene_probe`, `nfl_scne_inventory`, `nfl_txtr` and `xbe_info`.
+
+Add assertions that `compile_import`, `write_import_copy`, `compile_limb`,
+`write_limb_copy`, and the embedded `status`/`apply` methods are callable;
+`nfl2k5_animation_xbe.status(b"bad") == "foreign"`; and a fresh offscreen
+AnimationsPanel has its Import button disabled. Do not replace the latter with
+an assertion that `IMPORT_ENABLED` is false: the button is now gated per plan.
+No C compiler, private reports, recovered-C source, or evidence files are runtime
+imports. The high-body C comparison lives only in the standalone evidence test.
+
+## Capability change
+
+Replace the existing `nfl2k5.animations.inspect_export` object in
+`mod_editor/capabilities/registry.v1.json` with the complete schema-valid object
+in `docs/mod_editor/nfl2k5_animation_import_capability.json`. Preserve the stable
+ID so existing navigation continues to resolve. The object changes classification
+from `extract-only` to `offline-writer-proved`, backend operation from `export`
+to `write`, GUI mode from `export` to `edit`, and replaces the old disabled-import
+constraints with the exact gated subset. Runtime status remains `not-tested`.
+Both backend.command and validation_command use `python3 -m` with an actual
+repository module. The validation command checks packaged CLI availability;
+the evidence section names the substantive standalone tests. The same panel
+contains clip, limb and authored-gesture actions, so no extra invisible surface
+or generic BuildPlan field is introduced.
+
+## Occupied embedded roots and shared gates
+
+`nfl2k5_animation_xbe` owns only the explicitly pinned occupied spans
+`0x86d478..0x86e014` (2,972 bytes) and `0x851e38..0x85291c` (2,788 bytes), with
+writes restricted to their main quaternion words, plus the affected section
+header's digest. These are live animation data, not free space. Retail `.rdata`
+flags are 7 and stay 7. No `.text` mutation and no cave bytes occur.
+
+The checked-in test union already includes its empty `REQUESTS` and default
+one-word witness in both orders. Both XBE gate setUpClass methods explicitly
+check that the owner composed. The manifest builder now includes the owner in
+its module/request/compose/status/extra-owner lists and declares both complete
+root reservations, including unchanged bytes. Do not add an allocator budget
+row: zero-byte requests are invalid and this owner has no allocation.
+
+Claude must regenerate the protected
+`data/nfl2k5_cave_reservations.json` with the existing oracle manifest command
+after integration, with the disk-space rule respected. This session did not
+regenerate it. The writer checks the existing complete retail manifest for
+other-owner overlaps as well as its own explicit pinned spans. Generated
+manifest rows for this owner may also include observed digest bytes in retail
+or grown headers; those do not grant any additional resource write range.
+
+## Validation and user witness handoff
+
+Run these standalone files (Qt offscreen), and retain their precise skip reasons
+if private assets or the C compiler are absent:
+
+```text
+tests/mod_editor/test_nfl2k5_animation.py
+tests/mod_editor/test_nfl2k5_animation_import.py
+tests/mod_editor/test_nfl2k5_animation_retail.py
+tests/mod_editor/test_nfl2k5_animation_import_retail.py
+tests/mod_editor/test_animations_panel_qt.py
+tests/mod_editor/test_xbe_patch_memory_writes.py
+tests/mod_editor/test_xbe_patch_cave_references.py
+```
+
+For the corpus set `NFL2K5_ANIMATION_FULL_CORPUS=1`; provide the existing resource
+inventory via `NFL2K5_ANIMATION_INVENTORY` when not using `.scratch/`. The full
+corpus has 5,198 resources and 14,091,296 main/auxiliary words. No whole image or
+pack is read into memory. Compact disposable XDVDFS tests verify byte-identical
+no-edit output, the authored referee clip, both LODs/SKEL, exact changed ranges,
+replay, directory/source refusals and cleanup. Real retail offsets are checked
+read-only. A full retail output-copy acceptance build was intentionally not
+started with only about 102 GiB free on the main drive; it would break Noah's
+100 GB floor. No acceptance disc or pack copy remains in `.scratch/`.
+
+Before promising import, complete Noah's witness list in the report: unchanged
+round trip and edited clip through start/blend/loop/end/mirror/replay, then both
+LODs, head/hands/equipment, body profiles, planted feet, hand-to-ball and opponent
+contact for the limb. Throws/tackles need both actors and release/contact timing;
+this revision does not expose paired-action or throw-style authoring.

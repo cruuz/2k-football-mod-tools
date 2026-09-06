@@ -1,7 +1,7 @@
-"""EXPERIMENTAL / UNWITNESSED animation inspection and fixed-span groundwork.
+"""EXPERIMENTAL / UNWITNESSED animation inspection and fixed-span compilation.
 
-No executable, disc, or archive writes. Archive SMCD replacement returns bytes
-and a receipt; MMCD and embedded XBE roots remain inspection-only. The local
+This module returns bytes and receipts. The animation import and XBE modules
+provide checked output-copy transport. MMCD remains inspection-only. The local
 pose model has no captured actor root, player proportions, or high-body pass.
 """
 from __future__ import annotations
@@ -26,7 +26,7 @@ SCHEMA = 'nfl2k5_animation_native/v1'
 KEY_SCHEMA = 'nfl2k5_animation_keys/v1'
 RETAIL_XBE_SHA256 = '73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9'
 EMBEDDED_ROOTS = (0x86dfe0, 0x8528e8)  # Explicit memo roots, NOT an exhaustive census.
-IMPORT_ENABLED = False
+IMPORT_ENABLED = True  # Per-bundle/source/pose/transport preflight is still mandatory.
 SKELETON_NAMES = {
     'referee': ('root lfemur ltibia lfoot ltoes rfemur rtibia rfoot rtoes waist thorax neck head '
                 'lcollar lhumerus ltwist lelbow lwrist lhand rcollar rhumerus rtwist relbow rwrist rhand').split(),
@@ -223,7 +223,7 @@ class AnimationSource:
         segments = self.outer.range_segments(self.archive.packs,[p.virtual_start for p in self.archive.packs],
                                               entry.virtual_offset+int(row['chunk_offset']),len(span))
         source = {'scope':'archive','outer_index':pair[0],'chunk_index':pair[1],
-                  'outer_id':row['outer_id'],'chunk_offset':int(row['chunk_offset']),
+                  'outer_id':row['outer_id'],'outer_size':int(row['outer_size']),'chunk_offset':int(row['chunk_offset']),
                   'segments':[{'pack':s.pack_name,'offset':s.pack_offset,'length':s.size} for s in segments]}
         return parse_archive_span(span,identity,source)
 
@@ -426,7 +426,7 @@ def native_sidecar(clip: Clip,skeleton=None) -> dict:
             'original_sha256':sha256(clip.original),'body_sha256':sha256(clip.body),'structure':clip.structure,
             'roots':roots,'skeleton':skeleton,
             'channel_map_pairs':list({'referee':qm.REF_MAP,'player':qm.PLAYER_MAP}.get(clip.family,())),
-            'assumptions':list(ASSUMPTIONS),'import_enabled':False,
+            'assumptions':list(ASSUMPTIONS),'import_requires_preflight':True,
             'preservation':'Original whole span is authoritative, including wrapper, padding, directory and opaque bytes.'}
 
 
@@ -525,6 +525,10 @@ def export_clip(clip: Clip,destination: Path,skeleton=None,*,bake_rate=120) -> d
     files = {'animation.gltf':_json(gltf),'animation.bin':bytes(binary)}
     if clip.kind == 'SMCD':
         files['animation.keys.json'] = _json(key_document(clip))
+    if clip.kind in ('SMCD', 'XBE_ROOT'):
+        from .nfl2k5_animation_import import primary_files
+        files.update(primary_files(clip))
+        sidecar['primary_edit_file'] = 'primary.gltf'
     sidecar['export_hashes'] = {name:sha256(data) for name,data in files.items()}
     files['animation.native.json'] = _json(sidecar)
     files['README.txt'] = ('EXPERIMENTAL / UNWITNESSED\n\n'+'\n'.join(ASSUMPTIONS)+
@@ -532,7 +536,10 @@ def export_clip(clip: Clip,destination: Path,skeleton=None,*,bake_rate=120) -> d
         'The glTF is an inspection bake, with derived joints when the skeleton is known.\n'
         'For a dry-run key edit, edit rotations in animation.keys.json. Keep all other fields.\n'
         'Keys are scalar-first WXYZ in original packed-channel order, before mirroring.\n'
-        'The UI can report changes but cannot import them. No game file is written.\n').encode()
+        'Edit primary.gltf rotation tracks for import; keep its layout and native times.\n'
+        'The baked animation.gltf is for inspection. Derived joints cannot be edited independently.\n'
+        'Choose primary.gltf in Animations, then What would change to check the output copy.\n'
+        'Every import must pass source, pose, timing and byte-range checks.\n').encode()
     destination.parent.mkdir(parents=True,exist_ok=True)
     import shutil
     stage = Path(tempfile.mkdtemp(prefix='.animation-',dir=destination.parent)).resolve()
@@ -583,8 +590,8 @@ def _diff_spans(before,after):
 
 
 def compile_replacement(clip: Clip,rotations: Sequence) -> Replacement:
-    """Constrained existing SMCD primary keys only. Pure bytes, never disk I/O."""
-    require(clip.kind == 'SMCD' and len(clip.roots) == 1,'MMCD and embedded XBE replacement are disabled')
+    """Constrained single-root primary keys. Embedded transport adds XBE gates."""
+    require(clip.kind in ('SMCD','XBE_ROOT') and len(clip.roots) == 1,'MMCD replacement is disabled')
     r = clip.roots[0]
     require(len(rotations) == r.frames,'Frame count must stay fixed')
     output = bytearray(clip.original)
@@ -594,7 +601,7 @@ def compile_replacement(clip: Clip,rotations: Sequence) -> Replacement:
     for frame,values in enumerate(rotations):
         require(len(values) == r.channels,'Channel count must stay fixed')
         for channel,value in enumerate(values):
-            offset = 32+r.rotations+4*(frame*r.channels+channel)
+            offset = (0 if clip.kind == 'XBE_ROOT' else 32)+r.rotations+4*(frame*r.channels+channel)
             before = struct.unpack_from('<I',clip.original,offset)[0]
             try:
                 require(all(isinstance(v,(int,float)) and not isinstance(v,bool) for v in value),'Rotation values must be numbers')
@@ -613,8 +620,9 @@ def compile_replacement(clip: Clip,rotations: Sequence) -> Replacement:
                                 'offset':offset,'length':4,'before_word':before,'after_word':after,
                                 'omitted_lane_before':before>>30,'omitted_lane_after':after>>30,'error_degrees':error})
     after = bytes(output)
-    parsed = parse_archive_span(after,clip.identity,clip.source)
-    require(parsed.roots == clip.roots and parsed.name == clip.name,'Clip structure changed')
+    if clip.kind == 'SMCD':
+        parsed = parse_archive_span(after,clip.identity,clip.source)
+        require(parsed.roots == clip.roots and parsed.name == clip.name,'Clip structure changed')
     exact = _diff_spans(clip.original,after)
     physical = []
     span_base = 0
@@ -631,7 +639,7 @@ def compile_replacement(clip: Clip,rotations: Sequence) -> Replacement:
                'changed_bytes':sum(s['length'] for s in exact),'maximum_packing_error_degrees':max_error,
                'preserved':['identity','name','channels','frames','rate','multiplier','duration','flags',
                             'events','trajectory','auxiliary','opaque fields','wrapper','slack'],
-               'experimental':True,'witnessed':False,'ui_import_enabled':False,'game_files_written':False}
+               'experimental':True,'witnessed':False,'requires_transport_preflight':True,'game_files_written':False}
     return Replacement(clip.identity,clip.original,after,receipt)
 
 
