@@ -1,0 +1,585 @@
+{
+  "capabilities": [
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane nflblitz2002_ps2 gameplay.field_table build --source <SLUS-20051.iso> --destination <new.iso> --recipe <recipe.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/nflblitz2002_ps2/text_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
+        "tests/mod_editor/test_nflblitz2002_ps2_module.py",
+        "tools/validate_nflblitz2002_ps2_text.sh"
+      ],
+      "game": "nflblitz2002_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Gameplay page of the PS2 NFL Blitz 2002 Studio with a line editor bounded by each line's own span."
+      },
+      "id": "nflblitz2002ps2.gameplay.field_table",
+      "input_constraints": [
+        "Read-only source, new destination: the ISO is opened for reading, the destination must not exist, and a refusal leaves no destination behind.",
+        "Fixed allocation: a replacement fits the span it is given or is refused by name; no member moves, no member changes length, and the image's own length is the source's.",
+        "The three-place rule: a replaced member's CRC-32 is rewritten in the local file header, the central directory and the .ZIH index together, or not at all.",
+        "The independent verifier imports none of the patcher: it re-derives the archive and the index from the destination's own bytes, requires every unnamed member byte-identical, and requires every named member's bytes to recompute to the CRC-32 all three sites now carry.",
+        "A line owns its own bytes: a replacement longer than the span is refused naming the byte count, and a line break or a NUL inside a value is refused too.",
+        "Retail-free: no line, name, pixel or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc this module builds from the formats' rules."
+      ],
+      "portme": [
+        "Nothing structural: the shape is measured exhaustively on both discs and the writer is bounded by it. What a given table's columns mean is a separate question this row does not answer."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared Midway stored-ZIP and RenderWare texture-dictionary readers it imports, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "No rebuilt image has been booted in an emulator or on hardware; the game's acceptance of a rewritten member is not claimed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "member#line, e.g. cb_crowd.ini#3",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "Latin-1, at most the line's own byte span",
+            "name": "text",
+            "required": true
+          }
+        ],
+        "notes": "One line per edit; the catalogue carries each line's offset and span."
+      },
+      "source_container": {
+        "format": "One stored ZIP (/DATA/BASSETS.ZIP, 2,426 members, every one stored) and Midway's pre-built index beside it (/DATA/BASSETS.ZIH), whose names, sizes, data offsets and CRC-32s all agree with the archive's on 2,426 of 2,426.",
+        "hash_pins": [
+          "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
+          "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
+        ],
+        "resource": "1 member",
+        "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Edit any line of the one gameplay table on the disc, inside the span that line already owns. A CRLF line is padded with spaces and a 40-byte trivia record with NUL, so the member's length never changes and it is written back into the stored ZIP where it lies.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "NFL Blitz 2002 (PS2) field.tab",
+      "validation_command": "bash tools/validate_nflblitz2002_ps2_text.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane nflblitz2002_ps2 identity.crowd_tables build --source <SLUS-20051.iso> --destination <new.iso> --recipe <recipe.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/nflblitz2002_ps2/text_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
+        "tests/mod_editor/test_nflblitz2002_ps2_module.py",
+        "tools/validate_nflblitz2002_ps2_text.sh"
+      ],
+      "game": "nflblitz2002_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Text & Team Identity page of the PS2 NFL Blitz 2002 Studio with a line editor bounded by each line's own span."
+      },
+      "id": "nflblitz2002ps2.identity.crowd_tables",
+      "input_constraints": [
+        "Read-only source, new destination: the ISO is opened for reading, the destination must not exist, and a refusal leaves no destination behind.",
+        "Fixed allocation: a replacement fits the span it is given or is refused by name; no member moves, no member changes length, and the image's own length is the source's.",
+        "The three-place rule: a replaced member's CRC-32 is rewritten in the local file header, the central directory and the .ZIH index together, or not at all.",
+        "The independent verifier imports none of the patcher: it re-derives the archive and the index from the destination's own bytes, requires every unnamed member byte-identical, and requires every named member's bytes to recompute to the CRC-32 all three sites now carry.",
+        "A line owns its own bytes: a replacement longer than the span is refused naming the byte count, and a line break or a NUL inside a value is refused too.",
+        "Retail-free: no line, name, pixel or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc this module builds from the formats' rules."
+      ],
+      "portme": [
+        "Nothing structural: the shape is measured exhaustively on both discs and the writer is bounded by it. What a given table's columns mean is a separate question this row does not answer."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared Midway stored-ZIP and RenderWare texture-dictionary readers it imports, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "No rebuilt image has been booted in an emulator or on hardware; the game's acceptance of a rewritten member is not claimed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "member#line, e.g. cb_crowd.ini#3",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "Latin-1, at most the line's own byte span",
+            "name": "text",
+            "required": true
+          }
+        ],
+        "notes": "One line per edit; the catalogue carries each line's offset and span."
+      },
+      "source_container": {
+        "format": "One stored ZIP (/DATA/BASSETS.ZIP, 2,426 members, every one stored) and Midway's pre-built index beside it (/DATA/BASSETS.ZIH), whose names, sizes, data offsets and CRC-32s all agree with the archive's on 2,426 of 2,426.",
+        "hash_pins": [
+          "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
+          "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
+        ],
+        "resource": "31 members",
+        "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Edit any line of the 31 CRLF ASCII crowd tables, one per NFL team, inside the span that line already owns. A CRLF line is padded with spaces and a 40-byte trivia record with NUL, so the member's length never changes and it is written back into the stored ZIP where it lies.",
+      "surface": "colors",
+      "title": "NFL Blitz 2002 (PS2) the per-team crowd tables",
+      "validation_command": "bash tools/validate_nflblitz2002_ps2_text.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane nflblitz2002_ps2 menus.screen_textures catalogue --source <SLUS-20051.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/nflblitz2002_ps2/texture_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
+        "tests/mod_editor/test_nflblitz2002_ps2_module.py",
+        "tools/validate_nflblitz2002_ps2_art.sh"
+      ],
+      "game": "nflblitz2002_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Menus & UI page of the PS2 NFL Blitz 2002 Studio with preview and Export PNG and no import."
+      },
+      "id": "nflblitz2002ps2.menus.screen_textures",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading; nothing is written to the disc, a save or the emulator.",
+        "No writer: check_edit refuses every value, because there is nothing this lane accepts to write.",
+        "Bounded: at most 3,000 rows are listed as targets while the document's totals stay complete.",
+        "A PCSX2 replacement name is derived from the raster's own bytes and is never claimed to have been confirmed: no texture dump of this disc exists in this project.",
+        "Retail-free: no line, name, pixel or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc this module builds from the formats' rules."
+      ],
+      "portme": [
+        "The same writer the team row wants; one lane class serves both."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared Midway stored-ZIP and RenderWare texture-dictionary readers it imports, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "member#raster",
+            "name": "target",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table with an export. The GUI must not offer an import from this row."
+      },
+      "source_container": {
+        "format": "RenderWare texture dictionaries (section id 0x16) inside the stored ZIP, each holding PlayStation 2 native rasters uploaded through a GIF chain.",
+        "hash_pins": [
+          "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
+          "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
+        ],
+        "resource": "730 dictionaries",
+        "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Export any 8-bit or 32-bit raster of the 730 texture dictionaries that are not a team's, with a derived PCSX2 replacement name. Same walker and same measured refusal for 4-bit as the team row.",
+      "surface": "menus",
+      "title": "NFL Blitz 2002 (PS2) every texture dictionary that is not a team's",
+      "validation_command": "bash tools/validate_nflblitz2002_ps2_art.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane nflblitz2002_ps2 playbooks.trivia_banks build --source <SLUS-20051.iso> --destination <new.iso> --recipe <recipe.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/nflblitz2002_ps2/text_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
+        "tests/mod_editor/test_nflblitz2002_ps2_module.py",
+        "tools/validate_nflblitz2002_ps2_text.sh"
+      ],
+      "game": "nflblitz2002_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Playbooks & Plays page of the PS2 NFL Blitz 2002 Studio with a line editor bounded by each line's own span."
+      },
+      "id": "nflblitz2002ps2.playbooks.trivia_banks",
+      "input_constraints": [
+        "Read-only source, new destination: the ISO is opened for reading, the destination must not exist, and a refusal leaves no destination behind.",
+        "Fixed allocation: a replacement fits the span it is given or is refused by name; no member moves, no member changes length, and the image's own length is the source's.",
+        "The three-place rule: a replaced member's CRC-32 is rewritten in the local file header, the central directory and the .ZIH index together, or not at all.",
+        "The independent verifier imports none of the patcher: it re-derives the archive and the index from the destination's own bytes, requires every unnamed member byte-identical, and requires every named member's bytes to recompute to the CRC-32 all three sites now carry.",
+        "A line owns its own bytes: a replacement longer than the span is refused naming the byte count, and a line break or a NUL inside a value is refused too.",
+        "Retail-free: no line, name, pixel or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc this module builds from the formats' rules."
+      ],
+      "portme": [
+        "Nothing structural: the shape is measured exhaustively on both discs and the writer is bounded by it. What a given table's columns mean is a separate question this row does not answer."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared Midway stored-ZIP and RenderWare texture-dictionary readers it imports, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "No rebuilt image has been booted in an emulator or on hardware; the game's acceptance of a rewritten member is not claimed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "member#line, e.g. cb_crowd.ini#3",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "Latin-1, at most the line's own byte span",
+            "name": "text",
+            "required": true
+          }
+        ],
+        "notes": "One line per edit; the catalogue carries each line's offset and span."
+      },
+      "source_container": {
+        "format": "One stored ZIP (/DATA/BASSETS.ZIP, 2,426 members, every one stored) and Midway's pre-built index beside it (/DATA/BASSETS.ZIH), whose names, sizes, data offsets and CRC-32s all agree with the archive's on 2,426 of 2,426.",
+        "hash_pins": [
+          "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
+          "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
+        ],
+        "resource": "40 members",
+        "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Edit any line of the 40 banks of fixed 40-byte NUL-padded ASCII records, inside the span that line already owns. A CRLF line is padded with spaces and a 40-byte trivia record with NUL, so the member's length never changes and it is written back into the stored ZIP where it lies.",
+      "surface": "scripts_config",
+      "title": "NFL Blitz 2002 (PS2) the trivia banks",
+      "validation_command": "bash tools/validate_nflblitz2002_ps2_text.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane nflblitz2002_ps2 presentation.camera_paths catalogue --source <SLUS-20051.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/nflblitz2002_ps2/camera_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
+        "tests/mod_editor/test_nflblitz2002_ps2_module.py",
+        "tools/validate_nflblitz2002_ps2_containers.sh"
+      ],
+      "game": "nflblitz2002_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Presentation page of the PS2 NFL Blitz 2002 Studio as a table and no editor: the page states, in the row's own words, that a camera record's fields are not measured."
+      },
+      "id": "nflblitz2002ps2.presentation.camera_paths",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading; nothing is written to the disc, a save or the emulator.",
+        "No writer: check_edit refuses every value, because there is nothing this lane accepts to write.",
+        "Bounded: at most 3,000 rows are listed as targets while the document's totals stay complete.",
+        "Retail-free: no line, name, pixel or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc this module builds from the formats' rules."
+      ],
+      "portme": [
+        "Decode a camera record's 32 bytes, and a path becomes editable.",
+        "Read a WIFF's chunks. Only its head is measured.",
+        "Read a clump's geometry, materials and frames; that is a different reader from the texture-dictionary one this module ships."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared Midway stored-ZIP and RenderWare texture-dictionary readers it imports, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "camera:<member> or wiff:<member>",
+            "name": "target",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer an export or an import from this row."
+      },
+      "source_container": {
+        "format": "Midway CPTH camera paths, big-endian WIFF containers and RenderWare clump streams inside the stored ZIP.",
+        "hash_pins": [
+          "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
+          "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
+        ],
+        "resource": "85 camera paths, 190 WIFF containers, 1,272 clumps",
+        "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "List the 85 CPTH camera paths (16 + records * 32 == the member on 85 of 85), the 190 WIFF containers (a big-endian RIFF whose declared size + 8 is the member on 190 of 190) and the 1,272 .dff members, which are ordinary RenderWare clump streams: a top-level walk consumes 1,043 of them exactly, in the sequence Clump then Extension. Writes nothing.",
+      "surface": "scorebug_presentation",
+      "title": "NFL Blitz 2002 (PS2) camera paths, WIFF containers and RenderWare clumps",
+      "validation_command": "bash tools/validate_nflblitz2002_ps2_containers.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane nflblitz2002_ps2 rosters.player_names build --source <SLUS-20051.iso> --destination <new.iso> --recipe <recipe.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/nflblitz2002_ps2/roster_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
+        "tests/mod_editor/test_nflblitz2002_ps2_module.py",
+        "tools/validate_nflblitz2002_ps2_roster.sh"
+      ],
+      "game": "nflblitz2002_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 NFL Blitz 2002 Studio with a name editor and no rating editor: the page states, in the row's own words, that the numeric columns are not measured."
+      },
+      "id": "nflblitz2002ps2.rosters.player_names",
+      "input_constraints": [
+        "Read-only source, new destination: the ISO is opened for reading, the destination must not exist, and a refusal leaves no destination behind.",
+        "Fixed allocation: a replacement fits the span it is given or is refused by name; no member moves, no member changes length, and the image's own length is the source's.",
+        "The three-place rule: a replaced member's CRC-32 is rewritten in the local file header, the central directory and the .ZIH index together, or not at all.",
+        "The independent verifier imports none of the patcher: it re-derives the archive and the index from the destination's own bytes, requires every unnamed member byte-identical, and requires every named member's bytes to recompute to the CRC-32 all three sites now carry.",
+        "A name field holds 32 bytes including its NUL terminator; a longer value is refused naming the limit, and the padding this writes is the 0xCD the disc already uses.",
+        "The verifier additionally re-parses the rewritten roster and requires every record to still carry its block's ordinal at byte +68.",
+        "Retail-free: no line, name, pixel or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc this module builds from the formats' rules."
+      ],
+      "portme": [
+        "Name which block is which team. The block count tracks the team count and the mapping itself is not measured.",
+        "Decode the 36 numeric bytes. Two columns have exact identities and fourteen sit in a 0..100 range; looking like ratings is not being ratings."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared Midway stored-ZIP and RenderWare texture-dictionary readers it imports, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "No rebuilt image has been booted in an emulator or on hardware; the game's acceptance of a rewritten member is not claimed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "block:slot, e.g. 0:3",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "Latin-1, at most 31 characters",
+            "name": "first",
+            "required": false
+          },
+          {
+            "allowed": "Latin-1, at most 31 characters",
+            "name": "last",
+            "required": false
+          }
+        ],
+        "notes": "One record per edit; a value that does not fit its field is refused before anything is written."
+      },
+      "source_container": {
+        "format": "One stored ZIP (/DATA/BASSETS.ZIP, 2,426 members, every one stored) and Midway's pre-built index beside it (/DATA/BASSETS.ZIH), whose names, sizes, data offsets and CRC-32s all agree with the archive's on 2,426 of 2,426.",
+        "hash_pins": [
+          "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
+          "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
+        ],
+        "resource": "1 member, 41 blocks, 738 records",
+        "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Edit either 32-byte name field of any of the 738 records in roster.rst -- 41 blocks of u32 18 plus 18 100-byte records, which is the member's 73,964 bytes exactly. Every record's byte +68 equals its block's ordinal, 738 of 738, and the block count moves with the team count between the two discs. The 36 numeric bytes are listed as a column census and never written.",
+      "surface": "players_rosters",
+      "title": "NFL Blitz 2002 (PS2) player names in roster.rst",
+      "validation_command": "bash tools/validate_nflblitz2002_ps2_roster.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane nflblitz2002_ps2 textures.dictionary_inventory catalogue --source <SLUS-20051.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/nflblitz2002_ps2/texture_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
+        "tests/mod_editor/test_nflblitz2002_ps2_module.py",
+        "tools/validate_nflblitz2002_ps2_textures.sh"
+      ],
+      "game": "nflblitz2002_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the All Textures page of the PS2 NFL Blitz 2002 Studio as a table and no editor."
+      },
+      "id": "nflblitz2002ps2.textures.dictionary_inventory",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading; nothing is written to the disc, a save or the emulator.",
+        "No writer: check_edit refuses every value, because there is nothing this lane accepts to write.",
+        "Bounded: at most 3,000 rows are listed as targets while the document's totals stay complete.",
+        "Retail-free: no line, name, pixel or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc this module builds from the formats' rules."
+      ],
+      "portme": [
+        "Nothing: this row is the census, and the pages that own each dictionary carry the work."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared Midway stored-ZIP and RenderWare texture-dictionary readers it imports, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "a member name, e.g. cb_glogo.rtd",
+            "name": "member",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer an export or an import from this row."
+      },
+      "source_container": {
+        "format": "RenderWare texture dictionaries (section id 0x16) inside the stored ZIP, each holding PlayStation 2 native rasters uploaded through a GIF chain.",
+        "hash_pins": [
+          "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
+          "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
+        ],
+        "resource": "761 dictionaries, 10,420 rasters",
+        "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Count every texture dictionary and every raster on the disc -- 761 dictionaries and 10,420 rasters, each dictionary's declared texture count equal to the rasters found -- one row per dictionary with its rasters, its decodable rasters and its library version. Draws nothing and writes nothing.",
+      "surface": "textures",
+      "title": "NFL Blitz 2002 (PS2) every RenderWare texture dictionary on the disc",
+      "validation_command": "bash tools/validate_nflblitz2002_ps2_textures.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane nflblitz2002_ps2 uniforms.team_textures catalogue --source <SLUS-20051.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/nflblitz2002_ps2/texture_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/NFLBLITZ2002_PS2_MODULE.md",
+        "tests/mod_editor/test_nflblitz2002_ps2_lanes.py",
+        "tests/mod_editor/test_nflblitz2002_ps2_module.py",
+        "tools/validate_nflblitz2002_ps2_art.sh"
+      ],
+      "game": "nflblitz2002_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NFL Blitz 2002 Studio with preview and Export PNG and no import: the page states, in the row's own words, why a raster is not written back."
+      },
+      "id": "nflblitz2002ps2.uniforms.team_textures",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading; nothing is written to the disc, a save or the emulator.",
+        "No writer: check_edit refuses every value, because there is nothing this lane accepts to write.",
+        "Bounded: at most 3,000 rows are listed as targets while the document's totals stay complete.",
+        "A PCSX2 replacement name is derived from the raster's own bytes and is never claimed to have been confirmed: no texture dump of this disc exists in this project.",
+        "Retail-free: no line, name, pixel or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc this module builds from the formats' rules."
+      ],
+      "portme": [
+        "Prove a writer. Re-swizzling an 8-bit raster into the GS memory image and rewriting the member at its own length is within this module's readers and is not proved.",
+        "Establish the 4-bit GS upload layout, and 6,231 more rasters are drawn."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared Midway stored-ZIP and RenderWare texture-dictionary readers it imports, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "member#raster, e.g. cb_glogo.rtd#0",
+            "name": "target",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table with an export. The GUI must not offer an import from this row."
+      },
+      "source_container": {
+        "format": "RenderWare texture dictionaries (section id 0x16) inside the stored ZIP, each holding PlayStation 2 native rasters uploaded through a GIF chain.",
+        "hash_pins": [
+          "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d",
+          "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda"
+        ],
+        "resource": "31 dictionaries",
+        "retail_file": "User-owned NFL Blitz 2002 (USA) PlayStation 2 ISO, SLUS-20051 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Export any 8-bit or 32-bit raster of the 31 per-team texture dictionaries as PNG, with a derived PCSX2 replacement name. The 4-bit rasters are listed with the measured reason nothing is drawn: seven candidate GS layouts were scored on the retail disc and none separated from reading the bytes linearly, where the 8-bit answer beat it by 232%.",
+      "surface": "uniforms",
+      "title": "NFL Blitz 2002 (PS2) the per-team texture dictionaries",
+      "validation_command": "bash tools/validate_nflblitz2002_ps2_art.sh"
+    }
+  ],
+  "game": {
+    "id": "nflblitz2002_ps2",
+    "platform": "PlayStation 2",
+    "public_input": "User supplies a legally obtained USA PS2 ISO (SLUS-20051); the tool never bundles game files, BIOS, saves, or emulator binaries.",
+    "retail_identity": {
+      "content_sha256": "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda",
+      "executable_sha256": "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d"
+    },
+    "title": "NFL Blitz 2002 (USA, PlayStation 2)"
+  },
+  "schema": "vc_mod_capability_registry_fragment/v1",
+  "surfaces": [
+    "colors",
+    "gameplay_tuning_sliders",
+    "menus",
+    "players_rosters",
+    "scorebug_presentation",
+    "scripts_config",
+    "textures",
+    "uniforms"
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "all_passed": true,
+  "disc": "2002",
+  "final_bytes": 1464205312,
+  "not_booted": "No rebuilt image has been booted in an emulator or on hardware.",
+  "note": "The real-disc trial: four chained builds on the owner's own SLUS-20051 image, read-only source, scratch destinations, each verified against its own source, every image deleted afterwards. Every edit is a value this project chose, so any byte difference would be the writer's.",
+  "schema": "nflblitz_ps2_writer_trial_measured/v1",
+  "source": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/discs/blitz2002.iso",
+  "source_bytes": 1464205312,
+  "steps": [
+    {
+      "declared_bytes": 361524828,
+      "declared_ranges": 4,
+      "destination_bytes": 1464205312,
+      "lane": "identity.crowd_tables",
+      "members": [
+        {
+          "archive_ranges": 3,
+          "bytes": 25,
+          "crc32": "fb85c200",
+          "data_offset": 361223978,
+          "index_ranges": 1,
+          "member": "ac_crowd.ini",
+          "previous_crc32": "f76bd308",
+          "sha256": "96387f6a92b13fe06a209ee6e31fac7e2eec44cd1e4a98c679ab6f5e511d46aa"
+        }
+      ],
+      "members_byte_identical": 2424,
+      "members_checked": 2426,
+      "passed": true,
+      "seconds": {
+        "build": 46.4,
+        "catalogue": 0.0,
+        "verify": 6.2
+      },
+      "source_bytes": 1464205312,
+      "target": "ac_crowd.ini#0",
+      "targets": 31,
+      "values": {
+        "text": "FIXTURE0"
+      },
+      "verdict": "1 member(s) replaced, 2426 checked, 2424 byte-identical; the index and the archive agree"
+    },
+    {
+      "declared_bytes": 361524828,
+      "declared_ranges": 4,
+      "destination_bytes": 1464205312,
+      "lane": "gameplay.field_table",
+      "members": [
+        {
+          "archive_ranges": 3,
+          "bytes": 37113,
+          "crc32": "0f3cc96b",
+          "data_offset": 361226053,
+          "index_ranges": 1,
+          "member": "field.tab",
+          "previous_crc32": "74edc8ea",
+          "sha256": "3273d66bcd2a8d1abc3d5b1c2be1c9cbed8ad7c644bce79f322bf10b7e30d9de"
+        }
+      ],
+      "members_byte_identical": 2424,
+      "members_checked": 2426,
+      "passed": true,
+      "seconds": {
+        "build": 38.6,
+        "catalogue": 0.0,
+        "verify": 6.2
+      },
+      "source_bytes": 1464205312,
+      "target": "field.tab#0",
+      "targets": 2592,
+      "values": {
+        "text": "# FIXTUR"
+      },
+      "verdict": "1 member(s) replaced, 2426 checked, 2424 byte-identical; the index and the archive agree"
+    },
+    {
+      "declared_bytes": 361524828,
+      "declared_ranges": 4,
+      "destination_bytes": 1464205312,
+      "lane": "playbooks.trivia_banks",
+      "members": [
+        {
+          "archive_ranges": 3,
+          "bytes": 18000,
+          "crc32": "8ba41066",
+          "data_offset": 13535586,
+          "index_ranges": 1,
+          "member": "tr2002000.trv",
+          "previous_crc32": "d3681074",
+          "sha256": "9b7d778eaa3ee7ec8ba43b1ebe6099a85cfb4ee6a48017b5d0c53c16c5b19151"
+        }
+      ],
+      "members_byte_identical": 2424,
+      "members_checked": 2426,
+      "passed": true,
+      "seconds": {
+        "build": 49.3,
+        "catalogue": 0.1,
+        "verify": 8.7
+      },
+      "source_bytes": 1464205312,
+      "target": "tr2002000.trv#0",
+      "targets": 3000,
+      "values": {
+        "text": "FIXTURE TRIVIA LINE"
+      },
+      "verdict": "1 member(s) replaced, 2426 checked, 2424 byte-identical; the index and the archive agree"
+    },
+    {
+      "declared_bytes": 361524828,
+      "declared_ranges": 4,
+      "destination_bytes": 1464205312,
+      "lane": "rosters.player_names",
+      "members": [
+        {
+          "archive_ranges": 3,
+          "bytes": 73964,
+          "crc32": "8047c5dc",
+          "data_offset": 169720628,
+          "index_ranges": 1,
+          "member": "roster.rst",
+          "previous_crc32": "706b1fd4",
+          "sha256": "26e3f81f1b6db7fee98173c3f951ba52a37933b3a36ade39209bf070b382ea92"
+        }
+      ],
+      "members_byte_identical": 2424,
+      "members_checked": 2426,
+      "passed": true,
+      "seconds": {
+        "build": 59.6,
+        "catalogue": 0.0,
+        "verify": 9.0
+      },
+      "source_bytes": 1464205312,
+      "target": "0:0",
+      "targets": 738,
+      "values": {
+        "first": "Fixture",
+        "last": "Namefield"
+      },
+      "verdict": "roster.rst replaced, 2426 member(s) checked, 2424 byte-identical; the roster still parses and every record keeps its block ordinal"
+    }
+  ]
+}

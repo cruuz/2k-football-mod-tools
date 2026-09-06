@@ -1901,6 +1901,10 @@ def main() -> int:
         "mod_editor.games.ncaa09_ps2.art_pages",
         "mod_editor.games.ncaa09_ps2.playbooks_lane",
         "mod_editor.games.ncaa09_ps2.saves_lane",
+        "mod_editor.games.nflblitz2002_ps2",
+        "mod_editor.games._formats.blitz_zip",
+        "mod_editor.games._formats.rw_txd",
+        "mod_editor.games.nflblitz2002_ps2.containers",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -2006,7 +2010,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 133,
+    require(len(registry.capabilities) == 141,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -2413,7 +2417,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=133 sections=12 nfl2k5_capabilities=45 "
+        "registry=141 sections=12 nfl2k5_capabilities=45 "
         "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

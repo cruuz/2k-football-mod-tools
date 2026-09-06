@@ -1,0 +1,25 @@
+{
+  "capability_rows": 8,
+  "game_id": "nflblitz2002_ps2",
+  "hidden_disc_writers": 4,
+  "lanes_on_contract": 8,
+  "product_modules": 14,
+  "retail_identity": {
+    "content_sha256": "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda",
+    "executable_sha256": "d165b3c8bdd90548219ea13494c1d1e6e28cd7a4f0b0ae8f87c5c2e5b60fe85d"
+  },
+  "save_writer_ids": [],
+  "schema": "vc_game_module_pins/v1",
+  "shipped_files": 26,
+  "surfaces": [
+    "colors",
+    "gameplay_tuning_sliders",
+    "menus",
+    "players_rosters",
+    "scorebug_presentation",
+    "scripts_config",
+    "textures",
+    "uniforms"
+  ],
+  "windows": 1
+}

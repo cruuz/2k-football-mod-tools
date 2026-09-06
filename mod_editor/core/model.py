@@ -24,6 +24,7 @@ class GameId(str, Enum):
     MADDEN09_PS2 = "madden09_ps2"
     NCAA09_PS2 = "ncaa09_ps2"
     MVP05_PS2 = "mvp05_ps2"
+    NFLBLITZ2002_PS2 = "nflblitz2002_ps2"
 
     @property
     def display_name(self) -> str:
@@ -34,6 +35,7 @@ class GameId(str, Enum):
             GameId.MADDEN09_PS2: "Madden NFL 09 (PS2)",
             GameId.NCAA09_PS2: "NCAA Football 09 (PS2)",
             GameId.MVP05_PS2: "MVP Baseball 2005 (PS2)",
+            GameId.NFLBLITZ2002_PS2: "NFL Blitz 2002 (PS2)",
         }[self]
 
 
