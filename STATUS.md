@@ -1,4 +1,118 @@
-# 2K5 Mod Studio — v1.0 RC85 Release Status
+# 2K5 Mod Studio — v1.0 RC88 Release Status
+
+## Beta 64 (unreleased) — PS2 Madden 09 Studio: every page answered
+
+Source/UI version is **2K5 RC88**. Everything below is offline-proved or read-only; **nothing here has been booted**,
+and no Madden 09 row is `runtime-proved`.
+
+- **Fourteen pages, fourteen rows, eleven of them writing.** *PS2 Madden 09 Studio* now carries a lane on **eleven of
+  the shell's fourteen pages** — Uniforms & Equipment (export + disc writer), Names Numbers & Faces (team databases +
+  face art), Text & Team Identity, Field Art & Create-Team Art, Stadiums, Presentation, Menus & UI, Audio (streams +
+  banks), Gameplay, Playbooks & Plays and All Textures. **The Crib** and **Saves** state a reason instead;
+  **Build & Share** is the shell's own page. Eleven rows write, two export, one inspects.
+- **New this release**: the team-identity writer (32 teams, both agreeing copies, 470 of 470 checksum slots on the
+  real-disc trial); the audio lanes (34,046 streams and 967 bank sounds catalogued, 289 of 289 streams and 508 of 508
+  bank sounds byte-identical to ffmpeg's own decode, a bounded stream writer, the 33,751 MicroTalk streams refused by
+  name); the playbooks lane (102 books, 1,938 tables, 78,875 editable rows, the exact-size packing path proved on all
+  102); four more art pages (stadiums, field art, presentation, faces — 12,876 texture members, 11,735 decodable
+  images, three chained real-disc edits all passing at maximum channel error 0); and the first real executable patch
+  (five `sltiu` immediates behind the playbook editor's four caps).
+- **The two encoders everything else stands on**: `LZH1` had no public encoder anywhere and now round-trips **1,836
+  of 1,836** compressed art members byte for byte; the `MMAP` member writer rebuilds **all 1,780** texture members
+  byte for byte from their own decoded pixels.
+- **A four-character EA TDB name is four bytes, not four characters.** That one fix took the disc from **252
+  databases parsed with 103 refused** to **355 parsed with none refused**, and the checksum pass from 4,806 sites to
+  **8,926, all correct**.
+- **PCSX2 replacement identities** for **3,024** disc textures on the uniform containers and **234 of 8,449** across
+  the art pages, learned by pixel-matching a 33-frame texture dump. *Write PCSX2 pack* is still offered by **no** row.
+- **Capability registry: 106 rows** across four game/platform targets — 45 Xbox NFL 2K5, 37 APF 2K8, 14 PS2 Madden 09,
+  10 NFL 2K5 PS2. All ten Madden 09 validators pass in a shipped tree on Linux; the conformance harness passes 544 of
+  544 checks for the module. The `cmd.exe` validator run and the portable build's Windows smoke are **pending the
+  RC88 smoke**.
+- **Upstream Beta 61 is merged**, and the two regressions it caused are fixed: the NFL 2K5 (PS2) host-catalogue reader
+  (an entry quoting another module's constant is read as its own source text) and the evidence-directory name (the
+  release checker forbids a path component named `evidence`; the measured records live under
+  `docs/product/measured/`).
+- Full account: `docs/product/MADDEN09_PS2_MODULE.md`, whose §10 answers the seven-point shipping standard — including
+  the point it fails, which is that no writer has an in-game witness.
+
+## Beta 63 (unreleased) — PS2 Madden 09 Studio: a second game on the shell
+
+Source/UI version is **2K5 RC87**. Everything below is offline-proved or read-only; nothing new has been seen in a game.
+
+- **Select other games… lists two studios**: PS2 Madden 09 Studio and PS2 NFL 2K5 Studio. Madden NFL 09 (USA, PS2), retail or
+  Deluxe, is recognised by its boot ELF; every one of the fourteen pages is present, five carry a lane, the rest say why not.
+- **Madden 09 lanes**: All Textures inventories every EA container on the disc (read-only); Uniforms decodes the disc's `MMAP`
+  textures to PNG (7,082 of 7,616 uniform images; the palette table layout was proved by looking at faces and jerseys) and stays
+  extract-only until a PCSX2 texture dump of the game exists; Rosters reads the 355 on-disc EA databases (2,151 tables) read-only;
+  Menus & UI previews the 14,748 text members read-only; Gameplay carries the executable-patch scaffold, every translation refused.
+- **Substrate**: the EA TERF container package (LZH1 / RLE1 decoders re-expressed from the owner's prior work) and a new EA TDB
+  reader (`mod_editor/games/_formats/ea_tdb.py`). No writer is offered for Madden yet: no rebuilt container has been booted.
+- **Two games taught the contract four one-game assumptions**: the chooser test, the runtime-gate mirror, NFL 2K5's allowlist
+  patterns and the conformance work dirs now allow any number of games. The 2K5 studio is unchanged.
+
+## Beta 62 (unreleased) — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container
+
+Source/UI version is **2K5 RC86**. Everything below is offline-proved or read-only unless it says otherwise; nothing new
+has been seen in a game.
+
+- **Select other games… lists studios, one per game**, labelled *Console Game Year Studio*: **PS2 NFL 2K5 Studio** today.
+  The Xbox studio's File menu keeps two PS2 entries (the studio and the chooser); the save editor, disc inventory and
+  replacement-pack export moved into the studio's own Windows menu. `--game nfl2k5_ps2` opens the studio.
+- **The Game Studio shell** (`mod_editor/games/studio_qt.py`, core-owned): the Xbox studio's fourteen pages for every game,
+  each either a lane page drawn from the lane's declared fields or an honest empty page that says why, a Build & Share page
+  that chains every staged edit through child processes with receipts and per-step verification, honesty badges on every
+  writer. Games write lanes, never UI. The classic hand-written PS2 disc window stays reachable for its play designers.
+- **Contract 1.0 (still unreleased) grew** the three display fields and the composed label, the studio window, `Field` /
+  `Target.fields`, `ReadOnlyLane` / `ArtLane` / `AudioLane`, `Lane.page`, and a `lane` command-line verb; scaffold,
+  conformance (shell checks included) and the frozen tests moved with it.
+- **PS2 uniform art works off the PS2 disc**: the disc's own uniform textures decoded to PNG, edited, packed for PCSX2 under
+  the identities it computes at draw time, verified independently; 634 packages / 38,674 textures catalogued on the owner's
+  disc, 841 packable across 32 teams. Extract-only by registry rule; PCSX2 swaps at run time; nothing is written to the disc.
+- **EA's PlayStation 2 disc container is read and written** (`_formats/ea_terf`: TERF/DIR1, DATA and COMP chunks, LZH1 and
+  RLE1 decoders re-expressed from the owner's prior work, stored-member writes). Madden NFL 09 (PS2) is the second title and
+  builds on it in the next release.
+- Windows console fix for the games command line; macOS path fix in the conformance test; upstream Beta 60 merged.
+
+## Beta 61 (unreleased) — NFL 2K5 (PS2): six on-disc writers, proven offline
+
+- **Multi-game interfaces — design and proof, nothing wired yet.** `mod_editor/games/` holds a
+  versioned game-module contract (`vc_game_module/v1`), filesystem discovery that fails closed per
+  package, per-game registry/allowlist/pin fragments with a lossless merge (proved byte-exact
+  against `registry.v1.json`), a generic conformance harness that proves a game on its own
+  synthetic source, and the core-owned "Select other games…" chooser. ESPN NFL 2K5 (PS2) is
+  expressed on it as an adapter wrapping its lane tools unchanged; 40 new tests. No registry row,
+  pin, allowlist line or upstream module changed. Plan and the exact one-time hooks:
+  `docs/product/MULTI_GAME_INTERFACES_PLAN.md`.
+- **PS2 uniform replacement-pack export** (`nfl2k5ps2.uniforms.replacement_pack_export`, extract-only):
+  the edited uniform textures of the open Xbox project leave as a PCSX2 texture-replacement pack
+  for `SLUS-20919`, each file named by the hashes PCSX2 computes at draw time, computed offline from
+  the stock disc (5,379 manifest rows, 4,732 unique names). Separate PS2 export window and
+  `--ps2-export`; independent verifier; never emits an unedited texture; never writes the user's
+  ISO. **Witnessed** 2026-09-05 in PenguinScreen2 `8226182a` by GS-dump replay: an exported pack
+  rendered in place of the disc's art (shield, scorebug, kick-meter dial), and uniform parts (torso,
+  sleeves, pants, gloves) on two player-filling dumps; stock upstream PCSX2 loads the same pack.
+- **Six PS2 on-disc writers**, each a tab of the new PS2 NFL 2K5 Studio and offline-writer-proved: display text, playbooks,
+  uniform colours, the disc roster, stadium positions and one-shot AUDO sounds. Each writes a NEW
+  image through the fixed-allocation ISO9660 writer and ships an independent verifier; each was
+  proven once on the real disc. One AUDO slot has been heard on a cold boot (that row is runtime-proved
+  for that selector only); nothing else has been on a screen or heard.
+
+## Beta 61 (unreleased), earlier slice — NFL 2K5 (PS2): the disc, read by name
+
+Source/UI versions are **2K5 RC85** and **APF alpha.84**.
+
+- **First PS2 disc capability.** `nfl2k5ps2.textures.disc_inventory` (read-only-mapped, view):
+  open a `SLUS-20919` ISO read-only, identity-check it against the pinned digests, inventory
+  550,746 named resources (120,779 textures with GS format and dimensions) and see each name's
+  Xbox counterpart -- 24,187 shared names, 99.6% of the Xbox disc's. Command line
+  (`tools/nfl2k5_ps2_disc_inventory.py`) and the **PS2 Disc Inventory** window (File menu, or
+  `--ps2-disc`): a separate read-only browser like the PS2 save editor, virtualized table, filters,
+  CSV/JSON export. Never reads a pixel or a sample: only the metadata half of each chunk is
+  decoded, and the self-test proves it.
+- ISO9660 reader serial fix (`SLUS-209.19` -> `SLUS-20919`); its 54-test suite now runs in CI.
+- The PCSX2 replacement-pack audit accepts all six PCSX2 name shapes (it rejected 27% of a real
+  pack).
 
 ## Beta 60 (unreleased) — ★ Rosters reads the disc's own position scheme
 
@@ -47,9 +161,9 @@ Source/UI versions are **2K5 RC84** and **APF alpha.84**.
   from the disc's own data (4,303 portraits); and `docs/nfl2k5_ratings_and_styles.md`. Moves travel
   in the roster-edits document and the CSV; Build replays them. Unwitnessed in game.
 
-## Beta 59 (unreleased) — ★ Rosters: the whole roster editable, on the disc and in a save
+## Beta 59 — ★ Rosters: the whole roster editable, on the disc and in a save
 
-Source/UI versions are **2K5 RC83** and **APF alpha.84**.
+Source/UI versions were **2K5 RC83** and **APF alpha.84**.
 
 - **★ Rosters**, a new top-level page: the studio's replacement for Flying Finn's NFL 2K5 GameSave
   Editor. Team list → player grid → attribute cards, over the **disc** as well as over an Xbox save,
@@ -2799,7 +2913,7 @@ Export-only boundary instead of pretending that registry status is an action.
 
 | Product surface | Exact release-candidate coverage |
 | --- | ---: |
-| Capability registry | 70 rows total; 32 Xbox NFL 2K5 rows; 1 NFL 2K5 PS2 save-import row |
+| Capability registry | 180 rows total; 45 Xbox NFL 2K5 rows; 9 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory, PCSX2 replacement-pack export, six on-disc writers (PS2 NFL 2K5 Studio tabs): text, playbooks, uniform colours, disc roster, stadium positions, AUDO sounds) |
 | Sidebar tabs | 11 |
 | Specialized visual assets | 63,592 total; all 63,592 Editable, including 28,530 package-local equipment P8 palettes |
 | Text banks | 716 |

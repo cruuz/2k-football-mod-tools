@@ -1,0 +1,46 @@
+{
+  "cross_check": {
+    "crc_column_agrees": null,
+    "crc_recomputed": 0,
+    "crc_recomputed_agrees": 0,
+    "data_offsets_agree": 2695,
+    "index_entries": 2695,
+    "index_order_is_by_name": true,
+    "index_shape": "table",
+    "names_in_both": 2695,
+    "names_match_as_sets": true,
+    "sizes_agree": 2695,
+    "zip_entries": 2695,
+    "zip_order_is_by_data_offset": true
+  },
+  "disc": {
+    "archive": "/DATA/BERTHA.ZIP",
+    "archive_bytes": 439045790,
+    "index": "/DATA/BERTHA.ZIH",
+    "index_bytes": 68452,
+    "serial": "SLUS-20474"
+  },
+  "index_has_crc_column": false,
+  "index_shape": "table",
+  "member_extensions": {
+    "asd": 2,
+    "ban": 5,
+    "cap": 88,
+    "dff": 1436,
+    "ico": 2,
+    "ini": 32,
+    "ms2": 1,
+    "rsc": 37,
+    "rst": 1,
+    "rtd": 840,
+    "tab": 1,
+    "trv": 40,
+    "txt": 1,
+    "wip": 158,
+    "wmp": 23,
+    "wom": 28
+  },
+  "members": 2695,
+  "note": "Counts, names, offsets and lengths only. No member's bytes are here.",
+  "schema": "nflblitz_ps2_zip_index_measured/v1"
+}

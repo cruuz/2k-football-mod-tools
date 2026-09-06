@@ -1,0 +1,28 @@
+{
+  "capability_rows": 14,
+  "game_id": "ncaa09_ps2",
+  "hidden_disc_writers": 9,
+  "lanes_on_contract": 14,
+  "product_modules": 25,
+  "retail_identity": {
+    "content_sha256": "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8",
+    "executable_sha256": "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee"
+  },
+  "save_writer_ids": [],
+  "schema": "vc_game_module_pins/v1",
+  "shipped_files": 42,
+  "surfaces": [
+    "audio",
+    "colors",
+    "menus",
+    "players_rosters",
+    "portraits_faces",
+    "saves",
+    "scorebug_presentation",
+    "scripts_config",
+    "stadiums_fields",
+    "textures",
+    "uniforms"
+  ],
+  "windows": 1
+}

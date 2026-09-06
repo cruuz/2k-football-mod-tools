@@ -1,0 +1,75 @@
+{
+  "depths": {
+    "32": 27,
+    "4": 5436,
+    "8": 6365
+  },
+  "dictionaries": 840,
+  "dictionaries_whose_one_section_accounts_for_the_file": 840,
+  "dimensions_top": {
+    "1024x256": 66,
+    "128x128": 3499,
+    "128x16": 99,
+    "128x256": 130,
+    "128x32": 541,
+    "128x64": 2379,
+    "16x16": 120,
+    "256x128": 272,
+    "256x256": 1411,
+    "32x32": 316,
+    "32x64": 60,
+    "512x256": 96,
+    "64x128": 344,
+    "64x32": 527,
+    "64x64": 1654,
+    "8x8": 55
+  },
+  "gs_layout_measurement": {
+    "4_bit": {
+      "gs_block_image_inverted": 28.16,
+      "half_width_via_8_bit": 18.75,
+      "published_4_bit_routine": 20.14,
+      "raw_linear": 20.53,
+      "verdict": "none taken: the best candidate beats reading the bytes linearly by 9%, which does not separate from the null, so a 4-bit raster is listed and not drawn"
+    },
+    "8_bit": {
+      "gs_block_image_inverted": 15.93,
+      "psmct32_composition": 7.32,
+      "raw_linear": 24.26,
+      "verdict": "taken: it beats reading the bytes linearly by 232%"
+    },
+    "method": "Candidate GS layouts scored on 30 rasters of the retail 2002 disc by the mean absolute difference between horizontally adjacent decoded RGB values; real art is locally coherent and a wrong layout destroys that. Lower is more coherent."
+  },
+  "identities_derived_on_the_export_lanes": 6365,
+  "identity_note": "Derived, never confirmed: no PCSX2 texture dump of either Blitz disc exists in this project, so a name is what the emulator's documented rules compute from the raster's own bytes and no more.",
+  "library_versions": {
+    "0x0401ffff": 840
+  },
+  "note": "Counts and sizes only. No pixel, palette entry or texture name is here.",
+  "per_lane": {
+    "menus.screen_textures": {
+      "dictionaries": 230,
+      "identities_derived": 2980,
+      "rasters": 3241,
+      "rasters_decoded_to_rgba": 3007,
+      "rasters_listed_and_not_drawn": 234,
+      "refusals": 0
+    },
+    "uniforms.team_textures": {
+      "dictionaries": 610,
+      "identities_derived": 3385,
+      "rasters": 8587,
+      "rasters_decoded_to_rgba": 3385,
+      "rasters_listed_and_not_drawn": 5202,
+      "refusals": 0
+    }
+  },
+  "produced_by": "python3 -m mod_editor.games.nflblitz2003_ps2.texture_lane --lane inventory",
+  "rasters": 11828,
+  "rasters_decoded_to_rgba": 6392,
+  "rasters_listed_and_not_drawn": 5436,
+  "rasters_whose_tex0_agrees_with_the_header": 11828,
+  "refusals": 0,
+  "schema": "nflblitz_ps2_texture_dictionaries_measured/v1",
+  "team_selection": "A dictionary belongs to a team when its name is <a team prefix>_..., and the prefixes are read off the disc's own <two letters>_crowd.ini members rather than listed in this module."
+}

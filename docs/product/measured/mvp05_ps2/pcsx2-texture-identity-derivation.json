@@ -1,0 +1,52 @@
+{
+ "by_psm": {
+  "19": {
+   "agree": 1890,
+   "disagree": 0,
+   "no name derived": 198
+  },
+  "2": {
+   "agree": 0,
+   "disagree": 0,
+   "no name derived": 60
+  },
+  "27": {
+   "agree": 1035,
+   "disagree": 0,
+   "no name derived": 0
+  }
+ },
+ "by_psm_note": "The PSM 27 row is the finding. Those names are of textures the game uploaded as a high-byte surface, and until this run the deriver only ever produced the PSMT8 (PSM 19) reading, so every one of them was a disagreement: a different bits word AND a different TEX0 hash for the same pixels. The block reading reproduces none of them; the linear reading reproduces all of them, which is why pcsx2_texture_name.hashed_stream now takes the linear path for PSM 27 and derive_names offers both modes. A PSM with only 'no name derived' against it is a direct-colour or short-palette image, which this module names on purpose only when it is 8-bit with a 256-entry CLUT.",
+ "confirmed_names_checked": 3183,
+ "derived_but_a_different_name": 0,
+ "derived_name_is_the_confirmed_name": 2925,
+ "disagreements": [],
+ "generated_by": "tools/mvp05_ps2_texture_identities.py",
+ "method": "The disc image's derived names are computed from its own pixel block and palette and compared, string for string, with the filename PCSX2 wrote.",
+ "no_name_derived_for_the_disc_image": 258,
+ "question": "For every dumped name that pairs on pixels, does mod_editor/games/_formats/pcsx2_texture_name.py derive that same name from the disc bytes?",
+ "schema": "mvp05_ps2_pcsx2_texture_identity_derivation/v1",
+ "source": "mvp05.iso",
+ "tex0_only": {
+  "by_psm": {
+   "19": {
+    "tex0 not reproduced": 0,
+    "tex0 reproduced": 132
+   },
+   "2": {
+    "tex0 not reproduced": 40,
+    "tex0 reproduced": 0
+   }
+  },
+  "confirmed_images_the_deriver_names_nothing_for": 33,
+  "palette_entries_histogram": {
+   "1": 23,
+   "2": 9,
+   "9": 1
+  },
+  "reading": "A name is <tex0>-<clut>-<bits>. Where the TEX0 half is reproduced and the name still is not, the missing half is the CLUT: PCSX2 hashes a 256-entry CLUT and this image carries a shorter palette that the game pads at upload with something no disc byte records -- the same image is dumped under several CLUT hashes across the capture, so it is recoloured at run time. Those names can be confirmed by a dump and cannot be derived.",
+  "tex0_half_not_reproduced": 40,
+  "tex0_half_reproduced_from_the_disc": 132,
+  "their_distinct_filenames": 172
+ }
+}

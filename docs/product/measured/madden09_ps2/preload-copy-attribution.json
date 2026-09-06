@@ -1,0 +1,241 @@
+{
+ "discs": {
+  "Madden NFL 06": {
+   "caches": [
+    "FE.QKL",
+    "GAME.QKL"
+   ],
+   "containers_named": 39,
+   "copies": 5773,
+   "copies_re_attributed": 12,
+   "copies_refused": 0,
+   "header_copies": 55,
+   "member_copies": 5718,
+   "re_attributed": [
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 471
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 472
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 473
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 474
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 475
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 476
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 477
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 478
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 8335360,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 1
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 479
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 9287680,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 217
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 470
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 9287680,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 217
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 480
+     }
+    },
+    {
+     "cache": "GAME.QKL",
+     "offset": 9287680,
+     "the_bytes_are": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 217
+     },
+     "the_row_named": {
+      "container": "SOUNDDAT.DAT",
+      "kind": "member",
+      "member": 481
+     }
+    }
+   ]
+  },
+  "Madden NFL 09 (Deluxe)": {
+   "caches": [],
+   "containers_named": 0,
+   "copies": 0,
+   "copies_re_attributed": 0,
+   "copies_refused": 0,
+   "header_copies": 0,
+   "member_copies": 0,
+   "re_attributed": []
+  },
+  "Madden NFL 09 (retail)": {
+   "caches": [
+    "FE.QKL",
+    "GAME.QKL"
+   ],
+   "containers_named": 39,
+   "copies": 6270,
+   "copies_re_attributed": 2,
+   "copies_refused": 0,
+   "header_copies": 59,
+   "member_copies": 6211,
+   "re_attributed": [
+    {
+     "cache": "FE.QKL",
+     "offset": 2863552,
+     "the_bytes_are": {
+      "container": "UIS_PERS.DAT",
+      "kind": "header",
+      "member": null
+     },
+     "the_row_named": {
+      "container": "UIS_FONT.DAT",
+      "kind": "member",
+      "member": 10
+     }
+    },
+    {
+     "cache": "FE.QKL",
+     "offset": 3867968,
+     "the_bytes_are": {
+      "container": "UIS_PERS.DAT",
+      "kind": "header",
+      "member": null
+     },
+     "the_row_named": {
+      "container": "UIS_FONT.DAT",
+      "kind": "member",
+      "member": 10
+     }
+    }
+   ]
+  }
+ },
+ "measured_on": "2026-09-05",
+ "rule": "a DTLS row whose declared member the container it names does not have is attributed to the copy at the same offset in the same cache whose source bytes are what is there; the row's own words are kept",
+ "what": "which container a preload-cache copy is attributed to, after the boundary rows the census found refused"
+}

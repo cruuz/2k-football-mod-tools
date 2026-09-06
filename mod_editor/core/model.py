@@ -21,6 +21,13 @@ class GameId(str, Enum):
     NFL2K5 = "nfl2k5"
     APF2K8 = "apf2k8"
     NFL2K5_PS2 = "nfl2k5_ps2"
+    MADDEN09_PS2 = "madden09_ps2"
+    NCAA09_PS2 = "ncaa09_ps2"
+    MVP05_PS2 = "mvp05_ps2"
+    NFLBLITZ2002_PS2 = "nflblitz2002_ps2"
+    NFLBLITZ2003_PS2 = "nflblitz2003_ps2"
+    NFLSTREET1_PS2 = "nflstreet1_ps2"
+    NFLSTREET3_PS2 = "nflstreet3_ps2"
 
     @property
     def display_name(self) -> str:
@@ -28,6 +35,13 @@ class GameId(str, Enum):
             GameId.NFL2K5: "ESPN NFL 2K5 (Original Xbox)",
             GameId.APF2K8: "All-Pro Football 2K8 (Xbox 360)",
             GameId.NFL2K5_PS2: "ESPN NFL 2K5 (PlayStation 2)",
+            GameId.MADDEN09_PS2: "Madden NFL 09 (PS2)",
+            GameId.NCAA09_PS2: "NCAA Football 09 (PS2)",
+            GameId.MVP05_PS2: "MVP Baseball 2005 (PS2)",
+            GameId.NFLBLITZ2002_PS2: "NFL Blitz 2002 (PS2)",
+            GameId.NFLBLITZ2003_PS2: "NFL Blitz 2003 (PS2)",
+            GameId.NFLSTREET1_PS2: "NFL Street (PS2)",
+            GameId.NFLSTREET3_PS2: "NFL Street 3 (PS2)",
         }[self]
 
 

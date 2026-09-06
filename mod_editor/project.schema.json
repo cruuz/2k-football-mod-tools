@@ -7,7 +7,14 @@
       "enum": [
         "nfl2k5",
         "apf2k8",
-        "nfl2k5_ps2"
+        "nfl2k5_ps2",
+        "madden09_ps2",
+        "ncaa09_ps2",
+        "mvp05_ps2",
+        "nflblitz2002_ps2",
+        "nflblitz2003_ps2",
+        "nflstreet1_ps2",
+        "nflstreet3_ps2"
       ]
     },
     "log": {

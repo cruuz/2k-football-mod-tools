@@ -1,0 +1,986 @@
+{
+  "note": "Counts, sizes and digests measured on the owner's retail Madden NFL 09 (USA) PS2 disc, SLUS-21770, read-only. No record value, no name and no game byte is here: the only digest is over the playbook SCHEMA (table names, field names, types and bit widths), which is format, not content.",
+  "packing": {
+    "books_measured": 102,
+    "books_that_fit_their_own_slot": 102,
+    "max_headroom_bytes": 4023,
+    "max_ratio_ours_over_eas": 0.9579,
+    "min_headroom_bytes": 263,
+    "min_ratio_ours_over_eas": 0.9383,
+    "note": "Every shipped playbook re-encoded with ea_terf.lzh1_compress and compared with the bytes EA stored for it, then padded to EA's size and decoded again.",
+    "padded_round_trip_ok": 102,
+    "per_book": [
+      {
+        "decompressed_bytes": 91412,
+        "ea_stored_bytes": 40313,
+        "headroom_bytes": 2252,
+        "member": 0,
+        "ratio": 0.9441,
+        "reencoded_bytes": 38061
+      },
+      {
+        "decompressed_bytes": 91800,
+        "ea_stored_bytes": 40191,
+        "headroom_bytes": 2240,
+        "member": 1,
+        "ratio": 0.9443,
+        "reencoded_bytes": 37951
+      },
+      {
+        "decompressed_bytes": 87128,
+        "ea_stored_bytes": 38031,
+        "headroom_bytes": 2127,
+        "member": 2,
+        "ratio": 0.9441,
+        "reencoded_bytes": 35904
+      },
+      {
+        "decompressed_bytes": 87128,
+        "ea_stored_bytes": 37880,
+        "headroom_bytes": 2127,
+        "member": 3,
+        "ratio": 0.9438,
+        "reencoded_bytes": 35753
+      },
+      {
+        "decompressed_bytes": 87764,
+        "ea_stored_bytes": 38614,
+        "headroom_bytes": 2066,
+        "member": 4,
+        "ratio": 0.9465,
+        "reencoded_bytes": 36548
+      },
+      {
+        "decompressed_bytes": 83752,
+        "ea_stored_bytes": 36983,
+        "headroom_bytes": 2111,
+        "member": 5,
+        "ratio": 0.9429,
+        "reencoded_bytes": 34872
+      },
+      {
+        "decompressed_bytes": 87128,
+        "ea_stored_bytes": 37867,
+        "headroom_bytes": 2124,
+        "member": 6,
+        "ratio": 0.9439,
+        "reencoded_bytes": 35743
+      },
+      {
+        "decompressed_bytes": 86792,
+        "ea_stored_bytes": 38211,
+        "headroom_bytes": 2112,
+        "member": 7,
+        "ratio": 0.9447,
+        "reencoded_bytes": 36099
+      },
+      {
+        "decompressed_bytes": 88056,
+        "ea_stored_bytes": 38753,
+        "headroom_bytes": 2194,
+        "member": 8,
+        "ratio": 0.9434,
+        "reencoded_bytes": 36559
+      },
+      {
+        "decompressed_bytes": 83752,
+        "ea_stored_bytes": 36870,
+        "headroom_bytes": 2110,
+        "member": 9,
+        "ratio": 0.9428,
+        "reencoded_bytes": 34760
+      },
+      {
+        "decompressed_bytes": 87764,
+        "ea_stored_bytes": 38718,
+        "headroom_bytes": 2081,
+        "member": 10,
+        "ratio": 0.9463,
+        "reencoded_bytes": 36637
+      },
+      {
+        "decompressed_bytes": 92916,
+        "ea_stored_bytes": 40616,
+        "headroom_bytes": 2285,
+        "member": 11,
+        "ratio": 0.9437,
+        "reencoded_bytes": 38331
+      },
+      {
+        "decompressed_bytes": 87076,
+        "ea_stored_bytes": 37949,
+        "headroom_bytes": 2153,
+        "member": 12,
+        "ratio": 0.9433,
+        "reencoded_bytes": 35796
+      },
+      {
+        "decompressed_bytes": 87128,
+        "ea_stored_bytes": 38019,
+        "headroom_bytes": 2138,
+        "member": 13,
+        "ratio": 0.9438,
+        "reencoded_bytes": 35881
+      },
+      {
+        "decompressed_bytes": 87764,
+        "ea_stored_bytes": 38605,
+        "headroom_bytes": 2083,
+        "member": 14,
+        "ratio": 0.946,
+        "reencoded_bytes": 36522
+      },
+      {
+        "decompressed_bytes": 87128,
+        "ea_stored_bytes": 37930,
+        "headroom_bytes": 2142,
+        "member": 15,
+        "ratio": 0.9435,
+        "reencoded_bytes": 35788
+      },
+      {
+        "decompressed_bytes": 86740,
+        "ea_stored_bytes": 37934,
+        "headroom_bytes": 2153,
+        "member": 16,
+        "ratio": 0.9432,
+        "reencoded_bytes": 35781
+      },
+      {
+        "decompressed_bytes": 93720,
+        "ea_stored_bytes": 41329,
+        "headroom_bytes": 2213,
+        "member": 17,
+        "ratio": 0.9465,
+        "reencoded_bytes": 39116
+      },
+      {
+        "decompressed_bytes": 86740,
+        "ea_stored_bytes": 37922,
+        "headroom_bytes": 2169,
+        "member": 18,
+        "ratio": 0.9428,
+        "reencoded_bytes": 35753
+      },
+      {
+        "decompressed_bytes": 91472,
+        "ea_stored_bytes": 39952,
+        "headroom_bytes": 2281,
+        "member": 19,
+        "ratio": 0.9429,
+        "reencoded_bytes": 37671
+      },
+      {
+        "decompressed_bytes": 87128,
+        "ea_stored_bytes": 37866,
+        "headroom_bytes": 2123,
+        "member": 20,
+        "ratio": 0.9439,
+        "reencoded_bytes": 35743
+      },
+      {
+        "decompressed_bytes": 88884,
+        "ea_stored_bytes": 39162,
+        "headroom_bytes": 2147,
+        "member": 21,
+        "ratio": 0.9452,
+        "reencoded_bytes": 37015
+      },
+      {
+        "decompressed_bytes": 87128,
+        "ea_stored_bytes": 37877,
+        "headroom_bytes": 2135,
+        "member": 22,
+        "ratio": 0.9436,
+        "reencoded_bytes": 35742
+      },
+      {
+        "decompressed_bytes": 86844,
+        "ea_stored_bytes": 37728,
+        "headroom_bytes": 2147,
+        "member": 23,
+        "ratio": 0.9431,
+        "reencoded_bytes": 35581
+      },
+      {
+        "decompressed_bytes": 97100,
+        "ea_stored_bytes": 42761,
+        "headroom_bytes": 2351,
+        "member": 24,
+        "ratio": 0.945,
+        "reencoded_bytes": 40410
+      },
+      {
+        "decompressed_bytes": 86740,
+        "ea_stored_bytes": 37927,
+        "headroom_bytes": 2160,
+        "member": 25,
+        "ratio": 0.943,
+        "reencoded_bytes": 35767
+      },
+      {
+        "decompressed_bytes": 91472,
+        "ea_stored_bytes": 39947,
+        "headroom_bytes": 2275,
+        "member": 26,
+        "ratio": 0.943,
+        "reencoded_bytes": 37672
+      },
+      {
+        "decompressed_bytes": 91472,
+        "ea_stored_bytes": 39902,
+        "headroom_bytes": 2266,
+        "member": 27,
+        "ratio": 0.9432,
+        "reencoded_bytes": 37636
+      },
+      {
+        "decompressed_bytes": 86792,
+        "ea_stored_bytes": 38373,
+        "headroom_bytes": 2112,
+        "member": 28,
+        "ratio": 0.945,
+        "reencoded_bytes": 36261
+      },
+      {
+        "decompressed_bytes": 91620,
+        "ea_stored_bytes": 39804,
+        "headroom_bytes": 2243,
+        "member": 29,
+        "ratio": 0.9436,
+        "reencoded_bytes": 37561
+      },
+      {
+        "decompressed_bytes": 86844,
+        "ea_stored_bytes": 37744,
+        "headroom_bytes": 2141,
+        "member": 30,
+        "ratio": 0.9433,
+        "reencoded_bytes": 35603
+      },
+      {
+        "decompressed_bytes": 87700,
+        "ea_stored_bytes": 38370,
+        "headroom_bytes": 2202,
+        "member": 31,
+        "ratio": 0.9426,
+        "reencoded_bytes": 36168
+      },
+      {
+        "decompressed_bytes": 91344,
+        "ea_stored_bytes": 40186,
+        "headroom_bytes": 2346,
+        "member": 32,
+        "ratio": 0.9416,
+        "reencoded_bytes": 37840
+      },
+      {
+        "decompressed_bytes": 96584,
+        "ea_stored_bytes": 42663,
+        "headroom_bytes": 2401,
+        "member": 33,
+        "ratio": 0.9437,
+        "reencoded_bytes": 40262
+      },
+      {
+        "decompressed_bytes": 82408,
+        "ea_stored_bytes": 35911,
+        "headroom_bytes": 2033,
+        "member": 34,
+        "ratio": 0.9434,
+        "reencoded_bytes": 33878
+      },
+      {
+        "decompressed_bytes": 87036,
+        "ea_stored_bytes": 38449,
+        "headroom_bytes": 2256,
+        "member": 35,
+        "ratio": 0.9413,
+        "reencoded_bytes": 36193
+      },
+      {
+        "decompressed_bytes": 96932,
+        "ea_stored_bytes": 42611,
+        "headroom_bytes": 2403,
+        "member": 36,
+        "ratio": 0.9436,
+        "reencoded_bytes": 40208
+      },
+      {
+        "decompressed_bytes": 96520,
+        "ea_stored_bytes": 42698,
+        "headroom_bytes": 2366,
+        "member": 37,
+        "ratio": 0.9446,
+        "reencoded_bytes": 40332
+      },
+      {
+        "decompressed_bytes": 58444,
+        "ea_stored_bytes": 26211,
+        "headroom_bytes": 1449,
+        "member": 38,
+        "ratio": 0.9447,
+        "reencoded_bytes": 24762
+      },
+      {
+        "decompressed_bytes": 55904,
+        "ea_stored_bytes": 24739,
+        "headroom_bytes": 1202,
+        "member": 39,
+        "ratio": 0.9514,
+        "reencoded_bytes": 23537
+      },
+      {
+        "decompressed_bytes": 130200,
+        "ea_stored_bytes": 58187,
+        "headroom_bytes": 3378,
+        "member": 40,
+        "ratio": 0.9419,
+        "reencoded_bytes": 54809
+      },
+      {
+        "decompressed_bytes": 131340,
+        "ea_stored_bytes": 60516,
+        "headroom_bytes": 3558,
+        "member": 41,
+        "ratio": 0.9412,
+        "reencoded_bytes": 56958
+      },
+      {
+        "decompressed_bytes": 131560,
+        "ea_stored_bytes": 60966,
+        "headroom_bytes": 3629,
+        "member": 42,
+        "ratio": 0.9405,
+        "reencoded_bytes": 57337
+      },
+      {
+        "decompressed_bytes": 125456,
+        "ea_stored_bytes": 57731,
+        "headroom_bytes": 3310,
+        "member": 43,
+        "ratio": 0.9427,
+        "reencoded_bytes": 54421
+      },
+      {
+        "decompressed_bytes": 134312,
+        "ea_stored_bytes": 60876,
+        "headroom_bytes": 3591,
+        "member": 44,
+        "ratio": 0.941,
+        "reencoded_bytes": 57285
+      },
+      {
+        "decompressed_bytes": 144936,
+        "ea_stored_bytes": 67039,
+        "headroom_bytes": 4023,
+        "member": 45,
+        "ratio": 0.94,
+        "reencoded_bytes": 63016
+      },
+      {
+        "decompressed_bytes": 132916,
+        "ea_stored_bytes": 60874,
+        "headroom_bytes": 3594,
+        "member": 46,
+        "ratio": 0.941,
+        "reencoded_bytes": 57280
+      },
+      {
+        "decompressed_bytes": 130452,
+        "ea_stored_bytes": 59782,
+        "headroom_bytes": 3383,
+        "member": 47,
+        "ratio": 0.9434,
+        "reencoded_bytes": 56399
+      },
+      {
+        "decompressed_bytes": 128364,
+        "ea_stored_bytes": 59153,
+        "headroom_bytes": 3493,
+        "member": 48,
+        "ratio": 0.9409,
+        "reencoded_bytes": 55660
+      },
+      {
+        "decompressed_bytes": 133552,
+        "ea_stored_bytes": 62155,
+        "headroom_bytes": 3682,
+        "member": 49,
+        "ratio": 0.9408,
+        "reencoded_bytes": 58473
+      },
+      {
+        "decompressed_bytes": 134500,
+        "ea_stored_bytes": 62169,
+        "headroom_bytes": 3711,
+        "member": 50,
+        "ratio": 0.9403,
+        "reencoded_bytes": 58458
+      },
+      {
+        "decompressed_bytes": 132164,
+        "ea_stored_bytes": 58583,
+        "headroom_bytes": 3405,
+        "member": 51,
+        "ratio": 0.9419,
+        "reencoded_bytes": 55178
+      },
+      {
+        "decompressed_bytes": 138748,
+        "ea_stored_bytes": 63960,
+        "headroom_bytes": 3797,
+        "member": 52,
+        "ratio": 0.9406,
+        "reencoded_bytes": 60163
+      },
+      {
+        "decompressed_bytes": 137076,
+        "ea_stored_bytes": 60076,
+        "headroom_bytes": 3466,
+        "member": 53,
+        "ratio": 0.9423,
+        "reencoded_bytes": 56610
+      },
+      {
+        "decompressed_bytes": 133492,
+        "ea_stored_bytes": 61264,
+        "headroom_bytes": 3681,
+        "member": 54,
+        "ratio": 0.9399,
+        "reencoded_bytes": 57583
+      },
+      {
+        "decompressed_bytes": 129252,
+        "ea_stored_bytes": 59576,
+        "headroom_bytes": 3451,
+        "member": 55,
+        "ratio": 0.9421,
+        "reencoded_bytes": 56125
+      },
+      {
+        "decompressed_bytes": 133344,
+        "ea_stored_bytes": 61695,
+        "headroom_bytes": 3600,
+        "member": 56,
+        "ratio": 0.9416,
+        "reencoded_bytes": 58095
+      },
+      {
+        "decompressed_bytes": 131184,
+        "ea_stored_bytes": 60185,
+        "headroom_bytes": 3588,
+        "member": 57,
+        "ratio": 0.9404,
+        "reencoded_bytes": 56597
+      },
+      {
+        "decompressed_bytes": 132796,
+        "ea_stored_bytes": 60783,
+        "headroom_bytes": 3562,
+        "member": 58,
+        "ratio": 0.9414,
+        "reencoded_bytes": 57221
+      },
+      {
+        "decompressed_bytes": 138724,
+        "ea_stored_bytes": 64423,
+        "headroom_bytes": 3816,
+        "member": 59,
+        "ratio": 0.9408,
+        "reencoded_bytes": 60607
+      },
+      {
+        "decompressed_bytes": 132348,
+        "ea_stored_bytes": 59554,
+        "headroom_bytes": 3242,
+        "member": 60,
+        "ratio": 0.9456,
+        "reencoded_bytes": 56312
+      },
+      {
+        "decompressed_bytes": 133612,
+        "ea_stored_bytes": 59388,
+        "headroom_bytes": 3429,
+        "member": 61,
+        "ratio": 0.9423,
+        "reencoded_bytes": 55959
+      },
+      {
+        "decompressed_bytes": 130456,
+        "ea_stored_bytes": 60195,
+        "headroom_bytes": 3409,
+        "member": 62,
+        "ratio": 0.9434,
+        "reencoded_bytes": 56786
+      },
+      {
+        "decompressed_bytes": 135448,
+        "ea_stored_bytes": 62099,
+        "headroom_bytes": 3621,
+        "member": 63,
+        "ratio": 0.9417,
+        "reencoded_bytes": 58478
+      },
+      {
+        "decompressed_bytes": 130340,
+        "ea_stored_bytes": 60081,
+        "headroom_bytes": 3556,
+        "member": 64,
+        "ratio": 0.9408,
+        "reencoded_bytes": 56525
+      },
+      {
+        "decompressed_bytes": 134040,
+        "ea_stored_bytes": 62286,
+        "headroom_bytes": 3685,
+        "member": 65,
+        "ratio": 0.9408,
+        "reencoded_bytes": 58601
+      },
+      {
+        "decompressed_bytes": 131648,
+        "ea_stored_bytes": 60760,
+        "headroom_bytes": 3475,
+        "member": 66,
+        "ratio": 0.9428,
+        "reencoded_bytes": 57285
+      },
+      {
+        "decompressed_bytes": 145580,
+        "ea_stored_bytes": 67149,
+        "headroom_bytes": 3998,
+        "member": 67,
+        "ratio": 0.9405,
+        "reencoded_bytes": 63151
+      },
+      {
+        "decompressed_bytes": 140032,
+        "ea_stored_bytes": 64834,
+        "headroom_bytes": 3865,
+        "member": 68,
+        "ratio": 0.9404,
+        "reencoded_bytes": 60969
+      },
+      {
+        "decompressed_bytes": 129688,
+        "ea_stored_bytes": 59745,
+        "headroom_bytes": 3374,
+        "member": 69,
+        "ratio": 0.9435,
+        "reencoded_bytes": 56371
+      },
+      {
+        "decompressed_bytes": 135984,
+        "ea_stored_bytes": 62740,
+        "headroom_bytes": 3745,
+        "member": 70,
+        "ratio": 0.9403,
+        "reencoded_bytes": 58995
+      },
+      {
+        "decompressed_bytes": 136204,
+        "ea_stored_bytes": 60137,
+        "headroom_bytes": 3507,
+        "member": 71,
+        "ratio": 0.9417,
+        "reencoded_bytes": 56630
+      },
+      {
+        "decompressed_bytes": 125584,
+        "ea_stored_bytes": 57738,
+        "headroom_bytes": 3318,
+        "member": 72,
+        "ratio": 0.9425,
+        "reencoded_bytes": 54420
+      },
+      {
+        "decompressed_bytes": 127088,
+        "ea_stored_bytes": 58621,
+        "headroom_bytes": 3382,
+        "member": 73,
+        "ratio": 0.9423,
+        "reencoded_bytes": 55239
+      },
+      {
+        "decompressed_bytes": 128244,
+        "ea_stored_bytes": 58767,
+        "headroom_bytes": 3331,
+        "member": 74,
+        "ratio": 0.9433,
+        "reencoded_bytes": 55436
+      },
+      {
+        "decompressed_bytes": 121500,
+        "ea_stored_bytes": 56045,
+        "headroom_bytes": 3216,
+        "member": 75,
+        "ratio": 0.9426,
+        "reencoded_bytes": 52829
+      },
+      {
+        "decompressed_bytes": 128648,
+        "ea_stored_bytes": 58799,
+        "headroom_bytes": 3253,
+        "member": 76,
+        "ratio": 0.9447,
+        "reencoded_bytes": 55546
+      },
+      {
+        "decompressed_bytes": 125564,
+        "ea_stored_bytes": 58161,
+        "headroom_bytes": 3287,
+        "member": 77,
+        "ratio": 0.9435,
+        "reencoded_bytes": 54874
+      },
+      {
+        "decompressed_bytes": 136924,
+        "ea_stored_bytes": 59930,
+        "headroom_bytes": 2524,
+        "member": 78,
+        "ratio": 0.9579,
+        "reencoded_bytes": 57406
+      },
+      {
+        "decompressed_bytes": 40356,
+        "ea_stored_bytes": 18334,
+        "headroom_bytes": 1026,
+        "member": 79,
+        "ratio": 0.944,
+        "reencoded_bytes": 17308
+      },
+      {
+        "decompressed_bytes": 32868,
+        "ea_stored_bytes": 14369,
+        "headroom_bytes": 752,
+        "member": 80,
+        "ratio": 0.9477,
+        "reencoded_bytes": 13617
+      },
+      {
+        "decompressed_bytes": 27272,
+        "ea_stored_bytes": 12112,
+        "headroom_bytes": 597,
+        "member": 81,
+        "ratio": 0.9507,
+        "reencoded_bytes": 11515
+      },
+      {
+        "decompressed_bytes": 20956,
+        "ea_stored_bytes": 9037,
+        "headroom_bytes": 434,
+        "member": 82,
+        "ratio": 0.952,
+        "reencoded_bytes": 8603
+      },
+      {
+        "decompressed_bytes": 53936,
+        "ea_stored_bytes": 24052,
+        "headroom_bytes": 1476,
+        "member": 83,
+        "ratio": 0.9386,
+        "reencoded_bytes": 22576
+      },
+      {
+        "decompressed_bytes": 38072,
+        "ea_stored_bytes": 17003,
+        "headroom_bytes": 866,
+        "member": 84,
+        "ratio": 0.9491,
+        "reencoded_bytes": 16137
+      },
+      {
+        "decompressed_bytes": 10324,
+        "ea_stored_bytes": 4266,
+        "headroom_bytes": 263,
+        "member": 85,
+        "ratio": 0.9383,
+        "reencoded_bytes": 4003
+      },
+      {
+        "decompressed_bytes": 12920,
+        "ea_stored_bytes": 5119,
+        "headroom_bytes": 288,
+        "member": 86,
+        "ratio": 0.9437,
+        "reencoded_bytes": 4831
+      },
+      {
+        "decompressed_bytes": 34500,
+        "ea_stored_bytes": 14744,
+        "headroom_bytes": 867,
+        "member": 87,
+        "ratio": 0.9412,
+        "reencoded_bytes": 13877
+      },
+      {
+        "decompressed_bytes": 51296,
+        "ea_stored_bytes": 23058,
+        "headroom_bytes": 1368,
+        "member": 88,
+        "ratio": 0.9407,
+        "reencoded_bytes": 21690
+      },
+      {
+        "decompressed_bytes": 40792,
+        "ea_stored_bytes": 18307,
+        "headroom_bytes": 968,
+        "member": 89,
+        "ratio": 0.9471,
+        "reencoded_bytes": 17339
+      },
+      {
+        "decompressed_bytes": 45920,
+        "ea_stored_bytes": 20815,
+        "headroom_bytes": 1181,
+        "member": 90,
+        "ratio": 0.9433,
+        "reencoded_bytes": 19634
+      },
+      {
+        "decompressed_bytes": 43448,
+        "ea_stored_bytes": 19671,
+        "headroom_bytes": 1106,
+        "member": 91,
+        "ratio": 0.9438,
+        "reencoded_bytes": 18565
+      },
+      {
+        "decompressed_bytes": 44184,
+        "ea_stored_bytes": 20047,
+        "headroom_bytes": 1132,
+        "member": 92,
+        "ratio": 0.9435,
+        "reencoded_bytes": 18915
+      },
+      {
+        "decompressed_bytes": 16888,
+        "ea_stored_bytes": 7631,
+        "headroom_bytes": 410,
+        "member": 93,
+        "ratio": 0.9463,
+        "reencoded_bytes": 7221
+      },
+      {
+        "decompressed_bytes": 45032,
+        "ea_stored_bytes": 19119,
+        "headroom_bytes": 1092,
+        "member": 94,
+        "ratio": 0.9429,
+        "reencoded_bytes": 18027
+      },
+      {
+        "decompressed_bytes": 40060,
+        "ea_stored_bytes": 17286,
+        "headroom_bytes": 921,
+        "member": 95,
+        "ratio": 0.9467,
+        "reencoded_bytes": 16365
+      },
+      {
+        "decompressed_bytes": 43332,
+        "ea_stored_bytes": 18703,
+        "headroom_bytes": 1001,
+        "member": 96,
+        "ratio": 0.9465,
+        "reencoded_bytes": 17702
+      },
+      {
+        "decompressed_bytes": 43972,
+        "ea_stored_bytes": 18760,
+        "headroom_bytes": 1039,
+        "member": 97,
+        "ratio": 0.9446,
+        "reencoded_bytes": 17721
+      },
+      {
+        "decompressed_bytes": 37168,
+        "ea_stored_bytes": 16288,
+        "headroom_bytes": 794,
+        "member": 98,
+        "ratio": 0.9513,
+        "reencoded_bytes": 15494
+      },
+      {
+        "decompressed_bytes": 14100,
+        "ea_stored_bytes": 6037,
+        "headroom_bytes": 304,
+        "member": 99,
+        "ratio": 0.9496,
+        "reencoded_bytes": 5733
+      },
+      {
+        "decompressed_bytes": 39364,
+        "ea_stored_bytes": 17335,
+        "headroom_bytes": 927,
+        "member": 100,
+        "ratio": 0.9465,
+        "reencoded_bytes": 16408
+      },
+      {
+        "decompressed_bytes": 161284,
+        "ea_stored_bytes": 68024,
+        "headroom_bytes": 3140,
+        "member": 101,
+        "ratio": 0.9538,
+        "reencoded_bytes": 64884
+      }
+    ]
+  },
+  "playbooks": {
+    "books": 102,
+    "capacity_per_table": {
+      "ARTL": 29123,
+      "FORM": 1000,
+      "PBAI": 77134,
+      "PBAU": 1424,
+      "PBFM": 919,
+      "PBPL": 22105,
+      "PBST": 2300,
+      "PLCM": 4332,
+      "PLPD": 7651,
+      "PLRD": 4314,
+      "PLYL": 22103,
+      "PLYS": 243133,
+      "PSAL": 119396,
+      "SETG": 62819,
+      "SETL": 2402,
+      "SETP": 26422,
+      "SGF\\x00": 17630,
+      "SPKF": 8992,
+      "SPKG": 17064
+    },
+    "checksum_sites": 4080,
+    "checksum_sites_wrong": 0,
+    "editable_rows": 78875,
+    "editable_rows_per_table": {
+      "FORM": 1000,
+      "PBAU": 1424,
+      "PBFM": 919,
+      "PBPL": 22105,
+      "PBST": 2300,
+      "PLYL": 22103,
+      "SETL": 2402,
+      "SGF\\x00": 17630,
+      "SPKF": 8992
+    },
+    "field_definitions": 24684,
+    "records": 670263,
+    "rows_per_table": {
+      "ARTL": 29123,
+      "FORM": 1000,
+      "PBAI": 77134,
+      "PBAU": 1424,
+      "PBFM": 919,
+      "PBPL": 22105,
+      "PBST": 2300,
+      "PLCM": 4332,
+      "PLPD": 7651,
+      "PLRD": 4314,
+      "PLYL": 22103,
+      "PLYS": 243133,
+      "PSAL": 119396,
+      "SETG": 62819,
+      "SETL": 2402,
+      "SETP": 26422,
+      "SGF\\x00": 17630,
+      "SPKF": 8992,
+      "SPKG": 17064
+    },
+    "schema_sha256": "401a728208b12b2260e92fcef37c1e12cb888bffcc910200dd7cacccb58fe1bc",
+    "tables": 1938,
+    "tables_packed_exactly_full": 1938
+  },
+  "preload_coherence": {
+    "container_named_by": [
+      "GAME.QKL",
+      "FE.QKL"
+    ],
+    "fe_qkl_directory_copies": 2,
+    "game_qkl_member_copies": [
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112
+    ],
+    "playbook_members_cached": []
+  },
+  "reader_fix": {
+    "gamedata_after_the_fix": {
+      "checksum_sites": 4096,
+      "checksum_sites_wrong": 0,
+      "playbooks": 102,
+      "route_menu_databases": 2,
+      "tdb_members": 104
+    },
+    "name_bytes_census": {
+      "backslash_bytes_in_any_name": 0,
+      "distinct_such_names": [
+        "53474600"
+      ],
+      "names_read": 89508,
+      "names_with_a_byte_outside_0x20_0x7e": 103
+    },
+    "what": "ea_tdb.decode_name: a four-character table or field name is four BYTES; a byte outside 0x20..0x7E is rendered \\\\xNN and the raw bytes are kept for a writer.",
+    "whole_disc_after_the_fix": {
+      "checksum_sites": 8926,
+      "checksum_sites_wrong": 0,
+      "databases_parsed": 355,
+      "databases_parsed_before_the_fix": 252,
+      "databases_refused": 0,
+      "field_definitions": 85400,
+      "tables": 4108
+    },
+    "why": "102 shipped playbooks and the create-a-playbook template declare a table named SGF followed by a NUL byte; a strict-ASCII decode refused all 103."
+  },
+  "real_disc_trial": {
+    "container_directory_changed": false,
+    "declared_ranges": [
+      {
+        "length": 8,
+        "reason": "dirrec_length:/DATA/GAMEDATA.DAT",
+        "start": 538812
+      },
+      {
+        "length": 4422400,
+        "reason": "extent:/DATA/GAMEDATA.DAT",
+        "start": 1052076032
+      }
+    ],
+    "destination_image_bytes": 1657339904,
+    "ea_stored_bytes": 67149,
+    "edit": "GAMEDATA.DAT member 67, SETL record 0, the name field",
+    "packing_path": "exact-size",
+    "padding_bytes": 3983,
+    "preload_caches_rewritten": 0,
+    "reencoded_bytes": 63166,
+    "runtime": "not tested; no rebuilt Madden 09 disc has been booted",
+    "source_image_bytes": 1657339904,
+    "verifier": {
+      "checksum_sites": 40,
+      "edits_checked": 1,
+      "iso_bytes_compared": 1652917496,
+      "members_checked": 1,
+      "preload_copies": 12,
+      "undeclared_changed_bytes": 0,
+      "untouched_members": 114,
+      "verdict": "PASS"
+    }
+  },
+  "schema": "madden09_ps2_playbook_databases/v1",
+  "source": {
+    "boot_elf_sha256": "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+    "container": "/DATA/GAMEDATA.DAT",
+    "container_bytes": 4422400,
+    "container_members": 115,
+    "image_sha256": "b34e8a6acb4be6c92c238173e9c269bf42dfd3bb4231685052538f3aa82f6427",
+    "serial": "SLUS-21770"
+  }
+}

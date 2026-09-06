@@ -1,0 +1,149 @@
+{
+  "note": "Each bounded probe's verdict, its identities, and what it became.",
+  "probes": {
+    "dff_clump_ids": {
+      "answer": "The rule is the wrong rule for these members: a DFF stream is more than one top-level section. A walk over the whole member consumes it exactly, and the sequence is Clump(0x10) then Extension(0x03).",
+      "became": "a page note (Stadiums) plus counts on presentation.camera_paths",
+      "identities": {
+        "library version words": {
+          "0x00000310": {
+            "2002": 592,
+            "2003": 593
+          },
+          "0x0401ffff": {
+            "2002": 680,
+            "2003": 843
+          }
+        },
+        "members": {
+          "2002": 1272,
+          "2003": 1436
+        },
+        "top-level sequence Clump alone": {
+          "2002": 162,
+          "2003": 149
+        },
+        "top-level sequence Clump then Extension": {
+          "2002": 1043,
+          "2003": 1145
+        },
+        "walk consumes the member exactly": {
+          "2002": "1,043 of 1,272",
+          "2003": "1,167 of 1,436"
+        }
+      },
+      "not_claimed": [
+        "a clump's geometry, materials or frames; that is a different reader from the texture-dictionary one this module ships"
+      ],
+      "question": "The owner's disc map left all 2,708 .dff members as a raw magic because a single-section length rule -- section bytes + 12 == the file -- fails on every one of them.",
+      "verdict": "answered: the ids ARE RenderWare and Midway wrote no variant"
+    },
+    "htpc_cpth": {
+      "became": "a reader with a row: presentation.camera_paths, read-only-mapped",
+      "correction": "The owner's scoping study names this family HTPC, which is its tag read as a little-endian word. The bytes on the disc are CPTH.",
+      "header_word1_census": {
+        "2002": {
+          "1": 20,
+          "3": 3,
+          "5": 19,
+          "7": 43
+        },
+        "2003": {
+          "1": 20,
+          "3": 3,
+          "5": 19,
+          "7": 46
+        }
+      },
+      "identities": {
+        "16 + records * 32 == the member": {
+          "2002": "85 of 85",
+          "2003": "88 of 88"
+        }
+      },
+      "not_claimed": [
+        "what a 32-byte record's fields are; they read as IEEE floats and nothing here says which is a position and which a time"
+      ],
+      "records": {
+        "2002": 39595,
+        "2003": 42718
+      },
+      "shape": "char[4] 'CPTH', u32 (unnamed), u32 records, u32 0, then records x 32 bytes",
+      "verdict": "yielded"
+    },
+    "roster_rst": {
+      "became": "a writer: rosters.player_names, offline-writer-proved",
+      "cross_check_against_the_ini_files": {
+        "blocks_minus_team_tables": {
+          "2002": 10,
+          "2003": 10
+        },
+        "crowd_ini": {
+          "2002": 31,
+          "2003": 32
+        },
+        "glogo_rtd": {
+          "2002": 31,
+          "2003": 32
+        },
+        "note": "The disc carries one <two letters>_crowd.ini and one <two letters>_glogo.rtd per NFL team. The 2003 disc adds the prefix ht to both lists -- the Houston Texans, the team the NFL added for the 2002 season -- and the roster's block count moves with them.",
+        "roster_blocks": {
+          "2002": 41,
+          "2003": 42
+        }
+      },
+      "identities": {
+        "blocks": {
+          "2002": 41,
+          "2003": 42
+        },
+        "blocks whose header word is 18": {
+          "2002": "41 of 41",
+          "2003": "42 of 42"
+        },
+        "bytes % 1804 == 0": "holds on both discs",
+        "records whose byte +68 equals their block ordinal": {
+          "2002": "738 of 738",
+          "2003": "756 of 756"
+        },
+        "records whose two name fields are NUL-terminated ASCII": {
+          "2002": "738 of 738",
+          "2003": "756 of 756"
+        }
+      },
+      "not_claimed": [
+        "which block is which team",
+        "what any of the 36 numeric bytes mean, beyond byte +68 (the block ordinal) and byte +72 (exactly 18 distinct values, 0..17)"
+      ],
+      "shape": "u32 18 then 18 x 100-byte records per block; two 32-byte NUL-terminated ASCII name fields and 36 numeric bytes per record",
+      "verdict": "yielded"
+    },
+    "wiff": {
+      "became": "counts and a refusal on the row presentation.camera_paths, read-only-mapped",
+      "form_types": {
+        "2002": {
+          "WIPS": 167,
+          "WOM ": 7,
+          "WOMS": 16
+        },
+        "2003": {
+          "WIPS": 181,
+          "WOM ": 7,
+          "WOMS": 21
+        }
+      },
+      "identities": {
+        "declared body bytes + 8 == the member": {
+          "2002": "190 of 190",
+          "2003": "209 of 209"
+        }
+      },
+      "not_claimed": [
+        "any chunk inside a WIFF"
+      ],
+      "shape": "big-endian RIFF: char[4] 'WIFF', u32 big-endian body bytes, char[4] form type",
+      "verdict": "yielded (head only)"
+    }
+  },
+  "schema": "nflblitz_ps2_probes_measured/v1"
+}

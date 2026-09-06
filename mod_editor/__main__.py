@@ -56,6 +56,54 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     action.add_argument(
+        "--ps2-disc",
+        action="store_true",
+        help=(
+            "open only the PlayStation 2 disc inventory browser, without the "
+            "rest of the studio"
+        ),
+    )
+    action.add_argument(
+        "--ps2-export",
+        nargs="?",
+        const="",
+        default=None,
+        metavar="PROJECT.2k5mod",
+        help=(
+            "open only the PlayStation 2 replacement-pack exporter, without "
+            "the rest of the studio; give a saved .2k5mod project to plan it "
+            "straight away, or omit it and choose one in the window"
+        ),
+    )
+    action.add_argument(
+        "--ps2-disc-studio",
+        nargs="?",
+        const="",
+        default=None,
+        metavar="SLUS-20919.iso",
+        help=(
+            "open only the PlayStation 2 Disc Studio -- text, playbooks, "
+            "uniform colours, rosters, stadium positions and sounds written "
+            "into a NEW copy of your own disc image -- without the rest of the "
+            "studio; give the ISO to open it straight away, or omit it and "
+            "choose one in the window"
+        ),
+    )
+    action.add_argument(
+        "--game",
+        metavar="GAME_ID",
+        help=(
+            "open one installed game module's studio on its own, without the "
+            "Xbox studio; with --window opens one of that module's other "
+            "windows instead; 'python -m mod_editor.games' lists the modules"
+        ),
+    )
+    action.add_argument(
+        "--games-chooser",
+        action="store_true",
+        help="open the game-module chooser window alone, without the studio",
+    )
+    action.add_argument(
         "--check-registry",
         action="store_true",
         help="validate the capability registry without opening a display",
@@ -202,6 +250,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="show named APF scorebug components and digital-font writer boundary",
     )
     parser.add_argument(
+        "--window",
+        metavar="WINDOW_ID",
+        help="with --game: the module window to open (see --game <id> for the ids)",
+    )
+    parser.add_argument(
         "--require-registry",
         action="store_true",
         help="refuse the temporary sample fallback",
@@ -243,6 +296,24 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--shield-espn-png", type=Path, help="128x64 RGBA ESPN strip")
     parser.add_argument("--digital-font-png", type=Path, help="128x128 RGBA digit atlas")
     args = parser.parse_args(argv)
+    if args.window and not args.game:
+        parser.error("--window needs --game GAME_ID")
+    if args.game or args.games_chooser:
+        # Every game module is reached through one seam: the games package's
+        # own command line.  It needs none of the studio's Xbox-derived
+        # startup inputs, so someone who owns only that game's release can
+        # use it, and the studio never imports a module beyond the contract.
+        from .games.__main__ import main as games_main
+
+        if args.games_chooser:
+            return games_main(["chooser"])
+        if args.window:
+            return games_main(["open", args.game, "--window", args.window])
+        # Without --window this opens the module's *studio* -- the window its
+        # studio_window names -- rather than only describing it. A user who
+        # owns one game's release types --game and is in that game's studio;
+        # 'python -m mod_editor.games show <id>' still prints the description.
+        return games_main(["open", args.game])
     if args.check_registry:
         registry = CapabilityRegistryLoader().load(
             allow_sample_fallback=not args.require_registry, check_files=False
@@ -498,6 +569,46 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         application = QApplication.instance() or QApplication(sys.argv[:1])
         dialog = Ps2SaveEditorDialog()
+        dialog.show()
+        return application.exec_()
+    if args.ps2_disc:
+        # Same shape as --ps2-save: the disc inventory reads the user's own
+        # PS2 ISO and needs none of the studio's Xbox-derived startup inputs.
+        from PyQt5.QtWidgets import QApplication
+
+        from .gui.ps2_disc_dialog_qt import Ps2DiscInventoryDialog
+
+        application = QApplication.instance() or QApplication(sys.argv[:1])
+        dialog = Ps2DiscInventoryDialog()
+        dialog.show()
+        return application.exec_()
+    if args.ps2_export is not None:
+        # Same shape again: the exporter works from a saved .2k5mod project and
+        # the shipped texture map, so it needs none of the studio's Xbox-derived
+        # startup inputs.  The empty string is "--ps2-export with no path" --
+        # distinct from the flag being absent, which is None -- and opens the
+        # window on its project chooser.
+        from PyQt5.QtWidgets import QApplication
+
+        from .gui.ps2_export_dialog_qt import Ps2ExportDialog
+
+        application = QApplication.instance() or QApplication(sys.argv[:1])
+        dialog = Ps2ExportDialog(Path(args.ps2_export) if args.ps2_export else None)
+        dialog.show()
+        return application.exec_()
+    if args.ps2_disc_studio is not None:
+        # Same shape as --ps2-disc: the studio works on the user's own PS2 ISO
+        # and needs none of the Xbox-derived startup inputs.  The empty string
+        # is "--ps2-disc-studio with no path" and opens the window on its
+        # disc chooser.
+        from PyQt5.QtWidgets import QApplication
+
+        from .gui.ps2_disc_studio_qt import Ps2DiscStudioDialog
+
+        application = QApplication.instance() or QApplication(sys.argv[:1])
+        dialog = Ps2DiscStudioDialog(
+            initial_iso=Path(args.ps2_disc_studio) if args.ps2_disc_studio else None
+        )
         dialog.show()
         return application.exec_()
 

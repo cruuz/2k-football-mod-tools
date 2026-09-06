@@ -1,0 +1,19 @@
+{
+  "contract_version": "1.0",
+  "files": {
+    "mod_editor/games/__init__.py": "6d6cd09c31059d97834dc5cc7b44d1c4191b9eda10eed4d1982fd4ce7ba3c13f",
+    "mod_editor/games/chooser.py": "6b3cd013ce0b3fc5d5b4740b77dd4e23dedb518ef098f49b5dd5e5eff6c456e0",
+    "mod_editor/games/chooser_qt.py": "6164e13fcf34a3636b8e61af50d81057546cb8634886c6a3ddc5f962013e6d76",
+    "mod_editor/games/conformance.py": "949491d74c617bbdc8d200d4bce131def35850e96513617cc339462ff3288f3d",
+    "mod_editor/games/contract.py": "d218445c403dc40cf13a8da867aaf4dda85fcc541fbe967dfc77ca346d5388ae",
+    "mod_editor/games/pins.py": "b20a5b399932ecad13da6b0117db5344319b5d1100c6fda5b82417b7d5e3fab1",
+    "mod_editor/games/registry_merge.py": "4407313c47a62f25ec2a651f2b0045fde47052b5abfac813135ebc5c6ef0facf",
+    "mod_editor/games/studio_qt.py": "f58865818b1aa4a6bc7046b52c908862e8b009121b5eef967c8f6b0a3cf4d34f",
+    "tests/mod_editor/games_fakes.py": "da40bbefc402bca1070652f8655313edfb5e5c03524b10fb94a5065d65689d4c",
+    "tests/mod_editor/test_games_chooser.py": "35ea3a472b9e5f661e5bfab5257e772caa5792a838dcd1a4c035554645572842",
+    "tests/mod_editor/test_games_conformance.py": "9053271d82659dab867116068098dbced300aeaaa0b5cb79e4d3b883dc2cd304",
+    "tests/mod_editor/test_games_contract.py": "a1ee002c7f993a9f2378bf951fa65a041b5695d55aa4bb09e141bcf9a6361468",
+    "tests/mod_editor/test_games_contract_frozen.py": "c32deb7ed8faf546515dbbddfb11db8697791c86b43dad0779dbff4d69a4dc98"
+  },
+  "schema": "vc_game_module_contract_pins/v1"
+}

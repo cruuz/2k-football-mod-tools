@@ -1,0 +1,1028 @@
+{
+ "block_image_sizes": [
+  "32x256",
+  "64x32",
+  "64x64",
+  "64x128",
+  "128x32",
+  "128x64",
+  "128x128",
+  "128x256",
+  "256x32",
+  "256x64",
+  "256x128",
+  "256x256",
+  "256x512",
+  "512x32",
+  "512x64",
+  "512x128",
+  "512x256",
+  "512x512",
+  "1024x256"
+ ],
+ "block_images": 23954,
+ "block_images_with_a_256_entry_clut": 23831,
+ "clut_hash_candidates": [
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "classic",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  },
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "classic",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00005dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  },
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "modern",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  }
+ ],
+ "disc_images_paired_to_a_dumped_texture": 1008,
+ "dump_directory": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/wp-identities/texdumps-20260905/SLUS-21135",
+ "dump_files": 1308,
+ "dump_files_whose_size_a_block_image_also_has": 939,
+ "dump_textures": 436,
+ "generated_by": "tools/mvp05_ps2_texture_identities.py",
+ "ground_truth_probes": [
+  {
+   "block_image": "MODELS.BIG:470:10",
+   "block_shapes": [
+    {
+     "block": "4x4",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "8x2",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "2x8",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "16x1",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1019,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "1x16",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1010,
+     "most_distinct_indices_in_a_block": 16
+    }
+   ],
+   "convention": "classic",
+   "distinct_true_indices": 251,
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_pixels_outside_the_palette": 0,
+   "dumped_pixels_whose_colour_is_at_more_than_one_index": 528,
+   "palette_distinct_colours": 251,
+   "palette_entries": 256,
+   "reading": "Two 8-bit endpoints and sixteen 2-bit selectors put at most four distinct indices in a block. A shape with blocks above four rules that reading out for that shape; every shape ruled out rules the pairing out.",
+   "size": "128x128"
+  },
+  {
+   "block_image": "MODELS.BIG:470:10",
+   "block_shapes": [
+    {
+     "block": "4x4",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "8x2",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "2x8",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1016,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "16x1",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1019,
+     "most_distinct_indices_in_a_block": 16
+    },
+    {
+     "block": "1x16",
+     "blocks": 1024,
+     "blocks_with_more_than_four": 1010,
+     "most_distinct_indices_in_a_block": 16
+    }
+   ],
+   "convention": "classic",
+   "distinct_true_indices": 251,
+   "dump": "c614023431f1a62d-25da022c848a6e78-00005dd3.png",
+   "dumped_pixels_outside_the_palette": 0,
+   "dumped_pixels_whose_colour_is_at_more_than_one_index": 528,
+   "palette_distinct_colours": 251,
+   "palette_entries": 256,
+   "reading": "Two 8-bit endpoints and sixteen 2-bit selectors put at most four distinct indices in a block. A shape with blocks above four rules that reading out for that shape; every shape ruled out rules the pairing out.",
+   "size": "128x128"
+  }
+ ],
+ "lerp_residuals": [
+  {
+   "block_image": "INITSTAZ.BIG!initstay.big:23:21",
+   "dump": "f1a2866425a8d452-cb3f75fdf6b7e67f-00001993.png",
+   "reading": "A true pair puts nearly every pixel within quantisation and improves markedly when the interior points are offered. One that does neither is not a pair, whatever it correlated at.",
+   "sets": {
+    "DXT weights {0, 1/3, 2/3, 1}": {
+     "mean_residual": 25.54,
+     "pixels_within_quantisation_pct": 5.3
+    },
+    "endpoints only {0, 1}": {
+     "mean_residual": 26.07,
+     "pixels_within_quantisation_pct": 4.9
+    },
+    "linear {0, 1/2, 1}": {
+     "mean_residual": 25.63,
+     "pixels_within_quantisation_pct": 5.0
+    }
+   },
+   "size": "64x64"
+  }
+ ],
+ "palette_hunt_ran": true,
+ "palette_subset_candidates": [
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "classic",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  },
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "classic",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00005dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  },
+  {
+   "block_images": [
+    "MODELS.BIG:470:10"
+   ],
+   "colours_used": 251,
+   "convention": "modern",
+   "dump": "c614023431f1a62d-25da022c848a6e78-00001dd3.png",
+   "dumped_texels_compress_to_bits": 122072,
+   "frames": [
+    "20260905142725"
+   ],
+   "payload_bytes": 6144,
+   "payload_can_hold_it": false,
+   "payload_capacity_bits": 49152,
+   "psm": 19,
+   "size": "128x128"
+  }
+ ],
+ "per_draw_dump": {
+  "cluts_by_the_pixel_code_of_the_disc_image_that_owns_them": {
+   "0x0e": 44
+  },
+  "disc_0x02_images_identified": 2874,
+  "distinct_8bit_uploads": 135,
+  "distinct_cluts_uploaded": 44,
+  "frames": [
+   "142559",
+   "142723",
+   "142725"
+  ],
+  "method": "A per-draw GS dump writes every texture a draw uses whatever its source and every EE-to-GS upload, so the replacement dumper's filter -- it writes only textures sourced from a plain transfer -- is gone. A P_8 upload's PNG carries the uploaded byte in its red channel, which is the index image itself: no palette is involved in reading it, so what follows is palette-free.",
+  "reading": "Two endpoints and sixteen 2-bit selectors put at most four distinct indices in a 4x4 block. An upload that exceeds that is not a decode of a 0x0E image whatever its palette, and this test needs no palette at all.",
+  "uploads_that_are_a_disc_0x02_image_byte_for_byte": 117,
+  "uploads_where_every_4x4_block_has_at_most_four_indices": 6,
+  "uploads_with_no_disc_twin": 18,
+  "uploads_without_a_twin": [
+   {
+    "block_codec_budget_bytes": 49152,
+    "blocks": 8192,
+    "blocks_over_four_distinct": 1520,
+    "file": "00599_transfer00_EE_to_GS_3580_8_P_8_0_0_512_256.png",
+    "frame": "142559",
+    "index_zlib_bytes": 16620,
+    "most_distinct_in_a_block": 15,
+    "size": "512x256"
+   },
+   {
+    "block_codec_budget_bytes": 6144,
+    "blocks": 1024,
+    "blocks_over_four_distinct": 1024,
+    "file": "00011_transfer03_EE_to_GS_34e0_2_P_8_0_0_128_128.png",
+    "frame": "142559",
+    "index_zlib_bytes": 10168,
+    "most_distinct_in_a_block": 16,
+    "size": "128x128"
+   },
+   {
+    "block_codec_budget_bytes": 3072,
+    "blocks": 512,
+    "blocks_over_four_distinct": 211,
+    "file": "00533_transfer00_EE_to_GS_3d00_4_P_8_0_0_256_32.png",
+    "frame": "142559",
+    "index_zlib_bytes": 2437,
+    "most_distinct_in_a_block": 16,
+    "size": "256x32"
+   },
+   {
+    "block_codec_budget_bytes": 3072,
+    "blocks": 512,
+    "blocks_over_four_distinct": 142,
+    "file": "00137_transfer00_EE_to_GS_3620_4_P_8_0_0_256_32.png",
+    "frame": "142723",
+    "index_zlib_bytes": 1745,
+    "most_distinct_in_a_block": 16,
+    "size": "256x32"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 256,
+    "file": "00011_transfer04_EE_to_GS_3520_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 2152,
+    "most_distinct_in_a_block": 12,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 84,
+    "file": "00147_transfer02_EE_to_GS_35c0_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1053,
+    "most_distinct_in_a_block": 16,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 47,
+    "file": "00147_transfer05_EE_to_GS_3600_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 671,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 112,
+    "file": "00176_transfer00_EE_to_GS_3b40_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1277,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 226,
+    "file": "00271_transfer02_EE_to_GS_37a0_1_P_8_0_0_32_128.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1623,
+    "most_distinct_in_a_block": 15,
+    "size": "32x128"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 234,
+    "file": "00271_transfer04_EE_to_GS_37e0_1_P_8_0_0_32_128.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1643,
+    "most_distinct_in_a_block": 16,
+    "size": "32x128"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 81,
+    "file": "00370_transfer02_EE_to_GS_39c0_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 1014,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 150,
+    "file": "00543_transfer00_EE_to_GS_3e00_1_P_8_0_0_64_64.png",
+    "frame": "142559",
+    "index_zlib_bytes": 849,
+    "most_distinct_in_a_block": 14,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 116,
+    "file": "00075_transfer00_EE_to_GS_38e0_1_P_8_0_0_64_64.png",
+    "frame": "142723",
+    "index_zlib_bytes": 745,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 131,
+    "file": "00145_transfer00_EE_to_GS_3720_1_P_8_0_0_64_64.png",
+    "frame": "142723",
+    "index_zlib_bytes": 1291,
+    "most_distinct_in_a_block": 14,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 73,
+    "file": "00064_transfer02_EE_to_GS_3ac0_1_P_8_0_0_64_64.png",
+    "frame": "142725",
+    "index_zlib_bytes": 834,
+    "most_distinct_in_a_block": 15,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 1536,
+    "blocks": 256,
+    "blocks_over_four_distinct": 104,
+    "file": "00479_transfer02_EE_to_GS_3bc0_1_P_8_0_0_64_64.png",
+    "frame": "142725",
+    "index_zlib_bytes": 1200,
+    "most_distinct_in_a_block": 16,
+    "size": "64x64"
+   },
+   {
+    "block_codec_budget_bytes": 384,
+    "blocks": 64,
+    "blocks_over_four_distinct": 63,
+    "file": "00011_transfer05_EE_to_GS_3540_1_P_8_0_0_32_32.png",
+    "frame": "142559",
+    "index_zlib_bytes": 488,
+    "most_distinct_in_a_block": 9,
+    "size": "32x32"
+   },
+   {
+    "block_codec_budget_bytes": 96,
+    "blocks": 16,
+    "blocks_over_four_distinct": 10,
+    "file": "00011_transfer06_EE_to_GS_3560_1_P_8_0_0_16_16.png",
+    "frame": "142559",
+    "index_zlib_bytes": 123,
+    "most_distinct_in_a_block": 6,
+    "size": "16x16"
+   }
+  ],
+  "uploads_without_a_twin_that_could_be_a_block_decode": 0
+ },
+ "question": "Does this texture dump carry the decoded pixels of any SHPS code-0x0E image, which would be the answer key the codec needs?",
+ "schema": "mvp05_ps2_shps_0x0e_dump_pairing/v1",
+ "source": "mvp05.iso",
+ "structural_pairing": {
+  "above_the_null_ceiling": 1,
+  "block_images_correlated": 12732,
+  "block_images_with_contrast": 11618,
+  "candidate_best": 0.9434,
+  "candidate_median": 0.2649,
+  "candidate_pictures": 19,
+  "contrast_floor": 20.0,
+  "contrast_note": "Both sides are filtered on it. A near-flat thumbnail correlates with every other near-flat thumbnail, and unfiltered the whole top of this ranking is such pairs.",
+  "method": "Normalised cross-correlation of two pictures at 4x4-block resolution: the dumped texture's block means against the 0x0E image's endpoint thumbnail, which is the midpoint of each block's two endpoint colours. It goes nowhere near the palette, so it finds a pair whose CLUT the game rebuilt, and it finds one whose decoder interpolated in colour space, both of which the palette joins miss.",
+  "null_ceiling": 0.8416,
+  "null_median": 0.4206,
+  "null_pictures": 28,
+  "probe_pictures": 47,
+  "ranking": [
+   {
+    "already_paired_to_a_decoded_image": false,
+    "best": [
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:21",
+      "ncc": 0.9434
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:25",
+      "ncc": 0.9281
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:26",
+      "ncc": 0.9269
+     }
+    ],
+    "contrast": 24.4,
+    "convention": "classic",
+    "dump": "f1a2866425a8d452-cb3f75fdf6b7e67f-00001993.png",
+    "frames": [
+     "20260905142559"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "COORDAY.BIG:62:31",
+      "ncc": 0.8416
+     },
+     {
+      "key": "COORNITE.BIG:62:32",
+      "ncc": 0.8416
+     },
+     {
+      "key": "MODELS.BIG:460:23",
+      "ncc": 0.8277
+     }
+    ],
+    "contrast": 31.5,
+    "convention": "classic",
+    "dump": "d206e0a7229f4fb-6cd36fab72f23a73-00001dd3.png",
+    "frames": [
+     "20260905142559",
+     "20260905142723",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "128x128"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "MODELS.BIG:601:25",
+      "ncc": 0.7391
+     },
+     {
+      "key": "MODELS.BIG:601:26",
+      "ncc": 0.7391
+     },
+     {
+      "key": "MODELS.BIG:649:25",
+      "ncc": 0.7306
+     }
+    ],
+    "contrast": 24.6,
+    "convention": "classic",
+    "dump": "c1df0da322fad2-b45cee6998dd419c-000019d3.png",
+    "frames": [
+     "20260905142559",
+     "20260905142723",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "128x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "TIGRNITE.BIG:62:0",
+      "ncc": 0.713
+     },
+     {
+      "key": "AAA1NITE.BIG:62:44",
+      "ncc": 0.7108
+     },
+     {
+      "key": "AAA2NITE.BIG:62:3",
+      "ncc": 0.7108
+     }
+    ],
+    "contrast": 26.0,
+    "convention": "classic",
+    "dump": "711be4d783e086eb-2acaa513a3bf1285-0000221b.png",
+    "frames": [
+     "20260905142559",
+     "20260905142723",
+     "20260905142725"
+    ],
+    "psm": 27,
+    "size": "256x256"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:19",
+      "ncc": 0.6946
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:17",
+      "ncc": 0.6945
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:23",
+      "ncc": 0.6868
+     }
+    ],
+    "contrast": 31.7,
+    "convention": "classic",
+    "dump": "a150117598194dc9-ba4d3618d617ecaf-00001993.png",
+    "frames": [
+     "20260905142559",
+     "20260905142723",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "BPSETUP.BIG:31:0",
+      "ncc": 0.6397
+     },
+     {
+      "key": "BPSETUP.BIG:33:0",
+      "ncc": 0.6125
+     },
+     {
+      "key": "BPSETUP.BIG:32:0",
+      "ncc": 0.6025
+     }
+    ],
+    "contrast": 24.0,
+    "convention": "classic",
+    "dump": "c673f1de52e352c-ae6fc9517df16298-00001e1b.png",
+    "frames": [
+     "20260905142725"
+    ],
+    "psm": 27,
+    "size": "256x128"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "BPUPGRAD.BIG:24:0",
+      "ncc": 0.613
+     },
+     {
+      "key": "GABADAY.BIG:62:13",
+      "ncc": 0.5837
+     },
+     {
+      "key": "SKYDDAY.BIG:62:62",
+      "ncc": 0.5696
+     }
+    ],
+    "contrast": 36.2,
+    "convention": "classic",
+    "dump": "71006f9693f33aa6-19d932503c6d9b68-0000221b.png",
+    "frames": [
+     "20260905142559",
+     "20260905142723",
+     "20260905142725"
+    ],
+    "psm": 27,
+    "size": "256x256"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:17",
+      "ncc": 0.5459
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:19",
+      "ncc": 0.5265
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:25",
+      "ncc": 0.5238
+     }
+    ],
+    "contrast": 35.3,
+    "convention": "classic",
+    "dump": "94a2be9be3e2eb0-a1a9213e537244a9-00001993.png",
+    "frames": [
+     "20260905142559",
+     "20260905142723",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "LOGOS.BIG:46:1",
+      "ncc": 0.5407
+     },
+     {
+      "key": "LOGOS.BIG:14:2",
+      "ncc": 0.487
+     },
+     {
+      "key": "LOGOS.BIG:25:3",
+      "ncc": 0.4815
+     }
+    ],
+    "contrast": 26.6,
+    "convention": "classic",
+    "dump": "162da0ffdb2a0f56-d101c6543ce15a5d-00001993.png",
+    "frames": [
+     "20260905142559",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:25",
+      "ncc": 0.5192
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:17",
+      "ncc": 0.5175
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:21",
+      "ncc": 0.5122
+     }
+    ],
+    "contrast": 20.2,
+    "convention": "classic",
+    "dump": "82eb879bbea343b8-497c88352ac91ea7-00001993.png",
+    "frames": [
+     "20260905142559",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "FEONLY.BIG:12:1",
+      "ncc": 0.5074
+     },
+     {
+      "key": "HRSONLY.BIG:0:28",
+      "ncc": 0.4798
+     },
+     {
+      "key": "HRSONLY.BIG:0:27",
+      "ncc": 0.474
+     }
+    ],
+    "contrast": 70.8,
+    "convention": "classic",
+    "dump": "7d2a2fa4843a40e6-5195ab2135a57366-00001993.png",
+    "frames": [
+     "20260905142559",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": false,
+    "best": [
+     {
+      "key": "FEONLY.BIG:4:28",
+      "ncc": 0.4943
+     },
+     {
+      "key": "LOGOS.BIG:81:2",
+      "ncc": 0.4403
+     },
+     {
+      "key": "FEONLY.BIG:12:1",
+      "ncc": 0.4396
+     }
+    ],
+    "contrast": 34.0,
+    "convention": "classic",
+    "dump": "cb0373ab239748a3-3c83c34cd3637a27-00001993.png",
+    "frames": [
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "FENWDAY.BIG:62:107",
+      "ncc": 0.4665
+     },
+     {
+      "key": "COMEDAY.BIG:62:90",
+      "ncc": 0.4612
+     },
+     {
+      "key": "UNIFORMS.BIG:446:0",
+      "ncc": 0.4483
+     }
+    ],
+    "contrast": 76.2,
+    "convention": "classic",
+    "dump": "1fb2f9a0fce0247a-920e8acd37c3a936-00001dd3.png",
+    "frames": [
+     "20260905142559",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "128x128"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "LOGOS.BIG:113:2",
+      "ncc": 0.4548
+     },
+     {
+      "key": "LOGOS.BIG:94:6",
+      "ncc": 0.3682
+     },
+     {
+      "key": "LOGOS.BIG:121:2",
+      "ncc": 0.3596
+     }
+    ],
+    "contrast": 38.3,
+    "convention": "classic",
+    "dump": "31bd24e8fbdc8a18-c105be9a168fc4da-00001993.png",
+    "frames": [
+     "20260905142559",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "UNIFORMS.BIG:446:0",
+      "ncc": 0.4407
+     },
+     {
+      "key": "FENWDAY.BIG:62:107",
+      "ncc": 0.434
+     },
+     {
+      "key": "COMEDAY.BIG:62:90",
+      "ncc": 0.4235
+     }
+    ],
+    "contrast": 47.1,
+    "convention": "classic",
+    "dump": "9ca68f8bbad2ad6a-9911a144e89e5b5f-00001dd3.png",
+    "frames": [
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "128x128"
+   },
+   {
+    "already_paired_to_a_decoded_image": false,
+    "best": [
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:11",
+      "ncc": 0.4246
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:14",
+      "ncc": 0.4207
+     },
+     {
+      "key": "INITSTAZ.BIG!initstay.big:23:22",
+      "ncc": 0.4169
+     }
+    ],
+    "contrast": 42.2,
+    "convention": "classic",
+    "dump": "afecb6ebf4c75c3-3c83c34cd3637a27-00001993.png",
+    "frames": [
+     "20260905142559"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "HRSONLY.BIG:0:44",
+      "ncc": 0.4206
+     },
+     {
+      "key": "LOGOS.BIG:70:1",
+      "ncc": 0.3754
+     },
+     {
+      "key": "HRSONLY.BIG:0:47",
+      "ncc": 0.3583
+     }
+    ],
+    "contrast": 68.8,
+    "convention": "classic",
+    "dump": "8b82d8aae159ba48-85d8db8c0bd9748a-00001993.png",
+    "frames": [
+     "20260905142559",
+     "20260905142725"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   },
+   {
+    "already_paired_to_a_decoded_image": false,
+    "best": [
+     {
+      "key": "CINEDAY.BIG:62:64",
+      "ncc": 0.4175
+     },
+     {
+      "key": "CINEDAY.BIG:62:65",
+      "ncc": 0.4042
+     },
+     {
+      "key": "ASTRDOME.BIG:62:34",
+      "ncc": 0.4042
+     }
+    ],
+    "contrast": 62.6,
+    "convention": "classic",
+    "dump": "28b06a2c8a2c14c0-bcc2a547ba78ce7f-00001e14.png",
+    "frames": [
+     "20260905142725"
+    ],
+    "psm": 20,
+    "size": "256x128"
+   },
+   {
+    "already_paired_to_a_decoded_image": false,
+    "best": [
+     {
+      "key": "CINEDAY.BIG:62:64",
+      "ncc": 0.4097
+     },
+     {
+      "key": "CINEDAY.BIG:62:65",
+      "ncc": 0.4023
+     },
+     {
+      "key": "ASTRDOME.BIG:62:34",
+      "ncc": 0.397
+     }
+    ],
+    "contrast": 68.5,
+    "convention": "classic",
+    "dump": "dbe0d22aa7a2b9f5-bcc2a547ba78ce7f-00001e14.png",
+    "frames": [
+     "20260905142723"
+    ],
+    "psm": 20,
+    "size": "256x128"
+   },
+   {
+    "already_paired_to_a_decoded_image": true,
+    "best": [
+     {
+      "key": "LOGOS.BIG:5:1",
+      "ncc": 0.3961
+     },
+     {
+      "key": "LOGOS.BIG:80:6",
+      "ncc": 0.3385
+     },
+     {
+      "key": "LOGOS.BIG:58:6",
+      "ncc": 0.3202
+     }
+    ],
+    "contrast": 46.7,
+    "convention": "classic",
+    "dump": "abb75bea237b03c4-2e63acdf14d59c57-00001993.png",
+    "frames": [
+     "20260905142559"
+    ],
+    "psm": 19,
+    "size": "64x64"
+   }
+  ]
+ },
+ "tests": [
+  {
+   "candidates": 3,
+   "finds": "a palette the game uploaded to the GS exactly as the disc stores it",
+   "test": "the CLUT hash in the dumped filename equals a 0x0E image's palette"
+  },
+  {
+   "candidates": 3,
+   "finds": "the same, and also a palette the game re-ordered before uploading it",
+   "ran": true,
+   "test": "every colour a dumped picture uses is in a 0x0E image's palette, in any order"
+  },
+  {
+   "candidates": 0,
+   "finds": "whether a candidate could be a decode of that payload at all",
+   "test": "the payload can hold the picture: w*h*3/8 bytes against what the dumped texels compress to"
+  },
+  {
+   "candidates": 0,
+   "finds": "whether two endpoints and sixteen 2-bit selectors could describe it",
+   "probed": 2,
+   "test": "the true index image, palette inverted, has at most four distinct indices in some 16-texel block shape"
+  },
+  {
+   "already_a_disc_0x02_image": 117,
+   "candidates": 6,
+   "finds": "a decoded 0x0E texture wherever it reaches the GS, with no palette involved",
+   "test": "no 8-bit texture the game hands the GS -- from a per-draw dump, which has no source filter -- has more than four distinct indices in a 4x4 block",
+   "uploads": 135
+  },
+  {
+   "candidates": 1,
+   "finds": "a pair the palette joins miss -- a rebuilt CLUT, or a decoder that interpolates in colour space and never uses the palette as a codebook",
+   "null_ceiling": 0.8416,
+   "probes": 47,
+   "test": "the picture correlates with a 0x0E image's endpoint thumbnail, above what a dumped texture already known not to be 0x0E scores"
+  }
+ ],
+ "verdict": "no dumped texture is a decoded 0x0E image: the 3 candidate(s) a palette join finds carry more information than the 0x0E payload can hold and have far more than four distinct indices in every 16-texel block shape, and the 1 that clear the picture-correlation null do not put their pixels on the segment between their block's endpoints; and with the dumper's source filter removed, 117 of the 135 distinct 8-bit textures the game hands the GS are a disc 0x02 image byte for byte and 0 of the rest could be a block decode"
+}

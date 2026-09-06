@@ -1,0 +1,934 @@
+{
+  "banks": {
+    "banks": 301,
+    "empty_slots": 44,
+    "rated_vs_total_per_bank": [
+      {
+        "banks": 111,
+        "rated": 1,
+        "sounds": 1
+      },
+      {
+        "banks": 58,
+        "rated": 5,
+        "sounds": 5
+      },
+      {
+        "banks": 41,
+        "rated": 0,
+        "sounds": 1
+      },
+      {
+        "banks": 30,
+        "rated": 1,
+        "sounds": 4
+      },
+      {
+        "banks": 28,
+        "rated": 0,
+        "sounds": 4
+      },
+      {
+        "banks": 12,
+        "rated": 2,
+        "sounds": 10
+      },
+      {
+        "banks": 5,
+        "rated": 0,
+        "sounds": 14
+      },
+      {
+        "banks": 5,
+        "rated": 0,
+        "sounds": 7
+      },
+      {
+        "banks": 3,
+        "rated": 3,
+        "sounds": 3
+      },
+      {
+        "banks": 3,
+        "rated": 4,
+        "sounds": 4
+      }
+    ],
+    "rates": [
+      {
+        "channels": 1,
+        "rate": 36000,
+        "sounds": 117
+      },
+      {
+        "channels": 1,
+        "rate": 24000,
+        "sounds": 89
+      },
+      {
+        "channels": 1,
+        "rate": 18000,
+        "sounds": 84
+      },
+      {
+        "channels": 2,
+        "rate": 44100,
+        "sounds": 75
+      },
+      {
+        "channels": 2,
+        "rate": 12000,
+        "sounds": 59
+      },
+      {
+        "channels": 1,
+        "rate": 32000,
+        "sounds": 58
+      },
+      {
+        "channels": 1,
+        "rate": 16000,
+        "sounds": 10
+      },
+      {
+        "channels": 1,
+        "rate": 48000,
+        "sounds": 6
+      },
+      {
+        "channels": 2,
+        "rate": 32000,
+        "sounds": 5
+      },
+      {
+        "channels": 2,
+        "rate": 24000,
+        "sounds": 3
+      },
+      {
+        "channels": 2,
+        "rate": 36000,
+        "sounds": 1
+      },
+      {
+        "channels": 1,
+        "rate": 44100,
+        "sounds": 1
+      }
+    ],
+    "sounds": 967,
+    "sounds_with_a_declared_rate": 508,
+    "sounds_with_loop_points": 134
+  },
+  "codec_totals": [
+    {
+      "codec": 4,
+      "streams": 33751,
+      "version": 3
+    },
+    {
+      "codec": null,
+      "streams": 150,
+      "version": null
+    },
+    {
+      "codec": 10,
+      "streams": 132,
+      "version": 3
+    },
+    {
+      "codec": 10,
+      "streams": 13,
+      "version": 2
+    }
+  ],
+  "codecs": [
+    {
+      "block_ints": "BE",
+      "channels": 2,
+      "codec": null,
+      "codec_name": "EA-XA ADPCM",
+      "container": "BGM.DAT",
+      "sample_rate": 22050,
+      "streams": 47,
+      "version": null
+    },
+    {
+      "block_ints": "LE",
+      "channels": 2,
+      "codec": 10,
+      "codec_name": "EA-XA ADPCM",
+      "container": "SOUNDDAT.DAT",
+      "sample_rate": 28000,
+      "streams": 132,
+      "version": 3
+    },
+    {
+      "block_ints": "BE",
+      "channels": 2,
+      "codec": null,
+      "codec_name": "EA-XA ADPCM",
+      "container": "SOUNDDAT.DAT",
+      "sample_rate": 22050,
+      "streams": 100,
+      "version": null
+    },
+    {
+      "block_ints": "LE",
+      "channels": 1,
+      "codec": 10,
+      "codec_name": "EA-XA ADPCM",
+      "container": "SOUNDDAT.DAT",
+      "sample_rate": null,
+      "streams": 6,
+      "version": 2
+    },
+    {
+      "block_ints": "LE",
+      "channels": 1,
+      "codec": 10,
+      "codec_name": "EA-XA ADPCM",
+      "container": "SOUNDDAT.DAT",
+      "sample_rate": 44100,
+      "streams": 5,
+      "version": 2
+    },
+    {
+      "block_ints": "BE",
+      "channels": 1,
+      "codec": null,
+      "codec_name": "EA-XA ADPCM",
+      "container": "SOUNDDAT.DAT",
+      "sample_rate": 22050,
+      "streams": 3,
+      "version": null
+    },
+    {
+      "block_ints": "LE",
+      "channels": 2,
+      "codec": 10,
+      "codec_name": "EA-XA ADPCM",
+      "container": "SOUNDDAT.DAT",
+      "sample_rate": 24000,
+      "streams": 2,
+      "version": 2
+    },
+    {
+      "block_ints": "BE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHDATA.DAT",
+      "sample_rate": 36000,
+      "streams": 10165,
+      "version": 3
+    },
+    {
+      "block_ints": "LE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHDATA.DAT",
+      "sample_rate": 36000,
+      "streams": 5096,
+      "version": 3
+    },
+    {
+      "block_ints": "BE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHDATA.DAT",
+      "sample_rate": 24000,
+      "streams": 613,
+      "version": 3
+    },
+    {
+      "block_ints": "LE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHDATA.DAT",
+      "sample_rate": null,
+      "streams": 553,
+      "version": 3
+    },
+    {
+      "block_ints": "LE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHDATA.DAT",
+      "sample_rate": 14000,
+      "streams": 199,
+      "version": 3
+    },
+    {
+      "block_ints": "LE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHFEDT.DAT",
+      "sample_rate": 36000,
+      "streams": 167,
+      "version": 3
+    },
+    {
+      "block_ints": "BE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHMAD1.DAT",
+      "sample_rate": 36000,
+      "streams": 12474,
+      "version": 3
+    },
+    {
+      "block_ints": "BE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHMAD1.DAT",
+      "sample_rate": 22050,
+      "streams": 1,
+      "version": 3
+    },
+    {
+      "block_ints": "BE",
+      "channels": 1,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHMAD2.DAT",
+      "sample_rate": 36000,
+      "streams": 4482,
+      "version": 3
+    },
+    {
+      "block_ints": "BE",
+      "channels": 2,
+      "codec": 4,
+      "codec_name": "MicroTalk (EA speech, ~10:1)",
+      "container": "SPCHMAD2.DAT",
+      "sample_rate": 36000,
+      "streams": 1,
+      "version": 3
+    }
+  ],
+  "encoder_round_trip": {
+    "retail": {
+      "note": "the SNR is against the first decode, which is what a replacement has to preserve. The byte agreement is low on the two stereo streams and high on the version-2 stream and the bank sound: the encoder picks its own predictor and shift per frame and reaches nearly the same samples by a different route, which is what an independently written encoder should do.",
+      "rows": [
+        {
+          "byte_agreement_pct": 7.74,
+          "channels": 2,
+          "key": "BGM.DAT:0:0",
+          "rate": 22050,
+          "reencoded_bytes": 237252,
+          "samples": 441000,
+          "seconds": 10.0,
+          "snr_db": 106.28,
+          "stored_bytes": 237576,
+          "version": null
+        },
+        {
+          "byte_agreement_pct": 1.6,
+          "channels": 2,
+          "key": "SOUNDDAT.DAT:27:0",
+          "rate": 28000,
+          "reencoded_bytes": 303300,
+          "samples": 560000,
+          "seconds": 10.0,
+          "snr_db": 97.21,
+          "stored_bytes": 303476,
+          "version": 3
+        },
+        {
+          "byte_agreement_pct": 94.86,
+          "channels": 1,
+          "key": "SOUNDDAT.DAT:444:0",
+          "rate": 44100,
+          "reencoded_bytes": 239400,
+          "samples": 441000,
+          "seconds": 10.0,
+          "snr_db": 57.84,
+          "stored_bytes": 239400,
+          "version": 2
+        },
+        {
+          "byte_agreement_pct": 99.63,
+          "channels": 1,
+          "key": "bank SOUNDDAT.DAT:32:0",
+          "rate": 24000,
+          "reencoded_bytes": 21696,
+          "samples": 37968,
+          "snr_db": "bit-exact",
+          "stored_bytes": 21696
+        }
+      ],
+      "what": "ten seconds of a real stream decoded, re-encoded with this module's own encoder, and decoded again; byte agreement is against the bytes EA shipped"
+    },
+    "synthetic": {
+      "ea_xa_mono_28000_db": 58.25,
+      "ea_xa_stereo_22050_version_2_little_endian_db": 54.66,
+      "ea_xa_stereo_22050_version_3_big_endian_db": 54.66,
+      "ps_adpcm_mono_24000_db": 57.72,
+      "what": "a computed tone encoded and decoded back, for every shape the disc uses"
+    }
+  },
+  "ffmpeg_agreement": {
+    "bank_sounds": {
+      "byte_identical": 508,
+      "compared": 508,
+      "differing": 0,
+      "note": "a stereo sound is de-interleaved into its two 16-byte-frame runs and each run is compared on its own; ffmpeg has no bank reader",
+      "pcm_samples_compared": 33451124
+    },
+    "method": "every decodable member of the retail disc decoded twice, once by mod_editor.games._formats.ea_schl and once by ffmpeg, and compared byte for byte; no ffmpeg source was consulted or copied",
+    "not_compared": {
+      "reason": "EA MicroTalk (header codec 4) and six EA-XA streams that declare no sample rate; ffmpeg refuses codec 4 by name, so there is no oracle for it",
+      "streams": 33757
+    },
+    "streams": {
+      "byte_identical": 289,
+      "compared": 289,
+      "differing": 0,
+      "pcm_samples_compared": 670692008,
+      "per_container": {
+        "BGM.DAT": {
+          "equal": 47,
+          "reexpressed_header": 47,
+          "samples": 397474168,
+          "streams": 47,
+          "verbatim_header": 0
+        },
+        "SOUNDDAT.DAT": {
+          "equal": 242,
+          "reexpressed_header": 105,
+          "samples": 273217840,
+          "streams": 242,
+          "verbatim_header": 137
+        }
+      }
+    },
+    "tool": "ffmpeg 7.0.2-static (johnvansickle) \u2014 demuxers ea and vag, decoders adpcm_ea_r1/r2/r3 and adpcm_psx"
+  },
+  "header_tags": [
+    {
+      "distinct_values": 1,
+      "meaning": "constant 101 on every stream; role not established",
+      "streams": 34046,
+      "tag": "0x6",
+      "values": [
+        101
+      ]
+    },
+    {
+      "distinct_values": 1,
+      "meaning": "constant 2; role not established",
+      "streams": 134,
+      "tag": "0xb",
+      "values": [
+        2
+      ]
+    },
+    {
+      "distinct_values": 1,
+      "meaning": "constant 127; role not established",
+      "streams": 3863,
+      "tag": "0x13",
+      "values": [
+        127
+      ]
+    },
+    {
+      "distinct_values": 0,
+      "meaning": "variable-length blob opening with a FourCC; contents not established",
+      "streams": 527,
+      "tag": "0x14",
+      "values": []
+    },
+    {
+      "distinct_values": 2,
+      "meaning": "version (2 or 3)",
+      "streams": 33896,
+      "tag": "0x80",
+      "values": [
+        3,
+        2
+      ]
+    },
+    {
+      "distinct_values": 1,
+      "meaning": "channel count; absent means 1",
+      "streams": 282,
+      "tag": "0x82",
+      "values": [
+        2
+      ]
+    },
+    {
+      "distinct_values": 6,
+      "meaning": "sample rate in Hz",
+      "streams": 33487,
+      "tag": "0x84",
+      "values": [
+        36000,
+        24000,
+        14000,
+        22050,
+        28000,
+        44100
+      ]
+    },
+    {
+      "distinct_values": 24334,
+      "meaning": "sample count, per channel",
+      "streams": 34046,
+      "tag": "0x85",
+      "values": [
+        17994,
+        24024,
+        21621,
+        22822,
+        20420,
+        19219
+      ]
+    },
+    {
+      "distinct_values": 1,
+      "meaning": "constant 4 on every PT stream; role not established",
+      "streams": 6160,
+      "tag": "0x8c",
+      "values": [
+        4
+      ]
+    },
+    {
+      "distinct_values": 2,
+      "meaning": "codec (4 = a ~10:1 speech codec, 10 = EA-XA ADPCM)",
+      "streams": 33896,
+      "tag": "0xa0",
+      "values": [
+        4,
+        10
+      ]
+    },
+    {
+      "distinct_values": 0,
+      "meaning": "no value; padding between tags",
+      "streams": 1054,
+      "tag": "0xfc",
+      "values": []
+    },
+    {
+      "distinct_values": 0,
+      "meaning": "no value; opens the info block",
+      "streams": 34046,
+      "tag": "0xfd",
+      "values": []
+    },
+    {
+      "distinct_values": 0,
+      "meaning": "no value; ends the header",
+      "streams": 34046,
+      "tag": "0xff",
+      "values": []
+    }
+  ],
+  "measured_seconds": {
+    "stream_catalogue": 13.42,
+    "with_banks": 13.49
+  },
+  "platforms": [
+    {
+      "big_endian": true,
+      "container": "BGM.DAT",
+      "platform": "GSTR",
+      "platform_code": null,
+      "streams": 47
+    },
+    {
+      "big_endian": true,
+      "container": "SOUNDDAT.DAT",
+      "platform": "GSTR",
+      "platform_code": null,
+      "streams": 103
+    },
+    {
+      "big_endian": false,
+      "container": "SOUNDDAT.DAT",
+      "platform": "PT",
+      "platform_code": 5,
+      "streams": 145
+    },
+    {
+      "big_endian": true,
+      "container": "SPCHDATA.DAT",
+      "platform": "GSTR",
+      "platform_code": null,
+      "streams": 10778
+    },
+    {
+      "big_endian": false,
+      "container": "SPCHDATA.DAT",
+      "platform": "PT",
+      "platform_code": 5,
+      "streams": 5848
+    },
+    {
+      "big_endian": false,
+      "container": "SPCHFEDT.DAT",
+      "platform": "PT",
+      "platform_code": 5,
+      "streams": 167
+    },
+    {
+      "big_endian": true,
+      "container": "SPCHMAD1.DAT",
+      "platform": "GSTR",
+      "platform_code": null,
+      "streams": 12475
+    },
+    {
+      "big_endian": true,
+      "container": "SPCHMAD2.DAT",
+      "platform": "GSTR",
+      "platform_code": null,
+      "streams": 4483
+    }
+  ],
+  "preload_caches": {
+    "audio_containers": [
+      {
+        "cache": "/DATA/FE.QKL",
+        "carried_members": [],
+        "carried_members_elided": false,
+        "container": "BGM.DAT",
+        "header_copies": 1,
+        "member_copies": 0,
+        "member_index_range": null
+      },
+      {
+        "cache": "/DATA/FE.QKL",
+        "carried_members": [
+          0,
+          8,
+          9,
+          23
+        ],
+        "carried_members_elided": false,
+        "container": "SOUNDDAT.DAT",
+        "header_copies": 1,
+        "member_copies": 4,
+        "member_index_range": [
+          0,
+          23
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": [
+          1,
+          2,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          22,
+          24,
+          25,
+          26,
+          28,
+          30,
+          35,
+          36,
+          218,
+          219,
+          224,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435
+        ],
+        "carried_members_elided": false,
+        "container": "SOUNDDAT.DAT",
+        "header_copies": 1,
+        "member_copies": 41,
+        "member_index_range": [
+          1,
+          435
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": [
+          0,
+          2,
+          3,
+          4,
+          5,
+          6,
+          8,
+          9
+        ],
+        "carried_members_elided": false,
+        "container": "SPCHDATA.DAT",
+        "header_copies": 1,
+        "member_copies": 8,
+        "member_index_range": [
+          0,
+          9
+        ]
+      },
+      {
+        "cache": "/DATA/FE.QKL",
+        "carried_members": [
+          0,
+          1
+        ],
+        "carried_members_elided": false,
+        "container": "SPCHFEDT.DAT",
+        "header_copies": 1,
+        "member_copies": 2,
+        "member_index_range": [
+          0,
+          1
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": [
+          0
+        ],
+        "carried_members_elided": false,
+        "container": "SPCHMAD1.DAT",
+        "header_copies": 1,
+        "member_copies": 1,
+        "member_index_range": [
+          0,
+          0
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": [
+          0
+        ],
+        "carried_members_elided": false,
+        "container": "SPCHMAD2.DAT",
+        "header_copies": 1,
+        "member_copies": 1,
+        "member_index_range": [
+          0,
+          0
+        ]
+      },
+      {
+        "cache": "/DATA/GAME.QKL",
+        "carried_members": null,
+        "carried_members_elided": true,
+        "container": "SPCHHDRS.DAT",
+        "header_copies": 1,
+        "member_copies": 5740,
+        "member_index_range": [
+          0,
+          5739
+        ]
+      }
+    ],
+    "caches": [
+      {
+        "copies": 186,
+        "files": 28,
+        "path": "/DATA/FE.QKL"
+      },
+      {
+        "copies": 6084,
+        "files": 29,
+        "path": "/DATA/GAME.QKL"
+      }
+    ],
+    "copies_checked_against_the_container_they_copy": 5805,
+    "copies_that_differ": 0,
+    "reader": "audio_lane.preload_copies(image): takes an opened image, returns per container the directory copies and the member copies as (cache, offset). One call site, bound to the module-level _preload_copies, so a shared reader replaces it in one line.",
+    "stream_members_that_are_carried": {
+      "BGM.DAT": {
+        "carried": 0,
+        "carried_stream_members": 0,
+        "stream_members": 47
+      },
+      "SOUNDDAT.DAT": {
+        "bank_members": 301,
+        "carried": 43,
+        "carried_bank_members": 17,
+        "carried_neither": 26,
+        "carried_stream_members": 0,
+        "stream_members": 119
+      }
+    },
+    "what": "GAME.QKL and FE.QKL (QL01) carry byte copies of some container members and of some container header blocks; the game loads the copy, so an edit to a carried member that leaves the copy alone is an edit the game never sees",
+    "writer_position": "BGM.DAT has a header copy and no member copies. SOUNDDAT.DAT has 43 carried members across the two caches and NOT ONE of them is among its 119 SCHl stream members: 17 are BNKl banks, which this lane does not write, and 26 are members of neither kind. So on the retail disc the cache rewrite fires on no sound this lane can replace; the path is implemented anyway, refuses a deduplicated offset another untouched member points at, and is proved in CI on a synthetic cache that does carry a replaced member."
+  },
+  "real_disc_write": {
+    "build_seconds": 122.54,
+    "catalogue_seconds": 14.53,
+    "declared_ranges": [
+      {
+        "length": 8,
+        "reason": "dirrec_length:/DATA/BGM.DAT",
+        "start": 536744
+      },
+      {
+        "length": 213950464,
+        "reason": "extent:/DATA/BGM.DAT",
+        "start": 1264089088
+      }
+    ],
+    "destination_bytes": 1657339904,
+    "exports_measured_then_deleted": [
+      {
+        "channels": 2,
+        "key": "BGM.DAT:1:0",
+        "peak": 31622,
+        "rate": 22050,
+        "rms": 4191.8,
+        "saturated": 0,
+        "seconds": 138.91,
+        "sha256": "1c24a472caa9246f2498c02ee0469c2e8e6f2ab60e257a95dc13dfb93daeee46",
+        "wav_bytes": 12251612
+      },
+      {
+        "channels": 2,
+        "key": "SOUNDDAT.DAT:27:0",
+        "peak": 21249,
+        "rate": 28000,
+        "rms": 1677.4,
+        "saturated": 0,
+        "seconds": 13.92,
+        "sha256": "3ef468076706fa2c1a1c2b1c4850dcaa89d56342ecb69180c1dfa216ce2e6362",
+        "wav_bytes": 1559084
+      },
+      {
+        "channels": 1,
+        "key": "SOUNDDAT.DAT:444:0",
+        "peak": 30297,
+        "rate": 44100,
+        "rms": 4271.2,
+        "saturated": 0,
+        "seconds": 11.53,
+        "sha256": "9b6f180bb56d2a79889216278850df1af64452b4e1090d59edda911c96339790",
+        "wav_bytes": 1016556
+      },
+      {
+        "channels": 1,
+        "key": "bank SOUNDDAT.DAT:32:0",
+        "peak": 20480,
+        "rate": 24000,
+        "rms": 2957.3,
+        "saturated": 0,
+        "seconds": 1.58,
+        "wav_bytes": 75980
+      }
+    ],
+    "preload_copies_rewritten": [],
+    "source_bytes": 1657339904,
+    "target": "BGM.DAT:0:0",
+    "verdict": {
+      "document": {
+        "declared_ranges": 2,
+        "preload_copies_checked": 1,
+        "result": "PASS",
+        "snr_threshold_db": 30.0,
+        "sounds": [
+          {
+            "samples": 441000,
+            "snr_db": 47.44,
+            "sound": "BGM.DAT:0:0"
+          }
+        ]
+      },
+      "passed": true,
+      "summary": "1 sound(s) decoded from the destination and matched the WAV that was written (lowest 47.4 dB); 1 preload-cache copy or copies agree with the container they copy; every byte outside the 2 declared range(s) is identical to the source."
+    },
+    "verify_seconds": 19.1,
+    "what": "one BGM stream replaced by a computed 10-second tone, on the owner's retail disc, read-only; the destination was verified and then deleted"
+  },
+  "schema": "madden09_ps2_audio_codec_census/v1",
+  "source": {
+    "boot_elf_sha256": "adb400ba49702114876fb3f8e1d2d64dce1b1a57a9d25cd705d74ffcf9f68c4c",
+    "bytes": 1657339904,
+    "name": "Madden NFL 09 (USA).iso",
+    "serial": "SLUS-21770"
+  },
+  "streams": {
+    "block_sample_sums_agree_with_header": 34046,
+    "block_sample_sums_disagree": 0,
+    "members": 11389,
+    "per_container": {
+      "BGM.DAT": {
+        "bytes": 213899224,
+        "decodable": 47,
+        "members": 47,
+        "samples": 198737511,
+        "streams": 47
+      },
+      "SOUNDDAT.DAT": {
+        "bytes": 148148248,
+        "decodable": 242,
+        "members": 119,
+        "other": 6,
+        "samples": 138742758,
+        "streams": 248
+      },
+      "SPCHDATA.DAT": {
+        "bytes": 132382304,
+        "members": 7725,
+        "samples": 571204655,
+        "speech": 16626,
+        "streams": 16626
+      },
+      "SPCHFEDT.DAT": {
+        "bytes": 3807452,
+        "members": 167,
+        "samples": 24894328,
+        "speech": 167,
+        "streams": 167
+      },
+      "SPCHMAD1.DAT": {
+        "bytes": 413609164,
+        "members": 1212,
+        "samples": 1966411013,
+        "speech": 12475,
+        "streams": 12475
+      },
+      "SPCHMAD2.DAT": {
+        "bytes": 157596276,
+        "members": 2119,
+        "samples": 755225810,
+        "speech": 4483,
+        "streams": 4483
+      }
+    },
+    "streams": 34046
+  }
+}

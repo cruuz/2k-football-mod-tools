@@ -1,0 +1,559 @@
+{
+  "cross_check_against_the_shipped_documents": {
+    "discs": {
+      "nflblitz2002_ps2": {
+        "agree": true,
+        "decoded": [
+          4189,
+          4189
+        ],
+        "dictionaries": [
+          761,
+          761
+        ],
+        "document": "docs/product/measured/nflblitz2002_ps2/texture-dictionaries.json",
+        "identities": [
+          4166,
+          4166
+        ],
+        "rasters": [
+          10420,
+          10420
+        ]
+      },
+      "nflblitz2003_ps2": {
+        "agree": true,
+        "decoded": [
+          6392,
+          6392
+        ],
+        "dictionaries": [
+          840,
+          840
+        ],
+        "document": "docs/product/measured/nflblitz2003_ps2/texture-dictionaries.json",
+        "identities": [
+          6365,
+          6365
+        ],
+        "rasters": [
+          11828,
+          11828
+        ]
+      }
+    },
+    "note": "The two Blitz discs are re-measured here so every disc is counted by one code path. Their four headline counts must equal what the modules' own measured documents already publish, and they do."
+  },
+  "discs": {
+    "blitzleague_ps2": {
+      "container": {
+        "bytes": 505679872,
+        "file": "RESIMG1.DAT",
+        "objects": 57
+      },
+      "dictionaries_read": 4442,
+      "dictionaries_refused": [
+        [
+          "<member>: the first section is id 0x10, not the texture-dictionary id 0x16; this is not a .rtd.",
+          99
+        ]
+      ],
+      "dictionaries_whose_declared_count_equals_the_rasters_found": 4442,
+      "dictionaries_whose_one_section_accounts_for_the_file": 4442,
+      "disc": {
+        "id": "blitzleague_ps2",
+        "image_bytes": 2328985600,
+        "label": "Blitz: The League (USA)",
+        "measured_on": "dev box (WSL)",
+        "serial": "SLUS-21128"
+      },
+      "header_word_15_census": {
+        "3960": 191,
+        "3968": 7,
+        "4032": 4726
+      },
+      "how_the_members_were_reached": "midway_pak.MidwayPak over /RESIMG1.DAT, every object loaded, then every member whose extension is a RenderWare one",
+      "identities_derived": 3303,
+      "library_versions": {
+        "0x1c020020": 4442
+      },
+      "members_examined": 7409,
+      "raster_decode_failures": [],
+      "raster_depths": {
+        "32": 1,
+        "4": 1620,
+        "8": 3303
+      },
+      "raster_dimensions_top": {
+        "128x128": 4562,
+        "128x32": 10,
+        "128x64": 10,
+        "256x128": 162,
+        "256x256": 57,
+        "32x32": 2,
+        "512x256": 42,
+        "512x64": 20,
+        "64x128": 5,
+        "64x32": 2,
+        "64x64": 50,
+        "8x8": 1
+      },
+      "raster_format_words": {
+        "0x0504": 1,
+        "0x2504": 3276,
+        "0x4504": 1449,
+        "0xa504": 27,
+        "0xc504": 171
+      },
+      "rasters_by_palette_flag": {
+        "PAL4": 1620,
+        "PAL8": 3303,
+        "direct": 1
+      },
+      "rasters_decoded_to_rgba": 3304,
+      "rasters_listed_and_not_drawn": [
+        [
+          "A 4-bit raster's GS upload layout is not established: seven candidate un-swizzles were scored on the retail disc and the best beat reading the bytes linearly by 9%, where the 8-bit answer beat it by 232%, so this reader lists a 4-bit raster and does not draw it.",
+          1620
+        ]
+      ],
+      "rasters_read": 4924,
+      "rasters_whose_gpu_aligned_word_equals_width_times_height": 3,
+      "rasters_whose_tex0_agrees_with_the_header": 4924,
+      "rasters_with_the_mipmap_flag": 198,
+      "renderware_member_first_words": {
+        "10000000": 99,
+        "16000000": 4442
+      },
+      "renderware_members_by_extension": {
+        ".dff": 17,
+        ".rtd": 4442,
+        ".rws": 82
+      },
+      "seconds": 74.7
+    },
+    "madden06_ps2": {
+      "dictionaries_read": 0,
+      "dictionaries_refused": [
+        [
+          "<member>: no RenderWare section could be read from this member.",
+          70
+        ],
+        [
+          "<member>: the first section is id 0x1d, not the texture-dictionary id 0x16; this is not a .rtd.",
+          36
+        ],
+        [
+          "<member>: the first section is id 0x80d, not the texture-dictionary id 0x16; this is not a .rtd.",
+          24
+        ],
+        [
+          "<member>: the first section is id 0x809, not the texture-dictionary id 0x16; this is not a .rtd.",
+          1
+        ],
+        [
+          "<member>: the first section is id 0x10, not the texture-dictionary id 0x16; this is not a .rtd.",
+          1
+        ]
+      ],
+      "dictionaries_whose_declared_count_equals_the_rasters_found": 0,
+      "dictionaries_whose_one_section_accounts_for_the_file": 0,
+      "disc": {
+        "id": "madden06_ps2",
+        "image_bytes": 3390275584,
+        "label": "Madden NFL 06 (USA)",
+        "measured_on": "NAS 192.168.68.185 (/turret/builds/discs/ps2), python3.11",
+        "serial": "SLUS-21213"
+      },
+      "embedded_texture_dictionary_probe": {
+        "bytes_of_each_member_searched": "the whole member (every one is under the 67108864-byte cap)",
+        "embedded_texture_dictionary_headers": 1,
+        "files_scanned": 178,
+        "files_with_an_embedded_texture_dictionary_header": 1,
+        "hit_detail": [
+          {
+            "at": 51904,
+            "declared_body_bytes": 13,
+            "extension": ".bgv",
+            "library_version": "0x08000009",
+            "member_bytes": 464896
+          }
+        ]
+      },
+      "header_word_15_census": {},
+      "how_the_members_were_reached": "the ISO9660 directory under /BURNOUT, then every file whose extension is a RenderWare one. Madden NFL 06's own art is EA TERF/MMAP and SHPS and carries no RenderWare at all; the RenderWare on this disc is a bundled Burnout 3 demo.",
+      "identities_derived": 0,
+      "library_versions": {},
+      "members_examined": 178,
+      "raster_decode_failures": [],
+      "raster_depths": {},
+      "raster_dimensions_top": {},
+      "raster_format_words": {},
+      "rasters_by_palette_flag": {},
+      "rasters_decoded_to_rgba": 0,
+      "rasters_listed_and_not_drawn": [],
+      "rasters_read": 0,
+      "rasters_whose_gpu_aligned_word_equals_width_times_height": 0,
+      "rasters_whose_tex0_agrees_with_the_header": 0,
+      "rasters_with_the_mipmap_flag": 0,
+      "refusals_by_member_extension": {
+        ".awd": {
+          "no RenderWare section could be read from this member.": 59,
+          "the first section is id 0x809, not the texture-dictionary id 0x16; this is not a .rtd.": 1
+        },
+        ".bgd": {
+          "the first section is id 0x10, not the texture-dictionary id 0x16; this is not a .rtd.": 1
+        },
+        ".bgv": {
+          "the first section is id 0x1d, not the texture-dictionary id 0x16; this is not a .rtd.": 5
+        },
+        ".btv": {
+          "the first section is id 0x1d, not the texture-dictionary id 0x16; this is not a .rtd.": 31
+        },
+        ".hwd": {
+          "no RenderWare section could be read from this member.": 5
+        },
+        ".lwd": {
+          "no RenderWare section could be read from this member.": 5
+        },
+        ".rws": {
+          "the first section is id 0x80d, not the texture-dictionary id 0x16; this is not a .rtd.": 24
+        },
+        ".txd": {
+          "no RenderWare section could be read from this member.": 1
+        }
+      },
+      "renderware_member_first_words": {
+        "00003c54": 1,
+        "09080000": 70,
+        "0d080000": 24,
+        "10000000": 1,
+        "1d000000": 36
+      },
+      "renderware_members_by_extension": {
+        ".awd": 60,
+        ".bgd": 1,
+        ".bgv": 5,
+        ".btv": 31,
+        ".hwd": 5,
+        ".lwd": 5,
+        ".rws": 24,
+        ".txd": 1
+      },
+      "scanned_prefix": "/BURNOUT",
+      "seconds": 0.3
+    },
+    "nflblitz2002_ps2": {
+      "container": {
+        "bytes": 361404913,
+        "file": "/DATA/BASSETS.ZIP",
+        "members": 2426
+      },
+      "dictionaries_read": 761,
+      "dictionaries_refused": [
+        [
+          "<member>: the first section is id 0x10, not the texture-dictionary id 0x16; this is not a .rtd.",
+          1272
+        ]
+      ],
+      "dictionaries_whose_declared_count_equals_the_rasters_found": 761,
+      "dictionaries_whose_one_section_accounts_for_the_file": 761,
+      "disc": {
+        "id": "nflblitz2002_ps2",
+        "image_bytes": 1464205312,
+        "label": "NFL Blitz 2002 (USA)",
+        "measured_on": "dev box (WSL)",
+        "serial": "SLUS-20051"
+      },
+      "header_word_15_census": {
+        "11528": 3,
+        "2048": 24,
+        "3376": 16,
+        "3856": 256,
+        "3932": 28,
+        "3948": 16,
+        "3952": 274,
+        "3960": 239,
+        "3984": 1,
+        "4032": 9563
+      },
+      "how_the_members_were_reached": "blitz_zip.read_zip over /DATA/BASSETS.ZIP, then every member whose extension is a RenderWare one",
+      "identities_derived": 4166,
+      "library_versions": {
+        "0x0401ffff": 761
+      },
+      "members_examined": 2426,
+      "raster_decode_failures": [],
+      "raster_depths": {
+        "32": 23,
+        "4": 6231,
+        "8": 4166
+      },
+      "raster_dimensions_top": {
+        "128x128": 2850,
+        "128x16": 73,
+        "128x256": 117,
+        "128x32": 439,
+        "128x64": 2222,
+        "16x16": 112,
+        "256x128": 218,
+        "256x256": 1328,
+        "32x32": 288,
+        "64x128": 335,
+        "64x32": 473,
+        "64x64": 1514
+      },
+      "raster_format_words": {
+        "0x0504": 23,
+        "0x2504": 3999,
+        "0x4504": 5541,
+        "0xa504": 167,
+        "0xc504": 690
+      },
+      "rasters_by_palette_flag": {
+        "PAL4": 6231,
+        "PAL8": 4166,
+        "direct": 23
+      },
+      "rasters_decoded_to_rgba": 4189,
+      "rasters_listed_and_not_drawn": [
+        [
+          "A 4-bit raster's GS upload layout is not established: seven candidate un-swizzles were scored on the retail disc and the best beat reading the bytes linearly by 9%, where the 8-bit answer beat it by 232%, so this reader lists a 4-bit raster and does not draw it.",
+          6231
+        ]
+      ],
+      "rasters_read": 10420,
+      "rasters_whose_gpu_aligned_word_equals_width_times_height": 627,
+      "rasters_whose_tex0_agrees_with_the_header": 10420,
+      "rasters_with_the_mipmap_flag": 857,
+      "renderware_member_first_words": {
+        "10000000": 1272,
+        "16000000": 761
+      },
+      "renderware_members_by_extension": {
+        ".dff": 1272,
+        ".rtd": 761
+      },
+      "seconds": 71.8
+    },
+    "nflblitz2003_ps2": {
+      "container": {
+        "bytes": 439045790,
+        "file": "/DATA/BERTHA.ZIP",
+        "members": 2695
+      },
+      "dictionaries_read": 840,
+      "dictionaries_refused": [
+        [
+          "<member>: the first section is id 0x10, not the texture-dictionary id 0x16; this is not a .rtd.",
+          1436
+        ]
+      ],
+      "dictionaries_whose_declared_count_equals_the_rasters_found": 840,
+      "dictionaries_whose_one_section_accounts_for_the_file": 840,
+      "disc": {
+        "id": "nflblitz2003_ps2",
+        "image_bytes": 1029144576,
+        "label": "NFL Blitz 2003 (USA)",
+        "measured_on": "dev box (WSL)",
+        "serial": "SLUS-20474"
+      },
+      "header_word_15_census": {
+        "11528": 3,
+        "2048": 24,
+        "3376": 16,
+        "3856": 224,
+        "3932": 24,
+        "3948": 13,
+        "3952": 243,
+        "3960": 240,
+        "3984": 1,
+        "4032": 11040
+      },
+      "how_the_members_were_reached": "blitz_zip.read_zip over /DATA/BERTHA.ZIP, then every member whose extension is a RenderWare one",
+      "identities_derived": 6365,
+      "library_versions": {
+        "0x0401ffff": 840
+      },
+      "members_examined": 2695,
+      "raster_decode_failures": [],
+      "raster_depths": {
+        "32": 27,
+        "4": 5436,
+        "8": 6365
+      },
+      "raster_dimensions_top": {
+        "128x128": 3499,
+        "128x16": 99,
+        "128x256": 130,
+        "128x32": 541,
+        "128x64": 2379,
+        "16x16": 120,
+        "256x128": 272,
+        "256x256": 1411,
+        "32x32": 316,
+        "64x128": 344,
+        "64x32": 527,
+        "64x64": 1654
+      },
+      "raster_format_words": {
+        "0x0504": 27,
+        "0x2504": 6225,
+        "0x4504": 4788,
+        "0xa504": 140,
+        "0xc504": 648
+      },
+      "rasters_by_palette_flag": {
+        "PAL4": 5436,
+        "PAL8": 6365,
+        "direct": 27
+      },
+      "rasters_decoded_to_rgba": 6392,
+      "rasters_listed_and_not_drawn": [
+        [
+          "A 4-bit raster's GS upload layout is not established: seven candidate un-swizzles were scored on the retail disc and the best beat reading the bytes linearly by 9%, where the 8-bit answer beat it by 232%, so this reader lists a 4-bit raster and does not draw it.",
+          5436
+        ]
+      ],
+      "rasters_read": 11828,
+      "rasters_whose_gpu_aligned_word_equals_width_times_height": 720,
+      "rasters_whose_tex0_agrees_with_the_header": 11828,
+      "rasters_with_the_mipmap_flag": 788,
+      "renderware_member_first_words": {
+        "10000000": 1436,
+        "16000000": 840
+      },
+      "renderware_members_by_extension": {
+        ".dff": 1436,
+        ".rtd": 840
+      },
+      "seconds": 100.8
+    },
+    "nflblitzpro_ps2": {
+      "container": {
+        "bytes": 417095680,
+        "file": "RESIMG1.DAT",
+        "objects": 14
+      },
+      "dictionaries_read": 1641,
+      "dictionaries_refused": [
+        [
+          "<member>: the first section is id 0x10, not the texture-dictionary id 0x16; this is not a .rtd.",
+          2229
+        ]
+      ],
+      "dictionaries_whose_declared_count_equals_the_rasters_found": 1641,
+      "dictionaries_whose_one_section_accounts_for_the_file": 1641,
+      "disc": {
+        "id": "nflblitzpro_ps2",
+        "image_bytes": 3608838144,
+        "label": "NFL Blitz Pro (USA)",
+        "measured_on": "dev box (WSL)",
+        "serial": "SLUS-20631"
+      },
+      "header_word_15_census": {
+        "11528": 4,
+        "3948": 1,
+        "3960": 247,
+        "3968": 44,
+        "3984": 1,
+        "4032": 17312
+      },
+      "how_the_members_were_reached": "midway_pak.MidwayPak over /RESIMG1.DAT, every object loaded, then every member whose extension is a RenderWare one",
+      "identities_derived": 3200,
+      "library_versions": {
+        "0x1005ffff": 1641
+      },
+      "members_examined": 5605,
+      "raster_decode_failures": [
+        [
+          "<member>: raster 0's texel section carries no IMAGE-mode GIF tag; its pixels cannot be read.",
+          2
+        ]
+      ],
+      "raster_depths": {
+        "4": 14407,
+        "8": 3202
+      },
+      "raster_dimensions_top": {
+        "128x128": 4683,
+        "128x256": 157,
+        "128x32": 346,
+        "128x64": 5125,
+        "16x16": 126,
+        "256x128": 714,
+        "256x256": 2386,
+        "256x64": 505,
+        "32x32": 280,
+        "64x128": 386,
+        "64x32": 468,
+        "64x64": 1607
+      },
+      "raster_format_words": {
+        "0x2504": 3150,
+        "0x4504": 14162,
+        "0xa504": 52,
+        "0xc504": 245
+      },
+      "rasters_by_palette_flag": {
+        "PAL4": 14407,
+        "PAL8": 3202
+      },
+      "rasters_decoded_to_rgba": 3200,
+      "rasters_listed_and_not_drawn": [
+        [
+          "A 4-bit raster's GS upload layout is not established: seven candidate un-swizzles were scored on the retail disc and the best beat reading the bytes linearly by 9%, where the 8-bit answer beat it by 232%, so this reader lists a 4-bit raster and does not draw it.",
+          14407
+        ]
+      ],
+      "rasters_read": 17609,
+      "rasters_whose_gpu_aligned_word_equals_width_times_height": 631,
+      "rasters_whose_tex0_agrees_with_the_header": 17609,
+      "rasters_with_the_mipmap_flag": 297,
+      "renderware_member_first_words": {
+        "10000000": 2229,
+        "16000000": 1641
+      },
+      "renderware_members_by_extension": {
+        ".dff": 2229,
+        ".rtd": 1641
+      },
+      "seconds": 87.4
+    }
+  },
+  "method": {
+    "embedded_probe": "on Madden NFL 06 only: every /BURNOUT member searched whole for a 12-byte pattern that reads as a texture-dictionary section header (id 0x16, a size that fits the member, a RenderWare library word)",
+    "hosts": {
+      "madden06_ps2": "the NAS, 192.168.68.185, image at /turret/builds/discs/ps2, python3.11, the same mod_editor tree rsynced from this branch -- the image is 3.39 GB and copying it would have cost more than running the leg where it lives",
+      "nflblitz2002_ps2 / nflblitz2003_ps2 / nflblitzpro_ps2 / blitzleague_ps2": "the dev box (WSL), images under the session scratchpad"
+    },
+    "per_member": "rw_txd.read_dictionary(member_bytes) -- a refusal is recorded by its sentence with the member's name replaced by <member>; a dictionary that reads has every raster's undecodable_reason() taken, every decodable one passed through decode_rgba() and, at 8 bits, replacement_identity()",
+    "produced_by": "an owner-side scratch script; it is not part of the shipped tree, and every number here is reproducible from the reader calls named above",
+    "reader": "mod_editor/games/_formats/rw_txd.py, unchanged, at branch rw-docs",
+    "renderware_extensions_examined": [
+      ".rtd",
+      ".dff",
+      ".rws",
+      ".txd",
+      ".awd",
+      ".hwd",
+      ".lwd",
+      ".bgv",
+      ".btv",
+      ".bgd"
+    ],
+    "selection": "the extensions the owner's disc maps list as RenderWare on each disc; a member of any other extension is not opened"
+  },
+  "note": "What mod_editor.games._formats.rw_txd makes of every RenderWare member of every mapped PlayStation 2 disc that carries one. Counts, sizes, section ids, library versions and refusal sentences only; no pixel, no palette entry and no member name from any disc is here.",
+  "question": "Two Blitz discs already ship an art page on this reader. Would a third or a fourth disc read with the same code, and is Madden NFL 06 -- an EA title that carries RenderWare -- one of them?",
+  "schema": "rw_txd_cross_disc_census/v1",
+  "verdicts": {
+    "blitzleague_ps2": "READS WITH NO CHANGE. All 4,442 .rtd members parse at library version 0x1c020020, later again, and 3,304 of 4,924 rasters decode -- 67%, the best of the four discs, because this disc's art is mostly 8-bit. The 82 .rws and 17 .dff members are refused as clumps, which is correct.",
+    "madden06_ps2": "NO TEXTURE DICTIONARY ON THE DISC. Madden NFL 06's own art is EA TERF/MMAP and SHPS; the only RenderWare is a bundled Burnout 3 demo under /BURNOUT, 178 files. All 132 RenderWare-extension members are refused, by five distinct sentences: 70 carry a section length that does not fit the member (60 .awd audio-wave dictionaries, 10 .hwd/.lwd meshes and the one .txd), 36 begin with section id 0x1d, 24 with 0x80d, 1 with 0x809 and 1 with 0x10 (a clump). The whole-member search for an embedded texture-dictionary header found one candidate in one .bgv, declaring a 13-byte body -- too small to be a dictionary and read as a coincidence. So rw_txd unlocks nothing on Madden NFL 06.",
+    "nflblitz2002_ps2": "761 of 761 dictionaries read, 10,420 rasters, 4,189 decoded, 4,166 identities. The disc the reader was written on.",
+    "nflblitz2003_ps2": "840 of 840 dictionaries read, 11,828 rasters, 6,392 decoded, 6,365 identities.",
+    "nflblitzpro_ps2": "READS WITH NO CHANGE. All 1,641 .rtd members parse, 17,609 rasters, and the library version is 0x1005ffff on every one -- a later RenderWare than the Blitz 2002/2003 discs' 0x0401ffff, and it made no difference to the reader. But 14,407 of the 17,609 rasters are 4-bit, so only 3,200 decode: 18% of the disc's art, against 40% and 54% on the two Blitz discs. Two 8-bit rasters are refused individually because their texel section carries no IMAGE-mode GIF tag. The 2,229 .dff members are refused as clumps, which is correct."
+  },
+  "what_a_blitz_pro_or_madden06_art_page_would_cost": "Blitz Pro and Blitz: The League: the reader is done and the container reader (midway_pak) is done, so an art page is the wiring -- a lane over the pack instead of over a ZIP -- plus the same 4-bit gap, which costs Blitz Pro most (only 18% of its rasters decode). Madden NFL 06: rw_txd contributes nothing; its art page is TERF/MMAP and SHPS work, which is a different reader this project already has.",
+  "what_would_make_the_madden06_negative_wrong": "The search looks for section id 0x16 written little-endian at a byte boundary in a member whose extension the disc map calls RenderWare. A dictionary compressed inside another container, stored big-endian, or held in a member with an extension not on that list would be missed. The disc map records no compressed container under /BURNOUT, and every EA container on the disc is TERF, which this project already reads and which holds MMAP, not RenderWare."
+}

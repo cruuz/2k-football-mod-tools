@@ -1,0 +1,540 @@
+{
+  "date": "2026-09-05",
+  "machine": "the owner's Windows PC (hard disk), Windows Python from the portable runtime; local paths scrubbed",
+  "schema": "nfl2k5_ps2_disc_studio_windows_e2e/v1",
+  "source_sha256_prefix": "f1300699ab445ad0 (matches the registry's retail pin)",
+  "studio_receipt": {
+    "claims": {
+      "destination_created_exclusively": true,
+      "every_step_independently_verified": true,
+      "runtime_audibility_proved": false,
+      "runtime_visibility_proved": false,
+      "source_opened_read_only": true
+    },
+    "destination": {
+      "path": "<e2e-dir>\\patched.iso",
+      "same_size_as_source": true,
+      "sha256": "d2e0d3183a39278de1edf09dc13d58defd4f081001a7b7a5dd3e0d89c23ab63c",
+      "size": 4665081856
+    },
+    "generated": "2026-09-05T10:39:58Z",
+    "schema": "nfl2k5_ps2_disc_studio_receipt/v1",
+    "seconds_total": 368.1,
+    "serial": "SLUS-20919",
+    "source": {
+      "boot_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+      "modified": false,
+      "name": "ESPN NFL 2K5 (USA).iso",
+      "retail_boot_elf": true,
+      "serial": "SLUS-20919",
+      "sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+      "size": 4665081856
+    },
+    "steps": [
+      {
+        "input": "ESPN NFL 2K5 (USA).iso",
+        "lane": "text",
+        "note": "1 string",
+        "output": ".patched.iso.step1.iso",
+        "output_sha256": "71a0400e997d69a0f97641eadc109b64429892f8d24e71d5a19cf7509a5aeba1",
+        "plan": "1 string \u00b7 34 bytes would change inside 1 pack",
+        "receipt": {
+          "claims": {
+            "fixed_allocation": true,
+            "pointers_unchanged": true,
+            "recompression_used": false,
+            "report_contains_replacement_text": false,
+            "resource_sizes_unchanged": true,
+            "source_opened_read_only": true,
+            "tokens_preserved": true
+          },
+          "destination": {
+            "path": "<e2e-dir>\\.patched.iso.step1.iso",
+            "size": 4665081856
+          },
+          "edits": [
+            {
+              "allocation_bytes": 72,
+              "bank_id": "nfl2k5.ps2.text-bank.cred.8.22",
+              "bank_kind": "CRED",
+              "iso_byte_offset": 36539610,
+              "label": "Credits string 1",
+              "new_code_units": 9,
+              "original_text_sha256": "47544323b377bc5c8f9bdc53957899816ff700ad2a0e50ebf4e04733ad4425df",
+              "pack_iso_path": "/VC_20919/0.",
+              "pack_offset": 6558938,
+              "pool_index": 1,
+              "reference_count": 1,
+              "replacement_bytes_sha256": "dc2c6208815b9e4f1fcba7f3ad0d63d99941915e460ed918fd493d9f1c644d3e",
+              "replacement_text_sha256": "47e93deb2812bdf0cd5d16c4f58fe33f9daee733898caaac5120c31943abe1a3",
+              "selector": "nfl2k5.ps2.text-bank.cred.8.22:string:1",
+              "tokens": []
+            }
+          ],
+          "iso_write_report": {
+            "block_size": 2048,
+            "bytes_declared": 1073741832,
+            "data_offset": 0,
+            "declared_ranges": [
+              {
+                "length": 8,
+                "reason": "dirrec_length:/VC_20919/0.",
+                "start": 536682
+              },
+              {
+                "length": 1073741824,
+                "reason": "extent:/VC_20919/0.",
+                "start": 29980672
+              }
+            ],
+            "destination": "<e2e-dir>\\.patched.iso.step1.iso",
+            "entry_count": 78,
+            "file_size": 4665081856,
+            "replacements": [
+              {
+                "allocated_bytes": 1073741824,
+                "content_source": "<e2e-dir>\\nfl2k5-ps2-text-pack-sa96yndo.bin",
+                "extent_offset": 29980672,
+                "lba": 14639,
+                "length_field_offset": 536682,
+                "new_length": 1073741824,
+                "parent_lba": 262,
+                "path": "/VC_20919/0.",
+                "previous_length": 1073741824,
+                "previous_sha256": "aedd794680a0450b09db5c1502b937ae0abc5b8be6b1e80881cd004a555fe16d",
+                "raw_name": "0.;1",
+                "record_offset": 96,
+                "record_offset_abs": 536672,
+                "requested": "/VC_20919/0.",
+                "sha256": "b90219a3f7698f2756439a0a54c8fd707683339176587e72716ca21c8b701079",
+                "zero_filled_bytes": 0
+              }
+            ],
+            "root_lba": 261,
+            "root_length": 272,
+            "schema": "ps2_iso9660_write/v1",
+            "sector_size": 2048,
+            "slack_bytes": 0,
+            "source": "<roms>\\ESPN NFL 2K5 (USA).iso",
+            "volume_blocks": 2277872,
+            "volume_descriptors": [
+              1,
+              255
+            ],
+            "volume_id": "50137"
+          },
+          "packs": [
+            {
+              "edit_count": 1,
+              "iso_path": "/VC_20919/0.",
+              "replaced_ranges": [
+                {
+                  "iso_byte_offset": 36539610,
+                  "length": 72,
+                  "pack_offset": 6558938
+                }
+              ]
+            }
+          ],
+          "recipe": {
+            "changed_byte_count": 34,
+            "edit_count": 1
+          },
+          "schema": "nfl2k5_ps2_text_patch/v1",
+          "source": {
+            "path": "<roms>\\ESPN NFL 2K5 (USA).iso",
+            "size": 4665081856
+          }
+        },
+        "recipe": {
+          "edits": [
+            {
+              "expect_sha256": "47544323b377bc5c8f9bdc53957899816ff700ad2a0e50ebf4e04733ad4425df",
+              "new_text": "STUDIO TR",
+              "selector": "nfl2k5.ps2.text-bank.cred.8.22:string:1"
+            }
+          ]
+        },
+        "seconds": {
+          "hash_input": 13.84,
+          "hash_output": 13.77,
+          "plan": 0.81,
+          "verify": 22.91,
+          "write": 131.95
+        },
+        "step": 1,
+        "verdict": {
+          "passed": true,
+          "report": {
+            "changed_byte_count": 34,
+            "checks": {
+              "allocation_boundaries_unchanged": true,
+              "chunk_headers_unchanged": true,
+              "differences_exactly_the_edited_allocations": true,
+              "images_same_size": true,
+              "independent_of_patcher_and_catalog": true,
+              "inline_tokens_preserved": true,
+              "iso9660_verifier_passed": true,
+              "outer_entry_table_unchanged": true,
+              "pack_extents_unchanged": true,
+              "record_tables_unchanged": true,
+              "replacements_terminated_and_zero_filled": true,
+              "untouched_strings_byte_identical": true
+            },
+            "destination": {
+              "path": "<e2e-dir>\\.patched.iso.step1.iso",
+              "size": 4665081856
+            },
+            "differing_ranges": [
+              {
+                "length": 1,
+                "offset": 36539610
+              },
+              {
+                "length": 1,
+                "offset": 36539612
+              },
+              {
+                "length": 1,
+                "offset": 36539614
+              },
+              {
+                "length": 1,
+                "offset": 36539616
+              },
+              {
+                "length": 1,
+                "offset": 36539618
+              },
+              {
+                "length": 1,
+                "offset": 36539620
+              },
+              {
+                "length": 1,
+                "offset": 36539624
+              },
+              {
+                "length": 1,
+                "offset": 36539626
+              },
+              {
+                "length": 1,
+                "offset": 36539628
+              },
+              {
+                "length": 1,
+                "offset": 36539630
+              },
+              {
+                "length": 1,
+                "offset": 36539632
+              },
+              {
+                "length": 1,
+                "offset": 36539634
+              },
+              {
+                "length": 1,
+                "offset": 36539636
+              },
+              {
+                "length": 1,
+                "offset": 36539638
+              },
+              {
+                "length": 1,
+                "offset": 36539640
+              },
+              {
+                "length": 1,
+                "offset": 36539642
+              },
+              {
+                "length": 1,
+                "offset": 36539644
+              },
+              {
+                "length": 1,
+                "offset": 36539646
+              },
+              {
+                "length": 1,
+                "offset": 36539648
+              },
+              {
+                "length": 1,
+                "offset": 36539650
+              },
+              {
+                "length": 1,
+                "offset": 36539652
+              },
+              {
+                "length": 1,
+                "offset": 36539654
+              },
+              {
+                "length": 1,
+                "offset": 36539656
+              },
+              {
+                "length": 1,
+                "offset": 36539658
+              },
+              {
+                "length": 1,
+                "offset": 36539660
+              },
+              {
+                "length": 1,
+                "offset": 36539662
+              },
+              {
+                "length": 1,
+                "offset": 36539664
+              },
+              {
+                "length": 1,
+                "offset": 36539666
+              },
+              {
+                "length": 1,
+                "offset": 36539668
+              },
+              {
+                "length": 1,
+                "offset": 36539670
+              },
+              {
+                "length": 1,
+                "offset": 36539672
+              },
+              {
+                "length": 1,
+                "offset": 36539674
+              },
+              {
+                "length": 1,
+                "offset": 36539676
+              },
+              {
+                "length": 1,
+                "offset": 36539678
+              }
+            ],
+            "edits": [
+              {
+                "allocation_bytes": 72,
+                "bank_id": "nfl2k5.ps2.text-bank.cred.8.22",
+                "bank_kind": "CRED",
+                "changed_byte_count": 34,
+                "iso_byte_offset": 36539610,
+                "new_code_units": 9,
+                "new_text_sha256": "47e93deb2812bdf0cd5d16c4f58fe33f9daee733898caaac5120c31943abe1a3",
+                "original_text_sha256": "47544323b377bc5c8f9bdc53957899816ff700ad2a0e50ebf4e04733ad4425df",
+                "pack_iso_path": "/VC_20919/0.",
+                "pool_index": 1,
+                "selector": "nfl2k5.ps2.text-bank.cred.8.22:string:1",
+                "tokens": []
+              }
+            ],
+            "iso_write_verification": {
+              "declared_bytes": 1073741832,
+              "declared_ranges": [
+                {
+                  "length": 8,
+                  "reason": "dirrec_length:/VC_20919/0.",
+                  "start": 536682
+                },
+                {
+                  "length": 1073741824,
+                  "reason": "extent:/VC_20919/0.",
+                  "start": 29980672
+                }
+              ],
+              "destination": "<e2e-dir>\\.patched.iso.step1.iso",
+              "entries_compared": 79,
+              "file_size": 4665081856,
+              "replacements_checked": [
+                {
+                  "extent_offset": 29980672,
+                  "lba": 14639,
+                  "length_field_offset": 536682,
+                  "new_length": 1073741824,
+                  "path": "/VC_20919/0.",
+                  "previous_length": 1073741824,
+                  "sha256": "b90219a3f7698f2756439a0a54c8fd707683339176587e72716ca21c8b701079",
+                  "zero_filled_bytes": 0
+                }
+              ],
+              "result": "PASS",
+              "schema": "ps2_iso9660_verify/v1",
+              "slack_bytes": 0,
+              "source": "<roms>\\ESPN NFL 2K5 (USA).iso",
+              "unchanged_bytes_compared": 3591340024,
+              "volume_blocks": 2277872,
+              "volume_id": "50137"
+            },
+            "patch_report_agreement": {
+              "agrees": true,
+              "edit_count": 1
+            },
+            "schema": "nfl2k5_ps2_text_verify/v1",
+            "source": {
+              "path": "<roms>\\ESPN NFL 2K5 (USA).iso",
+              "size": 4665081856
+            },
+            "verdict": "pass"
+          },
+          "summary": "text verifier: pass \u00b7 1 edits located \u00b7 34 bytes differ, exactly the edited allocations"
+        }
+      },
+      {
+        "input": ".patched.iso.step1.iso",
+        "lane": "colors",
+        "note": "1 package in /VC_20919/0.",
+        "output": "patched.iso",
+        "output_sha256": "d2e0d3183a39278de1edf09dc13d58defd4f081001a7b7a5dd3e0d89c23ab63c",
+        "plan": "1 package \u00b7 8 bytes would change in /VC_20919/0.",
+        "receipt": {
+          "catalog_summary": {
+            "away_packages": 317,
+            "compressed_targets": 0,
+            "duplicate_selectors": 0,
+            "home_packages": 317,
+            "matching_xbox_offsets": 634,
+            "rejected": 0,
+            "targets": 634,
+            "with_selector": 634
+          },
+          "declared_ranges": [
+            {
+              "length": 8,
+              "reason": "unif_color:09H0",
+              "start": 1069963344
+            }
+          ],
+          "destination": "<e2e-dir>\\patched.iso",
+          "edits": [
+            {
+              "after_sha256": "07d3e343c5162299c7736ca34b005d7c205a9b7fee6915effa7aa233f656ef36",
+              "before_sha256": "ec1cfe77146b59228601e5bc40fef43869ea4d9863e2f61e6b97a3fc4dc76e63",
+              "iso_path": "/VC_20919/0.",
+              "note": null,
+              "offset_in_iso": 1069963344,
+              "offset_in_pack": 1039982672,
+              "outer_index": 1770,
+              "outer_name_id": "0x9a4832d6",
+              "selector": "09H0",
+              "span_size": 8,
+              "words_changed": [
+                "facemask"
+              ]
+            }
+          ],
+          "files_replaced": [
+            "/VC_20919/0."
+          ],
+          "iso_write_report": {
+            "block_size": 2048,
+            "bytes_declared": 1073741832,
+            "data_offset": 0,
+            "declared_ranges": [
+              {
+                "length": 8,
+                "reason": "dirrec_length:/VC_20919/0.",
+                "start": 536682
+              },
+              {
+                "length": 1073741824,
+                "reason": "extent:/VC_20919/0.",
+                "start": 29980672
+              }
+            ],
+            "destination": "<e2e-dir>\\patched.iso",
+            "entry_count": 78,
+            "file_size": 4665081856,
+            "replacements": [
+              {
+                "allocated_bytes": 1073741824,
+                "content_source": "<e2e-dir>\\.patched.iso.work-o0hqzy9b\\tmpqzh_707l\\pack00.bin",
+                "extent_offset": 29980672,
+                "lba": 14639,
+                "length_field_offset": 536682,
+                "new_length": 1073741824,
+                "parent_lba": 262,
+                "path": "/VC_20919/0.",
+                "previous_length": 1073741824,
+                "previous_sha256": "b90219a3f7698f2756439a0a54c8fd707683339176587e72716ca21c8b701079",
+                "raw_name": "0.;1",
+                "record_offset": 96,
+                "record_offset_abs": 536672,
+                "requested": "/VC_20919/0.",
+                "sha256": "c22716629dda3b53c669306c7513949b2895881a25ae01df9830ba0913a5fb8a",
+                "zero_filled_bytes": 0
+              }
+            ],
+            "root_lba": 261,
+            "root_length": 272,
+            "schema": "ps2_iso9660_write/v1",
+            "sector_size": 2048,
+            "slack_bytes": 0,
+            "source": "<e2e-dir>\\.patched.iso.step1.iso",
+            "volume_blocks": 2277872,
+            "volume_descriptors": [
+              1,
+              255
+            ],
+            "volume_id": "50137"
+          },
+          "schema": "nfl2k5_ps2_unif_color_write/v1",
+          "serial": "SLUS-20919",
+          "source": "<e2e-dir>\\.patched.iso.step1.iso",
+          "staged_pack_sha256": {
+            "/VC_20919/0.": "c22716629dda3b53c669306c7513949b2895881a25ae01df9830ba0913a5fb8a"
+          }
+        },
+        "recipe": {
+          "edits": [
+            {
+              "facemask": "#12FF34",
+              "selector": "09H0"
+            }
+          ],
+          "schema": "nfl2k5_ps2_unif_color_recipe/v1"
+        },
+        "seconds": {
+          "hash_output": 13.62,
+          "plan": 0.14,
+          "verify": 17.88,
+          "write": 151.48
+        },
+        "step": 2,
+        "verdict": {
+          "passed": true,
+          "report": {
+            "destination": "<e2e-dir>\\patched.iso",
+            "edits_checked": 1,
+            "files_replaced": [
+              "/VC_20919/0."
+            ],
+            "iso_verify": {
+              "declared_bytes": 1073741832,
+              "result": "PASS",
+              "unchanged_bytes_compared": 3591340024
+            },
+            "result": "PASS",
+            "schema": "nfl2k5_ps2_unif_color_verify/v1",
+            "serial": "SLUS-20919",
+            "source": "<e2e-dir>\\.patched.iso.step1.iso",
+            "unchanged_bytes_compared": 1073741816,
+            "unif_records_decoded": 634
+          },
+          "summary": "colour verifier: PASS \u00b7 1 edits checked \u00b7 634 Unif records decoded \u00b7 1,073,741,816 unchanged bytes compared"
+        }
+      }
+    ]
+  },
+  "what_this_is": "The shipped Windows portable build (2K5-Mod-Studio-1.0.0rc85-portable-win64.zip: private CPython 3.12.10 + PyQt5 5.15.11 + the staged app tree) driving the PS2 Disc Studio service end to end over the user's retail SLUS-20919 image on the Windows drive: open + identity check, text and colour catalogues built from the disc, one same-length string and one facemask colour staged and planned, a two-step chained build to a new image, each step verified by the lane's independent verifier, receipt written, image deleted afterwards."
+}

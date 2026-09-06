@@ -1,0 +1,126 @@
+{
+  "game_id": "madden09_ps2",
+  "lanes": {
+    "art_pages": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/art_pages.py",
+        "mod_editor/games/madden09_ps2/uniform_art.py",
+        "tools/ps2_iso9660_writer.py",
+        "tools/ps2_iso9660_verify.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/ps2_iso9660_writer.py"
+        },
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/ps2_iso9660_verify.py"
+        }
+      ],
+      "what": "the four MMAP art-page writer lanes: stadiums, field art, presentation and the player and coach faces"
+    },
+    "audio": {
+      "compile": [
+        "mod_editor/games/_formats/ea_schl.py",
+        "mod_editor/games/madden09_ps2/audio_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [],
+      "what": "the SCHl stream and BNKl bank audio lanes"
+    },
+    "code_patches": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/code_patches.py"
+      ],
+      "conformance": true,
+      "selftest": [],
+      "what": "the executable-patch lane"
+    },
+    "identity": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/identity_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [],
+      "what": "the team-identity lane"
+    },
+    "inventory": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/inventory_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [],
+      "what": "the container inventory lane"
+    },
+    "playbooks": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/playbooks_lane.py",
+        "mod_editor/games/_formats/ea_tdb.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.madden09_ps2.playbooks_lane"
+        }
+      ],
+      "what": "the playbooks lane"
+    },
+    "team_data": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/team_data.py"
+      ],
+      "conformance": true,
+      "selftest": [],
+      "what": "the team-database lane"
+    },
+    "text": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/text_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [],
+      "what": "the text lane"
+    },
+    "uniform_art": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/uniform_art.py"
+      ],
+      "conformance": true,
+      "selftest": [],
+      "what": "the MMAP uniform-art lane"
+    },
+    "uniform_disc_art": {
+      "compile": [
+        "mod_editor/games/madden09_ps2/uniform_art.py",
+        "tools/ps2_iso9660_writer.py",
+        "tools/ps2_iso9660_verify.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/ps2_iso9660_writer.py"
+        },
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/ps2_iso9660_verify.py"
+        }
+      ],
+      "what": "the MMAP uniform-art disc writer lane"
+    }
+  },
+  "schema": "vc_game_lane_validators/v1"
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "madden09_ps2_stadium_art_recipe/v1",
+  "textures": [
+    {"texture": "STADIUMS.DAT:697:0", "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/stadiums/STADIUMS.DAT_697_0.png", "note": "frame 20260905152031 (Bears in the coloured kit); the art-pages real-disc trial used this member"},
+    {"texture": "STADIUMS.DAT:764:0", "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/stadiums/STADIUMS.DAT_764_0.png", "note": "frame 20260905145305 (Bears in the white kit)"},
+    {"texture": "STADIUMS.DAT:821:0", "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/stadiums/STADIUMS.DAT_821_0.png", "note": "frame 20260905145305 and nine other coin tosses; the only one of the three whose own CLUT carries a black and a white"}
+  ]
+}

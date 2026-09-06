@@ -1,0 +1,151 @@
+{
+ "builds": {
+  "colors.team_identity": {
+   "checksum_sites": 470,
+   "image": {
+    "container": "DB_TEAMS.DAT",
+    "container_directory_identical": true,
+    "data_chunk_declares_after": 2574848,
+    "data_chunk_declares_before": 2574848,
+    "differing_bytes_in_the_container": 10,
+    "directory_records_moved_or_resized": [],
+    "first_differing_byte": 33183,
+    "image_bytes_after": 1846476800,
+    "image_bytes_before": 1846476800,
+    "last_differing_byte": 33267,
+    "recorded_length_after": 2559112,
+    "recorded_length_before": 2559112
+   },
+   "passed": true,
+   "recipe": "docs/product/measured/madden09_ps2/witness-recipes/disc4-02-identity.json",
+   "undeclared_changed_bytes": 0,
+   "verdict": "identity verifier: PASS \u00b7 8 value(s) read back from the destination \u00b7 2 database(s) re-parsed with 470 checksum slot(s) all correct \u00b7 0 undeclared changed bytes."
+  },
+  "players_rosters.team_databases": {
+   "checksum_sites": 44,
+   "image": {
+    "container": "DB_TEAMS.DAT",
+    "container_directory_identical": true,
+    "data_chunk_declares_after": 2574848,
+    "data_chunk_declares_before": 2574848,
+    "differing_bytes_in_the_container": 19,
+    "directory_records_moved_or_resized": [],
+    "first_differing_byte": 23186,
+    "image_bytes_after": 1846476800,
+    "image_bytes_before": 1846476800,
+    "last_differing_byte": 23911,
+    "recorded_length_after": 2559112,
+    "recorded_length_before": 2559112
+   },
+   "passed": true,
+   "recipe": "docs/product/measured/madden09_ps2/witness-recipes/disc4-01-roster.json",
+   "undeclared_changed_bytes": 0,
+   "verdict": "team-data verifier: PASS \u00b7 3 value(s) read back from the destination \u00b7 1 database(s) re-parsed with 44 checksum slot(s) all correct \u00b7 0 undeclared changed bytes."
+  }
+ },
+ "images": {
+  "deluxe": {
+   "sha256_prefix": "d331c5e401043177"
+  },
+  "retail": {
+   "sha256_prefix": "b34e8a6acb4be6c9"
+  }
+ },
+ "measured_on": "2026-09-05",
+ "recorded_short_containers": {
+  "deluxe": [
+   {
+    "container": "DB_TEAMS.DAT",
+    "data_chunk_declares": 2574848,
+    "declared_length": 2585280,
+    "directory_bytes": 10432,
+    "layout_violations": [
+     "DATA chunk is 2574848 byte(s); its members end at 2574912"
+    ],
+    "layout_violations_allowing_a_short_tail": [],
+    "members": 644,
+    "members_past_the_record": 409,
+    "members_past_the_record_with_bytes": 0,
+    "recorded_length": 2559112,
+    "sectors_between_this_record_and_the_next_file": 0,
+    "understated_by": 26168
+   },
+   {
+    "container": "FIELDART.DAT",
+    "data_chunk_declares": 20112384,
+    "declared_length": 20123968,
+    "directory_bytes": 11584,
+    "layout_violations": [],
+    "layout_violations_allowing_a_short_tail": [],
+    "members": 715,
+    "members_past_the_record": 0,
+    "members_past_the_record_with_bytes": 0,
+    "recorded_length": 20123950,
+    "sectors_between_this_record_and_the_next_file": 0,
+    "understated_by": 18
+   },
+   {
+    "container": "MOVIEDAT.DAT",
+    "data_chunk_declares": 640,
+    "declared_length": 832,
+    "directory_bytes": 192,
+    "layout_violations": [
+     "DATA chunk is 640 byte(s); its members end at 704"
+    ],
+    "layout_violations_allowing_a_short_tail": [],
+    "members": 10,
+    "members_past_the_record": 10,
+    "members_past_the_record_with_bytes": 0,
+    "recorded_length": 200,
+    "sectors_between_this_record_and_the_next_file": 0,
+    "understated_by": 632
+   },
+   {
+    "container": "TEMPLATE.DAT",
+    "data_chunk_declares": 2164992,
+    "declared_length": 2165248,
+    "directory_bytes": 256,
+    "layout_violations": [],
+    "layout_violations_allowing_a_short_tail": [],
+    "members": 18,
+    "members_past_the_record": 0,
+    "members_past_the_record_with_bytes": 0,
+    "recorded_length": 2165188,
+    "sectors_between_this_record_and_the_next_file": 0,
+    "understated_by": 60
+   },
+   {
+    "container": "UIS_PLYR.DAT",
+    "data_chunk_declares": 13286848,
+    "declared_length": 13313216,
+    "directory_bytes": 26368,
+    "layout_violations": [],
+    "layout_violations_allowing_a_short_tail": [],
+    "members": 3286,
+    "members_past_the_record": 0,
+    "members_past_the_record_with_bytes": 0,
+    "recorded_length": 13313212,
+    "sectors_between_this_record_and_the_next_file": 0,
+    "understated_by": 4
+   },
+   {
+    "container": "UIS_STAD.DAT",
+    "data_chunk_declares": 1666688,
+    "declared_length": 1668672,
+    "directory_bytes": 1984,
+    "layout_violations": [
+     "DATA chunk is 1666688 byte(s); its members end at 1666752"
+    ],
+    "layout_violations_allowing_a_short_tail": [],
+    "members": 115,
+    "members_past_the_record": 64,
+    "members_past_the_record_with_bytes": 0,
+    "recorded_length": 1664620,
+    "sectors_between_this_record_and_the_next_file": 0,
+    "understated_by": 4052
+   }
+  ],
+  "retail": []
+ },
+ "what": "the Madden 09 Deluxe image's recorded-short containers, and the two database lanes writing inside the ISO9660 record they declare"
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "vc_game_lane_validators/v1",
+  "game_id": "mvp05_ps2",
+  "lanes": {
+    "tables": {
+      "what": "the three CSV table writer lanes: rosters, team identity and tuning",
+      "compile": [
+        "mod_editor/games/_formats/ea_big.py",
+        "mod_editor/games/_formats/ea_csv_db.py",
+        "mod_editor/games/mvp05_ps2/containers.py",
+        "mod_editor/games/mvp05_ps2/disc_write.py",
+        "mod_editor/games/mvp05_ps2/database_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.mvp05_ps2.database_lane", "args": ["--selftest", "--lane", "rosters"]},
+        {"module": "mod_editor.games.mvp05_ps2.database_lane", "args": ["--selftest", "--lane", "identity"]},
+        {"module": "mod_editor.games.mvp05_ps2.database_lane", "args": ["--selftest", "--lane", "tuning"]}
+      ],
+      "conformance": true
+    },
+    "strings": {
+      "what": "the LOCH UI strings writer lane",
+      "compile": [
+        "mod_editor/games/mvp05_ps2/loch_text.py",
+        "mod_editor/games/mvp05_ps2/loch_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.mvp05_ps2.loch_lane", "args": ["--selftest"]}
+      ],
+      "conformance": true
+    },
+    "art": {
+      "what": "the four SHPS art writer lanes and the three code-0x0e inventory lanes",
+      "compile": [
+        "mod_editor/games/_formats/ea_shps.py",
+        "mod_editor/games/_formats/pcsx2_texture_name.py",
+        "mod_editor/games/mvp05_ps2/art_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "stadiums"]},
+        {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "presentation"]},
+        {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "menus"]},
+        {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "kits"]},
+        {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "uniforms"]},
+        {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "faces"]},
+        {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "field_art"]}
+      ],
+      "conformance": true
+    },
+    "audio": {
+      "what": "the SCHl stream lane and the BNKl bank lane",
+      "compile": [
+        "mod_editor/games/_formats/ea_schl.py",
+        "mod_editor/games/mvp05_ps2/audio_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.mvp05_ps2.audio_lane", "args": ["--selftest", "--lane", "streams"]},
+        {"module": "mod_editor.games.mvp05_ps2.audio_lane", "args": ["--selftest", "--lane", "banks"]}
+      ],
+      "conformance": true
+    },
+    "inventory": {
+      "what": "the all-textures bank inventory lane",
+      "compile": [
+        "mod_editor/games/mvp05_ps2/inventory_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.mvp05_ps2.inventory_lane", "args": ["--selftest"]}
+      ],
+      "conformance": true
+    }
+  }
+}

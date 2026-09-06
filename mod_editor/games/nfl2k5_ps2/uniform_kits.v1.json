@@ -1,0 +1,3388 @@
+{
+  "counts": {
+    "abbreviations": 50,
+    "named_teams": 49,
+    "selectors": 562
+  },
+  "note": "Selector -> team, side and kit name for ESPN NFL 2K5's 634 uniform packages. Names only: no offsets, no digests, no pixels. Extracted mechanically from the committed source below, which is research evidence and is not part of a release; this copy travels with the module so the uniform-art lane can name a kit without it.",
+  "schema": "nfl2k5_ps2_uniform_kits/v1",
+  "selectors": {
+    "00A0": {
+      "abbreviation": "ARZ",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00A1": {
+      "abbreviation": "ARZ",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00A2": {
+      "abbreviation": "ARZ",
+      "kit": "1990 - 1991 Uniform",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00A3": {
+      "abbreviation": "ARZ",
+      "kit": "1971 - 1972 Uniform",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00A4": {
+      "abbreviation": "ARZ",
+      "kit": "1959 - 1960 Uniform",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00A5": {
+      "abbreviation": "ARZ",
+      "kit": "1958 - 1959 Uniform",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00A6": {
+      "abbreviation": "ARZ",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00A7": {
+      "abbreviation": "ARZ",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00A8": {
+      "abbreviation": "ARZ",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Arizona Cardinals"
+    },
+    "00H0": {
+      "abbreviation": "ARZ",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "00H1": {
+      "abbreviation": "ARZ",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "00H2": {
+      "abbreviation": "ARZ",
+      "kit": "1990 - 1991 Uniform",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "00H3": {
+      "abbreviation": "ARZ",
+      "kit": "1971 - 1972 Uniform",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "00H4": {
+      "abbreviation": "ARZ",
+      "kit": "1959 - 1960 Uniform",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "00H5": {
+      "abbreviation": "ARZ",
+      "kit": "1958 - 1959 Uniform",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "00H6": {
+      "abbreviation": "ARZ",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "00H7": {
+      "abbreviation": "ARZ",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "00H8": {
+      "abbreviation": "ARZ",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Arizona Cardinals"
+    },
+    "01A0": {
+      "abbreviation": "ATL",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A1": {
+      "abbreviation": "ATL",
+      "kit": "1998 - 2003 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A10": {
+      "abbreviation": "ATL",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A11": {
+      "abbreviation": "ATL",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A12": {
+      "abbreviation": "ATL",
+      "kit": "2004  Alternate 3",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A13": {
+      "abbreviation": "ATL",
+      "kit": "2004  Alternate 4",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A2": {
+      "abbreviation": "ATL",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A3": {
+      "abbreviation": "ATL",
+      "kit": "1990 - 1997 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A4": {
+      "abbreviation": "ATL",
+      "kit": "1987 - 1989 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A5": {
+      "abbreviation": "ATL",
+      "kit": "1984 - 1986 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A6": {
+      "abbreviation": "ATL",
+      "kit": "1978 - 1979 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A7": {
+      "abbreviation": "ATL",
+      "kit": "1971 - 1977 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A8": {
+      "abbreviation": "ATL",
+      "kit": "1968 - 1969 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01A9": {
+      "abbreviation": "ATL",
+      "kit": "1966 - 1967 Uniform",
+      "side": "away",
+      "team": "Atlanta Falcons"
+    },
+    "01H0": {
+      "abbreviation": "ATL",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H1": {
+      "abbreviation": "ATL",
+      "kit": "1998 - 2003 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H10": {
+      "abbreviation": "ATL",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H11": {
+      "abbreviation": "ATL",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H12": {
+      "abbreviation": "ATL",
+      "kit": "2004  Alternate 3",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H13": {
+      "abbreviation": "ATL",
+      "kit": "2004  Alternate 4",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H2": {
+      "abbreviation": "ATL",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H3": {
+      "abbreviation": "ATL",
+      "kit": "1990 - 1997 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H4": {
+      "abbreviation": "ATL",
+      "kit": "1987 - 1989 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H5": {
+      "abbreviation": "ATL",
+      "kit": "1984 - 1986 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H6": {
+      "abbreviation": "ATL",
+      "kit": "1978 - 1979 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H7": {
+      "abbreviation": "ATL",
+      "kit": "1971 - 1977 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H8": {
+      "abbreviation": "ATL",
+      "kit": "1968 - 1969 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "01H9": {
+      "abbreviation": "ATL",
+      "kit": "1966 - 1967 Uniform",
+      "side": "home",
+      "team": "Atlanta Falcons"
+    },
+    "02A0": {
+      "abbreviation": "BAL",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Baltimore Ravens"
+    },
+    "02A1": {
+      "abbreviation": "BAL",
+      "kit": "1997 - 1999 Uniform",
+      "side": "away",
+      "team": "Baltimore Ravens"
+    },
+    "02A2": {
+      "abbreviation": "BAL",
+      "kit": "1995 - 1996 Uniform",
+      "side": "away",
+      "team": "Baltimore Ravens"
+    },
+    "02A3": {
+      "abbreviation": "BAL",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Baltimore Ravens"
+    },
+    "02H0": {
+      "abbreviation": "BAL",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Baltimore Ravens"
+    },
+    "02H1": {
+      "abbreviation": "BAL",
+      "kit": "1997 - 1999 Uniform",
+      "side": "home",
+      "team": "Baltimore Ravens"
+    },
+    "02H2": {
+      "abbreviation": "BAL",
+      "kit": "1995 - 1996 Uniform",
+      "side": "home",
+      "team": "Baltimore Ravens"
+    },
+    "02H3": {
+      "abbreviation": "BAL",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Baltimore Ravens"
+    },
+    "03A0": {
+      "abbreviation": "BUF",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A1": {
+      "abbreviation": "BUF",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A2": {
+      "abbreviation": "BUF",
+      "kit": "1987 - 2002 Uniform",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A3": {
+      "abbreviation": "BUF",
+      "kit": "1984 - 1986 Uniform",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A4": {
+      "abbreviation": "BUF",
+      "kit": "1976 - 1983 Uniform",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A5": {
+      "abbreviation": "BUF",
+      "kit": "1974 - 1975 Uniform",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A6": {
+      "abbreviation": "BUF",
+      "kit": "1969 - 1973 Uniform",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A7": {
+      "abbreviation": "BUF",
+      "kit": "1964 - 1965 Uniform",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A8": {
+      "abbreviation": "BUF",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03A9": {
+      "abbreviation": "BUF",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Buffalo Bills"
+    },
+    "03H0": {
+      "abbreviation": "BUF",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H1": {
+      "abbreviation": "BUF",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H2": {
+      "abbreviation": "BUF",
+      "kit": "1987 - 2002 Uniform",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H3": {
+      "abbreviation": "BUF",
+      "kit": "1984 - 1986 Uniform",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H4": {
+      "abbreviation": "BUF",
+      "kit": "1976 - 1983 Uniform",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H5": {
+      "abbreviation": "BUF",
+      "kit": "1974 - 1975 Uniform",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H6": {
+      "abbreviation": "BUF",
+      "kit": "1969 - 1973 Uniform",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H7": {
+      "abbreviation": "BUF",
+      "kit": "1964 - 1965 Uniform",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H8": {
+      "abbreviation": "BUF",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "03H9": {
+      "abbreviation": "BUF",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Buffalo Bills"
+    },
+    "04A0": {
+      "abbreviation": "CAR",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Carolina Panthers"
+    },
+    "04A1": {
+      "abbreviation": "CAR",
+      "kit": "1996 Uniform",
+      "side": "away",
+      "team": "Carolina Panthers"
+    },
+    "04A2": {
+      "abbreviation": "CAR",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Carolina Panthers"
+    },
+    "04H0": {
+      "abbreviation": "CAR",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Carolina Panthers"
+    },
+    "04H1": {
+      "abbreviation": "CAR",
+      "kit": "1996 Uniform",
+      "side": "home",
+      "team": "Carolina Panthers"
+    },
+    "04H2": {
+      "abbreviation": "CAR",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Carolina Panthers"
+    },
+    "05A0": {
+      "abbreviation": "CHI",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Chicago Bears"
+    },
+    "05A1": {
+      "abbreviation": "CHI",
+      "kit": "1974 - 1982 Uniform",
+      "side": "away",
+      "team": "Chicago Bears"
+    },
+    "05A2": {
+      "abbreviation": "CHI",
+      "kit": "1962 - 1973 Uniform",
+      "side": "away",
+      "team": "Chicago Bears"
+    },
+    "05A3": {
+      "abbreviation": "CHI",
+      "kit": "1958 - 1961 Uniform",
+      "side": "away",
+      "team": "Chicago Bears"
+    },
+    "05A4": {
+      "abbreviation": "CHI",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Chicago Bears"
+    },
+    "05A5": {
+      "abbreviation": "CHI",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Chicago Bears"
+    },
+    "05A6": {
+      "abbreviation": "CHI",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Chicago Bears"
+    },
+    "05H0": {
+      "abbreviation": "CHI",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Chicago Bears"
+    },
+    "05H1": {
+      "abbreviation": "CHI",
+      "kit": "1974 - 1982 Uniform",
+      "side": "home",
+      "team": "Chicago Bears"
+    },
+    "05H2": {
+      "abbreviation": "CHI",
+      "kit": "1962 - 1973 Uniform",
+      "side": "home",
+      "team": "Chicago Bears"
+    },
+    "05H3": {
+      "abbreviation": "CHI",
+      "kit": "1958 - 1961 Uniform",
+      "side": "home",
+      "team": "Chicago Bears"
+    },
+    "05H4": {
+      "abbreviation": "CHI",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Chicago Bears"
+    },
+    "05H5": {
+      "abbreviation": "CHI",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Chicago Bears"
+    },
+    "05H6": {
+      "abbreviation": "CHI",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Chicago Bears"
+    },
+    "06A0": {
+      "abbreviation": "CIN",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Cincinnati Bengals"
+    },
+    "06A1": {
+      "abbreviation": "CIN",
+      "kit": "1981 - 1997 Uniform",
+      "side": "away",
+      "team": "Cincinnati Bengals"
+    },
+    "06A2": {
+      "abbreviation": "CIN",
+      "kit": "1979 - 1980 Uniform",
+      "side": "away",
+      "team": "Cincinnati Bengals"
+    },
+    "06A3": {
+      "abbreviation": "CIN",
+      "kit": "1968 - 1978 Uniform",
+      "side": "away",
+      "team": "Cincinnati Bengals"
+    },
+    "06A4": {
+      "abbreviation": "CIN",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Cincinnati Bengals"
+    },
+    "06A5": {
+      "abbreviation": "CIN",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "Cincinnati Bengals"
+    },
+    "06A7": {
+      "abbreviation": "CIN",
+      "kit": "0 Uniform",
+      "side": "away",
+      "team": "Cincinnati Bengals"
+    },
+    "06H0": {
+      "abbreviation": "CIN",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Cincinnati Bengals"
+    },
+    "06H1": {
+      "abbreviation": "CIN",
+      "kit": "1981 - 1997 Uniform",
+      "side": "home",
+      "team": "Cincinnati Bengals"
+    },
+    "06H2": {
+      "abbreviation": "CIN",
+      "kit": "1979 - 1980 Uniform",
+      "side": "home",
+      "team": "Cincinnati Bengals"
+    },
+    "06H3": {
+      "abbreviation": "CIN",
+      "kit": "1968 - 1978 Uniform",
+      "side": "home",
+      "team": "Cincinnati Bengals"
+    },
+    "06H4": {
+      "abbreviation": "CIN",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Cincinnati Bengals"
+    },
+    "06H5": {
+      "abbreviation": "CIN",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "Cincinnati Bengals"
+    },
+    "06H7": {
+      "abbreviation": "CIN",
+      "kit": "0 Uniform",
+      "side": "home",
+      "team": "Cincinnati Bengals"
+    },
+    "07A0": {
+      "abbreviation": "DAL",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A1": {
+      "abbreviation": "DAL",
+      "kit": "1993 - 1995 Uniform",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A2": {
+      "abbreviation": "DAL",
+      "kit": "1982 - 1994 Uniform",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A3": {
+      "abbreviation": "DAL",
+      "kit": "1977 - 1980 Uniform",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A4": {
+      "abbreviation": "DAL",
+      "kit": "1975 - 1976 Uniform",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A5": {
+      "abbreviation": "DAL",
+      "kit": "1964 - 1966 Uniform",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A6": {
+      "abbreviation": "DAL",
+      "kit": "1960 - 1963 Uniform",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A7": {
+      "abbreviation": "DAL",
+      "kit": "1994  Alternate 1",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A8": {
+      "abbreviation": "DAL",
+      "kit": "1994  Alternate 2",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07A9": {
+      "abbreviation": "DAL",
+      "kit": "2002  Alternate 1",
+      "side": "away",
+      "team": "Dallas Cowboys"
+    },
+    "07H0": {
+      "abbreviation": "DAL",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H1": {
+      "abbreviation": "DAL",
+      "kit": "1993 - 1995 Uniform",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H2": {
+      "abbreviation": "DAL",
+      "kit": "1982 - 1994 Uniform",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H3": {
+      "abbreviation": "DAL",
+      "kit": "1977 - 1980 Uniform",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H4": {
+      "abbreviation": "DAL",
+      "kit": "1975 - 1976 Uniform",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H5": {
+      "abbreviation": "DAL",
+      "kit": "1964 - 1966 Uniform",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H6": {
+      "abbreviation": "DAL",
+      "kit": "1960 - 1963 Uniform",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H7": {
+      "abbreviation": "DAL",
+      "kit": "1994  Alternate 1",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H8": {
+      "abbreviation": "DAL",
+      "kit": "1994  Alternate 2",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "07H9": {
+      "abbreviation": "DAL",
+      "kit": "2002  Alternate 1",
+      "side": "home",
+      "team": "Dallas Cowboys"
+    },
+    "08A0": {
+      "abbreviation": "DEN",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Denver Broncos"
+    },
+    "08A1": {
+      "abbreviation": "DEN",
+      "kit": "1985 - 1996 Uniform",
+      "side": "away",
+      "team": "Denver Broncos"
+    },
+    "08A2": {
+      "abbreviation": "DEN",
+      "kit": "1969 - 1973 Uniform",
+      "side": "away",
+      "team": "Denver Broncos"
+    },
+    "08A3": {
+      "abbreviation": "DEN",
+      "kit": "1963 - 1965 Uniform",
+      "side": "away",
+      "team": "Denver Broncos"
+    },
+    "08A4": {
+      "abbreviation": "DEN",
+      "kit": "1961 - 1962 Uniform",
+      "side": "away",
+      "team": "Denver Broncos"
+    },
+    "08A5": {
+      "abbreviation": "DEN",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Denver Broncos"
+    },
+    "08A6": {
+      "abbreviation": "DEN",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Denver Broncos"
+    },
+    "08H0": {
+      "abbreviation": "DEN",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Denver Broncos"
+    },
+    "08H1": {
+      "abbreviation": "DEN",
+      "kit": "1985 - 1996 Uniform",
+      "side": "home",
+      "team": "Denver Broncos"
+    },
+    "08H2": {
+      "abbreviation": "DEN",
+      "kit": "1969 - 1973 Uniform",
+      "side": "home",
+      "team": "Denver Broncos"
+    },
+    "08H3": {
+      "abbreviation": "DEN",
+      "kit": "1963 - 1965 Uniform",
+      "side": "home",
+      "team": "Denver Broncos"
+    },
+    "08H4": {
+      "abbreviation": "DEN",
+      "kit": "1961 - 1962 Uniform",
+      "side": "home",
+      "team": "Denver Broncos"
+    },
+    "08H5": {
+      "abbreviation": "DEN",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Denver Broncos"
+    },
+    "08H6": {
+      "abbreviation": "DEN",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Denver Broncos"
+    },
+    "09A0": {
+      "abbreviation": "DET",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A1": {
+      "abbreviation": "DET",
+      "kit": "2000 - 2003 Uniform",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A2": {
+      "abbreviation": "DET",
+      "kit": "1999 Uniform",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A3": {
+      "abbreviation": "DET",
+      "kit": "1980 - 1993 Uniform",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A4": {
+      "abbreviation": "DET",
+      "kit": "1972 - 1976 Uniform",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A5": {
+      "abbreviation": "DET",
+      "kit": "1965 - 1968 Uniform",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A6": {
+      "abbreviation": "DET",
+      "kit": "1957 - 1965 Uniform",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A7": {
+      "abbreviation": "DET",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A8": {
+      "abbreviation": "DET",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09A9": {
+      "abbreviation": "DET",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "Detroit Lions"
+    },
+    "09H0": {
+      "abbreviation": "DET",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H1": {
+      "abbreviation": "DET",
+      "kit": "2000 - 2003 Uniform",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H2": {
+      "abbreviation": "DET",
+      "kit": "1999 Uniform",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H3": {
+      "abbreviation": "DET",
+      "kit": "1980 - 1993 Uniform",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H4": {
+      "abbreviation": "DET",
+      "kit": "1972 - 1976 Uniform",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H5": {
+      "abbreviation": "DET",
+      "kit": "1965 - 1968 Uniform",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H6": {
+      "abbreviation": "DET",
+      "kit": "1957 - 1965 Uniform",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H7": {
+      "abbreviation": "DET",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H8": {
+      "abbreviation": "DET",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "09H9": {
+      "abbreviation": "DET",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "Detroit Lions"
+    },
+    "10A0": {
+      "abbreviation": "GB",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Green Bay Packers"
+    },
+    "10A1": {
+      "abbreviation": "GB",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Green Bay Packers"
+    },
+    "10A2": {
+      "abbreviation": "GB",
+      "kit": "1983 - 1984 Uniform",
+      "side": "away",
+      "team": "Green Bay Packers"
+    },
+    "10A3": {
+      "abbreviation": "GB",
+      "kit": "1966 - 1976 Uniform",
+      "side": "away",
+      "team": "Green Bay Packers"
+    },
+    "10A4": {
+      "abbreviation": "GB",
+      "kit": "1952 - 1965 Uniform",
+      "side": "away",
+      "team": "Green Bay Packers"
+    },
+    "10A5": {
+      "abbreviation": "GB",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Green Bay Packers"
+    },
+    "10A6": {
+      "abbreviation": "GB",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Green Bay Packers"
+    },
+    "10H0": {
+      "abbreviation": "GB",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Green Bay Packers"
+    },
+    "10H1": {
+      "abbreviation": "GB",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Green Bay Packers"
+    },
+    "10H2": {
+      "abbreviation": "GB",
+      "kit": "1983 - 1984 Uniform",
+      "side": "home",
+      "team": "Green Bay Packers"
+    },
+    "10H3": {
+      "abbreviation": "GB",
+      "kit": "1966 - 1976 Uniform",
+      "side": "home",
+      "team": "Green Bay Packers"
+    },
+    "10H4": {
+      "abbreviation": "GB",
+      "kit": "1952 - 1965 Uniform",
+      "side": "home",
+      "team": "Green Bay Packers"
+    },
+    "10H5": {
+      "abbreviation": "GB",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Green Bay Packers"
+    },
+    "10H6": {
+      "abbreviation": "GB",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Green Bay Packers"
+    },
+    "11A0": {
+      "abbreviation": "IND",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Indianapolis Colts"
+    },
+    "11A1": {
+      "abbreviation": "IND",
+      "kit": "1995 Uniform",
+      "side": "away",
+      "team": "Indianapolis Colts"
+    },
+    "11A2": {
+      "abbreviation": "IND",
+      "kit": "1988 - 1991 Uniform",
+      "side": "away",
+      "team": "Indianapolis Colts"
+    },
+    "11A3": {
+      "abbreviation": "IND",
+      "kit": "1987 Uniform",
+      "side": "away",
+      "team": "Indianapolis Colts"
+    },
+    "11A4": {
+      "abbreviation": "IND",
+      "kit": "1982 Uniform",
+      "side": "away",
+      "team": "Indianapolis Colts"
+    },
+    "11A5": {
+      "abbreviation": "IND",
+      "kit": "1968 - 1970 Uniform",
+      "side": "away",
+      "team": "Indianapolis Colts"
+    },
+    "11A6": {
+      "abbreviation": "IND",
+      "kit": "1955 - 1956 Uniform",
+      "side": "away",
+      "team": "Indianapolis Colts"
+    },
+    "11A7": {
+      "abbreviation": "IND",
+      "kit": "1954 - 1955 Uniform",
+      "side": "away",
+      "team": "Indianapolis Colts"
+    },
+    "11H0": {
+      "abbreviation": "IND",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Indianapolis Colts"
+    },
+    "11H1": {
+      "abbreviation": "IND",
+      "kit": "1995 Uniform",
+      "side": "home",
+      "team": "Indianapolis Colts"
+    },
+    "11H2": {
+      "abbreviation": "IND",
+      "kit": "1988 - 1991 Uniform",
+      "side": "home",
+      "team": "Indianapolis Colts"
+    },
+    "11H3": {
+      "abbreviation": "IND",
+      "kit": "1987 Uniform",
+      "side": "home",
+      "team": "Indianapolis Colts"
+    },
+    "11H4": {
+      "abbreviation": "IND",
+      "kit": "1982 Uniform",
+      "side": "home",
+      "team": "Indianapolis Colts"
+    },
+    "11H5": {
+      "abbreviation": "IND",
+      "kit": "1968 - 1970 Uniform",
+      "side": "home",
+      "team": "Indianapolis Colts"
+    },
+    "11H6": {
+      "abbreviation": "IND",
+      "kit": "1955 - 1956 Uniform",
+      "side": "home",
+      "team": "Indianapolis Colts"
+    },
+    "11H7": {
+      "abbreviation": "IND",
+      "kit": "1954 - 1955 Uniform",
+      "side": "home",
+      "team": "Indianapolis Colts"
+    },
+    "12A0": {
+      "abbreviation": "JAX",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Jacksonville Jaguars"
+    },
+    "12A1": {
+      "abbreviation": "JAX",
+      "kit": "1995 - 2000 Uniform",
+      "side": "away",
+      "team": "Jacksonville Jaguars"
+    },
+    "12A2": {
+      "abbreviation": "JAX",
+      "kit": "1996 - 1997 Uniform",
+      "side": "away",
+      "team": "Jacksonville Jaguars"
+    },
+    "12A3": {
+      "abbreviation": "JAX",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Jacksonville Jaguars"
+    },
+    "12A4": {
+      "abbreviation": "JAX",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Jacksonville Jaguars"
+    },
+    "12A5": {
+      "abbreviation": "JAX",
+      "kit": "2003  Alternate 3",
+      "side": "away",
+      "team": "Jacksonville Jaguars"
+    },
+    "12A6": {
+      "abbreviation": "JAX",
+      "kit": "2003  Alternate 4",
+      "side": "away",
+      "team": "Jacksonville Jaguars"
+    },
+    "12H0": {
+      "abbreviation": "JAX",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Jacksonville Jaguars"
+    },
+    "12H1": {
+      "abbreviation": "JAX",
+      "kit": "1995 - 2000 Uniform",
+      "side": "home",
+      "team": "Jacksonville Jaguars"
+    },
+    "12H2": {
+      "abbreviation": "JAX",
+      "kit": "1996 - 1997 Uniform",
+      "side": "home",
+      "team": "Jacksonville Jaguars"
+    },
+    "12H3": {
+      "abbreviation": "JAX",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Jacksonville Jaguars"
+    },
+    "12H4": {
+      "abbreviation": "JAX",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Jacksonville Jaguars"
+    },
+    "12H5": {
+      "abbreviation": "JAX",
+      "kit": "2003  Alternate 3",
+      "side": "home",
+      "team": "Jacksonville Jaguars"
+    },
+    "12H6": {
+      "abbreviation": "JAX",
+      "kit": "2003  Alternate 4",
+      "side": "home",
+      "team": "Jacksonville Jaguars"
+    },
+    "13A0": {
+      "abbreviation": "KC",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Kansas City Chiefs"
+    },
+    "13A1": {
+      "abbreviation": "KC",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Kansas City Chiefs"
+    },
+    "13A2": {
+      "abbreviation": "KC",
+      "kit": "1991 - 1993 Uniform",
+      "side": "away",
+      "team": "Kansas City Chiefs"
+    },
+    "13A3": {
+      "abbreviation": "KC",
+      "kit": "1970 - 1971 Uniform",
+      "side": "away",
+      "team": "Kansas City Chiefs"
+    },
+    "13A4": {
+      "abbreviation": "KC",
+      "kit": "1963 - 1970 Uniform",
+      "side": "away",
+      "team": "Kansas City Chiefs"
+    },
+    "13A5": {
+      "abbreviation": "KC",
+      "kit": "1960 - 1962 Uniform",
+      "side": "away",
+      "team": "Kansas City Chiefs"
+    },
+    "13H0": {
+      "abbreviation": "KC",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Kansas City Chiefs"
+    },
+    "13H1": {
+      "abbreviation": "KC",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Kansas City Chiefs"
+    },
+    "13H2": {
+      "abbreviation": "KC",
+      "kit": "1991 - 1993 Uniform",
+      "side": "home",
+      "team": "Kansas City Chiefs"
+    },
+    "13H3": {
+      "abbreviation": "KC",
+      "kit": "1970 - 1971 Uniform",
+      "side": "home",
+      "team": "Kansas City Chiefs"
+    },
+    "13H4": {
+      "abbreviation": "KC",
+      "kit": "1963 - 1970 Uniform",
+      "side": "home",
+      "team": "Kansas City Chiefs"
+    },
+    "13H5": {
+      "abbreviation": "KC",
+      "kit": "1960 - 1962 Uniform",
+      "side": "home",
+      "team": "Kansas City Chiefs"
+    },
+    "14A0": {
+      "abbreviation": "MIA",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A1": {
+      "abbreviation": "MIA",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A10": {
+      "abbreviation": "MIA",
+      "kit": "2004  Alternate 3",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A2": {
+      "abbreviation": "MIA",
+      "kit": "1989 - 1990 Uniform",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A3": {
+      "abbreviation": "MIA",
+      "kit": "1979 - 1980 Uniform",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A4": {
+      "abbreviation": "MIA",
+      "kit": "1972 - 1973 Uniform",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A5": {
+      "abbreviation": "MIA",
+      "kit": "1971 - 1972 Uniform",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A6": {
+      "abbreviation": "MIA",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A7": {
+      "abbreviation": "MIA",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A8": {
+      "abbreviation": "MIA",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14A9": {
+      "abbreviation": "MIA",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "Miami Dolphins"
+    },
+    "14H0": {
+      "abbreviation": "MIA",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H1": {
+      "abbreviation": "MIA",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H10": {
+      "abbreviation": "MIA",
+      "kit": "2004  Alternate 3",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H2": {
+      "abbreviation": "MIA",
+      "kit": "1989 - 1990 Uniform",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H3": {
+      "abbreviation": "MIA",
+      "kit": "1979 - 1980 Uniform",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H4": {
+      "abbreviation": "MIA",
+      "kit": "1972 - 1973 Uniform",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H5": {
+      "abbreviation": "MIA",
+      "kit": "1971 - 1972 Uniform",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H6": {
+      "abbreviation": "MIA",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H7": {
+      "abbreviation": "MIA",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H8": {
+      "abbreviation": "MIA",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "14H9": {
+      "abbreviation": "MIA",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "Miami Dolphins"
+    },
+    "15A0": {
+      "abbreviation": "MIN",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Minnesota Vikings"
+    },
+    "15A1": {
+      "abbreviation": "MIN",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Minnesota Vikings"
+    },
+    "15A2": {
+      "abbreviation": "MIN",
+      "kit": "1980 - 1984 Uniform",
+      "side": "away",
+      "team": "Minnesota Vikings"
+    },
+    "15A3": {
+      "abbreviation": "MIN",
+      "kit": "1972 - 1973 Uniform",
+      "side": "away",
+      "team": "Minnesota Vikings"
+    },
+    "15A4": {
+      "abbreviation": "MIN",
+      "kit": "1961 - 1962 Uniform",
+      "side": "away",
+      "team": "Minnesota Vikings"
+    },
+    "15A5": {
+      "abbreviation": "MIN",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Minnesota Vikings"
+    },
+    "15A6": {
+      "abbreviation": "MIN",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "Minnesota Vikings"
+    },
+    "15H0": {
+      "abbreviation": "MIN",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Minnesota Vikings"
+    },
+    "15H1": {
+      "abbreviation": "MIN",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Minnesota Vikings"
+    },
+    "15H2": {
+      "abbreviation": "MIN",
+      "kit": "1980 - 1984 Uniform",
+      "side": "home",
+      "team": "Minnesota Vikings"
+    },
+    "15H3": {
+      "abbreviation": "MIN",
+      "kit": "1972 - 1973 Uniform",
+      "side": "home",
+      "team": "Minnesota Vikings"
+    },
+    "15H4": {
+      "abbreviation": "MIN",
+      "kit": "1961 - 1962 Uniform",
+      "side": "home",
+      "team": "Minnesota Vikings"
+    },
+    "15H5": {
+      "abbreviation": "MIN",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Minnesota Vikings"
+    },
+    "15H6": {
+      "abbreviation": "MIN",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "Minnesota Vikings"
+    },
+    "16A0": {
+      "abbreviation": "NE",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A1": {
+      "abbreviation": "NE",
+      "kit": "1996 - 2000 Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A10": {
+      "abbreviation": "NE",
+      "kit": "1994  Alternate 1",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A11": {
+      "abbreviation": "NE",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A2": {
+      "abbreviation": "NE",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A3": {
+      "abbreviation": "NE",
+      "kit": "1992 - 1993 Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A4": {
+      "abbreviation": "NE",
+      "kit": "1990 - 1992 Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A5": {
+      "abbreviation": "NE",
+      "kit": "1984 - 1987 Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A6": {
+      "abbreviation": "NE",
+      "kit": "1975 - 1981 Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A7": {
+      "abbreviation": "NE",
+      "kit": "1965 - 1969 Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A8": {
+      "abbreviation": "NE",
+      "kit": "1959 - 1960 Uniform",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16A9": {
+      "abbreviation": "NE",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "New England Patriots"
+    },
+    "16H0": {
+      "abbreviation": "NE",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H1": {
+      "abbreviation": "NE",
+      "kit": "1996 - 2000 Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H10": {
+      "abbreviation": "NE",
+      "kit": "1994  Alternate 1",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H11": {
+      "abbreviation": "NE",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H2": {
+      "abbreviation": "NE",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H3": {
+      "abbreviation": "NE",
+      "kit": "1992 - 1993 Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H4": {
+      "abbreviation": "NE",
+      "kit": "1990 - 1992 Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H5": {
+      "abbreviation": "NE",
+      "kit": "1984 - 1987 Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H6": {
+      "abbreviation": "NE",
+      "kit": "1975 - 1981 Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H7": {
+      "abbreviation": "NE",
+      "kit": "1965 - 1969 Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H8": {
+      "abbreviation": "NE",
+      "kit": "1959 - 1960 Uniform",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "16H9": {
+      "abbreviation": "NE",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "New England Patriots"
+    },
+    "17A0": {
+      "abbreviation": "NO",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17A1": {
+      "abbreviation": "NO",
+      "kit": "2001 - 2002 Uniform",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17A2": {
+      "abbreviation": "NO",
+      "kit": "1999 - 2000 Uniform",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17A3": {
+      "abbreviation": "NO",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17A4": {
+      "abbreviation": "NO",
+      "kit": "1991 - 1992 Uniform",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17A5": {
+      "abbreviation": "NO",
+      "kit": "1976 - 1982 Uniform",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17A6": {
+      "abbreviation": "NO",
+      "kit": "1975 - 1976 Uniform",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17A7": {
+      "abbreviation": "NO",
+      "kit": "1967 - 1975 Uniform",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17A8": {
+      "abbreviation": "NO",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "New Orleans Saints"
+    },
+    "17H0": {
+      "abbreviation": "NO",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "17H1": {
+      "abbreviation": "NO",
+      "kit": "2001 - 2002 Uniform",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "17H2": {
+      "abbreviation": "NO",
+      "kit": "1999 - 2000 Uniform",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "17H3": {
+      "abbreviation": "NO",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "17H4": {
+      "abbreviation": "NO",
+      "kit": "1991 - 1992 Uniform",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "17H5": {
+      "abbreviation": "NO",
+      "kit": "1976 - 1982 Uniform",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "17H6": {
+      "abbreviation": "NO",
+      "kit": "1975 - 1976 Uniform",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "17H7": {
+      "abbreviation": "NO",
+      "kit": "1967 - 1975 Uniform",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "17H8": {
+      "abbreviation": "NO",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "New Orleans Saints"
+    },
+    "18A0": {
+      "abbreviation": "NYG",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "New York Giants"
+    },
+    "18A1": {
+      "abbreviation": "NYG",
+      "kit": "2000 - 2002 Uniform",
+      "side": "away",
+      "team": "New York Giants"
+    },
+    "18A2": {
+      "abbreviation": "NYG",
+      "kit": "1981 - 1999 Uniform",
+      "side": "away",
+      "team": "New York Giants"
+    },
+    "18A3": {
+      "abbreviation": "NYG",
+      "kit": "1976 - 1980 Uniform",
+      "side": "away",
+      "team": "New York Giants"
+    },
+    "18A4": {
+      "abbreviation": "NYG",
+      "kit": "1974 - 1975 Uniform",
+      "side": "away",
+      "team": "New York Giants"
+    },
+    "18A5": {
+      "abbreviation": "NYG",
+      "kit": "1961 - 1974 Uniform",
+      "side": "away",
+      "team": "New York Giants"
+    },
+    "18A6": {
+      "abbreviation": "NYG",
+      "kit": "1956 - 1960 Uniform",
+      "side": "away",
+      "team": "New York Giants"
+    },
+    "18A7": {
+      "abbreviation": "NYG",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "New York Giants"
+    },
+    "18H0": {
+      "abbreviation": "NYG",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "New York Giants"
+    },
+    "18H1": {
+      "abbreviation": "NYG",
+      "kit": "2000 - 2002 Uniform",
+      "side": "home",
+      "team": "New York Giants"
+    },
+    "18H2": {
+      "abbreviation": "NYG",
+      "kit": "1981 - 1999 Uniform",
+      "side": "home",
+      "team": "New York Giants"
+    },
+    "18H3": {
+      "abbreviation": "NYG",
+      "kit": "1976 - 1980 Uniform",
+      "side": "home",
+      "team": "New York Giants"
+    },
+    "18H4": {
+      "abbreviation": "NYG",
+      "kit": "1974 - 1975 Uniform",
+      "side": "home",
+      "team": "New York Giants"
+    },
+    "18H5": {
+      "abbreviation": "NYG",
+      "kit": "1961 - 1974 Uniform",
+      "side": "home",
+      "team": "New York Giants"
+    },
+    "18H6": {
+      "abbreviation": "NYG",
+      "kit": "1956 - 1960 Uniform",
+      "side": "home",
+      "team": "New York Giants"
+    },
+    "18H7": {
+      "abbreviation": "NYG",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "New York Giants"
+    },
+    "19A0": {
+      "abbreviation": "NYJ",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "New York Jets"
+    },
+    "19A1": {
+      "abbreviation": "NYJ",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "New York Jets"
+    },
+    "19A2": {
+      "abbreviation": "NYJ",
+      "kit": "1990 - 1993 Uniform",
+      "side": "away",
+      "team": "New York Jets"
+    },
+    "19A3": {
+      "abbreviation": "NYJ",
+      "kit": "1978 - 1985 Uniform",
+      "side": "away",
+      "team": "New York Jets"
+    },
+    "19A4": {
+      "abbreviation": "NYJ",
+      "kit": "1965 - 1968 Uniform",
+      "side": "away",
+      "team": "New York Jets"
+    },
+    "19A5": {
+      "abbreviation": "NYJ",
+      "kit": "1963 - 1964 Uniform",
+      "side": "away",
+      "team": "New York Jets"
+    },
+    "19A6": {
+      "abbreviation": "NYJ",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "New York Jets"
+    },
+    "19A7": {
+      "abbreviation": "NYJ",
+      "kit": "0 Uniform",
+      "side": "away",
+      "team": "New York Jets"
+    },
+    "19H0": {
+      "abbreviation": "NYJ",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "New York Jets"
+    },
+    "19H1": {
+      "abbreviation": "NYJ",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "New York Jets"
+    },
+    "19H2": {
+      "abbreviation": "NYJ",
+      "kit": "1990 - 1993 Uniform",
+      "side": "home",
+      "team": "New York Jets"
+    },
+    "19H3": {
+      "abbreviation": "NYJ",
+      "kit": "1978 - 1985 Uniform",
+      "side": "home",
+      "team": "New York Jets"
+    },
+    "19H4": {
+      "abbreviation": "NYJ",
+      "kit": "1965 - 1968 Uniform",
+      "side": "home",
+      "team": "New York Jets"
+    },
+    "19H5": {
+      "abbreviation": "NYJ",
+      "kit": "1963 - 1964 Uniform",
+      "side": "home",
+      "team": "New York Jets"
+    },
+    "19H6": {
+      "abbreviation": "NYJ",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "New York Jets"
+    },
+    "19H7": {
+      "abbreviation": "NYJ",
+      "kit": "0 Uniform",
+      "side": "home",
+      "team": "New York Jets"
+    },
+    "20A0": {
+      "abbreviation": "OAK",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Oakland Raiders"
+    },
+    "20A1": {
+      "abbreviation": "OAK",
+      "kit": "1966 - 1967 Uniform",
+      "side": "away",
+      "team": "Oakland Raiders"
+    },
+    "20A2": {
+      "abbreviation": "OAK",
+      "kit": "1962 - 1963 Uniform",
+      "side": "away",
+      "team": "Oakland Raiders"
+    },
+    "20A3": {
+      "abbreviation": "OAK",
+      "kit": "1960 - 1962 Uniform",
+      "side": "away",
+      "team": "Oakland Raiders"
+    },
+    "20A4": {
+      "abbreviation": "OAK",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Oakland Raiders"
+    },
+    "20H0": {
+      "abbreviation": "OAK",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Oakland Raiders"
+    },
+    "20H1": {
+      "abbreviation": "OAK",
+      "kit": "1966 - 1967 Uniform",
+      "side": "home",
+      "team": "Oakland Raiders"
+    },
+    "20H2": {
+      "abbreviation": "OAK",
+      "kit": "1962 - 1963 Uniform",
+      "side": "home",
+      "team": "Oakland Raiders"
+    },
+    "20H3": {
+      "abbreviation": "OAK",
+      "kit": "1960 - 1962 Uniform",
+      "side": "home",
+      "team": "Oakland Raiders"
+    },
+    "20H4": {
+      "abbreviation": "OAK",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Oakland Raiders"
+    },
+    "21A0": {
+      "abbreviation": "PHI",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A1": {
+      "abbreviation": "PHI",
+      "kit": "2000 - 2003 Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A10": {
+      "abbreviation": "PHI",
+      "kit": "2000  Alternate 2",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A11": {
+      "abbreviation": "PHI",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A12": {
+      "abbreviation": "PHI",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A13": {
+      "abbreviation": "PHI",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A14": {
+      "abbreviation": "PHI",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A2": {
+      "abbreviation": "PHI",
+      "kit": "1996 Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A3": {
+      "abbreviation": "PHI",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A4": {
+      "abbreviation": "PHI",
+      "kit": "1989 - 1999 Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A5": {
+      "abbreviation": "PHI",
+      "kit": "1979 - 1980 Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A6": {
+      "abbreviation": "PHI",
+      "kit": "1969 - 1973 Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A7": {
+      "abbreviation": "PHI",
+      "kit": "1967 Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A8": {
+      "abbreviation": "PHI",
+      "kit": "1958 - 1959 Uniform",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21A9": {
+      "abbreviation": "PHI",
+      "kit": "2000  Alternate 1",
+      "side": "away",
+      "team": "Philadelphia Eagles"
+    },
+    "21H0": {
+      "abbreviation": "PHI",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H1": {
+      "abbreviation": "PHI",
+      "kit": "2000 - 2003 Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H10": {
+      "abbreviation": "PHI",
+      "kit": "2000  Alternate 2",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H11": {
+      "abbreviation": "PHI",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H12": {
+      "abbreviation": "PHI",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H13": {
+      "abbreviation": "PHI",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H14": {
+      "abbreviation": "PHI",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H2": {
+      "abbreviation": "PHI",
+      "kit": "1996 Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H3": {
+      "abbreviation": "PHI",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H4": {
+      "abbreviation": "PHI",
+      "kit": "1989 - 1999 Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H5": {
+      "abbreviation": "PHI",
+      "kit": "1979 - 1980 Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H6": {
+      "abbreviation": "PHI",
+      "kit": "1969 - 1973 Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H7": {
+      "abbreviation": "PHI",
+      "kit": "1967 Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H8": {
+      "abbreviation": "PHI",
+      "kit": "1958 - 1959 Uniform",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "21H9": {
+      "abbreviation": "PHI",
+      "kit": "2000  Alternate 1",
+      "side": "home",
+      "team": "Philadelphia Eagles"
+    },
+    "22A0": {
+      "abbreviation": "PIT",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Pittsburgh Steelers"
+    },
+    "22A1": {
+      "abbreviation": "PIT",
+      "kit": "1968 - 1976 Uniform",
+      "side": "away",
+      "team": "Pittsburgh Steelers"
+    },
+    "22A2": {
+      "abbreviation": "PIT",
+      "kit": "1966 - 1967 Uniform",
+      "side": "away",
+      "team": "Pittsburgh Steelers"
+    },
+    "22A3": {
+      "abbreviation": "PIT",
+      "kit": "1963 - 1965 Uniform",
+      "side": "away",
+      "team": "Pittsburgh Steelers"
+    },
+    "22A4": {
+      "abbreviation": "PIT",
+      "kit": "1961 - 1962 Uniform",
+      "side": "away",
+      "team": "Pittsburgh Steelers"
+    },
+    "22A5": {
+      "abbreviation": "PIT",
+      "kit": "1959 - 1960 Uniform",
+      "side": "away",
+      "team": "Pittsburgh Steelers"
+    },
+    "22H0": {
+      "abbreviation": "PIT",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Pittsburgh Steelers"
+    },
+    "22H1": {
+      "abbreviation": "PIT",
+      "kit": "1968 - 1976 Uniform",
+      "side": "home",
+      "team": "Pittsburgh Steelers"
+    },
+    "22H2": {
+      "abbreviation": "PIT",
+      "kit": "1966 - 1967 Uniform",
+      "side": "home",
+      "team": "Pittsburgh Steelers"
+    },
+    "22H3": {
+      "abbreviation": "PIT",
+      "kit": "1963 - 1965 Uniform",
+      "side": "home",
+      "team": "Pittsburgh Steelers"
+    },
+    "22H4": {
+      "abbreviation": "PIT",
+      "kit": "1961 - 1962 Uniform",
+      "side": "home",
+      "team": "Pittsburgh Steelers"
+    },
+    "22H5": {
+      "abbreviation": "PIT",
+      "kit": "1959 - 1960 Uniform",
+      "side": "home",
+      "team": "Pittsburgh Steelers"
+    },
+    "23A0": {
+      "abbreviation": "STL",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A1": {
+      "abbreviation": "STL",
+      "kit": "2002 - 2003 Uniform",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A10": {
+      "abbreviation": "STL",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A11": {
+      "abbreviation": "STL",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A12": {
+      "abbreviation": "STL",
+      "kit": "2004  Alternate 3",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A2": {
+      "abbreviation": "STL",
+      "kit": "1998 - 1999 Uniform",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A3": {
+      "abbreviation": "STL",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A4": {
+      "abbreviation": "STL",
+      "kit": "1978 - 1979 Uniform",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A5": {
+      "abbreviation": "STL",
+      "kit": "1965 - 1972 Uniform",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A6": {
+      "abbreviation": "STL",
+      "kit": "1957 - 1958 Uniform",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A7": {
+      "abbreviation": "STL",
+      "kit": "2000  Alternate 1",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A8": {
+      "abbreviation": "STL",
+      "kit": "2000  Alternate 2",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23A9": {
+      "abbreviation": "STL",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "St. Louis Rams"
+    },
+    "23H0": {
+      "abbreviation": "STL",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H1": {
+      "abbreviation": "STL",
+      "kit": "2002 - 2003 Uniform",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H10": {
+      "abbreviation": "STL",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H11": {
+      "abbreviation": "STL",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H12": {
+      "abbreviation": "STL",
+      "kit": "2004  Alternate 3",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H2": {
+      "abbreviation": "STL",
+      "kit": "1998 - 1999 Uniform",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H3": {
+      "abbreviation": "STL",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H4": {
+      "abbreviation": "STL",
+      "kit": "1978 - 1979 Uniform",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H5": {
+      "abbreviation": "STL",
+      "kit": "1965 - 1972 Uniform",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H6": {
+      "abbreviation": "STL",
+      "kit": "1957 - 1958 Uniform",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H7": {
+      "abbreviation": "STL",
+      "kit": "2000  Alternate 1",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H8": {
+      "abbreviation": "STL",
+      "kit": "2000  Alternate 2",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "23H9": {
+      "abbreviation": "STL",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "St. Louis Rams"
+    },
+    "24A0": {
+      "abbreviation": "SD",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A1": {
+      "abbreviation": "SD",
+      "kit": "1988 - 1989 Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A10": {
+      "abbreviation": "SD",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A11": {
+      "abbreviation": "SD",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A2": {
+      "abbreviation": "SD",
+      "kit": "1985 - 1987 Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A3": {
+      "abbreviation": "SD",
+      "kit": "1983 - 1984 Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A4": {
+      "abbreviation": "SD",
+      "kit": "1978 - 1979 Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A5": {
+      "abbreviation": "SD",
+      "kit": "1973 - 1974 Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A6": {
+      "abbreviation": "SD",
+      "kit": "1967 - 1972 Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A7": {
+      "abbreviation": "SD",
+      "kit": "1965 - 1966 Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A8": {
+      "abbreviation": "SD",
+      "kit": "1963 - 1965 Uniform",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24A9": {
+      "abbreviation": "SD",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "San Diego Chargers"
+    },
+    "24H0": {
+      "abbreviation": "SD",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H1": {
+      "abbreviation": "SD",
+      "kit": "1988 - 1989 Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H10": {
+      "abbreviation": "SD",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H11": {
+      "abbreviation": "SD",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H2": {
+      "abbreviation": "SD",
+      "kit": "1985 - 1987 Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H3": {
+      "abbreviation": "SD",
+      "kit": "1983 - 1984 Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H4": {
+      "abbreviation": "SD",
+      "kit": "1978 - 1979 Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H5": {
+      "abbreviation": "SD",
+      "kit": "1973 - 1974 Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H6": {
+      "abbreviation": "SD",
+      "kit": "1967 - 1972 Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H7": {
+      "abbreviation": "SD",
+      "kit": "1965 - 1966 Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H8": {
+      "abbreviation": "SD",
+      "kit": "1963 - 1965 Uniform",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "24H9": {
+      "abbreviation": "SD",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "San Diego Chargers"
+    },
+    "25A0": {
+      "abbreviation": "SF",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "San Francisco 49ers"
+    },
+    "25A1": {
+      "abbreviation": "SF",
+      "kit": "1996 - 1997 Uniform",
+      "side": "away",
+      "team": "San Francisco 49ers"
+    },
+    "25A2": {
+      "abbreviation": "SF",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "San Francisco 49ers"
+    },
+    "25A3": {
+      "abbreviation": "SF",
+      "kit": "1964 - 1995 Uniform",
+      "side": "away",
+      "team": "San Francisco 49ers"
+    },
+    "25A4": {
+      "abbreviation": "SF",
+      "kit": "1962 - 1963 Uniform",
+      "side": "away",
+      "team": "San Francisco 49ers"
+    },
+    "25A5": {
+      "abbreviation": "SF",
+      "kit": "1960 - 1961 Uniform",
+      "side": "away",
+      "team": "San Francisco 49ers"
+    },
+    "25A6": {
+      "abbreviation": "SF",
+      "kit": "1958 - 1959 Uniform",
+      "side": "away",
+      "team": "San Francisco 49ers"
+    },
+    "25A7": {
+      "abbreviation": "SF",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "San Francisco 49ers"
+    },
+    "25H0": {
+      "abbreviation": "SF",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "San Francisco 49ers"
+    },
+    "25H1": {
+      "abbreviation": "SF",
+      "kit": "1996 - 1997 Uniform",
+      "side": "home",
+      "team": "San Francisco 49ers"
+    },
+    "25H2": {
+      "abbreviation": "SF",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "San Francisco 49ers"
+    },
+    "25H3": {
+      "abbreviation": "SF",
+      "kit": "1964 - 1995 Uniform",
+      "side": "home",
+      "team": "San Francisco 49ers"
+    },
+    "25H4": {
+      "abbreviation": "SF",
+      "kit": "1962 - 1963 Uniform",
+      "side": "home",
+      "team": "San Francisco 49ers"
+    },
+    "25H5": {
+      "abbreviation": "SF",
+      "kit": "1960 - 1961 Uniform",
+      "side": "home",
+      "team": "San Francisco 49ers"
+    },
+    "25H6": {
+      "abbreviation": "SF",
+      "kit": "1958 - 1959 Uniform",
+      "side": "home",
+      "team": "San Francisco 49ers"
+    },
+    "25H7": {
+      "abbreviation": "SF",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "San Francisco 49ers"
+    },
+    "26A0": {
+      "abbreviation": "SEA",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Seattle Seahawks"
+    },
+    "26A1": {
+      "abbreviation": "SEA",
+      "kit": "1983 - 2002 Uniform",
+      "side": "away",
+      "team": "Seattle Seahawks"
+    },
+    "26A2": {
+      "abbreviation": "SEA",
+      "kit": "1976 - 1982 Uniform",
+      "side": "away",
+      "team": "Seattle Seahawks"
+    },
+    "26A3": {
+      "abbreviation": "SEA",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Seattle Seahawks"
+    },
+    "26A4": {
+      "abbreviation": "SEA",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Seattle Seahawks"
+    },
+    "26H0": {
+      "abbreviation": "SEA",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Seattle Seahawks"
+    },
+    "26H1": {
+      "abbreviation": "SEA",
+      "kit": "1983 - 2002 Uniform",
+      "side": "home",
+      "team": "Seattle Seahawks"
+    },
+    "26H2": {
+      "abbreviation": "SEA",
+      "kit": "1976 - 1982 Uniform",
+      "side": "home",
+      "team": "Seattle Seahawks"
+    },
+    "26H3": {
+      "abbreviation": "SEA",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Seattle Seahawks"
+    },
+    "26H4": {
+      "abbreviation": "SEA",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Seattle Seahawks"
+    },
+    "27A0": {
+      "abbreviation": "TB",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27A1": {
+      "abbreviation": "TB",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27A2": {
+      "abbreviation": "TB",
+      "kit": "1992 - 1996 Uniform",
+      "side": "away",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27A3": {
+      "abbreviation": "TB",
+      "kit": "1976 - 1991 Uniform",
+      "side": "away",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27A4": {
+      "abbreviation": "TB",
+      "kit": "1997  Alternate 1",
+      "side": "away",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27A5": {
+      "abbreviation": "TB",
+      "kit": "1997  Alternate 2",
+      "side": "away",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27A6": {
+      "abbreviation": "TB",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27A7": {
+      "abbreviation": "TB",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27H0": {
+      "abbreviation": "TB",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27H1": {
+      "abbreviation": "TB",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27H2": {
+      "abbreviation": "TB",
+      "kit": "1992 - 1996 Uniform",
+      "side": "home",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27H3": {
+      "abbreviation": "TB",
+      "kit": "1976 - 1991 Uniform",
+      "side": "home",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27H4": {
+      "abbreviation": "TB",
+      "kit": "1997  Alternate 1",
+      "side": "home",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27H5": {
+      "abbreviation": "TB",
+      "kit": "1997  Alternate 2",
+      "side": "home",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27H6": {
+      "abbreviation": "TB",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "27H7": {
+      "abbreviation": "TB",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "Tampa Bay Buccaneers"
+    },
+    "28A0": {
+      "abbreviation": "TEN",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28A1": {
+      "abbreviation": "TEN",
+      "kit": "1989 - 1990 Uniform",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28A2": {
+      "abbreviation": "TEN",
+      "kit": "1974 - 1975 Uniform",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28A3": {
+      "abbreviation": "TEN",
+      "kit": "1972 - 1974 Uniform",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28A4": {
+      "abbreviation": "TEN",
+      "kit": "1967 - 1968 Uniform",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28A5": {
+      "abbreviation": "TEN",
+      "kit": "1960 - 1961 Uniform",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28A6": {
+      "abbreviation": "TEN",
+      "kit": "1999  Alternate 1",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28A7": {
+      "abbreviation": "TEN",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28A8": {
+      "abbreviation": "TEN",
+      "kit": "2004  Alternate 2",
+      "side": "away",
+      "team": "Tennessee Titans"
+    },
+    "28H0": {
+      "abbreviation": "TEN",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "28H1": {
+      "abbreviation": "TEN",
+      "kit": "1989 - 1990 Uniform",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "28H2": {
+      "abbreviation": "TEN",
+      "kit": "1974 - 1975 Uniform",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "28H3": {
+      "abbreviation": "TEN",
+      "kit": "1972 - 1974 Uniform",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "28H4": {
+      "abbreviation": "TEN",
+      "kit": "1967 - 1968 Uniform",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "28H5": {
+      "abbreviation": "TEN",
+      "kit": "1960 - 1961 Uniform",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "28H6": {
+      "abbreviation": "TEN",
+      "kit": "1999  Alternate 1",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "28H7": {
+      "abbreviation": "TEN",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "28H8": {
+      "abbreviation": "TEN",
+      "kit": "2004  Alternate 2",
+      "side": "home",
+      "team": "Tennessee Titans"
+    },
+    "29A0": {
+      "abbreviation": "WAS",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A1": {
+      "abbreviation": "WAS",
+      "kit": "1993 - 1994 Uniform",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A2": {
+      "abbreviation": "WAS",
+      "kit": "1982 Uniform",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A3": {
+      "abbreviation": "WAS",
+      "kit": "1972 - 1977 Uniform",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A4": {
+      "abbreviation": "WAS",
+      "kit": "1970 - 1971 Uniform",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A5": {
+      "abbreviation": "WAS",
+      "kit": "1968 - 1969 Uniform",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A6": {
+      "abbreviation": "WAS",
+      "kit": "1965 - 1967 Uniform",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A7": {
+      "abbreviation": "WAS",
+      "kit": "1959 - 1964 Uniform",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A8": {
+      "abbreviation": "WAS",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29A9": {
+      "abbreviation": "WAS",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Washington Redskins"
+    },
+    "29H0": {
+      "abbreviation": "WAS",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H1": {
+      "abbreviation": "WAS",
+      "kit": "1993 - 1994 Uniform",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H2": {
+      "abbreviation": "WAS",
+      "kit": "1982 Uniform",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H3": {
+      "abbreviation": "WAS",
+      "kit": "1972 - 1977 Uniform",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H4": {
+      "abbreviation": "WAS",
+      "kit": "1970 - 1971 Uniform",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H5": {
+      "abbreviation": "WAS",
+      "kit": "1968 - 1969 Uniform",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H6": {
+      "abbreviation": "WAS",
+      "kit": "1965 - 1967 Uniform",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H7": {
+      "abbreviation": "WAS",
+      "kit": "1959 - 1964 Uniform",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H8": {
+      "abbreviation": "WAS",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "29H9": {
+      "abbreviation": "WAS",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Washington Redskins"
+    },
+    "30A0": {
+      "abbreviation": "CLE",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Cleveland Browns"
+    },
+    "30A1": {
+      "abbreviation": "CLE",
+      "kit": "1983 - 1984 Uniform",
+      "side": "away",
+      "team": "Cleveland Browns"
+    },
+    "30A2": {
+      "abbreviation": "CLE",
+      "kit": "1964 - 1974 Uniform",
+      "side": "away",
+      "team": "Cleveland Browns"
+    },
+    "30A3": {
+      "abbreviation": "CLE",
+      "kit": "2003  Alternate 1",
+      "side": "away",
+      "team": "Cleveland Browns"
+    },
+    "30A4": {
+      "abbreviation": "CLE",
+      "kit": "2003  Alternate 2",
+      "side": "away",
+      "team": "Cleveland Browns"
+    },
+    "30H0": {
+      "abbreviation": "CLE",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Cleveland Browns"
+    },
+    "30H1": {
+      "abbreviation": "CLE",
+      "kit": "1983 - 1984 Uniform",
+      "side": "home",
+      "team": "Cleveland Browns"
+    },
+    "30H2": {
+      "abbreviation": "CLE",
+      "kit": "1964 - 1974 Uniform",
+      "side": "home",
+      "team": "Cleveland Browns"
+    },
+    "30H3": {
+      "abbreviation": "CLE",
+      "kit": "2003  Alternate 1",
+      "side": "home",
+      "team": "Cleveland Browns"
+    },
+    "30H4": {
+      "abbreviation": "CLE",
+      "kit": "2003  Alternate 2",
+      "side": "home",
+      "team": "Cleveland Browns"
+    },
+    "31A0": {
+      "abbreviation": "NFL",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "NFL NFL"
+    },
+    "31H0": {
+      "abbreviation": "NFL",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "NFL NFL"
+    },
+    "33A0": {
+      "abbreviation": "BRI",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Bristol Swamis"
+    },
+    "33H0": {
+      "abbreviation": "BRI",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Bristol Swamis"
+    },
+    "34A0": {
+      "abbreviation": "AFC",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "AFC AFC"
+    },
+    "34H0": {
+      "abbreviation": "AFC",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "AFC AFC"
+    },
+    "35A0": {
+      "abbreviation": "NFC",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "NFC NFC"
+    },
+    "35H0": {
+      "abbreviation": "NFC",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "NFC NFC"
+    },
+    "37A0": {
+      "abbreviation": "HOU",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Houston Texans"
+    },
+    "37A1": {
+      "abbreviation": "HOU",
+      "kit": "2001 - 2002 Uniform",
+      "side": "away",
+      "team": "Houston Texans"
+    },
+    "37A2": {
+      "abbreviation": "HOU",
+      "kit": "2004  Alternate 1",
+      "side": "away",
+      "team": "Houston Texans"
+    },
+    "37H0": {
+      "abbreviation": "HOU",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Houston Texans"
+    },
+    "37H1": {
+      "abbreviation": "HOU",
+      "kit": "2001 - 2002 Uniform",
+      "side": "home",
+      "team": "Houston Texans"
+    },
+    "37H2": {
+      "abbreviation": "HOU",
+      "kit": "2004  Alternate 1",
+      "side": "home",
+      "team": "Houston Texans"
+    },
+    "40A0": {
+      "abbreviation": "AFW",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Far West FW Alumni"
+    },
+    "40H0": {
+      "abbreviation": "AFW",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Far West FW Alumni"
+    },
+    "41A0": {
+      "abbreviation": "AGP",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Great Plains GP Alumni"
+    },
+    "41H0": {
+      "abbreviation": "AGP",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Great Plains GP Alumni"
+    },
+    "42A0": {
+      "abbreviation": "AMW",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Midwest MW Alumni"
+    },
+    "42H0": {
+      "abbreviation": "AMW",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Midwest MW Alumni"
+    },
+    "43A0": {
+      "abbreviation": "ANE",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Northeast NE Alumni"
+    },
+    "43H0": {
+      "abbreviation": "ANE",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Northeast NE Alumni"
+    },
+    "44A0": {
+      "abbreviation": "ASE",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Southeast SE Alumni"
+    },
+    "44H0": {
+      "abbreviation": "ASE",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Southeast SE Alumni"
+    },
+    "45A0": {
+      "abbreviation": "ASW",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Southwest SW Alumni"
+    },
+    "45H0": {
+      "abbreviation": "ASW",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Southwest SW Alumni"
+    },
+    "46A0": {
+      "abbreviation": "BRP;BWG;CHH",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Bristol Risky Picks;Bristol Wingadoros;Canton Hammerheads"
+    },
+    "46H0": {
+      "abbreviation": "BRP;BWG;CHH",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Bristol Risky Picks;Bristol Wingadoros;Canton Hammerheads"
+    },
+    "50A0": {
+      "abbreviation": "USER1;USER2",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "**************** ****************;**************** ****************"
+    },
+    "50H0": {
+      "abbreviation": "USER1;USER2",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "**************** ****************;**************** ****************"
+    },
+    "85A0": {
+      "abbreviation": "?",
+      "kit": "(unnamed)",
+      "side": "away",
+      "team": ""
+    },
+    "85H0": {
+      "abbreviation": "?",
+      "kit": "(unnamed)",
+      "side": "home",
+      "team": ""
+    },
+    "95A0": {
+      "abbreviation": "UDC",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Upper Darby Cheesesteaks"
+    },
+    "95H0": {
+      "abbreviation": "UDC",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Upper Darby Cheesesteaks"
+    },
+    "96A0": {
+      "abbreviation": "LAL",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Los Angeles Locos"
+    },
+    "96H0": {
+      "abbreviation": "LAL",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Los Angeles Locos"
+    },
+    "97A0": {
+      "abbreviation": "CES",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Cincinnati Electra Shock"
+    },
+    "97H0": {
+      "abbreviation": "CES",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Cincinnati Electra Shock"
+    },
+    "98A0": {
+      "abbreviation": "BFM",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Baurtwell Funkmasters"
+    },
+    "98H0": {
+      "abbreviation": "BFM",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Baurtwell Funkmasters"
+    },
+    "99A0": {
+      "abbreviation": "LAD",
+      "kit": "Current Uniform",
+      "side": "away",
+      "team": "Los Angeles DreamTeam"
+    },
+    "99H0": {
+      "abbreviation": "LAD",
+      "kit": "Current Uniform",
+      "side": "home",
+      "team": "Los Angeles DreamTeam"
+    }
+  },
+  "source": {
+    "file": "reports/gameplay_tuning/nfl2k5-xbox-map.unresolved.v1.json",
+    "path_in_document": "demo_team.logical.kits + demo_team.physical.per_team[*].team",
+    "sha256": "fdb9efb4271330bed5c5225d3cf7f13755c1b2428c2c35e80dc01342efd3e833"
+  }
+}

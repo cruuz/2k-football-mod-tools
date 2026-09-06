@@ -1,0 +1,413 @@
+{
+  "schema": "madden09_ps2_text_edit/v1",
+  "edits": [
+    {
+      "target": "text:STRYHDLN.DAT:112:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:157:0",
+      "new_text": "<This Week Game>WMOD!"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:158:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:159:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:160:0",
+      "new_text": "<This Week Game>WMOD!"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:161:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:162:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:163:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:164:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:165:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:166:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:167:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2504:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2505:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2506:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2507:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2508:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2509:0",
+      "new_text": "<This Week Game>WMOD!"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2510:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2511:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2512:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2513:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2514:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2515:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2516:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2517:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2518:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2519:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2520:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2521:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2522:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2523:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2524:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2525:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2526:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2527:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2528:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2529:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2530:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2531:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2532:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2533:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2534:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2535:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2536:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2537:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2538:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2539:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2540:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2541:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2542:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2543:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2544:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2545:0",
+      "new_text": "<This Week Game>WMOD!"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2546:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2547:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2548:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2549:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2550:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2551:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2552:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2553:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2554:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2555:0",
+      "new_text": "<This Week Game>WMOD!"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2556:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2557:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2558:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2559:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2560:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2561:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2562:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2563:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2564:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2565:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2566:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2567:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2568:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2569:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2570:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2571:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2572:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2573:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2574:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2575:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2576:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2577:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2578:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2579:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2580:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2581:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2582:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2583:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2584:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2585:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2586:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2587:0",
+      "new_text": "<This Week Game>WITNESS"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2588:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2589:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2590:0",
+      "new_text": "<This Week Game>WITNESS MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2591:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2608:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    },
+    {
+      "target": "text:STRYHDLN.DAT:2609:0",
+      "new_text": "<This Week Game>WITNESS TEXT MOD"
+    }
+  ]
+}

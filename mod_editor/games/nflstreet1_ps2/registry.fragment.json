@@ -1,0 +1,1122 @@
+{
+  "capabilities": [
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.audio_lane --lane banks --source <SLUS-20841.iso> [--export <manifest.json>] [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/audio_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Audio page of the PS2 NFL Street 1 Studio with Export WAV and no import: the page states, in the row's own words, why nothing is written back and which sounds are refused."
+      },
+      "id": "nflstreet1ps2.audio.banks",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "A raw-CD image is refused by name: the memory map needs the 2048-byte sector layout every PlayStation 2 DVD uses.",
+        "The catalogue carries offsets, lengths, rates and channel counts -- never a sample.",
+        "Bounded: at most 3,000 rows are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "A MicroTalk decoder would make the speech exportable; none exists in this repository or in ffmpeg.",
+        "A same-length replacement writer needs the 9 QL01 preload caches kept in step with the container it rewrites."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter writes local WAVs and no path writes into the game or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "stream:<container>:<member> or bank:<container>:<member>:<sound>, as the catalogue writes it",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One sound, one WAV out. The GUI must not offer an import from this row: nothing here writes into the disc."
+      },
+      "source_container": {
+        "format": "EA SCHl streams and BNKl banks as members of TERF containers inside an ISO9660 DVD image, read through a read-only memory map of the image.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the audio containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Catalogue every EA BNKl on a user's SLUS-20841 ISO and export what decodes as WAV. Measured on the retail disc: 236 banks, all of which open, holding 1,031 PlayStation ADPCM sounds; a sound that declares no length or no sample rate is listed and refused rather than written at a rate nobody measured [M]. The image is memory-mapped, so a container of hundreds of megabytes is never copied.",
+      "surface": "audio",
+      "title": "NFL Street 1 (PS2) BNKl sound banks",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_audio.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.audio_lane --lane streams --source <SLUS-20841.iso> [--export <manifest.json>] [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/audio_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Audio page of the PS2 NFL Street 1 Studio with Export WAV and no import: the page states, in the row's own words, why nothing is written back and which sounds are refused."
+      },
+      "id": "nflstreet1ps2.audio.streams",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "A raw-CD image is refused by name: the memory map needs the 2048-byte sector layout every PlayStation 2 DVD uses.",
+        "The catalogue carries offsets, lengths, rates and channel counts -- never a sample.",
+        "Bounded: at most 3,000 rows are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "A MicroTalk decoder would make the speech exportable; none exists in this repository or in ffmpeg.",
+        "A same-length replacement writer needs the 9 QL01 preload caches kept in step with the container it rewrites."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter writes local WAVs and no path writes into the game or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "stream:<container>:<member> or bank:<container>:<member>:<sound>, as the catalogue writes it",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One sound, one WAV out. The GUI must not offer an import from this row: nothing here writes into the disc."
+      },
+      "source_container": {
+        "format": "EA SCHl streams and BNKl banks as members of TERF containers inside an ISO9660 DVD image, read through a read-only memory map of the image.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the audio containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Catalogue every EA SCHl on a user's SLUS-20841 ISO and export what decodes as WAV. Measured on the retail disc: 679 streams, of which 42 carry EA-XA ADPCM and decode; the other 637 are EA MicroTalk, which no decoder in this repository or in ffmpeg opens, and are listed with their rate, channels and length and refused by name [M]. The image is memory-mapped, so a container of hundreds of megabytes is never copied.",
+      "surface": "audio",
+      "title": "NFL Street 1 (PS2) SCHl streams",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_audio.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.art_pages --lane field --source <SLUS-20841.iso> [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on its own page of the PS2 NFL Street 1 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page states how many of its names are confirmed by a dump and how many are derived."
+      },
+      "id": "nflstreet1ps2.field_art.create_team_art",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges.",
+        "A replacement PNG must be exactly the texture's dimensions and must index inside the member's own CLUT; anything else is refused by name.",
+        "Bounded: at most 800 texture rows per container are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "More captured frames turn derived names into confirmed ones; the module document lists the screens worth capturing.",
+        "A decoder for pixel layouts 5 and 6 would add the direct-colour surfaces this census skips."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- some names are dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the field and create-team art containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Replace field and create-team art on a user's SLUS-20841 ISO with an edited PNG, writing a NEW image. Measured on the retail disc: 97 decodable MMAP surfaces reachable from this page, out of 1,048 the module decodes across the disc [M]. 9 textures on this disc carry a PCSX2 name confirmed by a 1-frame dump; every other name this row offers is derived from the texture's own bytes and the row says which.",
+      "surface": "stadiums_fields",
+      "title": "NFL Street 1 (PS2) field and create-team art",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.art_pages --lane logos --source <SLUS-20841.iso> [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on its own page of the PS2 NFL Street 1 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page states how many of its names are confirmed by a dump and how many are derived."
+      },
+      "id": "nflstreet1ps2.identity.logo_art",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges.",
+        "A replacement PNG must be exactly the texture's dimensions and must index inside the member's own CLUT; anything else is refused by name.",
+        "Bounded: at most 800 texture rows per container are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "More captured frames turn derived names into confirmed ones; the module document lists the screens worth capturing.",
+        "A decoder for pixel layouts 5 and 6 would add the direct-colour surfaces this census skips."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- some names are dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the team logo art containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Replace team logo art on a user's SLUS-20841 ISO with an edited PNG, writing a NEW image. Measured on the retail disc: 102 decodable MMAP surfaces reachable from this page, out of 1,048 the module decodes across the disc [M]. 9 textures on this disc carry a PCSX2 name confirmed by a 1-frame dump; every other name this row offers is derived from the texture's own bytes and the row says which.",
+      "surface": "logos_cards",
+      "title": "NFL Street 1 (PS2) team logo art",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.identity_lane --source <SLUS-20841.iso> --recipe <recipe.json> --destination <NEW.iso> [--report <report.json>]",
+        "module": "mod_editor/games/nflstreet1_ps2/identity_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Text & Team Identity page of the PS2 NFL Street 1 Studio: pick a team, change its names or its palette slots, and Build writes a NEW disc image. The page must not draw a colour swatch for TMC1..TMC3: they are 7-bit indices into a 128-row palette this lane does not open, and the row says so."
+      },
+      "id": "nflstreet1ps2.identity.team_records",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges."
+      ],
+      "portme": [
+        "Read CPAL out of TEMPLATE.DAT and TMC1..TMC3 become a real colour picker instead of three index spinners."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "row:<container>#<member>:<table>:<record>, as the catalogue writes it",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "a field name the row's own table declares, with a value inside the field's measured bound",
+            "name": "values",
+            "required": true
+          }
+        ],
+        "notes": "One team row, one set of values, one write. The GUI must not offer a colour picker: what the disc stores is a palette index, and the palette lives in a container this lane does not read."
+      },
+      "source_container": {
+        "format": "The TEAM table of an EA TDB database inside a TERF container inside an ISO9660 DVD image, written in place with all four CRC slots recomputed.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "/DATA/DB_TEAMS.DAT",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Edit the 32 TEAM rows in /DATA/DB_TEAMS.DAT on a user's SLUS-20841 ISO: display name, long name, short name, the three palette slots and the logo id. Measured on the retail disc: 32 rows, TEAM carrying 41 fields in 575 bits, TDNA/TLNA/TSNA budgets of 16/14/6 characters, TLGL running 1..32 and TMC1..TMC3 7-bit indices into CPAL rather than colours [M].",
+      "surface": "colors",
+      "title": "NFL Street 1 (PS2) team identity",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_identity.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.art_pages --lane menus --source <SLUS-20841.iso> [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on its own page of the PS2 NFL Street 1 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page states how many of its names are confirmed by a dump and how many are derived."
+      },
+      "id": "nflstreet1ps2.menus.front_end_art",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges.",
+        "A replacement PNG must be exactly the texture's dimensions and must index inside the member's own CLUT; anything else is refused by name.",
+        "Bounded: at most 800 texture rows per container are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "More captured frames turn derived names into confirmed ones; the module document lists the screens worth capturing.",
+        "A decoder for pixel layouts 5 and 6 would add the direct-colour surfaces this census skips."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- some names are dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the front-end and menu art containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Replace front-end and menu art on a user's SLUS-20841 ISO with an edited PNG, writing a NEW image. Measured on the retail disc: 103 decodable MMAP surfaces reachable from this page, out of 1,048 the module decodes across the disc [M]. 9 textures on this disc carry a PCSX2 name confirmed by a 1-frame dump; every other name this row offers is derived from the texture's own bytes and the row says which.",
+      "surface": "menus",
+      "title": "NFL Street 1 (PS2) front-end and menu art",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.text_lane --source <SLUS-20841.iso> --recipe <recipe.json> --destination <NEW.iso> [--report <report.json>]",
+        "module": "mod_editor/games/nflstreet1_ps2/text_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Menus & UI page of the PS2 NFL Street 1 Studio: pick a string, type a replacement no longer than the slot, and Build writes a NEW disc image. The page carries the row's own sentence about the fonts it cannot reach."
+      },
+      "id": "nflstreet1ps2.menus.text_members",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges."
+      ],
+      "portme": [
+        "A FNTS decoder would say which characters the shipped font can draw; today a replacement is written in latin-1 and the lane cannot tell the user which characters will not appear."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "slot:<container>:<member>:<offset>, as the catalogue writes it",
+            "name": "slot",
+            "required": true
+          },
+          {
+            "allowed": "latin-1 text no longer than the slot's measured budget",
+            "name": "text",
+            "required": true
+          }
+        ],
+        "notes": "One slot, one string, one write. The GUI must not offer a font change: no FNTS decoder exists in this repository, so which glyphs the shipped font has is out of reach."
+      },
+      "source_container": {
+        "format": "TEXT members inside TERF containers inside an ISO9660 DVD image. A TEXT member is NUL-separated latin-1 strings with no index and no length table, so a string is rewritten inside its own bytes and a longer replacement is refused by name.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "/DATA/OBJDEFS.DAT, /DATA/PLADYNCL.DAT and the other TEXT containers",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Measure every TEXT string bank on a user's SLUS-20841 ISO and rewrite a string inside the bytes it already occupies. Measured on the retail disc: 531 TEXT members, and **none of their containers is named by any of the disc's 9 QL01 preload caches** [M], which makes this the cheapest write in the module.",
+      "surface": "menus",
+      "title": "NFL Street 1 (PS2) text banks",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_text.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.playbooks_lane --source <SLUS-20841.iso> --recipe <recipe.json> --destination <NEW.iso> [--report <report.json>]",
+        "module": "mod_editor/games/nflstreet1_ps2/playbooks_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Playbooks & Plays page of the PS2 NFL Street 1 Studio: pick a play, rename it or move it, and Build writes a NEW disc image. The page carries the row's own sentence about the fields it lists and does not offer."
+      },
+      "id": "nflstreet1ps2.playbooks.play_databases",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges."
+      ],
+      "portme": [
+        "Establish what a route coordinate means in this disc's units and the geometry fields become editable instead of listed."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "row:<container>#<member>:<table>:<record>, as the catalogue writes it",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "a field name the row's own table declares, with a value inside the field's measured bound",
+            "name": "values",
+            "required": true
+          }
+        ],
+        "notes": "One play row, one set of values, one write. The GUI must not offer a route editor: the geometry fields, where this disc has them, are in units nothing here has established."
+      },
+      "source_container": {
+        "format": "Six tables of EA TDB databases inside a COMP-chunked TERF container inside an ISO9660 DVD image. The members are LZH1-packed, so the lane prices the re-pack before writing and refuses a member that would not fit its slot.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "/DATA/IGDATA.DAT",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Edit the play library in /DATA/IGDATA.DAT on a user's SLUS-20841 ISO: the formations, set-ups, plays, sets and play slots, and the names they carry. Measured on the retail disc: 2 databases and 266 rows across six tables [M].",
+      "surface": "scripts_config",
+      "title": "NFL Street 1 (PS2) playbooks",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_playbooks.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.database_lane --source <SLUS-20841.iso> --recipe <recipe.json> --destination <NEW.iso> [--report <report.json>]",
+        "module": "mod_editor/games/nflstreet1_ps2/database_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 NFL Street 1 Studio: pick a player, change a value, and Build writes a NEW disc image. The page carries the row's own sentence about the fields it does not offer and why, so a user is not left looking for a control that could only break something."
+      },
+      "id": "nflstreet1ps2.players.team_databases",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges.",
+        "A string is written inside its own field and a replacement longer than the budget is refused by name with both lengths in the sentence.",
+        "A number outside the field's measured bound is refused by the bound, not silently truncated."
+      ],
+      "portme": [
+        "Establish what PPOS 0..18 mean on this disc and the position spinner becomes a named choice instead of a number.",
+        "Establish the units PWGT and PHGT are stored in; both are offered as raw stored values today."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, in PCSX2 or on hardware, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "row:<container>#<member>:<table>:<record>, as the catalogue writes it",
+            "name": "target",
+            "required": true
+          },
+          {
+            "allowed": "a field name the row's own table declares, with a value inside the field's measured bound",
+            "name": "values",
+            "required": true
+          }
+        ],
+        "notes": "One row, one set of values, one write. The GUI must not offer a team change from this row: a player's team on this disc is which of the 32 databases he is in, not a field on his record."
+      },
+      "source_container": {
+        "format": "EA TDB databases inside a TERF container inside an ISO9660 DVD image. A field owns a fixed run of bits in a fixed-stride record, so the decompressed database comes back the same size; the container's members are stored rather than packed on this disc, so the stored size cannot move either. All four CRC-32/MPEG-2 slots are recomputed on write and re-derived from the destination by the verifier.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "/DATA/DB_TEAMS.DAT",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Edit the player rows in the 32 per-team EA TDB databases inside /DATA/DB_TEAMS.DAT on a user's SLUS-20841 ISO. Measured on the retail disc: 32 databases, 402 PLAY rows, PLAY carrying 65 fields in 671 bits, and the highest value any attribute field holds is 100 against the 127 its 7 bits would allow [M]. Names, jersey, position, the rating block and the appearance indices; PAGE is 0 on every row and is not offered.",
+      "surface": "players_rosters",
+      "title": "NFL Street 1 (PS2) team rosters",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_databases.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.art_pages --lane presentation --source <SLUS-20841.iso> [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on its own page of the PS2 NFL Street 1 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page states how many of its names are confirmed by a dump and how many are derived."
+      },
+      "id": "nflstreet1ps2.presentation.screen_art",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges.",
+        "A replacement PNG must be exactly the texture's dimensions and must index inside the member's own CLUT; anything else is refused by name.",
+        "Bounded: at most 800 texture rows per container are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "More captured frames turn derived names into confirmed ones; the module document lists the screens worth capturing.",
+        "A decoder for pixel layouts 5 and 6 would add the direct-colour surfaces this census skips."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- some names are dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the load screens and in-game overlay containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Replace load screens and in-game overlay on a user's SLUS-20841 ISO with an edited PNG, writing a NEW image. Measured on the retail disc: 155 decodable MMAP surfaces reachable from this page, out of 1,048 the module decodes across the disc [M]. 9 textures on this disc carry a PCSX2 name confirmed by a 1-frame dump; every other name this row offers is derived from the texture's own bytes and the row says which.",
+      "surface": "scorebug_presentation",
+      "title": "NFL Street 1 (PS2) load screens and in-game overlay",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.art_pages --lane portraits --source <SLUS-20841.iso> [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on its own page of the PS2 NFL Street 1 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page states how many of its names are confirmed by a dump and how many are derived."
+      },
+      "id": "nflstreet1ps2.rosters.portrait_art",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges.",
+        "A replacement PNG must be exactly the texture's dimensions and must index inside the member's own CLUT; anything else is refused by name.",
+        "Bounded: at most 800 texture rows per container are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "More captured frames turn derived names into confirmed ones; the module document lists the screens worth capturing.",
+        "A decoder for pixel layouts 5 and 6 would add the direct-colour surfaces this census skips."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- some names are dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the player portrait art containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Replace player portrait art on a user's SLUS-20841 ISO with an edited PNG, writing a NEW image. Measured on the retail disc: 549 decodable MMAP surfaces reachable from this page, out of 1,048 the module decodes across the disc [M]. 9 textures on this disc carry a PCSX2 name confirmed by a 1-frame dump; every other name this row offers is derived from the texture's own bytes and the row says which.",
+      "surface": "portraits_faces",
+      "title": "NFL Street 1 (PS2) player portrait art",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.art_pages --lane playfields --source <SLUS-20841.iso> [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on its own page of the PS2 NFL Street 1 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page states how many of its names are confirmed by a dump and how many are derived."
+      },
+      "id": "nflstreet1ps2.stadiums.playfield_art",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges.",
+        "A replacement PNG must be exactly the texture's dimensions and must index inside the member's own CLUT; anything else is refused by name.",
+        "Bounded: at most 800 texture rows per container are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "More captured frames turn derived names into confirmed ones; the module document lists the screens worth capturing.",
+        "A decoder for pixel layouts 5 and 6 would add the direct-colour surfaces this census skips."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- some names are dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the playfield and prop textures containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Replace playfield and prop textures on a user's SLUS-20841 ISO with an edited PNG, writing a NEW image. Measured on the retail disc: 34 decodable MMAP surfaces reachable from this page, out of 1,048 the module decodes across the disc [M]. 9 textures on this disc carry a PCSX2 name confirmed by a 1-frame dump; every other name this row offers is derived from the texture's own bytes and the row says which.",
+      "surface": "stadiums_fields",
+      "title": "NFL Street 1 (PS2) playfield and prop textures",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.inventory_lane --source <SLUS-20841.iso> [--out <catalogue.json>] [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/inventory_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/platex-pixel-layout-census.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the All Textures page of the PS2 NFL Street 1 Studio as a table of containers and members. There is no control: the row is read-only and the page says so in the lane's own sentence."
+      },
+      "id": "nflstreet1ps2.textures.container_inventory",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Bounded twice: at most 6,000 member rows across the disc and at most 150 from any one container, so one 1,735-member archive cannot spend the whole budget before the walk reaches the next container. The document's totals stay complete either way.",
+        "Sampled classification: at most 256 members per container are decompressed to name their format, and the row says how many were sampled."
+      ],
+      "portme": [
+        "Classify the members this reader leaves unclassified; the histogram names them rather than hiding them."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Read-only: nothing is written to the game or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [],
+        "notes": "Nothing is selected: the lane lists the whole /DATA directory and every value it shows is read-only."
+      },
+      "source_container": {
+        "format": "EA TERF containers inside an ISO9660 DVD image, read through the shared ea_terf reader; a member's format is read from its decompressed bytes rather than its stored magic.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "/DATA/*.DAT",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "List every /DATA container on a user's SLUS-20841 ISO and say what each holds. Measured on the retail disc: 48 TERF containers and 8,803 members, every one of which the shared reader opens; 38 EA TDB databases whose 570 checksum slots all already verify; 2,785 MMAP members, 531 TEXT banks, 679 SCHl streams and 236 BNKl banks [M]. Writes nothing.",
+      "surface": "textures",
+      "title": "NFL Street 1 (PS2) /DATA container inventory",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_inventory.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.art_pages --lane textures --source <SLUS-20841.iso> [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on its own page of the PS2 NFL Street 1 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page states how many of its names are confirmed by a dump and how many are derived."
+      },
+      "id": "nflstreet1ps2.textures.mmap_census",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "Fixed allocation: every container is rewritten inside the extent the disc's own directory records for it, and a member that would grow past its slot is refused by name with both sizes in the sentence.",
+        "Preload coherence: this disc ships 9 QL01 caches carrying 1,693 copies of 37 containers [M]; every copy an edit disturbs is rewritten from the container's own new bytes, and a cached member whose stored size grew is refused rather than written past the next copy.",
+        "Independent verifier: verify imports none of the writer and re-derives the claim from the two images alone, failing on a byte outside the declared ranges.",
+        "A replacement PNG must be exactly the texture's dimensions and must index inside the member's own CLUT; anything else is refused by name.",
+        "Bounded: at most 800 texture rows per container are listed as targets while the document's totals stay complete."
+      ],
+      "portme": [
+        "More captured frames turn derived names into confirmed ones; the module document lists the screens worth capturing.",
+        "A decoder for pixel layouts 5 and 6 would add the direct-colour surfaces this census skips."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: a rebuilt image has not been booted, so nothing here is witnessed at runtime.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- some names are dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "the every other MMAP texture on the disc containers under /DATA",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Replace every other MMAP texture on the disc on a user's SLUS-20841 ISO with an edited PNG, writing a NEW image. Measured on the retail disc: 1,048 decodable MMAP surfaces reachable from this page, out of 1,048 the module decodes across the disc [M]. 9 textures on this disc carry a PCSX2 name confirmed by a 1-frame dump; every other name this row offers is derived from the texture's own bytes and the row says which.",
+      "surface": "textures",
+      "title": "NFL Street 1 (PS2) every other MMAP texture on the disc",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.nflstreet1_ps2.texture_lane --source <SLUS-20841.iso> [--export <manifest.json>] [--selftest]",
+        "module": "mod_editor/games/nflstreet1_ps2/texture_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/NFLSTREET1_PS2_MODULE.md",
+        "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
+        "docs/product/measured/nflstreet1_ps2/platex-pixel-layout-census.json",
+        "tests/mod_editor/test_nflstreet1_ps2_module.py"
+      ],
+      "game": "nflstreet1_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NFL Street 1 Studio with Export PNG and no import. The page states, in the row's own words, that 1,734 of 1,735 kit images are in a pixel layout nothing in this repository decodes, so a user is not left looking for a control that could only refuse."
+      },
+      "id": "nflstreet1ps2.uniforms.texture_census",
+      "input_constraints": [
+        "Read-only source: the user's ISO is opened for reading and never written; a build writes a NEW image and refuses a destination that already exists.",
+        "Retail-free: the catalogue carries container names, member indexes, offsets, lengths, field names, widths and counts -- never a payload byte.",
+        "A member whose surface declares pixel layout 5 or 6 is listed with its layout number and refused by name; 1,734 of 1,735 are [M].",
+        "No writer: this lane exports and nothing here writes into the disc."
+      ],
+      "portme": [
+        "A decoder for pixel layouts 5 and 6 would turn 1,734 refusals into targets and is the one thing this container is waiting on.",
+        "Join a kit member to a team. PLATEX.DAT names none of its members and no table on this disc says which baller one belongs to."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF, EA TDB, EA SCHl, MMAP and QL01 readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter writes local PNGs and no path writes into the game or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG out. The GUI must not offer an import from this row and must not offer a PCSX2 pack: some names for this disc are dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
+      },
+      "source_container": {
+        "format": "MMAP members inside an HSH1/COMP-chunked TERF container inside an ISO9660 DVD image, LZH1-packed. Only 4-bit and 8-bit indexed surfaces are decoded; a direct-colour surface is named by its layout number rather than guessed at.",
+        "hash_pins": [
+          "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b",
+          "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613"
+        ],
+        "resource": "/DATA/PLATEX.DAT",
+        "retail_file": "SLUS_208.41"
+      },
+      "summary": "Catalogue every MMAP member in /DATA/PLATEX.DAT on a user's SLUS-20841 ISO and export the ones this decoder reads. Measured on the retail disc: 1,735 members carrying one image each, of which **1 decode** -- the other 1,734 declare pixel layout 5 or 6, direct-colour surfaces with no CLUT, and mmap_art reads only layout 0 (4-bit indexed) and layout 1 (8-bit indexed) [M]. There is no kit writer on this disc for that reason and the row says so in its own sentence.",
+      "surface": "uniforms",
+      "title": "NFL Street 1 (PS2) kit, skin and tattoo textures",
+      "validation_command": "bash tools/validate_nflstreet1_ps2_textures.sh"
+    }
+  ],
+  "game": {
+    "id": "nflstreet1_ps2",
+    "platform": "PlayStation 2",
+    "public_input": "User supplies a legally obtained USA PS2 ISO (SLUS-20841); the tool never bundles game files, BIOS, saves, or emulator binaries, and every lane for this disc reads the user's own image and writes only where the user asks.",
+    "retail_identity": {
+      "content_sha256": "cb197dbdd468f05c3099147aa802e8f4f315d1bb3a21e62b4a17fd34e6205613",
+      "executable_sha256": "1b5ceccd4e6bb7005320a93a24ee7614b7f5c03540ca9fc0a435b09c1da7728b"
+    },
+    "title": "NFL Street (USA, PlayStation 2)"
+  },
+  "schema": "vc_mod_capability_registry_fragment/v1",
+  "surfaces": [
+    "audio",
+    "colors",
+    "logos_cards",
+    "menus",
+    "players_rosters",
+    "portraits_faces",
+    "scorebug_presentation",
+    "scripts_config",
+    "stadiums_fields",
+    "textures",
+    "uniforms"
+  ]
+}

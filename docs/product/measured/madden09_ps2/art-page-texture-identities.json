@@ -1,0 +1,303 @@
+{
+  "conventions": [
+    "classic",
+    "modern"
+  ],
+  "counts": {
+    "containers_indexed": 34,
+    "disc_surfaces_indexed": 6681,
+    "dump_files": 9617,
+    "dump_files_matched": 138,
+    "frames": 33,
+    "textures_matched": 81,
+    "textures_new_here": 7
+  },
+  "dump_directory": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/wp-identities/texdumps-20260905/SLUS-21770",
+  "generated_by": "tools/madden09_ps2_texture_identities.py, index extended to the art-page containers",
+  "identities": {
+    "STADATA.DAT:106:0": {
+      "container": "STADATA.DAT",
+      "frames": [
+        "20260905141123"
+      ],
+      "height": 8,
+      "image": 0,
+      "levels": [
+        0
+      ],
+      "member": 106,
+      "names": {
+        "classic": [
+          "8362d6b75995b73c-abf5ac2d6e45965e-00000cd4.png",
+          "8362d6b75995b73c-abf5ac2d6e45965e-00004cd4.png"
+        ],
+        "modern": [
+          "8362d6b75995b73c-abf5ac2d6e45965e-00000cd4.png"
+        ]
+      },
+      "texture_name": "",
+      "width": 8
+    },
+    "STADATA.DAT:109:0": {
+      "container": "STADATA.DAT",
+      "frames": [
+        "20260905141123",
+        "20260905145305",
+        "20260905145529",
+        "20260905145557",
+        "20260905145714",
+        "20260905145742",
+        "20260905145836",
+        "20260905150019",
+        "20260905150053",
+        "20260905151224",
+        "20260905151318",
+        "20260905151507",
+        "20260905151545",
+        "20260905151922",
+        "20260905151957"
+      ],
+      "height": 64,
+      "image": 0,
+      "levels": [
+        0
+      ],
+      "member": 109,
+      "names": {
+        "classic": [
+          "be7c91ac7605489-d46d9423066219f5-000019d4.png",
+          "be7c91ac7605489-d46d9423066219f5-000059d4.png"
+        ],
+        "modern": [
+          "be7c91ac7605489-d46d9423066219f5-000019d4.png"
+        ]
+      },
+      "texture_name": "",
+      "width": 128
+    },
+    "STADATA.DAT:111:0": {
+      "container": "STADATA.DAT",
+      "frames": [
+        "20260905141123",
+        "20260905145305",
+        "20260905145529",
+        "20260905145557",
+        "20260905145714",
+        "20260905145742",
+        "20260905145836",
+        "20260905150019",
+        "20260905150053",
+        "20260905151224",
+        "20260905151318",
+        "20260905151507",
+        "20260905151545",
+        "20260905151922",
+        "20260905151957"
+      ],
+      "height": 16,
+      "image": 0,
+      "levels": [
+        0
+      ],
+      "member": 111,
+      "names": {
+        "classic": [
+          "fade91e45c4e2948-d46d9423066219f5-00001154.png",
+          "fade91e45c4e2948-d46d9423066219f5-00005154.png"
+        ],
+        "modern": [
+          "fade91e45c4e2948-d46d9423066219f5-00001154.png"
+        ]
+      },
+      "texture_name": "",
+      "width": 32
+    },
+    "STADATA.DAT:148:0": {
+      "container": "STADATA.DAT",
+      "frames": [
+        "20260905151436",
+        "20260905151858"
+      ],
+      "height": 64,
+      "image": 0,
+      "levels": [
+        0
+      ],
+      "member": 148,
+      "names": {
+        "classic": [
+          "20268cf1200e5c1a-a9396a2880c00167-000019d3.png",
+          "20268cf1200e5c1a-a9396a2880c00167-000059d3.png"
+        ],
+        "modern": [
+          "20268cf1200e5c1a-a9396a2880c00167-000019d3.png"
+        ]
+      },
+      "texture_name": "",
+      "width": 128
+    },
+    "STADATA.DAT:149:0": {
+      "container": "STADATA.DAT",
+      "frames": [
+        "20260905141123",
+        "20260905145305",
+        "20260905145347",
+        "20260905145413",
+        "20260905145451",
+        "20260905145529",
+        "20260905145557",
+        "20260905145632",
+        "20260905145714",
+        "20260905145742",
+        "20260905145813",
+        "20260905145836",
+        "20260905145921",
+        "20260905145947",
+        "20260905150019",
+        "20260905150053",
+        "20260905150128",
+        "20260905151224",
+        "20260905151252",
+        "20260905151318",
+        "20260905151358",
+        "20260905151436",
+        "20260905151507",
+        "20260905151545",
+        "20260905151616",
+        "20260905151646",
+        "20260905151714",
+        "20260905151751",
+        "20260905151825",
+        "20260905151858",
+        "20260905151922",
+        "20260905151957",
+        "20260905152031"
+      ],
+      "height": 64,
+      "image": 0,
+      "levels": [
+        0
+      ],
+      "member": 149,
+      "names": {
+        "classic": [
+          "2493bb2e001461b5-53761e68162340a-000019d3.png",
+          "2493bb2e001461b5-53761e68162340a-000059d3.png"
+        ],
+        "modern": [
+          "2493bb2e001461b5-53761e68162340a-000019d3.png"
+        ]
+      },
+      "texture_name": "",
+      "width": 128
+    },
+    "STADATA.DAT:192:0": {
+      "container": "STADATA.DAT",
+      "frames": [
+        "20260905141123",
+        "20260905145305",
+        "20260905145347",
+        "20260905145413",
+        "20260905145451",
+        "20260905145529",
+        "20260905145557",
+        "20260905145632",
+        "20260905145714",
+        "20260905145742",
+        "20260905145813",
+        "20260905145836",
+        "20260905145921",
+        "20260905145947",
+        "20260905150019",
+        "20260905150053",
+        "20260905150128",
+        "20260905151224",
+        "20260905151252",
+        "20260905151318",
+        "20260905151358",
+        "20260905151436",
+        "20260905151507",
+        "20260905151545",
+        "20260905151616",
+        "20260905151646",
+        "20260905151714",
+        "20260905151751",
+        "20260905151825",
+        "20260905151858",
+        "20260905151922",
+        "20260905151957",
+        "20260905152031"
+      ],
+      "height": 32,
+      "image": 0,
+      "levels": [
+        0
+      ],
+      "member": 192,
+      "names": {
+        "classic": [
+          "655c2081c812a454-befdf6c07c0cba0d-00001553.png",
+          "655c2081c812a454-befdf6c07c0cba0d-00005553.png"
+        ],
+        "modern": [
+          "655c2081c812a454-befdf6c07c0cba0d-00001553.png"
+        ]
+      },
+      "texture_name": "",
+      "width": 32
+    },
+    "STADATA.DAT:97:0": {
+      "container": "STADATA.DAT",
+      "frames": [
+        "20260905145347",
+        "20260905145413",
+        "20260905145451",
+        "20260905145632",
+        "20260905145813",
+        "20260905145921",
+        "20260905145947",
+        "20260905150128",
+        "20260905151252",
+        "20260905151358",
+        "20260905151436",
+        "20260905151616",
+        "20260905151646",
+        "20260905151714",
+        "20260905151751",
+        "20260905151825",
+        "20260905151858",
+        "20260905152031"
+      ],
+      "height": 64,
+      "image": 0,
+      "levels": [
+        0
+      ],
+      "member": 97,
+      "names": {
+        "classic": [
+          "4d72a31aed43bc4b-da1d61f0e071a41b-000019d4.png",
+          "4d72a31aed43bc4b-da1d61f0e071a41b-000059d4.png"
+        ],
+        "modern": [
+          "4d72a31aed43bc4b-da1d61f0e071a41b-000019d4.png"
+        ]
+      },
+      "texture_name": "",
+      "width": 128
+    }
+  },
+  "matched_by_container": {
+    "STADATA.DAT": 7,
+    "UIS_COMN.DAT": 10,
+    "UIS_IG.DAT": 6,
+    "UIS_TMLO.DAT": 58
+  },
+  "method": "exact pixel equality, RGBA with the CLUT's own 0..128 alpha",
+  "new_by_container": {
+    "STADATA.DAT": 7
+  },
+  "note": "The identities the shipped pcsx2-texture-identities.json does not carry. That document indexed the six containers the uniform lane reads; this one extends the index to the 34 further containers the stadiums, field-art, presentation and faces pages cover -- STADATA.DAT, LOADDATA.DAT and every UIS_*.DAT with decodable MMAP members -- and pairs the same 33 frames against them on exact pixel equality. Result: 6,681 further disc surfaces indexed, 81 textures matched, of which 74 (UIS_TMLO 58, UIS_COMN 10, UIS_IG 6) the first document already carries and 7 are new, every one of them in STADATA.DAT. Nothing new matched in LOADDATA.DAT or in any UIS container the first document had not already reached: the corpus is 32 coin-toss screens and one pre-game frame, and a menu texture is not drawn on either. No pixel is in this file.",
+  "schema": "madden09_ps2_pcsx2_texture_identities/v1",
+  "source": "Madden NFL 09 (USA).iso"
+}

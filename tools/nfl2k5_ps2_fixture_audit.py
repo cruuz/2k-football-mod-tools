@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import re
 import stat
+import sys
 from typing import Any, Iterable
 
 
@@ -42,7 +43,17 @@ EXPECTED_REDUMP_SHA256 = (
     "aa8ebbc304e332fd9f7f6f71e2904849e23e8100a579537c93f156967a4a2e6d"
 )
 
-PCSX2_PROFILE = Path("/home/noah/.var/app/net.pcsx2.PCSX2/config/PCSX2")
+# The PCSX2 profile, the disc suspects and the roots to scan are **this
+# machine's**, derived from the caller's own home directory.  They used to be
+# one contributor's absolute paths, which meant the tool ran nowhere else and
+# could not be shipped at all: the release checker refuses staged text carrying
+# a workstation path.  Every one of them is still overridable on the command
+# line, and every one is opened read-only.
+HOME = Path(os.path.expanduser("~"))
+PCSX2_PROFILE = Path(
+    os.environ.get("NFL2K5_PCSX2_PROFILE")
+    or HOME / ".var/app/net.pcsx2.PCSX2/config/PCSX2"
+)
 DEFAULT_MEMORY_CARDS = (
     PCSX2_PROFILE / "memcards/Mcd001.ps2",
     PCSX2_PROFILE / "memcards/Mcd002.ps2",
@@ -50,24 +61,11 @@ DEFAULT_MEMORY_CARDS = (
 DEFAULT_TEXTURE_ROOT = PCSX2_PROFILE / "textures"
 DEFAULT_SUSPECT_DISCS = (
     ROOT / "ESPN NFL 2K5 (USA).xiso.iso",
-    Path(
-        "/home/noah/Downloads/ESPN NFL 2K5 (USA)/"
-        "ESPN NFL 2K5 (USA).xiso.iso"
-    ),
+    HOME / "Downloads/ESPN NFL 2K5 (USA)/ESPN NFL 2K5 (USA).xiso.iso",
 )
 DEFAULT_SCAN_ROOTS = (
     ROOT,
-    Path("/home/noah/Downloads"),
-    Path("/media/noah/12TB HDD/Backups/Emulation/Roms/PCSX2 Games"),
-    Path(
-        "/media/noah/12TB HDD/Backups/Full Desktop Backup/"
-        "Emulation/Roms/PCSX2 Games"
-    ),
-    Path(
-        "/media/noah/12TB HDD/Backups/Old 2012 Flash Drive Backup/"
-        "Emulation/ISOs/PS2"
-    ),
-    Path("/media/noah/12TB HDD/Backups/Rom Archive/PlayStation 2"),
+    HOME / "Downloads",
 )
 DEFAULT_JSON = (
     ROOT / "reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json"
@@ -512,6 +510,176 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+EVIDENCE_REPORT = DEFAULT_JSON
+#: The absence facts the pinned evidence report records.  Kept here rather
+#: than in a test file because a shipped validator has no ``tests/`` to run.
+EXPECTED_LIMITATION_IDS = (
+    "draft_trade_logic",
+    "salary_cap_contracts",
+    "super_bowl_future_stadium",
+    "shared_team_textures",
+)
+
+
+def selftest() -> int:
+    """Every claim the lane's validator makes, with no local fixture at all.
+
+    This used to be ``python -m unittest tests.test_nfl2k5_ps2_fixture_audit``
+    plus a stat comparison of four files that existed on exactly one machine,
+    so the validator could not pass in a shipped tree and did not pass in a
+    checkout either.  What survives is what was ever provable anywhere: the
+    strict parsers, the header classifier, the memory-card marker inventory,
+    the exact-size scan, the absence rows the tool itself declares, and this
+    tool's read-only surface.  The pinned evidence report is checked when the
+    repository carries it; a release stage does not, because it records a
+    workstation's own paths.
+    """
+    global EXPECTED_ISO_SIZE          # the scan's pin, borrowed for one check
+
+    import tempfile
+
+    failures: list[str] = []
+
+    def check(condition: object, message: str) -> None:
+        if not condition:
+            failures.append(message)
+
+    # --- the PCSX2 authorities are parsed strictly ------------------------
+    game = parse_game_index(
+        'SLUS-20919:\n'
+        '  name: "ESPN - NFL 2K5"\n'
+        '  region: "NTSC-U"\n'
+        '  compat: 5\n'
+    )
+    check(game == {"compat": 5, "name": "ESPN - NFL 2K5", "region": "NTSC-U",
+                   "serial": SERIAL}, "game-index parse %r" % (game,))
+    redump = parse_redump_database(
+        "- hashes:\n"
+        "  - md5: 46ef5e7a2e155994e7c3e5627293e068\n"
+        "    size: 4665081856\n"
+        "  name: ESPN NFL 2K5 (USA)\n"
+        "  serial: SLUS-20919\n"
+        "  version: '1.01'\n"
+    )
+    check(redump["size"] == EXPECTED_ISO_SIZE, "redump size %r" % redump["size"])
+    try:
+        parse_game_index('SLUS-20919:\n  name: "ESPN - NFL 2K5"\n  region: "PAL-E"\n')
+        failures.append("accepted: a PAL entry for an NTSC-U target")
+    except FixtureAuditError:
+        pass
+
+    with tempfile.TemporaryDirectory(prefix="ps2-fixture-audit-selftest-") as scratch:
+        # --- an Xbox image named like a PS2 one is refused by its header ---
+        xbox = Path(scratch) / "named-like-ps2.iso"
+        payload = bytearray(0x10000 + 64)
+        payload[0x10000:0x10000 + len(XDVDFS_MAGIC)] = XDVDFS_MAGIC
+        xbox.write_bytes(bytes(payload))
+        check(classify_disc_header(xbox) == "xdvdfs_xbox",
+              "an XDVDFS image was not classified as Xbox")
+
+        ps2 = Path(scratch) / "fixture.iso"
+        iso_payload = bytearray(0x9000)
+        iso_payload[0x8001:0x8006] = b"CD001"
+        ps2.write_bytes(bytes(iso_payload))
+        check(classify_disc_header(ps2) == "iso9660",
+              "an ISO9660 volume was not classified as such")
+
+        # --- the memory-card inventory is metadata only -------------------
+        card = (MEMORY_CARD_MAGIC + b"\x00" * 64
+                + b"BASLUS-20919FFran 1\x00" + b"\x00" * 16
+                + b"BASLUS-20529TSett 1\x00")
+        check(memory_card_names(card)
+              == ["BASLUS-20529TSett 1", "BASLUS-20919FFran 1"],
+              "memory-card marker inventory")
+
+        # --- an exact-size candidate is hashed and rejected on a wrong md5 -
+        tiny = Path(scratch) / "tiny.iso"
+        tiny.write_bytes(b"fixture")
+        original = EXPECTED_ISO_SIZE
+        try:
+            EXPECTED_ISO_SIZE = len(b"fixture")
+            scanned = scan_for_fixtures((Path(scratch),))
+        finally:
+            EXPECTED_ISO_SIZE = original
+        candidates = scanned["exact_size_disc_candidates"]
+        check(len(candidates) == 1, "exact-size candidates %d" % len(candidates))
+        check(candidates and not candidates[0]["accepted"],
+              "a wrong-md5 candidate was accepted as the target disc")
+
+    # --- the absence rows never borrow an Xbox address --------------------
+    rows = limitation_rows()
+    check([row["id"] for row in rows] == list(EXPECTED_LIMITATION_IDS),
+          "limitation ids %r" % ([row["id"] for row in rows],))
+    for row in rows:
+        check(row["ps2_owner_status"]
+              == "unmapped_no_verified_ps2_elf_or_save_fixture",
+              "%s owner status" % row["id"])
+        check(not row["address_reuse_from_xbox_allowed"],
+              "%s allows an Xbox address" % row["id"])
+        check(not row["safe_ps2_patch_ready"], "%s claims patch-ready" % row["id"])
+
+    # --- this tool can read and cannot write ------------------------------
+    # The needles are built from fragments so the check cannot match itself.
+    own_source = Path(__file__).read_text(encoding="utf-8")
+    for forbidden in ("--" + "apply", "--" + "extract", "--" + "patch",
+                      "O_" + "RDWR", "O_" + "WRONLY", "r" + "+b"):
+        check(forbidden not in own_source,
+              "the audit tool has a %s surface" % forbidden)
+    check("os.O_RDONLY" in own_source, "the audit tool does not open read-only")
+    check("xbox_addresses_reused" in own_source,
+          "the audit tool no longer reports whether Xbox addresses were reused")
+
+    # --- the pinned evidence, when this tree carries it --------------------
+    evidence = "absent"
+    if EVIDENCE_REPORT.is_file():
+        evidence = "checked"
+        report = json.loads(EVIDENCE_REPORT.read_text(encoding="utf-8"))
+        check(report["schema"] == SCHEMA, "evidence schema %r" % report["schema"])
+        check(report["target"] == {
+            "boot_elf_expected_name": BOOT_ELF_NAME,
+            "disc_version": EXPECTED_DISC_VERSION,
+            "expected_iso_md5": EXPECTED_ISO_MD5,
+            "expected_iso_size": EXPECTED_ISO_SIZE,
+            "platform": "PlayStation 2",
+            "region": "NTSC-U",
+            "serial": SERIAL,
+        }, "the evidence report's target block moved")
+        summary = report["summary"]
+        check(summary["serial"] == SERIAL, "evidence serial")
+        for absent in ("expected_iso_present", "extracted_boot_elf_present",
+                       "save_directory_marker_present",
+                       "pcsx2_texture_dump_present", "safe_ps2_patch_ready",
+                       "all_four_ps2_owners_mapped"):
+            check(not summary[absent],
+                  "the evidence report now claims %s; re-run the audit and "
+                  "say so deliberately" % absent)
+        check(summary["memory_card_count"] == 2, "evidence memory-card count")
+        cards = report["local_evidence"]["memory_cards"]
+        check(len(cards) == 2 and all(row["nfl2k5_marker_occurrence_count"] == 0
+                                      for row in cards),
+              "a pinned memory card carries a 2K5 marker")
+        suspects = report["local_evidence"]["rejected_named_disc_suspects"]
+        check(suspects and all(row["classification"] == "xdvdfs_xbox"
+                               and not row["accepted_as_target_ps2_disc"]
+                               for row in suspects),
+              "a named disc suspect was not rejected by its header")
+        check([row["id"] for row in report["limitations"]]
+              == list(EXPECTED_LIMITATION_IDS), "evidence limitation ids")
+        check(all(not row["address_reuse_from_xbox_allowed"]
+                  and not row["safe_ps2_patch_ready"]
+                  for row in report["limitations"]),
+              "an evidence limitation row borrowed an Xbox address")
+
+    for line in failures:
+        print("FAIL: %s" % line, file=sys.stderr)
+    if failures:
+        return 1
+    print("NFL2K5_PS2_FIXTURE_AUDIT_SELFTEST_PASS serial=%s owners=0/4 "
+          "xbox_addresses_reused=false write_surface=none pinned_evidence=%s"
+          % (SERIAL, evidence))
+    return 0
+
+
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--game-index", type=Path, default=DEFAULT_GAME_INDEX)
@@ -533,10 +701,14 @@ def parser() -> argparse.ArgumentParser:
         help="root searched for exact-size discs, boot ELF, and loose save; repeatable",
     )
     result.add_argument("--json-out", type=Path, default=DEFAULT_JSON)
+    result.add_argument("--selftest", action="store_true",
+                        help="prove the audit with no local fixture")
     return result
 
 
 def main() -> int:
+    if "--selftest" in sys.argv[1:]:
+        return selftest()
     args = parser().parse_args()
     if args.memory_card is None:
         args.memory_card = list(DEFAULT_MEMORY_CARDS)

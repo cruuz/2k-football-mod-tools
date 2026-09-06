@@ -1,0 +1,97 @@
+{
+  "declared_ranges": [
+    {
+      "length": 8,
+      "reason": "unif_color:09H0",
+      "start": 1069963344
+    }
+  ],
+  "destination_image": {
+    "identity": "<gitignored scratch: unif_color.iso>",
+    "same_size_as_source": true,
+    "size": 4665081856
+  },
+  "edits": [
+    {
+      "after_sha256": "07d3e343c5162299c7736ca34b005d7c205a9b7fee6915effa7aa233f656ef36",
+      "before_sha256": "ec1cfe77146b59228601e5bc40fef43869ea4d9863e2f61e6b97a3fc4dc76e63",
+      "iso_path": "/VC_20919/0.",
+      "note": "Detroit Lions current HOME facemask, real-disc trial",
+      "offset_in_iso": 1069963344,
+      "offset_in_pack": 1039982672,
+      "outer_index": 1770,
+      "outer_name_id": "0x9a4832d6",
+      "selector": "09H0",
+      "span_size": 8,
+      "words_changed": [
+        "facemask"
+      ]
+    }
+  ],
+  "iso_write_report_ranges": [
+    {
+      "length": 8,
+      "reason": "dirrec_length:/VC_20919/0.",
+      "start": 536682
+    },
+    {
+      "length": 1073741824,
+      "reason": "extent:/VC_20919/0.",
+      "start": 29980672
+    }
+  ],
+  "purpose": "One real-disc trial on a COPY of the operator's own PS2 ISO: the stock image is read-only in and a new image comes out. No emulator was run; this records byte transport only.",
+  "recipe": {
+    "edits": [
+      {
+        "facemask": "#12FF34",
+        "note": "Detroit Lions current HOME facemask, real-disc trial",
+        "selector": "09H0"
+      }
+    ],
+    "schema": "nfl2k5_ps2_unif_color_recipe/v1"
+  },
+  "replaced_files": [
+    {
+      "allocated_bytes": 1073741824,
+      "extent_offset": 29980672,
+      "iso_path": "/VC_20919/0.",
+      "lba": 14639,
+      "new_length": 1073741824,
+      "previous_length": 1073741824,
+      "stock_extent_sha256": "aedd794680a0450b09db5c1502b937ae0abc5b8be6b1e80881cd004a555fe16d",
+      "written_extent_sha256": "34cc96a20f275f98f5f5df0a785a325cfd751aef2cbf0327ce48d7b120d7e3b2",
+      "zero_filled_bytes": 0
+    }
+  ],
+  "result": "PASS",
+  "schema": "nfl2k5_ps2_unif_color_trial/v1",
+  "serial": "SLUS-20919",
+  "source_image": {
+    "entry_count": 78,
+    "identity": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+    "sector_size": 2048,
+    "size": 4665081856,
+    "slack_bytes": 0,
+    "volume_blocks": 2277872,
+    "volume_id": "50137"
+  },
+  "verdict": {
+    "destination": "<gitignored scratch: unif_color.iso>",
+    "edits_checked": 1,
+    "files_replaced": [
+      "/VC_20919/0."
+    ],
+    "iso_verify": {
+      "declared_bytes": 1073741832,
+      "result": "PASS",
+      "unchanged_bytes_compared": 3591340024
+    },
+    "result": "PASS",
+    "schema": "nfl2k5_ps2_unif_color_verify/v1",
+    "serial": "SLUS-20919",
+    "source": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+    "unchanged_bytes_compared": 1073741816,
+    "unif_records_decoded": 634
+  }
+}

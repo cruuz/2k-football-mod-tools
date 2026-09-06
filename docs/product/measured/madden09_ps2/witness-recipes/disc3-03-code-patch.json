@@ -1,0 +1,13 @@
+{
+  "schema": "madden09_ps2_code_patch_recipe/v1",
+  "deliver": "disc",
+  "patches": [
+    {
+      "patch": "playbook_editor_caps",
+      "parameters": {
+        "plays_cap": 400,
+        "sets_cap": 130
+      }
+    }
+  ]
+}

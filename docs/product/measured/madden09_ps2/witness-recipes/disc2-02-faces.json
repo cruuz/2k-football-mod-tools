@@ -1,0 +1,6 @@
+{
+  "schema": "madden09_ps2_face_art_recipe/v1",
+  "textures": [
+    {"texture": "PLYRFACE.DAT:274:0", "png": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/png2/faces/PLYRFACE.DAT_274_0.png", "note": "drawn in both Bears-vs-Vikings coin-toss frames; which player it belongs to is not established"}
+  ]
+}

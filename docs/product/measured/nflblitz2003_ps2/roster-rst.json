@@ -1,0 +1,197 @@
+{
+  "block_bytes": 1804,
+  "blocks": 42,
+  "blocks_minus_team_tables": 10,
+  "bytes": 75768,
+  "member": "roster.rst",
+  "note": "Counts and column ranges only. No player name is here.",
+  "numeric_column_census": {
+    "64": {
+      "distinct": 98,
+      "maximum": 99,
+      "minimum": 0
+    },
+    "65": {
+      "distinct": 15,
+      "maximum": 80,
+      "minimum": 64
+    },
+    "66": {
+      "distinct": 152,
+      "maximum": 255,
+      "minimum": 2
+    },
+    "67": {
+      "distinct": 2,
+      "maximum": 1,
+      "minimum": 0
+    },
+    "68": {
+      "distinct": 42,
+      "maximum": 41,
+      "minimum": 0
+    },
+    "69": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "70": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "71": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "72": {
+      "distinct": 18,
+      "maximum": 17,
+      "minimum": 0
+    },
+    "73": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "74": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "75": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "76": {
+      "distinct": 56,
+      "maximum": 227,
+      "minimum": 0
+    },
+    "77": {
+      "distinct": 7,
+      "maximum": 6,
+      "minimum": 0
+    },
+    "78": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "79": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "80": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "81": {
+      "distinct": 1,
+      "maximum": 48,
+      "minimum": 48
+    },
+    "82": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "83": {
+      "distinct": 1,
+      "maximum": 0,
+      "minimum": 0
+    },
+    "84": {
+      "distinct": 69,
+      "maximum": 99,
+      "minimum": 30
+    },
+    "85": {
+      "distinct": 68,
+      "maximum": 99,
+      "minimum": 30
+    },
+    "86": {
+      "distinct": 38,
+      "maximum": 100,
+      "minimum": 48
+    },
+    "87": {
+      "distinct": 37,
+      "maximum": 99,
+      "minimum": 50
+    },
+    "88": {
+      "distinct": 41,
+      "maximum": 98,
+      "minimum": 0
+    },
+    "89": {
+      "distinct": 36,
+      "maximum": 100,
+      "minimum": 15
+    },
+    "90": {
+      "distinct": 32,
+      "maximum": 99,
+      "minimum": 15
+    },
+    "91": {
+      "distinct": 29,
+      "maximum": 99,
+      "minimum": 15
+    },
+    "92": {
+      "distinct": 32,
+      "maximum": 97,
+      "minimum": 15
+    },
+    "93": {
+      "distinct": 51,
+      "maximum": 99,
+      "minimum": 10
+    },
+    "94": {
+      "distinct": 61,
+      "maximum": 100,
+      "minimum": 15
+    },
+    "95": {
+      "distinct": 51,
+      "maximum": 100,
+      "minimum": 10
+    },
+    "96": {
+      "distinct": 70,
+      "maximum": 99,
+      "minimum": 15
+    },
+    "97": {
+      "distinct": 44,
+      "maximum": 98,
+      "minimum": 30
+    },
+    "98": {
+      "distinct": 1,
+      "maximum": 205,
+      "minimum": 205
+    },
+    "99": {
+      "distinct": 1,
+      "maximum": 205,
+      "minimum": 205
+    }
+  },
+  "produced_by": "python3 -m mod_editor.games.nflblitz2003_ps2.roster_lane",
+  "records": 756,
+  "records_per_block": 18,
+  "records_whose_team_byte_equals_their_block": 756,
+  "schema": "nflblitz_ps2_roster_measured/v1",
+  "team_crowd_tables": 32,
+  "team_logo_dictionaries": 32
+}

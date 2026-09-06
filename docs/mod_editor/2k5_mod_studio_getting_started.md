@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC85 — Getting Started
+# 2K5 Mod Studio v1.0 RC88 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -358,10 +358,194 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 83 cross-title rows, including 45 Xbox NFL 2K5
-capabilities and the separate PS2 save-import bridge. No current 2K5 capability
-is labeled Coming Soon, and an asset never becomes writable merely because it
-has a preview.
+The current registry has 180 cross-title rows, including 45 Xbox NFL 2K5
+capabilities, 9 NFL 2K5 PS2 rows (the separate PS2 save-import bridge, the
+capabilities, 37 APF 2K8 (Xbox 360) rows, 10 NFL 2K5 PS2 rows (the separate PS2
+save-import bridge, the read-only PS2 disc inventory, the PCSX2
+replacement-pack export for edited uniform art -- the PS2 studio's Windows
+menu, or --ps2-export -- six on-disc writers: display text, playbooks, uniform
+colours, the disc roster, stadium positions and one-shot AUDO sounds, which the
+PS2 NFL 2K5 Studio window drives, and that game's executable-patch lane, which
+is classified unknown and offers no controls) and 14 PS2 Madden 09 Studio rows
+(see below). No current 2K5 capability is labeled Coming Soon, and an asset
+never becomes writable merely because it has a preview.
+
+## PS2 Madden 09 Studio (RC88)
+
+**A second game is on the *Select other games…* list.** Pick **PS2 Madden 09 Studio** and it
+opens on your own **Madden NFL 09 (PlayStation 2)** disc image, `SLUS-21770`. From a terminal:
+`python -m mod_editor --game madden09_ps2`.
+
+It knows two discs apart and tells you which one you opened: the **retail** USA disc and the
+community's **Deluxe** rebuild. That matters — thirteen of the disc's data files are different
+between them, so the uniforms and the databases you are looking at genuinely are not the same.
+Any other disc is refused with a sentence saying which one it wanted.
+
+**Your image is opened read-only, and every build writes a NEW image.** Eleven of the fourteen
+pages have something on them now, and most of them edit:
+
+- **Uniforms & Equipment** — the disc's uniform, face and tattoo textures: preview, **Export
+  PNG**, an **Import PNG** checked against that texture's own palette, and a Build that writes
+  the edited texture back into a new disc image. 7,082 of 7,616 images decode; the 534 that do
+  not fall into three groups the page names.
+- **Names, Numbers & Faces** — two things on one page. The rows of the disc's own databases:
+  **12,499 of them**, each a player's first and last name, jersey number, age and twenty
+  ratings, plus each team's nickname, city, abbreviation and short name. And the art: 532 player
+  faces, 711 coach faces, 82 tattoos and 3,286 menu portraits, edited the same way as the
+  uniforms.
+- **Text & Team Identity** — the **32 NFL teams**, one target each: the four names, the two
+  colours as colour pickers, and the city id. A rename is written into **both** of the disc's
+  databases that agree about it, so nothing is left half-renamed. (A third copy, in a file the
+  preload cache carries, is deliberately not written; the page says so.)
+- **Field Art & Create-Team Art** — the 73 field textures, all of which decode. The other 642
+  members of that file are 3D geometry, which nothing here reads.
+- **Stadiums** — 514 stadium textures. The stands, the crowd and the scoreboard mesh are
+  geometry and are listed but not touched.
+- **Presentation** — 7,678 menu, loading and overlay textures across 50 containers. The scorebug
+  itself is drawn by the game's executable, not from a file, and the page says that rather than
+  pretending.
+- **Menus & UI** — every text bank on the disc: **14,760 of them**. Pick a string slot, see its
+  budget, replace it. A shorter replacement is padded; a longer one is refused with the length it
+  has to fit. Nothing keeps a copy of your game's text: it is read off your image when you ask.
+- **Audio** — **34,046 sounds**. The music and the sound-effect streams play, export as WAV and
+  can be **replaced**; the 967 bank sounds play and export. The 33,751 speech and commentary
+  lines use a codec nobody has a decoder for, so they are listed with their length and rate and
+  refused by name rather than guessed at.
+- **Gameplay** — the in-game create-a-playbook editor's own caps: formations, sets, plays per
+  book and plays per set. Delivered as a PCSX2 patch file by default, or written into the disc's
+  executable on a new image.
+- **Playbooks & Plays** — the **102 shipped playbooks**: **78,875 editable rows** of formation,
+  set, play and special-teams names, plus the handful of numbers whose meaning is known. Plays
+  cannot be *added* — every table on the disc is packed exactly full — which is what the Gameplay
+  page's caps are for.
+- **All Textures** — every container under `/DATA`, member by member: how it is packed, how big
+  it is packed and unpacked, and what its bytes turn out to be. 101 containers and 36,195
+  members, in about ten seconds. Read-only.
+
+**The Crib** is an ESPN NFL 2K5 feature Madden does not have, and **Saves** is another
+repository's tooling — both pages say so and stay empty on purpose. **Build & Share** chains
+your staged edits into one new image.
+
+**What has not happened yet.** No rebuilt Madden 09 disc has been booted in an emulator or on a
+console. Every writer here is proved *offline*: it builds a new image the same size as yours,
+declares exactly which bytes it changed, and an independent checker re-derives the whole claim
+from the two images and can fail. That a rebuilt disc still loads, and that your change shows up
+on a screen, is the one thing none of this proves — and every page, every receipt and every
+registry row says so. `docs/product/MADDEN09_PS2_MODULE.md` is the full account.
+
+## PS2 NFL 2K5 Studio (RC86)
+
+**The File menu has two PlayStation 2 entries now, not five.**
+
+- **File > PS2 NFL 2K5 Studio…** (or `python -m mod_editor --ps2-disc-studio [your.iso]`)
+  opens that game's studio. Its name is not typed anywhere: the studio of every game is
+  called `<Console> <Game> <Year> Studio`, composed from what the game module declares, so
+  the next game to arrive reads the same way on the same menu.
+- **File > Select other games…** lists every installed game as one row — its studio — and
+  opens the one you pick.
+
+**The PS2 Save Editor, the PS2 Disc Inventory and Export PS2 replacement pack are still
+here.** They are that game's *other* windows, so they moved to where that game's windows
+live: the **Windows** menu inside the PS2 studio. Nothing about them changed, and
+`--ps2-save`, `--ps2-disc` and `--ps2-export` still open each one on its own. (The export
+works on your open Xbox project, so it is listed but not clickable in a studio you opened
+without one — the File-menu entry hands the studio your session, so from there it works.)
+
+The studio works on **your own SLUS-20919 disc image**, which is opened read-only and never
+written: every build creates a **new** ISO at a name that does not exist yet, and a build
+that fails or is cancelled deletes whatever it had created. It is separate from the Xbox game
+image in the main window and never touches your Xbox project.
+
+**Every page is present, and a page with nothing to offer says why.** The studio has the same
+fourteen pages as the Xbox studio, in the same order, down the left: Uniforms & Equipment,
+Names Numbers & Faces, Text & Team Identity, Field Art, Stadiums, Presentation, Menus & UI,
+The Crib, Audio, Gameplay, Playbooks & Plays, All Textures, Saves, and Build & Share. A page
+whose writer does not exist for this game yet is still there and tells you so in one sentence
+rather than disappearing; a page whose writer exists but has not earned its evidence yet — the
+executable patches — says what the capability registry says about it and offers no controls.
+Every page that *can* write carries its registry badge and, unless somebody has watched it work
+in-game, the words **Not yet tested in-game**.
+
+**Where the old window went.** The disc window this studio grew out of is still here, as
+**Windows > Disc Studio (classic)…** (or `--ps2-disc-studio`), for one reason: its Playbooks tab
+drives the studio's Formation Designer and Play Designer on a book read from your disc, and the
+new Playbooks page cannot do that yet. Everything else -- the same six writers, the same
+refusals, the same new-image rule -- is on the studio's own pages. The classic window goes when
+the designers reach the Playbooks page.
+
+**Nothing built here has been seen or heard in an emulator yet.** Each lane is proved
+offline -- its bytes land where they should and an independent verifier re-derives that
+from the two images -- and no further. The window says so in its boundary note and in the
+receipt, and each tab carries its lane's caveats in plain words (the registry's rules are
+one click away on every tab).
+
+How it goes:
+
+1. **Open Disc Image…** The identity line shows the serial, whether the boot ELF is the
+   retail one, and the size. A disc that is not SLUS-20919 can be looked at but nothing is
+   planned or built from it.
+2. **Build catalogue** on a tab. The lane's own catalogue tool runs over your disc and the
+   result is cached on this machine, keyed by the disc, under
+   `2k5-mod-studio/ps2-disc-studio/` in your private application-data folder (`%LOCALAPPDATA%`
+   on Windows, your home folder elsewhere). On the trial machine the text catalogue took about
+   a second and the colours catalogue half of one; the stadium catalogue has two scopes -- the
+   one proved scene, or every stadium scene on the disc, which is long -- and says so.
+   Catalogues hold names, offsets, counts and digests only.
+3. **Pick a target, edit, Add to recipe.** Every editor shows its budget and refuses over the
+   line, in place, with the fix in the sentence:
+   - **Text** -- 6,658 editable strings (215 read-only ones are listed greyed with the reason).
+     The current text is read from your disc for display. The budget is the original's own
+     length: a replacement may be shorter or the same length, never longer, and inline tokens
+     such as `|CROSS|` must stay in place. "Used by N records" means editing changes them all.
+   - **Playbooks** -- 37 books with their headroom (50 formations, 270 plays, 3,500 nodes; eight
+     books are at the play cap). Formations and plays are designed with the studio's own
+     Formation Designer and Play Designer on the book read from your disc; names are up to 40
+     printable ASCII characters.
+   - **Colours** -- the facemask and turtleneck words of 634 uniform packages, named by selector
+     (package number, home or away, variant; team names appear only when this machine also has
+     the Xbox uniform catalogue). The current words show as swatches; each edit changes at most
+     eight bytes.
+   - **Roster** -- the boot roster's 2,547 players and the 75 historic rosters: first and last
+     name inside the bytes the original occupies, jersey 0-99, face shield None/Clear/Dark.
+     Each roster you edit is its own build step.
+   - **Stadium** -- catalogued position lanes; x, y, z offsets move every vertex of a lane. Whether
+     the recompressed scene fits its fixed span is decided during the build (tens of minutes;
+     the STADIUMS trial measured 17 minutes for one scene).
+   - **Audio** -- 844 AUDO slots, each with its capacity in seconds. A strict 16-bit PCM WAV with
+     the slot's channel count; a longer sound is refused with the slot's capacity, a shorter one
+     is followed by silence. 690 slots share a name with another slot.
+4. **Check** -- on a tab, or *Check everything* on the Build page. This is each lane's own dry
+   run against your disc; every refusal the patcher would make appears here, and *Build* is
+   offered only once every staged lane has checked clean.
+5. **Build new ISO.** Lanes run as chained steps in a fixed order (text, playbooks, colours,
+   roster, stadium, audio), each writing a new image from the previous one and verifying it with
+   the lane's independent verifier before the previous intermediate is deleted. Each step copies
+   the whole 4.3 GB image and rewrites a 1 GiB pack: minutes per step on most machines (the trial
+   machine's fast storage did two steps in 49 seconds), plus the two verifiers re-reading both
+   images. The build refuses to start unless the destination's drive has room for the new image
+   **plus one intermediate** and the staged pack (about 9.9 GiB for this disc), and says the sizes.
+   A JSON receipt with every step's changed bytes, digests, verdicts and timings is written next
+   to the new image; *Open folder* takes you there.
+
+**Uniforms & Equipment -- Export to PCSX2.** The one page here that is not about the disc. It
+exports the uniform art you have **edited in the Xbox studio** as a PCSX2
+texture-replacement pack for `SLUS-20919`, so you do not have to close this window to
+reach it. It is the same export window with the same
+rules: it needs a **saved `.2k5mod` Xbox project that has edited art** (this window has no
+Xbox session, so you choose the project; the one you chose last is offered back next time),
+it writes only targets that project marks edited, it asks which emulator the pack is for
+before it writes anything, and it offers the independent verifier afterwards. **No disc
+image is read and no ISO is written by this path** -- your ISO is not even needed, so the
+page works whether or not one is open. Once a pack is written, **Write PCSX2 kit** puts a
+kit for the emulator you answered for beside it, at `<pack>-kit/<target>/`: `HOW-TO.txt`,
+a `settings.ini` you can paste, and a byte-identical copy of the pack that the verifier
+still passes. The page names the folder and the setting that must be on -- with texture
+replacement off the game draws the retail art and the pack looks like it did nothing.
+
+Rules that prevent most refusals here: keep text inside the shown character budget and keep
+its tokens; keep names inside the shown budget; supply mono WAVs to mono slots and stereo to
+stereo; do not stage two aliases of one stadium span; choose a destination that does not exist
+yet, on a drive with room for two images.
 
 ## What v1.0 covers
 
@@ -1370,3 +1554,40 @@ fit the pool's 13,238 UTF-16 bytes (the built-in list uses all of them; shorter 
 surname equal to the retail one at its index keeps its call-out, any other surname is announced by
 number; the build receipt lists every slot as kept or replaced. Unwitnessed in game: please report
 whether a drafted Smith is called by name and a drafted Diggs by number.
+
+## ★ PCSX2 replacement pack — your uniform edits, on the PS2 game (RC85)
+
+Your project's **edited** uniform textures can be exported as a texture-replacement
+pack for the PlayStation 2 release, which you then load in an emulator. Nothing is
+written into any disc image, and nothing is ever exported for a texture you have not
+edited, so no retail art leaves your copy.
+
+Open your project, then **File → PS2 NFL 2K5 Studio… → Windows → Export PS2 replacement
+pack…** (or start the studio
+with `--ps2-export`). The window lists each edited uniform target as *Will export*,
+*Skipped* or *Ambiguous*, you choose an output folder, and Export writes the files
+plus a receipt describing exactly what was written.
+
+**It asks where you will use the pack, and it does not guess.** Export stays disabled
+until you answer. The files are the same either way — the answer only decides what you
+are told to turn on, because the emulators differ:
+
+- **PenguinScreen2 with Classic Texture Names on** — recommended, and the only
+  emulator these packs have actually been *witnessed* rendering on. Turn on
+  `ClassicTextureNames=true` and `LoadTextureReplacements=true`. Every file in the
+  pack is looked up whatever the game does with the texture.
+- **PCSX2 1.7.4034 or newer, including 2.x** — turn on `LoadTextureReplacements=true`
+  and nothing else; there is no Classic Texture Names setting in stock PCSX2, so do not
+  go hunting for one. From that build PCSX2 identifies a texture by hashing only the
+  part of it the game draws, which in principle can skip a pack file. Measured across
+  60 dumps from the test rig, 584 identities fall in that class and none of this
+  studio's texture names is among them, and three stock builds loaded the pack with
+  identical pixel counts.
+- **PCSX2 older than 1.7.4034** — `LoadTextureReplacements=true` only. These builds
+  hash the whole texture, which is how the filenames were computed.
+
+If the art still looks like the retail game, the setting is almost always the reason:
+with texture replacement off, the pack loads nothing and looks like it did nothing.
+The exported receipt repeats the steps for the emulator you chose, and
+`tools/nfl2k5_ps2_replacement_pack_verify.py` re-checks a finished pack — including
+that its instructions match the emulator it says it is for.

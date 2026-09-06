@@ -1,0 +1,50 @@
+{
+  "schema": "vc_game_module_manifest/v1",
+  "game_id": "nflblitz2002_ps2",
+  "package": "mod_editor.games.nflblitz2002_ps2",
+  "title": "NFL Blitz 2002 (USA, PlayStation 2)",
+  "platform": "PlayStation 2",
+  "console": "PS2",
+  "game": "NFL Blitz",
+  "year": "2002",
+  "version": "0.1.0",
+  "contract": "vc_game_module/v1",
+  "registry_fragment": "registry.fragment.json",
+  "allowlist_fragment": "allowlist.fragment.txt",
+  "pins": "pins.json",
+  "product_modules": [
+    "ps2_iso9660",
+    "mod_editor.games._formats.blitz_zip",
+    "mod_editor.games._formats.rw_txd",
+    "mod_editor.games._formats.pcsx2_texture_name",
+    "mod_editor.games._formats.ea_shps",
+    "mod_editor.games._formats.ps2_disc",
+    "mod_editor.games.nflblitz2002_ps2",
+    "mod_editor.games.nflblitz2002_ps2.containers",
+    "mod_editor.games.nflblitz2002_ps2.disc_identity",
+    "mod_editor.games.nflblitz2002_ps2.zip_lane",
+    "mod_editor.games.nflblitz2002_ps2.text_lane",
+    "mod_editor.games.nflblitz2002_ps2.roster_lane",
+    "mod_editor.games.nflblitz2002_ps2.texture_lane",
+    "mod_editor.games.nflblitz2002_ps2.camera_lane"
+  ],
+  "tool_modules": [],
+  "allowlist_patterns": [
+    "mod_editor/games/nflblitz2002_ps2/*",
+    "tools/validate_nflblitz2002_ps2_*",
+    "docs/product/measured/nflblitz2002_ps2/*",
+    "mod_editor/games/_formats/blitz_zip.py",
+    "mod_editor/games/_formats/rw_txd.py",
+    "mod_editor/games/_lanes/blitz_zip_lanes.py",
+    "docs/product/RENDERWARE_TXD_FORMAT.md",
+    "docs/product/MIDWAY_ZIP_FORMAT.md",
+    "docs/product/measured/rw_txd/*"
+  ],
+  "page_notes": {
+    "field_art": "The disc carries no create-team or field-art container: its field is one member, field.tab, which is a CRLF ASCII table and is edited on the Gameplay page rather than duplicated here. Every other art member on the disc is a RenderWare texture dictionary and is reached from Uniforms & Equipment, Menus & UI or All Textures.",
+    "stadiums": "Stadium geometry is in the 1,272 .dff members, and they are RenderWare clump streams: a top-level walk consumes 1,043 of them exactly and the sequence is Clump then Extension. Reading a clump's geometry, materials and frames is a different reader from the texture-dictionary one this module ships, so the .dff members are counted and named on the Presentation page's inventory and no stadium editor is offered.",
+    "crib": "The Crib is an ESPN NFL 2K5 feature and not an NFL Blitz concept, so this page stays empty here on purpose.",
+    "audio": "All of this disc's audio is one member, mslasset.ms2, 137,538,180 bytes, a Midway sound bank. That format is owned by another module in this repository and is not opened here; this module names the member, its size and its CRC-32 in the All Textures inventory's sibling counts and reads none of it.",
+    "saves": "A save is not the disc. The two .ico members are PlayStation 2 save icons for the dashboard, not saves, and no NFL Blitz 2002 memory-card save has been measured by this project."
+  }
+}

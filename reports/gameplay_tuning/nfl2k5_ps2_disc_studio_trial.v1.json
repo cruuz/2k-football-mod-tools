@@ -1,0 +1,640 @@
+{
+  "build": {
+    "destination_sha256": "f193954752d3ce6aca2af5c28cf29e186d2028f26322cb5c9f242d4f48160c55",
+    "destination_size": 4665081856,
+    "estimate": {
+      "available_bytes": 1465205915648,
+      "needed_bytes": 10672340992,
+      "sentence": "Needs about 9.94 GiB free on /: a 4.34 GiB new image, room for one 4.34 GiB intermediate while it is verified, and 1.25 GiB for the staged pack; 1364.58 GiB is free."
+    },
+    "message": "Wrote ESPN NFL 2K5 (USA)-studio-trial.iso (Text, Colours; 2 steps, 0.8 min) \u2014 every verifier passed. Your original disc image was not changed.",
+    "receipt_file_bytes": 15022,
+    "result": "PASS",
+    "same_size_as_source": true,
+    "seconds_total": 49.0,
+    "source_sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+    "steps": [
+      {
+        "input_sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+        "iso_write_declared_ranges": [
+          {
+            "length": 8,
+            "reason": "dirrec_length:/VC_20919/0.",
+            "start": 536682
+          },
+          {
+            "length": 1073741824,
+            "reason": "extent:/VC_20919/0.",
+            "start": 29980672
+          }
+        ],
+        "lane": "text",
+        "note": "1 string",
+        "output_sha256": "f453b9ed3ddce725b5f213c0f81e2dc61e72b56864b1f64c27e03ce24862549e",
+        "output_size": 4665081856,
+        "plan": "1 string \u00b7 10 bytes would change inside 1 pack",
+        "receipt_summary": "1 string \u00b7 10 bytes changed",
+        "seconds": {
+          "hash_input": 3.14,
+          "hash_output": 3.01,
+          "plan": 0.71,
+          "verify": 11.36,
+          "write": 9.55
+        },
+        "step": 1,
+        "verdict": "text verifier: pass \u00b7 1 edits located \u00b7 10 bytes differ, exactly the edited allocations",
+        "verdict_passed": true
+      },
+      {
+        "input_sha256": null,
+        "iso_write_declared_ranges": [
+          {
+            "length": 8,
+            "reason": "dirrec_length:/VC_20919/0.",
+            "start": 536682
+          },
+          {
+            "length": 1073741824,
+            "reason": "extent:/VC_20919/0.",
+            "start": 29980672
+          }
+        ],
+        "lane": "colors",
+        "note": "1 package in /VC_20919/0.",
+        "output_sha256": "f193954752d3ce6aca2af5c28cf29e186d2028f26322cb5c9f242d4f48160c55",
+        "output_size": 4665081856,
+        "plan": "1 package \u00b7 8 bytes would change in /VC_20919/0.",
+        "receipt_summary": "1 package \u00b7 8 bytes changed",
+        "seconds": {
+          "hash_output": 3.01,
+          "plan": 0.2,
+          "verify": 8.94,
+          "write": 8.33
+        },
+        "step": 2,
+        "verdict": "colour verifier: PASS \u00b7 1 edits checked \u00b7 634 Unif records decoded \u00b7 1,073,741,816 unchanged bytes compared",
+        "verdict_passed": true
+      }
+    ]
+  },
+  "catalogues": {
+    "colors": {
+      "path_size": 416386,
+      "sha256": "cc9127be4ffedd7ff1a9d5a9771a5775e9ed09fae3580bf62597681a94187e16",
+      "summary": "634 uniform packages \u00b7 317 home, 317 away \u00b7 0 unsafe",
+      "tool_summary": {
+        "away_packages": 317,
+        "compressed_targets": 0,
+        "duplicate_selectors": 0,
+        "home_packages": 317,
+        "matching_xbox_offsets": 634,
+        "rejected": 0,
+        "targets": 634,
+        "with_selector": 634
+      }
+    },
+    "text": {
+      "path_size": 2973404,
+      "sha256": "7c43cdbe7a5a9e13439ab16524d9378d699a011b2df94fb5db1a3f96ce47ff04",
+      "summary": "5 banks \u00b7 6,873 strings \u00b7 6,658 editable, 215 read-only",
+      "tool_summary": {
+        "aliased_allocation_count": 281,
+        "bank_count": 5,
+        "bank_kind_counts": {
+          "CRED": 1,
+          "SITU": 1,
+          "STRG": 2,
+          "TRIV": 1
+        },
+        "compressed_bank_count": 0,
+        "decoded_bank_count": 5,
+        "editable_count": 6658,
+        "non_ascii_string_count": 0,
+        "read_only_count": 215,
+        "string_count": 6873,
+        "strings_with_spare_capacity": 0,
+        "tokenised_string_count": 2
+      }
+    }
+  },
+  "generated": "2026-09-05T10:00:06Z",
+  "how_it_ran": {
+    "emulator": "none. No PCSX2 or PenguinScreen2 run; the images were deleted after the verifiers ran. This trial proves the studio's plumbing over the six lanes' tools, not that anything renders.",
+    "live_session_check": "pgrep for pcsx2-qt, mupen64plus and xemu before the launch: no emulator running",
+    "service": "mod_editor/core/ps2_disc_studio_service.py driving mod_editor/core/ps2_disc_studio_lanes.py exactly as the window does: catalogue tools and the build-step worker as child processes",
+    "where": "on the rig (the emulator test laptop) over SSH, because the owner's Windows drive could not take a 4.3 GB image; the dev box ran the synthetic-disc tests only"
+  },
+  "machine": "rig (pacarey-IdeaPad-Gaming-3-15ARH7), python 3.12.3",
+  "plans": {
+    "colors": {
+      "steps": 1,
+      "summary": "1 package \u00b7 8 bytes would change in /VC_20919/0."
+    },
+    "text": {
+      "steps": 1,
+      "summary": "1 string \u00b7 10 bytes would change inside 1 pack"
+    }
+  },
+  "recipe": {
+    "colors": {
+      "colour_offset_in_iso": 1069963344,
+      "current_words_read_from_disc": true,
+      "facemask": "#12FF34",
+      "iso_path": "/VC_20919/0.",
+      "label": "09H0 \u2014 package 09 \u00b7 home \u00b7 variant 0",
+      "no_op_inline_refusal": "The package already holds those colours; pick a different colour or leave it alone.",
+      "selector": "09H0"
+    },
+    "text": {
+      "allocation_bytes": 22,
+      "bank_kind": "STRG",
+      "label": "String message 897",
+      "original_code_units": 10,
+      "original_text_sha256": "52226aa1c4362bad11d7928fe5ad8873ae23eb1cc0686ba10b1276cc1b1e567b",
+      "over_budget_inline_refusal": "11 characters is 1 over the budget of 10. The budget is the original string's own length; shorten the replacement to 10.",
+      "reference_count": 1,
+      "replacement": "STUDIO TR",
+      "replacement_code_units": 9,
+      "selector": "nfl2k5.ps2.text-bank.strg.24.65:message:897"
+    }
+  },
+  "retail_free": "names, selectors, offsets, counts and SHA-256 digests only; no decoded text, colour words or image bytes",
+  "schema": "nfl2k5_ps2_disc_studio_trial/v1",
+  "source_image": {
+    "boot_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+    "disc_key": "420aa6d854773d45fb1cecea78ee4983",
+    "entry_count": 4322,
+    "identity": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+    "modified": false,
+    "opened_read_only": true,
+    "pack_count": 5,
+    "retail_boot_elf": true,
+    "serial": "SLUS-20919",
+    "sha256_after": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+    "size": 4665081856,
+    "unchanged": true,
+    "volume_id": "50137"
+  },
+  "studio_receipt": {
+    "claims": {
+      "destination_created_exclusively": true,
+      "every_step_independently_verified": true,
+      "runtime_audibility_proved": false,
+      "runtime_visibility_proved": false,
+      "source_opened_read_only": true
+    },
+    "destination": {
+      "path": "<rig scratch, deleted after the verifiers ran>/ESPN NFL 2K5 (USA)-studio-trial.iso",
+      "same_size_as_source": true,
+      "sha256": "f193954752d3ce6aca2af5c28cf29e186d2028f26322cb5c9f242d4f48160c55",
+      "size": 4665081856
+    },
+    "generated": "2026-09-05T10:00:57Z",
+    "schema": "nfl2k5_ps2_disc_studio_receipt/v1",
+    "seconds_total": 49.0,
+    "serial": "SLUS-20919",
+    "source": {
+      "boot_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+      "modified": false,
+      "name": "ESPN NFL 2K5 (USA).iso",
+      "retail_boot_elf": true,
+      "serial": "SLUS-20919",
+      "sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+      "size": 4665081856
+    },
+    "steps": [
+      {
+        "input": "ESPN NFL 2K5 (USA).iso",
+        "lane": "text",
+        "note": "1 string",
+        "output": ".ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+        "output_sha256": "f453b9ed3ddce725b5f213c0f81e2dc61e72b56864b1f64c27e03ce24862549e",
+        "plan": "1 string \u00b7 10 bytes would change inside 1 pack",
+        "receipt": {
+          "claims": {
+            "fixed_allocation": true,
+            "pointers_unchanged": true,
+            "recompression_used": false,
+            "report_contains_replacement_text": false,
+            "resource_sizes_unchanged": true,
+            "source_opened_read_only": true,
+            "tokens_preserved": true
+          },
+          "destination": {
+            "path": "<rig scratch, deleted after the verifiers ran>/.ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+            "size": 4665081856
+          },
+          "edits": [
+            {
+              "allocation_bytes": 22,
+              "bank_id": "nfl2k5.ps2.text-bank.strg.24.65",
+              "bank_kind": "STRG",
+              "iso_byte_offset": 44561956,
+              "label": "String message 897",
+              "new_code_units": 9,
+              "original_text_sha256": "52226aa1c4362bad11d7928fe5ad8873ae23eb1cc0686ba10b1276cc1b1e567b",
+              "pack_iso_path": "/VC_20919/0.",
+              "pack_offset": 14581284,
+              "pool_index": 897,
+              "reference_count": 1,
+              "replacement_bytes_sha256": "28b928d5599cde626ec9de03796a5621ec34c67759b57903de5019c1ad6432ff",
+              "replacement_text_sha256": "47e93deb2812bdf0cd5d16c4f58fe33f9daee733898caaac5120c31943abe1a3",
+              "selector": "nfl2k5.ps2.text-bank.strg.24.65:message:897",
+              "tokens": []
+            }
+          ],
+          "iso_write_report": {
+            "block_size": 2048,
+            "bytes_declared": 1073741832,
+            "data_offset": 0,
+            "declared_ranges": [
+              {
+                "length": 8,
+                "reason": "dirrec_length:/VC_20919/0.",
+                "start": 536682
+              },
+              {
+                "length": 1073741824,
+                "reason": "extent:/VC_20919/0.",
+                "start": 29980672
+              }
+            ],
+            "destination": "<rig scratch, deleted after the verifiers ran>/.ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+            "entry_count": 78,
+            "file_size": 4665081856,
+            "replacements": [
+              {
+                "allocated_bytes": 1073741824,
+                "content_source": "<rig scratch, deleted after the verifiers ran>/nfl2k5-ps2-text-pack-bulu1jiy.bin",
+                "extent_offset": 29980672,
+                "lba": 14639,
+                "length_field_offset": 536682,
+                "new_length": 1073741824,
+                "parent_lba": 262,
+                "path": "/VC_20919/0.",
+                "previous_length": 1073741824,
+                "previous_sha256": "aedd794680a0450b09db5c1502b937ae0abc5b8be6b1e80881cd004a555fe16d",
+                "raw_name": "0.;1",
+                "record_offset": 96,
+                "record_offset_abs": 536672,
+                "requested": "/VC_20919/0.",
+                "sha256": "6645b32281e7c37b9da37453baf6e176aca2508305d2c9d938d1bff6cb4c4bcc",
+                "zero_filled_bytes": 0
+              }
+            ],
+            "root_lba": 261,
+            "root_length": 272,
+            "schema": "ps2_iso9660_write/v1",
+            "sector_size": 2048,
+            "slack_bytes": 0,
+            "source": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+            "volume_blocks": 2277872,
+            "volume_descriptors": [
+              1,
+              255
+            ],
+            "volume_id": "50137"
+          },
+          "packs": [
+            {
+              "edit_count": 1,
+              "iso_path": "/VC_20919/0.",
+              "replaced_ranges": [
+                {
+                  "iso_byte_offset": 44561956,
+                  "length": 22,
+                  "pack_offset": 14581284
+                }
+              ]
+            }
+          ],
+          "recipe": {
+            "changed_byte_count": 10,
+            "edit_count": 1
+          },
+          "schema": "nfl2k5_ps2_text_patch/v1",
+          "source": {
+            "path": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+            "size": 4665081856
+          }
+        },
+        "recipe": {
+          "edits": [
+            {
+              "expect_sha256": "52226aa1c4362bad11d7928fe5ad8873ae23eb1cc0686ba10b1276cc1b1e567b",
+              "new_text": "STUDIO TR",
+              "selector": "nfl2k5.ps2.text-bank.strg.24.65:message:897"
+            }
+          ]
+        },
+        "seconds": {
+          "hash_input": 3.14,
+          "hash_output": 3.01,
+          "plan": 0.71,
+          "verify": 11.36,
+          "write": 9.55
+        },
+        "step": 1,
+        "verdict": {
+          "passed": true,
+          "report": {
+            "changed_byte_count": 10,
+            "checks": {
+              "allocation_boundaries_unchanged": true,
+              "chunk_headers_unchanged": true,
+              "differences_exactly_the_edited_allocations": true,
+              "images_same_size": true,
+              "independent_of_patcher_and_catalog": true,
+              "inline_tokens_preserved": true,
+              "iso9660_verifier_passed": true,
+              "outer_entry_table_unchanged": true,
+              "pack_extents_unchanged": true,
+              "record_tables_unchanged": true,
+              "replacements_terminated_and_zero_filled": true,
+              "untouched_strings_byte_identical": true
+            },
+            "destination": {
+              "path": "<rig scratch, deleted after the verifiers ran>/.ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+              "size": 4665081856
+            },
+            "differing_ranges": [
+              {
+                "length": 1,
+                "offset": 44561956
+              },
+              {
+                "length": 1,
+                "offset": 44561958
+              },
+              {
+                "length": 1,
+                "offset": 44561960
+              },
+              {
+                "length": 1,
+                "offset": 44561962
+              },
+              {
+                "length": 1,
+                "offset": 44561964
+              },
+              {
+                "length": 1,
+                "offset": 44561966
+              },
+              {
+                "length": 1,
+                "offset": 44561968
+              },
+              {
+                "length": 1,
+                "offset": 44561970
+              },
+              {
+                "length": 1,
+                "offset": 44561972
+              },
+              {
+                "length": 1,
+                "offset": 44561974
+              }
+            ],
+            "edits": [
+              {
+                "allocation_bytes": 22,
+                "bank_id": "nfl2k5.ps2.text-bank.strg.24.65",
+                "bank_kind": "STRG",
+                "changed_byte_count": 10,
+                "iso_byte_offset": 44561956,
+                "new_code_units": 9,
+                "new_text_sha256": "47e93deb2812bdf0cd5d16c4f58fe33f9daee733898caaac5120c31943abe1a3",
+                "original_text_sha256": "52226aa1c4362bad11d7928fe5ad8873ae23eb1cc0686ba10b1276cc1b1e567b",
+                "pack_iso_path": "/VC_20919/0.",
+                "pool_index": 897,
+                "selector": "nfl2k5.ps2.text-bank.strg.24.65:message:897",
+                "tokens": []
+              }
+            ],
+            "iso_write_verification": {
+              "declared_bytes": 1073741832,
+              "declared_ranges": [
+                {
+                  "length": 8,
+                  "reason": "dirrec_length:/VC_20919/0.",
+                  "start": 536682
+                },
+                {
+                  "length": 1073741824,
+                  "reason": "extent:/VC_20919/0.",
+                  "start": 29980672
+                }
+              ],
+              "destination": "<rig scratch, deleted after the verifiers ran>/.ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+              "entries_compared": 79,
+              "file_size": 4665081856,
+              "replacements_checked": [
+                {
+                  "extent_offset": 29980672,
+                  "lba": 14639,
+                  "length_field_offset": 536682,
+                  "new_length": 1073741824,
+                  "path": "/VC_20919/0.",
+                  "previous_length": 1073741824,
+                  "sha256": "6645b32281e7c37b9da37453baf6e176aca2508305d2c9d938d1bff6cb4c4bcc",
+                  "zero_filled_bytes": 0
+                }
+              ],
+              "result": "PASS",
+              "schema": "ps2_iso9660_verify/v1",
+              "slack_bytes": 0,
+              "source": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+              "unchanged_bytes_compared": 3591340024,
+              "volume_blocks": 2277872,
+              "volume_id": "50137"
+            },
+            "patch_report_agreement": {
+              "agrees": true,
+              "edit_count": 1
+            },
+            "schema": "nfl2k5_ps2_text_verify/v1",
+            "source": {
+              "path": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+              "size": 4665081856
+            },
+            "verdict": "pass"
+          },
+          "summary": "text verifier: pass \u00b7 1 edits located \u00b7 10 bytes differ, exactly the edited allocations"
+        }
+      },
+      {
+        "input": ".ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+        "lane": "colors",
+        "note": "1 package in /VC_20919/0.",
+        "output": "ESPN NFL 2K5 (USA)-studio-trial.iso",
+        "output_sha256": "f193954752d3ce6aca2af5c28cf29e186d2028f26322cb5c9f242d4f48160c55",
+        "plan": "1 package \u00b7 8 bytes would change in /VC_20919/0.",
+        "receipt": {
+          "catalog_summary": {
+            "away_packages": 317,
+            "compressed_targets": 0,
+            "duplicate_selectors": 0,
+            "home_packages": 317,
+            "matching_xbox_offsets": 634,
+            "rejected": 0,
+            "targets": 634,
+            "with_selector": 634
+          },
+          "declared_ranges": [
+            {
+              "length": 8,
+              "reason": "unif_color:09H0",
+              "start": 1069963344
+            }
+          ],
+          "destination": "<rig scratch, deleted after the verifiers ran>/ESPN NFL 2K5 (USA)-studio-trial.iso",
+          "edits": [
+            {
+              "after_sha256": "07d3e343c5162299c7736ca34b005d7c205a9b7fee6915effa7aa233f656ef36",
+              "before_sha256": "ec1cfe77146b59228601e5bc40fef43869ea4d9863e2f61e6b97a3fc4dc76e63",
+              "iso_path": "/VC_20919/0.",
+              "note": null,
+              "offset_in_iso": 1069963344,
+              "offset_in_pack": 1039982672,
+              "outer_index": 1770,
+              "outer_name_id": "0x9a4832d6",
+              "selector": "09H0",
+              "span_size": 8,
+              "words_changed": [
+                "facemask"
+              ]
+            }
+          ],
+          "files_replaced": [
+            "/VC_20919/0."
+          ],
+          "iso_write_report": {
+            "block_size": 2048,
+            "bytes_declared": 1073741832,
+            "data_offset": 0,
+            "declared_ranges": [
+              {
+                "length": 8,
+                "reason": "dirrec_length:/VC_20919/0.",
+                "start": 536682
+              },
+              {
+                "length": 1073741824,
+                "reason": "extent:/VC_20919/0.",
+                "start": 29980672
+              }
+            ],
+            "destination": "<rig scratch, deleted after the verifiers ran>/ESPN NFL 2K5 (USA)-studio-trial.iso",
+            "entry_count": 78,
+            "file_size": 4665081856,
+            "replacements": [
+              {
+                "allocated_bytes": 1073741824,
+                "content_source": "<rig scratch, deleted after the verifiers ran>/.ESPN NFL 2K5 (USA)-studio-trial.iso.work-s6nfd4yy/tmp9pf78c2q/pack00.bin",
+                "extent_offset": 29980672,
+                "lba": 14639,
+                "length_field_offset": 536682,
+                "new_length": 1073741824,
+                "parent_lba": 262,
+                "path": "/VC_20919/0.",
+                "previous_length": 1073741824,
+                "previous_sha256": "6645b32281e7c37b9da37453baf6e176aca2508305d2c9d938d1bff6cb4c4bcc",
+                "raw_name": "0.;1",
+                "record_offset": 96,
+                "record_offset_abs": 536672,
+                "requested": "/VC_20919/0.",
+                "sha256": "dc132ce7c199f781bbcef6fe83cc92f595afdb037e5aa058a2ae273bd6e05927",
+                "zero_filled_bytes": 0
+              }
+            ],
+            "root_lba": 261,
+            "root_length": 272,
+            "schema": "ps2_iso9660_write/v1",
+            "sector_size": 2048,
+            "slack_bytes": 0,
+            "source": "<rig scratch, deleted after the verifiers ran>/.ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+            "volume_blocks": 2277872,
+            "volume_descriptors": [
+              1,
+              255
+            ],
+            "volume_id": "50137"
+          },
+          "schema": "nfl2k5_ps2_unif_color_write/v1",
+          "serial": "SLUS-20919",
+          "source": "<rig scratch, deleted after the verifiers ran>/.ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+          "staged_pack_sha256": {
+            "/VC_20919/0.": "dc132ce7c199f781bbcef6fe83cc92f595afdb037e5aa058a2ae273bd6e05927"
+          }
+        },
+        "recipe": {
+          "edits": [
+            {
+              "facemask": "#12FF34",
+              "selector": "09H0"
+            }
+          ],
+          "schema": "nfl2k5_ps2_unif_color_recipe/v1"
+        },
+        "seconds": {
+          "hash_output": 3.01,
+          "plan": 0.2,
+          "verify": 8.94,
+          "write": 8.33
+        },
+        "step": 2,
+        "verdict": {
+          "passed": true,
+          "report": {
+            "destination": "<rig scratch, deleted after the verifiers ran>/ESPN NFL 2K5 (USA)-studio-trial.iso",
+            "edits_checked": 1,
+            "files_replaced": [
+              "/VC_20919/0."
+            ],
+            "iso_verify": {
+              "declared_bytes": 1073741832,
+              "result": "PASS",
+              "unchanged_bytes_compared": 3591340024
+            },
+            "result": "PASS",
+            "schema": "nfl2k5_ps2_unif_color_verify/v1",
+            "serial": "SLUS-20919",
+            "source": "<rig scratch, deleted after the verifiers ran>/.ESPN NFL 2K5 (USA)-studio-trial.iso.step1.iso",
+            "unchanged_bytes_compared": 1073741816,
+            "unif_records_decoded": 634
+          },
+          "summary": "colour verifier: PASS \u00b7 1 edits checked \u00b7 634 Unif records decoded \u00b7 1,073,741,816 unchanged bytes compared"
+        }
+      }
+    ]
+  },
+  "timings_all": {
+    "build:colors": 21.01,
+    "build:text": 28.02,
+    "catalogue:colors:default": 0.51,
+    "catalogue:text:default": 1.03
+  },
+  "timings_seconds": {
+    "build_total": 49.03,
+    "catalogue_colors": 0.51,
+    "catalogue_text": 1.03,
+    "open": 0.02,
+    "plan_colors": 0.09,
+    "plan_text": 0.35
+  },
+  "what_this_is": "One real-disc trial of the PS2 Disc Studio service on a COPY path: the stock SLUS-20919 image is opened read-only, the text and colours catalogues are built from it by the lanes' own tools, a two-lane recipe (one shorter-by-one STRG string pinned by its original's digest, one facemask colour word) is planned, built into a NEW image in two chained steps and each step verified by the lane's independent verifier. No emulator was run; nothing here claims a screen.",
+  "what_this_proves": [
+    "the service opens the stock disc read-only and keys its sidecar without hashing the whole image (0.02 s)",
+    "the text and colours catalogue tools run as child processes into the sidecar in about a second each on the rig",
+    "an over-budget replacement is refused inline with the budget in the sentence before it can be staged",
+    "a no-op colour is refused inline when the current words are read from the disc",
+    "the two-lane recipe plans clean against the disc (the text patcher's own dry run rebuilds its catalogue in 0.35 s)",
+    "the chained build writes two NEW images in 49 s on the rig, verifying each step against its own input with the lane's independent verifier; the intermediate is deleted after the second step verifies",
+    "the source image is byte-identical afterwards (its SHA-256 equals the registry's retail pin)",
+    "nothing about a screen: every lane stays offline-writer-proved"
+  ]
+}

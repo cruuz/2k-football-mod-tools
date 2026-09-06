@@ -1,0 +1,63 @@
+{
+  "schema": "vc_game_lane_validators/v1",
+  "game_id": "nflblitz2003_ps2",
+  "lanes": {
+    "text": {
+      "what": "the three text-member writer lanes: crowd tables, field.tab and the trivia banks",
+      "compile": [
+        "mod_editor/games/_formats/blitz_zip.py",
+        "mod_editor/games/nflblitz2003_ps2/containers.py",
+        "mod_editor/games/nflblitz2003_ps2/zip_lane.py",
+        "mod_editor/games/nflblitz2003_ps2/text_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.nflblitz2003_ps2.text_lane", "args": ["--selftest", "--lane", "crowd"]},
+        {"module": "mod_editor.games.nflblitz2003_ps2.text_lane", "args": ["--selftest", "--lane", "field"]},
+        {"module": "mod_editor.games.nflblitz2003_ps2.text_lane", "args": ["--selftest", "--lane", "trivia"]}
+      ],
+      "conformance": true
+    },
+    "roster": {
+      "what": "the roster.rst player-name writer lane",
+      "compile": [
+        "mod_editor/games/nflblitz2003_ps2/roster_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.nflblitz2003_ps2.roster_lane", "args": ["--selftest"]}
+      ],
+      "conformance": true
+    },
+    "art": {
+      "what": "the two texture-dictionary export lanes: team dictionaries and screen dictionaries",
+      "compile": [
+        "mod_editor/games/_formats/rw_txd.py",
+        "mod_editor/games/nflblitz2003_ps2/texture_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.nflblitz2003_ps2.texture_lane", "args": ["--selftest", "--lane", "team"]},
+        {"module": "mod_editor.games.nflblitz2003_ps2.texture_lane", "args": ["--selftest", "--lane", "screens"]}
+      ],
+      "conformance": true
+    },
+    "textures": {
+      "what": "the all-textures dictionary inventory lane",
+      "compile": [
+        "mod_editor/games/nflblitz2003_ps2/texture_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.nflblitz2003_ps2.texture_lane", "args": ["--selftest", "--lane", "inventory"]}
+      ],
+      "conformance": true
+    },
+    "containers": {
+      "what": "the camera-path, WIFF and RenderWare-clump inventory lane",
+      "compile": [
+        "mod_editor/games/nflblitz2003_ps2/camera_lane.py"
+      ],
+      "selftest": [
+        {"module": "mod_editor.games.nflblitz2003_ps2.camera_lane", "args": ["--selftest"]}
+      ],
+      "conformance": true
+    }
+  }
+}

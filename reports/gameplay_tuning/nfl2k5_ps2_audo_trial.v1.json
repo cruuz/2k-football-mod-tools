@@ -1,0 +1,132 @@
+{
+  "schema": "nfl2k5_ps2_audo_trial/v1",
+  "note": "One uniquely-named mono slot replaced with a tone this script generates. Retail-free: names, sizes, offsets and the digests of the generated audio only. Neither ISO is committed.",
+  "generated": "2026-09-05T06:48:46Z",
+  "disc": {
+    "serial": "SLUS-20919",
+    "expected_serial": "SLUS-20919",
+    "serial_matches": true,
+    "boot_file": "SLUS_209.19",
+    "boot_size": 12601952,
+    "boot_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+    "packs": [
+      {
+        "name": "0",
+        "size": 1073741824
+      },
+      {
+        "name": "1",
+        "size": 1073741824
+      },
+      {
+        "name": "2",
+        "size": 1073741824
+      },
+      {
+        "name": "3",
+        "size": 1073741824
+      },
+      {
+        "name": "4",
+        "size": 340113408
+      }
+    ]
+  },
+  "source_size": 4665081856,
+  "output_size": 4665081856,
+  "slot": {
+    "slot_id": "nfl2k5ps2.audio.audo.o0009.c0038",
+    "name": "menu-error_01",
+    "unique_name": true,
+    "entry_index": 9,
+    "chunk_index": 38,
+    "pack": "0",
+    "pack_iso_path": "/VC_20919/0.",
+    "pack_offset": 7179488,
+    "iso_offset": 37160160,
+    "channels": 1,
+    "sample_rate": 16000,
+    "video_bytes": 6544,
+    "per_channel_bytes": 6544,
+    "max_frames": 11452
+  },
+  "replacement": {
+    "source": "generated 720/1440 Hz two-tone chirp",
+    "frames_written": 8000,
+    "blocks_written": 286,
+    "pad_blocks": 123,
+    "resampled_from": null,
+    "wav_bytes": 16044,
+    "wav_sha256": "3701caf2ae68cfaaec62b34b232bb9a0134925fd536eaf9a32dd6249178bc6a3",
+    "payload_sha256": "82a44b3d51cdccea628271fc6f7af0cc78a1efef7533bc6dda28d6edce31f31e"
+  },
+  "iso_writer": {
+    "schema": "ps2_iso9660_write/v1",
+    "declared_ranges": [
+      {
+        "start": 536682,
+        "length": 8,
+        "reason": "dirrec_length:/VC_20919/0."
+      },
+      {
+        "start": 29980672,
+        "length": 1073741824,
+        "reason": "extent:/VC_20919/0."
+      }
+    ],
+    "replaced": [
+      {
+        "path": "/VC_20919/0.",
+        "requested": "/VC_20919/0.",
+        "raw_name": "0.;1",
+        "lba": 14639,
+        "parent_lba": 262,
+        "record_offset": 96,
+        "record_offset_abs": 536672,
+        "extent_offset": 29980672,
+        "length_field_offset": 536682,
+        "allocated_bytes": 1073741824,
+        "previous_length": 1073741824,
+        "new_length": 1073741824,
+        "zero_filled_bytes": 0,
+        "previous_sha256": "aedd794680a0450b09db5c1502b937ae0abc5b8be6b1e80881cd004a555fe16d"
+      }
+    ]
+  },
+  "verification": {
+    "audio_verifier_returncode": 0,
+    "verdict": "pass",
+    "image_size": 4665081856,
+    "tree_entries": 78,
+    "tree_identical": true,
+    "declared_payload_bytes": 6544,
+    "changed_bytes": 6080,
+    "changed_outside_declared_spans": 0,
+    "changed_bytes_note": "Fewer bytes change than the slot declares because the silent filler blocks are almost all zero and 464 of those zeros land on bytes that were already zero in the retail payload. No 16-byte block survives: 0 of 409 are byte-identical to retail. LOOP_END|LOOP sits on block 285, the last real block, so the filler is never played; the physical last block carries it too, as retail does.",
+    "boot_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+    "slot_report": {
+      "slot_id": "nfl2k5ps2.audio.audo.o0009.c0038",
+      "name": "menu-error_01",
+      "wrapper_offset": 37160000,
+      "system_bytes": 128,
+      "payload_offset": 37160160,
+      "payload_bytes": 6544,
+      "channels": 1,
+      "sample_rate": 16000,
+      "blocks_per_channel": 409,
+      "audible_frames": 8008,
+      "wav": "source WAV matched by digest"
+    },
+    "ps2_iso9660_verify": {
+      "ran": true,
+      "returncode": 0,
+      "passed": true,
+      "stdout_tail": [
+        "  ],",
+        "  \"result\": \"PASS\"",
+        "}"
+      ],
+      "stderr_tail": []
+    }
+  }
+}

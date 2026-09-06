@@ -1,0 +1,156 @@
+{
+  "game_id": "ncaa09_ps2",
+  "lanes": {
+    "art_pages": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/art_pages.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.art_pages"
+        }
+      ],
+      "what": "the stadium, field-art, presentation and face texture lanes"
+    },
+    "audio": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/audio_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.audio_lane"
+        }
+      ],
+      "what": "the SCHl stream and BNKl bank audio lanes"
+    },
+    "databases": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/database_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.database_lane"
+        }
+      ],
+      "what": "the roster and TDB database lane"
+    },
+    "identity": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/identity_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.identity_lane"
+        }
+      ],
+      "what": "the league identity lane: school, conference, stadium and coach names"
+    },
+    "inventory": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/inventory_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.inventory_lane"
+        }
+      ],
+      "what": "the /DATA container inventory lane"
+    },
+    "playbooks": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/playbooks_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.playbooks_lane"
+        }
+      ],
+      "what": "the playbook and play-name lane"
+    },
+    "saves": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/saves_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.saves_lane"
+        }
+      ],
+      "what": "the send-to-Madden draft-class reader"
+    },
+    "text": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/text_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.text_lane"
+        }
+      ],
+      "what": "the text-member census lane"
+    },
+    "textures": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/texture_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.texture_lane"
+        }
+      ],
+      "what": "the kit, equipment and face texture census lane"
+    },
+    "uniform_disc_art": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/texture_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.texture_lane"
+        }
+      ],
+      "what": "the kit, equipment and gear disc-art writer"
+    }
+  },
+  "schema": "vc_game_lane_validators/v1"
+}

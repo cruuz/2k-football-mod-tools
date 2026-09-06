@@ -1,0 +1,372 @@
+{
+ "discs": {
+  "Madden NFL 06": {
+   "databases": 319,
+   "field_types_seen": {
+    "0": 2235,
+    "1": 28,
+    "2": 6464,
+    "3": 67084,
+    "4": 383
+   },
+   "parsed_carrying_an_undecoded_field": 0,
+   "parsed_fully": 319,
+   "refused": 0,
+   "tables_carrying_an_undecoded_field": []
+  },
+  "Madden NFL 09 (Deluxe)": {
+   "databases": 355,
+   "field_types_seen": {
+    "0": 2570,
+    "1": 32,
+    "2": 8821,
+    "3": 73482,
+    "4": 527
+   },
+   "parsed_carrying_an_undecoded_field": 0,
+   "parsed_fully": 355,
+   "refused": 0,
+   "tables_carrying_an_undecoded_field": []
+  },
+  "Madden NFL 09 (retail)": {
+   "databases": 355,
+   "field_types_seen": {
+    "0": 2570,
+    "1": 32,
+    "2": 8789,
+    "3": 73482,
+    "4": 527
+   },
+   "parsed_carrying_an_undecoded_field": 0,
+   "parsed_fully": 355,
+   "refused": 0,
+   "tables_carrying_an_undecoded_field": []
+  },
+  "NCAA Football 09": {
+   "databases": 582,
+   "field_types_seen": {
+    "0": 1129,
+    "1": 2,
+    "13": 20,
+    "14": 1,
+    "2": 9561,
+    "3": 61119,
+    "4": 569
+   },
+   "parsed_carrying_an_undecoded_field": 2,
+   "parsed_fully": 580,
+   "refused": 0,
+   "tables_carrying_an_undecoded_field": [
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 12,
+     "table": "ANIN",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 400,
+       "field": "ASNA",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 53,
+     "table": "ANMM",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 400,
+       "field": "ASNA",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 24,
+     "table": "ANPG",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 400,
+       "field": "ASNA",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 668,
+     "table": "ANPO",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 400,
+       "field": "ASNA",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 74,
+     "table": "ANPR",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 400,
+       "field": "ASNA",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 19,
+     "table": "ANRE",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 400,
+       "field": "ASNA",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 4,
+     "fields": 5,
+     "record_bytes": 12,
+     "records": 3045,
+     "table": "CAPT",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 960,
+       "field": "CPTX",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 31,
+     "table": "CSDC",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 800,
+       "field": "SEDP",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 3,
+     "fields": 7,
+     "record_bytes": 20,
+     "records": 240,
+     "table": "LGML",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 2000,
+       "field": "MLBD",
+       "type": 13
+      },
+      {
+       "bit_offset": 32,
+       "declared_bits": 200,
+       "field": "MLSG",
+       "type": 13
+      },
+      {
+       "bit_offset": 64,
+       "declared_bits": 200,
+       "field": "MLCL",
+       "type": 13
+      },
+      {
+       "bit_offset": 96,
+       "declared_bits": 200,
+       "field": "MLGR",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 3,
+     "fields": 4,
+     "record_bytes": 8,
+     "records": 3107,
+     "table": "HEAD",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 960,
+       "field": "HTXT",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 5,
+     "table": "CSDP",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 800,
+       "field": "SEDP",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 3,
+     "fields": 4,
+     "record_bytes": 8,
+     "records": 120,
+     "table": "STXT",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 2040,
+       "field": "NTXT",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 118,
+     "table": "TICK",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 2048,
+       "field": "OPTT",
+       "type": 14
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 2,
+     "fields": 3,
+     "record_bytes": 8,
+     "records": 127,
+     "table": "PLCC",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 720,
+       "field": "PLCX",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 8191,
+     "table": "RCFN",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 80,
+       "field": "SPFN",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 6915,
+     "table": "RCLN",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 104,
+       "field": "SPLN",
+       "type": 13
+      }
+     ],
+     "where": "/DATA/STRMDATA.DB"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 8191,
+     "table": "RCFN",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 80,
+       "field": "SPFN",
+       "type": 13
+      }
+     ],
+     "where": "TEMPLATE.DAT:3"
+    },
+    {
+     "decoded_fields_still_readable": 1,
+     "fields": 2,
+     "record_bytes": 8,
+     "records": 6915,
+     "table": "RCLN",
+     "undecoded": [
+      {
+       "bit_offset": 0,
+       "declared_bits": 104,
+       "field": "SPLN",
+       "type": 13
+      }
+     ],
+     "where": "TEMPLATE.DAT:3"
+    }
+   ]
+  }
+ },
+ "finding": "a type outside 0..4 declares a bits word that is not a per-record width; the next field begins 32 bits later in every table measured, and the declared width is a multiple of 8 far larger than the record",
+ "measured_on": "2026-09-05",
+ "what": "EA TDB field type ids outside the five the format defines, and what the reader now does with them"
+}

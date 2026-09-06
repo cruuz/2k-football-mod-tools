@@ -1,0 +1,149 @@
+{
+  "declared_ranges": [
+    {
+      "length": 4,
+      "reason": "roster_packed:primary_players:0",
+      "start": 32935912
+    },
+    {
+      "length": 12,
+      "reason": "roster_name:primary_players:0",
+      "start": 33397136
+    }
+  ],
+  "destination_image": {
+    "identity": "<gitignored scratch: disc_roster.iso>",
+    "same_size_as_source": true,
+    "size": 4665081856
+  },
+  "edits": [
+    {
+      "after_sha256": "81e86bd96a32f03e9a4f0d3fcddd35c1b117e59d78a109e679c0893f6b2cbbbb",
+      "before_sha256": "7accfd0c5ea0f4bea403d2bbe0c54ced04e6c45887badce5d8ee5d7149bc28b1",
+      "fields": [
+        "jersey_number"
+      ],
+      "kind": "packed",
+      "note": "boot-roster primary player 0, real-disc trial: equal-length first name plus a masked jersey write",
+      "offset_in_arena": 45000,
+      "offset_in_iso": 32935912,
+      "offset_in_pack": 2955240,
+      "player": 0,
+      "pool": "primary_players",
+      "span_size": 4
+    },
+    {
+      "after_sha256": "ae071ebb77f3ffc14522d203cfff771206b45bad2538d9ea90148c85163b4d74",
+      "before_sha256": "1e4de3aa27248c66af4a5c8eccbfb366be23fc91076b7013f7ec2825a3104db6",
+      "fields": [
+        "first_name"
+      ],
+      "kind": "name",
+      "note": "boot-roster primary player 0, real-disc trial: equal-length first name plus a masked jersey write",
+      "offset_in_arena": 506224,
+      "offset_in_iso": 33397136,
+      "offset_in_pack": 3416464,
+      "player": 0,
+      "pool": "primary_players",
+      "span_size": 12
+    }
+  ],
+  "iso_write_report_ranges": [
+    {
+      "length": 8,
+      "reason": "dirrec_length:/VC_20919/0.",
+      "start": 536682
+    },
+    {
+      "length": 1073741824,
+      "reason": "extent:/VC_20919/0.",
+      "start": 29980672
+    }
+  ],
+  "purpose": "One real-disc trial on a COPY of the operator's own PS2 ISO: the stock image is read-only in and a new image comes out. No emulator was run; this records byte transport only.",
+  "recipe": {
+    "edits": [
+      {
+        "first_name": "Dwane",
+        "jersey_number": 7,
+        "note": "boot-roster primary player 0, real-disc trial: equal-length first name plus a masked jersey write",
+        "player": 0,
+        "pool": "primary_players"
+      }
+    ],
+    "roster": "boot",
+    "schema": "nfl2k5_ps2_disc_roster_recipe/v1"
+  },
+  "replaced_files": [
+    {
+      "allocated_bytes": 1073741824,
+      "extent_offset": 29980672,
+      "iso_path": "/VC_20919/0.",
+      "lba": 14639,
+      "new_length": 1073741824,
+      "previous_length": 1073741824,
+      "stock_extent_sha256": "aedd794680a0450b09db5c1502b937ae0abc5b8be6b1e80881cd004a555fe16d",
+      "written_extent_sha256": "b8badba61e70c7f34a0c1f38df7cbf19e40dc56f4be45d641a9ac8f798eb1e74",
+      "zero_filled_bytes": 0
+    }
+  ],
+  "result": "PASS",
+  "schema": "nfl2k5_ps2_disc_roster_trial/v1",
+  "serial": "SLUS-20919",
+  "source_image": {
+    "entry_count": 78,
+    "identity": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+    "sector_size": 2048,
+    "size": 4665081856,
+    "slack_bytes": 0,
+    "volume_blocks": 2277872,
+    "volume_id": "50137"
+  },
+  "target_roster": {
+    "body_offset_in_iso": 32890912,
+    "body_offset_in_pack": 2910240,
+    "body_sha256": "b1164eeed262988dc97d840ba59f6274c1f5d4505249474e4cafd4e322d9f7ae",
+    "boot_roster": true,
+    "iso_path": "/VC_20919/0.",
+    "label": "roster",
+    "outer_index": 5,
+    "outer_name_id": "0x4a37581d",
+    "root": 64,
+    "stored_size": 593760,
+    "version": 17
+  },
+  "verdict": {
+    "destination": "<gitignored scratch: disc_roster.iso>",
+    "edits_checked": 2,
+    "files_replaced": [
+      "/VC_20919/0."
+    ],
+    "iso_verify": {
+      "declared_bytes": 1073741832,
+      "result": "PASS",
+      "unchanged_bytes_compared": 3591340024
+    },
+    "name_edits_checked": 1,
+    "packed_edits_checked": 1,
+    "result": "PASS",
+    "rost_resources_decoded": 76,
+    "schema": "nfl2k5_ps2_disc_roster_verify/v1",
+    "serial": "SLUS-20919",
+    "source": "<operator ISO: ESPN NFL 2K5 (USA), SLUS-20919>",
+    "target_label": "roster",
+    "target_outer_index": 5,
+    "target_tables": {
+      "coaches": 35,
+      "colleges": 266,
+      "generated_names": 485,
+      "historic_descriptors": 75,
+      "player_pointer_vector": 241,
+      "primary_players": 2479,
+      "secondary_players": 68,
+      "stadiums": 82,
+      "team_labels": 36,
+      "teams": 52
+    },
+    "unchanged_bytes_compared": 1073741808
+  }
+}

@@ -55,13 +55,49 @@ class Ps2RegistryTests(unittest.TestCase):
         self.assertTrue(ps2, "PS2 must expose at least one capability")
         writers = [c for c in ps2 if c.raw["backend"]["operation"] == "write"]
         self.assertTrue(writers, "the PS2 save writer must be registered")
-        for capability in writers:
+        save_writers = [c for c in writers if c.surface == "saves"]
+        self.assertEqual(
+            [c.raw["id"] for c in save_writers], ["nfl2k5ps2.saves.roster_name_writer"]
+        )
+        for capability in save_writers:
             # This writer takes field edits, not a replacement file, so it is
             # exposed as an editable surface without a file-drop affordance.
             self.assertEqual(capability.classification.value, "offline-writer-proved")
             self.assertEqual(capability.raw["gui"]["mode"], "edit")
             self.assertIs(capability.raw["gui"]["expose"], True)
-            self.assertEqual(capability.surface, "saves")
+
+    def test_disc_writers_are_proved_offline_and_surface_in_the_disc_studio(self) -> None:
+        # The six on-disc PS2 writers (text, playbooks, colours, roster, stadium
+        # positions, AUDO sounds) are bounded writers with independent verifiers
+        # and a real-disc trial each, so they are offline-writer-proved -- and
+        # the registry binds that class to an edit surface. None has a window
+        # yet, so every one stays hidden and says why.
+        disc_writers = [
+            c for c in self.registry.capabilities
+            if c.game == GameId.NFL2K5_PS2
+            and c.raw["backend"]["operation"] == "write"
+            and c.surface != "saves"
+        ]
+        self.assertEqual(len(disc_writers), 6)
+        heard = {"nfl2k5ps2.audio.audo_exact_slot_replace"}
+        for capability in disc_writers:
+            self.assertEqual(capability.raw["gui"]["mode"], "edit")
+            # Each is a tab of the PS2 Disc Studio; stadium is off by default
+            # because its steps take tens of minutes and one scene is proved.
+            self.assertIs(capability.raw["gui"]["expose"], True)
+            self.assertIs(capability.raw["gui"]["default_enabled"],
+                          capability.raw["id"] != "nfl2k5ps2.stadiums.position_lanes")
+            self.assertIn("PS2 NFL 2K5 Studio", capability.raw["gui"]["reason"])
+            self.assertTrue(capability.raw["validation_command"])
+            if capability.raw["id"] in heard:
+                # One AUDO slot was heard on a cold boot (menu-appear_01); the
+                # row is runtime-proved for that recorded selector only.
+                self.assertEqual(capability.classification.value, "runtime-proved")
+                self.assertEqual(capability.raw["runtime"]["status"], "visible-proved")
+                self.assertTrue(capability.raw["runtime"]["evidence"])
+            else:
+                self.assertEqual(capability.classification.value, "offline-writer-proved")
+                self.assertEqual(capability.raw["runtime"]["status"], "not-tested")
 
 
 class Ps2SaveWriterTests(unittest.TestCase):

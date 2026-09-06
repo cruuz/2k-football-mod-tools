@@ -1,0 +1,45 @@
+{
+  "cross_check": {
+    "crc_column_agrees": 2426,
+    "crc_recomputed": 600,
+    "crc_recomputed_agrees": 600,
+    "data_offsets_agree": 2426,
+    "index_entries": 2426,
+    "index_order_is_by_name": true,
+    "index_shape": "inline",
+    "names_in_both": 2426,
+    "names_match_as_sets": true,
+    "sizes_agree": 2426,
+    "zip_entries": 2426,
+    "zip_order_is_by_data_offset": true
+  },
+  "disc": {
+    "archive": "/DATA/BASSETS.ZIP",
+    "archive_bytes": 361404913,
+    "index": "/DATA/BASSETS.ZIH",
+    "index_bytes": 119899,
+    "serial": "SLUS-20051"
+  },
+  "index_has_crc_column": true,
+  "index_shape": "inline",
+  "member_extensions": {
+    "asd": 2,
+    "ban": 4,
+    "cap": 85,
+    "dff": 1272,
+    "ico": 2,
+    "ini": 31,
+    "ms2": 1,
+    "rsc": 36,
+    "rst": 1,
+    "rtd": 761,
+    "tab": 1,
+    "trv": 40,
+    "wip": 149,
+    "wmp": 18,
+    "wom": 23
+  },
+  "members": 2426,
+  "note": "Counts, names, offsets and lengths only. No member's bytes are here.",
+  "schema": "nflblitz_ps2_zip_index_measured/v1"
+}

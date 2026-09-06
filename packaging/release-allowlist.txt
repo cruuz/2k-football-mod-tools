@@ -93,6 +93,7 @@ mod_editor/core/nfl2k5_playbook_inspector.py
 mod_editor/core/nfl2k5_playbook_route_writer.py
 mod_editor/core/nfl2k5_player_assets.py
 mod_editor/core/playbook_package_rule_spike.py
+mod_editor/core/ps2_disc_service.py
 mod_editor/core/ps2_save_service.py
 mod_editor/core/nfl2k5_safe_text_banks.py
 mod_editor/core/nfl2k5_save_writer.py
@@ -137,6 +138,7 @@ mod_editor/gui/franchise_panel_qt.py
 mod_editor/gui/gameplay_panel_qt.py
 mod_editor/gui/menus_panel_qt.py
 mod_editor/gui/play_designer_qt.py
+mod_editor/gui/ps2_disc_dialog_qt.py
 mod_editor/gui/ps2_save_dialog_qt.py
 mod_editor/gui/playbooks_panel_qt.py
 mod_editor/gui/save_panel_qt.py
@@ -188,11 +190,13 @@ tools/apf_outer.py
 tools/apf_xenos_mip_layout.py
 tools/game_audio_convert.py
 tools/launch_2k5_mod_studio.sh
+tools/madden09_ps2_texture_identities.py
 tools/make_app_icons.py
 tools/nfl2k5_career_stats.py
 tools/nfl2k5_depth_roles.py
 tools/nfl2k5_franchise_schedule_probe.py
 tools/nfl2k5_jersey_png_workflow.py
+tools/nfl2k5_ps2_disc_inventory.py
 tools/nfl2k5_ps2_save.py
 tools/nfl2k5_ps2_save_verify.py
 tools/nfl2k5_save_roster_import.py
@@ -250,7 +254,10 @@ tools/nfl_uniform_color_records.py
 tools/nfl_uniform_color_records_patch.py
 tools/nfl_uniform_color_xiso_direct_patch.py
 tools/nfl_uniform_inventory.py
+tools/ps2_iso9660.py
 tools/string_table_inventory.py
+tools/validate_nfl2k5_ps2_disc_inventory.bat
+tools/validate_nfl2k5_ps2_disc_inventory.sh
 tools/validate_nfl2k5_ps2_save.bat
 tools/validate_nfl2k5_ps2_save.sh
 tools/validate_nfl_coach_roster_name.sh
@@ -336,6 +343,206 @@ mod_editor/gui/task_delivery.py
 mod_editor/gui/ux_text.py
 tools/nfl2k5_playbook_pack.py
 
+# PS2 M1 (WP4): exporting an edited Xbox uniform as a PCSX2 replacement pack --
+# the Qt-free export service, the independent verifier that proves a pack emits
+# only edited art, the audit tool the verifier's self-test gates on, the kit
+# tool that copies one pack per emulator with that emulator's settings (the
+# validators run its self-test, so it ships with them), and the validator pair
+# the registry row names.
+mod_editor/core/ps2_export_service.py
+tools/nfl2k5_ps2_replacement_pack_audit.py
+tools/nfl2k5_ps2_replacement_pack_kit.py
+tools/nfl2k5_ps2_uniform_art.py
+tools/ea_terf_inspect.py
+tools/nfl2k5_ps2_replacement_pack_verify.py
+tools/validate_nfl2k5_ps2_replacement_pack.bat
+tools/validate_nfl2k5_ps2_uniform_art.bat
+tools/validate_nfl2k5_ps2_replacement_pack.sh
+tools/validate_nfl2k5_ps2_uniform_art.sh
+# PS2 playbooks (Phase 2): the fixed-allocation PLAY writer, its independent
+# verifier, the target catalog and the two offline validators.
+tools/nfl2k5_ps2_playbook_patch.py
+tools/nfl2k5_ps2_playbook_verify.py
+tools/nfl2k5_ps2_playbook_target_catalog.py
+tools/validate_nfl2k5_ps2_playbook.sh
+tools/validate_nfl2k5_ps2_playbook.bat
+# Phase 2 (PS2): bounded on-disc text editing for ESPN NFL 2K5 (SLUS-20919).
+# The catalog derives which strings are provably safe; the patcher writes a new
+# ISO through the bounded ISO9660 writer; the verifier re-derives the result.
+# PS2 ISO9660 writer and verifier: runtime dependencies of every Phase 2 disc
+# patcher (text, playbooks, colors, rosters, stadiums, audio) and of their
+# validators. Shipped once, here.
+tools/ps2_iso9660_writer.py
+tools/ps2_iso9660_verify.py
+docs/product/PS2_PHASE2_TEXT.md
+docs/product/EA_TERF_FORMAT.md
+docs/product/PS2_UNIFORM_ART.md
+docs/product/GAME_STUDIO_SHELL_PLAN.md
+docs/product/measured/madden09_ps2/pcsx2-texture-identities.json
+tools/nfl2k5_ps2_text_patch.py
+tools/nfl2k5_ps2_text_target_catalog.py
+tools/nfl2k5_ps2_text_verify.py
+tools/validate_nfl2k5_ps2_text.bat
+tools/validate_nfl2k5_ps2_text.sh
+
+# PS2 M1 (WP5): the Qt window over that export service -- File > Export PS2
+# replacement pack, and the --ps2-export entry point.
+mod_editor/gui/ps2_export_dialog_qt.py
+# PS2 Phase 2: on-disc uniform colours for ESPN NFL 2K5 (SLUS-20919) — the
+# target catalogue, the bounded writer, its independent verifier and both
+# validators.
+tools/nfl2k5_ps2_unif_color_target_catalog.py
+tools/nfl2k5_ps2_unif_color_patch.py
+tools/nfl2k5_ps2_unif_color_verify.py
+tools/validate_nfl2k5_ps2_unif_color.sh
+tools/validate_nfl2k5_ps2_unif_color.bat
+
+# PS2 Phase 2: the on-disc ROST roster seed for ESPN NFL 2K5 (SLUS-20919).
+# Catalogue, bounded writer, independent verifier, and the two validators
+# CI runs for this surface.
+tools/nfl2k5_ps2_disc_roster_target_catalog.py
+tools/nfl2k5_ps2_disc_roster_patch.py
+tools/nfl2k5_ps2_disc_roster_verify.py
+tools/validate_nfl2k5_ps2_disc_roster.sh
+tools/validate_nfl2k5_ps2_disc_roster.bat
+# PS2 Phase 2: exact-slot AUDO audio replacement on the SLUS-20919 disc.
+# The codec, the target catalogue, the patcher, its independent verifier and
+# the validators.  The patcher writes through tools/ps2_iso9660_writer.py, so
+# that module and its verifier ship with it.
+# PS2 Phase 2: exact-slot AUDO audio replacement on the SLUS-20919 disc --
+# the codec, the target catalogue, the patcher, its independent verifier and
+# the validators.
+#
+# NOT YET COMPLETE: nfl2k5_ps2_audo_patch.py writes through
+# tools/ps2_iso9660_writer.py, which is still shelved and therefore absent
+# from this list, so a release staged today would ship a patcher whose
+# dependency is missing.  Appending tools/ps2_iso9660_writer.py and
+# tools/ps2_iso9660_verify.py is what unblocks it, and doing so first needs
+# the writer's Path.write_text at ps2_iso9660_writer.py:1343 changed to a
+# byte write -- test_generated_artifacts_are_lf fails on it the moment the
+# module becomes shipped code.  Land that with the capability row.
+#
+# The real-disc trial's receipt: which slot was replaced, its declared
+# sizes and offsets, and both verifiers' verdicts.  Names, offsets and
+# digests only -- no disc bytes, no decoded audio.
+tools/spu_adpcm.py
+tools/nfl2k5_ps2_audo_target_catalog.py
+tools/nfl2k5_ps2_audo_patch.py
+tools/nfl2k5_ps2_audo_verify.py
+tools/validate_nfl2k5_ps2_audo.sh
+tools/validate_nfl2k5_ps2_audo.bat
+# Phase 2 (PS2): bounded stadium geometry editing for SLUS-20919 — the target
+# catalogue, the same-count position writer, the independent verifier and their
+# validators. The ISO9660 writer/verifier ship with them because the writer
+# produces its new image through them.
+# The trial record ships too, as the text lane's does: it is the receipt for the
+# one real-disc run, and it carries names, offsets, sizes and digests only. The
+# target catalogue is deliberately NOT shipped — it is derived from the user's
+# own disc by the catalogue tool, and the copy in this repository was derived
+# from ours.
+tools/nfl2k5_ps2_stadium_target_catalog.py
+tools/nfl2k5_ps2_stadium_position_patch.py
+tools/nfl2k5_ps2_stadium_position_verify.py
+tools/validate_nfl2k5_ps2_stadium_position.sh
+tools/validate_nfl2k5_ps2_stadium_position.bat
+
+# The fixture-availability audit and its lane validator: a read-only census
+# of what this machine has for SLUS-20919 and the four owners it still
+# cannot claim.  It ships because a validator that cannot run in the
+# release stage is not a gate.
+tools/nfl2k5_ps2_fixture_audit.py
+tools/validate_nfl2k5_ps2_fixture_audit.sh
+tools/validate_nfl2k5_ps2_fixture_audit.bat
+# M1: the PS2 texture lane. The manifest is the data an Xbox edit needs to be
+# named as a PCSX2 replacement; the two tools that compute it ship with it so a
+# user can re-derive the map from their own SLUS-20919 image and check ours.
+mod_editor/data/nfl2k5-xbox-map.v1.json
+tools/nfl2k5_ps2_texture_map.py
+tools/xxh3.py
+# PS2 NFL 2K5 Studio: one window over the six on-disc writers (File > PS2 Disc
+# Studio..., or --ps2-disc-studio). Qt-free service, lane adapters and the
+# build-step worker, then the window shell and its lane tabs.
+mod_editor/core/ps2_disc_studio_lanes.py
+mod_editor/core/ps2_disc_studio_service.py
+mod_editor/core/ps2_disc_studio_worker.py
+mod_editor/gui/ps2_disc_studio_qt.py
+mod_editor/gui/ps2_disc_studio_tabs_qt.py
+# Game modules (mod_editor/games/): the versioned game-module contract and its pins,
+# discovery, the registry merge, the conformance harness, the "Select other games…"
+# chooser, the pins/fragments/scaffold tooling and the shared format packages.
+# See docs/product/GAME_MODULE_CONTRACT.md.
+mod_editor/games/CONTRACT_CHANGELOG.md
+mod_editor/games/CONTRACT_PINS.json
+mod_editor/games/__init__.py
+mod_editor/games/__main__.py
+mod_editor/games/_formats/__init__.py
+mod_editor/games/_formats/ps2_disc/__init__.py
+mod_editor/games/_formats/ps2_elf/__init__.py
+mod_editor/games/_formats/ea_terf.py
+mod_editor/games/chooser.py
+mod_editor/games/chooser_qt.py
+mod_editor/games/studio_qt.py
+mod_editor/games/studio_service.py
+mod_editor/games/lane_cli.py
+mod_editor/games/conformance.py
+mod_editor/games/contract.py
+mod_editor/games/fragments.py
+mod_editor/games/pins.py
+mod_editor/games/registry_merge.py
+mod_editor/games/scaffold.py
+# nfl2k5_ps2: shipped by the game module (mod_editor/games/nfl2k5_ps2/allowlist.fragment.txt).
+mod_editor/games/nfl2k5_ps2/__init__.py
+mod_editor/games/nfl2k5_ps2/__main__.py
+mod_editor/games/nfl2k5_ps2/allowlist.fragment.txt
+mod_editor/games/nfl2k5_ps2/code_patches.py
+mod_editor/games/nfl2k5_ps2/game.json
+mod_editor/games/nfl2k5_ps2/pins.json
+mod_editor/games/nfl2k5_ps2/registry.fragment.json
+mod_editor/games/nfl2k5_ps2/validate_code_patches.bat
+mod_editor/games/nfl2k5_ps2/validate_code_patches.sh
+mod_editor/games/nfl2k5_ps2/uniform_art.py
+mod_editor/games/nfl2k5_ps2/disc_lanes.py
+mod_editor/games/nfl2k5_ps2/uniform_kits.v1.json
+# madden09_ps2: shipped by the game module (mod_editor/games/madden09_ps2/allowlist.fragment.txt).
+mod_editor/games/_formats/ea_schl.py
+mod_editor/games/_formats/ea_tdb.py
+mod_editor/games/madden09_ps2/__init__.py
+mod_editor/games/madden09_ps2/__main__.py
+mod_editor/games/madden09_ps2/allowlist.fragment.txt
+mod_editor/games/madden09_ps2/audio_lane.py
+mod_editor/games/madden09_ps2/code_patches.py
+mod_editor/games/madden09_ps2/containers.py
+mod_editor/games/madden09_ps2/disc_identity.py
+mod_editor/games/madden09_ps2/game.json
+mod_editor/games/madden09_ps2/inventory_lane.py
+mod_editor/games/madden09_ps2/mmap_art.py
+mod_editor/games/madden09_ps2/pins.json
+mod_editor/games/madden09_ps2/registry.fragment.json
+mod_editor/games/madden09_ps2/team_data.py
+mod_editor/games/madden09_ps2/text_lane.py
+mod_editor/games/madden09_ps2/uniform_art.py
+tools/validate_madden09_ps2_audio.bat
+tools/validate_game_lane.py
+mod_editor/games/madden09_ps2/validators.json
+mod_editor/games/ncaa09_ps2/validators.json
+mod_editor/games/nfl2k5_ps2/validators.json
+tools/validate_madden09_ps2_audio.sh
+tools/validate_madden09_ps2_code_patches.bat
+tools/validate_madden09_ps2_code_patches.sh
+tools/validate_madden09_ps2_inventory.bat
+tools/validate_madden09_ps2_inventory.sh
+tools/validate_madden09_ps2_team_data.bat
+tools/validate_madden09_ps2_team_data.sh
+tools/validate_madden09_ps2_text.bat
+tools/validate_madden09_ps2_text.sh
+tools/validate_madden09_ps2_uniform_art.bat
+tools/validate_madden09_ps2_uniform_art.sh
+tools/validate_madden09_ps2_uniform_disc_art.bat
+tools/validate_madden09_ps2_uniform_disc_art.sh
+# madden09_ps2: shipped by the game module (mod_editor/games/madden09_ps2/allowlist.fragment.txt).
+mod_editor/games/madden09_ps2/identity_lane.py
+tools/validate_madden09_ps2_identity.bat
+tools/validate_madden09_ps2_identity.sh
 mod_editor/core/nfl2k5_season_cap.py
 mod_editor/core/nfl2k5_xbe_space.py
 mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py
@@ -378,3 +585,255 @@ docs/mod_editor/nfl2k5_zone_drop_capability.json
 ASTRA_MOMENTUM_BUILD_REPORT.md
 ASTRA_DEFENSIVE_TRY_REPORT.md
 ASTRA_ZONE_DROP_REPORT.md
+docs/product/measured/madden09_ps2/playbook-databases.json
+mod_editor/games/madden09_ps2/playbooks_lane.py
+tools/validate_madden09_ps2_playbooks.bat
+tools/validate_madden09_ps2_playbooks.sh
+mod_editor/games/madden09_ps2/art_pages.py
+tools/validate_madden09_ps2_art_pages.bat
+tools/validate_madden09_ps2_art_pages.sh
+docs/product/measured/madden09_ps2/art-page-texture-identities.json
+docs/product/measured/madden09_ps2/art-page-textures.json
+# madden09_ps2: shipped by the game module (mod_editor/games/madden09_ps2/allowlist.fragment.txt).
+mod_editor/games/_formats/xxhash3_64.py
+mod_editor/games/_formats/pcsx2_texture_name.py
+mod_editor/games/_formats/mmap_art.py
+# madden09_ps2: shipped by the game module (mod_editor/games/madden09_ps2/allowlist.fragment.txt).
+docs/product/measured/madden09_ps2/pcsx2-texture-identity-derivation.json
+# ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
+docs/product/measured/ncaa09_ps2/tdb-schema.json
+mod_editor/games/ncaa09_ps2/allowlist.fragment.txt
+mod_editor/games/ncaa09_ps2/audio_lane.py
+mod_editor/games/ncaa09_ps2/containers.py
+mod_editor/games/ncaa09_ps2/database_lane.py
+mod_editor/games/ncaa09_ps2/disc_identity.py
+mod_editor/games/ncaa09_ps2/game.json
+mod_editor/games/ncaa09_ps2/__init__.py
+mod_editor/games/ncaa09_ps2/inventory_lane.py
+mod_editor/games/ncaa09_ps2/__main__.py
+mod_editor/games/ncaa09_ps2/pins.json
+mod_editor/games/ncaa09_ps2/registry.fragment.json
+mod_editor/games/ncaa09_ps2/text_lane.py
+mod_editor/games/ncaa09_ps2/texture_lane.py
+tools/validate_ncaa09_ps2_audio.bat
+tools/validate_ncaa09_ps2_audio.sh
+tools/validate_ncaa09_ps2_databases.bat
+tools/validate_ncaa09_ps2_databases.sh
+tools/validate_ncaa09_ps2_inventory.bat
+tools/validate_ncaa09_ps2_inventory.sh
+tools/validate_ncaa09_ps2_text.bat
+tools/validate_ncaa09_ps2_text.sh
+tools/validate_ncaa09_ps2_textures.bat
+tools/validate_ncaa09_ps2_textures.sh
+# mvp05_ps2: shipped by the game module (mod_editor/games/mvp05_ps2/allowlist.fragment.txt).
+mod_editor/games/mvp05_ps2/__init__.py
+mod_editor/games/mvp05_ps2/__main__.py
+mod_editor/games/mvp05_ps2/game.json
+mod_editor/games/mvp05_ps2/registry.fragment.json
+mod_editor/games/mvp05_ps2/allowlist.fragment.txt
+mod_editor/games/mvp05_ps2/pins.json
+mod_editor/games/mvp05_ps2/validators.json
+mod_editor/games/mvp05_ps2/containers.py
+mod_editor/games/mvp05_ps2/disc_identity.py
+mod_editor/games/mvp05_ps2/disc_write.py
+mod_editor/games/mvp05_ps2/database_lane.py
+mod_editor/games/mvp05_ps2/loch_text.py
+mod_editor/games/mvp05_ps2/loch_lane.py
+mod_editor/games/mvp05_ps2/art_lane.py
+mod_editor/games/mvp05_ps2/audio_lane.py
+mod_editor/games/mvp05_ps2/inventory_lane.py
+tools/validate_mvp05_ps2_tables.sh
+tools/validate_mvp05_ps2_tables.bat
+tools/validate_mvp05_ps2_strings.sh
+tools/validate_mvp05_ps2_strings.bat
+tools/validate_mvp05_ps2_art.sh
+tools/validate_mvp05_ps2_art.bat
+tools/validate_mvp05_ps2_audio.sh
+tools/validate_mvp05_ps2_audio.bat
+tools/validate_mvp05_ps2_inventory.sh
+tools/validate_mvp05_ps2_inventory.bat
+mod_editor/games/_formats/ea_big.py
+mod_editor/games/_formats/ea_shps.py
+mod_editor/games/_formats/ea_csv_db.py
+# ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
+mod_editor/games/_formats/ea_ql01.py
+mod_editor/games/_lanes/__init__.py
+mod_editor/games/_lanes/iso_tools.py
+mod_editor/games/_lanes/preload_coherence.py
+mod_editor/games/_lanes/synthetic_art.py
+mod_editor/games/_lanes/tdb_records.py
+mod_editor/games/_lanes/terf_art.py
+mod_editor/games/_lanes/text_banks.py
+mod_editor/games/ncaa09_ps2/art_pages.py
+mod_editor/games/ncaa09_ps2/identity_lane.py
+mod_editor/games/ncaa09_ps2/playbooks_lane.py
+mod_editor/games/ncaa09_ps2/saves_lane.py
+tools/validate_ncaa09_ps2_art_pages.sh
+tools/validate_ncaa09_ps2_art_pages.bat
+tools/validate_ncaa09_ps2_identity.sh
+tools/validate_ncaa09_ps2_identity.bat
+tools/validate_ncaa09_ps2_playbooks.sh
+tools/validate_ncaa09_ps2_playbooks.bat
+tools/validate_ncaa09_ps2_saves.sh
+tools/validate_ncaa09_ps2_saves.bat
+tools/validate_ncaa09_ps2_uniform_disc_art.sh
+tools/validate_ncaa09_ps2_uniform_disc_art.bat
+# ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
+tools/ps2_texture_identities.py
+# ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
+docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json
+docs/product/measured/ncaa09_ps2/pcsx2-texture-identity-derivation.json
+# mvp05_ps2: shipped by the game module (mod_editor/games/mvp05_ps2/allowlist.fragment.txt).
+tools/mvp05_ps2_texture_identities.py
+docs/product/measured/mvp05_ps2/pcsx2-texture-identities.json
+docs/product/measured/mvp05_ps2/pcsx2-texture-identity-derivation.json
+docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json
+# nflblitz2002_ps2: shipped by the game module (mod_editor/games/nflblitz2002_ps2/allowlist.fragment.txt).
+mod_editor/games/nflblitz2002_ps2/__init__.py
+mod_editor/games/nflblitz2002_ps2/__main__.py
+mod_editor/games/nflblitz2002_ps2/allowlist.fragment.txt
+mod_editor/games/nflblitz2002_ps2/camera_lane.py
+mod_editor/games/nflblitz2002_ps2/containers.py
+mod_editor/games/nflblitz2002_ps2/disc_identity.py
+mod_editor/games/nflblitz2002_ps2/game.json
+mod_editor/games/nflblitz2002_ps2/pins.json
+mod_editor/games/nflblitz2002_ps2/registry.fragment.json
+mod_editor/games/nflblitz2002_ps2/roster_lane.py
+mod_editor/games/nflblitz2002_ps2/text_lane.py
+mod_editor/games/nflblitz2002_ps2/texture_lane.py
+mod_editor/games/nflblitz2002_ps2/validators.json
+mod_editor/games/nflblitz2002_ps2/zip_lane.py
+tools/validate_nflblitz2002_ps2_art.bat
+tools/validate_nflblitz2002_ps2_art.sh
+tools/validate_nflblitz2002_ps2_containers.bat
+tools/validate_nflblitz2002_ps2_containers.sh
+tools/validate_nflblitz2002_ps2_roster.bat
+tools/validate_nflblitz2002_ps2_roster.sh
+tools/validate_nflblitz2002_ps2_text.bat
+tools/validate_nflblitz2002_ps2_text.sh
+tools/validate_nflblitz2002_ps2_textures.bat
+tools/validate_nflblitz2002_ps2_textures.sh
+# nflblitz2002_ps2: shipped by the game module (mod_editor/games/nflblitz2002_ps2/allowlist.fragment.txt).
+mod_editor/games/_formats/blitz_zip.py
+mod_editor/games/_formats/rw_txd.py
+# nflblitz2003_ps2: shipped by the game module (mod_editor/games/nflblitz2003_ps2/allowlist.fragment.txt).
+mod_editor/games/nflblitz2003_ps2/__init__.py
+mod_editor/games/nflblitz2003_ps2/__main__.py
+mod_editor/games/nflblitz2003_ps2/allowlist.fragment.txt
+mod_editor/games/nflblitz2003_ps2/camera_lane.py
+mod_editor/games/nflblitz2003_ps2/containers.py
+mod_editor/games/nflblitz2003_ps2/disc_identity.py
+mod_editor/games/nflblitz2003_ps2/game.json
+mod_editor/games/nflblitz2003_ps2/pins.json
+mod_editor/games/nflblitz2003_ps2/registry.fragment.json
+mod_editor/games/nflblitz2003_ps2/roster_lane.py
+mod_editor/games/nflblitz2003_ps2/text_lane.py
+mod_editor/games/nflblitz2003_ps2/texture_lane.py
+mod_editor/games/nflblitz2003_ps2/validators.json
+mod_editor/games/nflblitz2003_ps2/zip_lane.py
+tools/validate_nflblitz2003_ps2_art.bat
+tools/validate_nflblitz2003_ps2_art.sh
+tools/validate_nflblitz2003_ps2_containers.bat
+tools/validate_nflblitz2003_ps2_containers.sh
+tools/validate_nflblitz2003_ps2_roster.bat
+tools/validate_nflblitz2003_ps2_roster.sh
+tools/validate_nflblitz2003_ps2_text.bat
+tools/validate_nflblitz2003_ps2_text.sh
+tools/validate_nflblitz2003_ps2_textures.bat
+tools/validate_nflblitz2003_ps2_textures.sh
+# nflblitz2002_ps2: shipped by the game module (mod_editor/games/nflblitz2002_ps2/allowlist.fragment.txt).
+docs/product/measured/nflblitz2002_ps2/containers.json
+docs/product/measured/nflblitz2002_ps2/probes.json
+docs/product/measured/nflblitz2002_ps2/roster-rst.json
+docs/product/measured/nflblitz2002_ps2/texture-dictionaries.json
+docs/product/measured/nflblitz2002_ps2/writer-trial.json
+docs/product/measured/nflblitz2002_ps2/zip-index.json
+docs/product/measured/nflblitz2003_ps2/containers.json
+docs/product/measured/nflblitz2003_ps2/probes.json
+docs/product/measured/nflblitz2003_ps2/roster-rst.json
+docs/product/measured/nflblitz2003_ps2/texture-dictionaries.json
+docs/product/measured/nflblitz2003_ps2/writer-trial.json
+docs/product/measured/nflblitz2003_ps2/zip-index.json
+# nflblitz2002_ps2: shipped by the game module (mod_editor/games/nflblitz2002_ps2/allowlist.fragment.txt).
+mod_editor/games/_lanes/blitz_zip_lanes.py
+docs/product/RENDERWARE_TXD_FORMAT.md
+docs/product/MIDWAY_ZIP_FORMAT.md
+docs/product/measured/rw_txd/cross-disc-census.json
+# mvp05_ps2: shipped by the game module (mod_editor/games/mvp05_ps2/allowlist.fragment.txt).
+docs/product/measured/mvp05_ps2/models-big-parts.json
+# nflstreet1_ps2: shipped by the game module (mod_editor/games/nflstreet1_ps2/allowlist.fragment.txt).
+docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json
+docs/product/measured/nflstreet1_ps2/platex-pixel-layout-census.json
+mod_editor/games/nflstreet1_ps2/__init__.py
+mod_editor/games/nflstreet1_ps2/__main__.py
+mod_editor/games/nflstreet1_ps2/allowlist.fragment.txt
+mod_editor/games/nflstreet1_ps2/art_pages.py
+mod_editor/games/nflstreet1_ps2/audio_lane.py
+mod_editor/games/nflstreet1_ps2/containers.py
+mod_editor/games/nflstreet1_ps2/database_lane.py
+mod_editor/games/nflstreet1_ps2/disc_identity.py
+mod_editor/games/nflstreet1_ps2/game.json
+mod_editor/games/nflstreet1_ps2/identity_lane.py
+mod_editor/games/nflstreet1_ps2/inventory_lane.py
+mod_editor/games/nflstreet1_ps2/pins.json
+mod_editor/games/nflstreet1_ps2/playbooks_lane.py
+mod_editor/games/nflstreet1_ps2/registry.fragment.json
+mod_editor/games/nflstreet1_ps2/text_lane.py
+mod_editor/games/nflstreet1_ps2/texture_lane.py
+mod_editor/games/nflstreet1_ps2/validators.json
+tools/validate_nflstreet1_ps2_art_pages.bat
+tools/validate_nflstreet1_ps2_art_pages.sh
+tools/validate_nflstreet1_ps2_audio.bat
+tools/validate_nflstreet1_ps2_audio.sh
+tools/validate_nflstreet1_ps2_databases.bat
+tools/validate_nflstreet1_ps2_databases.sh
+tools/validate_nflstreet1_ps2_identity.bat
+tools/validate_nflstreet1_ps2_identity.sh
+tools/validate_nflstreet1_ps2_inventory.bat
+tools/validate_nflstreet1_ps2_inventory.sh
+tools/validate_nflstreet1_ps2_playbooks.bat
+tools/validate_nflstreet1_ps2_playbooks.sh
+tools/validate_nflstreet1_ps2_text.bat
+tools/validate_nflstreet1_ps2_text.sh
+tools/validate_nflstreet1_ps2_textures.bat
+tools/validate_nflstreet1_ps2_textures.sh
+# nflstreet3_ps2: shipped by the game module (mod_editor/games/nflstreet3_ps2/allowlist.fragment.txt).
+docs/product/measured/nflstreet3_ps2/pcsx2-texture-identities.json
+docs/product/measured/nflstreet3_ps2/platex-pixel-layout-census.json
+mod_editor/games/nflstreet3_ps2/__init__.py
+mod_editor/games/nflstreet3_ps2/__main__.py
+mod_editor/games/nflstreet3_ps2/allowlist.fragment.txt
+mod_editor/games/nflstreet3_ps2/art_pages.py
+mod_editor/games/nflstreet3_ps2/audio_lane.py
+mod_editor/games/nflstreet3_ps2/containers.py
+mod_editor/games/nflstreet3_ps2/database_lane.py
+mod_editor/games/nflstreet3_ps2/disc_identity.py
+mod_editor/games/nflstreet3_ps2/game.json
+mod_editor/games/nflstreet3_ps2/identity_lane.py
+mod_editor/games/nflstreet3_ps2/inventory_lane.py
+mod_editor/games/nflstreet3_ps2/pins.json
+mod_editor/games/nflstreet3_ps2/playbooks_lane.py
+mod_editor/games/nflstreet3_ps2/registry.fragment.json
+mod_editor/games/nflstreet3_ps2/text_lane.py
+mod_editor/games/nflstreet3_ps2/texture_lane.py
+mod_editor/games/nflstreet3_ps2/validators.json
+tools/validate_nflstreet3_ps2_art_pages.bat
+tools/validate_nflstreet3_ps2_art_pages.sh
+tools/validate_nflstreet3_ps2_audio.bat
+tools/validate_nflstreet3_ps2_audio.sh
+tools/validate_nflstreet3_ps2_databases.bat
+tools/validate_nflstreet3_ps2_databases.sh
+tools/validate_nflstreet3_ps2_identity.bat
+tools/validate_nflstreet3_ps2_identity.sh
+tools/validate_nflstreet3_ps2_inventory.bat
+tools/validate_nflstreet3_ps2_inventory.sh
+tools/validate_nflstreet3_ps2_playbooks.bat
+tools/validate_nflstreet3_ps2_playbooks.sh
+tools/validate_nflstreet3_ps2_text.bat
+tools/validate_nflstreet3_ps2_text.sh
+tools/validate_nflstreet3_ps2_textures.bat
+tools/validate_nflstreet3_ps2_textures.sh
+# nflstreet1_ps2: shipped by the game module (mod_editor/games/nflstreet1_ps2/allowlist.fragment.txt).
+mod_editor/games/_lanes/container_inventory.py
+mod_editor/games/_lanes/ea_audio.py
+mod_editor/games/_lanes/terf_discs.py

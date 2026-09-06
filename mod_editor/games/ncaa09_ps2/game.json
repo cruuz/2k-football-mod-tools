@@ -1,0 +1,53 @@
+{
+  "schema": "vc_game_module_manifest/v1",
+  "game_id": "ncaa09_ps2",
+  "package": "mod_editor.games.ncaa09_ps2",
+  "title": "NCAA Football 09 (USA, PlayStation 2)",
+  "platform": "PlayStation 2",
+  "console": "PS2",
+  "game": "NCAA",
+  "year": "09",
+  "version": "0.1.0",
+  "contract": "vc_game_module/v1",
+  "registry_fragment": "registry.fragment.json",
+  "allowlist_fragment": "allowlist.fragment.txt",
+  "pins": "pins.json",
+  "product_modules": [
+    "ps2_iso9660",
+    "mod_editor.games._formats.ea_terf",
+    "mod_editor.games._formats.ea_tdb",
+    "mod_editor.games._formats.ea_schl",
+    "mod_editor.games._formats.ea_ql01",
+    "mod_editor.games._formats.mmap_art",
+    "mod_editor.games._formats.pcsx2_texture_name",
+    "mod_editor.games._lanes.iso_tools",
+    "mod_editor.games._lanes.preload_coherence",
+    "mod_editor.games._lanes.synthetic_art",
+    "mod_editor.games._lanes.tdb_records",
+    "mod_editor.games._lanes.terf_art",
+    "mod_editor.games._lanes.text_banks",
+    "mod_editor.games.ncaa09_ps2",
+    "mod_editor.games.ncaa09_ps2.containers",
+    "mod_editor.games.ncaa09_ps2.disc_identity",
+    "mod_editor.games.ncaa09_ps2.inventory_lane",
+    "mod_editor.games.ncaa09_ps2.database_lane",
+    "mod_editor.games.ncaa09_ps2.identity_lane",
+    "mod_editor.games.ncaa09_ps2.text_lane",
+    "mod_editor.games.ncaa09_ps2.texture_lane",
+    "mod_editor.games.ncaa09_ps2.art_pages",
+    "mod_editor.games.ncaa09_ps2.playbooks_lane",
+    "mod_editor.games.ncaa09_ps2.saves_lane",
+    "mod_editor.games.ncaa09_ps2.audio_lane"
+  ],
+  "tool_modules": [],
+  "allowlist_patterns": [
+    "mod_editor/games/ncaa09_ps2/*",
+    "tools/validate_ncaa09_ps2_*",
+    "docs/product/measured/ncaa09_ps2/*",
+    "tools/ps2_texture_identities.py"
+  ],
+  "page_notes": {
+    "crib": "The Crib is an ESPN NFL 2K5 feature and not an NCAA Football concept, so this page stays empty here on purpose.",
+    "gameplay": "The boot executable is SLUS_217.52, 7,294,796 bytes, sha256 dc1b3089...9c1f71ee, PCSX2 CRC B0157E6C. No patch site on it has been located by this project, and every site is per-title research: none of the five sltiu immediates Madden 09's playbook-editor caps patch uses was found here, because they are addresses in a different executable. So this page carries no lane rather than a scaffold with nothing behind it -- a pnach writer with an empty translation table would be a control that can only refuse."
+  }
+}

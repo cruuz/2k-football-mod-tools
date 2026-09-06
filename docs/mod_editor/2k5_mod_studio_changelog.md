@@ -1,14 +1,337 @@
 # 2K5 Mod Studio — Product Changelog
 
-## v1.0 RC85 — defense Create a Play, the Music tab and 200-track banks, the Momentum option, Rosters locks / reserves / abilities, the reference scorebug with real logos, and the allocator that makes native features possible
+## v1.0 RC88 — PS2 Madden 09 Studio: every page answered (unreleased)
 
+- **Every page of the second studio now has an answer.** *PS2 Madden 09 Studio* fills **eleven of the shell's
+  fourteen pages with fourteen capability rows** — eleven of them write, two export, one inspects — while **The Crib**
+  and **Saves** say in one sentence why they are empty on purpose and **Build & Share** stays the shell's own page.
+  RC87 shipped four pages with a lane and ten notes; this is the rest. `docs/product/MADDEN09_PS2_MODULE.md` is the
+  page-by-page account, and its new §10 answers the seven-point shipping standard line by line — including the line it
+  fails: **nothing has been booted**, so no row is `runtime-proved` and none can be from this box.
+- **Text & Team Identity — the thirty-two teams, in every copy the disc agrees on.** Nickname, city, abbreviation,
+  short name, primary and secondary colour and the city id, per team. The blast radius was measured before a byte was
+  written: three databases carry all 32 teams' identity fields, **two of them agree with the anchor on 32 of 32 teams
+  and are written together** (so a rename cannot leave them disagreeing), and the third is refused because
+  `TEMPLATE.DAT` is named in the `FE.QKL` preload cache. `STRMDATA.DB`'s rows are **not** in team-id order — team 1 is
+  record 106 — so the second copy is found by reading the field off every record, never by arithmetic. Real disc: one
+  abbreviation and one colour, 7,746,536 bytes declared in four ranges, **PASS** with 470 of 470 checksum slots correct
+  and 0 undeclared changed bytes; two adversarial byte flips both refused.
+- **Audio — the music and the sound effects can be replaced; the speech is refused by name.** Two rows over **11,389
+  members, 34,046 streams, 301 banks and 967 bank sounds**, catalogued in 13.4 seconds. **295 streams are EA-XA and
+  289 of them decode**; all 967 bank sounds are Sony PlayStation ADPCM and the 508 that declare a rate export as WAV.
+  The decoders were checked against ffmpeg rather than against themselves: **289 of 289 streams and 508 of 508 bank
+  sounds byte-identical**, 704 million PCM samples compared. Import mixes, resamples and re-encodes a WAV and refuses
+  anything that will not fit the bytes the sound already occupies. **33,751 streams are EA MicroTalk** — every line of
+  speech and commentary — and ffmpeg has no decoder for it either, so they are listed with their rate, channels and
+  length and their audio is refused rather than guessed at. The bank writer is **not** offered: 134 of the 967 sounds
+  carry loop points nobody here has decoded. Real disc: one music track replaced by a computed ten-second tone,
+  **PASS at 47.4 dB**, image the same 1,657,339,904 bytes in and out.
+- **Playbooks & Plays — 102 shipped books, and the names inside them.** The page did not exist because the reader
+  could not open the files: every playbook declares a table named `SGF` followed by a **NUL byte**, and a
+  four-character name was decoded as strict printable ASCII. A four-character name is four **bytes**, so
+  `ea_tdb.decode_name` / `encode_name` render a byte outside `0x20..0x7E` as `\xNN` and a literal backslash as `\\` —
+  a bijection, so no two names collide. The disc's own answer: **355 databases parse where 252 did, none refused,
+  4,108 tables, 85,400 field definitions, and 8,926 checksum sites with 0 wrong** where 4,806 were checkable before.
+  The page then edits the eight `name` fields and six numbers the research gives a meaning to — **102 books, 1,938
+  tables, 78,875 editable rows**. **No row can be added**: every table on the disc is packed exactly full, 1,938 of
+  1,938. Packing takes the **exact-size** path — the member re-encoded under a budget equal to the bytes it already
+  occupies, padded and spliced, so no directory word moves — and **all 102 books fit their own slot**, the tightest by
+  263 bytes. Real disc: one set renamed in the deepest book, container directory unchanged, 0 caches rewritten,
+  **PASS** with 114 untouched members byte-identical and 12 cache copies still equal to what they copy.
+- **Four more art pages, and one lane doing both halves.** **Stadiums** (514 texture members, 581 decodable images),
+  **Field Art & Create-Team Art** (73 textures, every one decodable), **Presentation** (7,678 members across 50
+  containers, 6,482 decodable) and the face half of **Names, Numbers & Faces** (532 player faces, 711 coach faces, 82
+  tattoos, 3,286 menu portraits) each get preview, **Export PNG**, a checked **Import PNG** and a **Build** that writes
+  a new disc image — one row per page, because the writer lane already is the reader. What they do *not* touch is
+  measured, not skipped: **805 `SMF` and 2 `DMF` geometry members** in the stadium containers and **642 `SMF`** in the
+  field-art one, which no decoder here reads; `UIS_MCFL.DAT`'s **1,188 `IPU1` members**, refused by name at both ends;
+  five members of `STADIUMS.DAT` that are **palette banks** with no pixels at all; and the scorebug, which the
+  executable draws. Real disc: three chained edits — a stadium texture, a field texture and a UI texture — all three
+  **PASS** with **maximum channel error 0**, the image never growing, and both cache-coherence paths exercised on real
+  bytes (three directory copies rewritten on two of them, a member's own cached copy rewritten on the third).
+- **Four gates that could not pass in a release, made able to.** The NFL 2K5 PS2 validators for text,
+  playbooks, stadium positions and the fixture audit ran `python -m unittest` over files under `tests/` —
+  which the release allowlist does not carry — so all three that shipped exited **1** in a staged tree and
+  the fourth was not staged at all and exited 1 in a checkout, against a contributor's home directory.
+  Their proofs now live in the tools that make them, reachable as `--selftest`: the synthetic playbook,
+  text bank and stadium scene are built by the writers themselves, the seven forged images that must make
+  the text verifier fail and the four that must make the stadium verifier fail are built there, and the
+  twenty-nine refusals are asserted to leave no output image behind. Each validator is now a two-line
+  delegation to `tools/validate_game_lane.py` with the same derived pass token, so **no registry row
+  changed**. All four exit 0 in a fresh stage, and a test reads the release allowlist and holds every
+  shipped validator to the rule.
+
+- **Gameplay — the playbook editor's caps, translated.** RC87 shipped the pnach pipeline with every translation
+  refused. One is real now: **five `sltiu` immediates** behind four parameters — formations, sets, plays per book and
+  plays per set — each read out of the user's own executable at plan time and each changed only in its low 16 bits.
+  The retail and Deluxe executables differ in exactly **nine** 32-bit words and **none of the nine is at a translated
+  site**, so one recipe works on either disc. Delivery is a `.pnach` by default or the words written into the boot ELF
+  on a rebuilt disc; the verifier re-reads whichever artifact was written. What is **not** shipped, and why, is
+  written down: the runtime capacity layer behind the caps has no immediate to raise, and new code in a cave could
+  only be verified by a boot. PCSX2's own patch archive carries **no entry for this title** — 4,471 files, none naming
+  either CRC — so there was no community translation set to match.
+- **An `LZH1` encoder, and an `MMAP` member writer.** Codec 5 had no public encoder anywhere; there is one now, and
+  **1,836 of 1,836** compressed members of the uniform, stadium and field-art containers re-encode and decode back
+  byte for byte under two independent decoders, at about the size EA shipped them. **All 1,780 `MMAP` members** of the
+  four art containers rebuild byte for byte from their own decoded pixels. Together they are what turned every art
+  page from a viewer into an editor.
+- **PCSX2 replacement identities, learned from a real dump.** The filename PCSX2 looks for is built from hashes it
+  computes while drawing, so `tools/madden09_ps2_texture_identities.py` pairs a texture dump with the disc on **exact
+  pixel equality**. From **33 frames** — 32 coin tosses covering both kits of all 32 teams, plus one captains frame —
+  **3,024** disc textures on the uniform containers and **234 of 8,449** across the four art pages now have a name.
+  **Write PCSX2 pack is still not offered from any row**: what is proved is the pairing, and no pack has been loaded
+  in an emulator.
+- **The registry has 106 rows** across four game/platform targets: 45 Xbox NFL 2K5, 37 APF 2K8, 14 PS2 Madden 09 and
+  10 NFL 2K5 PS2. Every Madden 09 row carries a validation command that runs in a shipped tree and evidence paths that
+  exist.
+- **Upstream Beta 61 merged, and the two things it broke are fixed.** Its gameplay-patch catalogue names another
+  module's UI text inside one entry, which a strict literal reader refused — taking the **NFL 2K5 (PS2)
+  host-catalogue reader** and that game's whole conformance run with it; the reader now takes a literal as its value
+  and any other expression as its own source text, with four tests, one of them against the host's real catalogue.
+  And the release checker forbids a path component named **`evidence`**, which the new Madden 09 records had been
+  written into; every measured record now lives under `docs/product/measured/` and the staged release passes its own
+  check again.
+- **The count pins that were left behind are repaired.** Landing the fourteen rows moved the registry count in both
+  runtime checkers but not in the two assertions that mirror them, and the row-adding tool appended a line each time
+  instead of moving the one that was there — leaving pins on 86, 89 and 99 rows that no file carries any more, and a
+  truncated paragraph in the getting-started guide. The live numbers are pinned once each.
+
+## v1.0 RC87 — PS2 Madden 09 Studio (unreleased)
+
+- **A second studio.** *Select other games…* now lists two rows. **PS2 Madden 09 Studio** works off your own Madden
+  NFL 09 (PlayStation 2) disc image, `SLUS-21770` — the retail USA disc or the community's **Deluxe** rebuild, which
+  it tells apart by the boot ELF's digest and names on screen, because thirteen of the disc's data files differ
+  between them. A disc that boots another serial is refused with a sentence saying which one it wanted.
+- **All fourteen pages on day one.** Four of them have lanes; the other ten say, in Madden 09's own words, what is on
+  the disc for them and why there is no editor yet. No dead buttons and no hidden pages.
+- **All Textures — every /DATA container.** The chunk chain, the alignment, and each member's offset, stored size,
+  codec, unpacked size and — after decompression, because a packed member's magic means nothing — its format. On the
+  retail disc: **101 containers, 36,195 members, 4,901 MMAP textures, 1,288 TEXT banks, 626 SMF geometry, 354 TDB
+  databases**, in about ten seconds. Read-only.
+- **Names, Numbers & Faces — the team databases.** Madden 09's roster and tuning data is **EA TDB v8 packed inside
+  TERF members**, so `mod_editor/games/_formats/ea_tdb.py` joins the container reader as a shared format: header,
+  table directory, field directory and bit-packed records. On the retail disc: **355 databases, 2,151 tables, 354,812
+  records, 60,537 field definitions**. Field *names* are catalogued — they are the schema; a record's contents are
+  your game data and stay on your disc. The page also edits; see below.
+- **Menus & UI — the text banks**, counted and measured. The catalogue carries string counts, lengths and digests and
+  **not one string**, because a catalogue is a file you might share; the strings are read off your own image when you
+  ask to see them. The page also edits; see below.
+- **Uniforms & Equipment — the textures come off the disc.** `MMAP` turns out to be a table-of-tables, not a header
+  and a bitmap, and reading it that way gets the pixels out: **7,082 of 7,616 images** in the uniform, player-face,
+  coach-face and tattoo containers decode to PNG, and the 534 that do not fall in three groups the page names rather
+  than a silent gap. Preview, Export PNG, and an Import PNG that is checked against the texture's own palette and
+  tells you how it landed. **Write PCSX2 pack is refused by name**: that filename is built from hashes the emulator
+  computes while drawing, and nobody has captured a GS dump of Madden 09 to read them from. The verifier re-decodes
+  every exported file straight off your disc, not through the catalogue that produced it.
+- **Uniforms & Equipment — and now the textures go back on.** A second row on the same page,
+  `offline-writer-proved`: give back a PNG of exactly the texture's size and Build writes a **new** disc image.
+  Three things had to be built first. **An `LZH1` encoder** — codec 5 had no public encoder anywhere, and now
+  every one of the **1,836** compressed members of the uniform, stadium and field-art containers re-encodes and
+  decodes back byte for byte under two independent decoders, at about the size EA shipped them (1.0078× in
+  aggregate, 65% of members smaller or equal). **An `MMAP` member writer** that lays a member's tables and offsets
+  out afresh and reproduces **all 1,780** texture members of the four art containers byte for byte from their own
+  decoded pixels. And an **opt-in relocation mode** in the ISO9660 writer for a container that outgrows its extent;
+  fixed allocation stays the default and is the ordinary outcome. The two preload caches carry byte copies of a
+  container's directory — `UNIFORMS.DAT`'s is copied three times — so the writer keeps those in step and the
+  verifier checks them. Proved end to end on the owner's own retail disc: one jersey sheet recoloured, the image
+  the same 1,657,339,904 bytes it was, 724 untouched members byte-identical, 1,584,383,227 bytes compared
+  unchanged. **Not booted**: no rebuilt Madden 09 container has been loaded by the game, and the row says so.
+- **Write PCSX2 pack, one step closer.** `replacement_identity` used to be `None` for everything because the
+  filename PCSX2 looks for is built from hashes it computes while drawing. `tools/madden09_ps2_texture_identities.py`
+  learns them instead: it decodes the disc's own textures, decodes a real PCSX2 texture dump, and pairs them on
+  exact pixels — no tolerance, because two textures that differ by a byte are two textures. The pack step is still
+  not offered; what is proved is the pairing.
+- **Gameplay — the pnach pipeline, with nothing mapped.** Six subject areas named, zero sites located, every
+  translation refused by name. Classified `unknown`, so the page states that and offers no control. The pipeline
+  around a translation is complete and proved on a synthetic ELF, so locating one site is a one-entry change.
+- **Two Madden 09 pages that only listed now write.** *Names, Numbers & Faces* edits the rows of
+  `/DATA/DB_TEAMS.DAT` — **12,499 of them** on the retail disc — a player's first and last name, jersey number, age
+  and twenty ratings, and a team's nickname, city, abbreviation and short name. *Menus & UI* replaces the strings in a
+  text bank. Both are `offline-writer-proved`: a bounded write, a NEW image, an independent verifier that can fail —
+  and **nothing has been booted**, which both pages and both registry rows say in as many words.
+- **EA TDB's four checksums, computed and proved before anything used them.** `ea_tdb` gained `crc32_mpeg2`,
+  `crc_sites`, `recompute_crcs` and `verify_crcs`, and the algorithm was checked against the disc first: **4,806
+  stored checksum slots across 252 databases, and the stored value equalled the recomputed value at every one**. (The
+  103 members not in that count are refused by the *reader* — each declares a table whose four-character name carries
+  a NUL — which is a reader limit, written down rather than worked around.)
+- **A record edit cannot change a length**, and all four places that matters are checked: the database, the container
+  member, the container, and the image. So a destination is the source's exact byte count, and `rewrite_member` handed
+  a member's own bytes reproduces `DB_TEAMS.DAT` byte for byte.
+- **The old refusal was half right, and the half that was wrong is gone.** Both lanes used to refuse citing a missing
+  `LZH1` encoder; the containers they touch store their members uncompressed, so there was nothing to encode. The
+  other half of that refusal — the `GAME.QKL` and `FE.QKL` preload caches — turned out to be *under*-stated, so
+  `containers.preload_names` now reads the cache manifest off your own image and refuses any container it names. That
+  catches `STADATA.DAT`, which a table written down by hand had missed.
+- **Real-disc trial, then deleted.** One player renamed and re-numbered, one string replaced, on the owner's own
+  retail image: two 1,657,339,904-byte destinations, 2,585,800 and 741,088 declared bytes, both verifiers passing
+  with 1,654,754,104 and 1,656,598,816 unchanged bytes compared — and the same verifier failing when one byte outside
+  every declared range was flipped, then passing when it was put back. Both images were deleted; nothing was written
+  beside the disc.
+- **A shortened bank is still a bank.** `identify_member` reads 32 printable bytes, which stops being true of a
+  string this lane has cut short, so the text lane discounts the padding before asking. On the retail disc that finds
+  **14,760** banks instead of 14,748 — the twelve extra are NUL-padded name strings in `STADATA.DAT` the stricter
+  rule was missing.
+- **Nothing has been booted, and the module says so.** No rebuilt Madden 09 container has ever been loaded by the
+  game, so the two writing lanes above are `offline-writer-proved` and can go no higher, and the art and gameplay
+  lanes still write nothing to a disc at all. No `LZH1` encoder exists publicly either, which does not block the two
+  writers — the containers they touch store their members uncompressed — but does block any writer that would have to
+  replace a packed member. Both limits are written down in `docs/product/MADDEN09_PS2_MODULE.md` rather than worked
+  around.
+
+## v1.0 RC86 — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container (unreleased)
+
+- **Select other games… lists studios**, one row per game, labelled console, game, year: **PS2 NFL 2K5 Studio**. Open it
+  and the game's studio appears; the Xbox studio's File menu keeps that entry and the chooser, and the three PS2 side
+  windows live in the studio's Windows menu. `python -m mod_editor --game nfl2k5_ps2` opens it from a terminal.
+- **The Game Studio shell.** Every game gets the same fourteen pages as the Xbox studio. A page with a lane draws the
+  lane's own fields (colour words, names, sounds, PNGs); a page without one says, in the game's words, why it is not
+  available yet. Build & Share chains the staged edits into a new image with receipts and verifies each step. Writers wear
+  their registry classification and, unless seen in a game, "Not yet tested in-game".
+- **Uniform art from the PS2 disc.** On the Uniforms page the disc's own uniform textures are decoded to PNG, exported,
+  edited in any editor, imported back and written as a PCSX2 replacement pack under the names PCSX2 computes at draw
+  time, checked by the independent verifier (`tools/nfl2k5_ps2_uniform_art.py`, `validate_nfl2k5_ps2_uniform_art.sh`).
+  The Xbox-project route stays as a second origin. Extract-only by rule: PCSX2 swaps the art while the game runs.
+- **Contract 1.0 grew** (still unreleased): `console` / `game` / `year` and the composed label, `studio_window`,
+  `Field` and `Target.fields`, `ReadOnlyLane`, `ArtLane`, `AudioLane`, `Lane.page`, `python -m mod_editor.games lane`.
+  `docs/product/GAME_STUDIO_SHELL_PLAN.md` is the plan; `GAME_MODULE_CONTRACT.md` §14 the reference.
+- **EA TERF containers** (`mod_editor/games/_formats/ea_terf.py`, `tools/ea_terf_inspect.py`,
+  `docs/product/EA_TERF_FORMAT.md`): the PlayStation 2 Madden / NCAA disc container read and written, LZH1 and RLE1
+  members decoded. The substrate for **PS2 Madden 09 Studio** in the next release.
+
+## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
+
+- **PS2 NFL 2K5 Studio.** The PS2 disc window is now named the way every game's studio will be, console, game, year:
+  File ▸ PS2 NFL 2K5 Studio…, and it is the first window **Select other games…** offers for the PS2 module (it was
+  missing from that list). Its last page is now called **Uniforms** and explains in plain words why the uniform
+  art comes from the studio's project and reaches the PS2 game through PCSX2's texture swap.
+- **Windows console fix.** `python -m mod_editor.games …` (the `--game` / `--games-chooser` command line and the
+  conformance harness) no longer dies with `UnicodeEncodeError` on a cp1252 console when a lane message quotes a
+  character the console cannot show; such characters print as `\uXXXX` escapes instead. Found by running the
+  shipped portable build's conformance harness on Windows (it stopped at check 88 of 89).
+- **Game modules.** A versioned game-module contract (`mod_editor/games/`, `vc_game_module/v1`) lets further
+  games ship as their own packages that the studio only discovers: per-game registry and allowlist fragments
+  mirrored byte-for-byte, a conformance harness with a named CI job, frozen contract files with a release
+  discipline (`CONTRACT_PINS.json`, `CONTRACT_CHANGELOG.md`), `python -m mod_editor.games new|fragments|pins`,
+  `tools/registry_add_rows.py`, and one File-menu seam, **Select other games…** (also `--game`). The PS2 lane is
+  the first module. Rules for anyone editing this repository with an assistant: `CLAUDE.md` / `AGENTS.md`.
+- **Executable patches (scaffold).** `nfl2k5ps2.gameplay.executable_patches` is registered `unknown`: the
+  interface for carrying the Xbox gameplay patches to the PS2 executable exists (pnach emitter and ELF verifier
+  are real), but every translation to MIPS is refused until it is mapped (`docs/product/PS2_CODE_PATCH_PIPELINE.md`).
+- New capability `nfl2k5ps2.uniforms.replacement_pack_export` (extract-only by the registry's
+  definition: a validated exporter, nothing written back into the game): export the open Xbox
+  project's **edited** uniform textures as a PCSX2 texture-replacement pack for the PlayStation 2
+  release. Each file is named by the PS2 texture's replacement identity -- the TEX0 and CLUT
+  XXH3-64 hashes PCSX2 computes at draw time -- computed offline from the stock `SLUS-20919` disc
+  and shipped as a names-and-hashes manifest (`mod_editor/data/nfl2k5-xbox-map.v1.json`: 5,379
+  rows, one per PS2 filename; 4,732 resolve to exactly one Xbox asset; 1,394 rows carry the
+  studio's logical `nfl2k5.uniform.*` ids). The user's ISO is never touched and nothing is ever
+  emitted for an unedited texture, so no retail pixel leaves the disc.
+- Separate PS2 export window (File > Export PS2 replacement pack…, or `--ps2-export`) in the
+  shape of the PS2 save and disc windows: lists the project's edited uniform targets as mapped /
+  unmapped / ambiguous and exports the mapped ones into a fresh folder with a receipt.
+  Independent verifier `tools/nfl2k5_ps2_replacement_pack_verify.py` plus
+  `tools/validate_nfl2k5_ps2_replacement_pack.sh/.bat`.
+- **The window asks where the pack will be used, and there is no default.** The files are the
+  same bytes for every answer -- one spelling of a GS identity -- but what an emulator does with
+  them is not, so the answer is recorded in the receipt and decides the instructions the window
+  and the receipt give. PenguinScreen2 with `ClassicTextureNames=true` (recommended, and the only
+  build these packs have been *witnessed* on) restores the whole-texture hashing this studio's
+  filenames were computed with, so every file is looked up whatever the game does with the
+  texture; stock PCSX2 -- v1.7.4034 and later, including every 2.x -- needs only
+  `LoadTextureReplacements=true`, because from that build it hashes just a texture's clamped draw
+  region: measured across the rig's 60 dumps, 584 distinct identities fall in that class and
+  **none of this studio's texture names is among them**, and three stock builds (v2.7.469,
+  v2.6.0, v2.9.30) loaded the pack with identical pixel counts. A user is never told to turn on a
+  setting their build does not have, the tooltips carry the whole explanation (and the same words
+  as their accessible descriptions), and the verifier fails a pack whose instructions belong to a
+  different emulator than the one it names. **Witnessed 2026-09-05** on PenguinScreen2 build `8226182a` by GS-dump replay of a
+  gameplay dump: a 13-file pack exported by this service rendered in place of the disc's art (ESPN
+  shield, scorebug and kick-meter dial visibly replaced against a reference frame from the same dump; uniform parts —
+  torso, sleeves, pants, gloves, head/hair — witnessed on two player-filling dumps against an empty-pack control; the
+  same classic-named pack also loaded on three stock upstream PCSX2 builds). Evidence: hashes-only report at
+  `reports/gameplay_tuning/nfl2k5_ps2_replacement_pack_runtime.v1.json`; frames stay on the rig.
+- Six new `nfl2k5_ps2` capability rows, all `offline-writer-proved` and each a tab of the new
+  **PS2 NFL 2K5 Studio** (File ▸ PS2 NFL 2K5 Studio…, or `--ps2-disc-studio`), the separate PS2 window that
+  follows the save editor and Disc Inventory: `nfl2k5ps2.menus.text_banks` (display text inside its own allocation —
+  shorter or equal, never longer; 6,658 editable strings), `nfl2k5ps2.scripts.director_playbook`
+  (formations and plays inside the 37 fixed-capacity books, the Xbox writer unchanged),
+  `nfl2k5ps2.colors.unif_words` (the facemask and turtleneck words of 634 uniform records),
+  `nfl2k5ps2.players.disc_roster` (names and jersey numbers in the boot and 75 historic
+  rosters), `nfl2k5ps2.stadiums.position_lanes` (bounded vertex moves inside VC-LZ scenes;
+  one scene catalogued so far) and `nfl2k5ps2.audio.audo_exact_slot_replace` (any of 844
+  AUDO sounds, SPU-ADPCM encoded to the slot's exact byte count).
+- Every writer produces a NEW image from the user's own SLUS-20919 ISO through the
+  fixed-allocation ISO9660 writer `tools/ps2_iso9660_writer.py`: no extent moves, no size
+  changes, refusal before anything is created. Each lane ships an independent verifier that
+  re-derives its claims from the two images plus a whole-image byte comparison, `.sh`/`.bat`
+  validators and synthetic tests; the ISO9660 writer and verifier ship with them.
+- Each lane was proven on the real disc once, offline. One AUDO slot (menu-appear_01) was then heard on a cold boot in PenguinScreen2 — that row is runtime-proved for that one selector; nothing else has been on a screen or heard:
+  text 13 bytes in 13 runs; playbook 258 bytes in 74 ranges; colours 8 bytes; roster 16 bytes
+  in two ranges; stadium 1,282,669 bytes inside one declared window after an optimal-parse
+  refit into a chunk with 3 spare bytes; audio 6,080 bytes with none outside the slot.
+- Catalogues and trial receipts under `reports/gameplay_tuning/` are evidence, not release
+  payload; every catalogue tool rebuilds its catalogue from the user's own disc.
+- Registry 71 -> 78 rows; the `audio`, `colors`, `menus`, `players_rosters`, `scripts_config`,
+  `stadiums_fields` and `uniforms` surfaces now cover the PS2 target.
+- **PS2 NFL 2K5 Studio** (File > PS2 NFL 2K5 Studio…, or `--ps2-disc-studio [ISO]`): one window over
+  the six on-disc writers -- a tab per lane (Text, Playbooks, Colours, Roster, Stadium, Audio) and a
+  Build page. It opens the user's SLUS-20919 ISO read-only, builds each lane's catalogue from that
+  disc with the lane's own tool (cached per disc under the private application-data folder),
+  shows every budget on screen and refuses over the line in place, previews the exact recipe,
+  dry-runs it with the patcher so every refusal surfaces before any image exists, then writes a
+  NEW image as a chained queue of steps, each verified by the lane's independent verifier before
+  the previous intermediate is deleted; a build refuses to start without room for the image plus
+  one intermediate and says the size. Formations and plays reuse the Formation Designer and Play
+  Designer on the book read from the disc. Qt-free service (`mod_editor/core/ps2_disc_studio_*`),
+  thin window (`mod_editor/gui/ps2_disc_studio_*`), 60 tests on the lanes' synthetic discs. Trial on
+  the stock disc (`reports/gameplay_tuning/nfl2k5_ps2_disc_studio_trial.v1.json`): catalogues in
+  about a second each, a two-lane (text + facemask) build in 49 s with both verifiers PASS and the
+  source digest unchanged. Still nothing on a screen: every lane stays `offline-writer-proved`.
+  A **PCSX2 Pack** page beside Build offers the same replacement-pack export as the File menu --
+  the same window, on a saved `.2k5mod` you choose, reading no disc image and building no ISO --
+  and then writes that emulator's kit (`HOW-TO.txt`, `settings.ini`, a byte-identical copy of the
+  pack) beside the pack with `tools/nfl2k5_ps2_replacement_pack_kit.py`.
+
+## v1.0 RC85, earlier slice — NFL 2K5 (PS2): the disc, read by name (unreleased)
+
+- **The studio admits a PlayStation 2 disc for the first time.** A new capability row,
+  `nfl2k5ps2.textures.disc_inventory` (`read-only-mapped`, view), opens your own `SLUS-20919` ISO
+  read-only, checks the boot ELF -- and on request the whole image -- against the digests the
+  registry pins, and inventories the ~550,000 named resources inside `/VC_20919`: 120,779 textures
+  with their GS pixel format and dimensions, every TSET member, every scene's materials, nodes,
+  shapes and markers. With an Xbox resource-name inventory alongside it also names each resource's
+  **Xbox counterpart**. Both discs carry the same Visual Concepts container, so the correspondence
+  is a name join, not a pixel match: 24,187 of the Xbox disc's 24,285 names (99.6%) occur on the
+  PS2 disc. That list is what a PCSX2 texture-replacement pack author has never had, because a
+  GS-hash dump carries no names. It ships two ways: `tools/nfl2k5_ps2_disc_inventory.py` on the
+  command line, and **File → PS2 Disc Inventory…** (or `--ps2-disc` on its own, like `--ps2-save`),
+  a separate read-only window in the shape of the PS2 save editor: open your ISO, read the
+  identity check, browse the rows in a virtualized table (the half-million rows live in a private
+  SQLite sidecar and the table fetches pages as you scroll), narrow by name, entry number, type,
+  role, pack or Xbox counterpart, and export the rows shown as CSV or the whole report as JSON.
+  The walk runs off the Qt thread with progress, and the window refuses to close mid-walk.
+- **Retail-free by construction, and proved.** Only the metadata half of each resource chunk is
+  ever read or decoded; pixels and audio are never touched. The self-test builds a synthetic
+  two-pack disc, plants a payload sentinel and proves no output contains it. The committed
+  evidence -- `reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json` and the names-only
+  `nfl2k5_ps2_xbox_name_join.v1.csv` -- carries names, sizes, offsets, dimensions and digests only.
+- **Fixed: the PS2 serial.** The ISO9660 reader reported `SLUS-209.19`, the disc's 8.3 file name
+  with a hyphen, which matched nothing: PCSX2, redump and the registry all write `SLUS-20919`. It
+  does now, and its 54-test conformance suite runs in CI (it lived outside the directory CI globs,
+  so it had never run there).
+- **The PCSX2 replacement-pack audit completes against a real pack.** PCSX2 prints its hash fields
+  with `%llx`, unpadded, in six name shapes; the audit accepted one fixed-width shape and rejected
+  27% of a real 23,010-file pack. It now accepts all six, tolerates the pack manager's zero-byte
+  provenance markers and BOM-first JSON, and follows a symlinked pack root.
+- Registry 70 -> 71 rows; the `textures` surface now covers the PS2 target; the published schema
+  admits the third game and the twenty-first surface the registry already carried.
+## v1.0 RC85 — defense Create a Play, the Music tab and 200-track banks, the Momentum option, Rosters locks / reserves / abilities, the reference scorebug with real logos, and the allocator that makes native features possible
 Beta 61 was built almost entirely by GPT-6 Astra under Claude's review: research memo first, build session second, one
 integration session per wave on the stack. Every patch passed the retail byte pins, both executable safety gates
 (memory writes and cave references, now composed with every owner in both orders), a real image build of the
 experimental preset, a second real build with every opt-in switched on, and the full standalone CI loop. Nothing in this
 section has been played in xemu or on a console unless it says so; every new option is labelled experimental and
 defaults to off or retail in every preset unless stated.
-
 - **Owned executable space: two code pages and one writable page past the retail image, plus a 64 KiB read-only
   section (experimental, default off).** Every native feature people asked for this year stopped at the same wall: the
   free-space oracle certifies no unused code in the retail executable. Beta 60 grew the executable's final read-only
@@ -106,7 +429,6 @@ defaults to off or retail in every preset unless stated.
 - **Under the hood.** The cave manifest records every owner including the grown pages; provider closures pin every new
   module; the release and runtime gates cover the new tabs; the Playbooks panel offers the defense and option packs; a
   standalone `validate_beta61_integrated_features.py` runs every new capability's checks.
-
 ## v1.0 RC84 — ★ Rosters does what Finn's did (real saves, Franchise tab, membership, templates), dynamic kickoff, slot / nickel / dime, practice squads, career stats, simpler words everywhere (2026-09-04)
 
 - **Mod files are modular now (format 2): a `.2k5patch` can carry anything, including a change that resizes the disc.**

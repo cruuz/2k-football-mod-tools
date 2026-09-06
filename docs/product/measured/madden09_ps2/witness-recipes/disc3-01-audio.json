@@ -1,0 +1,10 @@
+{
+  "schema": "madden09_ps2_audio_streams_recipe/v1",
+  "sounds": [
+    {
+      "sound": "BGM.DAT:0:0",
+      "wav": "/tmp/claude-1000/-mnt-c-GitHub-NCAA-Draft-Class-Editor/fd4470c7-7f37-4a40-88e2-054f7c50a442/scratchpad/m09-witness-work/wav/witness-440hz-1hz-beep.wav",
+      "note": "synthetic 440 Hz tone gated at 1 Hz; BGM.DAT names none of its 47 members, so which track this is on screen is not established"
+    }
+  ]
+}
