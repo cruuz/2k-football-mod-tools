@@ -7,9 +7,10 @@ other in exactly two ways: which source files they compiled, and which sentence
 they echoed at the end.  Everything else -- find the repository root, force an
 offscreen Qt platform, run ``mod_editor.games conformance`` for the game, print
 a ``*_VALIDATION_PASS`` token -- was copied.  Copied text drifts: one of the ten
-ran the ISO9660 self-tests twice, and four validators of another game still run
+ran the ISO9660 self-tests twice, and four validators of a third game ran
 ``python3 -m unittest``, which cannot work in a shipped tree because ``tests/``
-is not shipped.
+is not shipped -- those four now delegate here too, with their proofs moved
+into the tools' own ``--selftest`` paths.
 
 So the behaviour lives here once, and what differs per lane lives in the game
 package where it belongs::
@@ -119,6 +120,10 @@ def load_manifest(game_id: str, root: Path = ROOT) -> Dict[str, Any]:
 def _run(argv: Sequence[str], root: Path, label: str, verbose: bool) -> None:
     env = dict(os.environ)
     env.setdefault("QT_QPA_PLATFORM", "offscreen")
+    # A step that imports a sibling writes a __pycache__ beside it, and a
+    # staged tree that gains files fails the release check.  The compile step
+    # already redirects its own .pyc; this covers every step's imports too.
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["PYTHONPATH"] = os.pathsep.join(
         [str(root)] + ([env["PYTHONPATH"]] if env.get("PYTHONPATH") else [])
     )

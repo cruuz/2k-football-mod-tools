@@ -59,6 +59,9 @@ tools/nfl2k5_ps2_stadium_position_patch.py
 tools/nfl2k5_ps2_stadium_position_verify.py
 tools/validate_nfl2k5_ps2_stadium_position.sh
 tools/validate_nfl2k5_ps2_stadium_position.bat
+tools/nfl2k5_ps2_fixture_audit.py
+tools/validate_nfl2k5_ps2_fixture_audit.sh
+tools/validate_nfl2k5_ps2_fixture_audit.bat
 tools/nfl2k5_ps2_texture_map.py
 tools/xxh3.py
 mod_editor/core/ps2_disc_studio_lanes.py
@@ -80,3 +83,4 @@ mod_editor/games/nfl2k5_ps2/validate_code_patches.sh
 mod_editor/games/nfl2k5_ps2/uniform_art.py
 mod_editor/games/nfl2k5_ps2/disc_lanes.py
 mod_editor/games/nfl2k5_ps2/uniform_kits.v1.json
+mod_editor/games/nfl2k5_ps2/validators.json

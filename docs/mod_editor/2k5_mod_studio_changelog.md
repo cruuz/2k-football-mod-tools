@@ -49,6 +49,18 @@
   executable draws. Real disc: three chained edits — a stadium texture, a field texture and a UI texture — all three
   **PASS** with **maximum channel error 0**, the image never growing, and both cache-coherence paths exercised on real
   bytes (three directory copies rewritten on two of them, a member's own cached copy rewritten on the third).
+- **Four gates that could not pass in a release, made able to.** The NFL 2K5 PS2 validators for text,
+  playbooks, stadium positions and the fixture audit ran `python -m unittest` over files under `tests/` —
+  which the release allowlist does not carry — so all three that shipped exited **1** in a staged tree and
+  the fourth was not staged at all and exited 1 in a checkout, against a contributor's home directory.
+  Their proofs now live in the tools that make them, reachable as `--selftest`: the synthetic playbook,
+  text bank and stadium scene are built by the writers themselves, the seven forged images that must make
+  the text verifier fail and the four that must make the stadium verifier fail are built there, and the
+  twenty-nine refusals are asserted to leave no output image behind. Each validator is now a two-line
+  delegation to `tools/validate_game_lane.py` with the same derived pass token, so **no registry row
+  changed**. All four exit 0 in a fresh stage, and a test reads the release allowlist and holds every
+  shipped validator to the rule.
+
 - **Gameplay — the playbook editor's caps, translated.** RC87 shipped the pnach pipeline with every translation
   refused. One is real now: **five `sltiu` immediates** behind four parameters — formations, sets, plays per book and
   plays per set — each read out of the user's own executable at plan time and each changed only in its low 16 bits.

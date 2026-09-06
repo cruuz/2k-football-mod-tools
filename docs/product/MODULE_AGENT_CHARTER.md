@@ -79,7 +79,11 @@ python "$STAGE/packaging/check_2k5_mod_studio_runtime.py"
 
 **Run a validator you changed inside the staged tree, not only in the checkout.** `tests/` is
 not shipped, so a validator that imports a test framework passes in a checkout and fails in a
-release. Four validators in this repository have that defect today; do not add a fifth.
+release. The four NFL 2K5 PS2 validators that had that defect now delegate to
+`tools/validate_game_lane.py` and their proofs live in the tools' own `--selftest` paths.
+**Two still have it** — `tools/validate_nfl_{all_texture_lane,coach_roster_name}.sh`, the Xbox
+lanes — and `tests/mod_editor/test_validate_game_lane.py` asserts the offender list is exactly
+those two, so a new one fails the suite and a fixed one has to be struck off there.
 
 Test files are `tests/mod_editor/test_*.py`, each runnable on its own
 (`PYTHONPATH=. python tests/mod_editor/test_<name>.py`). Run the ones your change can affect —

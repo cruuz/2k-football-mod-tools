@@ -1,11 +1,11 @@
 @echo off
 setlocal enableextensions
-rem Windows validator for ESPN NFL 2K5 (PS2), the stadium-position lane.
-rem Mirrors tools/validate_nfl2k5_ps2_stadium_position.sh: both hand the work to
+rem Windows validator for ESPN NFL 2K5 (PS2), the fixture-availability audit.
+rem Mirrors tools/validate_nfl2k5_ps2_fixture_audit.sh: both hand the work to
 rem tools/validate_game_lane.py, which reads mod_editor/games/nfl2k5_ps2/validators.json
 rem for the steps this lane needs and derives the pass token from the lane name.
 rem No game data, and no test framework: this has to run in a shipped tree.
-rem Prints NFL2K5_PS2_STADIUM_POSITION_VALIDATION_PASS on success.
+rem Prints NFL2K5_PS2_FIXTURE_AUDIT_VALIDATION_PASS on success.
 rem Note: no parentheses inside echo lines within if blocks; cmd.exe reads them as block ends.
 
 rem Run from the repository root, one level up from this script.
@@ -20,7 +20,7 @@ if not defined PY_CMD (
 )
 
 if not defined PY_CMD (
-    echo PS2 stadium position validation could not run.
+    echo PS2 fixture audit validation could not run.
     echo.
     echo Python 3 was not found. Install Python 3 from https://www.python.org/downloads/
     echo and enable "Add python.exe to PATH", then run this again.
@@ -29,6 +29,6 @@ if not defined PY_CMD (
 )
 
 set "PYTHONPATH=%CD%"
-%PY_CMD% tools\validate_game_lane.py --game nfl2k5_ps2 --lane stadium_position || exit /b 1
+%PY_CMD% tools\validate_game_lane.py --game nfl2k5_ps2 --lane fixture_audit || exit /b 1
 
 exit /b 0

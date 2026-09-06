@@ -1,0 +1,102 @@
+{
+  "game_id": "nfl2k5_ps2",
+  "lanes": {
+    "fixture_audit": {
+      "compile": [
+        "tools/nfl2k5_ps2_fixture_audit.py"
+      ],
+      "conformance": false,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_fixture_audit.py"
+        }
+      ],
+      "what": "the read-only PS2 fixture availability audit: what this machine has, and the four owners it still cannot claim (no studio lane, so no conformance harness)"
+    },
+    "playbook": {
+      "compile": [
+        "tools/nfl2k5_ps2_playbook_target_catalog.py",
+        "tools/nfl2k5_ps2_playbook_patch.py",
+        "tools/nfl2k5_ps2_playbook_verify.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_playbook_patch.py"
+        },
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_playbook_target_catalog.py"
+        }
+      ],
+      "what": "the PS2 playbook writer, its catalogue and its independent verifier"
+    },
+    "stadium_position": {
+      "compile": [
+        "tools/nfl2k5_ps2_stadium_target_catalog.py",
+        "tools/nfl2k5_ps2_stadium_position_patch.py",
+        "tools/nfl2k5_ps2_stadium_position_verify.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_stadium_target_catalog.py"
+        },
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_stadium_position_verify.py"
+        },
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_stadium_position_patch.py"
+        }
+      ],
+      "what": "the bounded stadium-geometry lane: the target catalogue, the writer and the independent verifier"
+    },
+    "text": {
+      "compile": [
+        "tools/nfl2k5_ps2_text_target_catalog.py",
+        "tools/nfl2k5_ps2_text_patch.py",
+        "tools/nfl2k5_ps2_text_verify.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_text_target_catalog.py"
+        },
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_text_patch.py"
+        },
+        {
+          "args": [
+            "--selftest"
+          ],
+          "script": "tools/nfl2k5_ps2_text_verify.py"
+        }
+      ],
+      "what": "the bounded on-disc text-bank lane: the catalogue, the writer and the independent verifier"
+    }
+  },
+  "schema": "vc_game_lane_validators/v1"
+}

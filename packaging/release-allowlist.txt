@@ -445,6 +445,14 @@ tools/nfl2k5_ps2_stadium_position_patch.py
 tools/nfl2k5_ps2_stadium_position_verify.py
 tools/validate_nfl2k5_ps2_stadium_position.sh
 tools/validate_nfl2k5_ps2_stadium_position.bat
+
+# The fixture-availability audit and its lane validator: a read-only census
+# of what this machine has for SLUS-20919 and the four owners it still
+# cannot claim.  It ships because a validator that cannot run in the
+# release stage is not a gate.
+tools/nfl2k5_ps2_fixture_audit.py
+tools/validate_nfl2k5_ps2_fixture_audit.sh
+tools/validate_nfl2k5_ps2_fixture_audit.bat
 # M1: the PS2 texture lane. The manifest is the data an Xbox edit needs to be
 # named as a PCSX2 replacement; the two tools that compute it ship with it so a
 # user can re-derive the map from their own SLUS-20919 image and check ours.
@@ -517,6 +525,7 @@ tools/validate_madden09_ps2_audio.bat
 tools/validate_game_lane.py
 mod_editor/games/madden09_ps2/validators.json
 mod_editor/games/ncaa09_ps2/validators.json
+mod_editor/games/nfl2k5_ps2/validators.json
 tools/validate_madden09_ps2_audio.sh
 tools/validate_madden09_ps2_code_patches.bat
 tools/validate_madden09_ps2_code_patches.sh
