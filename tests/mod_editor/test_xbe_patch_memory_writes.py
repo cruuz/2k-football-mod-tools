@@ -162,6 +162,9 @@ class PatchWriteTests(unittest.TestCase):
         cls.zone_evidence = zone_facing.assess(cls.patched)
         if cls.zone_evidence["states"]["initial_drop"] != "applied":
             raise AssertionError("Initial zone-drop owner missing from tier evidence")
+        from mod_editor.core import nfl2k5_my_career as my_career, nfl2k5_crib_reclaim as crib_reclaim
+        if my_career.status(cls.patched) != "applied" or crib_reclaim.status(cls.patched) != "applied":
+            raise AssertionError("MyCareer or Crib movie cut missing from the composed XBE")
         from mod_editor.core import nfl2k5_calendar_engine as calendar
         if calendar.status(cls.patched) != "applied":
             raise AssertionError("calendar owner missing from the composed XBE")

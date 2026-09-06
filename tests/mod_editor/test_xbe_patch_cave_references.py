@@ -87,6 +87,9 @@ class CaveReferenceTests(unittest.TestCase):
         settings = momentum.read_settings(cls.patched)
         if not settings.get("momentum_collisions") or settings.get("momentum_collision_level") != 100:
             raise AssertionError("collision momentum missing from the composed XBE")
+        from mod_editor.core import nfl2k5_my_career as my_career, nfl2k5_crib_reclaim as crib_reclaim
+        if my_career.status(cls.patched) != "applied" or crib_reclaim.status(cls.patched) != "applied":
+            raise AssertionError("MyCareer or Crib movie cut missing from the composed XBE")
         from mod_editor.core import nfl2k5_calendar_engine as calendar
         if calendar.status(cls.patched) != "applied":
             raise AssertionError("calendar owner missing from the composed XBE")
@@ -373,7 +376,9 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_defensive_try as defensive_try
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
-        proof = space.allocation_evidence(self.retail, manifest, allocated=self.patched)
+        from tests.nfl2k5_allocator_stack import manifest_for_allocated_union
+        allocation_manifest = manifest_for_allocated_union(manifest, self.retail, self.patched)
+        proof = space.allocation_evidence(self.retail, allocation_manifest, allocated=self.patched)
         self.assertEqual(proof["legacy_encoded_references"], [])
         # Calendar requires v3 even when the caller does not force scale-out.
         if space.layout(self.patched)["version"] == 3:
@@ -419,7 +424,9 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertTrue(XbeImage(self.patched).section(site["va"], site["size"]).executable)
         self.assertEqual({va: refs for va, refs in self.targets.items()
                           if site["va"] <= va < site["va"] + site["size"]}, {})
-        self.assertEqual(space.allocation_evidence(self.retail, manifest,
+        from tests.nfl2k5_allocator_stack import manifest_for_allocated_union
+        allocation_manifest = manifest_for_allocated_union(manifest, self.retail, self.patched)
+        self.assertEqual(space.allocation_evidence(self.retail, allocation_manifest,
                                                    allocated=self.patched)["legacy_encoded_references"], [])
         instructions = list(Cs(CS_ARCH_X86, CS_MODE_32).disasm(
             XbeImage(self.patched).read(zone_drop.HOOK_VA, 5), zone_drop.HOOK_VA))
@@ -496,6 +503,7 @@ class CaveReferenceTests(unittest.TestCase):
                 self.assertEqual(row["parent_owner"], space.OWNER)
         self.assertEqual(spy.status(self.patched), "applied")
 
+
     def test_guardian_has_complete_live_hooks_and_only_owned_grown_code(self):
         from mod_editor.core import nfl2k5_guardian_overlay as guardian, nfl2k5_xbe_space as space
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
@@ -509,6 +517,7 @@ class CaveReferenceTests(unittest.TestCase):
                 self.assertEqual(row["parent_owner"], space.OWNER)
 
 
+@unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class ScorebugReferenceReservations(unittest.TestCase):
     def test_scorebug_uses_existing_reserved_constants_and_no_new_cave(self):

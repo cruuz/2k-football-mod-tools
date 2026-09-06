@@ -86,8 +86,14 @@ def sites() -> list[tuple[str, int, bytes, bytes]]:
 def status(payload: bytes) -> str:
     try:
         at = rdata.offset_of(payload, COPY_PLAYERS_VA)
-        if payload[at:at + len(RETAIL_COPY_PLAYERS)] != RETAIL_COPY_PLAYERS:
-            return "foreign"
+        actual = payload[at:at + len(RETAIL_COPY_PLAYERS)]
+        if actual != RETAIL_COPY_PLAYERS:
+            # MyCareer delegates only this helper's six-byte entry. Accept it
+            # only with its complete sealed allocation and exact hook set.
+            from . import nfl2k5_my_career as career
+            if (actual[6:] != RETAIL_COPY_PLAYERS[6:] or
+                    career.status(payload) != "applied"):
+                return "foreign"
         state = rdata.status(payload, sites())
         if state == "applied" and (ps.status(payload) != "applied" or fp.status(payload) != "applied"):
             return "foreign"

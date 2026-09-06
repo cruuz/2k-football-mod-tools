@@ -7007,3 +7007,227 @@ was made in this session. Use sufficient free capacity and disposable temporary
 directories for those final integrated images. Noah's required played witness
 is in the report; offline proofs do not establish GPU appearance or saved-game
 lifecycle coverage.
+
+---
+
+# r62 MyCareer and independent Crib movie cut, 2026-09-06
+
+This section is additive. The supplied backends, own Qt page, generated assembly,
+tests and report are implemented. The files listed as protected in ASTRA_BRIEF.md
+have not been edited. Claude applies the following concrete integration. Keep
+both features **EXPERIMENTAL / UNWITNESSED**, with no played-runtime claim.
+
+## BuildPlan, presets, preflight and ordering
+
+Add these fields to `mod_editor/core/mod_build.py`:
+
+```python
+my_career: bool = False
+my_career_setup: str | None = None  # path to prepared MyCareer.json
+crib_reclaim: bool = False
+```
+
+Basic, Advanced and Experimental explicitly set `my_career=False`,
+`my_career_setup=None`, `crib_reclaim=False`. Add both modules to availability
+checks and both flags to `wants_xbe_patch`, normalization, serialization, preset
+round-trips and inspection/status key forwarding. Validate exact booleans.
+When `my_career` is true, require a nonempty setup, call
+`nfl2k5_my_career.read_setup(plan.my_career_setup)` before copying an image,
+freeze its returned 1280 bytes, and set `xbe_space=True`. Reject a setup supplied
+without its option. An unconfigured `apply(payload)` exists for owner/gate
+composition; it must not be offered as a configured MyCareer Build.
+
+Do not enable practice-squad features merely for MyCareer. If they are selected,
+preserve their existing prerequisite normalization. MyCareer understands their
+reserve metadata. The small change in `nfl2k5_practice_reserves.status` recognizes
+only MyCareer's complete sealed installation at the shared copy-helper entry;
+retain that change. No draft-AI picker, cap, roster limit or progression setting
+is implicitly enabled or disabled.
+
+Add MyCareer to the existing final allocator pass and all deferral predicates
+around the scorebug runtime path. On the preliminary pass pass `my_career=False`
+and `my_career_setup=None`; reserve its request in the **complete final union**
+passed to `runtime_apply_in_place(extra_requests=...)`. The final `_apply_all`
+receives `my_career=plan.my_career, my_career_setup=frozen_setup` along with every
+other selected owner. Preserve the existing allocator-first order. A later
+incremental request expansion after another owner's installation must refuse.
+
+`crib_reclaim` requests no allocator space. Its XBE tuple disables the consumer,
+but only the image rebuild below earns a reclaimed-byte receipt. Defer the
+image rewrite until **after** all XBE growth and archive rewrites, including
+music-library and hires-pack processing. Then use fresh offsets:
+
+```python
+crib = _core_module("nfl2k5_crib_reclaim")
+preview = crib.plan(target)
+with tempfile.TemporaryDirectory(prefix=".crib-cut-", dir=target.parent) as folder:
+    destination = Path(folder).resolve() / "image.iso"
+    rec = crib.rebuild(target, destination, expected_plan=preview, progress=progress)
+    os.replace(destination, target)
+receipt["steps"].append({"step": "crib_reclaim", **rec})
+inspection = inspect(target, screen_timing=plan.screen_timing)
+```
+
+Both readers and writers close before replacement. Reopen metadata after the
+rewrite; no saved physical offset is valid across it. Source and output must be
+separate. Retain the existing public Build transaction and failure cleanup.
+Before creating the first working image, account for the working image **and**
+the Crib transaction's second copy plus its scratch allowance. Keep the main
+drive above the user's 100 GB floor. The backend conservatively requires
+100 GiB plus scratch free for any source above 1 GiB. This session did not create
+a full-size disposable image because the drive had only about 102 GiB free.
+
+## Dispatcher, allocation adapter and four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, import:
+
+```python
+from . import nfl2k5_my_career as my_career_patch
+from . import nfl2k5_crib_reclaim as crib_reclaim_patch
+```
+
+Thread `my_career=False`, `my_career_setup=None`, `crib_reclaim=False` through
+`_apply_all`, `write_xbe_copy`, `write_image_copy`, their validation/no-op checks,
+all forwarding calls, and the scorebug deferred/final paths. Normalize and
+validate setup once, retaining the immutable bytes during the build.
+
+Append `my_career=False` to `_selected_space_requests` and `_xbe_space_adapter`,
+and pass it at every call site. Add
+`+ (my_career_patch.REQUESTS if my_career else ())` to the returned union and
+`or my_career` to allocator-selection predicates. Crib may be accepted as a
+forwarded flag but must contribute `()` and must not force allocation.
+
+The settings adapter is concrete and needs no assembler at runtime:
+
+```python
+class _my_career_adapter:
+    def __init__(self, setup):
+        self.setup = my_career_patch.read_setup(setup)
+
+    def status(self, payload):
+        return my_career_patch.status(payload)
+
+    def apply(self, payload):
+        return my_career_patch.apply(payload, setup=self.setup)
+```
+
+Append these `_apply_all` owner tuples **after** the shared allocator tuple:
+
+```python
+(my_career, _my_career_adapter(my_career_setup),
+ "my_career_patch", "MyCareer (experimental)"),
+(crib_reclaim, crib_reclaim_patch,
+ "crib_reclaim_patch", "Crib movie cut (experimental)"),
+```
+
+Add the following to `_grown_status_fields(payload)`, then retain its expansion
+in all **four** result/status dictionaries: `read_xbe`, `read_image`,
+`write_xbe_copy`, `write_image_copy`. Also add the keys to `mod_build.inspect`'s
+forwarded status list and the final Build receipt.
+
+```python
+"my_career": my_career_patch.status(payload),
+"crib_reclaim": crib_reclaim_patch.status(payload),
+```
+
+For a valid applied MyCareer image, `installed_setup(payload) is not None` is the
+configuration check. Do not call it on retail/foreign images. Do not expose the
+full identity/checkpoint bytes in generic status displays. `crib_reclaim` here
+is the XBE consumer status; label it accordingly. Only the explicit image plan
+and rebuild receipt establish `archive_bytes_reclaimed`, `disc_bytes_reclaimed`
+and verification of every retained resource. An XBE-only patch reports **zero**
+disc bytes reclaimed. Never silently count the movie payload size as image
+savings or run a 6 GB full-image hash on every ordinary status refresh.
+
+## Gameplay Patches, Build options and MyCareer page
+
+Add these PATCHES rows to `mod_editor/gui/gameplay_patches_panel_qt.py` and put
+both keys in `NEEDS_IMAGE`. Their help includes both required words:
+
+```python
+("my_career", "MyCareer (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team. Patch: "
+ "MyCareer follows MyPlayer, a created QB, through the normal draft. "
+ "The CPU manages the club and teammates. Create the paired draft save "
+ "and setup on the MyCareer page, then include the setup in Build."),
+("crib_reclaim", "Crib movie cut (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail: The Crib includes 23 movies. Patch: "
+ "Remove those movies from a smaller image. The Trophy Room, awards, "
+ "profiles, shared room, games and furniture stay."),
+```
+
+MyCareer needs its setup picker in the Gameplay Patches action path too. Forward
+the chosen frozen setup to the dispatcher and refuse a missing setup before a
+copy. Crib's action must call its transactional image `rebuild` with an explicit
+output, not finish after the XBE-only dispatch. Keep the two options independent.
+
+In `mod_editor/gui/build_panel_qt.py`, add `_option` entries using exact captions
+`MyCareer (experimental)` (23 characters) and `Crib movie cut (experimental)`
+(29 characters), each below 60. Add a `MyCareer.json` file picker and explanatory
+text linking it to the paired save. Wire both checkboxes, setup path, all plan
+read/write paths, availability and preset/reset synchronization. Selecting or
+opening a setup must not implicitly enable either checkbox.
+
+In `mod_editor/gui/studio_qt.py`, import and instantiate
+`MyCareerPanel` from `mod_editor.gui.my_career_panel_qt`, register its own tab
+with exact title **MyCareer**, and call `set_source(current_image)` on source
+changes. Connect `setup_ready(str)` to the Build panel's setup-path setter.
+The page itself already implements preparation, background work, errors,
+explicit movie-plan review and the separate smaller-image transaction. It
+does not start work on tab creation or source selection. Preserve the exact
+names **MyCareer** and **MyPlayer** everywhere; use no em dashes in UI text.
+
+## Allowlist, runtime closure, capability and manifest handoff
+
+Required runtime allowlist lines in `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_my_career.py
+mod_editor/core/nfl2k5_my_career_code.py
+mod_editor/core/nfl2k5_crib_reclaim.py
+mod_editor/gui/my_career_panel_qt.py
+docs/mod_editor/nfl2k5_my_career_capabilities.json
+ASTRA_MY_CAREER_REPORT.md
+```
+
+Retain already-shipped transitive dependencies: `nfl2k5_roster_records`,
+`nfl2k5_franchise_save`, `nfl2k5_practice_reserves`, `nfl2k5_xbe_space`,
+`nfl2k5_music_archive`, `nfl2k5_music_banks`, `nfl2k5_rdata_sites`,
+`nfl2k5_cave_oracle`, `nfl2k5_bump_strength`, `nfl2k5_depth_chart_storage`,
+`platform_compat`, `tools.nfl2k5_commentary_swap` and `tools.nfl_outer`, plus their
+existing closures. Source-distribution additions are
+`tools/nfl2k5_my_career.S` and `tools/nfl2k5_my_career_assemble.py`; the runtime
+needs only generated Python bytes, not GNU as, Capstone or Unicorn.
+
+Add runtime-closure imports in `packaging/check_2k5_mod_studio_runtime.py`:
+
+```text
+mod_editor.core.nfl2k5_my_career
+mod_editor.core.nfl2k5_my_career_code
+mod_editor.core.nfl2k5_crib_reclaim
+mod_editor.gui.my_career_panel_qt
+```
+
+Merge the two schema-valid objects in
+`docs/mod_editor/nfl2k5_my_career_capabilities.json` into the registry. IDs:
+`nfl2k5.mode.my_career` on existing `mode_state_routing`, and
+`nfl2k5.crib.movie_reclaim` on existing `crib_assets`. Classification is
+`offline-writer-proved`; runtime is `not-tested`; GUI defaults are false. Both
+backend and validation commands use `python3 -m <dotted.module> ...`, so the
+registry file-check mode resolves them. No new surface enum is needed.
+
+Both owners are already in `tests/nfl2k5_allocator_stack.py`, both XBE gates and
+the manifest builder's complete request and owner lists. MyCareer's real
+8192/4096/16-byte-aligned requests exactly equal its existing committed budget
+rows; no budget expansion or extra RO page is requested. Crib has no allocation.
+
+Claude alone regenerates `data/nfl2k5_cave_reservations.json` after protected
+integration, using the usual real-disc manifest workflow when disk space allows.
+The old manifest's named child offsets change when this owner enters the union.
+The cave gate now uses a **test-only** named-child projection for its two
+allocation proofs: old owner/kind bounds and identical size/alignment are
+required, retail reservations remain byte-for-byte intact, unknown owners
+refuse, and the product manifest is never rewritten. The separate MyCareer
+manifest tests observe its actual byte writes and zero-initialized RW capacity.
+These proofs do not replace Claude's release manifest regeneration or a played
+acceptance run. No updater, release-tag, workflow or push changes are requested.

@@ -19,14 +19,16 @@ from mod_editor.core import nfl2k5_read_option_runtime as read_option
 from mod_editor.core import nfl2k5_franchise_2026 as franchise_2026
 from mod_editor.core import nfl2k5_senior_bowl as senior_bowl
 from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
-
 from mod_editor.core import nfl2k5_guardian_overlay as guardian
+from mod_editor.core import nfl2k5_my_career as my_career
+from mod_editor.core import nfl2k5_crib_reclaim as crib_reclaim
+
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
                    + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS)
 REQUESTS = (LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
-            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS)
+            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -64,7 +66,8 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     owners = ((defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
-              (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}))
+              (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
+              (my_career, {}), (crib_reclaim, {}))
     order = tuple(reversed(owners)) if reverse else owners
     for module, kwargs in order:
         payload, _ = module.apply(payload, **kwargs)
@@ -76,3 +79,38 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     if space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)[0] != payload:
         raise AssertionError("allocator replay changed the complete owner union")
     return payload, policy_receipt
+
+
+def manifest_for_allocated_union(manifest, retail, allocated):
+    """Test-only relocation of proved named children to this request union.
+
+    The protected release manifest records a different union. Keep every retail
+    reservation and every parent page. Move a grown child span only if it lies
+    wholly within its recorded owner/kind allocation, whose size/alignment must
+    match the actual sealed directory. Unknown or changed ownership refuses.
+    This is not a regenerated disc manifest and is never written to the product.
+    """
+    from mod_editor.core.nfl2k5_cave_oracle import ReservationManifest, XbeImage
+    old = manifest.document["allocator_layout"]["allocations"]
+    layout = space.layout(allocated)
+    current = {(a["owner"], a["kind"]): a for a in layout["allocations"]}
+    spans = []
+    for span in manifest.document["spans"]:
+        start, end = int(span["start"], 0), int(span["end"], 0)
+        if start < space.CODE_VA or span["owner"] == space.OWNER:
+            spans.append(span)
+            continue
+        matches = [a for a in old if a["owner"] == span["owner"] and
+                   a["va"] <= start < end <= a["va"] + a["size"]]
+        if len(matches) != 1:
+            raise AssertionError("manifest contains an unrecognized grown owner span")
+        before = matches[0]
+        after = current[(before["owner"], before["kind"])]
+        if (before["size"], before["align"]) != (after["size"], after["align"]):
+            raise AssertionError("manifest child size/alignment changed")
+        delta = after["va"] - before["va"]
+        spans.append({**span, "start": hex(start + delta), "end": hex(end + delta)})
+    spans += space.reservations(allocated)
+    document = {**manifest.document, "spans": spans, "allocator_layout": layout,
+                "model": "Test-only named-allocation projection; retail reservations unchanged"}
+    return ReservationManifest(document, XbeImage(retail))
