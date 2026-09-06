@@ -467,6 +467,22 @@ directory rather than the `DATA` size. A tool must be tolerant of both:
 it, while still refusing any member that genuinely falls outside the bytes it
 was handed.
 
+**A writer takes the directory's view, and can.** Measured on all six: no
+member with bytes ends past the record, only trailing empty members lie out
+there, and the next file starts in the very next sector [M]. So
+`rewrite_member(..., allow_short_tail=True)` and its `plan_member_rewrite`
+twin work inside the bytes the record allocates: the `DATA` chunk's declared
+size is written back exactly as the disc had it, the result is the same length
+as the input, no member may move, and an empty member's slot past the record is
+left alone — which means the ISO9660 record never has to change and a
+fixed-allocation image writer is untouched. `parsed.short_tail` says how many
+bytes the chunk declares past the buffer's end and `short_tail_is_empty`
+whether anything but an empty member lives there;
+`layout_violations(allow_short_tail=True)` forgives the one departure above and
+nothing else. A container with real bytes past the record is refused, with both
+sizes in the sentence, because that is the case where a rewrite really would
+have to grow the file.
+
 ---
 
 ## 8. Cross-title: one reader, seven discs [M]
@@ -521,7 +537,7 @@ Against `GAME_STUDIO_SHELL_PLAN.md` §5:
 |---|---|
 | ~~shrinking a member back down after an edit~~ | **unblocked**: `lzh1_compress` (§5.3) re-encodes at about EA's own size, 1,836 of 1,836 members proved |
 | promoting any on-disc writer above `offline-writer-proved` | the boot test in §6 has not been run; it needs the rig |
-| ~~an edit to a container named in `GAME.QKL` / `FE.QKL`~~ | **unblocked**: `containers.preload_copies(image)` reads the two `QL01` caches and returns, per container, every header copy and every member copy with its offset. Measured on the retail disc: **6,270 copies across 39 containers**, every one byte-identical to what it copies. `UNIFORMS.DAT`'s directory is copied **three times** and none of its members at all, so a member rewrite is free only while the container's first `data_offset` bytes stay put — and they move the moment a member changes stored size or codec. The uniform-art writer rewrites every stale copy and refuses a carried member whose stored size changed, because a cached copy is a fixed slot |
+| ~~an edit to a container named in `GAME.QKL` / `FE.QKL`~~ | **unblocked**: `containers.preload_copies(image)` reads the two `QL01` caches and returns, per container, every header copy and every member copy with its offset. Measured on the retail disc: **6,270 copies across 39 containers**, every one byte-identical to what it copies, and every one resolved — a row naming a member past the end of the container it names is attributed to whatever its bytes actually equal, which for the two such rows on this disc is the next file's container header. `UNIFORMS.DAT`'s directory is copied **three times** and none of its members at all, so a member rewrite is free only while the container's first `data_offset` bytes stay put — and they move the moment a member changes stored size or codec. The uniform-art writer rewrites every stale copy and refuses a carried member whose stored size changed, because a cached copy is a fixed slot |
 | `MMAP` pixels, `SMF`/`DMF` geometry | not decoded anywhere here (§6) |
 
 ---

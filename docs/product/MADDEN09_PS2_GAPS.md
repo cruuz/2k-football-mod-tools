@@ -32,7 +32,7 @@ it, and the missing fact is named.
 | 9 | roster units | **closed** — inches and pounds-less-160, offered on the page |
 | 10 | container checksum | **narrowed** — no header word of the 13 rewritten Deluxe containers tracks content |
 | 11 | presentation | **narrowed** — the overlay textures are on disc and named |
-| 12 | Deluxe | **narrowed** — every lane catalogues it; two art containers exceed the read limit |
+| 12 | Deluxe | **narrowed** — the database writers now build and verify on it; open only on two art containers over the read limit, and on a boot |
 | 13 | `MMAP` palette banks, LZH1 worst case, ISO free space | **narrowed** — measured and scoped |
 | 14 | nothing booted | the witness plan, §14 |
 | 15 | the uniform verifier refused a recipe naming several images of one member | **closed** — the exemption is now the set of named images |
@@ -294,6 +294,19 @@ keep every copy in step or refuse. **Which copy a given screen reads is not
 known** [A], and it decides whether a stale copy is harmless, fatal, or
 silently wins.
 
+*Two of the 6,270 were unresolved until this pass* [M,
+`measured/madden09_ps2/preload-copy-attribution.json`]: `FE.QKL` carries two
+rows naming `UIS_FONT.DAT` member 10 of a ten-member container, and
+`PreloadCopy.length_in` refused them rather than guess how long they were. The
+rows' file index is read correctly — its neighbours with the same index resolve
+and match — and both sit at exactly the offset the cache's own header row gives
+`UIS_PERS.DAT`, the next file in the `FILS` list, where the 512 bytes are that
+container's header byte for byte. So the member number is EA's error, and a
+copy is now attributed to the container whose bytes it **is**, with the row's
+own words kept beside it. Retail Madden 09: 6,270 copies, **0 refusals**.
+Madden 06, where twelve rows alias out-of-range `SOUNDDAT.DAT` numbers onto two
+offsets that cache already attributes to real members: **0 refusals**.
+
 **The cheapest experiment.** One texture, drawn on a screen the owner reaches
 in under a minute, carried by a cache. `UIS_IG.DAT` member 53, image 0 — a
 128×64 8-bit texture — is carried by `GAME.QKL` and was drawn in **all 32**
@@ -482,8 +495,8 @@ differs in nine words and thirteen `/DATA` files [M].
 So every lane *catalogues* it; the one catalogue refusal is a size limit, not a
 format.
 
-**The database writers refuse it** [M, the witness-disc builds]. Both
-`team_data` and `identity` refuse the Deluxe image with one sentence: the
+**The database writers used to refuse it** [M, the witness-disc builds]. Both
+`team_data` and `identity` refused the Deluxe image with one sentence: the
 container's directory record says 2,559,112 bytes and the container "carries"
 2,585,280, and a rewrite that grows a file is not one they do. The text lane
 and the executable patches built and verified on the same image. What is
@@ -504,20 +517,59 @@ container's tail (harmless, since only empty members live there, and a defect
 all the same). The writers then compare the recovered length with the record
 and refuse.
 
-**What closes it, bounded, without growth.** (1) `containers.read_file`
-recovers past the record only when a **non-empty** member lies beyond it,
-which on this disc is never; (2) `ea_terf.rewrite_member` tolerates a `DATA`
-size that overruns the file when only empty members lie beyond, keeping it as
-the disc has it. A member rewrite then lands inside the recorded extent, the
-directory record is untouched, and the same verifier applies. Half a day with
-tests, in the shared container module.
+**What closed it, bounded, without growth** [M]. The reader still recovers to
+the declared length — that is right for a reader, and it is how the catalogue
+sees every member — but a **writer** now takes the other view. One shared
+preflight, `containers.open_for_rewrite`, hands a lane exactly the ISO9660
+record's bytes, says whether the container is one of the recorded-short ones,
+and refuses — naming the recorded size **and** the declared one — when a member
+with bytes really does lie past the record, or when a recipe names one.
+Underneath it, `ea_terf.rewrite_member` and `plan_member_rewrite` take an
+`allow_short_tail` recovery mode: the `DATA` chunk's declared size is written
+back exactly as the disc had it, the result is the same length as the input, no
+member may move, and an empty member's slot past the record is left alone. So
+the rewrite lands inside the recorded extent, the directory record never
+changes, the bounded ISO write is untouched, and the same verifier applies.
+`layout_violations(allow_short_tail=True)` forgives exactly one departure — a
+`DATA` chunk short of the layout rule's end with only empty members in the
+difference — and nothing else.
+
+**Proof on the Deluxe image** [M,
+`measured/madden09_ps2/deluxe-recorded-short-writers.json`], using the two
+recipes that produced the old sentence:
+
+| | |
+|---|---|
+| `disc4-01-roster.json` through `players_rosters.team_databases` | **PASS** — 3 values read back from the destination, 1 database re-parsed with 44 checksum slots all correct, **0 undeclared changed bytes** |
+| `disc4-02-identity.json` through `colors.team_identity` | **PASS** — 8 values read back, 2 databases re-parsed with 470 checksum slots all correct, **0 undeclared changed bytes** |
+| image bytes, before and after | 1,846,476,800 → 1,846,476,800 |
+| directory records moved or resized | **0 of 109** |
+| `DB_TEAMS.DAT` recorded length, before and after | 2,559,112 → 2,559,112 |
+| its `DATA` chunk's declared size, before and after | 2,574,848 → 2,574,848 |
+| its container directory (header + `DIR1`), before and after | **identical** |
+| bytes of it that differ (identity build) | **10**, all inside the edited record's span |
+
+And the refusal that must survive: a recipe naming member 235 — the first
+member whose slot starts past the record, and empty like the other 408 — is
+still refused, with both sizes in the sentence: *"/DATA/DB_TEAMS.DAT member 235
+ends at byte 2,559,168, and this image's own directory records the container as
+2,559,112 bytes against the 2,585,280 it declares; rewriting a member out there
+would have to grow the file, which this lane will not do."*
+
+The fixture is built from the format's rules, not from a disc:
+`containers.make_recorded_short` does to a synthetic container what the Deluxe
+repack tool did to its own, and `build_synthetic_disc(recorded_short=True)`
+puts one on the synthetic disc, so CI proves the recovery mode with no game
+data.
 
 **Cost of the other refusal.** Lift the art lane's read limit for containers
 it walks member by member (the audio lane already maps large containers) —
-half a day.
+half a day. Not done this pass.
 
-**Status: narrowed** to recorded-short containers. Missing fact: a Deluxe boot
-of any rebuilt container (§14 says which).
+**Status: narrowed.** The recorded-short half is **closed** — both database
+lanes build and verify on the Deluxe image. What is still open: the two art
+containers over the 96 MB read limit, and a Deluxe boot of any rebuilt
+container (§14 boot 8, which can now include boot 1's line).
 
 ---
 

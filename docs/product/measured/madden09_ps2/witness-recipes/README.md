@@ -50,16 +50,16 @@ either.**
 | `disc3-01-audio.json` | `audio.streams` | `BGM.DAT:0:0` ← a synthetic 30 s 440 Hz tone gated at 1 Hz |
 | `disc3-02-playbooks.json` | `playbooks.databases` | book `GAMEDATA.DAT#67`: one formation → `WITNESS FORM` (in `FORM` and `PBFM`), one set → `WITNESS SET` (in `PBST` and `SETL`) |
 | `disc3-03-code-patch.json` | `gameplay.boot_elf_patches` | `playbook_editor_caps` with `plays_cap: 400`, `sets_cap: 130`, delivered on the **disc** route |
-| `disc4-01-roster.json` | `players_rosters.team_databases` | **refused on Deluxe** — Bears `PLAY` record 48 → `WITNESS` / `ROSTER` / 77 |
-| `disc4-02-identity.json` | `colors.team_identity` | **refused on Deluxe** — identical to `disc1-02-identity.json` |
+| `disc4-01-roster.json` | `players_rosters.team_databases` | Bears `PLAY` record 48 → `WITNESS` / `ROSTER` / 77. *Refused on Deluxe when disc 4 was built; it builds and verifies there now — see below* |
+| `disc4-02-identity.json` | `colors.team_identity` | identical to `disc1-02-identity.json`. *Same story* |
 
 `disc4-01-text` does not exist: disc 4 reused `disc1-03-text.json` unchanged, because the
 Deluxe `STRYHDLN.DAT` holds the same 102 slots at the same offsets with the same
 allocations. Disc 4 likewise reused `disc3-03-code-patch.json`.
 
-## Two refusals, recorded rather than worked around
+## Two refusals, recorded rather than worked around — and both since closed
 
-**1. Both database writers refuse the Deluxe image**, with one sentence:
+**1. Both database writers refused the Deluxe image**, with one sentence:
 
 ```
 /DATA/DB_TEAMS.DAT is 2,559,112 bytes in this image's own directory and carries
@@ -68,12 +68,31 @@ allocations. Disc 4 likewise reused `disc3-03-code-patch.json`.
 
 The Deluxe rebuild's ISO9660 directory record understates that container by 26,168 bytes.
 The refusal is container-level and `DB_TEAMS.DAT` is the only container either lane
-writes, so **no** roster row and **no** team identity is writable on the Deluxe disc
-today. Reading is unaffected: the Deluxe catalogue reads 355 databases, 4,108 tables and
-12,550 editable rows in 35.1 s. Recipes `disc4-01-roster.json` and `disc4-02-identity.json`
-are kept as the exact input that produced that sentence. This answers §7 item 8 of the
-module document — *nothing has been written into a Deluxe image* — with a measured *no*,
-and no boot was needed for it.
+writes, so **no** roster row and **no** team identity was writable on the Deluxe disc on
+the day disc 4 was built. Reading was never affected: the Deluxe catalogue reads 355
+databases, 4,108 tables and 12,550 editable rows in 35.1 s.
+
+**Closed** (`MADDEN09_PS2_GAPS.md` §12). What lies past that record is only trailing
+empty members' alignment padding — measured on all six of the image's recorded-short
+containers, no member with bytes ends past the record, and the next file starts in the
+very next sector — so the rewrite fits inside the record and the record never moves.
+Re-run against the same two recipes, on the same image:
+
+| recipe | result |
+|---|---|
+| `disc4-01-roster.json` | **PASS** · 3 values read back from the destination · 1 database re-parsed with 44 checksum slots all correct · 0 undeclared changed bytes |
+| `disc4-02-identity.json` | **PASS** · 8 values read back · 2 databases re-parsed with 470 checksum slots all correct · 0 undeclared changed bytes |
+
+Both images come out 1,846,476,800 bytes, the size of the source; no directory record
+moved or was resized; `DB_TEAMS.DAT` keeps its recorded length and its `DATA` chunk's
+declared size; its container directory is byte-identical; and the only bytes that differ
+are inside the edited record. The counts are in
+[`../deluxe-recorded-short-writers.json`](../deluxe-recorded-short-writers.json). The
+two recipes are kept as what produced the old sentence **and** as what proves the fix.
+The images themselves were deleted after the check, as every witness build is.
+
+This changes §7 item 8 of the module document: four lanes now write into a Deluxe image.
+What has still never happened is a **boot** — of either disc.
 
 **2. The uniform verifier refuses two images of one member.**
 `disc2-01-uniforms.REFUSED-multi-image.json` names nine textures, five of them images 0,

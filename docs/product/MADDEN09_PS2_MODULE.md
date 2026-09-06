@@ -208,7 +208,12 @@ move the moment a member changes stored size or codec.
 `containers.preload_copies(image)` is the shared reader — **6,270 copies across
 39 containers, every one byte-identical to what it copies** [M] — and the
 writer rewrites every stale copy, declares the ranges, and refuses a *carried*
-member whose stored size changed, because a cached copy is a fixed slot.
+member whose stored size changed, because a cached copy is a fixed slot. A copy
+is filed under the container whose bytes it **is**: two of the 6,270 carry a
+`DTLS` row naming a member past the end of the container it names, at an offset
+where the next file's own container header is cached, and they are attributed
+to that file with the row's own words kept beside them
+(`MADDEN09_PS2_GAPS.md` §6).
 
 **What the verifier checks.** `verify` re-decodes every exported texture
 straight from the user's disc **by key**, not through the catalogue that
@@ -367,6 +372,35 @@ Also measured and recorded rather than used as a bound [M]: `lenBits` is
 index blocks trail the record array rather than preceding it; and `dbSize` is
 the last table's end plus four, not the file length.
 
+**A field type outside the five the format defines is a state, not damage**
+[M, `measured/madden09_ps2/tdb-undecoded-field-types.json`]. No table on
+either Madden 09 image carries one — 355 databases, every field type in
+0..4 — but the sibling NCAA discs do, and the shared reader used to refuse
+those databases with a sentence blaming the field directory: *"…covers bits
+0..400 of a record that is 8 byte(s) long; the field directory is being read
+at the wrong offset or the file is damaged."* It is not. On NCAA Football 09,
+18 tables carry 21 fields of type **13** or **14**, and in every one of them
+the next field begins exactly 32 bits later while the declared width is a
+multiple of 8 far larger than the whole record — so the record holds a
+four-byte slot and the word is not a per-record width. What it *is* stays
+unestablished [A]. The reader now carries such a field, refuses to decode it
+by naming the type, keeps the table's other fields readable and writable, and
+still refuses a field that starts past the end of its record. On that disc:
+582 databases, **580 parse fully, 2 carry an undecoded field, 0 refused**,
+against 2 refused before.
+
+**And on the Deluxe image** [M,
+`measured/madden09_ps2/deluxe-recorded-short-writers.json`]: the same edit at
+`DB_TEAMS.DAT` member 0, `PLAY` record 48, on a container whose ISO9660
+directory record understates it by 26,168 bytes. It used to be refused for
+that; it now builds inside the record — 1,846,476,800-byte destination, the
+source's exact size, **no directory record moved or resized**, the container's
+recorded length and its `DATA` chunk's declared size both unchanged, its
+directory byte-identical, 19 differing bytes all inside the edited record — and
+the verifier passes with three values read back, all 44 checksum slots correct
+and 0 undeclared changed bytes. A recipe naming a member past that record is
+still refused, with both sizes in the sentence.
+
 **What still needs a boot.** That the game loads the rebuilt `DB_TEAMS.DAT` and
 shows the renamed, re-numbered player on a roster screen.
 
@@ -457,6 +491,12 @@ changed bytes, 197 entries and 1,649,593,368 unchanged bytes compared. Two
 adversarial flips were refused — one byte outside every declared range, one
 byte inside a declared ISO range — and the untouched image then re-verified
 PASS.
+
+**And on the Deluxe image** [M, same evidence file]: the same recipe, on the
+same recorded-short container — **PASS**, 8 values read back, 2 databases
+re-parsed with 470 of 470 checksum slots correct, 0 undeclared changed bytes,
+the destination the source's exact size, no directory record moved, and 10
+differing bytes in `DB_TEAMS.DAT`, all inside the edited record.
 
 **What still needs a boot.** The owner opens **Team Select**, finds the edited
 team, reads the renamed abbreviation and sees the new primary colour on the
@@ -1132,7 +1172,7 @@ its verdict.
 | members in them | 36,195 | §3.12 [M] |
 | members classified (256/container sample) | 9,063 | §3.12 [M] |
 | inventory walk | ~10 s | §3.12 [M] |
-| preload-cache copies read, all identical to what they copy | **6,270 across 39 containers** | §3.1, `EA_TERF_FORMAT.md` §9 [M] |
+| preload-cache copies read, all identical to what they copy | **6,270 across 39 containers**, 0 unresolved | §3.1, `EA_TERF_FORMAT.md` §9 [M] |
 | the same, over the seven audio containers | 5,805, 0 differing | `MADDEN09_PS2_AUDIO.md` §3 [M] |
 
 **The databases**
@@ -1512,12 +1552,20 @@ one with fewer pages.
    these names has been loaded in an emulator**, so *Write PCSX2 pack* is not
    offered from any row: what is proved is the pairing. The CLUT half of the
    name does reproduce from the disc's own bytes; the TEX0 half does not yet.
-8. **Every real-disc trial is on the retail disc.** The Deluxe image is
-   identified, catalogued and compared (§5), and its executable was read
-   word-for-word against the retail one (§3.10), but **nothing has been written
-   into a Deluxe image** by any lane. The retail/Deluxe word table is why one
-   recipe is *expected* to translate on either disc; it is not evidence that a
-   rebuilt Deluxe container is sound.
+8. **Four lanes now write into a Deluxe image; every screen-level trial is
+   still on neither.** The Deluxe image is identified, catalogued and compared
+   (§5), its executable was read word-for-word against the retail one (§3.10),
+   the text lane and the executable patch build on it, and — since the
+   recorded-short containers stopped being a refusal — so do
+   `players_rosters.team_databases` and `colors.team_identity`, each with its
+   own verifier passing and **0 undeclared changed bytes**
+   (`MADDEN09_PS2_GAPS.md` §12;
+   `measured/madden09_ps2/deluxe-recorded-short-writers.json`). What is still
+   true is the part that matters: **no rebuilt image of either disc has been
+   booted**, so a Deluxe build is exactly as proved as a retail one and no
+   more. The retail/Deluxe word table is why one recipe is *expected* to
+   translate on either disc; it is not evidence that a rebuilt Deluxe container
+   is sound.
 9. **The container checksum question is open** [M/A]. No field in any container
    header varies with content in any way the reader could find, and the layout
    rules hold with zero residue across 47,769 members — but that is the whole of

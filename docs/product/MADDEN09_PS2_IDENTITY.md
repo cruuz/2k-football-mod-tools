@@ -181,7 +181,11 @@ refused rather than allowed to move bytes the lane cannot account for.
 The writer is the sibling roster page's, **imported and not copied**:
 `ea_tdb.write_records` for the record, `ea_terf.rewrite_member` for the
 container member, `tools/ps2_iso9660_writer.replace_files` for the image. The
-two pages cannot drift apart on the one thing they both do.
+two pages cannot drift apart on the one thing they both do — including how they
+open a container: `containers.open_for_rewrite` is the one preflight both go
+through, and it hands back exactly the bytes the ISO9660 record allocates, so
+a container the disc records shorter than the container declares itself is
+written inside its record rather than refused (§5.1).
 
 The four CRC-32/MPEG-2 checksum sites EA stores in a TDB header are recomputed
 on every write (`ea_tdb.recompute_crcs`) and re-derived from the destination's
@@ -260,6 +264,34 @@ untouched image then re-verified PASS.
 The full numbers, the per-team copy map and the two databases' before/after
 digests are in
 [`measured/madden09_ps2/identity_blast_radius.json`](measured/madden09_ps2/identity_blast_radius.json).
+
+### 5.1 The same trial on the Deluxe image [M]
+
+The community's Deluxe rebuild records `DB_TEAMS.DAT` as 2,559,112 bytes while
+the container's own chunk chain declares 2,585,280, and this lane used to
+refuse the whole image for it: *a rewrite would have to grow the file*. It does
+not have to. Nothing past that record is a member with bytes — only trailing
+empty members' alignment padding — so the write lands inside the record and the
+record never moves (`MADDEN09_PS2_GAPS.md` §12).
+
+| | |
+|---|---|
+| source | 1,846,476,800 bytes, `SLUS-21770` Deluxe |
+| destination | 1,846,476,800 bytes — the same size |
+| directory records moved or resized | **0 of 109** |
+| `DB_TEAMS.DAT` recorded length, before → after | 2,559,112 → 2,559,112 |
+| its `DATA` chunk's declared size, before → after | 2,574,848 → 2,574,848 |
+| its container directory (header + `DIR1`) | **byte-identical** |
+| bytes of it that differ | **10**, all inside the edited record's span |
+| verdict | **PASS** — 8 values read back, 2 databases re-parsed, **470 of 470 checksum slots correct**, 0 undeclared changed bytes |
+
+Recipe and counts:
+[`measured/madden09_ps2/deluxe-recorded-short-writers.json`](measured/madden09_ps2/deluxe-recorded-short-writers.json)
+and
+[`measured/madden09_ps2/witness-recipes/disc4-02-identity.json`](measured/madden09_ps2/witness-recipes/disc4-02-identity.json).
+The destination was deleted as soon as the verifier had passed. **This is still
+bytes, not a screen**: a Deluxe build is exactly as proved as a retail one and
+no more, and §6 is unchanged by it.
 
 ---
 
