@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-import struct
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -141,6 +141,23 @@ class CanonicalFixtureAuditTests(unittest.TestCase):
             )
             self.assertFalse(row["address_reuse_from_xbox_allowed"])
             self.assertFalse(row["safe_ps2_patch_ready"])
+
+    def test_the_shipped_selftest_passes(self) -> None:
+        """The lane validator runs this; a shipped tree has no tests/."""
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "tools/nfl2k5_ps2_fixture_audit.py"),
+             "--selftest"],
+            cwd=str(ROOT), capture_output=True, text=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("NFL2K5_PS2_FIXTURE_AUDIT_SELFTEST_PASS", result.stdout)
+
+    def test_the_defaults_name_no_workstation_path(self) -> None:
+        """The release checker refuses staged text carrying one."""
+        source = (ROOT / "tools/nfl2k5_ps2_fixture_audit.py").read_text(
+            encoding="utf-8"
+        )
+        for fragment in ("/" + "home" + "/", "/" + "media" + "/"):
+            self.assertNotIn(fragment, source)
 
     def test_tool_has_no_mutation_or_payload_export_surface(self) -> None:
         source = (ROOT / "tools/nfl2k5_ps2_fixture_audit.py").read_text(
