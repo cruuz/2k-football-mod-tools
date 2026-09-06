@@ -20,6 +20,7 @@ mod_editor/games/madden09_ps2/team_data.py
 mod_editor/games/madden09_ps2/text_lane.py
 mod_editor/games/madden09_ps2/uniform_art.py
 tools/validate_madden09_ps2_audio.bat
+mod_editor/games/madden09_ps2/validators.json
 tools/validate_madden09_ps2_audio.sh
 tools/validate_madden09_ps2_code_patches.bat
 tools/validate_madden09_ps2_code_patches.sh

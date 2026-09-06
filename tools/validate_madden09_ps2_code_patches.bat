@@ -1,8 +1,10 @@
 @echo off
 setlocal enableextensions
 rem Windows validator for Madden NFL 09 PS2, the executable-patch lane.
-rem Mirrors tools/validate_madden09_ps2_code_patches.sh: compiles the lane module and runs the
-rem game-module conformance harness for madden09_ps2 on a synthetic disc. No game data.
+rem Mirrors tools/validate_madden09_ps2_code_patches.sh: both hand the work to
+rem tools/validate_game_lane.py, which reads mod_editor/games/madden09_ps2/validators.json
+rem for the steps this lane needs and derives the pass token from the lane name.
+rem No game data, and no test framework: this has to run in a shipped tree.
 rem Note: no parentheses inside echo lines within if blocks; cmd.exe reads them as block ends.
 
 rem Run from the repository root, one level up from this script.
@@ -25,9 +27,7 @@ if not defined PY_CMD (
     exit /b 1
 )
 
-%PY_CMD% -m py_compile mod_editor\games\madden09_ps2\code_patches.py || exit /b 1
 set "PYTHONPATH=%CD%"
-%PY_CMD% -m mod_editor.games conformance --game madden09_ps2 || exit /b 1
+%PY_CMD% tools\validate_game_lane.py --game madden09_ps2 --lane code_patches || exit /b 1
 
-echo MADDEN09_PS2_CODE_PATCHES_VALIDATION_PASS
 exit /b 0

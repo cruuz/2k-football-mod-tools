@@ -1,0 +1,81 @@
+{
+  "game_id": "ncaa09_ps2",
+  "lanes": {
+    "audio": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/audio_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.audio_lane"
+        }
+      ],
+      "what": "the SCHl stream and BNKl bank audio lanes"
+    },
+    "databases": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/database_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.database_lane"
+        }
+      ],
+      "what": "the TDB database census lane"
+    },
+    "inventory": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/inventory_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.inventory_lane"
+        }
+      ],
+      "what": "the /DATA container inventory lane"
+    },
+    "text": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/text_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.text_lane"
+        }
+      ],
+      "what": "the text-member census lane"
+    },
+    "textures": {
+      "compile": [
+        "mod_editor/games/ncaa09_ps2/texture_lane.py"
+      ],
+      "conformance": true,
+      "selftest": [
+        {
+          "args": [
+            "--selftest"
+          ],
+          "module": "mod_editor.games.ncaa09_ps2.texture_lane"
+        }
+      ],
+      "what": "the kit, equipment and face texture census lane"
+    }
+  },
+  "schema": "vc_game_lane_validators/v1"
+}

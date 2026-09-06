@@ -1,9 +1,10 @@
 @echo off
 setlocal enableextensions
 rem Windows validator for NCAA Football 09 PS2, the SCHl stream and BNKl bank export lanes.
-rem Mirrors tools/validate_ncaa09_ps2_audio.sh: compiles the lane module, runs the
-rem game-module conformance harness for ncaa09_ps2 on a synthetic disc, and runs the
-rem lane's own self-test. No game data.
+rem Mirrors tools/validate_ncaa09_ps2_audio.sh: both hand the work to
+rem tools/validate_game_lane.py, which reads mod_editor/games/ncaa09_ps2/validators.json
+rem for the steps this lane needs and derives the pass token from the lane name.
+rem No game data, and no test framework: this has to run in a shipped tree.
 rem Note: no parentheses inside echo lines within if blocks; cmd.exe reads them as block ends.
 
 rem Run from the repository root, one level up from this script.
@@ -26,9 +27,7 @@ if not defined PY_CMD (
     exit /b 1
 )
 
-%PY_CMD% -m py_compile mod_editor\games\ncaa09_ps2\audio_lane.py || exit /b 1
 set "PYTHONPATH=%CD%"
-%PY_CMD% -m mod_editor.games conformance --game ncaa09_ps2 || exit /b 1
-%PY_CMD% -m mod_editor.games.ncaa09_ps2.audio_lane --selftest || exit /b 1
-echo NCAA09_PS2_AUDIO_VALIDATION_PASS
+%PY_CMD% tools\validate_game_lane.py --game ncaa09_ps2 --lane audio || exit /b 1
+
 exit /b 0
