@@ -1,8 +1,8 @@
 {
-  "capability_rows": 13,
+  "capability_rows": 14,
   "game_id": "mvp05_ps2",
-  "hidden_disc_writers": 8,
-  "lanes_on_contract": 13,
+  "hidden_disc_writers": 9,
+  "lanes_on_contract": 14,
   "product_modules": 19,
   "retail_identity": {
     "content_sha256": "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484",
@@ -10,7 +10,7 @@
   },
   "save_writer_ids": [],
   "schema": "vc_game_module_pins/v1",
-  "shipped_files": 35,
+  "shipped_files": 36,
   "surfaces": [
     "audio",
     "colors",

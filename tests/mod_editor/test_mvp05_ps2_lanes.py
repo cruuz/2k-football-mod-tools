@@ -67,12 +67,13 @@ class _Room(unittest.TestCase):
 
 class ModuleTests(_Room):
     def test_every_lane_is_registered_and_on_a_page(self) -> None:
-        self.assertEqual(len(LANES), 13)
+        self.assertEqual(len(LANES), 14)
         self.assertEqual({lane.lane_id for lane in LANES}, {
             "rosters.database_tables", "identity.team_tables", "playbooks.tuning_tables",
             "identity.ui_strings", "stadiums.park_textures", "presentation.overlay_textures",
-            "menus.widget_textures", "audio.streams", "audio.banks", "uniforms.kit_banks",
-            "rosters.face_banks", "field_art.banks", "textures.bank_inventory"})
+            "menus.widget_textures", "audio.streams", "audio.banks", "uniforms.kit_textures",
+            "uniforms.kit_banks", "rosters.face_banks", "field_art.banks",
+            "textures.bank_inventory"})
         self.assertEqual(GAME.identity.serials, (containers.SERIAL,))
 
     def test_the_identifier_names_the_synthetic_disc_as_not_retail(self) -> None:

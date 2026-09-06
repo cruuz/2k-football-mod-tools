@@ -358,7 +358,7 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 149 cross-title rows, including 45 Xbox NFL 2K5
+The current registry has 150 cross-title rows, including 45 Xbox NFL 2K5
 capabilities, 9 NFL 2K5 PS2 rows (the separate PS2 save-import bridge, the
 capabilities, 37 APF 2K8 (Xbox 360) rows, 10 NFL 2K5 PS2 rows (the separate PS2
 save-import bridge, the read-only PS2 disc inventory, the PCSX2

@@ -759,3 +759,5 @@ mod_editor/games/_lanes/blitz_zip_lanes.py
 docs/product/RENDERWARE_TXD_FORMAT.md
 docs/product/MIDWAY_ZIP_FORMAT.md
 docs/product/measured/rw_txd/cross-disc-census.json
+# mvp05_ps2: shipped by the game module (mod_editor/games/mvp05_ps2/allowlist.fragment.txt).
+docs/product/measured/mvp05_ps2/models-big-parts.json

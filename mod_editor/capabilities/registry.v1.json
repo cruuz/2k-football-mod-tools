@@ -4823,11 +4823,12 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/product/MVP05_PS2_MODULE.md",
         "docs/product/EA_BIG_FORMAT.md",
         "docs/product/EA_SHPS_FORMAT.md",
-        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/measured/mvp05_ps2/models-big-parts.json",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
         "tools/validate_mvp05_ps2_art.sh"
       ],
       "game": "mvp05_ps2",
@@ -4835,7 +4836,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "view",
-        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 MVP Baseball 2005 Studio as a table and no editor: every kit named and sized, the pixel code and the measured reason nothing is drawn beside each."
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 MVP Baseball 2005 Studio as a table and no editor, above the uniforms.kit_textures writer: every preview swatch named and sized, the pixel code and the measured reason nothing is drawn beside each, and a line saying the worn kit is editable on the row below."
       },
       "id": "mvp05ps2.uniforms.kit_banks",
       "input_constraints": [
@@ -4847,7 +4848,7 @@
       ],
       "portme": [
         "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
-        "Dump textures from PCSX2 running this game to learn which bank is which kit, portrait or field."
+        "Confirm that these 555 banks are what a uniform-select screen draws: no frame of the one PCSX2 dump here reached that screen, so their role is read from the archive's name and shape, not witnessed."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -4879,9 +4880,93 @@
         "resource": "UNIFORMS.BIG 555 banks, COOPUNIS.BIG 124",
         "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "List every kit image in UNIFORMS.BIG (555 banks) and COOPUNIS.BIG (124) with its size and palette. Every one is SHPS code 0x0e -- a 4x4-block codec whose two 8-bit palette endpoints per block are decoded and whose per-pixel selectors are not -- so this row draws nothing and says exactly why, with the measurement, rather than offering an export that would refuse every item.",
+      "summary": "List every image of UNIFORMS.BIG (555 banks) and COOPUNIS.BIG (124) with its size and palette: 986 images, of which 555 are SHPS code 0x0e 128x128 and 431 are 1x1 stubs. These are the PREVIEW swatches a uniform-select screen shows, not the art a player wears -- the worn kit is MODELS.BIG and is on the uniforms.kit_textures writer row beside this one, where 21,767 of 30,535 images are 8-bit and are written back. Nothing here is drawn or written: code 0x0e is a 4x4-block codec whose two 8-bit palette endpoints per block are decoded and whose per-pixel selectors are not.",
       "surface": "uniforms",
-      "title": "MVP 05 (PS2) team kits and create-a-team kits, listed",
+      "title": "MVP 05 (PS2) uniform preview swatches",
+      "validation_command": "bash tools/validate_mvp05_ps2_art.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 uniforms.kit_textures build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/art_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "docs/product/measured/mvp05_ps2/models-big-parts.json",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_art.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 MVP Baseball 2005 Studio with the same controls as the stadiums page, beside the read-only preview-swatch row. The part tag is in every label, so a modder picks llod or hat rather than an image number, and a code-0x0e part refuses with the measured reason."
+      },
+      "id": "mvp05ps2.uniforms.kit_textures",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "A PNG must be exactly the image's own size, 8-bit, non-interlaced; it is indexed against the image's own palette, so a colour that palette lacks takes the nearest entry and the receipt says how many pixels landed exactly.",
+        "Only 8-bit indexed images (SHPS code 0x02) are written back: 21,767 of MODELS.BIG's 30,535. The 8,756 code-0x0e images -- the high-detail jersey, the trousers, the shoes, the sleeves and every face -- are listed with the measured reason nothing is drawn, and the 12 direct-colour stubs export only.",
+        "Bounded by the slot: a re-packed bank must fit its own stored size plus the slack the archive leaves; 1,381 of MODELS.BIG's 1,407 banks re-pack inside their slot unedited, with a median 39 bytes of headroom, so an edit that compresses worse than the pixels it replaced can be refused naming the byte count. No entry ever moves.",
+        "A bank names its club by rule, not by a table this repository carries: u<nnn><v>.ssh and f<nnn><v>.ssh belong to the club whose DATABASE.BIG!team.dat row has team_artid == nnn + 1, a bijection over 126 rows and 126 bank numbers; umpire, umpirec, uniform and teamfont belong to no club.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 32,000 images are listed as targets, above the 30,535 this archive holds, so every kit is reachable while the bound stays real."
+      ],
+      "portme": [
+        "Boot a rebuilt image in PCSX2 and see the edited kit drawn. Nothing here has been booted.",
+        "Decode SHPS code 0x0e's per-pixel selectors; that is what stands between this row and the high-detail jersey, trousers and shoes. docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried.",
+        "Capture a close-up frame -- a replay or cutscene camera on a player -- so the high-detail LOD is loaded and a dump can confirm identities for the parts these three frames never drew."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. The edited bank is re-read out of the NEW image, its edited image's index bytes equal the PNG indexed against the source palette, every other byte of the bank and every untouched entry of the archive is byte-identical, and the image-level verifier re-derives every declared byte. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>:<entry>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the image's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One image, one PNG, one bank re-packed into its slot. replacement_identity returns the name a PCSX2 dump confirmed where one exists -- 167 of these images, all in kit banks -- and a name DERIVED from the image's own bytes for the other 21,363; the page says which of the two it is giving you."
+      },
+      "source_container": {
+        "format": "SHPS image banks inside RefPack-packed entries of one EA BIG archive (see the stadiums row).",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "MODELS.BIG: 1,407 SHPS banks (436 kit, 467 lettering, 504 head) beside 549 .ord/.orl model pairs",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Export and write back the art a player actually WEARS. MODELS.BIG holds 1,407 SHPS banks in three families: 436 kit banks (32 parts each), 467 lettering banks (the 26 letters and 10 digits of the name and number decals) and 504 head banks. 21,767 of its 30,535 images are 8-bit indexed and are written back through the same path as the stadium, presentation and menu art; 8,756 are code 0x0e and 12 are direct colour, and both are listed with the reason. What that reaches, per part tag: llod (the whole kit at low detail, 128x128 -- the texture a PCSX2 dump confirms the game drew), hat, hlm1, hhlm, aslv, mslv, merk, lace, wrbn, bglb, bglt, msk2, msk3, and every lettering glyph. What it does NOT reach: jers, jerk, jrsl, jrkl, jerf, jert, jrfl, jrtl, merf (the high-detail jersey), lega, legb, legc, legd (the trousers), msk1, shoe, slvl, slvr, chst, shn1 and every face -- all code 0x0e. NOT booted.",
+      "surface": "uniforms",
+      "title": "MVP 05 (PS2) worn kit textures: caps, helmets, gloves, the low-detail kit and every nameplate letter",
       "validation_command": "bash tools/validate_mvp05_ps2_art.sh"
     },
     {
