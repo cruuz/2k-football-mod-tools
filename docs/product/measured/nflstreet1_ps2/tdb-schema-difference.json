@@ -1,0 +1,2118 @@
+{
+  "discs": {
+    "nflstreet1_ps2": "SLUS-20841",
+    "nflstreet3_ps2": "SLUS-21482"
+  },
+  "note": "Measured on the two retail discs by walking every EA TDB in DB_TEAMS.DAT and IGDATA.DAT. Field names, types, bit widths and bit offsets only; no record value.",
+  "schema": "nflstreet_ps2_tdb_schema_difference/v1",
+  "tables": {
+    "DCHT": {
+      "container": "DB_TEAMS.DAT",
+      "difference": {
+        "common_field_names": 4,
+        "common_same_width": 4,
+        "common_same_width_and_offset": 4,
+        "only_nflstreet1_ps2": [],
+        "only_nflstreet3_ps2": [],
+        "width_changed": {}
+      },
+      "nflstreet1_ps2": {
+        "field_count": 4,
+        "fields": {
+          "PGID": {
+            "bits": 15,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "PPOS": {
+            "bits": 5,
+            "offset": 25,
+            "type": "UINT"
+          },
+          "TGID": {
+            "bits": 10,
+            "offset": 15,
+            "type": "UINT"
+          },
+          "ddep": {
+            "bits": 5,
+            "offset": 30,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 63,
+        "record_bytes": 8,
+        "row_count_sampled": 34
+      },
+      "nflstreet3_ps2": {
+        "field_count": 4,
+        "fields": {
+          "PGID": {
+            "bits": 15,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "PPOS": {
+            "bits": 5,
+            "offset": 25,
+            "type": "UINT"
+          },
+          "TGID": {
+            "bits": 10,
+            "offset": 15,
+            "type": "UINT"
+          },
+          "ddep": {
+            "bits": 5,
+            "offset": 30,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 63,
+        "record_bytes": 8,
+        "row_count_sampled": 34
+      }
+    },
+    "FORM": {
+      "container": "IGDATA.DAT",
+      "difference": {
+        "common_field_names": 3,
+        "common_same_width": 0,
+        "common_same_width_and_offset": 0,
+        "only_nflstreet1_ps2": [],
+        "only_nflstreet3_ps2": [],
+        "width_changed": {
+          "FORM": [
+            8,
+            4
+          ],
+          "FTYP": [
+            8,
+            4
+          ],
+          "name": [
+            192,
+            80
+          ]
+        }
+      },
+      "nflstreet1_ps2": {
+        "field_count": 3,
+        "fields": {
+          "FORM": {
+            "bits": 8,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "FTYP": {
+            "bits": 8,
+            "offset": 8,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 192,
+            "offset": 16,
+            "type": "STRING"
+          }
+        },
+        "record_bits": 223,
+        "record_bytes": 28,
+        "row_count_sampled": 2
+      },
+      "nflstreet3_ps2": {
+        "field_count": 3,
+        "fields": {
+          "FORM": {
+            "bits": 4,
+            "offset": 80,
+            "type": "UINT"
+          },
+          "FTYP": {
+            "bits": 4,
+            "offset": 84,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 80,
+            "offset": 0,
+            "type": "STRING"
+          }
+        },
+        "record_bits": 95,
+        "record_bytes": 12,
+        "row_count_sampled": 11
+      }
+    },
+    "PBFM": {
+      "container": "IGDATA.DAT",
+      "difference": {
+        "common_field_names": 5,
+        "common_same_width": 0,
+        "common_same_width_and_offset": 0,
+        "only_nflstreet1_ps2": [],
+        "only_nflstreet3_ps2": [
+          "FAU1",
+          "FAU2",
+          "FAU3",
+          "FAU4"
+        ],
+        "width_changed": {
+          "FTYP": [
+            8,
+            4
+          ],
+          "PBFM": [
+            8,
+            6
+          ],
+          "grid": [
+            32,
+            1
+          ],
+          "name": [
+            400,
+            136
+          ],
+          "ord_": [
+            8,
+            1
+          ]
+        }
+      },
+      "nflstreet1_ps2": {
+        "field_count": 5,
+        "fields": {
+          "FTYP": {
+            "bits": 8,
+            "offset": 40,
+            "type": "UINT"
+          },
+          "PBFM": {
+            "bits": 8,
+            "offset": 32,
+            "type": "UINT"
+          },
+          "grid": {
+            "bits": 32,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 400,
+            "offset": 56,
+            "type": "STRING"
+          },
+          "ord_": {
+            "bits": 8,
+            "offset": 48,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 479,
+        "record_bytes": 60,
+        "row_count_sampled": 2
+      },
+      "nflstreet3_ps2": {
+        "field_count": 9,
+        "fields": {
+          "FAU1": {
+            "bits": 6,
+            "offset": 136,
+            "type": "UINT"
+          },
+          "FAU2": {
+            "bits": 6,
+            "offset": 142,
+            "type": "UINT"
+          },
+          "FAU3": {
+            "bits": 6,
+            "offset": 148,
+            "type": "UINT"
+          },
+          "FAU4": {
+            "bits": 6,
+            "offset": 154,
+            "type": "UINT"
+          },
+          "FTYP": {
+            "bits": 4,
+            "offset": 166,
+            "type": "UINT"
+          },
+          "PBFM": {
+            "bits": 6,
+            "offset": 160,
+            "type": "UINT"
+          },
+          "grid": {
+            "bits": 1,
+            "offset": 171,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 136,
+            "offset": 0,
+            "type": "STRING"
+          },
+          "ord_": {
+            "bits": 1,
+            "offset": 170,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 191,
+        "record_bytes": 24,
+        "row_count_sampled": 11
+      }
+    },
+    "PBPL": {
+      "container": "IGDATA.DAT",
+      "difference": {
+        "common_field_names": 4,
+        "common_same_width": 1,
+        "common_same_width_and_offset": 0,
+        "only_nflstreet1_ps2": [],
+        "only_nflstreet3_ps2": [
+          "name"
+        ],
+        "width_changed": {
+          "PBPL": [
+            16,
+            10
+          ],
+          "PLYL": [
+            8,
+            9
+          ],
+          "ord_": [
+            8,
+            7
+          ]
+        }
+      },
+      "nflstreet1_ps2": {
+        "field_count": 4,
+        "fields": {
+          "PBPL": {
+            "bits": 16,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "PBST": {
+            "bits": 8,
+            "offset": 24,
+            "type": "UINT"
+          },
+          "PLYL": {
+            "bits": 8,
+            "offset": 16,
+            "type": "UINT"
+          },
+          "ord_": {
+            "bits": 8,
+            "offset": 32,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 63,
+        "record_bytes": 8,
+        "row_count_sampled": 2
+      },
+      "nflstreet3_ps2": {
+        "field_count": 5,
+        "fields": {
+          "PBPL": {
+            "bits": 10,
+            "offset": 200,
+            "type": "UINT"
+          },
+          "PBST": {
+            "bits": 8,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "PLYL": {
+            "bits": 9,
+            "offset": 210,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 192,
+            "offset": 8,
+            "type": "STRING"
+          },
+          "ord_": {
+            "bits": 7,
+            "offset": 219,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 255,
+        "record_bytes": 32,
+        "row_count_sampled": 11
+      }
+    },
+    "PBST": {
+      "container": "IGDATA.DAT",
+      "difference": {
+        "common_field_names": 5,
+        "common_same_width": 1,
+        "common_same_width_and_offset": 0,
+        "only_nflstreet1_ps2": [
+          "ax0_",
+          "ax10",
+          "ax1_",
+          "ax2_",
+          "ax3_",
+          "ax4_",
+          "ax5_",
+          "ax6_",
+          "ax7_",
+          "ax8_",
+          "ax9_",
+          "ay0_",
+          "ay10",
+          "ay1_",
+          "ay2_",
+          "ay3_",
+          "ay4_",
+          "ay5_",
+          "ay6_",
+          "ay7_",
+          "ay8_",
+          "ay9_"
+        ],
+        "only_nflstreet3_ps2": [],
+        "width_changed": {
+          "PBFM": [
+            8,
+            6
+          ],
+          "SETL": [
+            8,
+            6
+          ],
+          "name": [
+            192,
+            80
+          ],
+          "ord_": [
+            8,
+            4
+          ]
+        }
+      },
+      "nflstreet1_ps2": {
+        "field_count": 27,
+        "fields": {
+          "PBFM": {
+            "bits": 8,
+            "offset": 192,
+            "type": "UINT"
+          },
+          "PBST": {
+            "bits": 8,
+            "offset": 200,
+            "type": "UINT"
+          },
+          "SETL": {
+            "bits": 8,
+            "offset": 184,
+            "type": "UINT"
+          },
+          "ax0_": {
+            "bits": 16,
+            "offset": 16,
+            "type": "UINT"
+          },
+          "ax10": {
+            "bits": 16,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "ax1_": {
+            "bits": 16,
+            "offset": 32,
+            "type": "UINT"
+          },
+          "ax2_": {
+            "bits": 16,
+            "offset": 48,
+            "type": "UINT"
+          },
+          "ax3_": {
+            "bits": 16,
+            "offset": 64,
+            "type": "UINT"
+          },
+          "ax4_": {
+            "bits": 16,
+            "offset": 80,
+            "type": "UINT"
+          },
+          "ax5_": {
+            "bits": 16,
+            "offset": 96,
+            "type": "UINT"
+          },
+          "ax6_": {
+            "bits": 16,
+            "offset": 112,
+            "type": "UINT"
+          },
+          "ax7_": {
+            "bits": 16,
+            "offset": 128,
+            "type": "UINT"
+          },
+          "ax8_": {
+            "bits": 16,
+            "offset": 144,
+            "type": "UINT"
+          },
+          "ax9_": {
+            "bits": 16,
+            "offset": 160,
+            "type": "UINT"
+          },
+          "ay0_": {
+            "bits": 8,
+            "offset": 208,
+            "type": "UINT"
+          },
+          "ay10": {
+            "bits": 8,
+            "offset": 176,
+            "type": "UINT"
+          },
+          "ay1_": {
+            "bits": 8,
+            "offset": 216,
+            "type": "UINT"
+          },
+          "ay2_": {
+            "bits": 8,
+            "offset": 224,
+            "type": "UINT"
+          },
+          "ay3_": {
+            "bits": 8,
+            "offset": 232,
+            "type": "UINT"
+          },
+          "ay4_": {
+            "bits": 8,
+            "offset": 240,
+            "type": "UINT"
+          },
+          "ay5_": {
+            "bits": 8,
+            "offset": 248,
+            "type": "UINT"
+          },
+          "ay6_": {
+            "bits": 8,
+            "offset": 256,
+            "type": "UINT"
+          },
+          "ay7_": {
+            "bits": 8,
+            "offset": 264,
+            "type": "UINT"
+          },
+          "ay8_": {
+            "bits": 8,
+            "offset": 272,
+            "type": "UINT"
+          },
+          "ay9_": {
+            "bits": 8,
+            "offset": 280,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 192,
+            "offset": 296,
+            "type": "STRING"
+          },
+          "ord_": {
+            "bits": 8,
+            "offset": 288,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 511,
+        "record_bytes": 64,
+        "row_count_sampled": 2
+      },
+      "nflstreet3_ps2": {
+        "field_count": 5,
+        "fields": {
+          "PBFM": {
+            "bits": 6,
+            "offset": 94,
+            "type": "UINT"
+          },
+          "PBST": {
+            "bits": 8,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "SETL": {
+            "bits": 6,
+            "offset": 88,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 80,
+            "offset": 8,
+            "type": "STRING"
+          },
+          "ord_": {
+            "bits": 4,
+            "offset": 100,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 127,
+        "record_bytes": 16,
+        "row_count_sampled": 11
+      }
+    },
+    "PLAY": {
+      "container": "DB_TEAMS.DAT",
+      "difference": {
+        "common_field_names": 64,
+        "common_same_width": 49,
+        "common_same_width_and_offset": 0,
+        "only_nflstreet1_ps2": [
+          "PAWR"
+        ],
+        "only_nflstreet3_ps2": [
+          "PBTO",
+          "PFBW",
+          "PFEA",
+          "PFEB",
+          "PFEY",
+          "PFFH",
+          "PFHC",
+          "PFJC",
+          "PFLP",
+          "PFMO",
+          "PFNO",
+          "PHDC",
+          "PHTM",
+          "PJCT",
+          "PJUM",
+          "PLIL",
+          "PLPR",
+          "PMED",
+          "PSTM",
+          "TGTI"
+        ],
+        "width_changed": {
+          "PATO": [
+            6,
+            8
+          ],
+          "PFNA": [
+            88,
+            96
+          ],
+          "PLNA": [
+            104,
+            112
+          ],
+          "PLTO": [
+            6,
+            8
+          ],
+          "PNKN": [
+            104,
+            128
+          ],
+          "PPNT": [
+            6,
+            7
+          ],
+          "PRAT": [
+            6,
+            8
+          ],
+          "PRFC": [
+            6,
+            8
+          ],
+          "PRLT": [
+            6,
+            8
+          ],
+          "PSKI": [
+            3,
+            4
+          ],
+          "PSRT": [
+            6,
+            8
+          ],
+          "SGT1": [
+            5,
+            6
+          ],
+          "SGT2": [
+            5,
+            6
+          ],
+          "SGT3": [
+            5,
+            6
+          ],
+          "SGT4": [
+            5,
+            6
+          ]
+        }
+      },
+      "nflstreet1_ps2": {
+        "field_count": 65,
+        "fields": {
+          "PAGE": {
+            "bits": 6,
+            "offset": 424,
+            "type": "UINT"
+          },
+          "PAGI": {
+            "bits": 7,
+            "offset": 439,
+            "type": "UINT"
+          },
+          "PATO": {
+            "bits": 6,
+            "offset": 506,
+            "type": "UINT"
+          },
+          "PAWR": {
+            "bits": 7,
+            "offset": 562,
+            "type": "UINT"
+          },
+          "PBLK": {
+            "bits": 7,
+            "offset": 456,
+            "type": "UINT"
+          },
+          "PBPO": {
+            "bits": 4,
+            "offset": 502,
+            "type": "UINT"
+          },
+          "PBTK": {
+            "bits": 7,
+            "offset": 463,
+            "type": "UINT"
+          },
+          "PCEL": {
+            "bits": 7,
+            "offset": 475,
+            "type": "UINT"
+          },
+          "PCOV": {
+            "bits": 7,
+            "offset": 648,
+            "type": "UINT"
+          },
+          "PCTH": {
+            "bits": 7,
+            "offset": 432,
+            "type": "UINT"
+          },
+          "PDFT": {
+            "bits": 7,
+            "offset": 602,
+            "type": "UINT"
+          },
+          "PEBW": {
+            "bits": 6,
+            "offset": 655,
+            "type": "UINT"
+          },
+          "PETP": {
+            "bits": 2,
+            "offset": 525,
+            "type": "UINT"
+          },
+          "PEWR": {
+            "bits": 6,
+            "offset": 569,
+            "type": "UINT"
+          },
+          "PFLT": {
+            "bits": 4,
+            "offset": 620,
+            "type": "UINT"
+          },
+          "PFNA": {
+            "bits": 88,
+            "offset": 0,
+            "type": "STRING"
+          },
+          "PGID": {
+            "bits": 15,
+            "offset": 371,
+            "type": "UINT"
+          },
+          "PHA1": {
+            "bits": 7,
+            "offset": 320,
+            "type": "UINT"
+          },
+          "PHAN": {
+            "bits": 1,
+            "offset": 486,
+            "type": "UINT"
+          },
+          "PHAR": {
+            "bits": 6,
+            "offset": 540,
+            "type": "UINT"
+          },
+          "PHAT": {
+            "bits": 6,
+            "offset": 587,
+            "type": "UINT"
+          },
+          "PHGT": {
+            "bits": 7,
+            "offset": 609,
+            "type": "UINT"
+          },
+          "PHND": {
+            "bits": 6,
+            "offset": 411,
+            "type": "UINT"
+          },
+          "PHOR": {
+            "bits": 3,
+            "offset": 552,
+            "type": "UINT"
+          },
+          "PIMP": {
+            "bits": 7,
+            "offset": 518,
+            "type": "UINT"
+          },
+          "PJEN": {
+            "bits": 7,
+            "offset": 487,
+            "type": "UINT"
+          },
+          "PLEX": {
+            "bits": 3,
+            "offset": 661,
+            "type": "UINT"
+          },
+          "PLHT": {
+            "bits": 4,
+            "offset": 616,
+            "type": "UINT"
+          },
+          "PLIG": {
+            "bits": 2,
+            "offset": 430,
+            "type": "UINT"
+          },
+          "PLNA": {
+            "bits": 104,
+            "offset": 88,
+            "type": "STRING"
+          },
+          "PLTO": {
+            "bits": 6,
+            "offset": 512,
+            "type": "UINT"
+          },
+          "PLUL": {
+            "bits": 2,
+            "offset": 482,
+            "type": "UINT"
+          },
+          "PLWL": {
+            "bits": 2,
+            "offset": 484,
+            "type": "UINT"
+          },
+          "PNKN": {
+            "bits": 104,
+            "offset": 208,
+            "type": "STRING"
+          },
+          "POID": {
+            "bits": 15,
+            "offset": 396,
+            "type": "UINT"
+          },
+          "POVR": {
+            "bits": 7,
+            "offset": 555,
+            "type": "UINT"
+          },
+          "PPNT": {
+            "bits": 6,
+            "offset": 630,
+            "type": "UINT"
+          },
+          "PPOS": {
+            "bits": 5,
+            "offset": 575,
+            "type": "UINT"
+          },
+          "PPSN": {
+            "bits": 2,
+            "offset": 494,
+            "type": "UINT"
+          },
+          "PPSS": {
+            "bits": 7,
+            "offset": 580,
+            "type": "UINT"
+          },
+          "PRAT": {
+            "bits": 6,
+            "offset": 593,
+            "type": "UINT"
+          },
+          "PRFC": {
+            "bits": 6,
+            "offset": 353,
+            "type": "UINT"
+          },
+          "PRHD": {
+            "bits": 6,
+            "offset": 365,
+            "type": "UINT"
+          },
+          "PRLT": {
+            "bits": 6,
+            "offset": 624,
+            "type": "UINT"
+          },
+          "PRTY": {
+            "bits": 2,
+            "offset": 664,
+            "type": "UINT"
+          },
+          "PSHO": {
+            "bits": 6,
+            "offset": 496,
+            "type": "UINT"
+          },
+          "PSKI": {
+            "bits": 3,
+            "offset": 446,
+            "type": "UINT"
+          },
+          "PSOC": {
+            "bits": 6,
+            "offset": 359,
+            "type": "UINT"
+          },
+          "PSPA": {
+            "bits": 6,
+            "offset": 347,
+            "type": "UINT"
+          },
+          "PSPD": {
+            "bits": 7,
+            "offset": 417,
+            "type": "UINT"
+          },
+          "PSRT": {
+            "bits": 6,
+            "offset": 636,
+            "type": "UINT"
+          },
+          "PSXP": {
+            "bits": 13,
+            "offset": 527,
+            "type": "UINT"
+          },
+          "PTAK": {
+            "bits": 7,
+            "offset": 449,
+            "type": "UINT"
+          },
+          "PTBD": {
+            "bits": 8,
+            "offset": 192,
+            "type": "UINT"
+          },
+          "PTFD": {
+            "bits": 8,
+            "offset": 200,
+            "type": "UINT"
+          },
+          "PUAR": {
+            "bits": 6,
+            "offset": 546,
+            "type": "UINT"
+          },
+          "PUCL": {
+            "bits": 5,
+            "offset": 470,
+            "type": "UINT"
+          },
+          "PWGT": {
+            "bits": 8,
+            "offset": 312,
+            "type": "UINT"
+          },
+          "PWRT": {
+            "bits": 6,
+            "offset": 642,
+            "type": "UINT"
+          },
+          "PYBT": {
+            "bits": 3,
+            "offset": 599,
+            "type": "UINT"
+          },
+          "SGT1": {
+            "bits": 5,
+            "offset": 327,
+            "type": "UINT"
+          },
+          "SGT2": {
+            "bits": 5,
+            "offset": 332,
+            "type": "UINT"
+          },
+          "SGT3": {
+            "bits": 5,
+            "offset": 337,
+            "type": "UINT"
+          },
+          "SGT4": {
+            "bits": 5,
+            "offset": 342,
+            "type": "UINT"
+          },
+          "TGID": {
+            "bits": 10,
+            "offset": 386,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 671,
+        "record_bytes": 84,
+        "row_count_sampled": 32
+      },
+      "nflstreet3_ps2": {
+        "field_count": 84,
+        "fields": {
+          "PAGE": {
+            "bits": 6,
+            "offset": 550,
+            "type": "UINT"
+          },
+          "PAGI": {
+            "bits": 7,
+            "offset": 570,
+            "type": "UINT"
+          },
+          "PATO": {
+            "bits": 8,
+            "offset": 376,
+            "type": "UINT"
+          },
+          "PBLK": {
+            "bits": 7,
+            "offset": 598,
+            "type": "UINT"
+          },
+          "PBPO": {
+            "bits": 4,
+            "offset": 674,
+            "type": "UINT"
+          },
+          "PBTK": {
+            "bits": 7,
+            "offset": 605,
+            "type": "UINT"
+          },
+          "PBTO": {
+            "bits": 8,
+            "offset": 384,
+            "type": "UINT"
+          },
+          "PCEL": {
+            "bits": 7,
+            "offset": 617,
+            "type": "UINT"
+          },
+          "PCOV": {
+            "bits": 7,
+            "offset": 792,
+            "type": "UINT"
+          },
+          "PCTH": {
+            "bits": 7,
+            "offset": 563,
+            "type": "UINT"
+          },
+          "PDFT": {
+            "bits": 7,
+            "offset": 757,
+            "type": "UINT"
+          },
+          "PEBW": {
+            "bits": 6,
+            "offset": 799,
+            "type": "UINT"
+          },
+          "PETP": {
+            "bits": 2,
+            "offset": 687,
+            "type": "UINT"
+          },
+          "PEWR": {
+            "bits": 6,
+            "offset": 726,
+            "type": "UINT"
+          },
+          "PFBW": {
+            "bits": 4,
+            "offset": 805,
+            "type": "UINT"
+          },
+          "PFEA": {
+            "bits": 3,
+            "offset": 463,
+            "type": "UINT"
+          },
+          "PFEB": {
+            "bits": 2,
+            "offset": 472,
+            "type": "UINT"
+          },
+          "PFEY": {
+            "bits": 5,
+            "offset": 812,
+            "type": "UINT"
+          },
+          "PFFH": {
+            "bits": 5,
+            "offset": 558,
+            "type": "UINT"
+          },
+          "PFHC": {
+            "bits": 7,
+            "offset": 474,
+            "type": "UINT"
+          },
+          "PFJC": {
+            "bits": 4,
+            "offset": 481,
+            "type": "UINT"
+          },
+          "PFLP": {
+            "bits": 2,
+            "offset": 678,
+            "type": "UINT"
+          },
+          "PFLT": {
+            "bits": 4,
+            "offset": 775,
+            "type": "UINT"
+          },
+          "PFMO": {
+            "bits": 4,
+            "offset": 664,
+            "type": "UINT"
+          },
+          "PFNA": {
+            "bits": 96,
+            "offset": 0,
+            "type": "STRING"
+          },
+          "PFNO": {
+            "bits": 6,
+            "offset": 668,
+            "type": "UINT"
+          },
+          "PGID": {
+            "bits": 15,
+            "offset": 497,
+            "type": "UINT"
+          },
+          "PHA1": {
+            "bits": 7,
+            "offset": 432,
+            "type": "UINT"
+          },
+          "PHAN": {
+            "bits": 1,
+            "offset": 648,
+            "type": "UINT"
+          },
+          "PHAR": {
+            "bits": 6,
+            "offset": 702,
+            "type": "UINT"
+          },
+          "PHAT": {
+            "bits": 6,
+            "offset": 744,
+            "type": "UINT"
+          },
+          "PHDC": {
+            "bits": 8,
+            "offset": 208,
+            "type": "UINT"
+          },
+          "PHGT": {
+            "bits": 7,
+            "offset": 764,
+            "type": "UINT"
+          },
+          "PHND": {
+            "bits": 6,
+            "offset": 537,
+            "type": "UINT"
+          },
+          "PHOR": {
+            "bits": 3,
+            "offset": 714,
+            "type": "UINT"
+          },
+          "PHTM": {
+            "bits": 6,
+            "offset": 629,
+            "type": "UINT"
+          },
+          "PIMP": {
+            "bits": 7,
+            "offset": 680,
+            "type": "UINT"
+          },
+          "PJCT": {
+            "bits": 4,
+            "offset": 753,
+            "type": "UINT"
+          },
+          "PJEN": {
+            "bits": 7,
+            "offset": 649,
+            "type": "UINT"
+          },
+          "PJUM": {
+            "bits": 7,
+            "offset": 641,
+            "type": "UINT"
+          },
+          "PLEX": {
+            "bits": 3,
+            "offset": 809,
+            "type": "UINT"
+          },
+          "PLHT": {
+            "bits": 4,
+            "offset": 771,
+            "type": "UINT"
+          },
+          "PLIG": {
+            "bits": 2,
+            "offset": 556,
+            "type": "UINT"
+          },
+          "PLIL": {
+            "bits": 1,
+            "offset": 624,
+            "type": "UINT"
+          },
+          "PLNA": {
+            "bits": 112,
+            "offset": 96,
+            "type": "STRING"
+          },
+          "PLPR": {
+            "bits": 2,
+            "offset": 717,
+            "type": "UINT"
+          },
+          "PLTO": {
+            "bits": 8,
+            "offset": 392,
+            "type": "UINT"
+          },
+          "PLUL": {
+            "bits": 2,
+            "offset": 625,
+            "type": "UINT"
+          },
+          "PLWL": {
+            "bits": 2,
+            "offset": 627,
+            "type": "UINT"
+          },
+          "PMED": {
+            "bits": 8,
+            "offset": 232,
+            "type": "SINT"
+          },
+          "PNKN": {
+            "bits": 128,
+            "offset": 248,
+            "type": "STRING"
+          },
+          "POID": {
+            "bits": 15,
+            "offset": 522,
+            "type": "UINT"
+          },
+          "POVR": {
+            "bits": 7,
+            "offset": 719,
+            "type": "UINT"
+          },
+          "PPNT": {
+            "bits": 7,
+            "offset": 779,
+            "type": "UINT"
+          },
+          "PPOS": {
+            "bits": 5,
+            "offset": 732,
+            "type": "UINT"
+          },
+          "PPSN": {
+            "bits": 2,
+            "offset": 656,
+            "type": "UINT"
+          },
+          "PPSS": {
+            "bits": 7,
+            "offset": 737,
+            "type": "UINT"
+          },
+          "PRAT": {
+            "bits": 8,
+            "offset": 400,
+            "type": "UINT"
+          },
+          "PRFC": {
+            "bits": 8,
+            "offset": 216,
+            "type": "UINT"
+          },
+          "PRHD": {
+            "bits": 6,
+            "offset": 491,
+            "type": "UINT"
+          },
+          "PRLT": {
+            "bits": 8,
+            "offset": 416,
+            "type": "UINT"
+          },
+          "PRTY": {
+            "bits": 2,
+            "offset": 817,
+            "type": "UINT"
+          },
+          "PSHO": {
+            "bits": 6,
+            "offset": 658,
+            "type": "UINT"
+          },
+          "PSKI": {
+            "bits": 4,
+            "offset": 577,
+            "type": "UINT"
+          },
+          "PSOC": {
+            "bits": 6,
+            "offset": 485,
+            "type": "UINT"
+          },
+          "PSPA": {
+            "bits": 6,
+            "offset": 466,
+            "type": "UINT"
+          },
+          "PSPD": {
+            "bits": 7,
+            "offset": 543,
+            "type": "UINT"
+          },
+          "PSRT": {
+            "bits": 8,
+            "offset": 424,
+            "type": "UINT"
+          },
+          "PSTM": {
+            "bits": 6,
+            "offset": 635,
+            "type": "UINT"
+          },
+          "PSXP": {
+            "bits": 13,
+            "offset": 689,
+            "type": "UINT"
+          },
+          "PTAK": {
+            "bits": 7,
+            "offset": 591,
+            "type": "UINT"
+          },
+          "PTBD": {
+            "bits": 8,
+            "offset": 224,
+            "type": "UINT"
+          },
+          "PTFD": {
+            "bits": 8,
+            "offset": 240,
+            "type": "UINT"
+          },
+          "PUAR": {
+            "bits": 6,
+            "offset": 708,
+            "type": "UINT"
+          },
+          "PUCL": {
+            "bits": 5,
+            "offset": 612,
+            "type": "UINT"
+          },
+          "PWGT": {
+            "bits": 8,
+            "offset": 408,
+            "type": "UINT"
+          },
+          "PWRT": {
+            "bits": 6,
+            "offset": 786,
+            "type": "UINT"
+          },
+          "PYBT": {
+            "bits": 3,
+            "offset": 750,
+            "type": "UINT"
+          },
+          "SGT1": {
+            "bits": 6,
+            "offset": 439,
+            "type": "UINT"
+          },
+          "SGT2": {
+            "bits": 6,
+            "offset": 445,
+            "type": "UINT"
+          },
+          "SGT3": {
+            "bits": 6,
+            "offset": 451,
+            "type": "UINT"
+          },
+          "SGT4": {
+            "bits": 6,
+            "offset": 457,
+            "type": "UINT"
+          },
+          "TGID": {
+            "bits": 10,
+            "offset": 512,
+            "type": "UINT"
+          },
+          "TGTI": {
+            "bits": 10,
+            "offset": 581,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 831,
+        "record_bytes": 104,
+        "row_count_sampled": 34
+      }
+    },
+    "PLYL": {
+      "container": "IGDATA.DAT",
+      "difference": {
+        "common_field_names": 10,
+        "common_same_width": 0,
+        "common_same_width_and_offset": 0,
+        "only_nflstreet1_ps2": [],
+        "only_nflstreet3_ps2": [],
+        "width_changed": {
+          "PLF_": [
+            32,
+            18
+          ],
+          "PLYL": [
+            8,
+            9
+          ],
+          "PLYT": [
+            8,
+            6
+          ],
+          "SETL": [
+            8,
+            6
+          ],
+          "SITT": [
+            8,
+            2
+          ],
+          "motn": [
+            8,
+            1
+          ],
+          "name": [
+            192,
+            200
+          ],
+          "phlp": [
+            8,
+            3
+          ],
+          "risk": [
+            8,
+            1
+          ],
+          "vpos": [
+            8,
+            3
+          ]
+        }
+      },
+      "nflstreet1_ps2": {
+        "field_count": 10,
+        "fields": {
+          "PLF_": {
+            "bits": 32,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "PLYL": {
+            "bits": 8,
+            "offset": 40,
+            "type": "UINT"
+          },
+          "PLYT": {
+            "bits": 8,
+            "offset": 56,
+            "type": "UINT"
+          },
+          "SETL": {
+            "bits": 8,
+            "offset": 32,
+            "type": "UINT"
+          },
+          "SITT": {
+            "bits": 8,
+            "offset": 48,
+            "type": "UINT"
+          },
+          "motn": {
+            "bits": 8,
+            "offset": 264,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 192,
+            "offset": 64,
+            "type": "STRING"
+          },
+          "phlp": {
+            "bits": 8,
+            "offset": 272,
+            "type": "UINT"
+          },
+          "risk": {
+            "bits": 8,
+            "offset": 256,
+            "type": "UINT"
+          },
+          "vpos": {
+            "bits": 8,
+            "offset": 280,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 319,
+        "record_bytes": 40,
+        "row_count_sampled": 2
+      },
+      "nflstreet3_ps2": {
+        "field_count": 10,
+        "fields": {
+          "PLF_": {
+            "bits": 18,
+            "offset": 223,
+            "type": "UINT"
+          },
+          "PLYL": {
+            "bits": 9,
+            "offset": 206,
+            "type": "UINT"
+          },
+          "PLYT": {
+            "bits": 6,
+            "offset": 217,
+            "type": "UINT"
+          },
+          "SETL": {
+            "bits": 6,
+            "offset": 200,
+            "type": "UINT"
+          },
+          "SITT": {
+            "bits": 2,
+            "offset": 215,
+            "type": "UINT"
+          },
+          "motn": {
+            "bits": 1,
+            "offset": 242,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 200,
+            "offset": 0,
+            "type": "STRING"
+          },
+          "phlp": {
+            "bits": 3,
+            "offset": 243,
+            "type": "UINT"
+          },
+          "risk": {
+            "bits": 1,
+            "offset": 241,
+            "type": "UINT"
+          },
+          "vpos": {
+            "bits": 3,
+            "offset": 246,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 255,
+        "record_bytes": 32,
+        "row_count_sampled": 11
+      }
+    },
+    "SETL": {
+      "container": "IGDATA.DAT",
+      "difference": {
+        "common_field_names": 8,
+        "common_same_width": 0,
+        "common_same_width_and_offset": 0,
+        "only_nflstreet1_ps2": [],
+        "only_nflstreet3_ps2": [],
+        "width_changed": {
+          "FORM": [
+            8,
+            3
+          ],
+          "MOTN": [
+            16,
+            1
+          ],
+          "SETL": [
+            8,
+            6
+          ],
+          "SETT": [
+            8,
+            4
+          ],
+          "SITT": [
+            8,
+            2
+          ],
+          "SLF_": [
+            32,
+            1
+          ],
+          "name": [
+            192,
+            144
+          ],
+          "poso": [
+            8,
+            1
+          ]
+        }
+      },
+      "nflstreet1_ps2": {
+        "field_count": 8,
+        "fields": {
+          "FORM": {
+            "bits": 8,
+            "offset": 56,
+            "type": "UINT"
+          },
+          "MOTN": {
+            "bits": 16,
+            "offset": 32,
+            "type": "UINT"
+          },
+          "SETL": {
+            "bits": 8,
+            "offset": 48,
+            "type": "UINT"
+          },
+          "SETT": {
+            "bits": 8,
+            "offset": 64,
+            "type": "UINT"
+          },
+          "SITT": {
+            "bits": 8,
+            "offset": 72,
+            "type": "UINT"
+          },
+          "SLF_": {
+            "bits": 32,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 192,
+            "offset": 80,
+            "type": "STRING"
+          },
+          "poso": {
+            "bits": 8,
+            "offset": 272,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 287,
+        "record_bytes": 36,
+        "row_count_sampled": 2
+      },
+      "nflstreet3_ps2": {
+        "field_count": 8,
+        "fields": {
+          "FORM": {
+            "bits": 3,
+            "offset": 150,
+            "type": "UINT"
+          },
+          "MOTN": {
+            "bits": 1,
+            "offset": 153,
+            "type": "UINT"
+          },
+          "SETL": {
+            "bits": 6,
+            "offset": 144,
+            "type": "UINT"
+          },
+          "SETT": {
+            "bits": 4,
+            "offset": 154,
+            "type": "UINT"
+          },
+          "SITT": {
+            "bits": 2,
+            "offset": 158,
+            "type": "UINT"
+          },
+          "SLF_": {
+            "bits": 1,
+            "offset": 160,
+            "type": "UINT"
+          },
+          "name": {
+            "bits": 144,
+            "offset": 0,
+            "type": "STRING"
+          },
+          "poso": {
+            "bits": 1,
+            "offset": 161,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 191,
+        "record_bytes": 24,
+        "row_count_sampled": 11
+      }
+    },
+    "TEAM": {
+      "container": "DB_TEAMS.DAT",
+      "difference": {
+        "common_field_names": 21,
+        "common_same_width": 20,
+        "common_same_width_and_offset": 0,
+        "only_nflstreet1_ps2": [
+          "LGID",
+          "SGID",
+          "TAss",
+          "TDPB",
+          "TFTL",
+          "TGPT",
+          "TGRP",
+          "TLGS",
+          "TLSA",
+          "TMSA",
+          "TOPB",
+          "TRDB",
+          "TRDL",
+          "TRLB",
+          "TROL",
+          "TRQB",
+          "TRRB",
+          "TRST",
+          "TVQS",
+          "TWRR"
+        ],
+        "only_nflstreet3_ps2": [
+          "CTDL"
+        ],
+        "width_changed": {
+          "TLGL": [
+            7,
+            8
+          ]
+        }
+      },
+      "nflstreet1_ps2": {
+        "field_count": 41,
+        "fields": {
+          "CGID": {
+            "bits": 2,
+            "offset": 413,
+            "type": "UINT"
+          },
+          "DGID": {
+            "bits": 5,
+            "offset": 415,
+            "type": "UINT"
+          },
+          "DISN": {
+            "bits": 3,
+            "offset": 510,
+            "type": "UINT"
+          },
+          "LGID": {
+            "bits": 2,
+            "offset": 420,
+            "type": "UINT"
+          },
+          "SGID": {
+            "bits": 7,
+            "offset": 422,
+            "type": "UINT"
+          },
+          "TAss": {
+            "bits": 1,
+            "offset": 565,
+            "type": "UINT"
+          },
+          "TDNA": {
+            "bits": 136,
+            "offset": 16,
+            "type": "STRING"
+          },
+          "TDPB": {
+            "bits": 6,
+            "offset": 387,
+            "type": "UINT"
+          },
+          "TDRI": {
+            "bits": 9,
+            "offset": 473,
+            "type": "UINT"
+          },
+          "TFTL": {
+            "bits": 7,
+            "offset": 503,
+            "type": "UINT"
+          },
+          "TGID": {
+            "bits": 10,
+            "offset": 429,
+            "type": "UINT"
+          },
+          "TGPT": {
+            "bits": 8,
+            "offset": 344,
+            "type": "UINT"
+          },
+          "TGRP": {
+            "bits": 10,
+            "offset": 513,
+            "type": "UINT"
+          },
+          "TLGL": {
+            "bits": 7,
+            "offset": 489,
+            "type": "UINT"
+          },
+          "TLGS": {
+            "bits": 8,
+            "offset": 336,
+            "type": "UINT"
+          },
+          "TLNA": {
+            "bits": 120,
+            "offset": 152,
+            "type": "STRING"
+          },
+          "TLSA": {
+            "bits": 8,
+            "offset": 328,
+            "type": "UINT"
+          },
+          "TMBZ": {
+            "bits": 7,
+            "offset": 558,
+            "type": "UINT"
+          },
+          "TMC1": {
+            "bits": 7,
+            "offset": 352,
+            "type": "UINT"
+          },
+          "TMC2": {
+            "bits": 7,
+            "offset": 359,
+            "type": "UINT"
+          },
+          "TMC3": {
+            "bits": 7,
+            "offset": 366,
+            "type": "UINT"
+          },
+          "TMRP": {
+            "bits": 7,
+            "offset": 523,
+            "type": "UINT"
+          },
+          "TMSA": {
+            "bits": 16,
+            "offset": 0,
+            "type": "UINT"
+          },
+          "TOID": {
+            "bits": 10,
+            "offset": 439,
+            "type": "UINT"
+          },
+          "TOPB": {
+            "bits": 6,
+            "offset": 393,
+            "type": "UINT"
+          },
+          "TORD": {
+            "bits": 10,
+            "offset": 449,
+            "type": "UINT"
+          },
+          "TRDB": {
+            "bits": 7,
+            "offset": 373,
+            "type": "UINT"
+          },
+          "TRDE": {
+            "bits": 7,
+            "offset": 459,
+            "type": "UINT"
+          },
+          "TRDL": {
+            "bits": 7,
+            "offset": 482,
+            "type": "UINT"
+          },
+          "TRLB": {
+            "bits": 7,
+            "offset": 380,
+            "type": "UINT"
+          },
+          "TROF": {
+            "bits": 7,
+            "offset": 466,
+            "type": "UINT"
+          },
+          "TROL": {
+            "bits": 7,
+            "offset": 496,
+            "type": "UINT"
+          },
+          "TROV": {
+            "bits": 7,
+            "offset": 551,
+            "type": "UINT"
+          },
+          "TRQB": {
+            "bits": 7,
+            "offset": 399,
+            "type": "UINT"
+          },
+          "TRRB": {
+            "bits": 7,
+            "offset": 406,
+            "type": "UINT"
+          },
+          "TRST": {
+            "bits": 7,
+            "offset": 544,
+            "type": "UINT"
+          },
+          "TSNA": {
+            "bits": 56,
+            "offset": 272,
+            "type": "STRING"
+          },
+          "TTYP": {
+            "bits": 5,
+            "offset": 530,
+            "type": "UINT"
+          },
+          "TVIS": {
+            "bits": 1,
+            "offset": 542,
+            "type": "UINT"
+          },
+          "TVQS": {
+            "bits": 1,
+            "offset": 543,
+            "type": "UINT"
+          },
+          "TWRR": {
+            "bits": 7,
+            "offset": 535,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 575,
+        "record_bytes": 72,
+        "row_count_sampled": 32
+      },
+      "nflstreet3_ps2": {
+        "field_count": 22,
+        "fields": {
+          "CGID": {
+            "bits": 2,
+            "offset": 341,
+            "type": "UINT"
+          },
+          "CTDL": {
+            "bits": 1,
+            "offset": 401,
+            "type": "UINT"
+          },
+          "DGID": {
+            "bits": 5,
+            "offset": 343,
+            "type": "UINT"
+          },
+          "DISN": {
+            "bits": 3,
+            "offset": 402,
+            "type": "UINT"
+          },
+          "TDNA": {
+            "bits": 136,
+            "offset": 0,
+            "type": "STRING"
+          },
+          "TDRI": {
+            "bits": 9,
+            "offset": 392,
+            "type": "UINT"
+          },
+          "TGID": {
+            "bits": 10,
+            "offset": 348,
+            "type": "UINT"
+          },
+          "TLGL": {
+            "bits": 8,
+            "offset": 312,
+            "type": "UINT"
+          },
+          "TLNA": {
+            "bits": 120,
+            "offset": 136,
+            "type": "STRING"
+          },
+          "TMBZ": {
+            "bits": 7,
+            "offset": 425,
+            "type": "UINT"
+          },
+          "TMC1": {
+            "bits": 7,
+            "offset": 320,
+            "type": "UINT"
+          },
+          "TMC2": {
+            "bits": 7,
+            "offset": 327,
+            "type": "UINT"
+          },
+          "TMC3": {
+            "bits": 7,
+            "offset": 334,
+            "type": "UINT"
+          },
+          "TMRP": {
+            "bits": 7,
+            "offset": 405,
+            "type": "UINT"
+          },
+          "TOID": {
+            "bits": 10,
+            "offset": 358,
+            "type": "UINT"
+          },
+          "TORD": {
+            "bits": 10,
+            "offset": 368,
+            "type": "UINT"
+          },
+          "TRDE": {
+            "bits": 7,
+            "offset": 378,
+            "type": "UINT"
+          },
+          "TROF": {
+            "bits": 7,
+            "offset": 385,
+            "type": "UINT"
+          },
+          "TROV": {
+            "bits": 7,
+            "offset": 418,
+            "type": "UINT"
+          },
+          "TSNA": {
+            "bits": 56,
+            "offset": 256,
+            "type": "STRING"
+          },
+          "TTYP": {
+            "bits": 5,
+            "offset": 412,
+            "type": "UINT"
+          },
+          "TVIS": {
+            "bits": 1,
+            "offset": 417,
+            "type": "UINT"
+          }
+        },
+        "record_bits": 447,
+        "record_bytes": 56,
+        "row_count_sampled": 32
+      }
+    }
+  }
+}

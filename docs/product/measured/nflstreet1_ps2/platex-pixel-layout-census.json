@@ -1,0 +1,23 @@
+{
+ "container": "PLATEX.DAT",
+ "decodable_dimensions": {
+  "128x128": 1
+ },
+ "images": 1735,
+ "member_kinds": {
+  "MMAP": 1735
+ },
+ "members": 1735,
+ "pixel_layouts": {
+  "8-bit indexed": 1
+ },
+ "surface_codecs": {
+  "0": 1
+ },
+ "surfaces": 1,
+ "surfaces_decodable": 1,
+ "undecodable_reasons": {
+  "pixel layout 5 is not one this decoder reads": 662,
+  "pixel layout 6 is not one this decoder reads": 1072
+ }
+}
