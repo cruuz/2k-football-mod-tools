@@ -291,8 +291,11 @@ class UniformArtLaneTests(unittest.TestCase):
         self.addCleanup(uniform_art._IDENTITY_CACHE.clear)
         loaded = uniform_art.load_identities(table)
         self.assertEqual(sorted(loaded[self.target.key]), ["classic", "modern"])
-        original = uniform_art.IDENTITY_DOCUMENT
-        uniform_art.IDENTITY_DOCUMENT = table
+        # The lane now says where its identity table is -- ``identity_document``
+        # is a class attribute the shared base reads -- so pointing the lane at
+        # a fixture is setting that, not a module constant it no longer reads.
+        original = self.lane.identity_document
+        self.lane.identity_document = table
         try:
             self.assertEqual(self.lane.replacement_identity(self.target),
                              "aaaa-bbbb-00005dd3.png",
@@ -305,7 +308,7 @@ class UniformArtLaneTests(unittest.TestCase):
             self.assertEqual(sorted(names),
                              ["classic", "derived:classic", "derived:modern", "modern"])
         finally:
-            uniform_art.IDENTITY_DOCUMENT = original
+            self.lane.identity_document = original
             uniform_art._IDENTITY_CACHE.clear()
 
     def test_a_table_of_the_wrong_schema_is_ignored_rather_than_trusted(self) -> None:
