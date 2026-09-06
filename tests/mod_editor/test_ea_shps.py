@@ -268,7 +268,8 @@ class RefusalTests(unittest.TestCase):
         self.assertIn("8x8", reason)
         self.assertIn("0.375", reason)
         # The refusal carries the measurement, not just "unsupported".
-        self.assertIn("no reading at 8, 4 or 2 bits per pixel", reason)
+        self.assertIn("6 bytes per 4x4 block", reason)
+        self.assertIn("fixed-rate compressed codec", reason)
         self.assertFalse(parsed.image(0).decodable)
         with self.assertRaises(ea_shps.UnsupportedBlock) as caught:
             ea_shps.decode_rgba(parsed)

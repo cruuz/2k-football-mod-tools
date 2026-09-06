@@ -194,6 +194,25 @@ piece of engineering after this plan is accepted is the same for every page:
 the bounded `BIG` entry writer plus a RefPack encoder, with an independent
 verifier that re-derives the archive rather than importing the writer.
 
+### 6.1 The second wall: `SHPS` code `0x0E` [M]
+
+The art pages have a wall of their own, and it decides their rungs.
+`EA_SHPS_FORMAT.md` §5: code `0x0E` is a **fixed-rate compressed codec** — 6
+bytes per 4×4 block, exact at every size across 7,996 images, with
+near-uniform bytes at every position mod 6, 8 and 12 — and nothing here
+decodes it.
+
+It is not a corner case. **Every uniform, every portrait, every head texture,
+every one of the 59 loading screens, all of the field art, all of the
+ballpark-builder art, all of the ballpark menu art and all of the awards art
+is `0x0E`** [M]. What *is* decoded is the other side of the same disc: 8-bit
+indexed (`0x02`) menu widgets, model textures and 80% of the in-park
+textures, and 32-bit direct (`0x05`), which is the logo bank.
+
+Disc-wide, 19,223 of 27,485 sampled images decode — **70%** — and of the 178
+archives that hold banks, 5 decode every image, 78 decode none and 95 are
+mixed [M].
+
 ---
 
 ## 7. The fourteen pages
@@ -202,26 +221,32 @@ The shell draws the same fourteen for every game (`PAGE_ORDER`,
 `mod_editor/games/contract.py`). Here is what each would be for a baseball
 game, the rung the readers earn **today**, and what a writer needs.
 
-### 7.1 Uniforms & Equipment — `extract-only`
+### 7.1 Uniforms & Equipment — `read-only-mapped`
 
 `/DATA/FRONTEND/UNIFORMS.BIG` (557 entries, 555 `SHPS` banks) is the team
-kits; `COOPUNIS.BIG` (127 / 124) is the create-a-team set. Both decode: they
-are `0x02` 8-bit indexed banks with 256-entry CSM1 palettes, which is the case
-`ea_shps` proves. **Writer needs**: the bounded entry rewrite, a RefPack
-encoder (555 of 557 are packed), and an `SHPS` encoder that can re-quantise a
-PNG into the bank's own palette — the same shape `mmap_art.encode` has on the
-Madden side, and it does not exist here yet.
+kits; `COOPUNIS.BIG` (127 / 124) is the create-a-team set. Every bank in both
+opens, every image is listed with its dimensions and its palette — **and not
+one of them decodes**: the kits are code `0x0E` and the rest are the 1×1
+`0x01` stubs [M]. This page is filed at `read-only-mapped` for that reason and
+no other; it is a texture page that can name every texture and show none.
+**What lifts it**: the `0x0E` codec, §6.1. Only then the writer chain — the
+bounded entry rewrite, a RefPack encoder (555 of 557 are packed) and an
+`SHPS` encoder.
 
-### 7.2 Names, Numbers & Faces — `extract-only`
+### 7.2 Names, Numbers & Faces — `extract-only` for the rosters, `read-only-mapped` for the faces
 
-Three sources, all measured: `DATABASE.BIG`'s CSV rosters (§3),
-`PORTRAIT.BIG` (2,391 banks) and `GHEAD.BIG` (8,400 head textures). Every one
-of them comes out; none goes back. **Writer needs**: for the CSVs, only the
-bounded entry rewrite and a RefPack encoder — a row edit changes the file's
-length, so "no larger than it was" is a real constraint and the editor has to
-enforce it or the writer has to grow the archive. For the art, the `SHPS`
-encoder. This is the page the disc is friendliest to and the container is
-harshest to.
+Two halves that earn different rungs, and the page should say so rather than
+average them.
+
+**The rosters come out whole.** `DATABASE.BIG`'s eighteen CSVs (§3) are the
+identity, the ratings and the team assignment of every player on the disc, and
+they are text. **Writer needs**: only the bounded entry rewrite and a RefPack
+encoder — but a row edit changes the file's length, so "no larger than it was"
+is a real constraint the editor has to enforce.
+
+**The faces do not.** `PORTRAIT.BIG` (2,391 banks) and `GHEAD.BIG` (8,400 head
+textures) are 100% code `0x0E` in every bank sampled [M]. Listed, never shown.
+**What lifts it**: §6.1.
 
 ### 7.3 Text & Team Identity — `read-only-mapped`
 
@@ -231,14 +256,15 @@ Team names, cities and abbreviations are columns of `team.dat` and `org.dat`
 that is measured. **Writer needs**: a `LOCH` reader first, then the same
 container work. Filed at the lower of the two rungs on purpose.
 
-### 7.4 Field Art & Create-Team Art — `extract-only`
+### 7.4 Field Art & Create-Team Art — `read-only-mapped`
 
 `/DATA/FRONTEND/FIELDS.BIG` (58 entries / 56 banks) plus the seven ballpark-
 builder archives — `BPSETUP` (39/37), `BPITEMS` (35/33), `BPUPGRAD` (37/35),
 `BPTICKET` (26/24), `BPPROMOS` (18/16), `BPVENDOR` (18/16), `BPATTRAC` (9/7).
-All `0x02` banks. **Writer needs**: as §7.1.
+**All 224 of those images are code `0x0E`** [M], so the page can inventory
+every one and decode none. **What lifts it**: §6.1.
 
-### 7.5 Stadiums — `read-only-mapped`
+### 7.5 Stadiums — `extract-only`
 
 87 `/DATA/STADIUM/*.BIG` archives, one per ballpark per lighting condition,
 each holding 97 entries in a fixed shape: 31 `.ord` IOP objects, 31 `.orl`
@@ -246,28 +272,35 @@ relocation files, 25 `SHPS` banks and 10 text files (`.dat`, `.csv`, `.ifo`).
 Plus `FRONTEND/STADIUMS.BIG` (91 banks) and `BKGNDS.BIG` (105) for the menu
 art.
 
-This page is filed a rung below the other art pages for a measured reason:
-**each park's `cram.ssh` bank is code `0x0E`**, the 7,996 images at three bits
-per pixel that `ea_shps` §5 refuses. The crowd, the outfield walls and the
-warning track are exactly what a stadium modder wants and exactly what is not
-decoded. The geometry (`.ord`/`.orl`) is unparsed as well. What does come out
-today is the menu art and the `0x02` banks inside each park.
+**This is the art page that decodes best**, and the reason is the inverse of
+§7.1: 10,182 of the 12,737 in-park images sampled are `0x02` and come out —
+roughly 80% of every park [M]. What does not is the crowd and wall art
+(`cram.ssh`, code `0x0E`) and, awkwardly, the whole of `STADIUMS.BIG`, the
+ballpark *menu* art, which is 100% `0x0E` [M]. The geometry (`.ord`/`.orl`) is
+unparsed as well. **What lifts it**: §6.1 for the crowd and the menu art; a
+model reader for the geometry.
 
-### 7.6 Presentation — `read-only-mapped`
+### 7.6 Presentation — `extract-only`
 
 The scorebug and broadcast overlays are `INGAME.BIG`'s 44 `.fel` layout
-scripts plus `IGONLY.BIG` (4 banks, 137 sub-images) and `COOPOV.BIG`. The art
-extracts; **the `.fel` grammar is not decoded**, so where a value on screen
-comes from is unknown. Same honest position as Madden 09's presentation page,
-for a different reason.
+scripts plus `IGONLY.BIG` and `COOPOV.BIG` (4 banks each, 137 images each, 123
+of them `0x02` and decoded) [M]. The art comes out; **the `.fel` grammar is not
+decoded**, so where a value on screen comes from is unknown. Same honest
+position as Madden 09's presentation page, for a different reason.
 
 ### 7.7 Menus & UI — `extract-only`
 
 The largest art surface on the disc: 641 nested `.apt`/`.const` dashboard
 screens inside `EASOAPT.BIG`, 329 `.fel` layout scripts, 59 single-image
 `LOADn.BIG` loading screens, `SPLASH`, `TITLE`, `LOGOS` (132 banks),
-`AWARDS` (20), `MINIBAT`, `MINIPIT`, `SHARED`, `FEONLY`, `SUONLY`. The images
-decode; the layout scripts and the `.apt` screens are listed.
+`AWARDS` (20), `MINIBAT`, `MINIPIT`, `SHARED`, `EASOART`, `FEONLY`, `SUONLY`.
+
+The widget art decodes — `MINIBAT`, `MINIPIT`, `SHARED`, `EASOART` and
+`BKGNDS` are 100% `0x02`, `FEONLY` 80% and `SUONLY` 89% — and the **team logo
+bank is the disc's only 32-bit-direct art**: 396 of `LOGOS.BIG`'s 920 images
+are code `0x05` and decode, the other 524 are `0x0E` [M]. **All 59 loading
+screens are `0x0E` and none decodes** [M]. The layout scripts and the `.apt`
+screens are listed, not parsed.
 
 ### 7.8 The Crib — **empty by design**
 
@@ -337,18 +370,18 @@ Nothing game-specific.
 
 | page | feeding containers | rung today |
 |---|---|---|
-| Uniforms & Equipment | `UNIFORMS.BIG` 555 banks, `COOPUNIS.BIG` 124 | `extract-only` |
-| Names, Numbers & Faces | `DATABASE.BIG` 18 CSVs, `PORTRAIT.BIG` 2,391, `GHEAD.BIG` 8,400 | `extract-only` |
+| Uniforms & Equipment | `UNIFORMS.BIG` 555 banks, `COOPUNIS.BIG` 124 — every kit is the refused `0x0E` | `read-only-mapped` |
+| Names, Numbers & Faces | `DATABASE.BIG` 18 CSVs come out; `PORTRAIT.BIG` 2,391 and `GHEAD.BIG` 8,400 are 100% `0x0E` | `extract-only` / `read-only-mapped` |
 | Text & Team Identity | `team.dat`/`org.dat`; 3 `LOCH` files with no reader | `read-only-mapped` |
-| Field Art & Create-Team Art | `FIELDS.BIG` 56 banks + 7 ballpark-builder archives | `extract-only` |
-| Stadiums | 87 park archives; `cram.ssh` is code `0x0E`, refused | `read-only-mapped` |
-| Presentation | `INGAME.BIG` 44 `.fel`, `IGONLY.BIG`; `.fel` grammar unknown | `read-only-mapped` |
-| Menus & UI | 641 `.apt` screens, 329 `.fel`, 59 loading screens, `LOGOS.BIG` | `extract-only` |
+| Field Art & Create-Team Art | `FIELDS.BIG` 56 banks + 7 ballpark-builder archives, all 217 images `0x0E` | `read-only-mapped` |
+| Stadiums | 87 park archives, ~80% of each decodes; the crowd banks and all menu art are `0x0E` | `extract-only` |
+| Presentation | `IGONLY.BIG` 123 of 137 images decode; the `.fel` grammar is unknown | `extract-only` |
+| Menus & UI | widget banks and 396 `0x05` logos decode; all 59 loading screens are `0x0E` | `extract-only` |
 | The Crib | — | empty by design |
 | Audio | 9,123 archived MicroTalk entries + 2 bare MicroTalk containers (refused) + 35 EA-XA streams + 2 `BNKl` | `extract-only` |
 | Gameplay | `/SLUS_211.35`, 44 IRX, 3 packed overlays | `unknown` |
 | Playbooks & Plays | `ROOKIE.BIG` 26 + `PROGRESS.BIG` 8 + 33 audio CSVs + 460 `.txt` | `extract-only` |
-| All Textures | 16,371 `SHPS` banks; 8,317 of 27,485 sampled images refused by name | `extract-only` |
+| All Textures | 16,371 `SHPS` banks; 19,223 of 27,485 sampled images decode, 8,317 refused by name | `extract-only` |
 | Saves | — | out of scope |
 | Build & Share | — | the shell's own |
 
@@ -365,13 +398,19 @@ A first `mvp05_ps2` module, built on this plan and nothing more, would ship:
    every bank, every image, with the `0x0E` and `0x01` refusals quoted) and
    `mvp05ps2.rosters.database_export` (`extract-only`: the 18 CSVs out as
    text, plus `SCHEDULE`, `PROGRESS` and `ROOKIE`).
-3. **Three art export lanes** at `extract-only` — uniforms, portraits and
-   heads, field and ballpark art — each producing PNG through
-   `ea_shps.decode_rgba`, each refusing `0x0E` by name.
+3. **Two art export lanes** at `extract-only`, over the art that actually
+   decodes — the in-park textures (about 80% of each of the 87 ballpark
+   archives) and the menu widget banks plus the 396 direct-colour team logos —
+   each producing PNG through `ea_shps.decode_rgba` and refusing `0x0E` by
+   name. **Not** a uniform lane, not a portrait lane and not a face lane:
+   those surfaces are 100% `0x0E`, and a page that offers an export button
+   which refuses every single item is worse than a page that says why.
 4. **One audio export lane** at `extract-only` over the EA-XA streams, reusing
    `ea_schl` unchanged, with MicroTalk listed and refused.
-5. **Page notes on the other eight pages**, each one sentence saying what was
-   measured and why the page is empty — not "coming soon".
+5. **Page notes on the other pages**, each one sentence saying what was
+   measured and why the page shows what it shows — not "coming soon". Three of
+   them say the same thing and should say it in the same words: the art is
+   there, it is catalogued, and its codec is not decoded (§6.1).
 6. `ea_big.py` and `ea_shps.py` joining the release allowlist and the runtime
    checker's module list, which is where they belong once a shipped module
    imports them. **They are deliberately in neither today**, because nothing

@@ -50,24 +50,40 @@ there" must not render the same.
 
 | code | block | measured, over 22,883 images of a 4,065-bank MVP sample [M] |
 |---|---|---|
-| ``0x02`` | 8-bit indexed pixels | 16,786 images, exactly 1.000 byte per pixel — except 265 whose payload is about four thirds of that, which is a whole mip chain, and 3 with a little padding |
-| ``0x05`` | direct 32-bit RGBA pixels | 402 images, exactly 4.000 bytes per pixel, and **no palette block follows any of them** |
-| ``0x21`` | 32-bit RGBA palette | 23,412 blocks, ``size == 16 + 4 * width``; ``width`` is 256 in all but a handful |
-| ``0x0E`` | **refused** | 6,430 images, exactly 0.375 bytes per pixel with a 256-entry palette — see §*What is refused* |
-| ``0x01`` | **refused** | 196 images, every one of them 1x1 with a 16-byte payload and a two-entry palette |
-| ``0x69`` ``0x6F`` ``0x70`` ``0x7C`` | metadata / text attachments | 45,336 blocks, carried and never decoded |
+| ``0x02`` | 8-bit indexed pixels | 19,697 images, exactly 1.000 byte per pixel — except 265 whose payload is about four thirds of that, which is a whole mip chain, and 1 with a little padding |
+| ``0x05`` | direct 32-bit RGBA pixels | 402 images, exactly 4.000 bytes per pixel, and **no palette block follows any of them**; every one of them is in the logo bank |
+| ``0x21`` | 32-bit RGBA palette | 28,014 blocks, ``size == 16 + 4 * width``; ``width`` is 256 in all but a couple of thousand |
+| ``0x0E`` | **refused** | 7,996 images, exactly 6 bytes per 4x4 block with a 256-entry palette — a fixed-rate compressed codec, see below |
+| ``0x01`` | **refused** | 321 images, every one of them 1x1 with a 16-byte payload and a two-entry palette |
+| ``0x69`` ``0x6F`` ``0x70`` ``0x7C`` | metadata / text attachments | 52,281 blocks, carried and never decoded |
 
 ## What is refused, and why that is not the same as empty
 
-**Code ``0x0E``** is every crowd-and-wall texture of the 87 ballpark
-archives.  Its arithmetic is exactly three bits per pixel across all 6,430
-images measured, and reading those bytes as 8-bit indexed at three eighths of
-the declared height, or as 4-bit indexed at three quarters of it, produces the
-right *colours* and no coherent image in either nibble order [M].  So the
-layout is not known, the reader says so by name and quotes the measurement,
-and no half-right picture is ever handed back.
+**Code ``0x0E`` is the disc's second art codec, and it is compressed.**  It is
+not a corner case: it is every uniform, every portrait, every head texture,
+every loading screen, all of the field art and the ballpark-builder art, and
+about a fifth of the ballpark and model textures.  Three measurements settle
+what it is and what it is not [M]:
 
-**Code ``0x01``** is 196 one-pixel stubs.  A 16-byte payload for one pixel
+* its rate is **exactly 6 bytes per 4x4 block of pixels** -- 0.375 bytes per
+  pixel -- for all 7,996 images at every size from 64x64 to 1024x256, with no
+  exception.  A variable-rate compressor cannot produce an exact constant
+  ratio, so this is a fixed-rate codec;
+* its bytes are **near-uniform at every position mod 6, 8 and 12** (mean about
+  140, over 230 distinct values per column in a 1,024-sample image).  A plain
+  indexed bitmap uses a subset of its palette and looks nothing like that, and
+  a fixed-rate block codec with packed endpoints and selectors looks exactly
+  like that;
+* consequently the two re-readings that produce the right *number* of bytes --
+  8-bit indexed at three eighths of the declared height, and 4-bit indexed at
+  three quarters of it, in both nibble orders -- give the right colours and no
+  coherent image [M].
+
+So no rearrangement of these bits will ever decode them; decoding needs the
+codec, which lives in the executable.  The reader names the code, quotes the
+measurement, and hands back nothing.
+
+**Code ``0x01``** is 321 one-pixel stubs.  A 16-byte payload for one pixel
 proves only that a block has a minimum size; nothing about a real row layout
 can be read off it, so it is refused rather than assumed to be 4-bit indexed.
 
@@ -157,12 +173,14 @@ CODE_NAMES: Dict[int, str] = {
 #: the note, so the next person starts from the measurement rather than from
 #: "unsupported".
 CODE_NOTES: Dict[int, str] = {
-    0x01: ("every one of the 196 code-0x01 images measured is 1x1 with a "
+    0x01: ("every one of the 321 code-0x01 images measured is 1x1 with a "
            "16-byte payload and a two-entry palette, so nothing about its "
            "row layout has been proved and it is not guessed at"),
-    0x0E: ("all 6,430 code-0x0e images measured carry exactly 0.375 bytes per "
-           "pixel and a 256-entry palette; no reading at 8, 4 or 2 bits per "
-           "pixel produces a coherent image, so the layout is unknown"),
+    0x0E: ("all 7,996 code-0x0e images measured carry exactly 6 bytes per 4x4 "
+           "block of pixels at every size, and their bytes are near-uniform at "
+           "every position mod 6, 8 and 12, which is a fixed-rate compressed "
+           "codec rather than a bit-packed bitmap; no reinterpretation of the "
+           "bits can decode it"),
 }
 
 #: Bytes per pixel for each pixel code this module decodes.

@@ -26,8 +26,10 @@ no palette entry and no bank name from any game is reproduced here.
    Baseball 2005 and all 37 banks and 93 images of the Tiburon dashboard.
 2. **Two of the four pixel codes are decoded and proved to the eye** — 8-bit
    indexed (`0x02`) and direct 32-bit RGBA (`0x05`), 20,099 of the 27,485
-   images sampled — and **two are refused by name with the measurement that
-   failed to identify them**, which is the whole of §5.
+   images sampled — and **two are refused**, one of which is not a corner
+   case: code `0x0E` is a **compressed** codec at a fixed 6 bytes per 4×4
+   block, and it holds every uniform, portrait, head texture and loading
+   screen on the disc. §5 is the measurement that says so.
 3. **The palette is the part that is easy to get wrong twice**: a 256-entry
    CLUT is in the GS's CSM1 order and must be un-swapped, and a shorter one is
    padded past its declared length and must not be over-read. Both are settled
@@ -166,25 +168,48 @@ so a matcher pairing a dump with a bank asks for it.
 
 ## 5. What is refused, and why that is not the same as empty
 
-### `0x0E` — 7,996 images, exactly three bits per pixel
+### `0x0E` — 7,996 images, and it is a compressed codec
 
-This is the crowd-and-wall art of the 87 ballpark archives; it is one bank
-per stadium, and every image in it is code `0x0E` with a 256-entry palette
-attached. Its arithmetic is exactly **0.375 bytes per pixel** across all 7,996
-measured — a 256×256 image in 24,576 bytes, a 128×64 in 3,072 — with no
-exception at any size.
+**This is the single largest gap in this format, and it is not a corner
+case.** Code `0x0E` holds, on MVP Baseball 2005 [M]:
 
-Three bits per pixel is not a depth. The two readings that produce the right
-*number* of bytes were both tried and both looked at [M]:
+The counts below come from a second pass that sampled up to 200 banks per
+archive and recorded each image's first block code (20,973 images) [M].
 
-- 8-bit indexed at three eighths of the declared height;
-- 4-bit indexed at three quarters of it, in both nibble orders.
+| where | images, in that pass | share of that archive |
+|---|---:|---|
+| `UNIFORMS.BIG` | 158 | all of its non-stub images |
+| `PORTRAIT.BIG`, `GHEAD.BIG` | 200 + 200 sampled | 100% of both |
+| the 59 `LOADn.BIG` loading screens | 59 | 100% |
+| `FIELDS.BIG` and the 7 ballpark-builder archives | 224 | 100% |
+| `STADIUMS.BIG`, `AWARDS.BIG`, `COOPUNIS`, `COOPPLYR`, `COOPSTAD`, `COOPTEAM` | 325 | 100% |
+| the 87 ballpark archives | 2,555 | 20% |
+| `MODELS.BIG` | 1,249 | 29% |
+| `LOGOS.BIG` | 524 | 57% |
 
-All three sheets come out with plausible colours — blue crowds, green grass,
-brown dirt, so the palette is certainly right — and no coherent image. So the
-pixel layout is **not known**. The reader names the code, quotes the 0.375,
-says which readings were tried, and hands back nothing. A half-right picture
-exported as if it were the texture is how a modder ships a corrupted stadium.
+Three measurements say what it is, and rule out ever decoding it by
+rearranging bits [M]:
+
+1. **The rate is exactly 6 bytes per 4×4 block of pixels** — 0.375 bytes per
+   pixel — for all 7,996 images, at every size from 64×64 to 1024×256, with no
+   exception. A 256×256 image is 24,576 bytes; a 128×64 is 3,072. **A
+   variable-rate compressor cannot hold an exact constant ratio**, so this is a
+   fixed-rate codec, and 6 bytes per 4×4 block is the shape of one.
+2. **The bytes are near-uniform at every position mod 6, 8 and 12** — mean
+   about 140, more than 230 distinct values in each column of a 1,024-block
+   image. A plain indexed bitmap uses a subset of its palette and does not look
+   like that; packed endpoints and selectors do.
+3. Consequently the two readings that produce the right *number* of bytes
+   were tried, rendered and looked at — 8-bit indexed at three eighths of the
+   declared height, and 4-bit indexed at three quarters of it in both nibble
+   orders. All three sheets come out in plausible colours (so the attached
+   256-entry palette is certainly the right palette) and with no coherent
+   image.
+
+So the codec is not in these bytes' arrangement; it is in the executable.
+The reader names the code, quotes the rate and the statistics, and hands back
+nothing. A half-right picture exported as if it were the texture is how a
+modder ships a corrupted uniform.
 
 ### `0x01` — 321 images, every one of them 1×1
 
@@ -218,14 +243,17 @@ still needs to produce something a person can look at.
 
 | corpus | banks | images | decoded | refused |
 |---|---:|---:|---:|---:|
-| MVP Baseball 2005 (USA), 4,665-bank sample of 15,818 | 4,665 | 27,485 | 19,223 | 8,262 |
+| MVP Baseball 2005 (USA), 4,665-bank sample of 15,818 | 4,665 | 27,485 | 19,223 (70%) | 8,262 |
 | NCAA Football 09 (USA), `/EACN/BUNDLE.BIG`, all of it | 37 | 93 | 93 | 0 |
 | Madden NFL 09 (USA), same archive | 37 | 93 | 93 | 0 |
 | Madden NFL 08 (USA), same archive | 37 | 93 | 93 | 0 |
 | Madden NFL 06 (USA), same archive | 38 | 94 | 94 | 0 |
 
 Every refusal on MVP is a `0x0E` or a `0x01` image; there is no third kind
-[M]. The largest bank measured holds 198 images; the most common sizes are
+[M]. Of the 178 archives that hold banks, **5 decode every image, 78 decode
+none, and 95 are mixed** — and which side an archive falls on is decided
+entirely by §5: small UI widgets and model textures are `0x02` and come out,
+large photographic art is `0x0E` and does not [M]. The largest bank measured holds 198 images; the most common sizes are
 64×64 (3,934), 128×128 (3,833), 16×32 (2,337) and 32×32 (2,317), the largest
 decoded image is 512×512, and the largest of any kind is a 1024×256 `0x0E`
 block.
@@ -234,7 +262,8 @@ block.
 
 ## 8. What stays unknown
 
-- **`0x0E`'s pixel layout**, §5. The single biggest gap in this format.
+- **`0x0E`'s codec**, §5. The single biggest gap in this format, and the
+  one that decides how much of an EA BIG disc's art a studio can show.
 - **`0x01`'s layout**, §5, and it may never be knowable from this disc.
 - **The four `misc` u16s** of a pixel block. Zero in every pixel block
   measured; `0x0E` blocks carry `(0, 0, 8196, 2)` and palettes `(entries, 0,
