@@ -3,8 +3,7 @@
 > Normative. Contract version **1.0 (unreleased)**; the number is `CONTRACT_VERSION` in
 > `mod_editor/games/contract.py`, the history is `mod_editor/games/CONTRACT_CHANGELOG.md`, and
 > the files that *are* the contract are pinned in `mod_editor/games/CONTRACT_PINS.json`
-> (section 12). The design rationale and the migration of the existing products are in
-> `MULTI_GAME_INTERFACES_PLAN.md`; the how-to is `ADDING_A_GAME_MODULE.md`.
+> (section 12). The how-to is `ADDING_A_GAME_MODULE.md`.
 
 ## 1. Scope
 
@@ -309,7 +308,7 @@ the pnach and re-reads the ELF: the CRC the file names is the ELF's PCSX2 CRC (X
 32-bit word), every declared address is in the ELF, every original matches, nothing else is
 declared. Delivery is emulator-side first; on-disc ELF patching is optional and separate.
 `translation()` returns a `MipsPatch` or refuses with the reason. A recipe may carry
-hand-authored words while a translation is proved. See `PS2_CODE_PATCH_PIPELINE.md`.
+hand-authored words while a translation is proved.
 
 ## 12. Versioning and pins
 

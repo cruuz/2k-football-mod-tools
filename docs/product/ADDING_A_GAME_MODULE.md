@@ -1,13 +1,11 @@
 # Adding a game module — the exact steps for a PR
 
-This is the how-to. The contract itself is `GAME_MODULE_CONTRACT.md`; the reasoning is
-`MULTI_GAME_INTERFACES_PLAN.md`. Everything a game needs lives under
+This is the how-to. The contract itself is `GAME_MODULE_CONTRACT.md`. Everything a game needs lives under
 `mod_editor/games/<game_id>/` and `tests/mod_editor/test_<game_id>_*.py`; the upstream files
 that still carry per-game facts today are edited by one command (step 8), never by hand.
 
-`docs/product/MODULE_AGENT_CHARTER.md` is the standing rules that go with these steps -- the
-gates, the retail-free rule, the shared-file rule, where the measured facts already live, and
-the shape of the report. Read it once; this page assumes it.
+`AGENTS.md` is the standing rules that go with these steps -- the gates, the retail-free rule
+and the shared-file rule. Read it once; this page assumes it.
 
 ## 0. Before you start
 
@@ -75,7 +73,7 @@ write the two thin wrappers `tools/validate_<game_id>_<lane>.sh/.bat` that call
 `validation_command` runs the `.sh`. `python3 tools/validate_game_lane.py --game <game_id> --all`
 runs every lane with the harness once instead of once per lane.
 
-For executable patches use the `CodePatchLane` shape — see `PS2_CODE_PATCH_PIPELINE.md`. For
+For executable patches use the `CodePatchLane` shape — see `GAME_MODULE_CONTRACT.md` §11. For
 texture art implement `ArtLane` (`decode_png`, `encode`, `replacement_identity`) and for sounds
 `AudioLane` (`decode_wav`); a lane that only catalogues declares `read_only = True` and answers
 `ReadOnlyLane`. Each one gives the shell's page its controls and nothing else does.

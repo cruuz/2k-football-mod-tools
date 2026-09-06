@@ -1,171 +1,127 @@
-# NFL Blitz 2003 (PlayStation 2) — the module
+# NFL Blitz 2003 (USA, PlayStation 2) — module capability summary
 
-**What this document is.** `mod_editor/games/nflblitz2003_ps2/` is the sixth game
-on the Game Studio shell and the second Midway title. It is the NFL Blitz 2002
-module with this disc's identity, this disc's archive names and this disc's
-counts — because the two discs' formats are identical in every respect this
-project measured, and §2 is that claim with the numbers behind it.
-`docs/product/NFLBLITZ2002_PS2_MODULE.md` is the full account of the formats,
-the probes, the GS layout measurement and the real-disc trial; this document
-carries only what differs.
+This page is the capability summary for the `nflblitz2003_ps2` game module: what each
+Studio page offers, what it refuses, and how far each claim has been proved. It is a
+reference for the shipped module, not a study of the disc.
 
-**Evidence tags.** **[M]** measured on the retail SLUS-20474 disc this box
-holds, read-only; **[S]** sourced; **[A]** assumed.
+You supply the disc. The module reads a legally obtained USA PlayStation 2 image of
+NFL Blitz 2003 (serial SLUS-20474). No game files, BIOS, saves or emulator binaries
+are bundled with the tool, and no content from any retail disc is stored in this
+repository.
 
-**Retail-free.** Counts, names, offsets, lengths and digests. No line, name,
-pixel, palette entry or record from the disc is in this repository.
+## Opening it
 
----
+Start Mod Studio and choose **NFL Blitz 2003 (PS2)** from *Select other games…*, or open it
+straight from a terminal:
 
-## 1. The verdict, in four sentences
+```
+python -m mod_editor --game nflblitz2003_ps2
+```
 
-1. **All fourteen pages are answered**, with the same lane set and the same
-   classifications as the 2002 module (§3): four writers at
-   `offline-writer-proved`, two export lanes at `extract-only`, two inventories
-   at `read-only-mapped`, five page notes.
-2. **The two discs' formats are identical** in every measured respect but three,
-   and all three are data, not shape (§2).
-3. **Every gate is green on this disc's own numbers**: 296 of 296 conformance
-   checks, five validators, 24 lane tests, and the shared readers' 31 tests.
-4. **The writers are proved on this retail disc too** (§4), and every build
-   declares **two** ranges where the 2002 disc declares four — the shape
-   difference showing up in a receipt. **No image has been booted.**
+Point it at your own disc image. The module checks that the image is the release it
+supports and refuses by name if it is not, so a wrong disc costs you a sentence rather
+than a bad build.
 
-## 2. What differs from NFL Blitz 2002, in numbers [M]
+## Before you build anything
 
-Three things, and nothing else the readers can see:
+**Every writer in this module is proved offline and has never been seen in a running
+game.** Precisely: the rebuilt image is checked byte for byte by a verifier that shares
+no code with the writer, each edit is confirmed to land inside the range its capability
+row declares, and every other byte of the image is confirmed unchanged. What that does
+not cover is the game itself — nobody has booted the result. If you load a rebuilt image
+in an emulator or on hardware you are the first person to do so, and a crash, a missing
+texture or a wrong string is a real possibility rather than a surprise. Please report
+what you see.
 
-| | NFL Blitz 2002 | NFL Blitz 2003 |
-|---|---|---|
-| serial / boot ELF | SLUS-20051 / `SLUS_200.51`, 2,342,232 B | SLUS-20474 / `SLUS_204.74`, 2,417,112 B |
-| image | 1,464,205,312 B, 36 files | 1,029,144,576 B, 22 files |
-| the pair | `/DATA/BASSETS.ZIP` + `.ZIH` | `/DATA/BERTHA.ZIP` + `.ZIH` |
-| **`.ZIH` record shape** | **inline** — nine `u32` then the name, **with a CRC-32 column** | **table** — `u32` name offset, size, data offset, then one string table, **no CRC column** |
-| members | 2,426 | 2,695 |
+A build always writes a **new** image, to a destination that does not already exist. The
+disc image you supply is opened for reading and is never modified, so a bad build costs
+you the output file and nothing else.
 
-Everything else holds on both, exhaustively:
+## What the module edits
 
-| identity | 2002 | 2003 |
-|---|---|---|
-| `body bytes + 8 == the .ZIH file` | holds | holds |
-| the index walk consumes the file to its last byte | holds | holds |
-| index names equal the archive's, as sets | 2,426 | 2,695 |
-| index sizes equal the central directory's | 2,426 of 2,426 | 2,695 of 2,695 |
-| index offsets equal the archive's own local-data offsets | 2,426 of 2,426 | 2,695 of 2,695 |
-| every member's compression method is *stored* | 2,426 | 2,695 |
-| local-header extra field empty | 2,426 | 2,695 |
-| index order is by name; archive order is by data offset | both | both |
-| index CRC column equals the central directory's | 2,426 of 2,426 | **no column** |
-| recomputed CRC-32 over the stored bytes agrees | 600 of 600 | no column |
-| `.rtd` whose one section accounts for the file | 761 of 761 | 840 of 840 |
-| rasters read (= the count each dictionary declares) | 10,420 | 11,828 |
-| rasters whose TEX0 agrees with the header's w/h/depth | 10,420 | 11,828 |
-| platform word `PS2\0`; library version `0x0401ffff` | all | all |
-| `roster.rst` bytes / `% 1,804` / blocks | 73,964 / 0 / 41 | 75,768 / 0 / 42 |
-| blocks whose header word is 18 | 41 of 41 | 42 of 42 |
-| records whose byte +68 equals their block ordinal | 738 of 738 | 756 of 756 |
-| `CPTH`: `16 + records * 32 == the member` | 85 of 85 | 88 of 88 |
-| `WIFF`: big-endian size + 8 == the member | 190 of 190 | 209 of 209 |
-| `.dff` walk consumes the member | 1,043 of 1,272 | 1,167 of 1,436 |
-| `.trv`: `size % 40 == 0` | 40 of 40 | 40 of 40 |
-| `.ini` / `.tab` / `.txt` printable ASCII, CRLF | 32 of 32 | 34 of 34 |
+The module works off the disc image directly, and editing is confined to text and
+names that already sit in it: the crowd tables, the field table, the trivia banks and
+the roster's player names.
 
-**The one shape difference is the index's record layout, and the readers already
-tell the two apart from the bytes** — the table shape is recognised because its
-first record's first word is the directory's own length, `entries × 12` [M]. So
-the writer's three-place rule becomes a two-place rule on this disc, decided by
-the file rather than by the disc's name: `plan_member_replacement` returns an
-index range only where the index carries a CRC column, and never invents one.
+Every edit is written inside the space the line or field already occupies. The member
+goes back where it lies, no member changes length, and the rebuilt image is exactly as
+long as the source. Where the disc records a member's checksum in more than one place,
+all of those places are updated together or the edit is refused outright.
 
-**The team count moved, and the roster moved with it.** The 2003 disc adds one
-`<two letters>_crowd.ini` and one `<two letters>_glogo.rtd` — both `ht`, the
-Houston Texans, the team the NFL added for the 2002 season — and `roster.rst`
-gains exactly one 1,804-byte block [M]. That is the cross-check the roster's
-block arithmetic earns, and it is the same on both discs.
+Writing always produces a new file: the source image is opened read-only, the
+destination must not already exist, and a refusal leaves no destination behind.
 
-## 3. The fourteen pages
+Everything else on offer is inspection. Textures are decoded and exported to PNG;
+cameras and texture dictionaries are inventoried. Nothing is written back into art,
+geometry or audio.
 
-Identical to the 2002 module's table, with this disc's counts: 32 crowd tables
-rather than 31, 610 team-prefixed dictionaries rather than 594 and 230 others rather than 167, 42 roster blocks and 756 records rather than 41 and 738, 88
-camera paths, 209 `WIFF` containers, 1,436 clumps, and a 41st text member,
-`credits.txt`, which joins the trivia row because it is CRLF ASCII like the
-rest. See `docs/product/NFLBLITZ2002_PS2_MODULE.md` §3 for what each row writes
-and `docs/product/measured/nflblitz2003_ps2/` for this disc's numbers.
+## Studio pages
 
-The boot executable, for the record [M]: `SLUS_204.74`, 2,417,112 bytes, sha256
-`57cba3a8…771039a0`, PCSX2 CRC `49A00204`. No patch site on it has been located
-by this project.
+| Studio page | Registry row | Classification | What it does | What it will not do |
+| --- | --- | --- | --- | --- |
+| Gameplay | `nflblitz2003ps2.gameplay.field_table` | `offline-writer-proved` | Line editor over the disc's field table, each line bounded by its own span. | Add, remove or lengthen a line; an oversized value is refused by name. |
+| Text & Team Identity | `nflblitz2003ps2.identity.crowd_tables` | `offline-writer-proved` | Line editor over the crowd tables. | Change any line's length, or accept a line break or an embedded NUL. |
+| Playbooks & Plays | `nflblitz2003ps2.playbooks.trivia_banks` | `offline-writer-proved` | Line editor over the trivia banks. | Edit plays or formations — the trivia banks are the only row registered for this page. |
+| Names, Numbers & Faces | `nflblitz2003ps2.rosters.player_names` | `offline-writer-proved` | Name editor over the roster's player records. | Edit ratings or any numeric column; those are not measured. A name too long for its field is refused, naming the limit. |
+| Uniforms & Equipment | `nflblitz2003ps2.uniforms.team_textures` | `extract-only` | Preview and Export PNG for the team texture dictionaries. | Import. No raster is written back, and the page states in its own words why. |
+| Menus & UI | `nflblitz2003ps2.menus.screen_textures` | `extract-only` | Preview and Export PNG for the screen textures. | Import. The lane refuses every value offered for writing. |
+| Presentation | `nflblitz2003ps2.presentation.camera_paths` | `read-only-mapped` | Lists the camera paths and the containers inventoried alongside them. | Edit a camera; a camera record's fields are not measured. |
+| All Textures | `nflblitz2003ps2.textures.dictionary_inventory` | `read-only-mapped` | Inventory of every texture dictionary on the disc, with sibling counts for members this module does not open. | Anything else — it is a table with no editor. |
 
-## 4. What is proved, and what is not
+## Pages that are deliberately empty
 
-**Proved on the synthetic disc**, which this module builds with the *table*
-index shape so the shape difference is exercised in CI rather than asserted:
-296 of 296 conformance checks, all five validators, and 24 lane tests including
-a round trip through both index shapes.
+- **Field Art** — the disc carries no create-team or field-art container; its field
+  data is a single text table already edited on the Gameplay page rather than
+  duplicated here, and every other art member is reached from Uniforms & Equipment,
+  Menus & UI or All Textures.
+- **Stadiums** — stadium geometry lives in model streams that need a different reader
+  from the texture one this module ships, so those members are counted and named on
+  the Presentation inventory and no stadium editor is offered.
+- **The Crib** — a feature of another franchise and not an NFL Blitz concept, so the
+  page stays empty here on purpose.
+- **Audio** — all of this disc's audio is a single Midway sound bank whose format is
+  owned by another module in this repository; this module names the member in an
+  inventory and reads none of it.
+- **Saves** — a save is not the disc, and no memory-card save for this game has been
+  measured by this project.
 
-**Measured on the retail disc**: every identity in §2, produced by the shipped
-lanes and recorded in `docs/product/measured/nflblitz2003_ps2/`.
+## Limits
 
-**Proved on the retail disc**: four chained builds on the owner's own
-SLUS-20474 image, read-only source, scratch destinations, each verified against
-its own source, every image deleted afterwards
-(`docs/product/measured/nflblitz2003_ps2/writer-trial.json`).
+- Art is export-only: the texture lanes refuse every value offered for writing, so
+  nothing drawn ever returns to the disc.
+- A PCSX2 replacement identity is derived from a raster's own bytes and is never
+  claimed to have been confirmed; no texture dump of this disc exists in this project.
+- Cameras are listed, not understood: a record's fields are not measured, which is why
+  the Presentation page is a table and not an editor.
+- Roster editing stops at names, because the numeric columns are not measured.
+- Text edits are bounded by the span they are given; a value that does not fit is
+  refused naming the byte count, as are line breaks and embedded NULs.
+- The inventories cap how many rows they list while their totals stay complete, so a
+  very large set is summarised rather than enumerated in full.
+- Audio and model geometry are named and counted but never opened; both would need
+  readers this module does not ship.
+- No retail content lives in this repository — no line, name, pixel or palette entry
+  from any disc.
 
-| step | lane | declared ranges / bytes | verdict |
-|---|---|---:|---|
-| 1 | `identity.crowd_tables` | 2 / 439,045,798 | PASS |
-| 2 | `gameplay.field_table` | 2 / 439,045,798 | PASS |
-| 3 | `playbooks.trivia_banks` | 2 / 439,045,798 | PASS |
-| 4 | `rosters.player_names` | 2 / 439,045,798 | PASS |
+## Evidence, and what has not been proved
 
-Every destination is 1,029,144,576 bytes, the length of the source, and the
-verifier found all 2,695 members present at their original offsets and lengths
-with 2,694 byte-identical by streaming digest at every step.
+The registry row is the claim. Its classification, its GUI mode and its constraints are
+what the module promises for that page, and the vocabulary used above —
+`read-only-mapped`, `extract-only`, `offline-writer-proved` — is defined in
+`GAME_MODULE_CONTRACT.md`; `ADDING_A_GAME_MODULE.md` covers how a module registers
+pages like these.
 
-**Two ranges, where the 2002 disc declares four.** That is the whole shape
-difference showing up in a receipt: this index carries no CRC-32 column, so a
-build rewrites the ZIP and never touches the `.ZIH`. The three-place rule
-collapses to two because the index's own record shape says it should, not
-because the module knows which disc it is looking at.
+The proof is the module's tests — `tests/mod_editor/test_nflblitz2003_ps2_lanes.py`
+and `tests/mod_editor/test_nflblitz2003_ps2_module.py` — together with the
+`tools/validate_nflblitz2003_ps2_*.sh` wrappers, which run the same paths end to end.
+The verifier behind them imports none of the patcher: it re-derives everything from the
+rebuilt image's own bytes, requires every untouched member to come back byte-identical,
+requires every changed member's checksum to agree everywhere the disc keeps it, and
+re-parses a rewritten roster to confirm each record still sits in its own block. CI
+exercises the whole path against a synthetic image the module builds from the formats'
+rules, so none of it depends on retail content.
 
-**Not booted.** No image built by this module has been booted in an emulator or
-on hardware, and no receipt claims otherwise.
-
-## 5. This is an instantiation, not a copy
-
-It **was** a copy. The contract forbids a game package importing a sibling game
-(`mod_editor/games/contract.py`, `ALLOWED_CORE_IMPORTS`), and when this module
-shipped, the shared layer a second instantiation would use —
-`mod_editor/games/_lanes/` — held nothing for a Midway disc. So the lane files
-were the 2002 module's with a recorded substitution list applied, and this
-section asked the next agent to extract them.
-
-**That extraction is done.** `mod_editor/games/_lanes/blitz_zip_lanes.py` now
-holds `TextLineLane`, `RosterNameLane`, `TextureDictionaryLane`,
-`ContainerInventoryLane`, the `zip_lane` build/verify pair and the four
-command-line entry points, parameterised on a disc-access module exactly as
-`_lanes/terf_art.py` is for the two Tiburon discs. Both games are thin wirings
-over it: each lane file names which members, which page, which classification
-and its own schema string, and nothing else.
-
-| | before | after |
-|---|---:|---:|
-| `mod_editor/games/nflblitz2002_ps2/*.py` | 2,223 | 1,017 |
-| `mod_editor/games/nflblitz2003_ps2/*.py` | 2,224 | 1,018 |
-| `mod_editor/games/_lanes/blitz_zip_lanes.py` | — | 1,347 |
-| **total** | **4,447** | **3,382** |
-
-A game still never imports a sibling game; both import the shared layer. The
-two format readers under `mod_editor/games/_formats/` were already shared and
-are unchanged.
-
-The schema strings stay per game on purpose — `nflblitz2003_ps2_text_lines/v1`
-is not `nflblitz2002_ps2_text_lines/v1` — so a recipe written against one disc
-is refused by the other rather than silently applied to it.
-
-Both formats now have a document of their own:
-`docs/product/MIDWAY_ZIP_FORMAT.md` (the pair, both `.ZIH` shapes and **why this
-disc's builds declare two ranges where the 2002 disc's declare four**) and
-`docs/product/RENDERWARE_TXD_FORMAT.md` (the texture dictionaries, the GS layout
-measurement, and a cross-disc census of what the same reader makes of NFL Blitz
-Pro, Blitz: The League and Madden NFL 06).
+No row in this module is classified `runtime-proved`. Nothing described on this page
+has been confirmed by booting the game: every writer is `offline-writer-proved` and no
+more, meaning a rebuilt image has been verified offline and never on hardware or in an
+emulator.
