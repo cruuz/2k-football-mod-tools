@@ -1896,7 +1896,9 @@ def rewrite_member(container: bytes, index: int, payload: bytes, *,
             try:
                 declared = declared_length(container)
             except TerfError:
-                raise
+                # Not even the chunk chain reads, so there is no declared
+                # size to name; the parse's own sentence is the better one.
+                raise exc
             raise TerfError(
                 "this container is %d byte(s) and declares %d, and a member "
                 "with bytes lies past the end of what was handed in (%s) -- so "

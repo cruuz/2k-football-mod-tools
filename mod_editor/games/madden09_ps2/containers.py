@@ -419,16 +419,18 @@ def open_for_rewrite(image: Any, entry: DataFile, *,
             f"directory and declares {declared:,}; reading it as a container "
             f"inside the recorded length failed: {exc}"
         ) from exc
-    if declared > len(data) and not parsed.short_tail_is_empty:
-        beyond = [member.index for member in parsed.members
-                  if member.stored_size
-                  and parsed.data_offset + member.offset + member.stored_size > len(data)]
+    # The parse above normally gets here first -- it refuses a member with
+    # bytes that runs past what it was handed -- but the condition this lane
+    # actually promises is this one, so it is stated rather than inherited.
+    beyond = [member.index for member in parsed.members
+              if member.stored_size
+              and parsed.data_offset + member.offset + member.stored_size > len(data)]
+    if beyond:
         raise DiscError(
             f"{entry.path} is {entry.recorded_length:,} bytes in this image's own "
-            f"directory and declares {declared:,}, and member "
-            f"{beyond[0] if beyond else parsed.member_count - 1} carries bytes past "
-            f"the recorded end; a rewrite would have to grow the file, which this "
-            f"lane will not do."
+            f"directory and declares {declared:,}, and member {beyond[0]} carries "
+            f"bytes past the recorded end; a rewrite would have to grow the file, "
+            f"which this lane will not do."
         )
     return WritableContainer(entry=entry, data=data, parsed=parsed,
                              declared_length=declared)
@@ -698,7 +700,9 @@ def _copy_source(image: Any, entry: DataFile, shape: _ContainerShape,
 
     if copy.is_header:
         return shape.head[:shape.data_offset] if shape.data_offset <= len(shape.head) else None
-    row = shape.member(int(copy.member or 0))
+    if copy.member is None:
+        return None
+    row = shape.member(copy.member)
     if row is None:
         return None
     offset, stored = row
@@ -742,7 +746,11 @@ def _reattribute(image: Any, present: Mapping[str, DataFile],
         shape = shape_of(copy.container)
         if shape is None:
             return True  # not on this image: nothing to check it against
-        return copy.is_header or 0 <= int(copy.member or -1) < shape.member_count
+        if copy.is_header:
+            return True
+        # `copy.member or -1` would call member 0 unresolved, which every
+        # cache carries dozens of.
+        return copy.member is not None and 0 <= copy.member < shape.member_count
 
     unresolved = [copy for copy in copies if not resolves(copy)]
     if not unresolved:
@@ -1295,7 +1303,12 @@ def make_recorded_short(container: bytes) -> bytes:
     carried = [member for member in parsed.members if not member.empty]
     end = parsed.data_offset + (
         max(member.offset + member.stored_size for member in carried) if carried else 0)
-    cut = ((end + parsed.alignment - 1) // parsed.alignment) * parsed.alignment
+    # The cut may never take the DATA chunk's own tag and size with it: a
+    # container with nothing but empty members -- the *Deluxe* image's
+    # MOVIEDAT.DAT is one, recorded as 200 bytes against 832 -- is still a
+    # container, and a reader has to be able to walk its chain.
+    cut = max(((end + parsed.alignment - 1) // parsed.alignment) * parsed.alignment,
+              parsed.data_offset + ea_terf.CHUNK_HEADER_SIZE)
     out = bytearray(container)
     struct.pack_into("<I", out, parsed.data_offset + 4,
                      parsed.data_size - parsed.alignment)
@@ -1357,7 +1370,11 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     if recorded_short:
         team_members.extend([b""] * SYNTHETIC_EMPTY_TAIL)
     teams = ea_terf.build_terf([m for m in team_members], chunk="DATA")
-    teams_member_one = ea_terf.parse_terf(teams).stored(1)
+    parsed_teams = ea_terf.parse_terf(teams)
+    # Read before any truncation below: the recorded-short shape is not one a
+    # plain parse accepts, and these are the copies the caches carry.
+    teams_member_zero = parsed_teams.stored(0)
+    teams_member_one = parsed_teams.stored(1)
     if recorded_short:
         teams = make_recorded_short(teams)
     # The preload caches carry byte copies of a container's directory, so a
@@ -1375,8 +1392,14 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     ]
     if boundary_copies:
         past_team = len(team_members)
+        # The alias row points at the previous copy's offset, so it goes in
+        # directly behind the row it aliases.  Member 0 follows with a copy of
+        # its own: a real cache carries plenty, and "member 0" must not read as
+        # "no member" anywhere in the resolution.
         game_payload.append(
             (TEAM_DATABASE_CONTAINER, PRELOAD_KIND_MEMBER, past_team, None))
+        game_payload.append(
+            (TEAM_DATABASE_CONTAINER, PRELOAD_KIND_MEMBER, 0, teams_member_zero))
         fe_payload.append(
             (TEAM_DATABASE_CONTAINER, PRELOAD_KIND_MEMBER, past_team, None))
     game_cache = build_synthetic_preload_cache(game_payload)

@@ -122,7 +122,12 @@ class PreloadBoundaryTests(_Disc):
     the off-by-one is in EA's member number and the bytes are the tie-breaker.
     """
 
-    kwargs = {"boundary_copies": True}
+    # A real member 0 as well as the boundary rows: the default fixture leaves
+    # member 0 empty, and "a copy of member 0" is exactly the case a truthiness
+    # test on the member number gets wrong.
+    kwargs = {"boundary_copies": True,
+              "tdb_member": containers.synthetic_text_member(
+                  containers.SYNTHETIC_TEXT_LINES)}
 
     def _copies(self):
         rows = containers.preload_copies(self.image)
@@ -187,12 +192,48 @@ class PreloadBoundaryTests(_Disc):
             self.image, self.files[copy.container], limit=None)[:length]
         self.assertEqual(blob[copy.offset:copy.offset + length], source)
 
+    def test_member_zero_is_not_mistaken_for_an_unresolved_row(self) -> None:
+        """`copy.member or -1` would call member 0 unresolved; caches are full of it."""
+        zero = [copy for copy in self._copies()
+                if not copy.is_header and copy.member == 0]
+        self.assertTrue(zero, "the fixture must carry a copy of member 0")
+        for copy in zero:
+            self.assertFalse(copy.reattributed)
+            self.assertIsNone(copy.declared_member)
+
     def test_a_re_attributed_copy_keeps_what_its_row_said(self) -> None:
         copy = next(item for item in self._copies() if item.reattributed)
         row = copy.as_dict()
         self.assertEqual(row["declared_container"], containers.TEAM_DATABASE_CONTAINER)
         self.assertEqual(row["declared_kind"], "member")
         self.assertIsNotNone(row["declared_member"])
+
+
+class MakeRecordedShortTests(unittest.TestCase):
+    """The fixture builder, against the shapes the *Deluxe* image actually has."""
+
+    def test_a_container_of_nothing_but_empty_members_keeps_its_data_chunk(self) -> None:
+        """`MOVIEDAT.DAT` on that image is recorded as 200 bytes against 832 [M]."""
+        short = containers.make_recorded_short(ea_terf.build_terf([b""] * 10))
+        parsed = ea_terf.parse_terf(short, allow_size_mismatch=True)
+        self.assertEqual(len(short), 200)
+        self.assertEqual(parsed.declared_length, 832)
+        self.assertEqual(parsed.member_count, 10)
+        self.assertTrue(parsed.short_tail_is_empty)
+        self.assertEqual(parsed.layout_violations(allow_short_tail=True), [])
+
+    def test_a_container_with_no_empty_tail_is_refused(self) -> None:
+        with self.assertRaises(Refusal) as caught:
+            containers.make_recorded_short(ea_terf.build_terf([b"alpha", b"bravo"]))
+        self.assertIn("nothing about it is recorded short", str(caught.exception))
+
+    def test_the_members_with_bytes_all_survive_the_cut(self) -> None:
+        members = [b"alpha member", b"bravo member", b"charlie member"]
+        short = containers.make_recorded_short(
+            ea_terf.build_terf(members + [b""] * containers.SYNTHETIC_EMPTY_TAIL))
+        parsed = ea_terf.parse_terf(short, allow_size_mismatch=True)
+        for index, payload in enumerate(members):
+            self.assertEqual(parsed.member(index), payload)
 
 
 class PreloadUnresolvableTests(unittest.TestCase):
