@@ -2,8 +2,9 @@
 
 Everything here is synthetic: a ``PLAY`` body built field by field so the
 shipped codec accepts it, wrapped in a synthetic outer archive, wrapped in a
-real ISO9660 image from the reader's own test builder.  No disc, no retail
-bytes, no network.
+real ISO9660 image -- all three from the tool's own builders, which is where
+they have to live so ``--selftest`` can prove the lane in a shipped tree.  No
+disc, no retail bytes, no network.
 
 What the cases pin, in order: a formation and a play can be added and the
 independent verifier passes; a byte flipped anywhere outside the declared
@@ -18,7 +19,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import shutil
-import struct
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -29,8 +30,6 @@ for _candidate in (_REPO_ROOT, _REPO_ROOT / "tools", Path(__file__).resolve().pa
     if str(_candidate) not in sys.path:
         sys.path.insert(0, str(_candidate))
 
-from test_ps2_iso9660 import build_iso  # noqa: E402
-
 import nfl2k5_ps2_playbook_patch as patcher  # noqa: E402
 import nfl2k5_ps2_playbook_verify as verifier  # noqa: E402
 
@@ -39,143 +38,16 @@ from mod_editor.core import nfl2k5_playbook_inspector as insp  # noqa: E402
 from mod_editor.core import nfl2k5_formation_play_writer as fpwriter  # noqa: E402
 
 
-BOOK_ID = 0x49CD9F21
-OTHER_BOOK_ID = 0x2C3DEF14
+BOOK_ID = patcher.SELFTEST_BOOK_ID
+OTHER_BOOK_ID = patcher.SELFTEST_OTHER_BOOK_ID
 
-# Family 1 (defense), type code 4.  The retail validator's ball-handler and
-# snapper requirements are unconditional for this family, so a two-node
-# coverage chain in every slot is the smallest play it accepts.
-PLAY_FLAGS = 4 | (1 << 6)
-CHAIN_OPS = (0x1B, 0x0D)          # Defense Start -> Zone Coverage
-CHAINS_PER_BOOK = codec.SLOT_COUNT
-NODES_PER_CHAIN = len(CHAIN_OPS)
-
-
-def _put_rel(body: bytearray, field: int, target: int) -> None:
-    """Store the book's self-relative pointer form: ``target = field - 1 + v``."""
-    struct.pack_into("<i", body, field, target - field + 1)
-
-
-def synthetic_body(formations: int = 3, plays: int = 2, categories: int = 2) -> bytes:
-    """A ``0x13390`` playbook body the shipped inspector and validator accept."""
-    body = bytearray(insp.BODY_SIZE)
-    body[0x0C:0x10] = b"PLAY"
-    struct.pack_into("<I", body, 0x10, 0x11)
-    struct.pack_into("<i", body, 0x14, -19)
-    body[0x20:0x28] = b"p\0l\0b\0\0\0"
-
-    # --- name pool, then the zero tail the custom-name path requires ---
-    pool = bytearray()
-    offset = {}
-    for key, text in (("book", "TESTBOOK"), ("formation", "FORMATION"),
-                      ("play", "PLAY"), ("category", "CATEGORY")):
-        offset[key] = insp.STRING_BASE + len(pool)
-        pool += text.encode("utf-16le") + b"\0\0"
-    body[insp.STRING_BASE:insp.STRING_BASE + len(pool)] = pool
-    pool_end = insp.STRING_BASE + len(pool)
-    struct.pack_into("<I", body, fpwriter.POOL_COUNT_WORD,
-                     (pool_end - insp.STRING_BASE) // 2)
-
-    # --- one two-node chain per slot, shared by every play ---
-    blob = bytearray()
-    for _slot in range(CHAINS_PER_BOOK):
-        nodes = [codec.Node(op, 0, codec.decode_operands(op, 0)) for op in CHAIN_OPS]
-        codec.assign_node_flags(nodes)
-        for node in nodes:
-            blob += node.to_bytes()
-    node_count = len(blob) // insp.NODE_SIZE
-    body[insp.NODE_BASE:insp.NODE_BASE + len(blob)] = blob
-
-    struct.pack_into("<I", body, 0x34, formations)
-    struct.pack_into("<I", body, 0x38, plays)
-    struct.pack_into("<I", body, 0x3C, categories)
-    struct.pack_into("<I", body, 0x40, node_count)
-    _put_rel(body, 0x30, offset["book"])
-    _put_rel(body, 0x44, insp.FORMATION_BASE)
-    _put_rel(body, 0x48, insp.FORMATION_AUX_BASE)
-    _put_rel(body, 0x60, insp.PLAY_BASE)
-    _put_rel(body, 0x64, insp.CATEGORY_BASE)
-    _put_rel(body, 0x68, insp.NODE_BASE)
-
-    chains = []
-    for slot in range(CHAINS_PER_BOOK):
-        start = insp.NODE_BASE + slot * NODES_PER_CHAIN * insp.NODE_SIZE
-        chains.append([bytes(body[start + n * insp.NODE_SIZE:
-                                  start + (n + 1) * insp.NODE_SIZE])
-                       for n in range(NODES_PER_CHAIN)])
-    staged = [(0, chains[slot]) for slot in range(CHAINS_PER_BOOK)]
-    descriptors = [codec.build_descriptor(PLAY_FLAGS, staged, slot, 0xB0)
-                   for slot in range(CHAINS_PER_BOOK)]
-
-    for index in range(plays):
-        base = insp.PLAY_BASE + index * insp.PLAY_SIZE
-        _put_rel(body, base, offset["play"])
-        struct.pack_into("<I", body, base + 4, PLAY_FLAGS)
-        for slot in range(CHAINS_PER_BOOK):
-            struct.pack_into("<I", body, base + 8 + slot * 8, descriptors[slot])
-            _put_rel(body, base + 0x0C + slot * 8,
-                     insp.NODE_BASE + slot * NODES_PER_CHAIN * insp.NODE_SIZE)
-
-    for index in range(formations):
-        base = insp.FORMATION_BASE + index * insp.FORMATION_SIZE
-        _put_rel(body, base, offset["formation"])
-        struct.pack_into("<I", body, base + 4,
-                         codec.FORMATION_FLAG_UNDER_CENTER | (1 << 8))
-        body[base + 0x0D:base + 0x18] = bytes(range(11))     # package map
-        for slot in range(CHAINS_PER_BOOK):
-            record = base + codec.FORMATION_SLOT_BASE + slot * codec.FORMATION_SLOT_STRIDE
-            body[record + 1] = (codec.NO_MIRROR << 4) | 3
-            lateral = (slot - 5) * 120
-            struct.pack_into("<hhh", body, record + 2, lateral, lateral, lateral)
-            struct.pack_into("<hhh", body, record + 8, 0, 0, 0)
-        aux = insp.FORMATION_AUX_BASE + index * insp.FORMATION_AUX_SIZE
-        for link in range(insp.FORMATION_PLAY_LINKS):
-            struct.pack_into("<H", body, aux + link * 2, 0 if link == 0 else 0x01FF)
-
-    for index in range(categories):
-        base = insp.CATEGORY_BASE + index * insp.CATEGORY_SIZE
-        _put_rel(body, base, offset["category"])
-        body[base + 4] = index
-        body[base + 5:base + 16] = bytes(range(11))
-
-    return bytes(body)
-
-
-def synthetic_resource(body: bytes) -> bytes:
-    """A ``PLAY`` chunk: the 32-byte header plus the body, uncompressed."""
-    head = bytearray(patcher.RESOURCE_HEADER_SIZE)
-    head[0:4] = b"PLAY"
-    struct.pack_into("<4I", head, 4, len(body), len(body), 0, 0)
-    return bytes(head) + body
-
-
-def synthetic_pack(resources) -> bytes:
-    """A ``/VC_20919/0.`` outer archive holding one chunk per entry."""
-    count = len(resources)
-    table_end = patcher.OUTER_HEADER_SIZE + count * patcher.OUTER_ENTRY_SIZE
-    block = -(-table_end // patcher.ALIGNMENT)
-    placed = []
-    for name_id, payload in resources:
-        placed.append((name_id, len(payload), block, payload))
-        block += -(-len(payload) // patcher.ALIGNMENT)
-    buffer = bytearray(block * patcher.ALIGNMENT)
-    struct.pack_into("<III", buffer, 0, count, 0, 1)
-    struct.pack_into("<I", buffer, 0x0C, block)
-    for index, (name_id, size, at, payload) in enumerate(placed):
-        struct.pack_into("<III", buffer,
-                         patcher.OUTER_HEADER_SIZE + index * patcher.OUTER_ENTRY_SIZE,
-                         name_id, size, at)
-        buffer[at * patcher.ALIGNMENT:at * patcher.ALIGNMENT + len(payload)] = payload
-    return bytes(buffer)
-
-
-def synthetic_iso(pack: bytes) -> bytes:
-    return build_iso({
-        "SYSTEM.CNF": b"BOOT2 = cdrom0:\\SLUS_209.19;1\r\nVER = 1.01\r\n"
-                      b"VMODE = NTSC\r\n",
-        "SLUS_209.19": b"ELF" + bytes(4093),
-        "VC_20919": {"0.": pack},
-    })
+# The fixture builders live in the tool, not here: the lane's validator has to
+# prove itself in a shipped tree, where ``tests/`` does not exist, so the
+# synthetic book and the claims it supports are reachable as
+# ``nfl2k5_ps2_playbook_patch.py --selftest``.  These tests exercise the same
+# builders so the two can never drift apart.
+synthetic_body = patcher.build_synthetic_body
+synthetic_resource = patcher.build_synthetic_resource
 
 
 def default_books(plays: int = 2):
@@ -185,16 +57,10 @@ def default_books(plays: int = 2):
     ]
 
 
-RECIPE = {
-    "schema": patcher.SCHEMA,
-    "edits": [{
-        "book_id": "0x%08x" % BOOK_ID,
-        "formations": [{"donor_formation_index": 0, "custom_name": "GUN TRIPS RT",
-                        "slot_positions": [[(s - 5) * 130, -90 if s == 0 else 0]
-                                           for s in range(11)]}],
-        "plays": [{"donor_play_index": 0, "custom_name": "SMASH"}],
-    }],
-}
+RECIPE = patcher.selftest_recipe()
+
+CHAINS_PER_BOOK = codec.SLOT_COUNT
+NODES_PER_CHAIN = len(patcher.SELFTEST_CHAIN_OPS)
 
 
 class _Case(unittest.TestCase):
@@ -205,7 +71,8 @@ class _Case(unittest.TestCase):
         self.output = self.tmp / "output.iso"
 
     def write_source(self, books=None) -> Path:
-        self.source.write_bytes(synthetic_iso(synthetic_pack(books or default_books())))
+        self.source.write_bytes(
+            patcher.build_synthetic_disc(books=books or default_books()))
         return self.source
 
     def write_recipe(self, recipe=None) -> Path:
@@ -346,6 +213,20 @@ class RefusalTests(_Case):
         path.write_text(json.dumps({"schema": "nope", "edits": []}), encoding="utf-8")
         with self.assertRaises(patcher.PlaybookPatchError):
             patcher.load_recipe(path)
+
+
+class ShippedSelftestTests(unittest.TestCase):
+    """The lane validator runs these, and a shipped tree has no tests/."""
+
+    def test_each_tool_has_a_passing_selftest(self) -> None:
+        for tool in ("nfl2k5_ps2_playbook_patch.py",
+                     "nfl2k5_ps2_playbook_target_catalog.py"):
+            with self.subTest(tool=tool):
+                result = subprocess.run(
+                    [sys.executable, str(_REPO_ROOT / "tools" / tool), "--selftest"],
+                    cwd=str(_REPO_ROOT), capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn("SELFTEST_PASS", result.stdout)
 
 
 class CatalogTests(_Case):

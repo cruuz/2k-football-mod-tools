@@ -79,11 +79,62 @@ def build(iso_path):
     }
 
 
+def selftest():
+    """Counts and headroom against the patcher's synthetic disc; no game data.
+
+    This is the claim the lane validator used to make by running the test
+    suite, which a shipped tree does not carry.
+    """
+    import shutil
+    import tempfile
+
+    failures = []
+
+    def check(condition, message):
+        if not condition:
+            failures.append(message)
+
+    root = tempfile.mkdtemp(prefix="ps2-playbook-catalog-selftest-")
+    try:
+        source = Path(root) / "source.iso"
+        source.write_bytes(patcher.build_synthetic_disc())
+        built = build(source)
+        check(built["totals"]["books"] == 2,
+              "book count %d" % built["totals"]["books"])
+        check(built["totals"]["plays"] == 4,
+              "play count %d" % built["totals"]["plays"])
+        check(built["totals"]["books_at_play_capacity"] == 0,
+              "a synthetic book was reported at the play capacity")
+        _writer, inspector = patcher._studio()
+        for row in built["books"]:
+            check(row["play_headroom"] == inspector.PLAY_CAPACITY - 2,
+                  "play headroom %d" % row["play_headroom"])
+            check(not row["compressed"], "a synthetic book was called compressed")
+            check("raw" not in row, "the catalog carried playbook payload")
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+    for line in failures:
+        print("FAIL: %s" % line, file=sys.stderr)
+    if failures:
+        return 1
+    print("NFL2K5_PS2_PLAYBOOK_CATALOG_SELFTEST_PASS books=2 plays=4 "
+          "payload_bytes=0")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--iso", required=True)
+    parser.add_argument("--iso")
     parser.add_argument("--output", default=str(_ROOT / DEFAULT_OUTPUT))
+    parser.add_argument("--selftest", action="store_true",
+                        help="prove the catalog against synthetic bytes")
     args = parser.parse_args(argv)
+
+    if args.selftest:
+        return selftest()
+    if not args.iso:
+        parser.error("--iso is required unless --selftest is given")
 
     try:
         catalog = build(args.iso)
