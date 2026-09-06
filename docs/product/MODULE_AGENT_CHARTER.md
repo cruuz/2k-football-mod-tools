@@ -58,6 +58,12 @@ being stopped mid-task, purely because it had been written to disk first; the re
 it in a second and spent its budget on the question instead of the census. Separate the two
 passes on purpose: measure, persist, then think.
 
+**A negative result names the assumption that would make it wrong.** "No dumped texture pairs
+with any image of this format" was true under the assumption that a decoded texture keeps the
+disc palette's exact colours; a decoder that interpolates in colour space fails that pairing while
+the texture sits in the unmatched pile. State the assumption in the verdict sentence, so the next
+reader can test the assumption instead of re-running the search.
+
 **Evidence tags are not decoration.** `[M]` measured, by you, on the artefact named. `[S]`
 sourced from a named document. `[A]` assumed. A claim with no tag is read as `[A]`.
 
@@ -91,6 +97,12 @@ python packaging/stage_release.py packaging/release-allowlist.txt "$STAGE" .
 python packaging/check_2k5_mod_studio_release.py "$STAGE"
 python "$STAGE/packaging/check_2k5_mod_studio_runtime.py"
 ```
+
+**Run the release check before you run anything else inside the stage, and guard whatever you do
+run there with `PYTHONDONTWRITEBYTECODE=1`.** Python writes a `__pycache__` beside any module it
+imports, a bytecode cache is a forbidden release path, and the checker refuses the whole stage
+for it. The validator driver sets the guard itself; a direct `python tools/<x>.py` inside a stage
+does not, and cost one integration a refused gate on 2026-09-06.
 
 **Run a validator you changed inside the staged tree, not only in the checkout.** `tests/` is
 not shipped, so a validator that imports a test framework passes in a checkout and fails in a
@@ -131,6 +143,11 @@ single mechanical commit rebases cleanly or conflicts loudly; a hand edit does n
 If you believe an upstream file needs a change the tool cannot make, **stop and say so in your
 report**. Do not make it.
 
+**A new shell wrapper needs its executable bit in the index, not only on disk.** The repository
+lives on NTFS with `core.fileMode=false`, so `chmod +x` alone is lost and the stager copies index
+modes: run `git update-index --chmod=+x tools/<name>.sh` as well. Three modules each paid a
+separate "exec bits" commit for this on 2026-09-06; do it in the commit that creates the file.
+
 ## 6. What a lane owes
 
 One lane is one registry row and one entry in the game's `validators.json`. It owes:
@@ -163,6 +180,10 @@ and 56 KB, and ten validators each printed all of it. Prefer the summary; keep t
 failure.
 
 - Do not paste a tool's whole output into a report. Paste the line that carries the verdict.
+- Never end your turn to wait for a background job. A subagent that stops is not re-woken by its
+  own job's completion; it stays stopped until the coordinator notices. Read the job's output file
+  in a bounded loop, or run the job in the foreground with a timeout. One module agent ended its
+  turn "to wait for the notifications" on 2026-09-06 and idled until nudged.
 - Do not write a JSON dump into the repository that exists only so an agent can read it back.
 - When you build a tool that walks a disc, give it a bounded mode: EA's container reader takes
   `max_output`, and a 64-byte window answers "what format is this member" as well as a full
