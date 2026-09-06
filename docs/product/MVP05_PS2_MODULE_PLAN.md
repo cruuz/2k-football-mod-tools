@@ -373,7 +373,7 @@ Nothing game-specific.
 | Uniforms & Equipment | `UNIFORMS.BIG` 555 banks, `COOPUNIS.BIG` 124 — every kit is the refused `0x0E` | `read-only-mapped` |
 | Names, Numbers & Faces | `DATABASE.BIG` 18 CSVs come out; `PORTRAIT.BIG` 2,391 and `GHEAD.BIG` 8,400 are 100% `0x0E` | `extract-only` / `read-only-mapped` |
 | Text & Team Identity | `team.dat`/`org.dat`; 3 `LOCH` files with no reader | `read-only-mapped` |
-| Field Art & Create-Team Art | `FIELDS.BIG` 56 banks + 7 ballpark-builder archives, all 217 images `0x0E` | `read-only-mapped` |
+| Field Art & Create-Team Art | `FIELDS.BIG` 56 banks + 7 ballpark-builder archives, all 224 images `0x0E` | `read-only-mapped` |
 | Stadiums | 87 park archives, ~80% of each decodes; the crowd banks and all menu art are `0x0E` | `extract-only` |
 | Presentation | `IGONLY.BIG` 123 of 137 images decode; the `.fel` grammar is unknown | `extract-only` |
 | Menus & UI | widget banks and 396 `0x05` logos decode; all 59 loading screens are `0x0E` | `extract-only` |
