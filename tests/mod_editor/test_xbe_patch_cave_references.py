@@ -95,6 +95,12 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
             raise AssertionError("QB spy owner missing from the composed XBE")
+        # This audit allocates nothing. It verifies that neither deferred CB
+        # tier has displaced Spy's recognized hooks or the reaction owners.
+        from mod_editor.core import nfl2k5_zone_facing as zone_facing
+        cls.zone_evidence = zone_facing.assess(cls.patched)
+        if cls.zone_evidence["states"]["initial_drop"] != "applied":
+            raise AssertionError("Initial zone-drop owner missing from tier evidence")
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}

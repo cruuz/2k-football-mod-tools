@@ -4684,3 +4684,122 @@ after integration. Retain the source fingerprint guard and include all five
 live hook spans plus the three named child allocations. Run the spy writer and
 Unicorn suites, both XBE gates and the normal protected Build/closure checks.
 No release-tag/updater/workflow changes are requested; no push.
+
+---
+
+# r62 deep-zone tiers: evidence boundary, 2026-09-06
+
+This section governs **this job's new work only**. It does not undo the landed
+initial-drop, QB-spy, Coverage or catch integrations above.
+
+**Decision: do not wire new facing, bail or reaction switches.** The controlling
+`CB_DEEP_ZONE_RESEARCH_2026-09-05.md` section 3 calls the wider callback policy
+"HYPOTHESIS later extension" and requires event/target identity, user exclusions,
+hysteresis and next-play cleanup. Section 2 does not certify a bail donor.
+Sections 4 and 5 separate reaction from catch conversion and require traces.
+Neither the memo nor this checkout supplies Noah's required callback witness.
+The new native proofs establish additional prerequisites, not those missing
+contracts. The requested runtime tiers are therefore deferred, not implemented.
+
+`mod_editor/core/nfl2k5_zone_facing.py` is a **read-only developer audit**, with
+`assess(payload)` and a bounded `python3 -m` CLI. It deliberately has no
+`apply`, `status`, `OWNER` or `REQUESTS` patch interface. Its JSON says
+`patch_available: false`, `runtime_witnessed: false` and identifies each deferred
+tier. Do not use a successful audit as an installed gameplay feature.
+
+## Dispatcher, BuildPlan and presets
+
+| Required integration location | Decision for this delivery |
+| --- | --- |
+| `_apply_all` tuple and kwarg | No new tuple or kwarg. In particular, never pass the audit as a writer. Keep the landed `zone_drop_cap` and `qb_spy` tuples. |
+| `_selected_space_requests` and `_xbe_space_adapter` | No new request or flag. The audit consumes zero RX/RW/RO bytes. |
+| Four status dictionaries: `read_xbe`, `read_image`, `write_xbe_copy`, `write_image_copy` | Retain the existing `_grown_status_fields` entries for `zone_drop_cap`, `qb_spy` and `coverage_slider`, and the separate catch status. Do not add `zone_facing: applied` or treat `evidence_verified` as patch status. |
+| `BuildPlan` fields, normalization, deferred pass and final pass | No new runtime fields or forwarding. Existing `zone_drop_cap: bool = False` remains the initial-depth experiment only. |
+| Basic / Advanced / Experimental presets | None enables facing, bail or a new reaction adjustment; all three remain unavailable. Preserve `zone_drop_cap=False` in all presets. |
+| Future field names | Reserve `zone_facing`, `zone_bail`, `zone_ball_reaction`, each default `False`, for actual separately proved writers. Do not introduce unsupported selectable fields in this integration. |
+
+The allocator scale-out report has **no deep-zone-tiers budget row**. The memo's
+512 RX / 256 RW later-policy estimate fits the full planned union with 51,264 RX
+and 3,840 RW bytes still available to new owners, but is neither assembled code
+nor an allocated reservation. No new row is added to the committed budget
+fixture, `tests/nfl2k5_allocator_stack.py` or any manifest owner list. The existing
+initial-drop and Spy owners are already in all those lists. Both XBE gates now
+also run the read-only evidence audit in their composed `setUpClass` paths.
+
+## Gameplay Patches and Build text
+
+No new PATCHES row, NEEDS_IMAGE entry, GUI panel, checkbox or Build `_option`
+belongs to an unavailable runtime tier. The current `zone_drop_cap` row can be
+made more precise in the protected integration pass, keeping the same key:
+
+```python
+("zone_drop_cap", "Initial deep-zone corner drop (experimental)",
+ "EXPERIMENTAL / UNWITNESSED. Retail: a shallow deep-zone corner can start "
+ "by running. Patch: cap the initial depth request. Later movement can still "
+ "turn him away. This does not add bail technique or change ball reaction."),
+```
+
+This help contains **Retail** and **Patch**. Keep `zone_drop_cap` in
+`NEEDS_IMAGE`. Use the same 44-character caption for its existing Build `_option`:
+`Initial deep-zone corner drop (experimental)`. Existing checkbox, preset and
+plan synchronization keep the same flag. Do not advertise sustained quarterback
+facing, an interception improvement, or a bail technique as already built.
+The backend's older `HELP_TEXT` can be aligned with this wording when Claude
+regenerates its source fingerprint; this branch leaves that shipped source and
+its reservation fingerprint intact.
+
+## Allowlist, runtime closure, capability and manifest
+
+- **Release allowlist lines:** no new runtime line is required. The audit and
+  tests are developer evidence and are not imported by the product. If Claude
+  distributes the report with other Astra reports, the exact optional line is
+  `ASTRA_DEEP_ZONE_TIERS_REPORT.md`. The existing zone-drop/Spy/Coverage/catch
+  backend allowlist entries remain necessary for their existing features.
+- **Runtime-closure imports:** no new import in
+  `packaging/check_2k5_mod_studio_runtime.py`. If this developer audit is later
+  deliberately distributed, add the exact allowlist line
+  `mod_editor/core/nfl2k5_zone_facing.py` and closure import
+  `mod_editor.core.nfl2k5_zone_facing`, retaining its existing five backend
+  dependencies. It needs neither Capstone nor Unicorn to run.
+- **Capability registry:** no new product surface or writer entry. Keep
+  `nfl2k5.gameplay.zone_drop_cap` limited to the initial drop, with runtime
+  `not-tested` and all presets off. Add this report and the two new test paths
+  to that entry's evidence if desired. A developer audit command is
+  `python3 -m mod_editor.core.nfl2k5_zone_facing --xbe <extracted-default.xbe>`;
+  a standalone validation command is
+  `python3 -m tests.mod_editor.test_nfl2k5_zone_facing`.
+- **Manifest:** no new runtime owner or storage span exists, so no owner-list
+  addition or reservation-JSON regeneration is required for this job. Do not
+  reserve either zone callback for a second owner. If the existing backend help
+  or other fingerprinted sources change during integration, Claude alone
+  regenerates the protected JSON using the normal builder.
+
+## Concrete requirements before the deferred runtime work
+
+1. Retain paired full callback traces through receiver selection `0x1A1510`,
+   deep selection `0x1A2F80`, movement and effective facing. Establish which of
+   `A+0x40/+0x48` is the receiver whose crossing releases the preference. Define
+   the depth margin, hysteresis and late man-to-zone behavior from that evidence.
+2. Prove pass release separately from generic owner changes. Reuse the Spy
+   holder/type/team and user-control evidence where it applies, but preserve
+   handoff, scramble, loose ball and turnover pursuit. Trace actual assignment
+   reset, audible, snap and substitution; do not borrow Spy's private RW records.
+3. Design one explicit detour composition contract. Spy currently owns the
+   entire six-byte prologues at `0x1A5790` and `0x1A5090` and pins each complete
+   callback. It bypasses receiver selection for an active spy. A later owner
+   must share that dispatch or intercept proved nonoverlapping calls with strict
+   mutual recognition. Do not merely exempt callback bytes from either hash.
+   Prove both apply orders, replay, native fallback, active spy and every reset.
+4. Prove the press/bail donor and its transition before adding its flag. Modes
+   9/10 identify the outside deep assignments in both Cover 3 and four-deep
+   examples; they cannot establish thirds-only bail. PLAY names and Start operands
+   cannot establish actual press alignment or a rendered technique.
+5. If a reaction adjustment is still justified, specify its exact-CB/deep-zone
+   guard and separate contribution at the already facing-aware gate `0x1F4250`.
+   Account for the existing Coverage owner there; do not modify the Interception
+   catch cave at `0x1C8317` or count its effect twice. Then add actual REQUESTS,
+   allocator/manifest owners, strict idempotent writer APIs, the full flags/status/
+   Build/PATCHES/NEEDS_IMAGE/closure/capability integration, and per-tier native
+   proofs. All presets still default off until a separate release decision.
+
+No permission request, push or protected-file edit is part of this handoff.

@@ -135,6 +135,13 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
             raise AssertionError("QB spy owner missing from the composed XBE")
+        # The wider CB tiers remain deferred. Verify the shipped cap, Spy's
+        # exclusive callback detours and separate Coverage/catch dependencies
+        # on the real complete union in every inherited installation order.
+        from mod_editor.core import nfl2k5_zone_facing as zone_facing
+        cls.zone_evidence = zone_facing.assess(cls.patched)
+        if cls.zone_evidence["states"]["initial_drop"] != "applied":
+            raise AssertionError("Initial zone-drop owner missing from tier evidence")
         from mod_editor.core import nfl2k5_calendar_engine as calendar
         if calendar.status(cls.patched) != "applied":
             raise AssertionError("calendar owner missing from the composed XBE")
