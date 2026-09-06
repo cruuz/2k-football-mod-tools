@@ -768,16 +768,12 @@ class TeamDataLane:
                     f"this image holds no {iso_path}; it is not a Madden NFL 09 "
                     f"PlayStation 2 disc, or the container has been removed."
                 )
-            original = containers.read_file(image, entry)
-            if len(original) != entry.recorded_length:
-                raise TeamDataError(
-                    f"{iso_path} is {entry.recorded_length:,} bytes in this image's own "
-                    f"directory and carries {len(original):,}; a rewrite would have to grow "
-                    f"the file, which this lane will not do."
-                )
-            container = ea_terf.parse_terf(original, allow_size_mismatch=True)
+            writable = containers.open_for_rewrite(image, entry)
+            original = writable.data
+            container = writable.parsed
             working = original
             for member, rows in sorted(members.items()):
+                writable.require_member_inside(member)
                 payload = container.member(member)
                 database = ea_tdb.parse_tdb(payload)
                 new_payload = payload
@@ -826,7 +822,9 @@ class TeamDataLane:
                         f"member {member} of {iso_path} came out with a checksum that does "
                         f"not match its own bytes: {stale[0]}"
                     )
-                working = ea_terf.rewrite_member(working, member, new_payload)
+                working = ea_terf.rewrite_member(
+                    working, member, new_payload,
+                    allow_short_tail=writable.recorded_short)
                 if len(working) != len(original):
                     raise TeamDataError(
                         f"rewriting member {member} changed {iso_path} from "

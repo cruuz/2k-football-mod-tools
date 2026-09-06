@@ -312,6 +312,123 @@ def read_file(image: Any, entry: DataFile, *, limit: Optional[int] = CONTAINER_S
 
 
 # --------------------------------------------------------------------------
+# What a writer may rewrite
+# --------------------------------------------------------------------------
+#
+# A reader wants every member a container declares, so :func:`read_file`
+# recovers past a short ISO9660 record.  A **writer** wants the opposite: the
+# bytes the disc actually allocates, because that is the fixed allocation it
+# must write back into.  On the community's *Deluxe* image the two differ for
+# six containers, by 4 to 26,168 bytes, and what lies in the difference is
+# **only trailing empty members** -- the repack tool did not count their
+# alignment padding into the ``DATA`` chunk -- while the next file starts in
+# the very next sector [M].  So the recovered read walks into a neighbour's
+# head, and a writer that compared the two lengths refused the whole image.
+#
+# :func:`open_for_rewrite` is the one preflight every writing lane goes
+# through.  It hands back exactly ``recorded_length`` bytes, says whether the
+# container is one of the recorded-short ones, and refuses -- naming both
+# sizes -- when a member with bytes really does lie past the recorded end, or
+# when a recipe names such a member.
+
+
+@dataclass(frozen=True)
+class WritableContainer:
+    """One container, bounded to the space the disc gave it, ready to rewrite."""
+
+    entry: DataFile
+    #: Exactly ``entry.recorded_length`` bytes.
+    data: bytes
+    parsed: ea_terf.TerfContainer
+    #: What the container's own chunk chain says its length is.
+    declared_length: int
+
+    @property
+    def recorded_short(self) -> bool:
+        """Whether the container declares more than the disc records for it."""
+        return self.declared_length > len(self.data)
+
+    def member_end(self, index: int) -> int:
+        """Where member *index*'s stored bytes end, as a file offset."""
+        member = self.parsed.members[index]
+        return self.parsed.data_offset + member.offset + member.stored_size
+
+    def require_member_inside(self, index: int) -> None:
+        """Refuse a member whose bytes lie past what the disc records.
+
+        Nothing on either measured image does -- every member past a short
+        record is empty [M] -- but an edit that named one would be an edit the
+        writer could only satisfy by growing the file, and the sentence says
+        so with both sizes in it.
+        """
+        if not 0 <= index < self.parsed.member_count:
+            raise DiscError(
+                f"{self.entry.path} has no member {index}: it holds "
+                f"{self.parsed.member_count} (0..{self.parsed.member_count - 1})."
+            )
+        end = self.member_end(index)
+        if end > len(self.data):
+            raise DiscError(
+                f"{self.entry.path} member {index} ends at byte {end:,}, and this "
+                f"image's own directory records the container as "
+                f"{len(self.data):,} bytes against the {self.declared_length:,} it "
+                f"declares; rewriting a member out there would have to grow the "
+                f"file, which this lane will not do."
+            )
+
+
+def open_for_rewrite(image: Any, entry: DataFile, *,
+                     limit: Optional[int] = CONTAINER_SIZE_LIMIT) -> WritableContainer:
+    """A container bounded to its ISO9660 record, or one sentence saying why not.
+
+    The writer-side twin of :func:`read_file`.  ``read_file`` recovers a
+    recorded-short container to its declared length so a *reader* sees every
+    member; this stops at the record, because the record is the allocation a
+    fixed-allocation writer has, and hands the caller everything it needs to
+    stay inside it.
+
+    Refuses when the container is short **and** a member with bytes lies past
+    the record: that is the only case where a rewrite really would have to
+    grow the file, and it happens on neither measured image.
+    """
+
+    data = read_file(image, entry, limit=limit)
+    try:
+        declared = ea_terf.declared_length(data[:PROBE_BYTES])
+    except ea_terf.TerfError:
+        declared = len(data)
+    if len(data) > entry.recorded_length:
+        data = data[:entry.recorded_length]
+    if len(data) < entry.recorded_length:
+        raise DiscError(
+            f"{entry.path} is {entry.recorded_length:,} bytes in this image's own "
+            f"directory and only {len(data):,} could be read off it; the image is "
+            f"truncated and nothing here writes into it."
+        )
+    try:
+        parsed = ea_terf.parse_terf(data, allow_size_mismatch=True)
+    except ea_terf.TerfError as exc:
+        raise DiscError(
+            f"{entry.path} is {entry.recorded_length:,} bytes in this image's own "
+            f"directory and declares {declared:,}; reading it as a container "
+            f"inside the recorded length failed: {exc}"
+        ) from exc
+    if declared > len(data) and not parsed.short_tail_is_empty:
+        beyond = [member.index for member in parsed.members
+                  if member.stored_size
+                  and parsed.data_offset + member.offset + member.stored_size > len(data)]
+        raise DiscError(
+            f"{entry.path} is {entry.recorded_length:,} bytes in this image's own "
+            f"directory and declares {declared:,}, and member "
+            f"{beyond[0] if beyond else parsed.member_count - 1} carries bytes past "
+            f"the recorded end; a rewrite would have to grow the file, which this "
+            f"lane will not do."
+        )
+    return WritableContainer(entry=entry, data=data, parsed=parsed,
+                             declared_length=declared)
+
+
+# --------------------------------------------------------------------------
 # The preload caches
 # --------------------------------------------------------------------------
 #
@@ -947,10 +1064,47 @@ def build_synthetic_preload_cache(payload: Sequence[Tuple[str, int, Optional[int
     return bytes(out)
 
 
+#: How many empty members :func:`make_recorded_short` needs at the end of a
+#: container, and how many the synthetic disc appends when it is asked for
+#: one.  The *Deluxe* image's own recorded-short containers carry 10 to 755
+#: [M]; a handful proves the same shape.
+SYNTHETIC_EMPTY_TAIL = 6
+
+
+def make_recorded_short(container: bytes) -> bytes:
+    """Do to *container* what the *Deluxe* repack tool did to six of its own.
+
+    That tool left the trailing empty members' alignment padding out of the
+    ``DATA`` chunk's declared size and cut the file at the last member with
+    bytes, so the ISO9660 record that then describes it is 4 to 26,168 bytes
+    short of what the container declares and **only empty members** lie past
+    the record [M].  Reproducing that here is what lets CI prove the writers'
+    recovery mode on a shape no synthetic container would otherwise have.
+
+    The container must end in at least one empty member; there is nothing to
+    take away otherwise, and this refuses rather than inventing one.
+    """
+
+    parsed = ea_terf.parse_terf(container)
+    if not parsed.members or not parsed.members[-1].empty:
+        raise DiscError(
+            "this container's last member carries bytes, so nothing about it is "
+            "recorded short; append an empty member first.")
+    carried = [member for member in parsed.members if not member.empty]
+    end = parsed.data_offset + (
+        max(member.offset + member.stored_size for member in carried) if carried else 0)
+    cut = ((end + parsed.alignment - 1) // parsed.alignment) * parsed.alignment
+    out = bytearray(container)
+    struct.pack_into("<I", out, parsed.data_offset + 4,
+                     parsed.data_size - parsed.alignment)
+    return bytes(out[:cut])
+
+
 def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
                          tdb_members: Optional[Sequence[bytes]] = None,
                          stream_database: Optional[bytes] = None,
                          preload_caches: bool = True,
+                         recorded_short: bool = False,
                          uniform_members: Optional[Sequence[bytes]] = None) -> bytes:
     """A tiny ``SLUS-21770``-shaped image carrying two synthetic containers.
 
@@ -969,7 +1123,10 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     the second copy of a record living there.  Both default to absent, so a
     caller that wants what this built before gets exactly that.
     ``preload_caches=False`` leaves out the two ``QL01`` caches, for a test that
-    needs an image with no cache at all.
+    needs an image with no cache at all.  ``recorded_short=True`` gives
+    ``DB_TEAMS.DAT`` the shape the *Deluxe* image's own containers have --
+    see :func:`make_recorded_short` -- so a writer's recovery mode is proved
+    without any game data.
     """
 
     if uniform_members is None:
@@ -991,8 +1148,12 @@ def build_synthetic_disc(*, tdb_member: Optional[bytes] = None,
     else:
         team_members = [tdb_member if tdb_member is not None else b""]
     team_members.append(synthetic_text_member(SYNTHETIC_TEXT_LINES))
+    if recorded_short:
+        team_members.extend([b""] * SYNTHETIC_EMPTY_TAIL)
     teams = ea_terf.build_terf([m for m in team_members], chunk="DATA")
     teams_member_one = ea_terf.parse_terf(teams).stored(1)
+    if recorded_short:
+        teams = make_recorded_short(teams)
     # The preload caches carry byte copies of a container's directory, so a
     # writer that moves one has to move them too.  The synthetic disc carries
     # the same shape the retail disc does for this container -- one copy of
@@ -1064,20 +1225,24 @@ __all__ = [
     "SERIAL",
     "STREAM_DATABASE_FILE",
     "SYNTHETIC_CONTAINERS",
+    "SYNTHETIC_EMPTY_TAIL",
     "SYNTHETIC_TEXT_LINES",
     "TATTOO_CONTAINER",
     "TEAM_DATABASE_CONTAINER",
     "TEMPLATE_CONTAINER",
     "UNIFORM_CONTAINER",
+    "WritableContainer",
     "build_synthetic_disc",
     "build_synthetic_preload_cache",
     "classify",
     "data_files",
     "describe_container",
     "load_container",
+    "make_recorded_short",
     "member_uncached",
     "members_of_format",
     "open_disc",
+    "open_for_rewrite",
     "preload_names",
     "parse_preload_cache",
     "preload_copies",

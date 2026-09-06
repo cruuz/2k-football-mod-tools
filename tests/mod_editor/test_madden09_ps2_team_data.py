@@ -377,5 +377,92 @@ class TeamDataLaneTests(unittest.TestCase):
             team_data.verify_build(self.source, destination, {"edits": []})
 
 
+class RecordedShortContainerTests(unittest.TestCase):
+    """A disc whose ISO9660 record understates its own container.
+
+    The community's Madden 09 *Deluxe* image does that to six containers, by
+    4 to 26,168 bytes, and this lane refused the whole image over it: the
+    reader recovered the container to the length it declares, the lane
+    compared that with the record and said a rewrite would have to grow the
+    file. What lies past the record there is only trailing empty members'
+    alignment padding [M], so the rewrite fits inside the record and the
+    record never has to move. The fixture is built from the format's rules;
+    no game data.
+    """
+
+    def setUp(self) -> None:
+        self.work = Path(tempfile.mkdtemp(prefix="madden09-short-")).resolve()
+        self.addCleanup(shutil.rmtree, self.work, True)
+        self.source = self.work / "madden09-ps2-recorded-short.iso"
+        self.source.write_bytes(containers.build_synthetic_disc(
+            tdb_member=team_data.synthetic_database(), recorded_short=True))
+        self.lane = team_data.TeamDataLane()
+        self.catalogue = self.lane.build_catalogue(self.source)
+        self.image = containers.open_disc(self.source)
+        self.entry = next(entry for entry in containers.data_files(self.image)
+                          if entry.name == containers.TEAM_DATABASE_CONTAINER)
+
+    def test_the_fixture_really_is_recorded_short(self) -> None:
+        recovered = containers.read_file(self.image, self.entry)
+        self.assertGreater(len(recovered), self.entry.recorded_length,
+                           "the reader must still recover to the declared length")
+        writable = containers.open_for_rewrite(self.image, self.entry)
+        self.assertTrue(writable.recorded_short)
+        self.assertEqual(len(writable.data), self.entry.recorded_length)
+        self.assertEqual(writable.declared_length, len(recovered))
+        self.assertTrue(writable.parsed.short_tail_is_empty)
+
+    def test_the_lane_builds_and_its_own_verifier_passes(self) -> None:
+        recipe = self.lane.compose_recipe(self.lane.conformance_edits(self.catalogue))
+        destination = self.work / "built.iso"
+        receipt = self.lane.build(self.source, destination, recipe, self.catalogue)
+        verdict = self.lane.verify(self.source, destination, receipt)
+        self.assertTrue(verdict.passed, verdict.summary)
+        self.assertEqual(destination.stat().st_size, self.source.stat().st_size)
+
+    def test_the_record_and_the_declaration_both_survive_the_build(self) -> None:
+        recipe = self.lane.compose_recipe(self.lane.conformance_edits(self.catalogue))
+        destination = self.work / "built.iso"
+        self.lane.build(self.source, destination, recipe, self.catalogue)
+        after_image = containers.open_disc(destination)
+        after = next(entry for entry in containers.data_files(after_image)
+                     if entry.name == containers.TEAM_DATABASE_CONTAINER)
+        self.assertEqual(after.recorded_length, self.entry.recorded_length)
+        self.assertEqual(after.lba, self.entry.lba)
+        before_bytes = containers.open_for_rewrite(self.image, self.entry)
+        after_bytes = containers.open_for_rewrite(after_image, after)
+        self.assertEqual(after_bytes.parsed.data_size, before_bytes.parsed.data_size)
+        self.assertEqual(after_bytes.declared_length, before_bytes.declared_length)
+        self.assertEqual(after_bytes.data[:after_bytes.parsed.data_offset],
+                         before_bytes.data[:before_bytes.parsed.data_offset])
+
+    def test_the_written_values_read_back(self) -> None:
+        recipe = self.lane.compose_recipe(self.lane.conformance_edits(self.catalogue))
+        destination = self.work / "built.iso"
+        self.lane.build(self.source, destination, recipe, self.catalogue)
+        member = containers.load_container(
+            containers.open_disc(destination),
+            containers.TEAM_DATABASE_CONTAINER).member(0)
+        database = ea_tdb.parse_tdb(member)
+        self.assertEqual(database.value("PLAY", 0, "PFNA"), "Kit")
+        self.assertEqual(ea_tdb.verify_crcs(member), [])
+
+    def test_a_member_past_the_recorded_end_is_refused_with_both_sizes(self) -> None:
+        writable = containers.open_for_rewrite(self.image, self.entry)
+        beyond = [member.index for member in writable.parsed.members
+                  if writable.member_end(member.index) > len(writable.data)]
+        self.assertTrue(beyond, "the fixture must carry a member past the record")
+        recipe = {"schema": team_data.RECIPE_SCHEMA,
+                  "edits": [{"target": team_data.row_key(
+                      self.entry.path, beyond[0], "PLAY", 0),
+                      "values": {"PFNA": "Kit"}}]}
+        with self.assertRaises(Refusal) as caught:
+            self.lane.plan(self.source, recipe, self.catalogue)
+        message = str(caught.exception)
+        self.assertIn(f"{self.entry.recorded_length:,}", message)
+        self.assertIn(f"{writable.declared_length:,}", message)
+        self.assertIn("would have to grow the file", message)
+
+
 if __name__ == "__main__":
     unittest.main()

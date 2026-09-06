@@ -1480,12 +1480,44 @@ class TerfContainer:
             cursor = member.offset + max(member.stored_size, 1)
         return _round_up(cursor, self.alignment)
 
-    def layout_violations(self) -> List[str]:
+    @property
+    def short_tail(self) -> int:
+        """How many bytes the ``DATA`` chunk declares past the end of what this holds.
+
+        Zero for a container that was handed all of itself.  Positive when the
+        buffer stops short of the declared length, which is how the community's
+        Madden 09 *Deluxe* disc records six of its containers: the ISO9660
+        directory record is 4 to 26,168 bytes shorter than the chunk chain
+        declares [M].
+        """
+        return max(0, self.size_mismatch)
+
+    @property
+    def short_tail_is_empty(self) -> bool:
+        """Whether everything past the declared ``DATA`` size is an empty member.
+
+        The measured shape behind the *Deluxe* disc's short records: the repack
+        tool did not write the last empty member's alignment unit into the
+        ``DATA`` size, so the chunk stops one unit before the layout rule's end
+        and only members with no bytes live in the difference.  A rewrite can
+        stay inside the recorded extent exactly when this holds -- there is
+        nothing out there to preserve.
+        """
+        return all(member.empty for member in self.members
+                   if member.offset >= self.data_size)
+
+    def layout_violations(self, *, allow_short_tail: bool = False) -> List[str]:
         """Every way this container departs from the measured layout rules.
 
         Empty when the container is ordinary.  A caller that intends to rewrite
         a member should check this first: a container that already breaks the
         rules will not survive being rebuilt from them.
+
+        ``allow_short_tail`` forgives the one departure the *Deluxe* disc's
+        recorded-short containers carry and nothing else: a ``DATA`` chunk that
+        stops before the layout rule's end with only **empty** members in the
+        difference.  Every other violation is still reported, including a
+        ``DATA`` chunk that is short with real bytes beyond it.
         """
         problems: List[str] = []
         if self.version_word != VERSION_WORD:
@@ -1515,7 +1547,9 @@ class TerfContainer:
                     % (member.index, member.offset, want))
             cursor = member.offset + max(member.stored_size, 1)
         end = _round_up(cursor, self.alignment)
-        if self.data_size != end:
+        if self.data_size != end and not (
+                allow_short_tail and self.data_size < end
+                and self.short_tail_is_empty):
             problems.append(
                 "DATA chunk is %d byte(s); its members end at %d"
                 % (self.data_size, end))
@@ -1737,6 +1771,7 @@ class MemberRewritePlan:
 
 def plan_member_rewrite(container: bytes, index: int, payload: bytes, *,
                         codecs: Sequence[int] = (CODEC_STORED, CODEC_LZH1),
+                        allow_short_tail: bool = False,
                         ) -> MemberRewritePlan:
     """Choose a codec for *payload* in member *index*, and price the result.
 
@@ -1750,9 +1785,14 @@ def plan_member_rewrite(container: bytes, index: int, payload: bytes, *,
     the aligned slot the member already owns (in which case no other member
     moves) and whether the container grows at all, so a caller under a fixed
     allocation can refuse before it builds anything.
+
+    ``allow_short_tail`` prices a container whose buffer stops before its own
+    ``DATA`` chunk ends -- the shape the Madden 09 *Deluxe* disc records for
+    six of its containers -- against the bytes it was handed rather than
+    against the declared length.  See :func:`rewrite_member`.
     """
 
-    parsed = parse_terf(container)
+    parsed = parse_terf(container, allow_size_mismatch=allow_short_tail)
     if not 0 <= index < parsed.member_count:
         raise TerfError(
             "member %d does not exist: this container has %d (0..%d)."
@@ -1785,6 +1825,13 @@ def plan_member_rewrite(container: bytes, index: int, payload: bytes, *,
     fits = new_offsets == previous_offsets
     previous_length = parsed.data_offset + previous_data
     new_length = parsed.data_offset + new_data
+    if allow_short_tail and parsed.short_tail:
+        # The buffer is what the disc allocates this container, and a rewrite
+        # inside it may not need a byte more.  Price against the bytes handed
+        # in, not against the length the DATA chunk declares past their end.
+        previous_length = len(container)
+        new_length = (len(container) if new_offsets == previous_offsets
+                      else parsed.data_offset + new_data)
     if fits and new_length <= previous_length:
         note = ("%s in %d byte(s), inside the %d-byte slot member %d already owns: "
                 "no other member moves and the container keeps its length."
@@ -1808,7 +1855,8 @@ def plan_member_rewrite(container: bytes, index: int, payload: bytes, *,
 
 
 def rewrite_member(container: bytes, index: int, payload: bytes, *,
-                   codec: int = CODEC_STORED) -> bytes:
+                   codec: int = CODEC_STORED,
+                   allow_short_tail: bool = False) -> bytes:
     """Return *container* with member *index* replaced by *payload*.
 
     Every other member's bytes come through unchanged; the directory, the codec
@@ -1825,16 +1873,66 @@ def rewrite_member(container: bytes, index: int, payload: bytes, *,
     :data:`CODEC_LZH1` and :func:`plan_member_rewrite` says whether it does.
     A plain ``DATA`` container has no codec table and takes ``CODEC_STORED``
     only.
+
+    ``allow_short_tail`` is the **recovery mode** for a container the disc
+    records shorter than the container declares itself: the community's
+    Madden 09 *Deluxe* image does that to six of its containers, by 4 to
+    26,168 bytes, because its repack tool did not count the trailing empty
+    members' alignment padding into the ``DATA`` size [M].  With the flag on,
+    *container* is the bytes the disc actually allocates -- the ISO9660
+    directory record's length -- and the rewrite stays inside them: the
+    ``DATA`` chunk's declared size is written back exactly as the disc had it,
+    the result is the same length as the input, and no member may move.  A
+    replacement that would move any member, or one whose bytes would reach
+    past the recorded end, is refused with both sizes named, because that is
+    the case where the file really would have to grow.  Only empty members may
+    lie past the recorded end; a container with real bytes out there is
+    refused here rather than rebuilt from what was not handed in.
     """
-    parsed = parse_terf(container)
+    if allow_short_tail:
+        try:
+            parsed = parse_terf(container, allow_size_mismatch=True)
+        except TerfError as exc:
+            try:
+                declared = declared_length(container)
+            except TerfError:
+                raise
+            raise TerfError(
+                "this container is %d byte(s) and declares %d, and a member "
+                "with bytes lies past the end of what was handed in (%s) -- so "
+                "a rewrite really would have to grow the file, which this "
+                "writer will not do. Nothing was changed."
+                % (len(container), declared, exc)
+            ) from exc
+    else:
+        parsed = parse_terf(container)
     if not 0 <= index < parsed.member_count:
         raise TerfError(
             "member %d does not exist: this container has %d (0..%d). Nothing "
             "was changed."
             % (index, parsed.member_count, parsed.member_count - 1)
         )
+    short_tail = allow_short_tail and parsed.short_tail > 0
+    if short_tail:
+        _require(
+            parsed.short_tail_is_empty,
+            "this container is %d byte(s) and its DATA chunk declares %d; a "
+            "member with bytes lies past the recorded end, so a rewrite really "
+            "would have to grow the file. Nothing was changed."
+            % (len(container), parsed.declared_length),
+        )
+        end = (parsed.data_offset + parsed.members[index].offset
+               + parsed.members[index].stored_size)
+        _require(
+            end <= len(container),
+            "member %d of this container ends at byte %d, and the disc records "
+            "the container as %d byte(s) against the %d it declares; a rewrite "
+            "of a member out there would have to grow the file, which this "
+            "writer will not do. Nothing was changed."
+            % (index, end, len(container), parsed.declared_length),
+        )
     member = parsed.members[index]
-    violations = parsed.layout_violations()
+    violations = parsed.layout_violations(allow_short_tail=allow_short_tail)
     if violations:
         raise TerfError(
             "this container does not follow the layout rules a rewrite "
@@ -1870,6 +1968,25 @@ def rewrite_member(container: bytes, index: int, payload: bytes, *,
 
     offsets, data_size = _member_offsets([len(packed) for packed in stored],
                                          parsed.alignment)
+    if short_tail:
+        # Recovery mode: stay inside the bytes the disc gave this container.
+        # Nothing may move -- a same-size replacement is the whole of what a
+        # recorded-short container can take -- and the DATA chunk keeps the
+        # size the disc wrote, so the file comes back exactly as long as it
+        # went in and the ISO9660 record never has to change.
+        previous, _ = _member_offsets([m.stored_size for m in parsed.members],
+                                      parsed.alignment)
+        moved = sum(1 for a, b in zip(offsets, previous) if a != b)
+        _require(
+            offsets == previous,
+            "this container is recorded as %d byte(s) and declares %d, so a "
+            "member may only be replaced in place; the replacement for member "
+            "%d is %d byte(s) against %d and would move %d later member(s). "
+            "Nothing was changed."
+            % (len(container), parsed.declared_length, index, len(replacement),
+               member.stored_size, moved),
+        )
+        data_size = parsed.data_size
 
     out = bytearray(container[:parsed.data_offset])
     directory = parsed.chunk("DIR1")
@@ -1889,9 +2006,24 @@ def rewrite_member(container: bytes, index: int, payload: bytes, *,
                     else parsed.members[slot].decompressed_size)
             struct.pack_into("<II", out, base + 8 * slot, slot_codec, size)
 
+    body_bytes = (len(container) - parsed.data_offset) if short_tail else data_size
     body = bytearray(DATA_MAGIC + struct.pack("<I", data_size))
-    body += b"\x00" * (data_size - len(body))
-    for offset, packed in zip(offsets, stored):
+    body += b"\x00" * (body_bytes - len(body))
+    for slot, (offset, packed) in enumerate(zip(offsets, stored)):
+        if not packed:
+            # An empty member owns an alignment unit and no bytes.  On a
+            # recorded-short container the trailing empty members' units are
+            # exactly what lies past the record, and there is nothing of them
+            # to write; a member with bytes out there is refused above.
+            continue
+        _require(
+            offset + len(packed) <= body_bytes,
+            "member %d would end at byte %d of a container the disc records as "
+            "%d byte(s) against the %d it declares; nothing here writes past "
+            "the recorded end. Nothing was changed."
+            % (slot, parsed.data_offset + offset + len(packed), len(container),
+               parsed.declared_length),
+        )
         body[offset:offset + len(packed)] = packed
     out += body
     return bytes(out)

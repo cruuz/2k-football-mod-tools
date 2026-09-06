@@ -550,16 +550,12 @@ class TextLane:
                     f"is not a Madden NFL 09 PlayStation 2 disc, or the container has been "
                     f"removed."
                 )
-            original = containers.read_file(image, entry)
-            if len(original) != entry.recorded_length:
-                raise TextError(
-                    f"{entry.path} is {entry.recorded_length:,} bytes in this image's own "
-                    f"directory and carries {len(original):,}; a rewrite would have to grow "
-                    f"the file, which this lane will not do."
-                )
-            container = ea_terf.parse_terf(original, allow_size_mismatch=True)
+            writable = containers.open_for_rewrite(image, entry)
+            original = writable.data
+            container = writable.parsed
             working = original
             for member, slots in sorted(members.items()):
+                writable.require_member_inside(member)
                 payload = container.member(member)
                 known = {offset: (length, allocation)
                          for offset, length, allocation in slots_in(payload)}
@@ -598,7 +594,9 @@ class TextLane:
                         f"from {len(payload):,} to {len(new_payload):,}; a slot rewrite "
                         f"cannot do that and the result is refused."
                     )
-                working = ea_terf.rewrite_member(working, member, new_payload)
+                working = ea_terf.rewrite_member(
+                    working, member, new_payload,
+                    allow_short_tail=writable.recorded_short)
                 if len(working) != len(original):
                     raise TextError(
                         f"rewriting member {member} changed {entry.path} from "

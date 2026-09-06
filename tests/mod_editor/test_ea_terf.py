@@ -849,5 +849,127 @@ class Lzh1EncoderTests(unittest.TestCase):
         self.assertIn("grows", plan.note)
 
 
+def recorded_short(members, *, empty_tail: int = 6, chunk: str = "DATA",
+                   codecs=None) -> bytes:
+    """A container in the shape the Madden 09 *Deluxe* image records six of its own.
+
+    Its repack tool left the trailing empty members' alignment padding out of
+    the ``DATA`` chunk's declared size and the file was then cut at the last
+    member with bytes, so the buffer a reader is handed is shorter than the
+    chunk chain declares and only **empty** members lie past the end [M].
+    Everything here is computed from the format's rules; no disc is read.
+    """
+    full = ea_terf.build_terf(list(members) + [b""] * empty_tail, chunk=chunk,
+                             codecs=None if codecs is None
+                             else list(codecs) + [ea_terf.CODEC_STORED] * empty_tail)
+    parsed = ea_terf.parse_terf(full)
+    carried = [m for m in parsed.members if not m.empty]
+    end = parsed.data_offset + max(m.offset + m.stored_size for m in carried)
+    cut = -(-end // parsed.alignment) * parsed.alignment
+    out = bytearray(full)
+    struct.pack_into("<I", out, parsed.data_offset + 4,
+                     parsed.data_size - parsed.alignment)
+    return bytes(out[:cut])
+
+
+class RecordedShortTests(unittest.TestCase):
+    """A container the disc records shorter than the container declares itself.
+
+    Both database lanes used to refuse the whole *Deluxe* image over this,
+    with a sentence about growing a file that the bytes did not support:
+    nothing past the record was ever anything but an empty member's padding.
+    """
+
+    def setUp(self) -> None:
+        self.members = [b"first member", b"second member", b"third member"]
+        self.blob = recorded_short(self.members)
+        self.parsed = ea_terf.parse_terf(self.blob, allow_size_mismatch=True)
+
+    def test_the_fixture_is_the_measured_shape(self) -> None:
+        self.assertGreater(self.parsed.short_tail, 0)
+        self.assertTrue(self.parsed.short_tail_is_empty)
+        self.assertGreater(self.parsed.declared_length, len(self.blob))
+        for member in self.parsed.members[:len(self.members)]:
+            self.assertFalse(member.empty)
+            self.assertLessEqual(
+                self.parsed.data_offset + member.offset + member.stored_size,
+                len(self.blob))
+
+    def test_a_full_length_container_is_not_short(self) -> None:
+        whole = ea_terf.build_terf(self.members)
+        self.assertEqual(ea_terf.parse_terf(whole).short_tail, 0)
+
+    def test_the_layout_violation_is_only_forgiven_when_asked_for(self) -> None:
+        self.assertTrue(self.parsed.layout_violations())
+        self.assertIn("DATA chunk is", self.parsed.layout_violations()[0])
+        self.assertEqual(self.parsed.layout_violations(allow_short_tail=True), [])
+
+    def test_a_same_size_rewrite_stays_inside_the_recorded_length(self) -> None:
+        replacement = b"REPLACED!!!!!"
+        self.assertEqual(len(replacement), len(self.members[1]))
+        out = ea_terf.rewrite_member(self.blob, 1, replacement, allow_short_tail=True)
+        self.assertEqual(len(out), len(self.blob),
+                         "the file may not grow and may not shrink")
+        after = ea_terf.parse_terf(out, allow_size_mismatch=True)
+        self.assertEqual(after.data_size, self.parsed.data_size,
+                         "the DATA chunk keeps the size the disc wrote")
+        self.assertEqual(after.declared_length, self.parsed.declared_length)
+        self.assertEqual(out[:after.data_offset], self.blob[:self.parsed.data_offset],
+                         "the directory is untouched, so the ISO record still fits")
+        self.assertEqual(after.member(1), replacement)
+        self.assertEqual(after.member(0), self.members[0])
+        self.assertEqual(after.member(2), self.members[2])
+        differ = [i for i in range(len(out)) if out[i] != self.blob[i]]
+        member = after.members[1]
+        self.assertTrue(differ)
+        for index in differ:
+            self.assertGreaterEqual(index, after.data_offset + member.offset)
+            self.assertLess(index, after.data_offset + member.offset + member.stored_size)
+
+    def test_the_plan_prices_it_against_the_bytes_it_was_handed(self) -> None:
+        plan = ea_terf.plan_member_rewrite(self.blob, 1, b"REPLACED!!!!!",
+                                           allow_short_tail=True)
+        self.assertFalse(plan.grows_container)
+        self.assertEqual(plan.previous_length, len(self.blob))
+        self.assertEqual(plan.new_length, len(self.blob))
+
+    def test_without_the_flag_it_is_still_refused(self) -> None:
+        with self.assertRaises(ea_terf.TerfError) as caught:
+            ea_terf.rewrite_member(self.blob, 1, b"REPLACED!!!!!")
+        self.assertIn("allow_size_mismatch=True", str(caught.exception))
+
+    def test_a_replacement_that_would_move_a_member_is_refused_with_both_sizes(self) -> None:
+        with self.assertRaises(ea_terf.TerfError) as caught:
+            ea_terf.rewrite_member(self.blob, 1, b"X" * 4096, allow_short_tail=True)
+        message = str(caught.exception)
+        self.assertIn(str(len(self.blob)), message)
+        self.assertIn(str(self.parsed.declared_length), message)
+        self.assertIn("may only be replaced in place", message)
+        self.assertIn("Nothing was changed", message)
+
+    def test_a_member_with_bytes_past_the_record_is_refused_with_both_sizes(self) -> None:
+        """The one case where a rewrite really would have to grow the file."""
+        whole = ea_terf.build_terf(self.members)
+        parsed = ea_terf.parse_terf(whole)
+        cut = parsed.data_offset + parsed.members[2].offset + 4
+        with self.assertRaises(ea_terf.TerfError) as caught:
+            ea_terf.rewrite_member(whole[:cut], 0, b"first member",
+                                   allow_short_tail=True)
+        message = str(caught.exception)
+        self.assertIn(str(cut), message)
+        self.assertIn(str(parsed.declared_length), message)
+        self.assertIn("would have to grow the file", message)
+
+    def test_the_empty_members_past_the_record_are_left_alone(self) -> None:
+        out = ea_terf.rewrite_member(self.blob, 0, b"FIRST MEMBER",
+                                     allow_short_tail=True)
+        after = ea_terf.parse_terf(out, allow_size_mismatch=True)
+        self.assertEqual(after.member_count, self.parsed.member_count)
+        for index in range(len(self.members), after.member_count):
+            self.assertTrue(after.members[index].empty)
+            self.assertEqual(after.members[index].offset,
+                             self.parsed.members[index].offset)
+
+
 if __name__ == "__main__":
     unittest.main()

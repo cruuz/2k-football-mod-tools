@@ -774,14 +774,9 @@ class IdentityLane:
                 f"this image holds no {containers.DATA_DIRECTORY}/{TEAM_CONTAINER}; it is "
                 f"not a Madden NFL 09 PlayStation 2 disc, or the container has been removed."
             )
-        original = containers.read_file(image, entry)
-        if len(original) != entry.recorded_length:
-            raise IdentityError(
-                f"{entry.path} is {entry.recorded_length:,} bytes in this image's own "
-                f"directory and carries {len(original):,}; a rewrite would have to grow the "
-                f"file, which this lane will not do."
-            )
-        container = ea_terf.parse_terf(original, allow_size_mismatch=True)
+        writable = containers.open_for_rewrite(image, entry)
+        original = writable.data
+        container = writable.parsed
         stream = self._stream_rows(image, files, cached)
 
         iso_path = f"{containers.DATA_DIRECTORY}/{TEAM_CONTAINER}"
@@ -791,6 +786,7 @@ class IdentityLane:
         stream_writes: Dict[int, Dict[str, Any]] = {}
         stream_skipped: List[Dict[str, Any]] = []
         for member in sorted(wanted):
+            writable.require_member_inside(member)
             payload = container.member(member)
             new_payload = payload
             for record in sorted(wanted[member]):
@@ -837,7 +833,9 @@ class IdentityLane:
                     f"member {member} of {TEAM_CONTAINER} came out with a checksum that "
                     f"does not match its own bytes: {stale[0]}"
                 )
-            working = ea_terf.rewrite_member(working, member, new_payload)
+            working = ea_terf.rewrite_member(
+                working, member, new_payload,
+                allow_short_tail=writable.recorded_short)
             if len(working) != len(original):
                 raise IdentityError(
                     f"rewriting member {member} changed {iso_path} from {len(original):,} "

@@ -1186,12 +1186,15 @@ class UniformDiscArtWriteLane(UniformArtLane):
         cache_notes: List[Dict[str, Any]] = []
         for container_name in order:
             data_file = present[container_name]
-            blob = containers.read_file(disc, data_file)
+            writable = containers.open_for_rewrite(disc, data_file)
+            blob = writable.data
             original = blob
-            container = ea_terf.parse_terf(blob, allow_size_mismatch=True)
+            short_tail = writable.recorded_short
+            container = writable.parsed
             for (name, member), images in sorted(by_member.items()):
                 if name != container_name:
                     continue
+                writable.require_member_inside(member)
                 payload = container.member(member)
                 require(payload.startswith(mmap_art.MMAP_MAGIC),
                         f"{name} member {member} is not an MMAP texture, so there is nothing "
@@ -1242,13 +1245,15 @@ class UniformDiscArtWriteLane(UniformArtLane):
                 plan = ea_terf.plan_member_rewrite(
                     blob, member, new_member,
                     codecs=((ea_terf.CODEC_STORED,) if container.chunk("COMP") is None
-                            else (ea_terf.CODEC_STORED, ea_terf.CODEC_LZH1)))
-                blob = ea_terf.rewrite_member(blob, member, new_member, codec=plan.codec)
+                            else (ea_terf.CODEC_STORED, ea_terf.CODEC_LZH1)),
+                    allow_short_tail=short_tail)
+                blob = ea_terf.rewrite_member(blob, member, new_member, codec=plan.codec,
+                                              allow_short_tail=short_tail)
                 container = ea_terf.parse_terf(blob, allow_size_mismatch=True)
                 member_notes.append({
                     "container": name, "member": member,
                     "images": sorted(images), **plan.as_dict()})
-            violations = container.layout_violations()
+            violations = container.layout_violations(allow_short_tail=short_tail)
             if violations:
                 raise Refusal(
                     f"the rebuilt {container_name} broke the container's own layout rules "
