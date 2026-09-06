@@ -43,7 +43,8 @@
   "allowlist_patterns": [
     "mod_editor/games/ncaa09_ps2/*",
     "tools/validate_ncaa09_ps2_*",
-    "docs/product/measured/ncaa09_ps2/*"
+    "docs/product/measured/ncaa09_ps2/*",
+    "tools/ps2_texture_identities.py"
   ],
   "page_notes": {
     "crib": "The Crib is an ESPN NFL 2K5 feature and not an NCAA Football concept, so this page stays empty here on purpose.",

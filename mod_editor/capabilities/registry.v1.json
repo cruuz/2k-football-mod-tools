@@ -5064,7 +5064,7 @@
       ],
       "portme": [
         "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
-        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "The PCSX2 texture dump paired with SLUS-21752 is TWO frames of one matchup, so 510 of the 16,308 textures the six art rows reach carry a CONFIRMED replacement name and every other one is DERIVED from the texture's own bytes. Seven of the twelve art containers -- COACFACE.DAT, FANDATA.DAT, LOADDATA.DAT, MSCTDATA.DAT, UIS_GEAR.DAT, UIS_STAD.DAT, UIS_TMLO.DAT -- were drawn by neither frame and have no confirmed name at all. A gear screen, a school-logo menu, a stadium select, a load screen and a mascot or trophy cut-scene would reach all seven; the per-container counts are in docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json.",
         "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
       ],
       "public_distribution": {
@@ -5096,7 +5096,7 @@
             "required": false
           }
         ],
-        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either: some names for this disc are now dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
       },
       "source_container": {
         "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
@@ -5461,7 +5461,7 @@
       ],
       "portme": [
         "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
-        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "The PCSX2 texture dump paired with SLUS-21752 is TWO frames of one matchup, so 510 of the 16,308 textures the six art rows reach carry a CONFIRMED replacement name and every other one is DERIVED from the texture's own bytes. Seven of the twelve art containers -- COACFACE.DAT, FANDATA.DAT, LOADDATA.DAT, MSCTDATA.DAT, UIS_GEAR.DAT, UIS_STAD.DAT, UIS_TMLO.DAT -- were drawn by neither frame and have no confirmed name at all. A gear screen, a school-logo menu, a stadium select, a load screen and a mascot or trophy cut-scene would reach all seven; the per-container counts are in docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json.",
         "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
       ],
       "public_distribution": {
@@ -5493,7 +5493,7 @@
             "required": false
           }
         ],
-        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either: some names for this disc are now dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
       },
       "source_container": {
         "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
@@ -5541,7 +5541,7 @@
       ],
       "portme": [
         "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
-        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "The PCSX2 texture dump paired with SLUS-21752 is TWO frames of one matchup, so 510 of the 16,308 textures the six art rows reach carry a CONFIRMED replacement name and every other one is DERIVED from the texture's own bytes. Seven of the twelve art containers -- COACFACE.DAT, FANDATA.DAT, LOADDATA.DAT, MSCTDATA.DAT, UIS_GEAR.DAT, UIS_STAD.DAT, UIS_TMLO.DAT -- were drawn by neither frame and have no confirmed name at all. A gear screen, a school-logo menu, a stadium select, a load screen and a mascot or trophy cut-scene would reach all seven; the per-container counts are in docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json.",
         "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
       ],
       "public_distribution": {
@@ -5573,7 +5573,7 @@
             "required": false
           }
         ],
-        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either: some names for this disc are now dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
       },
       "source_container": {
         "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
@@ -5694,7 +5694,7 @@
       ],
       "portme": [
         "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
-        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "The PCSX2 texture dump paired with SLUS-21752 is TWO frames of one matchup, so 510 of the 16,308 textures the six art rows reach carry a CONFIRMED replacement name and every other one is DERIVED from the texture's own bytes. Seven of the twelve art containers -- COACFACE.DAT, FANDATA.DAT, LOADDATA.DAT, MSCTDATA.DAT, UIS_GEAR.DAT, UIS_STAD.DAT, UIS_TMLO.DAT -- were drawn by neither frame and have no confirmed name at all. A gear screen, a school-logo menu, a stadium select, a load screen and a mascot or trophy cut-scene would reach all seven; the per-container counts are in docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json.",
         "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
       ],
       "public_distribution": {
@@ -5726,7 +5726,7 @@
             "required": false
           }
         ],
-        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either: some names for this disc are now dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
       },
       "source_container": {
         "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
@@ -5844,7 +5844,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio as an editor beside the export row: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page repeats the row's own sentences -- there is no kit table on this disc to pair the art with, every replacement identity is derived rather than dump-confirmed, and no rebuilt NCAA Football 09 container has been booted -- so a user is told what the offline proof does and does not cover before building anything."
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio as an editor beside the export row: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page repeats the row's own sentences -- there is no kit table on this disc to pair the art with, a replacement identity is dump-confirmed only where one of the two paired frames drew the texture and derived otherwise, and no rebuilt NCAA Football 09 container has been booted -- so a user is told what the offline proof does and does not cover before building anything."
       },
       "id": "ncaa09ps2.uniforms.disc_art_writer",
       "input_constraints": [
@@ -5857,7 +5857,7 @@
       ],
       "portme": [
         "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
-        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "The PCSX2 texture dump paired with SLUS-21752 is TWO frames of one matchup, so 510 of the 16,308 textures the six art rows reach carry a CONFIRMED replacement name and every other one is DERIVED from the texture's own bytes. Seven of the twelve art containers -- COACFACE.DAT, FANDATA.DAT, LOADDATA.DAT, MSCTDATA.DAT, UIS_GEAR.DAT, UIS_STAD.DAT, UIS_TMLO.DAT -- were drawn by neither frame and have no confirmed name at all. A gear screen, a school-logo menu, a stadium select, a load screen and a mascot or trophy cut-scene would reach all seven; the per-container counts are in docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json.",
         "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
       ],
       "public_distribution": {
@@ -5889,7 +5889,7 @@
             "required": false
           }
         ],
-        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either: some names for this disc are now dump-confirmed and the rest derived, but no pack built from either kind has been loaded in an emulator."
       },
       "source_container": {
         "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
@@ -5924,7 +5924,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "export",
-        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio with preview and Export PNG. The write half is the disc-art row beside it, which earns a different rung and says so. The page repeats this row's own sentence that no kit table exists on this disc to pair the art with, and that every PCSX2 replacement identity it offers is derived rather than dump-confirmed."
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio with preview and Export PNG. The write half is the disc-art row beside it, which earns a different rung and says so. The page repeats this row's own sentence that no kit table exists on this disc to pair the art with, and says of every texture whether its PCSX2 replacement identity was confirmed by the paired two-frame dump or derived from the texture's own bytes."
       },
       "id": "ncaa09ps2.uniforms.texture_census",
       "input_constraints": [
@@ -5932,11 +5932,11 @@
         "An export writes a NEW manifest and a NEW folder of PNGs beside it, neither of which may already exist, and refuses a destination that is the source.",
         "verify re-decodes every exported file from the user's own disc BY KEY -- not through the catalogue that produced the receipt -- and fails on a tampered PNG, on an undeclared file in the export folder, and on a missing one.",
         "A member that is not an MMAP texture is listed by format and left alone. So is an MMAP entry the decoder will not draw: a palette-only entry carrying an alternate CLUT and no pixels of its own, one that declares no palette, and one whose surface does not satisfy the stride rule. Each is refused by name rather than drawn wrong.",
-        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. No pack built from those names has been loaded in an emulator.",
+        "A two-frame PCSX2 texture dump has been paired with SLUS-21752 on exact pixel equality, so a replacement identity this row offers is CONFIRMED where one of those frames drew the texture -- 510 of the 16,308 textures the six art rows reach -- and DERIVED from the texture's own bytes everywhere else. The lane says which on every texture. No pack built from either kind has been loaded in an emulator.",
         "The catalogue carries counts, dimensions, offsets and digests -- never a pixel."
       ],
       "portme": [
-        "Pairing one PCSX2 texture dump with this disc would turn every derived name into a confirmed one, and is the single cheapest thing that lifts this row.",
+        "The PCSX2 texture dump paired with SLUS-21752 is TWO frames of one matchup, so 510 of the 16,308 textures the six art rows reach carry a CONFIRMED replacement name and every other one is DERIVED from the texture's own bytes. Seven of the twelve art containers -- COACFACE.DAT, FANDATA.DAT, LOADDATA.DAT, MSCTDATA.DAT, UIS_GEAR.DAT, UIS_STAD.DAT, UIS_TMLO.DAT -- were drawn by neither frame and have no confirmed name at all. A gear screen, a school-logo menu, a stadium select, a load screen and a mascot or trophy cut-scene would reach all seven; the per-container counts are in docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json.",
         "Which school a member belongs to is not established: UNIFORM.DAT names none of its members and no table on this disc joins a TEAM row to a texture.",
         "Unpacking UNIFORM.DAT's 1,200 LZH1 members in full costs about 7 minutes; the census at a 64-byte window costs 2.7 s. An export pays the first number, and the page says so."
       ],

@@ -40,3 +40,6 @@ tools/validate_ncaa09_ps2_saves.sh
 tools/validate_ncaa09_ps2_saves.bat
 tools/validate_ncaa09_ps2_uniform_disc_art.sh
 tools/validate_ncaa09_ps2_uniform_disc_art.bat
+tools/ps2_texture_identities.py
+docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json
+docs/product/measured/ncaa09_ps2/pcsx2-texture-identity-derivation.json

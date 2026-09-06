@@ -84,3 +84,4 @@ mod_editor/games/nfl2k5_ps2/uniform_art.py
 mod_editor/games/nfl2k5_ps2/disc_lanes.py
 mod_editor/games/nfl2k5_ps2/uniform_kits.v1.json
 mod_editor/games/nfl2k5_ps2/validators.json
+tools/ps2_texture_identities.py

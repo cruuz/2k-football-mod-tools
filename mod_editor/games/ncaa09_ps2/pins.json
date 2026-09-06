@@ -10,7 +10,7 @@
   },
   "save_writer_ids": [],
   "schema": "vc_game_module_pins/v1",
-  "shipped_files": 39,
+  "shipped_files": 42,
   "surfaces": [
     "audio",
     "colors",

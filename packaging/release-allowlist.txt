@@ -678,3 +678,8 @@ tools/validate_ncaa09_ps2_saves.sh
 tools/validate_ncaa09_ps2_saves.bat
 tools/validate_ncaa09_ps2_uniform_disc_art.sh
 tools/validate_ncaa09_ps2_uniform_disc_art.bat
+# ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
+tools/ps2_texture_identities.py
+# ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
+docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json
+docs/product/measured/ncaa09_ps2/pcsx2-texture-identity-derivation.json
