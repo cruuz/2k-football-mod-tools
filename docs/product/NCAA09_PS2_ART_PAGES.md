@@ -25,6 +25,15 @@ is here or in the code.
 | `field_art.textures` | Field Art & Create-Team Art | `FLDDATA`, `UIS_TMLO` | `offline-writer-proved` |
 | `presentation.ui_textures` | Presentation | `FANDATA`, `MSCTDATA`, `LOADDATA` | `offline-writer-proved` |
 
+**Why there is no third row for choosing a kit [M, 2026-09-06].** A savestate
+pair taken either side of `Uniform: Home` → `Uniform: Away` in the pre-game
+selector shows the choice is a 32-bit index at EE `0x00737F60`, field `+0x18`
+of a 76-byte per-side setup record, and that **no byte of the resident
+`TEMPLATE.DAT` member 0 changes** when it flips. It is not a row in any table,
+so the page owes no database lane; the shipped default lives in the
+executable's `.data` (ELF offsets `0x00638F60` / `0x00638FAC`) and would be a
+code-patch, not an art or record edit. Neither row's rung moves.
+
 The uniforms page carries two rows because its exporter earns a lower rung than
 the writer beside it — the same shape Madden 09's uniforms page has. The other
 four ship with both halves at once, and one lane already *is* both: the shell

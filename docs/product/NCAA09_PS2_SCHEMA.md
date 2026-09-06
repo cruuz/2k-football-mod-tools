@@ -258,6 +258,25 @@ Every uniform-shaped table on the disc has **0 rows**:
 | `CTUN` | 28 | 76 | **0** | `LEAGUE.DAT` member 0, `TEMPLATE.DAT` ×2 |
 | `USTG` / `USLG` / `USLE` | 19 / 11 / 11 | 40 / 24 / 24 | **0** | `TEMPLATE.DAT` |
 
+**Confirmed in the running game [M, 2026-09-06].** Two savestates were taken on
+the pre-game uniform selector, identical but for `Uniform: Home` → `Uniform:
+Away`, and their 32 MB EE images diffed. `TEMPLATE.DAT` member 0 is resident at
+EE `0x01D52AE0` with all four kit-shaped tables present and still empty
+(`CTCD` 0, `CTUN` 0, `USTG` 0, `USLG` 0 rows), and **not one byte of its
+87,392-byte resident extent changes when the kit flips**. So "nowhere in a
+database" is no longer read off an empty table on the disc; it is measured in
+the game with the choice actually being made.
+
+What does change is a **32-bit little-endian index** at EE `0x00737F60`, field
+`+0x18` of a 76-byte per-side setup record, 0 for the home kit and 1 for the
+away one, 858 bytes above the matchup's two 16-bit team ids. The record head
+appears twice in the executable's own `.data` initialiser, 76 bytes apart,
+shipping 0 and 1 — so the *default* is on the disc after all, at ELF file
+offsets `0x00638F60` and `0x00638FAC`. Changing which kit a side starts in is
+therefore an executable `.data` patch, not a database edit, and belongs to a
+code-patch lane rather than to any table this section describes. Method and
+addresses: `docs/owner/scoping/SAVESTATE_DIFFS.md` on the owner branch.
+
 They are the **create-a-school** tables: the packed 32-bit colour and pattern
 words (`CUBC`, `CUHC`, `CUJC`, `CUNC`, `CUPC`, `CUSC`, `CUFM`, `CUJT`, `CUNO`,
 `CUSR`, `CUSI`) a user's own uniform would be stored in, shipped empty because
