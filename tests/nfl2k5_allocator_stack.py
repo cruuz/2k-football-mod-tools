@@ -22,10 +22,11 @@ from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
 from mod_editor.core import nfl2k5_guardian_overlay as guardian
 from mod_editor.core import nfl2k5_my_career as my_career
 from mod_editor.core import nfl2k5_crib_reclaim as crib_reclaim
+from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
 
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
-                   + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS)
+                   + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS + screen_hooks.REQUESTS)
 REQUESTS = (LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
             + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS)
@@ -67,7 +68,8 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
               (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
-              (my_career, {}), (crib_reclaim, {}))
+              (my_career, {}), (crib_reclaim, {}),
+              (screen_hooks, {}))
     order = tuple(reversed(owners)) if reverse else owners
     for module, kwargs in order:
         payload, _ = module.apply(payload, **kwargs)

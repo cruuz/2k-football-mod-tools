@@ -7231,3 +7231,167 @@ refuse, and the product manifest is never rewritten. The separate MyCareer
 manifest tests observe its actual byte writes and zero-initialized RW capacity.
 These proofs do not replace Claude's release manifest regeneration or a played
 acceptance run. No updater, release-tag, workflow or push changes are requested.
+
+# r62-screen-hooks: second screen timing experiment, 2026-09-06
+
+This section adds only `screen_hooks`. EXPERIMENTAL / UNWITNESSED. The runtime,
+assembler, standalone proofs, complete allocator union and manifest builder
+are implemented; the protected shared product files below were left unchanged.
+All Basic, Advanced and Experimental presets explicitly keep this flag OFF.
+The earlier `screen_timing` A-D experiment and its existing preset values stay
+independent. Noah has not yet witnessed the data tier. This box is for an
+explicit second experiment, never a default fix or a requirement for A-D.
+
+## BuildPlan, validation, resource order and final allocation
+
+In `mod_editor/core/mod_build.py`, add `screen_hooks: bool = False` to
+`BuildPlan`. Put `"screen_hooks": False` explicitly in `softdrink_basic`,
+`softdrink_advanced` and `softdrink_experimental`; loading any preset clears
+a previously selected value. Include it in `wants_xbe_patch()`, the actual-bool
+normalization list, availability, `inspect` status forwarding, recipe/plan
+serialization, feature summaries and the Build widget's plan collection.
+Do not derive it from `screen_timing`, or enable a timing level when checked.
+
+Add `screen_hooks` to every grow-owner deferral/final-pass condition alongside
+`calendar_engine` / `qb_spy`, including early-write suppression. Pass
+`screen_hooks=False` in the early normal-XBE pass. The existing
+`screen_timing.apply_to_image` A-D pass runs first. Install the hooks only in
+the existing final `_apply_all` owner pass after that PLAY pass and all other
+resource edits, with `screen_hooks=plan.screen_hooks`.
+
+The final union must include the hooks before its first allocation. Forward
+`screen_hooks=plan.screen_hooks` into the scorebug runtime call's
+`tt._selected_space_requests(...)`, both normal final-owner paths, and all
+equivalent dispatcher/writer forwarding. Otherwise a combined scorebug build
+can freeze an allocation union that lacks this owner. Standalone hook builds
+implicitly select scale-out through their new-owner REQUESTS. Never allocate
+them separately after another incomplete union has been installed.
+
+`_allocator_feature_status` should expose module availability and the actual
+`screen_hooks` state. `mod_build.inspect` should pass through both the state
+and `screen_hooks_settings` from executable inspection for either a standalone
+XBE or an image. Product builds require an image through NEEDS_IMAGE; the
+development XBE-only API/CLI remains useful and intentional. No PLAY identity
+table, authored-intent receipt or additional settings adapter is needed: the
+runtime follows the loaded grammar directly and has fixed policies.
+
+## Dispatcher and all four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py` import:
+
+```python
+from . import nfl2k5_screen_hooks as screen_hooks_patch
+```
+
+Add `screen_hooks: bool = False` to `_apply_all`, `write_xbe_copy` and
+`write_image_copy`, forwarding it through every call and validating
+`type(screen_hooks) is bool`. Include it in both writers' nothing-requested
+conditions. Extend `_selected_space_requests`, `_xbe_space_adapter`, inherited
+`_defensive_try_adapter`, their callers and allocator enablement predicates:
+
+```python
++ (screen_hooks_patch.REQUESTS if screen_hooks else ())
+```
+
+The final `_apply_all` owners tuple gets this entry AFTER its allocator entry:
+
+```python
+(screen_hooks, screen_hooks_patch, "screen_hooks_patch",
+ "screen pass timing hooks (second experiment)"),
+```
+
+This tuple is reached after `screen_timing` in image Build as specified above;
+the resource-only timing module does not belong in `_apply_all`'s XBE tuple.
+No settings adapter is required because `apply(payload)` has no settings args.
+Status/apply refuse both-hook mixtures, altered code, padding, dependencies,
+seals, geometry and digests before installing anything. Preserve the complete
+owner receipt, source/result hashes, the two exact edit spans, instruction
+size, zero data bytes, experiment order and unwitnessed markers.
+
+Add these entries to `_grown_status_fields(payload)`:
+
+```python
+"screen_hooks": screen_hooks_patch.status(payload),
+"screen_hooks_settings": screen_hooks_patch.read_settings(payload),
+```
+
+Verify they appear in all FOUR dictionaries, with each dictionary's actual
+bytes: `read_xbe(payload)`, `read_image(payload)`, `write_xbe_copy(result)`,
+`write_image_copy(after)`. `read_settings` returns None when foreign or absent;
+installed values are model version 1, line floor 0.8, default QB timer 0.6,
+explicit delays preserved, experiment order 2 and runtime_witnessed False.
+Forward these through Build output inspection and status refresh; a checked
+box alone is not proof that an owner is installed.
+
+## Gameplay Patches and Build tab
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add a PATCHES row with key
+`screen_hooks`, title `Screen pass timing hooks (second experiment)`, and
+description `screen_hooks_patch.HELP_TEXT`, exactly:
+
+> EXPERIMENTAL / UNWITNESSED. Retail: screen plays use their original line and
+> QB timers. Patch: matched screens keep expired line holds until 0.8 seconds
+> after the snap and use a 0.6-second default QB timer. Explicit QB delays stay
+> unchanged. This is the second experiment after the timing levels A-D. It
+> does not guarantee a throw or catch. All presets are off.
+
+This contains Retail and Patch. Add `screen_hooks` to NEEDS_IMAGE and the normal
+foreign-state gating, plan collection, status read-back and reset forwarding.
+Place it after the A-D timing control. Preserve independent checkboxes.
+
+In `mod_editor/gui/build_panel_qt.py`, add the Boolean `_option` with caption
+`Screen pass timing hooks (second experiment)` (44 characters, <=60), key
+`screen_hooks`, default False, and HELP_TEXT as its description. Include the
+field in preset application, plan construction, reset and installed-status
+refresh. Any existing forwarding lists in `studio_qt.py`, `gameplay_panel_qt.py`
+or providers need the same key. No new feature-specific GUI panel is required.
+Keep addresses and allocation details out of the product control text.
+
+## Allowlist, runtime closure, capability and manifest
+
+Add these lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_screen_hooks.py
+mod_editor/core/nfl2k5_screen_hooks_code.py
+ASTRA_SCREEN_HOOKS_REPORT.md
+```
+
+Add these imports to `packaging/check_2k5_mod_studio_runtime.py` and any gameplay
+provider closure import list:
+
+```text
+mod_editor.core.nfl2k5_screen_hooks
+mod_editor.core.nfl2k5_screen_hooks_code
+```
+
+Retain the existing allocator, cave reader and section-digest helper closure.
+GNU as, Capstone, Unicorn, tests, `.S`, the development assembler and private
+evidence are not runtime dependencies or shipped game assets. The byte template
+is checked in and reproducible. The release report links the witness protocol.
+
+Merge the complete object in
+`docs/mod_editor/nfl2k5_screen_hooks_capability.json` into
+`mod_editor/capabilities/registry.v1.json` as
+`nfl2k5.gameplay.screen_hooks` on `gameplay_tuning_sliders`. It is schema-valid
+with both commands in `python3 -m dotted.module ...` form. Keep classification
+`offline-writer-proved`, runtime `not-tested`, default_enabled False and the
+second-experiment wording. The handoff JSON itself is an integration input;
+no additional surface enum or schema change is required.
+
+The complete stack in `tests/nfl2k5_allocator_stack.py`, both XBE gates and all
+manifest request/observer/apply/probe/status/owner lists already include the
+new owner. Its real request is exactly the fixture's existing 640 RX / 0 RW /
+0 RO row, so no budget growth or owner rename is required. Claude must
+regenerate protected `data/nfl2k5_cave_reservations.json` from final integrated
+sources. The private bounded projection is explicitly not a new disc-build
+manifest. Add `screen_hooks=False` to the manifest builder's dormant-base
+BuildPlan replacement after the protected field exists, so preset changes
+cannot preallocate an incomplete owner union.
+
+Integration acceptance: all presets reset off; A-D alone unchanged; hooks
+alone; D plus hooks with explicit 0.6 preserved; scorebug plus hooks sharing
+one union; absent/foreign/applied states in all four dictionaries; exact replay;
+both XBE gates, the three new standalone suites, capability file validation,
+staged runtime closure, regenerated manifest and Noah's paired-snap protocol.
+Do not label the timing values calibrated or gameplay witnessed.

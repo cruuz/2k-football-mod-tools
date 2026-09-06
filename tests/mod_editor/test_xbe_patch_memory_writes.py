@@ -177,6 +177,10 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_senior_bowl as senior_bowl
         if senior_bowl.status(cls.patched) != "applied":
             raise AssertionError("Senior Bowl dormant components missing from the composed XBE")
+        from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
+        if screen_hooks.status(cls.patched) != "applied":
+            raise AssertionError("screen hooks owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_screen_hooks as screen
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
@@ -470,6 +474,20 @@ class PatchWriteTests(unittest.TestCase):
             address = int(write["target"], 0)
             self.assertTrue(data["va"] <= address < data["va"]+data["size"] or address == 0xE602B8, write)
 
+    def test_screen_hooks_have_no_persistent_state_or_absolute_writes(self) -> None:
+        from mod_editor.core import nfl2k5_screen_hooks as screen
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        code = screen.allocation(self.patched)
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        self.assertTrue(image.section(code["va"]).executable)
+        self.assertNotEqual(image.section(code["va"]).name, ".text")
+        self.assertEqual(screen.REQUESTS, ((screen.OWNER, "code", 640, 16),))
+        writes = absolute_writes(self.patched, [(code["va"], code["va"]+len(screen.assembly.CODE))])
+        self.assertTrue(writes)
+        self.assertTrue(all(row["target"] is None for row in writes), writes)
+        # Bounded Unicorn proves destinations: the native QB task+0x60 and
+        # temporary stack saves. No persistent classifier state exists.
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class ScorebugReferenceWrites(unittest.TestCase):

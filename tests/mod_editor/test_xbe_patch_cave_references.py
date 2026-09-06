@@ -124,6 +124,10 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
             raise AssertionError("QB spy owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
+        if screen_hooks.status(cls.patched) != "applied":
+            raise AssertionError("screen hooks owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_screen_hooks as screen
         # This audit allocates nothing. It verifies that neither deferred CB
         # tier has displaced Spy's recognized hooks or the reaction owners.
         from mod_editor.core import nfl2k5_zone_facing as zone_facing
@@ -376,9 +380,7 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_defensive_try as defensive_try
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
-        from tests.nfl2k5_allocator_stack import manifest_for_allocated_union
-        allocation_manifest = manifest_for_allocated_union(manifest, self.retail, self.patched)
-        proof = space.allocation_evidence(self.retail, allocation_manifest, allocated=self.patched)
+        proof = space.allocation_evidence(self.retail, manifest, allocated=self.patched)
         self.assertEqual(proof["legacy_encoded_references"], [])
         # Calendar requires v3 even when the caller does not force scale-out.
         if space.layout(self.patched)["version"] == 3:
@@ -424,9 +426,7 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertTrue(XbeImage(self.patched).section(site["va"], site["size"]).executable)
         self.assertEqual({va: refs for va, refs in self.targets.items()
                           if site["va"] <= va < site["va"] + site["size"]}, {})
-        from tests.nfl2k5_allocator_stack import manifest_for_allocated_union
-        allocation_manifest = manifest_for_allocated_union(manifest, self.retail, self.patched)
-        self.assertEqual(space.allocation_evidence(self.retail, allocation_manifest,
+        self.assertEqual(space.allocation_evidence(self.retail, manifest,
                                                    allocated=self.patched)["legacy_encoded_references"], [])
         instructions = list(Cs(CS_ARCH_X86, CS_MODE_32).disasm(
             XbeImage(self.patched).read(zone_drop.HOOK_VA, 5), zone_drop.HOOK_VA))
@@ -516,6 +516,24 @@ class CaveReferenceTests(unittest.TestCase):
             if int(row["start"], 0) >= space.CODE_VA:
                 self.assertEqual(row["parent_owner"], space.OWNER)
 
+    def test_screen_hooks_have_complete_spans_and_no_interior_or_foreign_entry(self) -> None:
+        from mod_editor.core import nfl2k5_screen_hooks as screen
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for name, (va, old) in screen.HOOKS.items():
+            self.assertEqual(sum(i.size for i in md.disasm(old, va)), len(old), name)
+            self.assertEqual(manifest.overlaps(va, va+len(old), exclude_owner=screen.OWNER), [])
+            self.assertTrue(any(r.detail.startswith(screen.OWNER+":") for r in manifest.overlaps(va, va+len(old))))
+            for target in range(va+1, va+len(old)):
+                self.assertFalse(self.targets.get(target, []), hex(target))
+        code = screen.allocation(self.patched)
+        parents = manifest.overlaps(code["va"], code["va"]+code["size"], exclude_owner=screen.OWNER)
+        self.assertTrue(parents)
+        self.assertTrue(all(r.detail.split(":", 1)[0] == "nfl2k5_xbe_space" for r in parents), parents)
+        self.assertTrue(any(r.start == code["va"] and r.end == code["va"]+code["size"]
+                            and r.detail == screen.OWNER+": named code allocation"
+                            for r in manifest.overlaps(code["va"], code["va"]+code["size"])))
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
