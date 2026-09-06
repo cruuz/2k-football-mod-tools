@@ -140,9 +140,19 @@ def counts(rows: Sequence[dict]) -> tuple[int, int, int, int]:
     the getting-started page quote; it moved from 32 to 45 with upstream's
     Beta 61, so it is read off the registry rather than written into this
     tool.
+
+    **A row is covered when it names a validator**, which is the rule
+    ``tools/validate_all_mod_editor_capabilities.py`` asserts against
+    (``build_validation_plan`` groups by ``validation_command`` and defers a
+    row only when that is ``None``).  This tool used to count by
+    classification instead, and the two rules disagree for a row that is
+    classified ``unknown`` and still has a validator that runs: one such row
+    left ``EXPECTED_COVERED_CAPABILITIES`` a row short, and the pin that was
+    supposed to refuse drift was itself the drift.
+    ``tools/check_registry_counts.py`` checks every site against this rule.
     """
     total = len(rows)
-    covered = sum(1 for row in rows if row.get("classification") not in ("unknown", "unsafe/deferred"))
+    covered = sum(1 for row in rows if row.get("validation_command"))
     validators = len({row.get("validation_command") for row in rows if row.get("validation_command")})
     nfl2k5 = sum(1 for row in rows if row.get("game") == "nfl2k5_xbox")
     return total, covered, validators, nfl2k5

@@ -59,7 +59,7 @@ REPORT_RESIDUAL_LIMITATION = (
 )
 ALLOWED_LAUNCHERS = {"bash", "python3"}
 EXPECTED_CAPABILITIES = 112
-EXPECTED_COVERED_CAPABILITIES = 106
+EXPECTED_COVERED_CAPABILITIES = 107
 EXPECTED_DEFERRED_CAPABILITIES = 5
 EXPECTED_UNIQUE_VALIDATORS = 77
 EXPECTED_DEFERRED_IDS = (
@@ -68,7 +68,6 @@ EXPECTED_DEFERRED_IDS = (
     "apf2k8.saves.profile",
     "nfl2k5.catching_drops.behavior",
     "nfl2k5.franchise_restoration_cross_title.port",
-    "nfl2k5ps2.gameplay.executable_patches",
 )
 def _discover_rg_path() -> Path:
     """Return the host's ripgrep without embedding a workstation path."""
