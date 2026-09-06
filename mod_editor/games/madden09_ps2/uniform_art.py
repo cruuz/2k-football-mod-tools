@@ -1514,7 +1514,13 @@ class UniformDiscArtWriteLane(UniformArtLane):
                                           f"{index} changed and no edit named it.")
                 members_checked += 1
             for row in rows:
-                verdict = self._check_one_texture(before, after, row)
+                # Every image of this member that the same receipt names is
+                # exempt from the "nothing else changed" rule, as a set: five
+                # edits to one member are five changes, not one change and
+                # four intrusions.
+                siblings = frozenset(int(other["image"]) for other in rows
+                                     if int(other["member"]) == int(row["member"]))
+                verdict = self._check_one_texture(before, after, row, named_images=siblings)
                 if verdict is not None:
                     return verdict
                 textures_checked += 1
@@ -1581,12 +1587,20 @@ class UniformDiscArtWriteLane(UniformArtLane):
 
     @staticmethod
     def _check_one_texture(before: "ea_terf.TerfContainer", after: "ea_terf.TerfContainer",
-                           row: Mapping[str, Any]) -> Optional[Verdict]:
-        """One rewritten texture, measured against the PNG rather than the build."""
+                           row: Mapping[str, Any], *,
+                           named_images: Optional[frozenset] = None) -> Optional[Verdict]:
+        """One rewritten texture, measured against the PNG rather than the build.
+
+        *named_images* is every image of this member the receipt names; each of
+        them is allowed to differ from the source, and every other image of the
+        member must be byte-for-byte the picture it was.  Without it only the
+        row's own image is exempt, which is the single-edit case.
+        """
 
         member = int(row["member"])
         image_index = int(row["image"])
         key = str(row["texture"])
+        exempt = set(named_images or ()) | {image_index}
         try:
             png = Path(str(row["png"])).read_bytes()
         except OSError as exc:
@@ -1629,11 +1643,11 @@ class UniformDiscArtWriteLane(UniformArtLane):
             return Verdict(False, f"Verification failed: {key} moves a channel by {worst} and "
                                   f"the receipt claims at most "
                                   f"{row.get('max_channel_error')}.")
-        # Every other image in the same member must be untouched.
+        # Every image in the same member that no edit named must be untouched.
         source_payload = before.member(member)
         source_texture = mmap_art.parse(source_payload)
         for other in source_texture.images:
-            if other.index == image_index or source_texture.undecodable_reason(other):
+            if other.index in exempt or source_texture.undecodable_reason(other):
                 continue
             if (mmap_art.decode_rgba(source_payload, image=other.index,
                                      texture=source_texture)

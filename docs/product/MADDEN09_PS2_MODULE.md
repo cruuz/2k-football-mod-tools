@@ -267,6 +267,18 @@ field name is the schema and is identical on every disc; a record's contents
 are the user's game data. A test asserts the point by searching the serialised
 catalogue for the synthetic fixture's own string values and failing if it finds
 one.
+**One defect the witness-disc builds found, fixed.** A recipe naming several
+images of **one** member built cleanly and was then refused by the lane's own
+verifier, which held every image of an edited member but the row's own to be
+unchanged — so the second edit of a member looked like an intrusion to the
+first. The verifier now exempts the set of images the receipt names for that
+member, as a whole, and every image nobody named must still be the picture it
+was; the regression fixture is a synthetic member with two drawable images
+(`MADDEN09_PS2_GAPS.md` §15).
+
+**What it does not claim.** `offline-writer-proved` is the whole of it: **no
+rebuilt Madden 09 container has ever been booted**, and the row, the receipt
+and the verdict all say so.
 
 **Three things the TDB reader had to get right**, each measured rather than
 assumed:

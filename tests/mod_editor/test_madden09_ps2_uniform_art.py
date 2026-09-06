@@ -28,7 +28,7 @@ if str(ROOT) not in sys.path:
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
-from mod_editor.games.contract import EncodedArt, Refusal, Target  # noqa: E402
+from mod_editor.games.contract import Edit, EncodedArt, Refusal, Target  # noqa: E402
 from mod_editor.games._formats import ea_terf  # noqa: E402
 from mod_editor.games.madden09_ps2 import containers, mmap_art, uniform_art  # noqa: E402
 
@@ -754,6 +754,89 @@ class TextureIdentityToolTests(unittest.TestCase):
         self.assertNotIn("pixels", payload)
         self.assertNotIn("rgba", json.dumps(payload["identities"])[:200000])
 
+
+class DiscArtMultiImageTests(unittest.TestCase):
+    """Several images of ONE member in one recipe: the verifier exempts them as a set.
+
+    A nine-texture recipe naming five images of one ``UNIFORMS.DAT`` member
+    built cleanly on the retail disc and was then refused by its own verifier,
+    which held every image but the row's own to be unchanged.  The fixture here
+    is a member with two drawable images; both are rewritten, and the verdict
+    must be PASS -- while the same check with no exemption set still refuses,
+    so the rule that a stranger image may not change is not lost.
+    """
+
+    def setUp(self) -> None:
+        self.work = Path(tempfile.mkdtemp(prefix="madden09-disc-art-multi-"))
+        self.addCleanup(shutil.rmtree, self.work, True)
+        self.lane = uniform_art.UniformDiscArtWriteLane()
+        self.source = self.work / "two-images.iso"
+        self.source.write_bytes(containers.build_synthetic_disc(uniform_members=[
+            containers.synthetic_mmap(16, 16, seed=4, images=2, retail_layout=True),
+            containers.synthetic_mmap(8, 8, seed=2, retail_layout=True),
+        ]))
+        self.catalogue = self.lane.build_catalogue(self.source)
+
+    def _flipped_png(self, target: Target, name: str) -> Path:
+        width, height, rgba = uniform_art.read_rgba_png(self.lane.decode_png(self.source, target))
+        stride = width * 4
+        flipped = b"".join(rgba[row * stride:(row + 1) * stride]
+                           for row in range(height - 1, -1, -1))
+        path = self.work / name
+        path.write_bytes(uniform_art.write_rgba_png(flipped, width, height))
+        return path
+
+    def test_the_fixture_member_carries_two_drawable_images(self) -> None:
+        keys = [target.key for target in self.catalogue.targets]
+        self.assertIn("UNIFORMS.DAT:0:0", keys)
+        self.assertIn("UNIFORMS.DAT:0:1", keys)
+        first = self.lane.decode_png(self.source, self.catalogue.target("UNIFORMS.DAT:0:0"))
+        second = self.lane.decode_png(self.source, self.catalogue.target("UNIFORMS.DAT:0:1"))
+        self.assertNotEqual(first, second, "two images of one member are two pictures")
+
+    def test_two_images_of_one_member_build_and_verify(self) -> None:
+        targets = [self.catalogue.target("UNIFORMS.DAT:0:0"),
+                   self.catalogue.target("UNIFORMS.DAT:0:1")]
+        edits = tuple(Edit(target.key, {"png": str(self._flipped_png(target, f"edit-{n}.png"))})
+                      for n, target in enumerate(targets))
+        recipe = self.lane.compose_recipe(edits)
+        destination = self.work / "two-images-out.iso"
+        receipt = self.lane.build(self.source, destination, recipe, self.catalogue,
+                                  work_dir=self.work)
+        rows = list(receipt.document["textures"])
+        self.assertEqual(sorted(int(row["image"]) for row in rows), [0, 1])
+        verdict = self.lane.verify(self.source, destination, receipt)
+        self.assertTrue(verdict.passed, verdict.summary)
+        self.assertIn("2 texture(s) decode from the NEW image", verdict.summary)
+
+        # The same check with no exemption set still refuses the sibling: the
+        # rule that an image nobody named may not change is intact.
+        before = ea_terf.parse_terf(
+            containers.read_file(containers.open_disc(self.source),
+                                 {e.name: e for e in containers.data_files(
+                                     containers.open_disc(self.source))}["UNIFORMS.DAT"]),
+            allow_size_mismatch=True)
+        after_disc = containers.open_disc(destination)
+        after = ea_terf.parse_terf(
+            containers.read_file(after_disc, {e.name: e for e in
+                                              containers.data_files(after_disc)}["UNIFORMS.DAT"]),
+            allow_size_mismatch=True)
+        row = next(item for item in rows if int(item["image"]) == 0)
+        refused = self.lane._check_one_texture(before, after, row)
+        self.assertIsNotNone(refused)
+        self.assertIn("changed and no edit named it", refused.summary)
+        self.assertIsNone(self.lane._check_one_texture(before, after, row,
+                                                       named_images=frozenset({0, 1})))
+
+    def test_a_single_image_edit_still_verifies(self) -> None:
+        target = self.catalogue.target("UNIFORMS.DAT:0:1")
+        recipe = self.lane.compose_recipe(
+            (Edit(target.key, {"png": str(self._flipped_png(target, "single.png"))}),))
+        destination = self.work / "single-out.iso"
+        receipt = self.lane.build(self.source, destination, recipe, self.catalogue,
+                                  work_dir=self.work)
+        verdict = self.lane.verify(self.source, destination, receipt)
+        self.assertTrue(verdict.passed, verdict.summary)
 
 if __name__ == "__main__":
     unittest.main()
