@@ -120,24 +120,24 @@ class PatchWriteTests(unittest.TestCase):
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
-        from mod_editor.core import nfl2k5_abilities_runtime as abilities
-        if abilities.status(cls.patched) != "applied":
-            raise AssertionError("abilities owner missing from the composed XBE")
-        from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
-        if practice_screen.status(cls.patched) != "applied":
-            raise AssertionError("Practice Squad screen missing from the composed XBE")
-        from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
-        if qb_spy.status(cls.patched) != "applied":
-            raise AssertionError("QB spy owner missing from the composed XBE")
-        from mod_editor.core import nfl2k5_calendar_engine as calendar
-        if calendar.status(cls.patched) != "applied":
-            raise AssertionError("calendar owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_roster_storage as roster_storage
         if roster_storage.status(cls.patched) != "applied":
             raise AssertionError("stadium-list owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_music_playlist as playlist
         if playlist.status(cls.patched) != "applied":
             raise AssertionError("playlist owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
+        if practice_screen.status(cls.patched) != "applied":
+            raise AssertionError("Practice Squad screen missing from the composed XBE")
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        if abilities.status(cls.patched) != "applied":
+            raise AssertionError("abilities owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
+        if qb_spy.status(cls.patched) != "applied":
+            raise AssertionError("QB spy owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_calendar_engine as calendar
+        if calendar.status(cls.patched) != "applied":
+            raise AssertionError("calendar owner missing from the composed XBE")
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
@@ -163,26 +163,6 @@ class PatchWriteTests(unittest.TestCase):
             else:
                 merged.append([a, b])
         return [(a - 16, b + 16) for a, b in merged]
-
-    def test_playlist_full_code_writes_only_writable_state(self):
-        from mod_editor.core import nfl2k5_music_playlist as playlist
-        from mod_editor.core import nfl2k5_music_playlist_code as assembly
-        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
-        code, data, ro = playlist.sites(self.patched)
-        image = XbeImage(self.patched)
-        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
-        self.assertFalse(image.runtime_writable(ro["va"], ro["size"]))
-        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
-        writes = absolute_writes(self.patched, [(code["va"], code["va"] + len(assembly.CODE))])
-        checked = 0
-        for write in writes:
-            if write["target"] is not None:
-                checked += 1
-                self.assertTrue(write["writable"], write)
-                target = int(write["target"], 0)
-                if target >= 0x14BA000:
-                    self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
-        self.assertGreater(checked, 0)
 
     def test_stadium_ids_are_owned_immutable_data(self) -> None:
         from mod_editor.core import nfl2k5_roster_storage as storage
@@ -334,36 +314,6 @@ class PatchWriteTests(unittest.TestCase):
                             for e in self.rows_receipt["edits"]))
         self.assertEqual(image.section(rows.SUMMARY_LABEL_WIDTH_VA, 4).name, ".rdata")
 
-    def test_abilities_code_and_tables_are_read_only_and_writes_are_indirect(self):
-        from mod_editor.core import nfl2k5_abilities_runtime as abilities
-        from mod_editor.core import nfl2k5_abilities_runtime_code as code
-        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
-        image = XbeImage(self.patched)
-        owner = abilities.allocation(self.patched)
-        self.assertNotEqual(image.section(owner["va"]).name, ".text")
-        self.assertFalse(image.runtime_writable(owner["va"], owner["size"]))
-        self.assertTrue(image.section(owner["va"]).executable)
-        writes = absolute_writes(self.patched, [(owner["va"], owner["va"] + code.LABELS["instructions_end"])])
-        self.assertTrue(writes)
-        self.assertTrue(all(write["target"] is None for write in writes), writes)
-        # Actual indirect destinations are bounded in the instruction suite.
-    def test_qb_spy_complete_code_and_immutable_lookup_permissions(self) -> None:
-        from mod_editor.core import nfl2k5_qb_spy_runtime as spy
-        places = spy.allocations(self.patched)
-        code, data, ro = (places[k] for k in ("code", "data", "read_only"))
-        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
-        self.assertFalse(image.runtime_writable(ro["va"], ro["size"]))
-        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
-        self.assertEqual(image.read(data["va"], data["size"]), bytes(768))
-        self.assertEqual(spy.validate_intent_table(image.read(ro["va"], ro["size"])), 0)
-        writes = absolute_writes(self.patched, [(code["va"], code["va"] + spy.assembly.LABELS["config"])])
-        absolute = [w for w in writes if w["target"] is not None]
-        self.assertTrue(absolute)
-        for write in absolute:
-            self.assertTrue(write["writable"], write)
-            address = int(write["target"], 0)
-            self.assertTrue(data["va"] <= address < data["va"]+data["size"] or address == 0xE602B8, write)
-
     def test_momentum_complete_code_writes_only_named_data_or_caller_state(self) -> None:
         from mod_editor.core import nfl2k5_momentum as momentum
         from mod_editor.core import nfl2k5_momentum_code as code
@@ -384,6 +334,59 @@ class PatchWriteTests(unittest.TestCase):
         self.assertGreater(checked, 0)
         # Indexed state/stack writes are checked by bounded instruction tests
         # with protected executable pages in test_nfl2k5_momentum.py.
+
+    def test_playlist_full_code_writes_only_writable_state(self):
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        from mod_editor.core import nfl2k5_music_playlist_code as assembly
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        code, data, ro = playlist.sites(self.patched)
+        image = XbeImage(self.patched)
+        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+        self.assertFalse(image.runtime_writable(ro["va"], ro["size"]))
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        writes = absolute_writes(self.patched, [(code["va"], code["va"] + len(assembly.CODE))])
+        checked = 0
+        for write in writes:
+            if write["target"] is not None:
+                checked += 1
+                self.assertTrue(write["writable"], write)
+                target = int(write["target"], 0)
+                if target >= 0x14BA000:
+                    self.assertTrue(data["va"] <= target < data["va"] + data["size"], write)
+        self.assertGreater(checked, 0)
+
+    def test_abilities_code_and_tables_are_read_only_and_writes_are_indirect(self):
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        from mod_editor.core import nfl2k5_abilities_runtime_code as code
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        owner = abilities.allocation(self.patched)
+        self.assertNotEqual(image.section(owner["va"]).name, ".text")
+        self.assertFalse(image.runtime_writable(owner["va"], owner["size"]))
+        self.assertTrue(image.section(owner["va"]).executable)
+        writes = absolute_writes(self.patched, [(owner["va"], owner["va"] + code.LABELS["instructions_end"])])
+        self.assertTrue(writes)
+        self.assertTrue(all(write["target"] is None for write in writes), writes)
+        # Actual indirect destinations are bounded in the instruction suite.
+
+    def test_qb_spy_complete_code_and_immutable_lookup_permissions(self) -> None:
+        from mod_editor.core import nfl2k5_qb_spy_runtime as spy
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        image = XbeImage(self.patched)
+        places = spy.allocations(self.patched)
+        code, data, ro = (places[k] for k in ("code", "data", "read_only"))
+        self.assertFalse(image.runtime_writable(code["va"], code["size"]))
+        self.assertFalse(image.runtime_writable(ro["va"], ro["size"]))
+        self.assertTrue(image.runtime_writable(data["va"], data["size"]))
+        self.assertEqual(image.read(data["va"], data["size"]), bytes(768))
+        self.assertEqual(spy.validate_intent_table(image.read(ro["va"], ro["size"])), 0)
+        writes = absolute_writes(self.patched, [(code["va"], code["va"] + spy.assembly.LABELS["config"])])
+        absolute = [w for w in writes if w["target"] is not None]
+        self.assertTrue(absolute)
+        for write in absolute:
+            self.assertTrue(write["writable"], write)
+            address = int(write["target"], 0)
+            self.assertTrue(data["va"] <= address < data["va"]+data["size"] or address == 0xE602B8, write)
 
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")

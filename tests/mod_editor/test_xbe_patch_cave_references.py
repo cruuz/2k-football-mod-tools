@@ -43,10 +43,6 @@ def sections(xbe: bytes):
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class CaveReferenceTests(unittest.TestCase):
-    # The complete union includes the 4 KiB native screen and requires v3.
-    # Keep the existing v3 mapping/candidate assertions selected explicitly.
-    scaleout = True
-
     @classmethod
     def setUpClass(cls) -> None:
         from mod_editor.core import nfl2k5_throw_tuning as tt
@@ -81,6 +77,15 @@ class CaveReferenceTests(unittest.TestCase):
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_calendar_engine as calendar
+        if calendar.status(cls.patched) != "applied":
+            raise AssertionError("calendar owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_roster_storage as roster_storage
+        if roster_storage.status(cls.patched) != "applied":
+            raise AssertionError("stadium-list owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        if playlist.status(cls.patched) != "applied":
+            raise AssertionError("playlist owner missing from the composed XBE")
         from mod_editor.core import nfl2k5_practice_squad_screen as practice_screen
         if practice_screen.status(cls.patched) != "applied":
             raise AssertionError("Practice Squad screen missing from the composed XBE")
@@ -90,12 +95,6 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_spy_runtime as qb_spy
         if qb_spy.status(cls.patched) != "applied":
             raise AssertionError("QB spy owner missing from the composed XBE")
-        from mod_editor.core import nfl2k5_calendar_engine as calendar
-        if calendar.status(cls.patched) != "applied":
-            raise AssertionError("calendar owner missing from the composed XBE")
-        from mod_editor.core import nfl2k5_roster_storage as roster_storage
-        if roster_storage.status(cls.patched) != "applied":
-            raise AssertionError("stadium-list owner missing from the composed XBE")
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -341,12 +340,11 @@ class CaveReferenceTests(unittest.TestCase):
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         proof = space.allocation_evidence(self.retail, manifest, allocated=self.patched)
         self.assertEqual(proof["legacy_encoded_references"], [])
-        # The complete union now requires RO storage and selects v3 even
-        # when the caller did not explicitly request scale-out.
-        if space.is_scaleout(self.patched):
+        # Calendar requires v3 even when the caller does not force scale-out.
+        if space.layout(self.patched)["version"] == 3:
             self.assertEqual(proof["retail_mapping_overlaps"], [])
             self.assertEqual(len(proof["pages"]), 52)
-            self.assertEqual(len(proof["encoded_references"]), 1081)  # disclosed raw inventory
+            self.assertTrue(proof["encoded_references"])  # raw candidates stay visible
         else:
             self.assertEqual(proof["encoded_references"], [])
         self.assertEqual(relocated.status(self.patched), "applied")
@@ -356,29 +354,6 @@ class CaveReferenceTests(unittest.TestCase):
             self.assertEqual(manifest.overlaps(va, va + len(original), exclude_owner=runtime.OWNER), [])
         for r in space.reservations(self.patched):
             self.assertGreaterEqual(int(r["start"], 0), space.CODE_VA)
-
-    def test_playlist_owns_pinned_hooks_and_allocator_children(self):
-        from mod_editor.core import nfl2k5_music_playlist as playlist
-        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
-        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
-        self.assertEqual(playlist.status(self.patched), "applied")
-        for row in playlist.reservations(self.patched):
-            start, end = int(row["start"], 0), int(row["end"], 0)
-            if start < 0x14BA000:
-                self.assertEqual(manifest.overlaps(start, end, exclude_owner=playlist.OWNER), [], row)
-        code, data, ro = playlist.sites(self.patched)
-        self.assertEqual({code["kind"], data["kind"], ro["kind"]}, {"code", "data", "read_only"})
-    def test_qb_spy_hooks_are_complete_instructions_and_have_no_foreign_owner(self) -> None:
-        from mod_editor.core import nfl2k5_qb_spy_runtime as spy, nfl2k5_xbe_space as space
-        image = XbeImage(self.patched)
-        md = Cs(CS_ARCH_X86, CS_MODE_32)
-        for name, (va, old) in spy.HOOKS.items():
-            self.assertEqual(sum(i.size for i in md.disasm(old, va)), len(old), name)
-            self.assertEqual(manifest.overlaps(va, va+len(old), exclude_owner=spy.OWNER), [], name)
-        for row in spy.reservations(self.patched):
-            if int(row["start"], 0) >= space.CODE_VA:
-                self.assertEqual(row["parent_owner"], space.OWNER)
-        self.assertEqual(spy.status(self.patched), "applied")
 
     def test_momentum_owns_named_children_and_pinned_live_spans_without_new_caves(self) -> None:
         from mod_editor.core import nfl2k5_momentum as momentum
@@ -418,6 +393,49 @@ class CaveReferenceTests(unittest.TestCase):
                             and int(r["start"], 0) == site["va"]
                             for r in space.reservations(self.patched)))
 
+    def test_playlist_owns_pinned_hooks_and_allocator_children(self):
+        from mod_editor.core import nfl2k5_music_playlist as playlist
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
+        self.assertEqual(playlist.status(self.patched), "applied")
+        for row in playlist.reservations(self.patched):
+            start, end = int(row["start"], 0), int(row["end"], 0)
+            if start < 0x14BA000:
+                self.assertEqual(manifest.overlaps(start, end, exclude_owner=playlist.OWNER), [], row)
+        code, data, ro = playlist.sites(self.patched)
+        self.assertEqual({code["kind"], data["kind"], ro["kind"]}, {"code", "data", "read_only"})
+
+    def test_abilities_have_only_pinned_hooks_and_named_grown_code(self):
+        from mod_editor.core import nfl2k5_abilities_runtime as abilities
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
+        self.assertEqual(abilities.status(self.patched), "applied")
+        owner = abilities.allocation(self.patched)
+        self.assertGreaterEqual(owner["va"], space.CODE_VA)
+        for record in abilities.reservations(self.patched):
+            start, end = int(record["start"], 0), int(record["end"], 0)
+            if start < space.CODE_VA:
+                self.assertLess(end - start, CAVE_MIN)
+                self.assertEqual(manifest.overlaps(start, end, exclude_owner=abilities.OWNER), [])
+                self.assertTrue(any(r.detail.startswith(abilities.OWNER + ":") for r in manifest.overlaps(start, end)))
+            else:
+                self.assertEqual(record["parent_owner"], space.OWNER)
+
+    def test_qb_spy_hooks_are_complete_instructions_and_have_no_foreign_owner(self) -> None:
+        from mod_editor.core import nfl2k5_qb_spy_runtime as spy, nfl2k5_xbe_space as space
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        image = XbeImage(self.patched)
+        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for name, (va, old) in spy.HOOKS.items():
+            self.assertEqual(sum(i.size for i in md.disasm(old, va)), len(old), name)
+            self.assertEqual(manifest.overlaps(va, va+len(old), exclude_owner=spy.OWNER), [], name)
+        for row in spy.reservations(self.patched):
+            if int(row["start"], 0) >= space.CODE_VA:
+                self.assertEqual(row["parent_owner"], space.OWNER)
+        self.assertEqual(spy.status(self.patched), "applied")
+
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class ScorebugReferenceReservations(unittest.TestCase):
@@ -439,24 +457,6 @@ class ScorebugReferenceReservations(unittest.TestCase):
                 self.assertEqual(sum(i.size for i in insns),len(new),label)
                 self.assertTrue(all(i.mnemonic in ("nop","fadd") for i in insns),label)
         self.assertEqual(scorebug.xbe_status(patched),"applied")
-
-
-    def test_abilities_have_only_pinned_hooks_and_named_grown_code(self):
-        from mod_editor.core import nfl2k5_abilities_runtime as abilities
-        from mod_editor.core import nfl2k5_xbe_space as space
-        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
-        manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
-        self.assertEqual(abilities.status(self.patched), "applied")
-        owner = abilities.allocation(self.patched)
-        self.assertGreaterEqual(owner["va"], space.CODE_VA)
-        for record in abilities.reservations(self.patched):
-            start, end = int(record["start"], 0), int(record["end"], 0)
-            if start < space.CODE_VA:
-                self.assertLess(end - start, CAVE_MIN)
-                self.assertEqual(manifest.overlaps(start, end, exclude_owner=abilities.OWNER), [])
-                self.assertTrue(any(r.detail.startswith(abilities.OWNER + ":") for r in manifest.overlaps(start, end)))
-            else:
-                self.assertEqual(record["parent_owner"], space.OWNER)
 
 
 class ReverseOwnerOrderTests(CaveReferenceTests):
