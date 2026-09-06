@@ -2724,9 +2724,7 @@
       },
       "classification": "extract-only",
       "evidence": [
-        "docs/product/EA_SCHL_FORMAT.md",
-        "docs/product/MADDEN09_PS2_AUDIO.md",
-        "docs/product/measured/madden09_ps2/audio_codec_census.json"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -2798,9 +2796,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_SCHL_FORMAT.md",
-        "docs/product/MADDEN09_PS2_AUDIO.md",
-        "docs/product/measured/madden09_ps2/audio_codec_census.json"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -2880,8 +2876,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/MADDEN09_PS2_ART_PAGES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_art_pages.sh",
         "tools/ps2_iso9660_writer.py",
         "tools/ps2_iso9660_verify.py"
@@ -2966,9 +2961,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/MADDEN09_PS2_CODE_PATCHES.md",
-        "docs/product/MADDEN09_PS2_MODULE.md",
-        "docs/product/PS2_CODE_PATCH_PIPELINE.md"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -3051,9 +3044,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/MADDEN09_PS2_IDENTITY.md",
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/measured/madden09_ps2/identity_blast_radius.json"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -3136,7 +3127,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/mod_editor/2k5_mod_studio_changelog.md",
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
@@ -3220,10 +3210,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/MADDEN09_PS2_PLAYBOOKS.md",
-        "docs/product/MADDEN09_PS2_MODULE.md",
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/measured/madden09_ps2/playbook-databases.json"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -3307,7 +3294,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/mod_editor/2k5_mod_studio_changelog.md",
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
@@ -3395,8 +3381,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/MADDEN09_PS2_ART_PAGES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_art_pages.sh",
         "tools/ps2_iso9660_writer.py",
         "tools/ps2_iso9660_verify.py"
@@ -3483,8 +3468,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/MADDEN09_PS2_ART_PAGES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_art_pages.sh",
         "tools/ps2_iso9660_writer.py",
         "tools/ps2_iso9660_verify.py"
@@ -3569,8 +3553,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/MADDEN09_PS2_ART_PAGES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_art_pages.sh",
         "tools/ps2_iso9660_writer.py",
         "tools/ps2_iso9660_verify.py"
@@ -3654,7 +3637,6 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
@@ -3737,7 +3719,6 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_uniform_disc_art.sh",
         "tools/ps2_iso9660_writer.py",
@@ -3821,7 +3802,6 @@
       },
       "classification": "extract-only",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
@@ -3902,8 +3882,6 @@
       "classification": "extract-only",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_audio.sh"
@@ -3973,8 +3951,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_audio.sh"
@@ -4056,8 +4032,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -4078,7 +4052,7 @@
         "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
       ],
       "portme": [
-        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
         "Dump textures from PCSX2 running this game to learn which bank is which kit, portrait or field."
       ],
       "public_distribution": {
@@ -4125,8 +4099,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_tables.sh"
@@ -4204,8 +4176,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_strings.sh"
@@ -4283,8 +4253,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -4309,7 +4277,7 @@
       "portme": [
         "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
         "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
-        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+        "Decode SHPS code 0x0e's per-pixel selectors."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -4365,8 +4333,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_tables.sh"
@@ -4444,8 +4410,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -4470,7 +4434,7 @@
       "portme": [
         "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
         "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
-        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+        "Decode SHPS code 0x0e's per-pixel selectors."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -4526,8 +4490,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_tables.sh"
@@ -4607,8 +4569,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -4629,7 +4589,7 @@
         "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
       ],
       "portme": [
-        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
         "Dump textures from PCSX2 running this game to learn which bank is which kit, portrait or field."
       ],
       "public_distribution": {
@@ -4676,8 +4636,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -4702,7 +4660,7 @@
       "portme": [
         "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
         "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
-        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+        "Decode SHPS code 0x0e's per-pixel selectors."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -4758,8 +4716,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_inventory.sh"
@@ -4823,8 +4779,6 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "docs/product/MVP05_PS2_MODULE.md",
         "docs/product/measured/mvp05_ps2/models-big-parts.json",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
@@ -4847,7 +4801,7 @@
         "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
       ],
       "portme": [
-        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
         "Confirm that these 555 banks are what a uniform-select screen draws: no frame of the one PCSX2 dump here reached that screen, so their role is read from the archive's name and shape, not witnessed."
       ],
       "public_distribution": {
@@ -4894,8 +4848,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "docs/product/measured/mvp05_ps2/models-big-parts.json",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
@@ -4921,7 +4873,7 @@
       ],
       "portme": [
         "Boot a rebuilt image in PCSX2 and see the edited kit drawn. Nothing here has been booted.",
-        "Decode SHPS code 0x0e's per-pixel selectors; that is what stands between this row and the high-detail jersey, trousers and shoes. docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried.",
+        "Decode SHPS code 0x0e's per-pixel selectors; that is what stands between this row and the high-detail jersey, trousers and shoes.",
         "Capture a close-up frame -- a replay or cutscene camera on a player -- so the high-detail LOD is loaded and a dump can confirm identities for the parts these three frames never drew."
       ],
       "public_distribution": {
@@ -4978,8 +4930,6 @@
       "classification": "extract-only",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
         "tests/mod_editor/test_ncaa09_ps2_module.py"
       ],
       "game": "ncaa09_ps2",
@@ -5052,8 +5002,6 @@
       "classification": "extract-only",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
         "tests/mod_editor/test_ncaa09_ps2_module.py"
       ],
       "game": "ncaa09_ps2",
@@ -5126,10 +5074,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -5206,7 +5152,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
         "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
@@ -5285,7 +5230,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
         "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
@@ -5364,7 +5308,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
         "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
@@ -5443,10 +5386,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -5523,10 +5464,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -5603,10 +5542,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -5683,7 +5620,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
         "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
@@ -5756,10 +5692,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -5836,8 +5770,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
         "tests/mod_editor/test_ncaa09_ps2_module.py"
       ],
       "game": "ncaa09_ps2",
@@ -5919,10 +5851,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -5999,10 +5929,8 @@
       "classification": "extract-only",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -9302,8 +9230,7 @@
       },
       "classification": "runtime-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_AUDIO_RESEARCH.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_audo_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_audo_trial.v1.json"
       ],
@@ -9383,8 +9310,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_unif_color_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_unif_color_trial.v1.json"
       ],
@@ -9467,7 +9393,7 @@
       },
       "classification": "unknown",
       "evidence": [
-        "docs/product/PS2_CODE_PATCH_PIPELINE.md"
+        "docs/product/NFL2K5_PS2_MODULE.md"
       ],
       "game": "nfl2k5_ps2",
       "gui": {
@@ -9542,8 +9468,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_TEXT.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_text_target_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_text_trial.v1.json"
       ],
@@ -9629,8 +9554,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_roster_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_roster_trial.v1.json"
       ],
@@ -9803,8 +9727,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_PLAYBOOKS_RESEARCH.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_playbook_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_playbook_trial.v1.json"
       ],
@@ -9888,8 +9811,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_STADIUMS.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_stadium_target_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_stadium_trial.v1.json"
       ],
@@ -9969,7 +9891,7 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_xbox_name_join.v1.csv"
       ],
@@ -10055,8 +9977,7 @@
       },
       "classification": "extract-only",
       "evidence": [
-        "docs/product/PS2_M1_PLAN.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "mod_editor/data/nfl2k5-xbox-map.v1.json",
         "reports/gameplay_tuning/nfl2k5-xbox-map.unresolved.v1.json"
       ],
@@ -12143,7 +12064,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/NFLSTREET1_PS2_MODULE.md",
-        "docs/product/measured/nflstreet1_ps2/platex-pixel-layout-census.json",
         "tests/mod_editor/test_nflstreet1_ps2_module.py"
       ],
       "game": "nflstreet1_ps2",
@@ -12280,7 +12200,6 @@
       "evidence": [
         "docs/product/NFLSTREET1_PS2_MODULE.md",
         "docs/product/measured/nflstreet1_ps2/pcsx2-texture-identities.json",
-        "docs/product/measured/nflstreet1_ps2/platex-pixel-layout-census.json",
         "tests/mod_editor/test_nflstreet1_ps2_module.py"
       ],
       "game": "nflstreet1_ps2",
@@ -13237,7 +13156,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/NFLSTREET3_PS2_MODULE.md",
-        "docs/product/measured/nflstreet3_ps2/platex-pixel-layout-census.json",
         "tests/mod_editor/test_nflstreet3_ps2_module.py"
       ],
       "game": "nflstreet3_ps2",
@@ -13374,7 +13292,6 @@
       "evidence": [
         "docs/product/NFLSTREET3_PS2_MODULE.md",
         "docs/product/measured/nflstreet3_ps2/pcsx2-texture-identities.json",
-        "docs/product/measured/nflstreet3_ps2/platex-pixel-layout-census.json",
         "tests/mod_editor/test_nflstreet3_ps2_module.py"
       ],
       "game": "nflstreet3_ps2",

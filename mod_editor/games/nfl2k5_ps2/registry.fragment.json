@@ -8,8 +8,7 @@
       },
       "classification": "runtime-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_AUDIO_RESEARCH.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_audo_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_audo_trial.v1.json"
       ],
@@ -89,8 +88,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_unif_color_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_unif_color_trial.v1.json"
       ],
@@ -173,7 +171,7 @@
       },
       "classification": "unknown",
       "evidence": [
-        "docs/product/PS2_CODE_PATCH_PIPELINE.md"
+        "docs/product/NFL2K5_PS2_MODULE.md"
       ],
       "game": "nfl2k5_ps2",
       "gui": {
@@ -248,8 +246,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_TEXT.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_text_target_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_text_trial.v1.json"
       ],
@@ -335,8 +332,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_COLORS_ROSTERS.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_roster_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_roster_trial.v1.json"
       ],
@@ -509,8 +505,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_PLAYBOOKS_RESEARCH.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_playbook_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_playbook_trial.v1.json"
       ],
@@ -594,8 +589,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/PS2_PHASE2_STADIUMS.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_stadium_target_catalog.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_stadium_trial.v1.json"
       ],
@@ -675,7 +669,7 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json",
         "reports/gameplay_tuning/nfl2k5_ps2_xbox_name_join.v1.csv"
       ],
@@ -761,8 +755,7 @@
       },
       "classification": "extract-only",
       "evidence": [
-        "docs/product/PS2_M1_PLAN.md",
-        "docs/product/PS2_PORT_HANDOFF.md",
+        "docs/product/NFL2K5_PS2_MODULE.md",
         "mod_editor/data/nfl2k5-xbox-map.v1.json",
         "reports/gameplay_tuning/nfl2k5-xbox-map.unresolved.v1.json"
       ],

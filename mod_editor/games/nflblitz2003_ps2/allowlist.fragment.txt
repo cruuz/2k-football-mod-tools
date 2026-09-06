@@ -27,13 +27,7 @@ tools/validate_nflblitz2003_ps2_text.bat
 tools/validate_nflblitz2003_ps2_text.sh
 tools/validate_nflblitz2003_ps2_textures.bat
 tools/validate_nflblitz2003_ps2_textures.sh
-docs/product/measured/nflblitz2003_ps2/containers.json
-docs/product/measured/nflblitz2003_ps2/probes.json
-docs/product/measured/nflblitz2003_ps2/roster-rst.json
-docs/product/measured/nflblitz2003_ps2/texture-dictionaries.json
-docs/product/measured/nflblitz2003_ps2/writer-trial.json
-docs/product/measured/nflblitz2003_ps2/zip-index.json
 mod_editor/games/_lanes/blitz_zip_lanes.py
-docs/product/RENDERWARE_TXD_FORMAT.md
-docs/product/MIDWAY_ZIP_FORMAT.md
-docs/product/measured/rw_txd/cross-disc-census.json
+docs/product/NFLBLITZ2003_PS2_MODULE.md
+docs/product/GAME_MODULE_CONTRACT.md
+docs/product/ADDING_A_GAME_MODULE.md

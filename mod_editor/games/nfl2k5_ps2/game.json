@@ -60,7 +60,10 @@
     "tools/validate_ps2_*",
     "docs/product/PS2_*",
     "*xxh3*",
-    "*spu_adpcm*"
+    "*spu_adpcm*",
+    "docs/product/NFL2K5_PS2_MODULE.md",
+    "docs/product/GAME_MODULE_CONTRACT.md",
+    "docs/product/ADDING_A_GAME_MODULE.md"
   ],
   "page_notes": {
     "field_art": "Field and create-team art live in the same GS texture packs as the uniforms, so this page arrives with the uniform art lane, not before it.",

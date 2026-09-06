@@ -34,6 +34,7 @@ mod_editor/games/_formats/ea_shps.py
 mod_editor/games/_formats/ea_csv_db.py
 tools/mvp05_ps2_texture_identities.py
 docs/product/measured/mvp05_ps2/pcsx2-texture-identities.json
-docs/product/measured/mvp05_ps2/pcsx2-texture-identity-derivation.json
-docs/product/measured/mvp05_ps2/shps-0x0e-dump-pairing.json
 docs/product/measured/mvp05_ps2/models-big-parts.json
+docs/product/MVP05_PS2_MODULE.md
+docs/product/GAME_MODULE_CONTRACT.md
+docs/product/ADDING_A_GAME_MODULE.md

@@ -8,9 +8,7 @@
       },
       "classification": "extract-only",
       "evidence": [
-        "docs/product/EA_SCHL_FORMAT.md",
-        "docs/product/MADDEN09_PS2_AUDIO.md",
-        "docs/product/measured/madden09_ps2/audio_codec_census.json"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -82,9 +80,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_SCHL_FORMAT.md",
-        "docs/product/MADDEN09_PS2_AUDIO.md",
-        "docs/product/measured/madden09_ps2/audio_codec_census.json"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -164,8 +160,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/MADDEN09_PS2_ART_PAGES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_art_pages.sh",
         "tools/ps2_iso9660_writer.py",
         "tools/ps2_iso9660_verify.py"
@@ -250,9 +245,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/MADDEN09_PS2_CODE_PATCHES.md",
-        "docs/product/MADDEN09_PS2_MODULE.md",
-        "docs/product/PS2_CODE_PATCH_PIPELINE.md"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -335,9 +328,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/MADDEN09_PS2_IDENTITY.md",
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/measured/madden09_ps2/identity_blast_radius.json"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -420,7 +411,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/mod_editor/2k5_mod_studio_changelog.md",
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
@@ -504,10 +494,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/MADDEN09_PS2_PLAYBOOKS.md",
-        "docs/product/MADDEN09_PS2_MODULE.md",
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/measured/madden09_ps2/playbook-databases.json"
+        "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
       "gui": {
@@ -591,7 +578,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/mod_editor/2k5_mod_studio_changelog.md",
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
@@ -679,8 +665,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/MADDEN09_PS2_ART_PAGES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_art_pages.sh",
         "tools/ps2_iso9660_writer.py",
         "tools/ps2_iso9660_verify.py"
@@ -767,8 +752,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/MADDEN09_PS2_ART_PAGES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_art_pages.sh",
         "tools/ps2_iso9660_writer.py",
         "tools/ps2_iso9660_verify.py"
@@ -853,8 +837,7 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
-        "docs/product/MADDEN09_PS2_ART_PAGES.md",
+        "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_art_pages.sh",
         "tools/ps2_iso9660_writer.py",
         "tools/ps2_iso9660_verify.py"
@@ -938,7 +921,6 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",
@@ -1021,7 +1003,6 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md",
         "tools/validate_madden09_ps2_uniform_disc_art.sh",
         "tools/ps2_iso9660_writer.py",
@@ -1105,7 +1086,6 @@
       },
       "classification": "extract-only",
       "evidence": [
-        "docs/product/EA_TERF_FORMAT.md",
         "docs/product/MADDEN09_PS2_MODULE.md"
       ],
       "game": "madden09_ps2",

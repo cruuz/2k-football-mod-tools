@@ -37,7 +37,6 @@ tools/validate_madden09_ps2_uniform_disc_art.sh
 mod_editor/games/madden09_ps2/identity_lane.py
 tools/validate_madden09_ps2_identity.bat
 tools/validate_madden09_ps2_identity.sh
-docs/product/measured/madden09_ps2/playbook-databases.json
 mod_editor/games/madden09_ps2/playbooks_lane.py
 tools/validate_madden09_ps2_playbooks.bat
 tools/validate_madden09_ps2_playbooks.sh
@@ -45,8 +44,9 @@ mod_editor/games/madden09_ps2/art_pages.py
 tools/validate_madden09_ps2_art_pages.bat
 tools/validate_madden09_ps2_art_pages.sh
 docs/product/measured/madden09_ps2/art-page-texture-identities.json
-docs/product/measured/madden09_ps2/art-page-textures.json
 mod_editor/games/_formats/xxhash3_64.py
 mod_editor/games/_formats/pcsx2_texture_name.py
 mod_editor/games/_formats/mmap_art.py
-docs/product/measured/madden09_ps2/pcsx2-texture-identity-derivation.json
+docs/product/MADDEN09_PS2_MODULE.md
+docs/product/GAME_MODULE_CONTRACT.md
+docs/product/ADDING_A_GAME_MODULE.md

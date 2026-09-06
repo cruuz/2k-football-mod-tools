@@ -9,8 +9,6 @@
       "classification": "extract-only",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
         "tests/mod_editor/test_ncaa09_ps2_module.py"
       ],
       "game": "ncaa09_ps2",
@@ -83,8 +81,6 @@
       "classification": "extract-only",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
         "tests/mod_editor/test_ncaa09_ps2_module.py"
       ],
       "game": "ncaa09_ps2",
@@ -157,10 +153,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -237,7 +231,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
         "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
@@ -316,7 +309,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
         "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
@@ -395,7 +387,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
         "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
@@ -474,10 +465,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -554,10 +543,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -634,10 +621,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -714,7 +699,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
         "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
@@ -787,10 +771,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -867,8 +849,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
         "tests/mod_editor/test_ncaa09_ps2_module.py"
       ],
       "game": "ncaa09_ps2",
@@ -950,10 +930,8 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
@@ -1030,10 +1008,8 @@
       "classification": "extract-only",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
-        "docs/product/NCAA09_PS2_SCHEMA.md",
         "tests/mod_editor/test_ncaa09_ps2_module.py",
-        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
-        "docs/product/NCAA09_PS2_ART_PAGES.md"
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {

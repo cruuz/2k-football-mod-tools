@@ -9,8 +9,6 @@
       "classification": "extract-only",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_audio.sh"
@@ -80,8 +78,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_audio.sh"
@@ -163,8 +159,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -185,7 +179,7 @@
         "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
       ],
       "portme": [
-        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
         "Dump textures from PCSX2 running this game to learn which bank is which kit, portrait or field."
       ],
       "public_distribution": {
@@ -232,8 +226,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_tables.sh"
@@ -311,8 +303,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_strings.sh"
@@ -390,8 +380,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -416,7 +404,7 @@
       "portme": [
         "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
         "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
-        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+        "Decode SHPS code 0x0e's per-pixel selectors."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -472,8 +460,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_tables.sh"
@@ -551,8 +537,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -577,7 +561,7 @@
       "portme": [
         "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
         "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
-        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+        "Decode SHPS code 0x0e's per-pixel selectors."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -633,8 +617,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_tables.sh"
@@ -714,8 +696,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -736,7 +716,7 @@
         "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
       ],
       "portme": [
-        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
         "Dump textures from PCSX2 running this game to learn which bank is which kit, portrait or field."
       ],
       "public_distribution": {
@@ -783,8 +763,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_art.sh"
@@ -809,7 +787,7 @@
       "portme": [
         "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
         "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
-        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+        "Decode SHPS code 0x0e's per-pixel selectors."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -865,8 +843,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
         "tools/validate_mvp05_ps2_inventory.sh"
@@ -930,8 +906,6 @@
       },
       "classification": "read-only-mapped",
       "evidence": [
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "docs/product/MVP05_PS2_MODULE.md",
         "docs/product/measured/mvp05_ps2/models-big-parts.json",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
@@ -954,7 +928,7 @@
         "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
       ],
       "portme": [
-        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
         "Confirm that these 555 banks are what a uniform-select screen draws: no frame of the one PCSX2 dump here reached that screen, so their role is read from the archive's name and shape, not witnessed."
       ],
       "public_distribution": {
@@ -1001,8 +975,6 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/MVP05_PS2_MODULE.md",
-        "docs/product/EA_BIG_FORMAT.md",
-        "docs/product/EA_SHPS_FORMAT.md",
         "docs/product/measured/mvp05_ps2/models-big-parts.json",
         "tests/mod_editor/test_mvp05_ps2_module.py",
         "tests/mod_editor/test_mvp05_ps2_lanes.py",
@@ -1028,7 +1000,7 @@
       ],
       "portme": [
         "Boot a rebuilt image in PCSX2 and see the edited kit drawn. Nothing here has been booted.",
-        "Decode SHPS code 0x0e's per-pixel selectors; that is what stands between this row and the high-detail jersey, trousers and shoes. docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried.",
+        "Decode SHPS code 0x0e's per-pixel selectors; that is what stands between this row and the high-detail jersey, trousers and shoes.",
         "Capture a close-up frame -- a replay or cutscene camera on a player -- so the high-detail LOD is loaded and a dump can confirm identities for the parts these three frames never drew."
       ],
       "public_distribution": {

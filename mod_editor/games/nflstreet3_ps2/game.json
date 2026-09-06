@@ -4,7 +4,10 @@
     "mod_editor/games/nflstreet3_ps2/*",
     "tools/validate_nflstreet3_ps2_*",
     "docs/product/measured/nflstreet3_ps2/*",
-    "tools/ps2_texture_identities.py"
+    "tools/ps2_texture_identities.py",
+    "docs/product/NFLSTREET3_PS2_MODULE.md",
+    "docs/product/GAME_MODULE_CONTRACT.md",
+    "docs/product/ADDING_A_GAME_MODULE.md"
   ],
   "console": "PS2",
   "contract": "vc_game_module/v1",

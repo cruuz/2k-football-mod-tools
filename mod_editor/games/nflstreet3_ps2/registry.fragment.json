@@ -896,7 +896,6 @@
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/NFLSTREET3_PS2_MODULE.md",
-        "docs/product/measured/nflstreet3_ps2/platex-pixel-layout-census.json",
         "tests/mod_editor/test_nflstreet3_ps2_module.py"
       ],
       "game": "nflstreet3_ps2",
@@ -1033,7 +1032,6 @@
       "evidence": [
         "docs/product/NFLSTREET3_PS2_MODULE.md",
         "docs/product/measured/nflstreet3_ps2/pcsx2-texture-identities.json",
-        "docs/product/measured/nflstreet3_ps2/platex-pixel-layout-census.json",
         "tests/mod_editor/test_nflstreet3_ps2_module.py"
       ],
       "game": "nflstreet3_ps2",

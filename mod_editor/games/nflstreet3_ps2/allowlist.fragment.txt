@@ -3,7 +3,6 @@
 # packaging/release-allowlist.txt using the manifest's allowlist_patterns.
 tools/ps2_texture_identities.py
 docs/product/measured/nflstreet3_ps2/pcsx2-texture-identities.json
-docs/product/measured/nflstreet3_ps2/platex-pixel-layout-census.json
 mod_editor/games/nflstreet3_ps2/__init__.py
 mod_editor/games/nflstreet3_ps2/__main__.py
 mod_editor/games/nflstreet3_ps2/allowlist.fragment.txt
@@ -37,3 +36,6 @@ tools/validate_nflstreet3_ps2_text.bat
 tools/validate_nflstreet3_ps2_text.sh
 tools/validate_nflstreet3_ps2_textures.bat
 tools/validate_nflstreet3_ps2_textures.sh
+docs/product/NFLSTREET3_PS2_MODULE.md
+docs/product/GAME_MODULE_CONTRACT.md
+docs/product/ADDING_A_GAME_MODULE.md
