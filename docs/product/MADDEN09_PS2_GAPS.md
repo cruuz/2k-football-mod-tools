@@ -35,6 +35,7 @@ it, and the missing fact is named.
 | 12 | Deluxe | **narrowed** — every lane catalogues it; two art containers exceed the read limit |
 | 13 | `MMAP` palette banks, LZH1 worst case, ISO free space | **narrowed** — measured and scoped |
 | 14 | nothing booted | the witness plan, §14 |
+| 15 | the uniform verifier refused a recipe naming several images of one member | **closed** — the exemption is now the set of named images |
 
 ---
 
@@ -478,18 +479,45 @@ differs in nine words and thirteen `/DATA` files [M].
 | audio | 34,056 streams, 297 decodable (`BGM.DAT` 57 streams, 55 decodable); banks unchanged | yes |
 | uniform art (both rows) | **`UNIFORMS.DAT` (137 MB) and `STADIUMS.DAT` (161 MB) exceed the 96 MB read limit** and are skipped — the catalogue now says why instead of "could not be opened"; faces and tattoos (1,325 members) catalogue | partly |
 
-So every lane runs; the one refusal is a size limit, not a format. A Deluxe
-build writes the same shapes the retail build does, with two differences a
-writer must respect and both are already measured: six containers are
-recorded short in ISO9660 and three under-count a trailing empty member
-(`EA_TERF_FORMAT.md` §7), and there are no caches to keep in step.
+So every lane *catalogues* it; the one catalogue refusal is a size limit, not a
+format.
 
-**Cost of the remaining refusal.** Lift the art lane's read limit for
-containers it walks member by member (the audio lane already maps large
-containers) — half a day.
+**The database writers refuse it** [M, the witness-disc builds]. Both
+`team_data` and `identity` refuse the Deluxe image with one sentence: the
+container's directory record says 2,559,112 bytes and the container "carries"
+2,585,280, and a rewrite that grows a file is not one they do. The text lane
+and the executable patches built and verified on the same image. What is
+behind that sentence, measured on every `/DATA` container of the Deluxe disc:
 
-**Status: narrowed.** Missing fact: a Deluxe boot of any rebuilt container
-(§14 says which).
+| fact | result |
+|---|---|
+| containers whose `DATA` chunk declares more than the directory record | **9** (none on the retail disc): `BGM` +1,164, `DB_TEAMS` +26,168, `FIELDART` +18, `MOVIEDAT` +632, `STADIUMS` +48,304, `TEMPLATE` +60, `UIS_PLYR` +4, `UIS_STAD` +4,052, `UNIFORMS` +21 bytes |
+| of the 9, the declared length still fits the record's own last sector | 5 (`BGM`, `FIELDART`, `TEMPLATE`, `UIS_PLYR`, `UNIFORMS`) — every member inside the recorded extent |
+| of the 9, the declared length needs sectors past the record | 4 (`DB_TEAMS` 13, `STADIUMS` 24, `UIS_STAD` 2, `MOVIEDAT` 0 rounded) |
+| in those 4, what lies past the record | **only trailing empty members** — 409 of `DB_TEAMS`'s 644, 755 of `STADIUMS`'s 2,120, 64 of `UIS_STAD`'s 115, all 10 of `MOVIEDAT`'s — each owed one 64-byte alignment unit the repack tool did not write; **no non-empty member ends past the record in any of the 9** |
+| sectors between each record's end and the next file | **0** in all 4 — the next file starts in the very next sector |
+
+So the Deluxe rebuild's `DATA` size is overstated by the trailing empty
+members' padding, the bytes past the record are the **next file's**, and the
+reader's recovery to the declared length reads a neighbour's head as this
+container's tail (harmless, since only empty members live there, and a defect
+all the same). The writers then compare the recovered length with the record
+and refuse.
+
+**What closes it, bounded, without growth.** (1) `containers.read_file`
+recovers past the record only when a **non-empty** member lies beyond it,
+which on this disc is never; (2) `ea_terf.rewrite_member` tolerates a `DATA`
+size that overruns the file when only empty members lie beyond, keeping it as
+the disc has it. A member rewrite then lands inside the recorded extent, the
+directory record is untouched, and the same verifier applies. Half a day with
+tests, in the shared container module.
+
+**Cost of the other refusal.** Lift the art lane's read limit for containers
+it walks member by member (the audio lane already maps large containers) —
+half a day.
+
+**Status: narrowed** to recorded-short containers. Missing fact: a Deluxe boot
+of any rebuilt container (§14 says which).
 
 ---
 
@@ -521,6 +549,27 @@ extent moved" rule unchanged.
 
 ---
 
+## 15. The uniform verifier and a recipe naming several images of one member
+
+**Root cause** [M, the witness-disc builds]. A recipe naming nine textures,
+five of them different images of one `UNIFORMS.DAT` member, planned and built
+cleanly — nine of nine pixel-exact — and the lane's own verifier then refused
+it: *image 1 of member 11 changed and no edit named it*.
+`_check_one_texture` held every image of an edited member other than the
+row's own to be unchanged, so the second edit of the same member looked like
+an intrusion to the first. A defect in the verifier, not the writer; a
+single-image recipe never met it.
+
+**Fixed.** The verifier exempts the set of images the receipt names for that
+member, as a whole, and every image nobody named must still be the picture it
+was. `containers.synthetic_mmap` grew an `images=` option so the fixture can
+carry two drawable images of one member, and the regression test builds both,
+verifies PASS, and shows the unexempted check still refusing the sibling.
+
+**Status: closed.**
+
+---
+
 ## 14. Nothing has been booted — the witness plan
 
 Every writer is `offline-writer-proved`; the rung above needs a screen. The
@@ -537,7 +586,12 @@ boot 8 settles gap 12.
 3. **Uniform art, container only** (§6 build 1: `UIS_IG.DAT` member 53
    recoloured, cache copy left stale). Look at: the coin toss. Report:
    *recolour seen / not seen*. Settles gap 10 for a `COMP` container and half
-   of gap 6.
+   of gap 6. A kit texture recoloured on the same disc earns a second line:
+   **which team's jersey changed**. No uniform texture yet attributes to one
+   team — the same members attribute identically to both teams of a matchup
+   (the dumped coin-toss frames each show one team in colour and one in white,
+   and the identity table records which is which per frame) — so that line is
+   new information for the identity table, not a check of it.
 4. **Uniform art, cache only** (§6 build 2). Same screen. Report the same
    line. Settles gap 6.
 5. **Identity** (one team's abbreviation and primary colour). Look at: Team
@@ -549,9 +603,11 @@ boot 8 settles gap 12.
 7. **Executable patch** (the four-cap pnach). Look at: create-a-playbook, add a
    twenty-first set to a shipped 20-set book. Report: *the editor's message, or
    the set added*. Then the same with a grown book when gap 4's writer exists.
-8. **Deluxe** — repeat boot 1 on the Deluxe image. Report the same line.
-   Settles gap 12 for the database lane; boot 3 repeated on Deluxe settles it
-   for art once the read limit is lifted.
+8. **Deluxe** — the text lane and the executable patch already build on the
+   Deluxe image (§12); boot that disc and report boot 2's line and boot 7's.
+   The database lanes cannot build on it until §12's recorded-short fix
+   lands; then repeat boot 1 there. Boot 3 repeated on Deluxe settles art
+   once the read limit is lifted.
 9. **PCSX2 pack** — a folder of one derived-name PNG for the boot-3 texture,
    `LoadTextureReplacements` on, stock disc. Look at: the coin toss. Report:
    *replacement drawn / not drawn*. This is the one boot that moves gap 1's
