@@ -1955,11 +1955,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 91,
+    require(len(registry.capabilities) == 95,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 53,
+    require(len(product_catalog.capabilities) == 57,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2362,7 +2362,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=91 sections=12 nfl2k5_capabilities=53 "
+        "registry=95 sections=12 nfl2k5_capabilities=57 "
         "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
