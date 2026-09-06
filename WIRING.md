@@ -7716,3 +7716,226 @@ full XBE gates, capability validation and staged runtime closure. Follow the
 Noah witness list in `ASTRA_MUSIC_ALL_MODES_REPORT.md`; no gameplay, audible
 playback, full retail-disc acceptance build or final release manifest was
 produced by this task.
+# r62 Modern 2K mode names (2026-09-06)
+
+This section is the modern-naming handoff. EXPERIMENTAL / UNWITNESSED.
+The brief reserves the shared files below for Claude; none was edited here.
+The actual backend, JSON, Text page, codec fix and standalone tests are delivered.
+Read `ASTRA_MODERN_NAMING_REPORT.md` and `docs/mod_editor/modern_2k_mode_names.md`.
+
+## Dispatcher and all four status dictionaries
+
+In `mod_editor/core/nfl2k5_throw_tuning.py` import
+`nfl2k5_modern_naming as modern_naming_patch` through the existing package/exact-path
+import mechanism. Add `modern_naming: bool = False` to `_apply_all`, `patch_file`
+and `patch_image` and every forwarding call. Validate its exact Boolean type.
+Include it in both "no patch selected" guards. In the ordinary fixed-site patch
+loop add the exact tuple, using the same tuple shape as adjacent owners:
+
+```python
+(modern_naming, modern_naming_patch, "modern_naming_patch", "modern 2K mode names")
+```
+
+The ordinary loop's `status`/`apply` API accepts the XBE directly. The receipt
+is a complete XBE-half naming receipt. This is immutable text in `.string_`,
+not runtime code; **do not request allocator pages or add an allocator adapter**.
+`REQUESTS = ()`. `_selected_space_requests` and `_xbe_space_adapter` need no new
+flags, and no budget row or cave reservation is appropriate.
+
+Add `"modern_naming": modern_naming_patch.status(payload)` to
+`_grown_status_fields(payload)`. Despite its historical name, that shared helper
+already includes fixed edits and expands into **all four** required status dicts:
+standalone status (`payload`, near 639), image status (`payload`, near 764),
+`patch_file` final status (`result`, near 1489), and `patch_image` final status
+(`after`, near 1765). Verify the key in each; this is XBE-only status, not a claim
+that the STRG half is installed. No status value may be hard-coded to "applied".
+
+If the integration supports a non-default manifest path, add a snapshot-backed
+adapter forwarding the same immutable JSON to status/apply and the final DATA
+pass. Never allow the JSON to change between the two halves. The default pass
+rereads the file deliberately; Build must snapshot it or compare its canonical
+SHA-256 at preflight and before/after the final pass and refuse on any mismatch.
+A changed JSON during Build invalidates the disposable output; never publish it.
+
+## BuildPlan, presets, preflight, deferral and final DATA pass
+
+In `mod_editor/core/mod_build.py`:
+
+1. Add `modern_naming: bool = False` to `BuildPlan` beside `team_names_2026`.
+   `to_recipe()` already uses `asdict`; ensure recipe/project import retains it.
+   Normalize only actual Booleans; reject strings/numbers. Include it in
+   `wants_xbe_patch()` and every XBE kwarg forwarding path, including deferred
+   allocator/scorebug passes. It is independent of season_2026 and team names.
+2. `softdrink_basic` and `softdrink_advanced`: `modern_naming=False`.
+   `softdrink_experimental`: select it only through
+   `module.preset_enabled("experimental")`, which revalidates every configured
+   desired/fallback, including both MyCareer roles. Reevaluate in `apply_preset`,
+   not just at import time. Invalid JSON means False with a visible reason;
+   explicit user True still refuses preflight instead of silently dropping it.
+3. `availability()["modern_naming"]` requires module presence and
+   `all_strings_fit()`. Standalone XBE source status says `"requires image"` for
+   this whole feature. The image branch uses `module.image_status(source)`;
+   it validates both halves and labels a partial install foreign. Include
+   `modern_naming_details = module.image_preview(source)` for the full table.
+4. Before copying a disc, when True, require an image, a valid manifest snapshot,
+   and `image_status(source) in ("retail", "applied")`. Call
+   `catalog_overrides(catalog, enabled=True, value_lookup=host.text_value)`
+   against raw staged project values to reject manual changes to the owned STRG
+   asset. The sole archive asset is `nfl2k5.text.strg.4248.1.3`. Never pass the
+   already-overridden facade back into this check. XBE literals are Build-only.
+   Existing unnamed sources need no dependency on MyCareer being installed.
+5. `_apply_all(..., modern_naming=plan.modern_naming)` owns the XBE half. After
+   project text edits and any pack relocation/growth, add the final data step:
+
+```python
+if plan.modern_naming:
+    module = _core_module("nfl2k5_modern_naming")
+    if module is None:
+        raise RuntimeError("Modern mode names are unavailable")
+    naming_receipt = module.apply_to_image(
+        target, include_xbe=False,
+        progress=lambda message: progress(message, 0, 0))
+    receipt["steps"].append({"step": "modern_naming", **naming_receipt})
+    if module.image_status(target) != "applied":
+        raise ValueError("Modern naming XBE and text-bank halves disagree")
+```
+
+The deliberate intermediate XBE-applied/STRG-retail state is accepted only by
+this DATA-only adapter. The normal full-image adapter refuses mixed states.
+Do not call its full-image default between the two Build steps. The final full
+status and manifest hash check must happen before publish. Pack directory IDs,
+chunk offsets, source spans and actual output are checked through bounded readers.
+
+6. Disabling: on the usual original-source build, skip both passes and remove
+   preview overrides; no text edits were staged by this feature. This restores
+   retail naming from that original source. If a user selects a named source,
+   False must not silently retain installed names. Require the retained original
+   source or refuse before copying, with "Choose the original source to restore
+   retail mode names". An explicit restore workflow can call
+   `apply_to_image(target, enabled=False, original_source=original)`; it restores
+   owned spans while preserving unrelated edits. Never guess source provenance.
+
+## PATCHES row, NEEDS_IMAGE and Build option
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add the existing three-field
+PATCHES row shape with key `modern_naming`, title `Modern 2K mode names`, and
+these help words (contains the mandatory **Retail** and **Patch**):
+
+> Retail uses Quick Game, Franchise and Create Player. Patch uses Play Now,
+> MyNFL and MyPlayer. Coach's Desk and The Crib keep their names. Experimental /
+> Unwitnessed. Preview every change in Text & Team Identity.
+
+Use `nfl2k5_modern_naming.HELP_TEXT` as the shared constant. Add `modern_naming`
+to `NEEDS_IMAGE`. This is a data option even though most literal storage is XBE.
+Use the adjacent data-row status/callback fields, not a dummy unsupported action.
+
+In `mod_editor/gui/build_panel_qt.py` add:
+
+```python
+self.modern_naming_check = self._option(
+    f, "modern_naming", "Modern 2K mode names (MyNFL, MyPlayer, Play Now)",
+    modern_naming.HELP_TEXT, needs_image=True)
+```
+
+Caption length is 45, below 60. Include it in all checkbox/preset/availability
+loops, plan construction, image-only admission, change detection and preview
+refresh. Follow `team_names_2026_check`'s actual `_option` signature and state
+persistence. If span validation fails, show the exception and leave Experimental's
+checkbox off. On switching away from Experimental, Basic/Advanced reset it off.
+
+## Text & Team Identity facade and MyCareer ownership
+
+`text_rosters_panel.py` already inserts the new **Modern mode names** subtab in
+text/combined views and reloads it with the host catalogue. Rosters-only is
+unchanged. `modern_naming_panel_qt.py` renders all 24 before/after rows and their
+IDs/limits; each tooltip contains the complete text. Until this facade wiring is
+installed, it explicitly presents an unverified mapping with no Build claim.
+
+In `mod_editor/gui/studio_qt.py`, extend `_EmbeddedOperationGuardedHost` alongside the existing
+team-name callbacks:
+
+- Add constructor kwarg `modern_naming_enabled: Callable[[], bool] | None = None`,
+  stored as `_modern_naming_enabled` with a False fallback. At the Text host
+  creation near 2464 pass `modern_naming_enabled=self._modern_naming_preview_enabled`.
+  Implement that window callback like `_team_names_preview_enabled`: require
+  the checkbox and that `Path(self._build_panel.source_field.text()).resolve()`
+  equals `Path(self.facade.source_path).resolve()`; otherwise return False.
+- Add `modern_naming_preview()` returning
+  `{"enabled": enabled, "rows": naming.image_preview(source, enabled=enabled)}`
+  using `self._host.source_path` (the retained source image) and the same manifest
+  snapshot as Build.
+  Also check raw staged catalog values before returning. If the source is an
+  already-named disc and naming is disabled, require the original-source binding
+  above instead of claiming a verified restoration preview from an unknown base.
+- Merge `naming.catalog_overrides(catalog, enabled=enabled,
+  value_lookup=self._host.text_value)` with `_team_name_overrides`; IDs are
+  disjoint. `text_value()` returns these transient values. `replace_text()` and
+  `revert_text()` on an overridden STRG field should ask the user to turn off the
+  Build naming option before manually editing it. No automatic project write.
+- Connect `modern_naming_check.toggled` to the same text-panel reload mechanism
+  used for team names. Clear/rebuild caches on manifest/source/preset change.
+  Compute the override map once per refresh; avoid opening the image per cell.
+
+The other session owns `nfl2k5_my_career` descriptors. No such module exists at
+this base. It should use `career_text("menu_row", allocation_bytes=20)` and
+`career_text("screen_title", allocation_bytes=20)` when installing its own text.
+Default output is `MyCareer`, 18 bytes including NUL, plus two bytes of spare
+contract space. These are two **contract rows, not invented retail IDs**.
+No existing mode row is replaced with MyCareer by this pass. That owner must
+add its own allocator and descriptor proof; this pass allocates nothing.
+
+## Packaging, runtime closure, capability registry and integration tests
+
+Append missing exact lines to `packaging/release-allowlist.txt` (do not duplicate
+already-shipped lines):
+
+```text
+mod_editor/core/nfl2k5_modern_naming.py
+mod_editor/gui/modern_naming_panel_qt.py
+data/nfl2k5_modern_naming_2k.json
+docs/mod_editor/modern_2k_mode_names.md
+docs/mod_editor/nfl2k5_modern_naming_capability.json
+```
+
+Retain already-listed `tools/string_table_inventory.py` with this revision's
+NFL zero-padding fix and `mod_editor/gui/text_rosters_panel.py` with its new tab.
+Also include the new documentation page in the documentation browser/index.
+
+Add literal imports to `packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_modern_naming",
+"mod_editor.gui.modern_naming_panel_qt",
+```
+
+The backend closure includes the existing rdata/bump/allocator/storage/digest
+helpers, `nfl2k5_safe_text_banks`, `nfl2k5_roster_records`,
+`nfl2k5_throw_tuning`, `platform_compat`, `nfl_outer`, `nfl_scene_probe`,
+`string_table_inventory`, and `nfl2k5_playbook_position_recode`. Carry the default
+JSON at its root-relative `data/` path. This module is a package import; do not
+load it under an invented top-level module name without its package context.
+
+Insert the exact object from
+`docs/mod_editor/nfl2k5_modern_naming_capability.json` into the canonical registry
+and sort capability objects by `id`, as its validator requires.
+It uses existing `menus`, so no new surface vocabulary is needed. Both commands
+are `python3 -m mod_editor.core.nfl2k5_modern_naming ...` for file-check closure.
+Status is `offline-writer-proved`, runtime `not-tested`; no witnessed claim.
+
+Both executable gates already compose the name pass before and after the
+allocator owner union, including v3, and assert its status. The owner has no
+code/data allocation and does not belong in `tests/nfl2k5_allocator_stack.py`'s
+REQUESTS or the cave manifest's owner reservation lists. Do not regenerate the
+protected cave JSON on this branch. Regenerate source-closure/provider pins if
+the runtime validation reports them changed by the codec revision.
+
+After wiring, run the new standalone tests and both gates, plus protected
+integration tests for a naming-only Build, all presets, manifest overflow,
+manual conflict, JSON changes mid-build, off/on/off source restoration, and the
+MyCareer owner calling both label roles. A checked box or static preview is not
+proof that the shared Build dispatch was wired.
+
+The shared `tools/nfl2k5_playbook_position_recode.py` loose-pack header read is
+also corrected to `read(HEADER_SIZE)` inside a closed context manager. Retain
+that already-shipped file and regenerate any exact-source provider closure pin
+covering it. The naming regression forbids whole-pack reads on this path.

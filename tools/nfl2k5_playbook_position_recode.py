@@ -269,7 +269,8 @@ class OuterImage:
     def _open_loose(self, folder: Path) -> None:
         index = folder / "0"
         _require(index.is_file(), f"{folder} has no pack '0'")
-        header = index.read_bytes()[:HEADER_SIZE]
+        with index.open("rb") as handle:
+            header = handle.read(HEADER_SIZE)
         _, _, populated = struct.unpack_from("<III", header, 0)
         blocks = struct.unpack_from(f"<{PACK_SLOT_COUNT}I", header, 12)
         virtual = 0

@@ -180,6 +180,10 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
         if screen_hooks.status(cls.patched) != "applied":
             raise AssertionError("screen hooks owner missing from the composed XBE")
+        from mod_editor.core import nfl2k5_modern_naming as modern_naming
+        if modern_naming.status(cls.patched) != "applied":
+            raise AssertionError("Modern mode text missing from the composed XBE")
+        from mod_editor.core import nfl2k5_modern_naming as modern_naming
         from mod_editor.core import nfl2k5_screen_hooks as screen
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
@@ -523,7 +527,8 @@ class ReverseOwnerOrderTests(PatchWriteTests):
 
     def test_both_installation_orders_are_byte_identical(self):
         from tests.nfl2k5_allocator_stack import compose
-        self.assertEqual(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0], self.patched)
+        from mod_editor.core import nfl2k5_modern_naming as modern_naming
+        self.assertEqual(modern_naming.apply(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
 
 
 class ScaleoutOwnerTests(PatchWriteTests):

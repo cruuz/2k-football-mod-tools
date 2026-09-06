@@ -469,7 +469,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
 
         self.assertEqual(
             [text_panel.tabs.tabText(index) for index in range(text_panel.tabs.count())],
-            ["All Text"],
+            ["All Text", "Modern mode names"],
         )
         self.assertEqual(
             [
@@ -535,6 +535,7 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
             [panel.tabs.tabText(index) for index in range(panel.tabs.count())],
             [
                 "All Text",
+                "Modern mode names",
                 "Current Roster Players",
                 "Historical Teams && Players",
             ],

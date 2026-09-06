@@ -1,0 +1,64 @@
+{
+  "id": "nfl2k5.menus.modern_naming",
+  "game": "nfl2k5_xbox",
+  "surface": "menus",
+  "title": "Modern 2K mode names",
+  "summary": "Fixed-span Play Now, MyNFL and MyPlayer text with a complete before/after preview. Experimental / Unwitnessed.",
+  "classification": "offline-writer-proved",
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_modern_naming apply COPY.iso",
+    "module": "mod_editor/core/nfl2k5_modern_naming.py",
+    "operation": "write"
+  },
+  "gui": {
+    "expose": true,
+    "mode": "edit",
+    "default_enabled": false,
+    "reason": "Build opt-in and Text & Team Identity preview. Basic/Advanced off; Experimental on only when every configured string fits. Protected integration is specified in WIRING.md."
+  },
+  "input_constraints": [
+    "Only reviewed USA .string_ literals and Crib STRG allocations; no save, pointer, code or resource-size edits.",
+    "User JSON may change only desired/fallbacks. Mixed/foreign strings and changed placeholders refuse before mutation.",
+    "Apply targets a disposable image; disabling restores from a separate original source."
+  ],
+  "evidence": [
+    "ASTRA_MODERN_NAMING_REPORT.md",
+    "docs/mod_editor/modern_2k_mode_names.md",
+    "tests/mod_editor/test_nfl2k5_modern_naming.py",
+    "tests/mod_editor/test_modern_naming_panel.py"
+  ],
+  "portme": [
+    "Wire the shared Build/Studio files as specified in WIRING.md and bind the MyCareer owner labels.",
+    "Witness all menu/title/prompt routes, pause/load/save labels and text width in game."
+  ],
+  "runtime": {
+    "status": "not-tested",
+    "scope": "Static literal/lookup references, exact readback, offline composition and offscreen Qt only. No game witness.",
+    "evidence": []
+  },
+  "selectors": {
+    "fields": [
+      {
+        "name": "modern_naming",
+        "required": false,
+        "allowed": "Boolean; Basic/Advanced false; Experimental conditional on all_strings_fit()."
+      }
+    ],
+    "notes": "Text mapping does not create MyCareer or a card mode."
+  },
+  "source_container": {
+    "format": "NFL 2K5 USA XBE and uncompressed STRG resource",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "XBE .string_ section 14 and archive outer 4248 chunk 1, STRG pool 3.",
+    "retail_file": "default.xbe and vc_53450030/0..F"
+  },
+  "validation_command": "python3 -m mod_editor.core.nfl2k5_modern_naming check",
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "tooling": "source-and-schemas-only",
+    "rule": "Only the original implementation, mapping metadata, source pins and user recipes ship; no retail file, image, pack or executable."
+  }
+}

@@ -1022,6 +1022,9 @@ class TextRosterPanel(QWidget):
         if self.view in {"combined", "text"}:
             self._text_tab = self._build_text_tab()
             self.tabs.addTab(self._text_tab, "All Text")
+            from .modern_naming_panel_qt import ModernNamingPanel
+            self.modern_naming_panel = ModernNamingPanel(self.host, self)
+            self.tabs.addTab(self.modern_naming_panel, "Modern mode names")
         if self.view in {"combined", "rosters"}:
             self._current_tab = self._build_current_tab()
             self._historical_tab = self._build_historical_tab()
@@ -1468,6 +1471,8 @@ class TextRosterPanel(QWidget):
     def reload(self) -> None:
         """Reload immutable catalog metadata and all current staged values."""
 
+        if self.view != "rosters":
+            self.modern_naming_panel.reload()
         selected_asset_id = self.selected_asset.asset_id if self.selected_asset else None
         selected_player_id = (
             self.selected_historical_row.player.group_id
