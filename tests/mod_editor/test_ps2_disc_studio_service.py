@@ -508,13 +508,16 @@ class WorkerTests(_Fixture):
 class PlaybookLaneTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        import nfl2k5_ps2_playbook_patch as playbooks
         import test_nfl2k5_ps2_playbook as fixture
 
         cls.fixture = fixture
         cls._temp = tempfile.TemporaryDirectory(prefix="ps2-disc-studio-play-")
         cls.root = Path(cls._temp.name)
         cls.iso = cls.root / "books.iso"
-        cls.iso.write_bytes(fixture.synthetic_iso(fixture.synthetic_pack(fixture.default_books())))
+        # The synthetic disc is the writer's own, so this lane and the
+        # writer's --selftest prove themselves against the same bytes.
+        cls.iso.write_bytes(playbooks.build_synthetic_disc())
         cls.service = svc.Ps2DiscStudioService(cache_root=cls.root / "cache", poll_seconds=0.05)
         cls.service.open(cls.iso)
         cls.service.build_catalogue("playbooks")
