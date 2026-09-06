@@ -170,8 +170,9 @@ class StringLaneTests(_Room):
 
 
 class ArtLaneTests(_Room):
-    def test_the_three_art_writers_round_trip(self) -> None:
-        for lane in (art_lane.STADIUM_LANE, art_lane.PRESENTATION_LANE, art_lane.MENU_LANE):
+    def test_the_four_art_writers_round_trip(self) -> None:
+        for lane in (art_lane.STADIUM_LANE, art_lane.PRESENTATION_LANE, art_lane.MENU_LANE,
+                     art_lane.KIT_LANE):
             self._round_trip(lane)
 
     def test_export_and_the_written_pixels_agree(self) -> None:
@@ -216,6 +217,77 @@ class ArtLaneTests(_Room):
             self.assertEqual(lane.check_edit(catalogue.targets[0], {}), art_lane.BLOCK_CODEC_REFUSAL)
             with self.assertRaises(Refusal):
                 lane.plan(source, {}, catalogue)
+
+    def test_the_kit_lane_writes_the_8bit_parts_and_refuses_the_block_codec_ones(self) -> None:
+        """The kit page's whole point: llod and hat are writable, jers and jerk are not."""
+
+        lane = art_lane.KIT_LANE
+        source = lane.synthetic_source(self.work)
+        catalogue = lane.build_catalogue(source)
+        by_tag = {}
+        for target in catalogue.targets:
+            by_tag.setdefault(target.raw["tag"], []).append(target)
+        # The measured vocabulary: these tags are 8-bit on the disc and these are not.
+        for tag in ("llod", "hat", "lace", "A___", "zig0", "a___"):
+            self.assertTrue(by_tag[tag], tag)
+            self.assertTrue(all(t.raw["code"] == art_lane.INDEXED8 for t in by_tag[tag]), tag)
+        for tag in ("jers", "jerk", "shoe", "face"):
+            self.assertTrue(by_tag[tag], tag)
+            self.assertTrue(all(t.raw["code"] == "0x0e" for t in by_tag[tag]), tag)
+        png = self.work / "kit-wrong.png"
+        png.write_bytes(ea_shps.encode_png(2, 2, bytes(16)))
+        self.assertIn("0x0e", lane.check_edit(by_tag["jers"][0], {"png": str(png)}))
+        self.assertIn("give a PNG of exactly that size",
+                      lane.check_edit(by_tag["llod"][0], {"png": str(png)}))
+        with self.assertRaises(Refusal):
+            lane.decode_png_by_key(source, by_tag["jers"][0].key)
+        # One llod written back, and its pixels come out again.
+        llod = by_tag["llod"][0]
+        exported = lane.decode_png_by_key(source, llod.key)
+        width, height, rgba = art_lane.read_rgba_png(exported)
+        rolled = bytes(rgba[width * 4:]) + bytes(rgba[:width * 4])
+        replacement = self.work / "kit-llod.png"
+        replacement.write_bytes(ea_shps.encode_png(width, height, rolled))
+        _s, _c, destination, receipt = self._round_trip(
+            lane, (Edit(llod.key, {"png": str(replacement)}, note="one llod, rolled"),))
+        self.assertEqual(receipt.document["textures"][0]["texture"], llod.key)
+        self.assertEqual(art_lane.read_rgba_png(lane.decode_png_by_key(destination, llod.key)),
+                         (width, height, rolled))
+
+    def test_the_parts_census_names_every_bank_family_and_counts_the_writable_ones(self) -> None:
+        lane = art_lane.KIT_LANE
+        source = lane.synthetic_source(self.work)
+        catalogue = lane.build_catalogue(source)
+        census = art_lane.parts_census(catalogue.document["rows"], source="synthetic.iso")
+        self.assertEqual(census["schema"], art_lane.PARTS_SCHEMA)
+        families = {group["family"]: group for group in census["families"]}
+        self.assertEqual(set(families), {"kit", "lettering", "head"})
+        self.assertEqual(families["head"]["writable"], 0)
+        self.assertEqual(families["lettering"]["writable"], families["lettering"]["images"])
+        self.assertLess(families["kit"]["writable"], families["kit"]["images"])
+        self.assertEqual(census["totals"]["images"], catalogue.document["images"])
+        self.assertEqual(census["totals"]["writable"],
+                         sum(1 for t in catalogue.targets if t.raw["code"] == art_lane.INDEXED8))
+        parts = {part["tag"]: part for part in census["parts"]}
+        self.assertEqual(parts["llod"]["codes"], {art_lane.INDEXED8: parts["llod"]["images"]})
+        self.assertEqual(parts["jers"]["writable"], 0)
+        self.assertIn("team_artid", census["team_artid_rule"])
+        # A bank the naming rule does not know is "other", never a guess.
+        self.assertEqual(art_lane.bank_family("u012a.ssh"), ("kit", 12, "a"))
+        self.assertEqual(art_lane.bank_family("f012b.ssh"), ("lettering", 12, "b"))
+        self.assertEqual(art_lane.bank_family("c012.ssh"), ("head", 12, None))
+        self.assertEqual(art_lane.bank_family("umpire.ssh"), ("kit", None, None))
+        self.assertEqual(art_lane.bank_family("teamfont.ssh"), ("lettering", None, None))
+        self.assertEqual(art_lane.bank_family("whatever.ssh"), ("other", None, None))
+
+    def test_the_slot_fit_census_measures_the_writers_own_bound(self) -> None:
+        lane = art_lane.KIT_LANE
+        source = lane.synthetic_source(self.work)
+        census = art_lane.slot_fit_census(source, lane.walker.archives)
+        self.assertGreater(census["banks"], 0)
+        self.assertEqual(census["fit"], census["banks"] - len(census["over_the_slot"]))
+        self.assertLessEqual(census["headroom_min"], census["headroom_max"])
+        self.assertEqual(set(census["by_family"]), {"kit", "lettering", "head"})
 
     def test_png_reader_handles_every_colour_type_and_filter(self) -> None:
         import zlib

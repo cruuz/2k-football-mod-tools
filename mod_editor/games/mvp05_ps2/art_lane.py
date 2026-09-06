@@ -50,6 +50,12 @@ from mod_editor.games.contract import (
 from . import containers, disc_write
 
 MAX_TARGETS = 4000
+#: ``MODELS.BIG``'s own cap.  The default 4,000 would reach 130 of its 1,407
+#: banks, so a modder could not open nine kits in ten; the whole archive is
+#: 30,535 images, and building every target from a walked catalogue costs 0.4 s
+#: and no measurable memory [M], so the bound is set above the archive instead
+#: of inside it.
+MODELS_TARGETS = 32000
 DERIVED_PREFIX = "derived:"
 CONFIRMED_PREFIX = "confirmed:"
 
@@ -264,6 +270,172 @@ def _identities(bank: ea_shps.ShpsBank, image: ea_shps.ShpsImage) -> Tuple[Dict[
     except Refusal as exc:
         return {}, f"no name is derived: {exc}"
     return pcsx2_texture_name.names_by_convention(derived), ""
+
+
+# -- MODELS.BIG: which bank is what, and which part is writable ---------------
+
+#: How a catalogue row spells the one pixel code this lane writes back.
+INDEXED8 = "0x%02x" % ea_shps.CODE_INDEXED8
+
+PARTS_SCHEMA = "mvp05_ps2_models_big_parts/v1"
+PARTS_DOCUMENT = Path("docs/product/measured/mvp05_ps2/models-big-parts.json")
+PARTS_COMMAND = ("python -m mod_editor.games.mvp05_ps2.art_lane --lane kits --source <iso> "
+                 "--parts docs/product/measured/mvp05_ps2/models-big-parts.json")
+
+#: ``MODELS.BIG``'s bank families, by the name each carries [M].  ``kit`` banks
+#: hold the 32 parts a player wears, ``lettering`` banks the 26 letters and 10
+#: digits of the name and number decals, ``head`` banks one face texture each.
+#: The numbered families key on a three-digit number; the four named banks are
+#: generic (two umpire kits, a create-a-team base kit, a shared font).
+_KIT_BANK = re.compile(r"^u(\d{3})([a-z])\.ssh$", re.IGNORECASE)
+_LETTERING_BANK = re.compile(r"^[fa](\d{3})([a-z])\.ssh$", re.IGNORECASE)
+_HEAD_BANK = re.compile(r"^c(\d{3})\.ssh$", re.IGNORECASE)
+_NAMED_BANKS = {"umpire.ssh": "kit", "umpirec.ssh": "kit", "uniform.ssh": "kit",
+                "teamfont.ssh": "lettering"}
+
+#: How a numbered bank names its club, measured and not assumed: ``team.dat``
+#: column 6 ``team_artid`` runs 1..126 over the table's 126 rows and the ``u``
+#: and ``f`` families each carry exactly the numbers 0..125, so
+#: ``team_artid - 1`` is the bank number and the map is a bijection [M].  The
+#: club's own name is a cell of that table and stays on the user's disc.
+TEAM_ARTID_RULE = ("A numbered bank u<nnn><v>.ssh or f<nnn><v>.ssh belongs to the club whose "
+                   "DATABASE.BIG!team.dat row carries team_artid == nnn + 1; the 126 artids and "
+                   "the 126 bank numbers are a bijection, measured on the retail disc. <v> is the "
+                   "uniform variant, a..p. The four named banks (umpire, umpirec, uniform, "
+                   "teamfont) belong to no club.")
+
+
+def bank_family(name: str) -> Tuple[str, Optional[int], Optional[str]]:
+    """``(family, bank number, variant)`` for a ``MODELS.BIG`` member name.
+
+    A name this does not recognise is ``("other", None, None)`` rather than a
+    guess, so a bank the disc adds is listed and not mis-attributed.
+    """
+
+    lowered = name.lower()
+    if lowered in _NAMED_BANKS:
+        return _NAMED_BANKS[lowered], None, None
+    for pattern, family in ((_KIT_BANK, "kit"), (_LETTERING_BANK, "lettering"),
+                            (_HEAD_BANK, "head")):
+        match = pattern.match(lowered)
+        if match is not None:
+            groups = match.groups()
+            return family, int(groups[0]), (groups[1] if len(groups) > 1 else None)
+    return "other", None, None
+
+
+def parts_census(rows: Sequence[Mapping[str, Any]], *, source: str = "",
+                 identities: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+    """The per-part-tag table: how many of each tag are writable, and at what sizes.
+
+    One row per four-character part tag, because that -- not the bank -- is what
+    a modder is choosing between: ``llod`` is the whole kit at low detail and is
+    8-bit, ``jers`` is the same kit at high detail and is code 0x0e.
+    """
+
+    families: Dict[str, Dict[str, Any]] = {}
+    parts: Dict[str, Dict[str, Any]] = {}
+    banks: Dict[Tuple[str, int], Dict[str, Any]] = {}
+    totals = {"banks": 0, "images": 0, "writable": 0}
+    codes: Dict[str, int] = {}
+    for row in rows:
+        name = str(row.get("entry_name", ""))
+        family, number, variant = bank_family(name)
+        code = str(row.get("code", ""))
+        tag = str(row.get("tag", ""))
+        writable = bool(row.get("decodable")) and code == INDEXED8
+        key = (str(row.get("archive", "")), int(row.get("entry", -1)))
+        bank = banks.setdefault(key, {"archive": key[0], "entry": key[1], "bank": name,
+                                      "family": family, "number": number, "variant": variant,
+                                      "images": 0, "writable": 0})
+        bank["images"] += 1
+        bank["writable"] += int(writable)
+        group = families.setdefault(family, {"family": family, "banks": 0, "images": 0,
+                                             "writable": 0, "codes": {}})
+        group["images"] += 1
+        group["writable"] += int(writable)
+        group["codes"][code] = group["codes"].get(code, 0) + 1
+        part = parts.setdefault(tag, {"tag": tag, "images": 0, "writable": 0, "codes": {},
+                                      "families": [], "sizes": {}})
+        part["images"] += 1
+        part["writable"] += int(writable)
+        part["codes"][code] = part["codes"].get(code, 0) + 1
+        if family not in part["families"]:
+            part["families"].append(family)
+        size = "%dx%d" % (int(row.get("width", 0)), int(row.get("height", 0)))
+        part["sizes"][size] = part["sizes"].get(size, 0) + 1
+        if row.get("confirmed_names"):
+            part["confirmed"] = part.get("confirmed", 0) + 1
+            group["confirmed"] = group.get("confirmed", 0) + 1
+        codes[code] = codes.get(code, 0) + 1
+        totals["images"] += 1
+        totals["writable"] += int(writable)
+    for bank in banks.values():
+        families[bank["family"]]["banks"] += 1
+    totals["banks"] = len(banks)
+    for part in parts.values():
+        part["families"].sort()
+    return {
+        "schema": PARTS_SCHEMA, "source": source, "generated_by": PARTS_COMMAND,
+        "totals": {**totals, "codes": codes, **(dict(identities) if identities else {})},
+        "team_artid_rule": TEAM_ARTID_RULE, "confirmed_note": DUMP_CORPUS,
+        "families": [families[name] for name in sorted(families)],
+        "parts": sorted(parts.values(), key=lambda part: (-part["images"], part["tag"])),
+        "banks": sorted(banks.values(), key=lambda bank: (bank["archive"], bank["entry"])),
+        "runtime_note": disc_write.NOT_BOOTED,
+    }
+
+
+def slot_fit_census(source: Path, archives: Sequence[str], *,
+                    progress: Optional[Callable[[str], None]] = None) -> Dict[str, Any]:
+    """How many banks re-pack inside the slot their entry already owns, and by how much.
+
+    This is the writer's real bound, and it is worth measuring rather than
+    assuming: the archive is rewritten in place, so a bank that packs larger
+    than its slot is refused naming the byte count.  The number here is for the
+    banks *unedited*; an edit that compresses worse can still be refused, which
+    is why the refusal exists and why this census is the floor, not a promise.
+    """
+
+    banks: List[Dict[str, Any]] = []
+    with containers.Disc(Path(source)) as disc:
+        for name, entry in containers.archives_named(disc, tuple(archives)):
+            if progress is not None:
+                progress(f"{name}…")
+            archive = disc.archive(entry)
+            for row in archive.entries:
+                if row.size == 0 or archive.entry_format(row.index) != "SHPS":
+                    continue
+                payload = archive.member(row.index)
+                packed = archive.is_compressed(row.index)
+                stored = len(ea_big.refpack_compress(payload)) if packed else len(payload)
+                slot = archive.slot_bytes(row.index)
+                banks.append({"archive": name, "entry": row.index, "bank": row.name,
+                              "family": bank_family(row.name)[0], "packed": packed,
+                              "plain_bytes": len(payload), "stored_bytes": row.size,
+                              "slot_bytes": slot, "repacked_bytes": stored,
+                              "headroom": slot - stored})
+    headroom = sorted(bank["headroom"] for bank in banks)
+    families: Dict[str, Dict[str, int]] = {}
+    for bank in banks:
+        group = families.setdefault(bank["family"], {"banks": 0, "fit": 0})
+        group["banks"] += 1
+        group["fit"] += int(bank["headroom"] >= 0)
+    return {
+        "banks": len(banks), "fit": sum(1 for value in headroom if value >= 0),
+        "headroom_min": headroom[0] if headroom else None,
+        "headroom_median": headroom[len(headroom) // 2] if headroom else None,
+        "headroom_max": headroom[-1] if headroom else None,
+        "by_family": families,
+        "over_the_slot": sorted(({"bank": bank["bank"], "entry": bank["entry"],
+                                  "over_by": -bank["headroom"]}
+                                 for bank in banks if bank["headroom"] < 0),
+                                key=lambda row: (-row["over_by"], row["entry"])),
+        "note": ("Measured with the banks unedited: our RefPack encoder against EA's stream, "
+                 "into the slot the entry already owns. A bank over its slot is refused naming "
+                 "the byte count, and an edit that compresses worse than the pixels it replaced "
+                 "can push a bank that fits here over the line."),
+    }
 
 
 class _Walker:
@@ -893,9 +1065,16 @@ MENU_LANE = ShpsArtLane(
     surface="menus", page="menus", title="Menu widgets, backgrounds, logos, awards and loading screens",
     walker=_Walker(containers.MENU_ARCHIVES, loading_screens=True), validators=ART_VALIDATORS)
 
+KIT_LANE = ShpsArtLane(
+    lane_id="uniforms.kit_textures", capability_id="mvp05ps2.uniforms.kit_textures",
+    surface="uniforms", page="uniforms",
+    title="Worn kit textures: MODELS.BIG's kit, lettering and head banks",
+    walker=_Walker(containers.MODEL_ARCHIVES), validators=ART_VALIDATORS,
+    max_targets=MODELS_TARGETS)
+
 UNIFORM_LANE = ShpsBankLane(
     lane_id="uniforms.kit_banks", capability_id="mvp05ps2.uniforms.kit_banks",
-    surface="uniforms", page="uniforms", title="Team kits and create-a-team kits",
+    surface="uniforms", page="uniforms", title="Uniform preview swatches",
     walker=_Walker(containers.UNIFORM_ARCHIVES), validators=ART_VALIDATORS, refusal=BLOCK_CODEC_REFUSAL)
 
 FACE_LANE = ShpsBankLane(
@@ -909,7 +1088,8 @@ FIELD_ART_LANE = ShpsBankLane(
     walker=_Walker(containers.FIELD_ART_ARCHIVES), validators=ART_VALIDATORS, refusal=BLOCK_CODEC_REFUSAL)
 
 LANES_BY_NAME = {"stadiums": STADIUM_LANE, "presentation": PRESENTATION_LANE, "menus": MENU_LANE,
-                 "uniforms": UNIFORM_LANE, "faces": FACE_LANE, "field_art": FIELD_ART_LANE}
+                 "kits": KIT_LANE, "uniforms": UNIFORM_LANE, "faces": FACE_LANE,
+                 "field_art": FIELD_ART_LANE}
 
 
 def _main(argv: Optional[Sequence[str]] = None) -> int:
@@ -918,6 +1098,9 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--source")
     parser.add_argument("--lane", default="stadiums", choices=sorted(LANES_BY_NAME))
     parser.add_argument("--out")
+    parser.add_argument("--parts", help="write the per-part-tag census of the lane's archives here")
+    parser.add_argument("--slot-fit", action="store_true",
+                        help="with --parts: also re-pack every bank and report slot headroom")
     parser.add_argument("--selftest", action="store_true")
     arguments = parser.parse_args(list(argv) if argv is not None else None)
     lane = LANES_BY_NAME[arguments.lane]
@@ -947,6 +1130,20 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     document = dict(catalogue.document)
+    if arguments.parts:
+        census = parts_census(document["rows"], source=Path(str(arguments.source)).name,
+                              identities={"derived_pcsx2_names": document["named"],
+                                          "confirmed_pcsx2_names": document["confirmed"]})
+        if arguments.slot_fit:
+            census["slot_fit"] = slot_fit_census(
+                Path(arguments.source), lane.walker.archives,
+                progress=lambda line: print(line, file=sys.stderr))
+        Path(arguments.parts).write_text(json.dumps(census, indent=1, sort_keys=True) + "\n",
+                                         encoding="utf-8", newline="\n")
+        print("PARTS banks=%d images=%d writable=%d tags=%d families=%s" % (
+            census["totals"]["banks"], census["totals"]["images"], census["totals"]["writable"],
+            len(census["parts"]),
+            ",".join("%s=%d" % (f["family"], f["banks"]) for f in census["families"])))
     if arguments.out:
         Path(arguments.out).write_text(json.dumps(document, indent=2, sort_keys=True) + "\n",
                                        encoding="utf-8", newline="\n")
@@ -956,10 +1153,13 @@ def _main(argv: Optional[Sequence[str]] = None) -> int:
     return 0
 
 
-__all__ = ["ART_VALIDATORS", "BLOCK_CODEC_REFUSAL", "FACE_LANE", "FIELD_ART_LANE", "LANES_BY_NAME",
+__all__ = ["ART_VALIDATORS", "BLOCK_CODEC_REFUSAL", "FACE_LANE", "FIELD_ART_LANE", "INDEXED8",
+           "KIT_LANE", "LANES_BY_NAME", "PARTS_DOCUMENT", "PARTS_SCHEMA", "TEAM_ARTID_RULE",
+           "PARTS_COMMAND", "bank_family", "parts_census", "slot_fit_census",
            "CONFIRMED_PREFIX", "DUMP_CORPUS", "IDENTITY_DOCUMENT", "IDENTITY_SCHEMA",
            "IDENTITY_TOOL", "load_identities", "NOT_CONFIRMED",
-           "MAX_TARGETS", "MENU_LANE", "NO_DUMP", "PRESENTATION_LANE", "STADIUM_LANE",
+           "MAX_TARGETS", "MENU_LANE", "MODELS_TARGETS", "NO_DUMP", "PRESENTATION_LANE",
+           "STADIUM_LANE",
            "ShpsArtLane", "ShpsBankLane", "UNIFORM_LANE", "parse_key", "read_rgba_png"]
 
 

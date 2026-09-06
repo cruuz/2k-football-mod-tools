@@ -17,10 +17,12 @@ What is on the contract:
   the slot its entry already owns.
 * **the UI strings writer** (:mod:`.loch_lane`) -- 7,977 ``LOCH`` strings,
   replaced inside their own span.
-* **three art writers and three art inventories** (:mod:`.art_lane`) -- 8-bit
-  images exported and written back with derived PCSX2 identities; the
-  code-``0x0e`` archives (kits, faces, field art) listed with the measured
-  reason nothing is drawn.
+* **four art writers and three art inventories** (:mod:`.art_lane`) -- 8-bit
+  images exported and written back with derived PCSX2 identities, including
+  ``MODELS.BIG``'s 21,767 writable kit, lettering and equipment textures -- the
+  art a player actually wears; the code-``0x0e`` archives (the uniform preview
+  swatches, portraits, field art) listed with the measured reason nothing is
+  drawn.
 * **audio** (:mod:`.audio_lane`) -- every ``SCHl`` stream played and exported,
   the bare stream files replaced, MicroTalk refused by name; the two ``BNKl``
   banks exported.
@@ -47,7 +49,7 @@ from mod_editor.games.contract import (
 
 from . import containers
 from .art_lane import (
-    FACE_LANE, FIELD_ART_LANE, MENU_LANE, PRESENTATION_LANE, STADIUM_LANE, UNIFORM_LANE,
+    FACE_LANE, FIELD_ART_LANE, KIT_LANE, MENU_LANE, PRESENTATION_LANE, STADIUM_LANE, UNIFORM_LANE,
 )
 from .audio_lane import BANKS_LANE, STREAMS_LANE
 from .database_lane import IDENTITY_LANE, ROSTER_LANE, TUNING_LANE
@@ -113,6 +115,7 @@ _CANDIDATES = (
     MENU_LANE,
     STREAMS_LANE,
     BANKS_LANE,
+    KIT_LANE,
     UNIFORM_LANE,
     FACE_LANE,
     FIELD_ART_LANE,

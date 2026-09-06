@@ -67,7 +67,17 @@ IDENTITY_TABLES = ("team.dat", "org.dat", "tstat.dat", "manager.dat")
 #: audio event-table archives (33 stored) [M].
 TUNING_ARCHIVES = ("PROGRESS.BIG", "ROOKIE.BIG", "SCHEDULE.BIG", "SPEECHDB.BIG", "AUDIOCSV.BIG")
 
+#: The uniform-*preview* archives: 555 + 124 banks, every image code 0x0e [M].
+#: These are the swatches a select screen shows, not what a player wears.
 UNIFORM_ARCHIVES = ("UNIFORMS.BIG", "COOPUNIS.BIG")
+#: The 3D model archive, and where the kit a player actually *wears* lives:
+#: 1,407 ``SHPS`` banks beside 549 ``.ord``/``.orl`` model pairs [M].  Its banks
+#: come in three families, told apart by name and confirmed by their tag sets:
+#: ``u<nnn><v>.ssh`` kit banks (436 with the three named ones), ``f<nnn><v>.ssh``
+#: / ``a<nnn><v>.ssh`` / ``teamfont.ssh`` lettering banks (467) and ``c<nnn>.ssh``
+#: head banks (504).  21,767 of its 30,535 images are 8-bit indexed and so are
+#: writable; the other 8,768 are code 0x0e or direct colour [M].
+MODEL_ARCHIVES = ("MODELS.BIG",)
 FACE_ARCHIVES = ("PORTRAIT.BIG", "GHEAD.BIG")
 FIELD_ART_ARCHIVES = ("FIELDS.BIG", "BPSETUP.BIG", "BPITEMS.BIG", "BPUPGRAD.BIG",
                       "BPTICKET.BIG", "BPPROMOS.BIG", "BPVENDOR.BIG", "BPATTRAC.BIG")
@@ -407,6 +417,42 @@ def synthetic_block_codec_archive() -> bytes:
     ])
 
 
+def synthetic_models_archive() -> bytes:
+    """``MODELS.BIG``'s shape: kit banks, lettering banks, head banks, model pairs [M].
+
+    The retail archive's three bank families are told apart by name and
+    confirmed by their tag sets, and each family's codes are the measured ones:
+    a kit bank mixes 8-bit parts (``llod``, ``hat``, ``lace``) with code-0x0e
+    parts (``jers``, ``jerk``, ``shoe``), a lettering bank is 8-bit throughout,
+    and a head bank is one code-0x0e image.  Every byte here is computed.
+    """
+
+    return ea_big.build_big([
+        ("g001.ord", b"\x7fELF" + bytes(60)),
+        ("g001.orl", bytes(32)),
+        ("u000a.ssh", _packed(synthetic_bank([
+            synthetic_indexed_image(64, 64, seed=11, tag="llod"),
+            synthetic_indexed_image(64, 32, seed=12, tag="hat"),
+            synthetic_block_codec_image(32, 32, tag="jers"),
+            synthetic_block_codec_image(32, 32, tag="jerk"),
+            synthetic_indexed_image(16, 16, seed=13, palette_entries=27, tag="lace"),
+            synthetic_block_codec_image(16, 16, tag="shoe")]))),
+        ("u000b.ssh", _packed(synthetic_bank([
+            synthetic_indexed_image(64, 64, seed=14, tag="llod"),
+            synthetic_block_codec_image(32, 32, tag="jers")]))),
+        ("f000a.ssh", _packed(synthetic_bank([
+            synthetic_indexed_image(16, 32, seed=15, tag="A___"),
+            synthetic_indexed_image(32, 64, seed=16, tag="zig0")]))),
+        ("teamfont.ssh", _packed(synthetic_bank([
+            synthetic_indexed_image(16, 32, seed=17, tag="a___")]))),
+        ("umpire.ssh", _packed(synthetic_bank([
+            synthetic_indexed_image(64, 64, seed=18, tag="llod"),
+            synthetic_block_codec_image(32, 32, tag="jers")]))),
+        ("c001.ssh", _packed(synthetic_bank([
+            synthetic_block_codec_image(32, 32, tag="face")]))),
+    ], alignment=4)
+
+
 def synthetic_stadium_archive() -> bytes:
     """A ballpark archive's shape: ``.ord``/``.orl`` objects, banks, text [M]."""
     return ea_big.build_big([
@@ -486,6 +532,7 @@ def build_synthetic_disc() -> bytes:
         (b"DATABASE.BIG;1", synthetic_database_archive()),
         (b"PROGRESS.BIG;1", synthetic_progress_archive()),
         (b"UNIFORMS.BIG;1", synthetic_block_codec_archive()),
+        (b"MODELS.BIG;1", synthetic_models_archive()),
         (b"PORTRAIT.BIG;1", synthetic_block_codec_archive()),
         (b"FIELDS.BIG;1", synthetic_block_codec_archive()),
         (b"IGONLY.BIG;1", synthetic_decodable_archive(1)),
@@ -509,14 +556,15 @@ __all__ = [
     "AUDIO_DIRECTORY", "BANK_FILES", "BOOT_FILE", "DATABASE_ARCHIVE", "DATA_DIRECTORY", "Disc",
     "DiscError", "FACE_ARCHIVES", "FIELD_ART_ARCHIVES", "FILE_SIZE_LIMIT", "HEAD_BYTES",
     "IDENTITY_TABLES", "LOADING_SCREEN_PREFIX", "LOCH_FILES", "LOCH_HEADER_SIZE", "LOCH_MAGIC",
-    "LOCI_MAGIC", "LOCL_MAGIC", "MENU_ARCHIVES", "PRESENTATION_ARCHIVES",
+    "LOCI_MAGIC", "LOCL_MAGIC", "MENU_ARCHIVES", "MODEL_ARCHIVES", "PRESENTATION_ARCHIVES",
     "PRESENTATION_SCRIPT_ARCHIVES", "RETAIL_BOOT_ELF_SHA256", "RETAIL_EDITION", "RETAIL_ELF_CRC",
     "RETAIL_IMAGE_SHA256", "SERIAL", "STADIUM_DIRECTORY", "SYNTHETIC_CHAIN_LIMIT", "STADIUM_MENU_ARCHIVES",
     "TUNING_ARCHIVES", "UNIFORM_ARCHIVES", "archives_named", "build_synthetic_disc", "open_disc",
     "synthetic_art_archive", "synthetic_bank", "synthetic_bare_stream_file",
     "synthetic_block_codec_archive", "synthetic_block_codec_image", "synthetic_curve_table",
     "synthetic_database_archive", "synthetic_decodable_archive", "synthetic_direct_image",
-    "synthetic_indexed_image", "synthetic_loch", "synthetic_palette", "synthetic_player_table",
+    "synthetic_indexed_image", "synthetic_loch", "synthetic_models_archive", "synthetic_palette",
+    "synthetic_player_table",
     "synthetic_progress_archive", "synthetic_speech_archive", "synthetic_speech_file",
     "synthetic_stadium_archive", "synthetic_team_table",
 ]

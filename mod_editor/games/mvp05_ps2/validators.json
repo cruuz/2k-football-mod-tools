@@ -30,7 +30,7 @@
       "conformance": true
     },
     "art": {
-      "what": "the three SHPS art writer lanes and the three code-0x0e inventory lanes",
+      "what": "the four SHPS art writer lanes and the three code-0x0e inventory lanes",
       "compile": [
         "mod_editor/games/_formats/ea_shps.py",
         "mod_editor/games/_formats/pcsx2_texture_name.py",
@@ -40,6 +40,7 @@
         {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "stadiums"]},
         {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "presentation"]},
         {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "menus"]},
+        {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "kits"]},
         {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "uniforms"]},
         {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "faces"]},
         {"module": "mod_editor.games.mvp05_ps2.art_lane", "args": ["--selftest", "--lane", "field_art"]}

@@ -19,7 +19,7 @@ string, pixel, sample or palette entry from the disc is in this repository.
 
 ## 1. The verdict, in six sentences
 
-1. **All fourteen pages are answered**: eight writers at
+1. **All fourteen pages are answered**: nine writers at
    `offline-writer-proved`, one export lane at `extract-only`, four
    inventories at `read-only-mapped`, and one page note each for the three
    pages the disc gives nothing to write (§3).
@@ -32,8 +32,17 @@ string, pixel, sample or palette entry from the disc is in this repository.
    codec over the attached 256-entry palette — two 8-bit endpoints per block
    whose layout and block map are decoded (a flat-endpoint render shows the
    picture) and 2-bit per-pixel selectors whose semantics are not, after every
-   reading tried in a bounded hour. The kits, faces and field art therefore
-   stay listed, not drawn (§5).
+   reading tried in a bounded hour. The faces and field art therefore stay
+   listed, not drawn (§5).
+3a. **The uniform page went past that wall without decoding it.** The kit a
+   player *wears* is not in the archives named `UNIFORMS` — those are preview
+   swatches — it is in `MODELS.BIG`, and **21,767 of its 30,535 images are
+   ordinary 8-bit `0x02`** that `ea_shps` has decoded and encoded all along
+   (§9). `uniforms.kit_textures` writes them: the low-detail whole kit, caps,
+   helmets, gloves, sleeves, wristbands and every one of the 16,110 letters and
+   digits the game composites into a nameplate. The high-detail jersey and the
+   trousers are the `0x0E` half and stay refused, so this is a kit editor with
+   a named hole in it, not a complete one.
 4. **Every writer is proved twice offline** — on the synthetic disc in CI and
    on the retail disc by hand, chained so the last image carries every edit
    (§4) — and **no rebuilt image has been booted**; every receipt says so.
@@ -60,12 +69,13 @@ string, pixel, sample or palette entry from the disc is in this repository.
 | `disc_write.py` | the one way anything is written: `tools/ps2_iso9660_writer.py` in, `tools/ps2_iso9660_verify.py` out |
 | `database_lane.py` | `CsvTableLane`, three rows: rosters, team identity, tuning |
 | `loch_text.py`, `loch_lane.py` | the `LOCH` string file, measured and written; the UI-strings row |
-| `art_lane.py` | `ShpsArtLane` (three writer rows) and `ShpsBankLane` (three `0x0E` inventories); also the PCSX2 identity table it loads and the sentence each texture gets |
+| `art_lane.py` | `ShpsArtLane` (four writer rows) and `ShpsBankLane` (three `0x0E` inventories); the `MODELS.BIG` bank-family rule, the per-part census and the slot-fit census (§9); also the PCSX2 identity table it loads and the sentence each texture gets |
 | `tools/mvp05_ps2_texture_identities.py` | pairs a PCSX2 texture dump with the disc on exact pixels and writes the three measured documents (§4.2); `--selftest` proves it on a synthetic bank |
 | `audio_lane.py` | the stream lane (play, export, replace in a bare file) and the bank lane (export) |
 | `inventory_lane.py` | every bank on the disc, one row per archive |
 | `validators.json`, `tools/validate_mvp05_ps2_*.{sh,bat}` | five validators through `tools/validate_game_lane.py` |
 | `tests/mod_editor/test_mvp05_ps2_lanes.py`, `..._module.py`, `..._identities.py` | 20 tests on the synthetic disc, 13 on the identities, plus the conformance harness |
+| `docs/product/measured/mvp05_ps2/models-big-parts.json` | the `MODELS.BIG` census: every bank with its family, every part tag with its codes and sizes, and the slot-fit measurement (§9) |
 
 Shared code this module added: `ea_big.refpack_compress`, `ea_big.rewrite_entry`
 and `BigArchive.row_offset`; `ea_shps.encode_indexed` and `ea_shps.replace_pixels`;
@@ -84,7 +94,8 @@ art lane reads at catalogue time.
 
 | page | lane (row) | classification | what it writes, or why not |
 |---|---|---|---|
-| Uniforms & Equipment | `uniforms.kit_banks` | `read-only-mapped` | lists every kit image of `UNIFORMS.BIG` and `COOPUNIS.BIG`; all `0x0E`, §5 |
+| Uniforms & Equipment | `uniforms.kit_textures` | `offline-writer-proved` | the kit a player wears: 21,767 8-bit images of `MODELS.BIG`, exported and written back; its 8,756 `0x0E` parts listed, §9 |
+| | `uniforms.kit_banks` | `read-only-mapped` | lists the 986 uniform *preview* images of `UNIFORMS.BIG` and `COOPUNIS.BIG`; all `0x0E` or 1×1 stubs, §5 |
 | Names, Numbers & Faces | `rosters.database_tables` | `offline-writer-proved` | any cell of the 18 `DATABASE.BIG` tables, re-packed into its slot |
 | | `rosters.face_banks` | `read-only-mapped` | lists `PORTRAIT.BIG` and `GHEAD.BIG`; all `0x0E` |
 | Text & Team Identity | `identity.team_tables` | `offline-writer-proved` | any cell of `team.dat`, `org.dat`, `tstat.dat`, `manager.dat` |
@@ -132,7 +143,7 @@ string's span runs to the next offset in address order; a replacement must
 fit it with its terminator and is NUL-padded to it. The file is loose on the
 disc, so the writer is the ISO writer alone.
 
-### 3.3 The art (three writers, three inventories, one walker)
+### 3.3 The art (four writers, three inventories, one walker)
 
 One walker parses every bank of a page's archives and lists every image with
 its size, code, palette width, mip bytes, packing and slot. A writer lane
@@ -177,7 +188,21 @@ so any pixel or byte difference would be the writer's.
 | `stadiums.park_textures` | `A001DAY.BIG!cram.ssh` image 1, 64x32, 2,048/2,048 exact; bank 832,160 → 548,715 stored in 551,016 (was 551,013) | 2 / 2,144,689 | PASS | 43 / 66 / 5 |
 | `presentation.overlay_textures` | `IGONLY.BIG!ingameov.ssh` image 15, 64x32, 1,436/2,048 exact; bank 123,712 → 48,340 stored in 49,896 (was 49,893) | 2 / 114,474 | PASS | 0 / 99 / 36 |
 | `menus.widget_textures` | `FEONLY.BIG!sdoodads.ssh` image 0, 128x32, 3,840/4,096 exact; bank 358,304 → 156,927 stored in 158,444 (was 158,444) | 2 / 523,012 | PASS | 6 / 90 / 5 |
+| `uniforms.kit_textures` | `MODELS.BIG!u010a.ssh` images 0 (`llod`, 128x128) and 5 (`hat`, 128x64) and `!f010a.ssh` image 0 (`A___`, 16x32); banks 255,264 → 194,450 stored in 216,124 (was 216,124) and 75,552 → 18,642 stored in 19,304 (was 19,302) | 4 / 122,887,433 | PASS | 233 / 79 / 33 |
 | `audio.streams` | `BATDIT.AST` stream 0: 68,908 encoded, padded to 324,156; 64,000 samples at 32,000 Hz × 2 | 2 / 26,717,064 | PASS | 1 / 68 / 9 |
+
+The kit row is the trial this pass added, and it is deliberately three
+textures in two banks of one archive so the multi-image and multi-bank paths
+are both exercised: 25,088 pixel indices re-derived, **both banks the exact
+length they went in**, **0 bytes of either bank changed outside the edited
+pixels**, the other 2,503 entries of `MODELS.BIG` byte-identical, and 233,494
+bytes of the 4.3 GB image different, every one inside the declared span. Its
+first two images are two of the 167 `MODELS.BIG` textures a PCSX2 dump
+confirms (§4.2), so what was written is art the emulator has been seen
+drawing. The two edited banks were chosen for headroom, which is the writer's
+real bound: **1,381 of `MODELS.BIG`'s 1,407 banks re-pack inside their own
+slot unedited, with a median 39 bytes to spare** (§9.3), and an edit that
+compresses worse than the pixels it replaced is refused naming the byte count.
 
 The declared bytes are the ISO writer's own accounting: the whole extent of
 the rewritten file plus its 8-byte directory-record length, which is a
@@ -208,6 +233,7 @@ retail disc, wall clock on this box, pure Python:
 | `stadiums.park_textures` | 87 park archives + `STADIUMS.BIG` + `COOPSTAD.BIG`: 2,284 banks | 12,846 images | 10,182 decode (`0x02`); 8,305 carry a derived PCSX2 name; 2,664 are `0x0E` | 51 |
 | `presentation.overlay_textures` | `IGONLY`, `COOPOV`, `HRSONLY`: 9 banks; 88 `.fel` scripts listed | 322 images | 272 decode; 40 named; 50 `0x0E` | <1 |
 | `menus.widget_textures` | 17 menu archives + `LOGOS.BIG` + 59 loading screens: 424 banks | 2,400 images | 1,145 `0x02` decode and write; 396 `0x05` export; 859 `0x0E` listed | 6 |
+| `uniforms.kit_textures` | `MODELS.BIG`: 1,407 banks (436 kit, 467 lettering, 504 head) beside 549 `.ord`/`.orl` pairs | 30,535 images | 21,767 `0x02` decode and write; 21,363 carry a derived PCSX2 name and 167 a confirmed one; 8,756 `0x0E` and 12 `0x05` listed | 232 |
 | `uniforms.kit_banks` | `UNIFORMS.BIG` 555 banks, `COOPUNIS.BIG` 124 | 986 images | 0: 555 `0x0E`, 431 `0x01` 1×1 stubs | 1 |
 | `rosters.face_banks` | `PORTRAIT.BIG` 2,391 banks, `GHEAD.BIG` 8,400 | 10,791 images | 0: all `0x0E` | 65 |
 | `field_art.banks` | `FIELDS.BIG` + 7 ballpark-builder archives: 224 banks | 224 images | 0: all `0x0E` | <1 |
@@ -252,15 +278,20 @@ identity records how many others it shares with.
 | `stadiums.park_textures` (87 parks + 2) | 12,846 | 2,664 | 8,305 | **816** (59 pictures) | 3 of 3 |
 | `menus.widget_textures` (17 + logos + 59 loaders) | 2,400 | 859 | 317 | **13** | 3 of 3 |
 | `presentation.overlay_textures` (3) | 322 | 50 | 40 | **10** | 3 of 3 |
+| `uniforms.kit_textures` (`MODELS.BIG`) | 30,535 | 8,756 | 21,363 | **167** | 3 of 3 |
 | `uniforms.kit_banks` (2) | 555 | 555 | 0 | 0 | none |
 | `rosters.face_banks` (2) | 10,791 | 10,791 | 0 | 0 | none |
 | `field_art.banks` (8) | 224 | 224 | 0 | 0 | none |
-| everything else, incl. `MODELS.BIG` | 31,466 | 8,811 | 21,642 | **169** | 3 of 3 |
+| everything else, **now that `MODELS.BIG` has its own row** | 931 | 55 | 279 | **2** | 3 of 3 |
 | **all 211 archives** (`textures.bank_inventory`) | **58,604** | **23,954** | **30,304** | **1,008** | 3 of 3 |
 
-The zeros are the honest part. **Every image on the uniform, face and field-art
-pages is `0x0E`**, so nothing there can be paired even though two kits and a
-portrait are on screen in these very frames — §5 is why. And 1,008 confirmed of
+The zeros are the honest part. **Every image on the uniform-preview, face and
+field-art pages is `0x0E`**, so nothing there can be paired even though two kits
+and a portrait are on screen in these very frames — §5 is why. The kit row above
+them is where those two on-screen kits actually are: 167 of its images are
+confirmed, and the parts they fall on are `lace` (155), `hat` (4), `llod` (3),
+`bglb` and `bglt` (2 each) and `hlm1` (1) — the low-detail equipment a wide
+camera draws [M]. And 1,008 confirmed of
 58,604 is a fact about a three-frame capture, not about the disc:
 `replacement_identity` answers with the confirmed name where there is one, the
 derived name where there is not, and the page says which of the two it is
@@ -310,8 +341,9 @@ emulator, so no lane offers a *Write PCSX2 pack* step.
 
 ## 5. `SHPS` code `0x0E`: the verdict
 
-Every kit, portrait, head texture, loading screen and piece of field art on
-the disc is code `0x0E`. The bounded hour the brief allowed established what
+Every uniform *preview* swatch, portrait, head texture, loading screen and
+piece of field art on the disc is code `0x0E` — and so is the high-detail half
+of every worn kit, though not the rest of it (§9). The bounded hour the brief allowed established what
 it is and stopped short of drawing it; `EA_SHPS_FORMAT.md` §5 carries every
 measurement and every rejected reading. In short:
 
@@ -335,7 +367,8 @@ measurement and every rejected reading. In short:
   97.8, 69.9 and +1.9 against 14.5).
 
 So those pages are `read-only-mapped` with that reason, and the reader hands
-back nothing rather than a half-right picture. Whoever picks it up starts at
+back nothing rather than a half-right picture. The Uniforms page is the
+exception, and §9 is why: most of what a player wears was never `0x0E`. Whoever picks it up starts at
 the selector semantics with the block map, the endpoint order and the raster
 order settled.
 
@@ -447,8 +480,8 @@ matched byte for byte; its bank tags it **`llod`**, and the same bank's `0x0E`
 images are the high-detail parts (`jers`, `jerk`, `msk1`, `slvl`, `slvr`,
 `lega`, `shoe`). These frames draw the low LOD. **An on-screen kit is
 therefore an editable `0x02` image in `MODELS.BIG`, not one of the `0x0E`
-images the uniforms page lists** — and `MODELS.BIG` is on no writer page today,
-which is a gap this pass found and did not close.
+images the uniforms page lists** — and `MODELS.BIG` was on no writer page when
+that was written. **§9 is the census that followed and the writer it earned.**
 
 **The capture to ask for is a close-up** [A] — a replay or cutscene camera on a
 player, or a portrait at full size — where the game has a reason to load the
@@ -472,6 +505,11 @@ by these lanes; the trial in §4 is the recipe:
    catalogue's LOCI ids say which.
 3. **The art.** Diagonal bands in a park texture, an overlay texture and a
    menu widget.
+3a. **The kit.** Diagonal bands in `u010a.ssh`'s `llod` and `hat`, which a
+   wide camera on that club should draw, and in `f010a.ssh`'s `A___`, which
+   should appear in that club's nameplates. If the kit changes and the letter
+   does not, the game composites nameplates from somewhere else and §9's
+   reading of the lettering banks is wrong.
 4. **The audio.** A two-second tone where a crowd bed was.
 5. **The negative that matters.** The game must still *load*. A rewritten
    size word in an archive's table is the step most likely to be checked.
@@ -491,7 +529,7 @@ separate trial and nobody has run it.
 
 ```bash
 export QT_QPA_PLATFORM=offscreen
-python -m mod_editor.games conformance --game mvp05_ps2          # 453 of 453
+python -m mod_editor.games conformance --game mvp05_ps2          # 493 of 493
 python tools/validate_game_lane.py --game mvp05_ps2 --all         # five PASS tokens
 PYTHONPATH=. python tests/mod_editor/test_mvp05_ps2_lanes.py
 PYTHONPATH=. python tests/mod_editor/test_mvp05_ps2_identities.py
@@ -515,6 +553,16 @@ python tools/mvp05_ps2_texture_identities.py \
 `--index <scratch>/index.jsonl` on a later run reads that index instead of
 walking the disc again; the index carries the palette-join hits too, so the
 `0x0E` verdict is reproduced from it without a second walk.
+
+§9's tables are rebuilt in one command — about eleven minutes, of which four
+are the archive walk and seven are re-packing all 1,407 banks:
+
+```bash
+python -m mod_editor.games.mvp05_ps2.art_lane --lane kits --source <iso> \
+    --parts docs/product/measured/mvp05_ps2/models-big-parts.json --slot-fit
+```
+
+Drop `--slot-fit` for the per-part table alone.
 
 ---
 
@@ -542,3 +590,155 @@ or one import away. A second title costs:
 The pieces that were genuinely new here — the encoder, the slot writer, the
 CSV model, the `LOCH` reader and the bit-exact art round trip — do not have to
 be built again.
+
+---
+
+## 9. `MODELS.BIG`: the census, and the writer it earned [M]
+
+§5.2 ended on a gap: the kit on a batter is an editable `0x02` image and
+`MODELS.BIG` was on no writer page. This section is the measurement that
+closed it. Everything here is in
+`docs/product/measured/mvp05_ps2/models-big-parts.json`, rebuilt by the command
+in §7.
+
+### 9.1 Three bank families, told apart by name and confirmed by their tags
+
+`MODELS.BIG` holds **1,407 `SHPS` banks beside 549 `.ord`/`.orl` model pairs**,
+in 2,505 entries. Every bank's name puts it in one of three families, and every
+family has one tag set:
+
+| family | names | banks | images | `0x02` | `0x0E` | `0x05` | tags per bank |
+|---|---|---:|---:|---:|---:|---:|---:|
+| kit | `u<nnn><v>.ssh`, plus `umpire`, `umpirec`, `uniform` | 436 | 13,921 | **5,657** | 8,252 | 12 | 32 |
+| lettering | `f<nnn><v>.ssh`, `a<nnn><v>.ssh`, `teamfont` | 467 | 16,110 | **16,110** | 0 | 0 | 36 (10 for `a<nnn><v>`) |
+| head | `c<nnn>.ssh` | 504 | 504 | 0 | 504 | 0 | 1 |
+| **all** | | **1,407** | **30,535** | **21,767** | **8,756** | **12** | |
+
+The families are not read off the names alone — the name predicts the tag set
+and the tag set confirms it, with no counter-example in 1,407 banks. A name
+this rule does not recognise is reported as `other`, never guessed.
+
+**Which bank is which club, and which is nobody's.** `DATABASE.BIG!team.dat`
+column 6, `team_artid`, runs 1..126 across the table's 126 rows, and the `u`
+and `f` families each carry exactly the bank numbers 0..125: **`team_artid` − 1
+is the bank number, and the map is a bijection** [M]. So a bank names its club
+by rule, and this repository carries the rule rather than a table of club names,
+which would be disc payload. `<v>` is the uniform variant, `a`..`p`: 32 of the
+126 clubs (the two top leagues) carry 6 to 12 variants each and the rest carry
+1 or 2 [M]. **The four named banks belong to no club** — `umpire` and `umpirec`
+are officials' kits, `uniform` a create-a-team base, `teamfont` a shared
+lowercase-and-digits sheet — which is why the page names banks and lets the rule
+name clubs, instead of claiming a team attribution per row.
+
+**What `UNIFORMS.BIG` is, then.** Its 555 banks are 128x128 `0x0E` images with
+431 one-pixel `0x01` stubs beside them, keyed by the same `<nnn><v>` scheme: the
+uniform *preview* swatches. That they are the select-screen art is read from
+their name, shape and key, not witnessed — no frame of the three-frame dump
+reached that screen, and the row says so.
+
+### 9.2 The part table: what is writable, and what is not
+
+One row per four-character part tag of the 436 kit banks. **The dichotomy is
+total**: a tag is `0x02` in every bank or `0x0E` in every bank, never mixed.
+The `0x05` column is a handful of 8x8 direct-colour stubs standing in where a
+part is unused. `confirmed` is how many of that part the three-frame PCSX2 dump
+names by exact pixel equality (§4.2).
+
+| tag | images | `0x02` | `0x0E` | `0x05` | confirmed | sizes |
+|---|---:|---:|---:|---:|---:|---|
+| `aslv` | 436 | 436 | 0 | 0 | 0 | 64x64 ×434, 8x8 ×2 |
+| `hat` | 436 | 436 | 0 | 0 | 4 | 128x64 |
+| `hlm1` | 436 | 436 | 0 | 0 | 1 | 128x64 ×434, 64x64 ×2 |
+| `lace` | 436 | 436 | 0 | 0 | 155 | 32x32 |
+| `msk2` | 436 | 436 | 0 | 0 | 0 | 8x8 ×435, 64x64 ×1 |
+| `msk3` | 436 | 436 | 0 | 0 | 0 | 64x32 ×433, 128x32 ×3 |
+| `bglb` | 435 | 435 | 0 | 0 | 2 | 64x64 ×433, 8x8 ×2 |
+| `bglt` | 435 | 435 | 0 | 0 | 2 | 64x64 ×433, 8x8 ×2 |
+| `hhlm` | 435 | 435 | 0 | 0 | 0 | 128x128 ×433, 8x8 ×2 |
+| `llod` | 435 | 435 | 0 | 0 | 3 | 128x128 |
+| `wrbn` | 435 | 435 | 0 | 0 | 0 | 32x32 ×433, 8x8 ×2 |
+| `merk` | 433 | 433 | 0 | 0 | 0 | 64x64 |
+| `mslv` | 433 | 433 | 0 | 0 | 0 | 64x128 |
+| `chst` | 435 | 0 | 433 | 2 | 0 | 128x128 ×433, 8x8 ×2 |
+| `jerf` | 435 | 0 | 433 | 2 | 0 | 128x128 ×433, 8x8 ×2 |
+| `jerk` | 436 | 0 | 436 | 0 | 0 | 128x128 |
+| `jers` | 436 | 0 | 436 | 0 | 0 | 128x128 |
+| `jert` | 435 | 0 | 433 | 2 | 0 | 128x128 ×433, 8x8 ×2 |
+| `jrfl` | 433 | 0 | 433 | 0 | 0 | 128x128 |
+| `jrkl` | 434 | 0 | 434 | 0 | 0 | 128x128 |
+| `jrsl` | 436 | 0 | 436 | 0 | 0 | 128x128 |
+| `jrtl` | 433 | 0 | 433 | 0 | 0 | 128x128 |
+| `lega` | 436 | 0 | 436 | 0 | 0 | 128x256 ×435, 128x128 ×1 |
+| `legb` | 435 | 0 | 433 | 2 | 0 | 128x256 ×433, 8x8 ×2 |
+| `legc` | 435 | 0 | 433 | 2 | 0 | 128x256 ×433, 8x8 ×2 |
+| `legd` | 433 | 0 | 433 | 0 | 0 | 128x256 |
+| `merf` | 433 | 0 | 433 | 0 | 0 | 128x128 |
+| `msk1` | 436 | 0 | 436 | 0 | 0 | 128x128 |
+| `shn1` | 435 | 0 | 433 | 2 | 0 | 128x128 ×433, 8x8 ×2 |
+| `shoe` | 436 | 0 | 436 | 0 | 0 | 128x64 ×433, 64x32 ×3 |
+| `slvl` | 436 | 0 | 436 | 0 | 0 | 128x64 |
+| `slvr` | 436 | 0 | 436 | 0 | 0 | 128x64 |
+
+**Writable: 13 tags, 5,657 images.** `llod` is the whole kit at low detail and
+is the texture §5.2 caught the game drawing; `hat`, `hlm1` and `hhlm` are caps
+and helmets; `aslv` and `mslv` sleeves; `bglb`/`bglt` batting gloves; `wrbn` a
+wristband; `lace`, `merk`, `msk2`, `msk3` the small equipment.
+
+**Refused: 19 tags, 8,252 images.** `jers`/`jerk`/`jrsl`/`jrkl`/`jerf`/`jert`/
+`jrfl`/`jrtl`/`merf` are the high-detail jersey in its variants; `lega`..`legd`
+the trousers; `msk1`, `shoe`, `slvl`, `slvr`, `chst`, `shn1` the rest. All
+`0x0E`, all §5.
+
+**The lettering banks are 62 tags and every one is writable**: `A___`..`Z___`
+(438 each, 16x32), `a___`..`z___` (2 each, 16x32) and `zig0`..`zig9` (467 each,
+mostly 32x64) — 16,110 images. These are the glyphs the game composites into a
+nameplate and a squad number, which is what §4.2's unmatched pile said it was
+doing ("nameplates and numbers the game composites at run time"). **That reading
+is inference from the tag names and the per-club keying; no frame of the dump
+drew one**, so the boot list in §6 asks for it directly.
+
+**The 504 head banks are one `0x0E` `face` image each**, 128x256. They are
+listed by this lane because they are in this archive; nothing draws them.
+
+### 9.3 The writer's real bound is the slot, and it is thin
+
+The bank goes back inside the slot its entry already owns. Re-packing all 1,407
+banks with our own RefPack encoder, **unedited**:
+
+| family | banks | re-pack inside the slot | over it |
+|---|---:|---:|---:|
+| kit | 436 | 416 | 20 |
+| lettering | 467 | 461 | 6 |
+| head | 504 | 504 | 0 |
+| **all** | **1,407** | **1,381** (98.2 per cent) | **26** |
+
+Headroom runs from **-89 to +388 bytes, median 39** [M]. That is a far tighter
+margin than the CSV tables enjoy, and it is why the refusal matters: an edit
+that compresses *worse* than the pixels it replaced can push a bank that fits
+here over the line, and `ea_big.rewrite_entry` refuses it naming the byte count
+rather than moving an entry. The trial in §4 chose two banks with headroom on
+purpose, and says so.
+
+### 9.4 What a modder can and cannot change, plainly
+
+- **Can:** the low-detail whole kit, the cap, the helmet (both), the sleeves,
+  the batting gloves, the wristband, the laces and the small equipment masks,
+  for any of 436 kit banks; and every letter and digit of the nameplate and
+  number sheets, for any of 467 lettering banks. 21,767 images.
+- **Cannot:** the high-detail jersey, the trousers, the shoes, the arm sleeves
+  and the chest and shin pieces — 8,252 images, all `SHPS` code `0x0E`, whose
+  per-pixel selectors are undecoded (§5). Nor the 504 head textures, nor the
+  986 preview swatches on the row beside it.
+- **Cannot, on 26 banks:** whatever re-packs larger than its slot. The refusal
+  names the byte count; nothing repacks the archive.
+- **Not proved anywhere:** that the game loads any of it. **No rebuilt image
+  has been booted** (§6), and no PCSX2 replacement pack built from these names
+  has been loaded either (§4.2). The 167 confirmed names say the emulator wrote
+  those filenames while drawing those pixels; they do not say a pack under them
+  comes back.
+
+So MVP has a uniform writer, and it reaches most of the kit and all of the
+lettering. It is not a complete uniform editor and the page does not say it is:
+the shirt and trousers a close camera shows are the `0x0E` half, and decoding
+those selectors is the one piece of work that would finish it — the same piece
+that would finish the portraits and the field art (§5).
