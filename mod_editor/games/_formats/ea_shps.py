@@ -15,7 +15,8 @@ The shape, and the two things a first reading gets wrong
 +0x00  "SHPS"                 (also ShpS / SHPI / SHPM / SHPP / SHPX)
 +0x04  u32   declared size    the whole bank, and it matches [M]
 +0x08  u32   image count
-+0x0C  4 chars directory id   "G355" on the discs measured [M]
++0x0C  4 chars directory id   "G359" on MVP, "G355" on the Tiburon
+                              dashboard banks; little-endian on both [M]
 +0x10  count x { 4-char tag; u32 offset }     offsets from the bank's start
 
 each block, at one of those offsets and chained from it:
@@ -58,7 +59,7 @@ there" must not render the same.
 
 ## What is refused, and why that is not the same as empty
 
-**Code ``0x0E``** is every crowd-and-wall texture of the 100 ballpark
+**Code ``0x0E``** is every crowd-and-wall texture of the 87 ballpark
 archives.  Its arithmetic is exactly three bits per pixel across all 6,430
 images measured, and reading those bytes as 8-bit indexed at three eighths of
 the declared height, or as 4-bit indexed at three quarters of it, produces the
