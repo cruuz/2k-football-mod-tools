@@ -27,9 +27,10 @@ no palette entry and no bank name from any game is reproduced here.
 2. **Two of the four pixel codes are decoded and proved to the eye** — 8-bit
    indexed (`0x02`) and direct 32-bit RGBA (`0x05`), 20,099 of the 27,485
    images sampled — and **two are refused**, one of which is not a corner
-   case: code `0x0E` is a **compressed** codec at a fixed 6 bytes per 4×4
-   block, and it holds every uniform, portrait, head texture and loading
-   screen on the disc. §5 is the measurement that says so.
+   case: code `0x0E` is a **4×4-block codec** at 6 bytes per block — two 8-bit
+   palette endpoints per block, whose layout is decoded, and 2-bit per-pixel
+   selectors, whose semantics are not — and it holds every uniform, portrait,
+   head texture and loading screen on the disc. §5 is the measurement.
 3. **The palette is the part that is easy to get wrong twice**: a 256-entry
    CLUT is in the GS's CSM1 order and must be un-swapped, and a shorter one is
    padded past its declared length and must not be over-read. Both are settled
@@ -37,9 +38,11 @@ no palette entry and no bank name from any game is reproduced here.
 4. **Alpha is EA's PlayStation 2 scale**, where `0x80` is opaque, not `0xFF`
    [M] — the same convention the `MMAP` decoder on the Madden side documents,
    because the two formats are different wrappers over the same hardware.
-5. **Nothing here writes.** An `SHPS` bank sits inside a `BIG` entry, and
-   `EA_BIG_FORMAT.md` §6 says why that entry cannot be replaced yet; an
-   encoder written before then would have nowhere to put its output.
+5. **An 8-bit image is written back in place.** `encode_indexed` indexes an
+   RGBA image against a bank's own palette and `replace_pixels` swaps an
+   image's level-0 bytes inside the bank at the same size; `EA_BIG_FORMAT.md`
+   §6 is the slot writer that puts the bank back. The MVP Baseball 2005
+   module's art lanes are the proof.
 
 ---
 
@@ -168,7 +171,7 @@ so a matcher pairing a dump with a bank asks for it.
 
 ## 5. What is refused, and why that is not the same as empty
 
-### `0x0E` — 7,996 images, and it is a compressed codec
+### `0x0E` — 7,996 images: a block codec, half decoded
 
 **This is the single largest gap in this format, and it is not a corner
 case.** Code `0x0E` holds, on MVP Baseball 2005 [M]:
@@ -187,29 +190,81 @@ archive and recorded each image's first block code (20,973 images) [M].
 | `MODELS.BIG` | 1,249 | 29% |
 | `LOGOS.BIG` | 524 | 57% |
 
-Three measurements say what it is, and rule out ever decoding it by
-rearranging bits [M]:
+**What it is, as measured on the retail disc (2026-09-06, one bounded
+session)** [M]. An earlier pass called this "a fixed-rate compressed codec
+in the executable, undecodable by rearranging bits". One of its three claims
+holds and two are corrected here:
 
-1. **The rate is exactly 6 bytes per 4×4 block of pixels** — 0.375 bytes per
-   pixel — for all 7,996 images, at every size from 64×64 to 1024×256, with no
-   exception. A 256×256 image is 24,576 bytes; a 128×64 is 3,072. **A
-   variable-rate compressor cannot hold an exact constant ratio**, so this is a
-   fixed-rate codec, and 6 bytes per 4×4 block is the shape of one.
-2. **The bytes are near-uniform at every position mod 6, 8 and 12** — mean
-   about 140, more than 230 distinct values in each column of a 1,024-block
-   image. A plain indexed bitmap uses a subset of its palette and does not look
-   like that; packed endpoints and selectors do.
-3. Consequently the two readings that produce the right *number* of bytes
-   were tried, rendered and looked at — 8-bit indexed at three eighths of the
-   declared height, and 4-bit indexed at three quarters of it in both nibble
-   orders. All three sheets come out in plausible colours (so the attached
-   256-entry palette is certainly the right palette) and with no coherent
-   image.
+1. **The rate is exactly 6 bytes per 4×4 block** — 0.375 bytes per pixel —
+   at every size, for every image; the pixel block is exactly
+   `16 + w*h*3/8` bytes and **a 256-entry `0x21` palette block follows it in
+   every chain** (`0x0e, 0x21, 0x69, 0x70`). Still true, and the palette
+   decides what the bytes can be.
+2. **The bytes are not near-uniform.** The first bytes of a uniform run
+   `6c 6c 6c 18 6c 6c 6c 6c 6c 24 …`, a portrait `01 01 2c 24 01 01 23 2c
+   00 00 …`, a loading screen `17 54 17 54 17 54 …`: long runs of one value
+   and its neighbours. The palette is the tell: every `0x0E` image's palette
+   has **246 to 252 distinct entries, all non-zero**, and the payload uses
+   **254 to 256 distinct byte values**. A 4-bit image would touch 16 palette
+   entries; a selector-only stream would not correlate with the palette at
+   all. **These bytes are 8-bit palette indices.**
+3. **The layout is two streams, not interleaved blocks.** The first `w*h/8`
+   bytes are a coherent raster at width `w/2` (neighbour-colour distance
+   0.3–0.45 of random, against 1.0 for the rest); the last `w*h/4` bytes are
+   not a raster at any width but keep a period-4 structure. That is a
+   4×4-block codec with two 8-bit endpoints and a 2-bit selector per pixel —
+   DXT1's structure over a CLUT — with the two halves stored apart:
 
-So the codec is not in these bytes' arrangement; it is in the executable.
-The reader names the code, quotes the rate and the statistics, and hands back
-nothing. A half-right picture exported as if it were the texture is how a
-modder ships a corrupted uniform.
+   * **Endpoint stream** (`w*h/8` bytes): one 32-bit word per two
+     horizontally adjacent blocks, `[i1(x), i1(x+1), i0(x), i0(x+1)]`, in
+     block-raster order. The within-word similarity matrix says so — bytes 2
+     and 3 of every word form a smooth image (next word 0.32, next row 0.33
+     of random), bytes 0 and 1 a rough one (0.77 / 0.90), and the two halves
+     are anti-correlated (0.95–1.0), which is a dark and a light endpoint of
+     one block. **Rendering every block flat in its `i0` colour gives a
+     recognisable quarter-resolution portrait** (head, hair, jersey) and
+     loading screen (title, panels): the block→position map is right.
+   * **Selector stream** (`w*h/4` bytes): 8 bytes per pair of blocks, raster
+     order (adjacent-word Hamming similarity 0.45, next row 0.65). Within a
+     byte the two nibbles are unrelated (2-bit fields 0↔1 agree 61%, 2↔3
+     48%, 0↔2 24% = random), and the most common selector bytes are `0x0F`,
+     `0xFF`, `0x6F`, `0x5F`, `0xAF` — low nibble `1111` — the signature of
+     bit-planar nibbles over a flat row.
+
+   **What is not decoded: the per-pixel selector semantics.** Every reading
+   tried leaves noise inside the blocks while the composition stays right:
+   row-per-byte (LSB-first and MSB-first), one little-endian u32, two 16-bit
+   planes, nibble-interleaved between the two blocks of a pair (2 pixels per
+   nibble, both assignments), bit-planar nibbles (low nibble = plane 0 of a
+   4-pixel row, high = plane 1) × both bit orders × all 24 orderings of the
+   weights (0, ⅓, ⅔, 1), and endpoint interpolation in DXT order, linear
+   order, in index space and in colour space. The total neighbour gradient
+   of the portrait plateaued at 34 on every one of them, against 14.5 for
+   the flat-endpoint render.
+
+   **The 48-bit-per-block decompositions, tested against a portrait and
+   rejected by the same gradient** [M] (lower is smoother; 14.5 is the
+   two-stream flat-endpoint reference, raster block order):
+
+   | decomposition | best gradient | why it is out |
+   |---|---:|---|
+   | (a) two RGB565 endpoints + 16 one-bit indices, per 6-byte block, both endian, both endpoint orders, both bit orders | 135.5 | worst of everything tried; and the palette block that follows every `0x0E` block would be unused |
+   | (b) one RGB565 base + 16 two-bit luma steps, both endian, both bit orders, two step tables | 97.8 | random-level; same palette objection |
+   | (c) two CLUT indices + 16 two-bit selectors **interleaved** per 6-byte block | 69.9 | the raster test says the two halves are separate streams, and separating them (above) gives 14.5 |
+   | (d) blocks in 8×8-tile order instead of raster, applied to every reading above | worse in every case (16.4 vs 14.5 for the reference) | raster is the block order |
+
+   Also rejected earlier, and why: 8-bit and 4-bit rasters at (w/2)·(3h/4),
+   (3w/4)·(h/2) and w·(3h/8) in both nibble orders (no picture); the PS2
+   `swizzle8` layout and the PCSX2 GS block permutation at every candidate
+   size (their coherence gain was the endpoint stream's own structure, not a
+   picture); the GS PSMCT16/PSMCT32 page swizzles over the two streams (they
+   scramble the block map that raster order gets right); half-resolution
+   8-bit plus a 1-bit or 4-bit plane, in either order.
+
+So the reader names the code, quotes this measurement, and still hands back
+nothing: a half-right picture exported as if it were the texture is how a
+modder ships a corrupted uniform. The next person starts at the selector
+semantics with the block map, the endpoint order and the raster order settled.
 
 ### `0x01` — 321 images, every one of them 1×1
 
@@ -262,8 +317,9 @@ block.
 
 ## 8. What stays unknown
 
-- **`0x0E`'s codec**, §5. The single biggest gap in this format, and the
-  one that decides how much of an EA BIG disc's art a studio can show.
+- **`0x0E`'s per-pixel selectors**, §5. The block map, the endpoint order
+  and the raster order are settled; the 2-bit selector semantics are not,
+  and they decide how much of an EA BIG disc's art a studio can show.
 - **`0x01`'s layout**, §5, and it may never be knowable from this disc.
 - **The four `misc` u16s** of a pixel block. Zero in every pixel block
   measured; `0x0E` blocks carry `(0, 0, 8196, 2)` and palettes `(entries, 0,

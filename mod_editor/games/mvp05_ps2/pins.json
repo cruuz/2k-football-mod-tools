@@ -1,0 +1,27 @@
+{
+  "capability_rows": 13,
+  "game_id": "mvp05_ps2",
+  "hidden_disc_writers": 8,
+  "lanes_on_contract": 13,
+  "product_modules": 19,
+  "retail_identity": {
+    "content_sha256": "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484",
+    "executable_sha256": "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615"
+  },
+  "save_writer_ids": [],
+  "schema": "vc_game_module_pins/v1",
+  "shipped_files": 29,
+  "surfaces": [
+    "audio",
+    "colors",
+    "menus",
+    "players_rosters",
+    "portraits_faces",
+    "scorebug_presentation",
+    "scripts_config",
+    "stadiums_fields",
+    "textures",
+    "uniforms"
+  ],
+  "windows": 1
+}

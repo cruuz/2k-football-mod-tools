@@ -1,0 +1,1018 @@
+{
+  "capabilities": [
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 audio.banks catalogue --source <SLUS-21135.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/mvp05_ps2/audio_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_audio.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Audio page of the PS2 MVP Baseball 2005 Studio with Export WAV and no import: the page states, in the row's own words, that a bank sound is not replaced here and why."
+      },
+      "id": "mvp05ps2.audio.banks",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and memory-mapped read-only; an export writes only where the user asks.",
+        "A sound that declares no length or no sample rate is listed and refused.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules."
+      ],
+      "portme": [
+        "Map the loop points and a same-length replacement becomes possible through the shared writer."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter writes local WAVs and no path writes anything into the game or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<path>:<sound>, as the catalogue writes it",
+            "name": "sound",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "Export writes one WAV per selected sound. There is no import."
+      },
+      "source_container": {
+        "format": "EA BNKl bank: a directory of sound entries, each an SCHl-shaped header and a run of PlayStation ADPCM.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "2 banks, 11 sounds",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Catalogue the two EA BNKl sound banks (/DATA/AUDIO/ORCA/ZSNDFRNT.GEN and PAUSESFX.BNK, 11 sounds between them) and export their sounds as WAV. Nothing is written back: the banks' loop points are not mapped and no rebuilt file has been booted.",
+      "surface": "audio",
+      "title": "MVP 05 (PS2) BNKl sound banks",
+      "validation_command": "bash tools/validate_mvp05_ps2_audio.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 audio.streams build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/audio_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_audio.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Audio page of the PS2 MVP Baseball 2005 Studio with Play, Export WAV and an Import WAV that is checked before it is accepted; a MicroTalk stream is listed with its rate, channels and length and its Play and Export refuse by name."
+      },
+      "id": "mvp05ps2.audio.streams",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "Fixed allocation: a replacement longer than the stream it replaces is refused naming the byte count it had to fit; the file keeps its length.",
+        "A replacement WAV is mixed to the stream's channel count and resampled to its rate by linear interpolation, which is said on the page rather than done quietly.",
+        "MicroTalk (codec 4) is refused by name: no decoder for it exists that this project could check against.",
+        "Only the bare stream files are replaced; an archived stream exports and its replace is refused naming the reason.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 4,000 streams are listed as targets while the per-file totals stay complete."
+      ],
+      "portme": [
+        "Boot a rebuilt image and hear the replaced bed.",
+        "Decode MicroTalk; every line of commentary is behind it.",
+        "Name the beds: the files carry an index (.OFF) whose rows are not parsed here."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. The edited file is re-read out of BOTH images: every untouched stream is byte-identical, the replaced stream decodes against the WAV it came from above 12 dB, and the image-level verifier re-derives every declared byte. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<path>:<stream> for a bare file, <path>!<entry> for an archived stream",
+            "name": "sound",
+            "required": true
+          },
+          {
+            "allowed": "a path to an uncompressed WAV that fits the stream's stored bytes once encoded",
+            "name": "wav",
+            "required": false
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "A recipe that names a sound with no WAV is refused by the build. The GUI must not offer Play or Export WAV on a MicroTalk stream; both refuse with the codec's name."
+      },
+      "source_container": {
+        "format": "Bare EA SCHl stream files (SCHl header with a PT platform tag and a tag list, SCCl count, SCDl blocks of 28-sample 15-byte EA-XA frames, SCEl), zero-padded apart; and stored SCHl entries inside EA BIG archives.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "31 bare stream files, 5 speech archives of 9,123 entries",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "List every EA SCHl stream on the disc, play and export the ones that decode, and replace a stream in one of the 31 bare stream files with a WAV, writing a NEW disc image. Measured: six *DAT.BIG beds (CHANTDAT 144 MB, RALLYDAT, PLCHTDAT, BDCSTDAT, HSFXDAT, STDMDAT), 14 .AST crowd and heckle beds and 9 .ASF menu tracks are EA-XA ADPCM and decode; PADAT.BIG, PBPDAT.BIG and the 9,123 entries of the five speech archives are MicroTalk and are refused by name. A replacement is mixed and resampled to the stream's own rate and channels, re-encoded as EA-XA, must fit the bytes the stream occupies, is zero-padded to them, and the file goes back inside its extent. NOT booted.",
+      "surface": "audio",
+      "title": "MVP 05 (PS2) EA SCHl audio streams: play, export WAV, and replace",
+      "validation_command": "bash tools/validate_mvp05_ps2_audio.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 field_art.banks catalogue --source <SLUS-21135.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/mvp05_ps2/art_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_art.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Field Art & Create-Team Art page of the PS2 MVP Baseball 2005 Studio as a table and no editor."
+      },
+      "id": "mvp05ps2.field_art.banks",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading; nothing is written to the disc, a save or the emulator.",
+        "Every bank is parsed for its directory and every image is listed with its size, pixel code and palette width; no pixel is decoded and no PNG is offered, because every image in these archives is SHPS code 0x0e.",
+        "The refusal quotes the measurement: 6 bytes per 4x4 block, two 8-bit palette endpoints per block in 4-byte words over the block raster, 2-bit selectors in 8-byte block-pair chunks, and every per-pixel reading tried leaving noise inside the blocks.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
+      ],
+      "portme": [
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Dump textures from PCSX2 running this game to learn which bank is which kit, portrait or field."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>:<entry>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer an export or an import from this row: no image in these archives decodes."
+      },
+      "source_container": {
+        "format": "SHPS image banks of code-0x0e images inside RefPack-packed entries of EA BIG archives.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "FIELDS.BIG 56 banks plus 7 ballpark-builder archives, 224 images",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "List every image in FIELDS.BIG (56 banks) and the seven ballpark-builder archives BPSETUP, BPITEMS, BPUPGRAD, BPTICKET, BPPROMOS, BPVENDOR and BPATTRAC (224 images in all) with its size and palette. Every one is SHPS code 0x0e and is listed, not drawn, for the reason the uniforms row measures.",
+      "surface": "textures",
+      "title": "MVP 05 (PS2) field art and ballpark-builder art, listed",
+      "validation_command": "bash tools/validate_mvp05_ps2_art.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 identity.team_tables build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/database_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_tables.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Text & Team Identity page of the PS2 MVP Baseball 2005 Studio: pick a team, organisation or manager row, change any cell, and Build writes a NEW disc image. Colours are not a column this disc's team table carries by name, so the page edits what the table holds and says so."
+      },
+      "id": "mvp05ps2.identity.team_tables",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "Bounded by the slot: a re-packed entry must fit its own stored size plus the slack the archive leaves (at most three bytes on this disc); a replacement that does not is refused naming the byte count, and no entry ever moves.",
+        "A value may not contain a comma or a line break, must be Latin-1, and keeps the column's kind.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules."
+      ],
+      "portme": [
+        "Boot a rebuilt image and see the renamed team in the menus.",
+        "Which column a menu screen reads a team's colour from is not established; the table's columns are listed by name and nothing more is claimed."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. Same proof as the rosters row over the four team tables. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>!<table>#<line>, as the catalogue writes it",
+            "name": "row",
+            "required": true
+          },
+          {
+            "allowed": "a mapping of column key to new value: no comma, no line break, Latin-1, and a number where the column held one",
+            "name": "cells",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One row, any number of its cells, one re-pack of its table. The GUI draws one text field per column from the catalogue's own column list."
+      },
+      "source_container": {
+        "format": "EA BIG archive of RefPack-packed CSV tables in EA's numbered-field grammar (see the rosters row).",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "DATABASE.BIG: team.dat, org.dat, tstat.dat, manager.dat",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Edit the team identity tables of /DATA/DATABASE/DATABASE.BIG -- team.dat (128 rows x 55 columns: names, cities, abbreviations and the rest), org.dat (36 x 14), tstat.dat (128 x 5) and manager.dat (36 x 21) -- and write a NEW disc image. The same cell writer as the rosters row, pointed at the four tables that are teams rather than players; the same slot rule and the same verifier. NOT booted.",
+      "surface": "colors",
+      "title": "MVP 05 (PS2) teams, organisations and managers",
+      "validation_command": "bash tools/validate_mvp05_ps2_tables.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 identity.ui_strings build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/loch_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_strings.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Text & Team Identity page of the PS2 MVP Baseball 2005 Studio: pick a string, type its replacement, and Build writes a NEW disc image; a string longer than its span is refused naming the characters to cut."
+      },
+      "id": "mvp05ps2.identity.ui_strings",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "A replacement must fit the string's own span in UTF-16LE plus its terminator; longer is refused naming the count to cut, shorter is NUL-padded.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 4,000 strings are listed as targets while the per-file totals stay complete."
+      ],
+      "portme": [
+        "Boot a rebuilt image and read the replaced string on screen.",
+        "Which screen a string appears on is not mapped; the LOCI ids are carried in the catalogue for whoever maps them."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. Every string of the edited file is re-read out of BOTH images; the recipe's read as the recipe says, every other one is unchanged, and the image-level verifier re-derives every declared byte. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<file>#<index>, as the catalogue writes it",
+            "name": "string",
+            "required": true
+          },
+          {
+            "allowed": "UTF-16 text that fits the string's span",
+            "name": "text",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One string, one replacement, one file rewritten inside its extent."
+      },
+      "source_container": {
+        "format": "EA LOCH string file: 'LOCH' header (20 bytes, offset of LOCL), 'LOCI' (count x u16 id, u16 index), 'LOCL' (count x u32 offset, then UTF-16LE NUL-terminated strings).",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "FEENG.LOC 415,508 bytes, IGENG.LOC 59,432, MC_ENG.LOC 6,536; 7,977 strings",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Replace any of the 7,977 UI strings in the three LOCH files (/DATA/FEENG.LOC 6,352, /DATA/IGENG.LOC 1,584, /DATA/MC_ENG.LOC 41) and write a NEW disc image. The format was measured here: a LOCH header, a LOCI id table and a LOCL chunk of u32 offsets followed by UTF-16LE NUL-terminated strings. A replacement must fit the span the string already owns and is NUL-padded to it; the loose file goes back inside its ISO9660 extent. NOT booted.",
+      "surface": "menus",
+      "title": "MVP 05 (PS2) menu and in-game strings, replaced in place",
+      "validation_command": "bash tools/validate_mvp05_ps2_strings.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 menus.widget_textures build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/art_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_art.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Menus & UI page of the PS2 MVP Baseball 2005 Studio with the same controls as the stadiums page; a direct-colour logo exports and its import is refused naming the missing encoder."
+      },
+      "id": "mvp05ps2.menus.widget_textures",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "A PNG must be exactly the image's own size, 8-bit, non-interlaced; it is indexed against the image's own palette, so a colour that palette lacks takes the nearest entry and the receipt says how many pixels landed exactly.",
+        "Only 8-bit indexed images (SHPS code 0x02) are written back; direct 32-bit images (0x05) export only, and code 0x0e images are listed with the measured reason nothing is drawn.",
+        "Bounded by the slot: a re-packed bank must fit its own stored size plus the slack the archive leaves (at most three bytes on this disc); a replacement that does not is refused naming the byte count, and no entry ever moves.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
+      ],
+      "portme": [
+        "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
+        "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
+        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. The edited bank is re-read out of the NEW image, its edited image's index bytes equal the PNG indexed against the source palette, every other byte of the bank and every untouched entry of the archive is byte-identical, and the image-level verifier re-derives every declared byte. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>:<entry>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the image's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One image, one PNG, one bank re-packed into its slot. replacement_identity returns a name DERIVED from the image's own bytes for 8-bit images with a 256-entry palette; no PCSX2 dump of this game exists here, so no name is confirmed and the page says so."
+      },
+      "source_container": {
+        "format": "SHPS image banks inside RefPack-packed entries of EA BIG archives (see the stadiums row).",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "17 menu archives, LOGOS.BIG 132 banks, 59 loading-screen archives",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Export and write back the menu art: the widget banks (FEONLY, FEONLYCM, SHARED, SUSHARED, SUONLY, EASOART, MINIBAT, MINIPIT, MINIGAME, MISC, BKGNDS, AWARDS, SPLASH, TITLE, COOPPLYR, COOPTEAM) and LOGOS.BIG, whose 396 direct-colour images export and whose 524 code-0x0e images are listed. The 59 LOADn.BIG loading screens are one code-0x0e image each and are listed with their sizes. NOT booted.",
+      "surface": "menus",
+      "title": "MVP 05 (PS2) menu widgets, backgrounds, logos, awards and loading screens",
+      "validation_command": "bash tools/validate_mvp05_ps2_art.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 playbooks.tuning_tables build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/database_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_tables.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Playbooks & Plays page of the PS2 MVP Baseball 2005 Studio, which for a baseball game holds the tuning tables: pick a row, change any cell, and Build writes a NEW disc image. DATAFILE.BIG's 460 one-line hex tables are not CSV and are not offered."
+      },
+      "id": "mvp05ps2.playbooks.tuning_tables",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "Bounded by the slot: a re-packed entry must fit its own stored size plus the slack the archive leaves (at most three bytes on this disc); a replacement that does not is refused naming the byte count, and no entry ever moves.",
+        "A value may not contain a comma or a line break, must be Latin-1, and keeps the column's kind.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules."
+      ],
+      "portme": [
+        "Boot a rebuilt image and see a changed contract curve or schedule take effect.",
+        "What each curve column means is the disc's semantics; the header names are all that is decoded."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. Same proof as the rosters row over the tuning archives. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>!<table>#<line>, as the catalogue writes it",
+            "name": "row",
+            "required": true
+          },
+          {
+            "allowed": "a mapping of column key to new value: no comma, no line break, Latin-1, and a number where the column held one",
+            "name": "cells",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One row, any number of its cells, one re-pack of its table. The GUI draws one text field per column from the catalogue's own column list."
+      },
+      "source_container": {
+        "format": "EA BIG archives of CSV tables: plain 'a,b,c' CRLF tables (PROGRESS, SCHEDULE, the event tables) and EA's numbered-field grammar (ROOKIE); stored or RefPack-packed per entry.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "PROGRESS.BIG 8, ROOKIE.BIG 26, SCHEDULE.BIG 9, SPEECHDB.BIG 12, AUDIOCSV.BIG 21 tables",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Edit the CSV tables that decide how the game plays -- PROGRESS.BIG's 8 stored progression and contract curves, ROOKIE.BIG's 26 packed draft-class distributions, SCHEDULE.BIG's 9 packed schedules, and the 33 audio event tables of SPEECHDB.BIG and AUDIOCSV.BIG -- and write a NEW disc image. Baseball has no playbook and the disc confirms it, so this is what the page holds. Stored entries go back plain, packed entries re-packed, each inside its own slot. NOT booted.",
+      "surface": "scripts_config",
+      "title": "MVP 05 (PS2) tuning tables: progression, contracts, draft classes, schedules, audio events",
+      "validation_command": "bash tools/validate_mvp05_ps2_tables.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 presentation.overlay_textures build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/art_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_art.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Presentation page of the PS2 MVP Baseball 2005 Studio with the same controls as the stadiums page over the overlay banks."
+      },
+      "id": "mvp05ps2.presentation.overlay_textures",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "A PNG must be exactly the image's own size, 8-bit, non-interlaced; it is indexed against the image's own palette, so a colour that palette lacks takes the nearest entry and the receipt says how many pixels landed exactly.",
+        "Only 8-bit indexed images (SHPS code 0x02) are written back; direct 32-bit images (0x05) export only, and code 0x0e images are listed with the measured reason nothing is drawn.",
+        "Bounded by the slot: a re-packed bank must fit its own stored size plus the slack the archive leaves (at most three bytes on this disc); a replacement that does not is refused naming the byte count, and no entry ever moves.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
+      ],
+      "portme": [
+        "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
+        "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
+        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. The edited bank is re-read out of the NEW image, its edited image's index bytes equal the PNG indexed against the source palette, every other byte of the bank and every untouched entry of the archive is byte-identical, and the image-level verifier re-derives every declared byte. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>:<entry>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the image's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One image, one PNG, one bank re-packed into its slot. replacement_identity returns a name DERIVED from the image's own bytes for 8-bit images with a 256-entry palette; no PCSX2 dump of this game exists here, so no name is confirmed and the page says so."
+      },
+      "source_container": {
+        "format": "SHPS image banks inside RefPack-packed entries of EA BIG archives (see the stadiums row).",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "IGONLY.BIG 4 banks, COOPOV.BIG 4, HRSONLY.BIG 1; 88 layout scripts listed",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Export and write back the overlay art of IGONLY.BIG, COOPOV.BIG and HRSONLY.BIG (4, 4 and 1 banks; 137 images in each of the first two, most of them 8-bit). INGAME.BIG's and COOPLAY.BIG's 44 .fel layout scripts each are listed with their entry counts and not parsed, so where a value on screen comes from is not established. NOT booted.",
+      "surface": "scorebug_presentation",
+      "title": "MVP 05 (PS2) in-game overlay textures",
+      "validation_command": "bash tools/validate_mvp05_ps2_art.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 rosters.database_tables build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/database_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_tables.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 MVP Baseball 2005 Studio: pick a row, change any of its cells, and Build writes a NEW disc image. The page repeats the row's own sentences: the table is re-packed into the slot it already owns and refused if it no longer fits, and no rebuilt image has been booted."
+      },
+      "id": "mvp05ps2.rosters.database_tables",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "Bounded by the slot: a re-packed entry must fit its own stored size plus the slack the archive leaves (at most three bytes on this disc); a replacement that does not is refused naming the byte count, and no entry ever moves.",
+        "A value may not contain a comma or a line break, must be Latin-1, and keeps the column's kind: a number where the column held a number.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 3,000 rows are listed as targets while the document's per-table totals stay complete."
+      ],
+      "portme": [
+        "Boot a rebuilt image in PCSX2 and see the edited name or rating in the game; that is the only thing between this row and runtime-proved.",
+        "Adding or removing a row changes the table's length past what a re-pack recovers; a whole-archive relocation writer would be needed, and none exists.",
+        "Which table column means what is the disc's schema and is not decoded here beyond the column names the header carries."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. The edited table is re-read out of the NEW image, every cell the recipe names holds its value and every other line is byte-identical to the source; every untouched entry of the archive is compared byte for byte; the image-level verifier re-derives every declared byte. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>!<table>#<line>, as the catalogue writes it",
+            "name": "row",
+            "required": true
+          },
+          {
+            "allowed": "a mapping of column key to new value: no comma, no line break, Latin-1, and a number where the column held one",
+            "name": "cells",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One row, any number of its cells, one re-pack of its table. The GUI draws one text field per column from the catalogue's own column list."
+      },
+      "source_container": {
+        "format": "EA BIG archive of RefPack-packed CSV tables: a 16-byte header (little-endian length, big-endian count and table size), a variable-length name table, payloads 4-byte aligned; each table is Latin-1 text, CRLF lines, EA's '<id>,0 value,1 value,...,;' grammar.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "DATABASE.BIG: 18 tables, 1,010,268 payload bytes packed from 3,857,466 plain",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Edit any cell of any of the 18 CSV tables in /DATA/DATABASE/DATABASE.BIG and write a NEW disc image. Measured on the retail disc: attrib.dat 2,923 rows x 46 columns, pitcher.dat 1,432 x 29, roster.dat 2,972 x 10, team.dat 128 x 55, plus the batting, pitching, career, organisation and manager tables, every one RefPack-packed and text in EA's numbered-field grammar. The table is re-packed into the slot its entry already owns -- the disc leaves 0 to 3 bytes of slack, and the encoder here packed every table smaller than EA's stream by 10 to 8,687 bytes -- and the archive goes back inside its ISO9660 extent. NOT booted.",
+      "surface": "players_rosters",
+      "title": "MVP 05 (PS2) rosters: the 18 database tables, cell by cell",
+      "validation_command": "bash tools/validate_mvp05_ps2_tables.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 rosters.face_banks catalogue --source <SLUS-21135.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/mvp05_ps2/art_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_art.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 MVP Baseball 2005 Studio beside the roster table writer, as a table and no editor."
+      },
+      "id": "mvp05ps2.rosters.face_banks",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading; nothing is written to the disc, a save or the emulator.",
+        "Every bank is parsed for its directory and every image is listed with its size, pixel code and palette width; no pixel is decoded and no PNG is offered, because every image in these archives is SHPS code 0x0e.",
+        "The refusal quotes the measurement: 6 bytes per 4x4 block, two 8-bit palette endpoints per block in 4-byte words over the block raster, 2-bit selectors in 8-byte block-pair chunks, and every per-pixel reading tried leaving noise inside the blocks.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
+      ],
+      "portme": [
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Dump textures from PCSX2 running this game to learn which bank is which kit, portrait or field."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>:<entry>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer an export or an import from this row: no image in these archives decodes."
+      },
+      "source_container": {
+        "format": "SHPS image banks of code-0x0e images inside RefPack-packed entries of EA BIG archives.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "PORTRAIT.BIG 2,391 banks, GHEAD.BIG 8,400",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "List every image in PORTRAIT.BIG (2,391 banks) and GHEAD.BIG (8,400 head textures) with its size and palette. Every one is SHPS code 0x0e and is listed, not drawn, for the reason the uniforms row measures.",
+      "surface": "portraits_faces",
+      "title": "MVP 05 (PS2) portraits and head textures, listed",
+      "validation_command": "bash tools/validate_mvp05_ps2_art.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 stadiums.park_textures build --source <SLUS-21135.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/mvp05_ps2/art_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_art.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Stadiums page of the PS2 MVP Baseball 2005 Studio: preview, Export PNG, a checked Import PNG, and Build writes a NEW disc image; a code-0x0e image shows the measured reason it is not drawn instead of a broken preview."
+      },
+      "id": "mvp05ps2.stadiums.park_textures",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and never modified. The destination is a NEW image that must not exist, and naming the source as the destination is refused.",
+        "A PNG must be exactly the image's own size, 8-bit, non-interlaced; it is indexed against the image's own palette, so a colour that palette lacks takes the nearest entry and the receipt says how many pixels landed exactly.",
+        "Only 8-bit indexed images (SHPS code 0x02) are written back; direct 32-bit images (0x05) export only, and code 0x0e images are listed with the measured reason nothing is drawn.",
+        "Bounded by the slot: a re-packed bank must fit its own stored size plus the slack the archive leaves (at most three bytes on this disc); a replacement that does not is refused naming the byte count, and no entry ever moves.",
+        "The independent verifier imports nothing that wrote the image: tools/ps2_iso9660_verify.py re-derives every declared byte with its own ISO9660 decoder, and the lane re-reads the archive out of BOTH images, compares every untouched entry byte for byte, and re-derives the edited content from the recipe.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
+      ],
+      "portme": [
+        "Boot a rebuilt image in PCSX2 and see the edited texture drawn.",
+        "Dump textures from PCSX2 running this game and confirm the derived names against the dump; until then every identity is derived, none confirmed.",
+        "Decode SHPS code 0x0e's per-pixel selectors; docs/product/EA_SHPS_FORMAT.md section 5 lists every reading tried."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. The edited bank is re-read out of the NEW image, its edited image's index bytes equal the PNG indexed against the source palette, every other byte of the bank and every untouched entry of the archive is byte-identical, and the image-level verifier re-derives every declared byte. No MVP Baseball 2005 image rebuilt by this module has been booted in an emulator or on hardware; that the game accepts a rewritten archive is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>:<entry>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the image's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One image, one PNG, one bank re-packed into its slot. replacement_identity returns a name DERIVED from the image's own bytes for 8-bit images with a 256-entry palette; no PCSX2 dump of this game exists here, so no name is confirmed and the page says so."
+      },
+      "source_container": {
+        "format": "SHPS image banks (little-endian directory, 8-bit indexed pixel blocks with a CSM1-ordered 256-entry or short palette, direct 32-bit blocks, code-0x0e block-codec blocks) inside RefPack-packed entries of EA BIG archives.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "87 park archives x 25 banks, plus STADIUMS.BIG 91 banks and COOPSTAD.BIG 18",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Export any decodable SHPS image of the 87 /DATA/STADIUM park archives (25 banks each; about 80% of their images are 8-bit and decode) and of the park menu art (STADIUMS.BIG, COOPSTAD.BIG), and write an edited 8-bit PNG back into a NEW disc image: re-indexed against the image's own palette, the bank re-packed into its entry's slot, the archive back inside its extent. The crowd banks and the whole of the menu art are code 0x0e and are listed only; the 31 .ord/.orl objects per park are geometry with no reader. NOT booted.",
+      "surface": "stadiums_fields",
+      "title": "MVP 05 (PS2) ballpark textures, exported and written back",
+      "validation_command": "bash tools/validate_mvp05_ps2_art.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 textures.bank_inventory catalogue --source <SLUS-21135.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/mvp05_ps2/inventory_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_inventory.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the All Textures page of the PS2 MVP Baseball 2005 Studio as a table and no editor."
+      },
+      "id": "mvp05ps2.textures.bank_inventory",
+      "input_constraints": [
+        "Read-only: nothing is written to the disc, a save or the emulator.",
+        "Every entry is classified from its first 32 bytes and only a bank is parsed, for its directory; no pixel is decoded.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules."
+      ],
+      "portme": [
+        "Nothing: this row is the census, and the pages that own each archive carry the work."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "an archive path, e.g. /DATA/GHEAD.BIG",
+            "name": "archive",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer an export or an import from this row."
+      },
+      "source_container": {
+        "format": "EA BIG archives (nested one level) holding SHPS image banks.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "211 archives, 16,371 banks",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Count every SHPS image bank in every EA BIG archive on the disc -- 211 archives, 643 nested, 16,371 banks -- one row per archive with its banks, images, decodable images and pixel-code histogram. Draws nothing and writes nothing; the art pages are where an image is exported or replaced.",
+      "surface": "textures",
+      "title": "MVP 05 (PS2) every SHPS image bank on the disc",
+      "validation_command": "bash tools/validate_mvp05_ps2_inventory.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane mvp05_ps2 uniforms.kit_banks catalogue --source <SLUS-21135.iso> --out <catalogue.json>",
+        "module": "mod_editor/games/mvp05_ps2/art_lane.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/MVP05_PS2_MODULE.md",
+        "docs/product/EA_BIG_FORMAT.md",
+        "docs/product/EA_SHPS_FORMAT.md",
+        "tests/mod_editor/test_mvp05_ps2_module.py",
+        "tests/mod_editor/test_mvp05_ps2_lanes.py",
+        "tools/validate_mvp05_ps2_art.sh"
+      ],
+      "game": "mvp05_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 MVP Baseball 2005 Studio as a table and no editor: every kit named and sized, the pixel code and the measured reason nothing is drawn beside each."
+      },
+      "id": "mvp05ps2.uniforms.kit_banks",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading; nothing is written to the disc, a save or the emulator.",
+        "Every bank is parsed for its directory and every image is listed with its size, pixel code and palette width; no pixel is decoded and no PNG is offered, because every image in these archives is SHPS code 0x0e.",
+        "The refusal quotes the measurement: 6 bytes per 4x4 block, two 8-bit palette endpoints per block in 4-byte words over the block raster, 2-bit selectors in 8-byte block-pair chunks, and every per-pixel reading tried leaving noise inside the blocks.",
+        "Retail-free: no cell value, string, pixel, sample or palette entry from any disc is in this repository; CI proves the whole path on a synthetic disc built from the formats' rules.",
+        "Bounded: at most 4,000 images are listed as targets while the per-archive totals stay complete."
+      ],
+      "portme": [
+        "Decode code 0x0e's per-pixel selectors; the endpoint stream and block map are already decoded and docs/product/EA_SHPS_FORMAT.md section 5 carries every rejected reading. That single piece of work lifts this row to an exporter and, with the art writer already built, to a writer.",
+        "Dump textures from PCSX2 running this game to learn which bank is which kit, portrait or field."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA BIG, EA SHPS, EA SCHl and EA CSV readers it imports, the RefPack encoder, the ISO9660 writer and its independent verifier, their self-tests and the synthetic disc CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<archive>:<entry>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table. The GUI must not offer an export or an import from this row: no image in these archives decodes."
+      },
+      "source_container": {
+        "format": "SHPS image banks of code-0x0e images inside RefPack-packed entries of EA BIG archives.",
+        "hash_pins": [
+          "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615",
+          "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484"
+        ],
+        "resource": "UNIFORMS.BIG 555 banks, COOPUNIS.BIG 124",
+        "retail_file": "User-owned MVP Baseball 2005 (USA) PlayStation 2 ISO, SLUS-21135 NTSC-U. One image is recognised by its boot-ELF digest; any other re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "List every kit image in UNIFORMS.BIG (555 banks) and COOPUNIS.BIG (124) with its size and palette. Every one is SHPS code 0x0e -- a 4x4-block codec whose two 8-bit palette endpoints per block are decoded and whose per-pixel selectors are not -- so this row draws nothing and says exactly why, with the measurement, rather than offering an export that would refuse every item.",
+      "surface": "uniforms",
+      "title": "MVP 05 (PS2) team kits and create-a-team kits, listed",
+      "validation_command": "bash tools/validate_mvp05_ps2_art.sh"
+    }
+  ],
+  "game": {
+    "id": "mvp05_ps2",
+    "platform": "PlayStation 2",
+    "public_input": "User supplies a legally obtained USA PS2 ISO (SLUS-21135); the tool never bundles game files, BIOS, saves, or emulator binaries, and every writer for this disc produces a NEW image and never touches the source.",
+    "retail_identity": {
+      "content_sha256": "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484",
+      "executable_sha256": "14db3aa3660e526ce12423db8102ce138e34f252985543406ff67a753e5c4615"
+    },
+    "title": "MVP Baseball 2005 (USA, PlayStation 2)"
+  },
+  "schema": "vc_mod_capability_registry_fragment/v1",
+  "surfaces": [
+    "audio",
+    "colors",
+    "menus",
+    "players_rosters",
+    "portraits_faces",
+    "scorebug_presentation",
+    "scripts_config",
+    "stadiums_fields",
+    "textures",
+    "uniforms"
+  ]
+}

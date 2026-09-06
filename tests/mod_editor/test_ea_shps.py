@@ -267,9 +267,11 @@ class RefusalTests(unittest.TestCase):
         self.assertIn("0x0e", reason)
         self.assertIn("8x8", reason)
         self.assertIn("0.375", reason)
-        # The refusal carries the measurement, not just "unsupported".
+        # The refusal carries the measurement, not just "unsupported": the
+        # block rate, the two streams, and that the selectors are undecoded.
         self.assertIn("6 bytes per 4x4 block", reason)
-        self.assertIn("fixed-rate compressed codec", reason)
+        self.assertIn("2-bit selectors", reason)
+        self.assertIn("no pixel is decoded", reason)
         self.assertFalse(parsed.image(0).decodable)
         with self.assertRaises(ea_shps.UnsupportedBlock) as caught:
             ea_shps.decode_rgba(parsed)
@@ -336,6 +338,60 @@ class PngTests(unittest.TestCase):
         with self.assertRaises(Refusal) as caught:
             ea_shps.encode_png(4, 4, b"\x00" * 8)
         self.assertIn("64 byte(s)", str(caught.exception))
+
+
+class EncodeTests(unittest.TestCase):
+    """Indexing a PNG's pixels back against the bank's own palette, and writing them."""
+
+    def _bank(self):
+        entries = [(i, 255 - i, (i * 7) & 0xFF, 0x80) for i in range(256)]
+        pixels = bytes((x * 3 + y * 5) & 0xFF for y in range(4) for x in range(4))
+        raw = bank([("img0", [block(ea_shps.CODE_INDEXED8, 4, 4, pixels),
+                              palette_block(entries), text_terminator()]),
+                    ("img1", [block(ea_shps.CODE_INDEXED8, 2, 2, bytes(4)),
+                              palette_block(entries[:16]), text_terminator()])])
+        return ea_shps.parse(raw), pixels, raw
+
+    def test_a_decoded_image_indexes_back_exactly(self) -> None:
+        parsed, pixels, _raw = self._bank()
+        width, height, rgba = ea_shps.decode_rgba(parsed, 0)
+        palette = ea_shps.read_palette(parsed, parsed.image(0).palette)
+        indices, exact = ea_shps.encode_indexed(rgba, width, height, palette)
+        self.assertEqual(indices, pixels)
+        self.assertEqual(exact, 16)
+
+    def test_a_colour_the_palette_lacks_takes_the_nearest_entry(self) -> None:
+        palette = [(0, 0, 0, 255), (255, 255, 255, 255), (200, 0, 0, 255)]
+        rgba = bytes((250, 10, 10, 255)) + bytes((5, 5, 5, 255))
+        indices, exact = ea_shps.encode_indexed(rgba, 2, 1, palette)
+        self.assertEqual(indices, b"\x02\x00")
+        self.assertEqual(exact, 0)
+
+    def test_replace_pixels_changes_only_the_level_zero_bytes(self) -> None:
+        parsed, _pixels, raw = self._bank()
+        new_pixels = bytes(range(16))
+        out = ea_shps.replace_pixels(parsed, 0, new_pixels)
+        self.assertEqual(len(out), len(raw))
+        again = ea_shps.parse(out)
+        self.assertEqual(again.block_bytes(again.image(0).pixels)[:16], new_pixels)
+        start = parsed.image(0).pixels.offset + ea_shps.BLOCK_HEADER_SIZE
+        self.assertEqual(out[:start], raw[:start])
+        self.assertEqual(out[start + 16:], raw[start + 16:])
+
+    def test_replace_pixels_refuses_the_wrong_size_and_the_wrong_code(self) -> None:
+        parsed, _pixels, _raw = self._bank()
+        with self.assertRaises(Refusal) as caught:
+            ea_shps.replace_pixels(parsed, 0, bytes(15))
+        self.assertIn("needs 16 index byte(s)", str(caught.exception))
+        direct = bank([("rgb", [block(ea_shps.CODE_RGBA32, 1, 1, bytes(4)),
+                                text_terminator()])])
+        with self.assertRaises(Refusal) as caught:
+            ea_shps.replace_pixels(ea_shps.parse(direct), 0, bytes(1))
+        self.assertIn("only 8-bit indexed", str(caught.exception))
+
+    def test_an_rgba_length_that_does_not_match_is_refused(self) -> None:
+        with self.assertRaises(Refusal):
+            ea_shps.encode_indexed(bytes(7), 2, 1, [(0, 0, 0, 255)])
 
 
 if __name__ == "__main__":

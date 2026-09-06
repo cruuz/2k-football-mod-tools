@@ -56,9 +56,21 @@ little under one alignment unit) are not interpreted.  No checksum field
 exists in the header and none was found: nothing here has run a rebuilt
 archive through a game, so the absence of a checksum is a search that came up
 empty, not a proof.  ``BIG4`` and the RefPack-wrapped archive are recognised
-by magic and refused by name.  **There is no writer**: :func:`plan_entry_rewrite`
-prices a bounded replacement and :func:`rewrite_entry` refuses, saying what a
-writer would still need.
+by magic and refused by name.
+
+The one bounded writer
+----------------------
+:func:`refpack_compress` is a RefPack encoder written from the same grammar
+the decoder reads (hash-chain LZ77, lazy by one step, every opcode shape).
+Measured against EA's own streams on MVP Baseball 2005: with the default chain
+depth it packs every one of 18 database tables and 40 texture banks sampled
+**smaller** than the disc's stream, by 10 bytes to 8,687 bytes [M] -- which is
+what makes a same-slot rewrite possible at all, because an entry's slot is its
+own size plus at most three bytes.  :func:`rewrite_entry` replaces one entry
+**inside the slot it already owns** -- re-packed when the disc packed it,
+stored when it did not -- rewriting the row's size word and nothing else, and
+refuses by name when the result does not fit.  Growing an entry, or renaming
+one, still moves every payload after it; neither is implemented.
 
 Standard library only; importable without Qt.
 """
@@ -732,6 +744,18 @@ class BigArchive:
                 return start - entry.offset
         return max(self.length - entry.offset, 0)
 
+    def row_offset(self, key: "int | str") -> int:
+        """Where an entry's table row starts, from the start of the archive.
+
+        Rows carry no stride: each is eight bytes plus its NUL-terminated name,
+        so the offset is found by walking the rows before it.
+        """
+        entry = self.entry(key)
+        position = BIG_HEADER_SIZE
+        for earlier in self.entries[:entry.index]:
+            position += BIG_ROW_FIXED + len(earlier.name.encode("latin-1")) + 1
+        return position
+
     def layout_notes(self) -> List[str]:
         """Every way this archive departs from the shape a rewrite assumes.
 
@@ -936,35 +960,37 @@ def plan_entry_rewrite(archive: BigArchive, key: "int | str",
     entry = archive.entry(key)
     payload = bytes(payload)
     slot = archive.slot_bytes(entry.index)
-    fits = len(payload) <= slot
     compressed = archive.is_compressed(entry.index)
+    fits = len(payload) <= slot
+    packed_size = len(payload)
     blockers: List[str] = []
-    if not fits:
+    if not fits and not compressed:
         blockers.append(
             "the replacement is %d byte(s) and entry %d owns %d: every entry "
             "after it would move and every table row after it would be "
             "rewritten, which no code here does."
             % (len(payload), entry.index, slot))
     if compressed:
-        blockers.append(
-            "entry %d is stored as a RefPack stream and there is no RefPack "
-            "encoder here, so a replacement can only be written back "
-            "uncompressed -- which is larger, and the game has never been "
-            "watched loading a plain entry where the disc packed one."
-            % entry.index)
+        packed_size = len(refpack_compress(payload)) if payload else 0
+        fits = packed_size <= slot
+        if not fits:
+            blockers.append(
+                "entry %d is stored as a RefPack stream; re-packed, the "
+                "replacement is %d byte(s) and the slot holds %d, so it does "
+                "not fit even compressed." % (entry.index, packed_size, slot))
     blockers.append(
         "no archive rebuilt by this project has been loaded by any game, so "
         "whether the header's length word, the table's offsets or something "
         "outside the archive is also checked is unmeasured.")
     if fits and not compressed:
-        note = ("%d byte(s) into the %d-byte slot entry %d owns: a writer "
-                "would change the entry's size word in the table and the "
-                "bytes at +%d, and nothing else."
+        note = ("%d byte(s) into the %d-byte slot entry %d owns: the writer "
+                "changes the entry's size word in the table and the bytes at "
+                "+%d, and nothing else."
                 % (len(payload), slot, entry.index, entry.offset))
     elif fits:
-        note = ("%d byte(s) fit the %d-byte slot entry %d owns, but the disc "
-                "stores that entry packed."
-                % (len(payload), slot, entry.index))
+        note = ("%d plain byte(s) re-packed to %d fit the %d-byte slot entry "
+                "%d owns, which the disc stores packed."
+                % (len(payload), packed_size, slot, entry.index))
     else:
         note = ("%d byte(s) do not fit the %d-byte slot entry %d owns."
                 % (len(payload), slot, entry.index))
@@ -975,21 +1001,220 @@ def plan_entry_rewrite(archive: BigArchive, key: "int | str",
     )
 
 
-def rewrite_entry(archive: BigArchive, key: "int | str", payload: bytes) -> bytes:
-    """Refuse to replace an entry, and say what a writer would need.
+def rewrite_entry(archive: BigArchive, key: "int | str", payload: bytes,
+                  *, compress: Optional[bool] = None) -> "RewrittenEntry":
+    """Replace one entry inside the slot it already owns; refuse when it will not fit.
 
-    There is no ``BIG`` writer in this project.  This function exists so that
-    a caller reaching for one is answered by a sentence instead of by an
-    ``AttributeError``, and so that the shape of the writer that *should* be
-    built is written down where it will be read: see
-    :func:`plan_entry_rewrite`, which prices the bounded case.
+    *payload* is the entry's **plain** bytes.  When the disc stored the entry
+    RefPack-packed (or *compress* is ``True``) the payload is re-packed with
+    :func:`refpack_compress` first; the stored bytes must fit ``slot_bytes``.
+    Two byte ranges change and nothing moves: the row's size word in the table,
+    and the entry's own span -- the new stored bytes, then zeros over whatever
+    the old stored size covered past them, so no byte of the old payload
+    lingers inside the slot.  The archive keeps its length and every other row
+    and payload keeps its bytes.
+
+    Returns the new archive bytes with the two ranges declared.  The archive
+    may be open over a ranged reader (a disc): its bytes are read through the
+    same reader once.
     """
-    plan = plan_entry_rewrite(archive, key, payload)
-    raise BigError(
-        "this module reads EA BIG archives and does not write them. "
-        "Replacing entry %d (%r) would need: %s Nothing was changed."
-        % (plan.index, plan.name, " ".join(plan.blockers))
+    entry = archive.entry(key)
+    payload = bytes(payload)
+    if compress is None:
+        compress = archive.is_compressed(entry.index)
+    stored = refpack_compress(payload) if compress else payload
+    slot = archive.slot_bytes(entry.index)
+    if len(stored) > slot:
+        raise BigError(
+            "entry %d (%r) owns a %d-byte slot and the replacement is %d byte(s)%s; "
+            "every entry after it would have to move, which this writer never does. "
+            "Nothing was changed."
+            % (entry.index, entry.name, slot, len(stored),
+               " once RefPack-packed from %d plain" % len(payload) if compress else ""))
+    row = archive.row_offset(entry.index)
+    out = bytearray(archive._window.read(0, archive.length, "the archive"))
+    struct.pack_into(">I", out, row + 4, len(stored))
+    span = max(entry.size, len(stored))
+    out[entry.offset:entry.offset + len(stored)] = stored
+    if span > len(stored):
+        out[entry.offset + len(stored):entry.offset + span] = bytes(span - len(stored))
+    ranges = (
+        (row + 4, 4, "size word of entry %d (%r) in the table" % (entry.index, entry.name)),
+        (entry.offset, span, "entry %d (%r): %d stored byte(s)%s"
+         % (entry.index, entry.name, len(stored),
+            ", then zeros over the old stored size" if span > len(stored) else "")),
     )
+    return RewrittenEntry(bytes(out), entry.index, entry.name, len(payload), len(stored),
+                          entry.size, slot, bool(compress), ranges)
+
+
+@dataclass(frozen=True)
+class RewrittenEntry:
+    """What :func:`rewrite_entry` produced: the archive, and the two ranges it changed."""
+
+    archive: bytes
+    index: int
+    name: str
+    plain_bytes: int
+    stored_bytes: int
+    previous_stored_size: int
+    slot_bytes: int
+    compressed: bool
+    #: ``(offset, length, reason)`` inside the archive.
+    ranges: Tuple[Tuple[int, int, str], ...]
+
+    def as_dict(self) -> Dict[str, object]:
+        return {
+            "index": self.index, "name": self.name, "plain_bytes": self.plain_bytes,
+            "stored_bytes": self.stored_bytes,
+            "previous_stored_size": self.previous_stored_size,
+            "slot_bytes": self.slot_bytes, "compressed": self.compressed,
+            "ranges": [{"offset": start, "length": length, "reason": reason}
+                       for start, length, reason in self.ranges],
+        }
+
+
+# --------------------------------------------------------------------------
+# RefPack encoder
+# --------------------------------------------------------------------------
+
+#: How many earlier occurrences of a three-byte prefix the matcher considers.
+#: Measured on MVP Baseball 2005's database tables: at 48 the encoder lost to
+#: EA's on 6 of 18 tables by 9 to 3,810 bytes; at 256 it beats EA's on every
+#: one, by 10 to 8,687 bytes, in about 15 s for the 751 KB ``attrib.dat`` [M].
+REFPACK_CHAIN_LIMIT = 256
+
+#: The longest copy any opcode carries.
+REFPACK_MAX_LENGTH = 1028
+
+
+def _refpack_usable_length(offset: int, length: int) -> int:
+    """Clamp a raw match to what an opcode can carry at *offset*, or 0 if none can."""
+    if offset > REFPACK_MAX_OFFSET:
+        return 0
+    length = min(length, REFPACK_MAX_LENGTH)
+    if offset <= 1024:
+        return length if length >= 3 else 0
+    if offset <= 16384:
+        return length if length >= 4 else 0
+    return length if length >= 5 else 0
+
+
+def _refpack_literal_runs(out: bytearray, data: bytes, start: int, count: int) -> int:
+    """Emit ``0xE0..0xFB`` runs for whole fours; return the 0..3 literals left over."""
+    while count >= 4:
+        run = min(count - (count % 4), 112)
+        out.append(0xE0 | ((run - 4) >> 2))
+        out += data[start:start + run]
+        start += run
+        count -= run
+    return count
+
+
+def _refpack_copy(out: bytearray, data: bytes, literal_start: int, literals: int,
+                  offset: int, length: int) -> None:
+    """One copy opcode, with its 0..3 literals following it, as the decoder expects."""
+    biased = offset - 1
+    if length <= 10 and biased < 1024:
+        out.append(((biased >> 8) << 5) | ((length - 3) << 2) | literals)
+        out.append(biased & 0xFF)
+    elif length <= 67 and biased < 16384:
+        out.append(0x80 | (length - 4))
+        out.append((literals << 6) | (biased >> 8))
+        out.append(biased & 0xFF)
+    else:
+        out.append(0xC0 | ((biased >> 16) << 4) | (((length - 5) >> 8) << 2) | literals)
+        out.append((biased >> 8) & 0xFF)
+        out.append(biased & 0xFF)
+        out.append((length - 5) & 0xFF)
+    out += data[literal_start:literal_start + literals]
+
+
+def refpack_compress(data: bytes, *, chain_limit: int = REFPACK_CHAIN_LIMIT,
+                     long_sizes: bool = False) -> bytes:
+    """Pack *data* as a RefPack stream :func:`refpack_decompress` reads back exactly.
+
+    The stream carries the ``10 FB`` header every measured disc uses -- three-byte
+    big-endian decompressed size, no compressed-size field -- unless
+    *long_sizes* asks for the four-byte form.  Matching is a hash chain over
+    three-byte prefixes, most recent first, with a one-step lazy check; the
+    opcode is chosen by the match's offset and length exactly as the decoder's
+    table reads them, so every shape in the grammar is exercised by real data.
+    """
+    data = bytes(data)
+    total = len(data)
+    _require(total < (1 << 32) if long_sizes else total < (1 << 24),
+             "%d byte(s) do not fit RefPack's %d-byte size field."
+             % (total, 4 if long_sizes else 3))
+    out = bytearray()
+    out.append(REFPACK_FAMILY | (REFPACK_FLAG_LONG if long_sizes else 0))
+    out.append(REFPACK_SIGNATURE)
+    out += total.to_bytes(4 if long_sizes else 3, "big")
+    heads: Dict[bytes, List[int]] = {}
+    prune_at = 4 * chain_limit
+
+    def find(position: int) -> Tuple[int, int]:
+        if position + 3 > total:
+            return 0, 0
+        chain = heads.get(data[position:position + 3])
+        if not chain:
+            return 0, 0
+        best_length = 0
+        best_offset = 0
+        limit = min(total - position, REFPACK_MAX_LENGTH)
+        tried = 0
+        for candidate in reversed(chain):
+            offset = position - candidate
+            if offset > REFPACK_MAX_OFFSET:
+                break
+            tried += 1
+            if tried > chain_limit:
+                break
+            length = 3
+            while length < limit and data[candidate + length] == data[position + length]:
+                length += 1
+            length = _refpack_usable_length(offset, length)
+            if length > best_length:
+                best_length, best_offset = length, offset
+                if length >= limit:
+                    break
+        return best_offset, best_length
+
+    def insert(position: int) -> None:
+        if position + 3 <= total:
+            key = data[position:position + 3]
+            chain = heads.get(key)
+            if chain is None:
+                heads[key] = [position]
+            else:
+                chain.append(position)
+                if len(chain) > prune_at:
+                    del chain[:len(chain) - 2 * chain_limit]
+
+    position = 0
+    literal_start = 0
+    while position < total:
+        offset, length = find(position)
+        if length >= 3:
+            next_offset, next_length = find(position + 1) if position + 1 < total else (0, 0)
+            if next_length > length + 1:
+                insert(position)
+                position += 1
+                continue
+            remainder = _refpack_literal_runs(out, data, literal_start,
+                                              position - literal_start)
+            _refpack_copy(out, data, position - remainder, remainder, offset, length)
+            for filled in range(position, min(position + length, total)):
+                insert(filled)
+            position += length
+            literal_start = position
+        else:
+            insert(position)
+            position += 1
+    remainder = _refpack_literal_runs(out, data, literal_start, position - literal_start)
+    out.append(0xFC | remainder)
+    out += data[position - remainder:position]
+    return bytes(out)
 
 
 __all__ = [
@@ -1020,6 +1245,9 @@ __all__ = [
     "RangeReader",
     "RefpackError",
     "RefpackHeader",
+    "REFPACK_CHAIN_LIMIT",
+    "REFPACK_MAX_LENGTH",
+    "RewrittenEntry",
     "TruncatedArchive",
     "UnsupportedArchive",
     "build_big",
@@ -1027,6 +1255,7 @@ __all__ = [
     "is_refpack",
     "parse_big",
     "plan_entry_rewrite",
+    "refpack_compress",
     "refpack_decompress",
     "refpack_header",
     "rewrite_entry",

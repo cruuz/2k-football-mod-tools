@@ -10,6 +10,7 @@ rather than pasted in as hex blobs whose provenance nobody can check.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import struct
 import sys
@@ -389,21 +390,134 @@ class WriterSketchTests(unittest.TestCase):
         self.assertTrue(any("would move" in blocker for blocker in plan.blockers))
         self.assertIn("do not fit", plan.note)
 
-    def test_a_packed_entry_names_the_missing_encoder(self) -> None:
+    def test_a_packed_entry_is_priced_after_repacking(self) -> None:
         archive = ea_big.build_big([("p.bin", packed(b"repeat " * 40))])
-        plan = ea_big.plan_entry_rewrite(ea_big.parse_big(archive), 0, b"z" * 8)
+        plan = ea_big.plan_entry_rewrite(ea_big.parse_big(archive), 0, b"repeat " * 40)
         self.assertTrue(plan.source_compressed)
-        self.assertTrue(any("no RefPack encoder" in blocker
+        self.assertTrue(plan.fits_slot)
+        self.assertIn("re-packed", plan.note)
+        # A payload that does not pack small enough is refused by its packed size.
+        plan = ea_big.plan_entry_rewrite(ea_big.parse_big(archive), 0, os.urandom(4000))
+        self.assertFalse(plan.fits_slot)
+        self.assertTrue(any("not fit even compressed" in blocker
                             for blocker in plan.blockers))
 
-    def test_rewrite_refuses_and_says_what_a_writer_would_need(self) -> None:
+    def test_rewrite_replaces_a_stored_entry_inside_its_slot(self) -> None:
+        archive = ea_big.build_big([("a.bin", b"x" * 100), ("b.bin", b"y" * 100)],
+                                   alignment=64)
+        parsed = ea_big.parse_big(archive)
+        result = ea_big.rewrite_entry(parsed, 0, b"z" * 90)
+        again = ea_big.parse_big(result.archive)
+        self.assertEqual(len(result.archive), len(archive))
+        self.assertEqual(again.member(0), b"z" * 90)
+        self.assertEqual(again.member(1), b"y" * 100)
+        self.assertEqual(again.entry(0).size, 90)
+        self.assertEqual(again.entry(0).offset, parsed.entry(0).offset)
+        self.assertFalse(result.compressed)
+        # The old bytes past the new size are zeroed, not left behind.
+        tail = result.archive[parsed.entry(0).offset + 90:parsed.entry(0).offset + 100]
+        self.assertEqual(tail, bytes(10))
+        # Exactly two ranges: the size word and the entry's span.
+        self.assertEqual(len(result.ranges), 2)
+        self.assertEqual(result.ranges[0][:2], (parsed.row_offset(0) + 4, 4))
+        self.assertEqual(result.ranges[1][:2], (parsed.entry(0).offset, 100))
+        changed = [index for index in range(len(archive))
+                   if archive[index] != result.archive[index]]
+        declared = set()
+        for start, length, _reason in result.ranges:
+            declared.update(range(start, start + length))
+        self.assertTrue(set(changed) <= declared)
+
+    def test_rewrite_repacks_a_packed_entry_and_it_reads_back(self) -> None:
+        plain = b"the quick brown fox jumps over the lazy dog " * 30
+        archive = ea_big.build_big([("p.bin", packed(plain)), ("q.bin", b"q" * 10)])
+        parsed = ea_big.parse_big(archive)
+        replacement = plain.replace(b"lazy", b"idle")
+        result = ea_big.rewrite_entry(parsed, "p.bin", replacement)
+        again = ea_big.parse_big(result.archive)
+        self.assertTrue(again.is_compressed(0))
+        self.assertEqual(again.member(0), replacement)
+        self.assertEqual(again.member(1), b"q" * 10)
+        self.assertTrue(result.compressed)
+        self.assertLessEqual(result.stored_bytes, result.slot_bytes)
+
+    def test_rewrite_refuses_a_replacement_that_does_not_fit(self) -> None:
         archive = ea_big.build_big([("a.bin", b"x" * 100)])
         parsed = ea_big.parse_big(archive)
         with self.assertRaises(Refusal) as caught:
-            ea_big.rewrite_entry(parsed, 0, b"z" * 100)
+            ea_big.rewrite_entry(parsed, 0, b"z" * 500)
         message = str(caught.exception)
-        self.assertIn("does not write them", message)
+        self.assertIn("owns a", message)
         self.assertIn("Nothing was changed.", message)
+        archive2 = ea_big.build_big([("p.bin", packed(b"abc" * 20))])
+        with self.assertRaises(Refusal) as caught:
+            ea_big.rewrite_entry(ea_big.parse_big(archive2), 0, os.urandom(3000))
+        self.assertIn("once RefPack-packed", str(caught.exception))
+
+    def test_row_offsets_walk_the_variable_length_table(self) -> None:
+        archive = ea_big.build_big([("a.bin", b"1"), ("longer-name.bin", b"2"),
+                                    ("c.bin", b"3")])
+        parsed = ea_big.parse_big(archive)
+        self.assertEqual(parsed.row_offset(0), 16)
+        self.assertEqual(parsed.row_offset(1), 16 + 8 + len("a.bin") + 1)
+        self.assertEqual(parsed.row_offset(2),
+                         parsed.row_offset(1) + 8 + len("longer-name.bin") + 1)
+        for index in range(3):
+            row = parsed.row_offset(index)
+            self.assertEqual(struct.unpack_from(">II", archive, row),
+                             (parsed.entry(index).offset, parsed.entry(index).size))
+
+
+class RefpackEncoderTests(unittest.TestCase):
+    """The encoder is proved by the decoder: every stream it writes reads back."""
+
+    def round_trip(self, data: bytes, **kw) -> bytes:
+        packed_bytes = ea_big.refpack_compress(data, **kw)
+        self.assertTrue(ea_big.is_refpack(packed_bytes))
+        self.assertEqual(ea_big.refpack_decompress(packed_bytes), data)
+        return packed_bytes
+
+    def test_empty_and_tiny_inputs_round_trip(self) -> None:
+        for data in (b"", b"a", b"ab", b"abc", b"abcd", b"abcde"):
+            self.round_trip(data)
+
+    def test_the_header_is_the_discs_ten_fb_shape(self) -> None:
+        stream = self.round_trip(b"hello" * 10)
+        header = ea_big.refpack_header(stream)
+        self.assertEqual(stream[:2], b"\x10\xfb")
+        self.assertFalse(header.long_sizes)
+        self.assertIsNone(header.compressed_size)
+        self.assertEqual(header.decompressed_size, 50)
+
+    def test_long_sizes_write_the_four_byte_form(self) -> None:
+        stream = self.round_trip(b"x" * 100, long_sizes=True)
+        self.assertEqual(stream[0] & ea_big.REFPACK_FLAG_LONG, ea_big.REFPACK_FLAG_LONG)
+        self.assertEqual(ea_big.refpack_header(stream).decompressed_size, 100)
+
+    def test_repetitive_data_compresses_and_random_data_survives(self) -> None:
+        text = b"the quick brown fox jumps over the lazy dog. " * 200
+        packed_bytes = self.round_trip(text)
+        self.assertLess(len(packed_bytes), len(text) // 10)
+        noise = os.urandom(20000)
+        self.round_trip(noise)
+
+    def test_every_opcode_shape_is_exercised(self) -> None:
+        near = b"abcdefgh" * 40
+        mid = os.urandom(3000) + b"pattern-mid" * 3 + os.urandom(5000) + b"pattern-mid" * 3
+        far = os.urandom(20000) + b"far-pattern-here" + os.urandom(30000) + b"far-pattern-here"
+        long_run = b"\x00" * 5000 + b"tail"
+        for data in (near, mid, far, long_run):
+            self.round_trip(data)
+
+    def test_an_overlapping_copy_is_written_and_read_as_a_repeat(self) -> None:
+        packed_bytes = self.round_trip(b"ab" * 3000)
+        self.assertLess(len(packed_bytes), 64)
+
+    def test_chain_depth_changes_size_never_correctness(self) -> None:
+        data = (b"alpha,beta,gamma,delta\r\n" * 300) + os.urandom(500)
+        shallow = self.round_trip(data, chain_limit=1)
+        deep = self.round_trip(data, chain_limit=256)
+        self.assertLessEqual(len(deep), len(shallow))
 
 
 if __name__ == "__main__":

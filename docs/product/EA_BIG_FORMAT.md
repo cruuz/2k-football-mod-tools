@@ -44,10 +44,13 @@ are the file system of the disc, not its content.
    disc it unpacked **all 23,855 packed entries — 764,038,770 bytes — and
    every one of them came out at exactly the length its own header declares**,
    with no refusals.
-5. **Reading is finished; there is no writer, deliberately.**
-   `plan_entry_rewrite` prices the only bounded shape worth building and
-   `rewrite_entry` refuses by name, because the measurement that matters —
-   §6 — says the slot an entry owns is its own size plus at most three bytes.
+5. **Reading is finished, and one bounded writer exists.** `refpack_compress`
+   is a RefPack encoder proved by the decoder, and `rewrite_entry` replaces
+   an entry inside the slot it already owns — re-packed when the disc packed
+   it — rewriting the row's size word and nothing else. The measurement that
+   made it possible is in §6: the slot is the entry's own size plus at most
+   three bytes, and the encoder here packs every entry measured smaller than
+   EA's stream did.
 
 ---
 
@@ -169,9 +172,20 @@ texture bank is classified for the price of a kilobyte. Running out of input
 is an error in a full decode and a normal stop in a bounded one; the two paths
 are separate and both are tested.
 
-**There is no encoder here.** RefPack encoders exist publicly [S]; none is
-written in this project, and §6 explains why writing one would not by itself
-unlock a writer.
+**The encoder** (`refpack_compress`, 2026-09-06) is a hash-chain LZ77 over
+three-byte prefixes, most recent first, one-step lazy, emitting every opcode
+shape by the decoder's own table. Proved by round trip through
+`refpack_decompress` on synthetic data and on the disc. Its output against
+EA's, measured on MVP Baseball 2005 [M]:
+
+| chain depth | database tables (18) | ROOKIE tables (20) | texture banks (40) |
+|---|---|---|---|
+| 48 | 6 of 18 **larger** than EA's stream, by 9 to 3,810 bytes | 5 of 20 larger, by 1 to 14 | all smaller |
+| **256 (default)** | **all 18 smaller**, by 10 (`contact.csv`) to 8,687 (`attrib.dat`) | all smaller | all smaller |
+| 1,024 | all smaller, `attrib.dat` by 13,428 | — | — |
+
+At 256 the 751 KB `attrib.dat` packs in about 15 s in pure Python; 1,024
+buys 4.7 KB more margin for twice the time and is not the default.
 
 ---
 
@@ -237,7 +251,7 @@ above.
 
 ---
 
-## 6. Writing: what a bounded writer would need, and why there is not one
+## 6. Writing: the bounded writer, and the measurement that bounds it
 
 A `BIG` archive has no chunk chain to rebuild and no checksum field, so a
 writer looks easy. The measurement says otherwise, and it is one number.
@@ -264,18 +278,20 @@ Anything larger relocates every payload after it and rewrites every table row
 from that point on. So does changing a name, because a row's length is its
 name's length. Neither is implemented.
 
-`rewrite_entry` therefore refuses, and its sentence lists what is missing:
+**`rewrite_entry` does exactly the bounded shape** (2026-09-06): the plain
+payload is re-packed with `refpack_compress` when the disc packed the entry,
+the stored bytes must fit `slot_bytes`, the row's size word is rewritten,
+the new bytes go at the entry's own offset and the rest of the old stored
+size is zeroed so no old byte lingers, and the two ranges are returned with
+the new archive. It refuses by name — with the slot and the packed size —
+when the result does not fit. The MVP Baseball 2005 module's table, art and
+bank writers all end in it, and its independent verifiers re-read the
+archive out of the new image and compare every other entry byte for byte.
 
-- a replacement that does not fit needs the whole-archive relocation above;
-- a replacement for a **packed** entry needs a RefPack encoder, which does not
-  exist here — and writing the entry back uncompressed is bigger, which the
-  first blocker then catches;
-- and in every case, **no archive rebuilt by this project has been loaded by
-  any game**, so whether the header's length word, the table's offsets, or
-  something outside the archive is also checked is unmeasured. That blocker is
-  on every plan, including the ones that fit.
-
----
+What stays unmeasured: **no archive rebuilt by this project has been loaded
+by any game**, so whether the header's length word, the table's offsets or
+something outside the archive is also checked is unknown. Every plan and
+receipt says so.
 
 ## 7. What remains unknown
 

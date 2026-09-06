@@ -161,7 +161,7 @@ CODE_NAMES: Dict[int, str] = {
     0x01: "1x1 stub",
     CODE_INDEXED8: "8-bit indexed",
     CODE_RGBA32: "32-bit RGBA",
-    0x0E: "undecoded, 3 bits per pixel",
+    0x0E: "4x4 block codec, 6 bytes per block, selectors undecoded",
     CODE_PALETTE32: "32-bit RGBA palette",
     0x69: "attachment",
     0x6F: "text attachment",
@@ -176,11 +176,13 @@ CODE_NOTES: Dict[int, str] = {
     0x01: ("every one of the 321 code-0x01 images measured is 1x1 with a "
            "16-byte payload and a two-entry palette, so nothing about its "
            "row layout has been proved and it is not guessed at"),
-    0x0E: ("all 7,996 code-0x0e images measured carry exactly 6 bytes per 4x4 "
-           "block of pixels at every size, and their bytes are near-uniform at "
-           "every position mod 6, 8 and 12, which is a fixed-rate compressed "
-           "codec rather than a bit-packed bitmap; no reinterpretation of the "
-           "bits can decode it"),
+    0x0E: ("code 0x0e is a block codec at 6 bytes per 4x4 block: the first "
+           "w*h/8 bytes are 8-bit palette indices, two per block, in 4-byte "
+           "words [i1(x), i1(x+1), i0(x), i0(x+1)] over the block raster, and "
+           "the last w*h/4 bytes are 2-bit selectors, 8 bytes per pair of "
+           "blocks -- the block-average render of the endpoints shows the "
+           "picture, but every per-pixel selector reading tried leaves noise "
+           "inside the blocks, so no pixel is decoded and none is guessed at"),
 }
 
 #: Bytes per pixel for each pixel code this module decodes.
@@ -645,6 +647,75 @@ def encode_png(width: int, height: int, rgba: bytes) -> bytes:
             + chunk(b"IEND", b""))
 
 
+def encode_indexed(rgba: bytes, width: int, height: int,
+                   palette: Sequence[Tuple[int, int, int, int]]) -> Tuple[bytes, int]:
+    """Index RGBA pixels against *palette*: ``(index bytes, exact matches)``.
+
+    A pixel that equals a palette entry takes that entry; any other takes the
+    nearest by squared distance over all four channels.  *palette* is the list
+    :func:`read_palette` returns for the image being replaced, so a PNG that
+    came out of :func:`decode_rgba` goes back in with every pixel exact.  A
+    palette shorter than 256 is used as it is: an index never reaches the
+    padding a short palette block carries.
+    """
+    _require(len(rgba) == width * height * 4,
+             "a %dx%d RGBA image is %d byte(s) and %d were given."
+             % (width, height, width * height * 4, len(rgba)))
+    _require(0 < len(palette) <= 256,
+             "a palette has 1 to 256 entries and this one has %d." % len(palette))
+    lookup: Dict[Tuple[int, int, int, int], int] = {}
+    for index, entry in enumerate(palette):
+        lookup.setdefault(tuple(entry), index)
+    cache: Dict[Tuple[int, int, int, int], int] = dict(lookup)
+    out = bytearray(width * height)
+    exact = 0
+    for position in range(width * height):
+        pixel = tuple(rgba[position * 4:position * 4 + 4])
+        found = cache.get(pixel)
+        if found is None:
+            best = 0
+            best_distance = None
+            for index, entry in enumerate(palette):
+                distance = ((pixel[0] - entry[0]) ** 2 + (pixel[1] - entry[1]) ** 2
+                            + (pixel[2] - entry[2]) ** 2 + (pixel[3] - entry[3]) ** 2)
+                if best_distance is None or distance < best_distance:
+                    best, best_distance = index, distance
+                    if distance == 0:
+                        break
+            cache[pixel] = best
+            found = best
+        elif pixel in lookup:
+            exact += 1
+        out[position] = found
+    return bytes(out), exact
+
+
+def replace_pixels(bank: ShpsBank, index: int, indices: bytes) -> bytes:
+    """The bank's bytes with image *index*'s level-0 pixel bytes replaced, same size.
+
+    Only an 8-bit indexed image (code ``0x02``) is written; the block keeps its
+    header, its size and any mip levels below level 0, and every other byte of
+    the bank is untouched.  Anything else is refused with the reason
+    :meth:`ShpsBank.undecodable_reason` gives.
+    """
+    reason = bank.undecodable_reason(index)
+    _require(reason is None, "%s: %s" % (bank.name, reason))
+    image = bank.image(index)
+    pixels = image.pixels
+    assert pixels is not None
+    _require(pixels.code == CODE_INDEXED8,
+             "%s: image %d is code 0x%02x and only 8-bit indexed pixels are written back."
+             % (bank.name, index, pixels.code))
+    wanted = pixels.width * pixels.height
+    _require(len(indices) == wanted,
+             "%s: image %d is %dx%d and needs %d index byte(s); %d were given."
+             % (bank.name, index, pixels.width, pixels.height, wanted, len(indices)))
+    start = pixels.offset + BLOCK_HEADER_SIZE
+    out = bytearray(bank.data)
+    out[start:start + wanted] = indices
+    return bytes(out)
+
+
 __all__ = [
     "BLOCK_HEADER_SIZE",
     "CODE_ATTACHMENTS",
@@ -668,8 +739,10 @@ __all__ = [
     "UnsupportedBlock",
     "decode_rgba",
     "deinterleave_csm1",
+    "encode_indexed",
     "encode_png",
     "looks_like_shps",
     "parse",
     "read_palette",
+    "replace_pixels",
 ]

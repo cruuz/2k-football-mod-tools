@@ -1,8 +1,16 @@
 # MVP Baseball 2005 (PlayStation 2) — the module plan
 
-This is a **plan**, not a module. Nothing is registered: there is no
-`mod_editor/games/mvp05_ps2/`, no registry row, no allowlist entry and no
-capability claimed. What exists today is two shared readers —
+**Status (2026-09-06): the module this plan asked for exists** —
+`mod_editor/games/mvp05_ps2/`, 13 registry rows, all fourteen pages answered;
+`MVP05_PS2_MODULE.md` is the module document and supersedes §7 and §8 below
+wherever they differ (three of the four walls in §6 came down: the RefPack
+encoder, the bounded slot writer and the `SHPS` 8-bit writer; the `0x0E`
+codec is half decoded and still refused). What follows is the plan as it was
+accepted, kept for its measurements.
+
+This was a **plan**, not a module, when it was written. Nothing was
+registered: there was no `mod_editor/games/mvp05_ps2/`, no registry row, no
+allowlist entry and no capability claimed. What exists today is two shared readers —
 `mod_editor/games/_formats/ea_big.py` and `ea_shps.py`, documented in
 `EA_BIG_FORMAT.md` and `EA_SHPS_FORMAT.md` — and the measurement below, taken
 with them. The module scaffold follows once this plan is accepted.
