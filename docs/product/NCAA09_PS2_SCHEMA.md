@@ -147,13 +147,38 @@ that research is the best available reading of what each field means. NCAA 06 is
 not on this box, so the two could not be diffed here; that is stated rather than
 assumed away.
 
-### The rating width, which is a real open question [M]
+### The rating width, and what reading the records settled [M]
 
 `POVR` and the twenty attribute fields are **5 bits wide** on this disc. Madden
 09's are 7. A five-bit field holds **0..31**, so whatever a rating screen shows,
-the stored value is not a 0..99 number in those bits. Reading one record would
-settle it; this pass reads no record. **No writer may offer a 0–99 spinner until
-it is settled.**
+the stored value is not a 0..99 number in those bits.
+
+That was recorded here as an open question, with the note that reading one
+record would settle it. **It has been read.** 3,295 `PLAY` records across 62 of
+the 432 rosters, sampled every seventh member [M]:
+
+| field | range across the sample |
+|---|---|
+| `POVR` and all twenty attributes | **0..31**, every value in use |
+| `PPOS` | 0..20 — 21 positions, and `PLPS` has exactly 21 rows |
+| `PYER` | 0..3 — four class years |
+| `PRSD` | 0..2 |
+| `PJEN` | 0..99 |
+| `PHGT` | 63..81 — inches, the same encoding Madden 09's `PHGT` uses |
+| `PWGT` | 0..209 — pounds **less 160**, the same encoding Madden 09's uses |
+| `PGID` | 70..30,012 |
+| `PTYP` | 0..0 — zero in every record sampled |
+
+`POVR`'s histogram is the shape that decides it: every value 0..31 appears, and
+**536 of the 3,295 players (16%) sit on 31** — the top of the field, and far
+above the next bucket. That is a scale that **saturates at its ceiling**, which
+is what a 0..31 quantisation of a wider rating looks like from below.
+
+**So the editor's bound is 31, the field's own**, and the roster lane offers
+exactly that. What the game *draws* from those five bits is still not
+established — no frame of NCAA Football 09 has been paired with a record here —
+and no control claims a 0–99 number. The two facts are different and the module
+keeps them apart: the bound is measured, the meaning is not.
 
 ---
 
@@ -406,12 +431,12 @@ needs a new field map, or has no NCAA equivalent [M].
 |---|---|---|
 | `textures.container_inventory` | **ports unchanged** | same `TERF` stack; 85/85 containers, 30,391/30,391 members |
 | `players.team_databases` (catalogue half) | **ports unchanged** | 580/582 databases, 8,564/8,564 checksums |
-| `players.team_databases` (writer half) | **no equivalent** | writes `PFNA`, `PLNA`, `PAGE` and 20 seven-bit ratings; this `PLAY` has none of the first three and its ratings are five bits |
-| `identity.team_records` | **no equivalent** | writes `TDNA`/`TLNA`/`TSNA`/`TMNC` and six colour bytes; `TLNA`, `TMNC` and all six colour fields are absent |
+| `players.team_databases` (writer half) | **a new field map, on the same base** | Madden's writes `PFNA`, `PLNA`, `PAGE` and 20 seven-bit ratings; this `PLAY` has none of the first three and its ratings are five bits. The *lane* ported: both games instantiate `_lanes/tdb_records.TdbRecordLane`, and what did not port is the field list — which is the point of the split |
+| `identity.team_records` | **a different writer, on the same base** | Madden's writes `TDNA`/`TLNA`/`TSNA`/`TMNC` and six colour bytes; `TLNA`, `TMNC` and all six colour fields are absent here. NCAA's writes `TDNA`/`TMNA`/`TSNA` plus `CONF`, `DIVI`, `STAD` and `COCH` names, and offers no colour |
 | `menus.text_members` (catalogue half) | **ports unchanged** | 1,247 `TEXT` members, 241,787 bytes |
-| `menus.text_members` (writer half) | **new field map not needed; a container writer is** | the `TEXT` format is identical; what is missing is a writer and the three `QL01` caches kept in step |
-| `playbooks.databases` | **needs a new field map** | 19 of 19 table names identical; `PBPL` has no `name` here, so the play name moves to `PLYL` and five widths shift |
-| `uniforms.mmap_export` / `uniforms.disc_art_writer` | **ports once the decoder moves** | `MMAP` is the same format; the decoder is inside the Madden package and out of a game module's reach |
+| `menus.text_members` (writer half) | **ports unchanged, on the same base** | the `TEXT` format is identical; both games instantiate `_lanes/text_banks.TextBankLane`. What differs is which containers a cache names: three of this disc's four `TEXT` containers are named by none |
+| `playbooks.databases` | **a new field map, on the same base** | 19 of 19 table names identical; `PBPL` has no `name` here, so the play name moves to `PLYL` and six other tables, and five widths shift. Written, on `TdbRecordLane` |
+| `uniforms.mmap_export` / `uniforms.disc_art_writer` | **ports unchanged** | `MMAP` is the same format and the decoder is now in `_formats`; both games instantiate `_lanes/terf_art.TerfArtLane` and `TerfArtWriteLane` |
 | `rosters.face_textures` | same | 64 player faces, 18 coach faces here against 4,611 members there |
 | `field_art.textures`, `stadiums.textures`, `presentation.ui_textures` | same | the containers differ by name; the format does not |
 | `audio.streams` | **ports as an exporter, not as a writer** | 412 of 8,021 streams are EA-XA; 7,609 are MicroTalk |
@@ -446,12 +471,18 @@ has no salary cap, so no `SLRI`; it has bowls, a Heisman and a colour palette, s
 
 ## 11. What a writer for this disc still needs
 
+Four of the six are now done; what is left is stated as plainly as what was.
+
 1. **Field types 13 and 14 named**, or the two refused databases stay refused —
-   and with them the only name pool on the disc (§7).
-2. **The scale of `PLAY`'s five-bit ratings** established from one record, before
-   any editor draws a spinner (§2).
+   and with them the only name pool on the disc (§7). **Still open.**
+2. ~~**The scale of `PLAY`'s five-bit ratings** established from one record~~ —
+   **done** (§2): the fields hold 0..31, every value is in use, and the editor's
+   bound is the field's own rather than a 0–99 number nobody measured.
 3. **The `TEAM` → `PACL` link** found, before any colour control exists (§3).
-4. **A container writer for this disc**, with the **three** `QL01` preload caches
+   **Still open**, and the identity writer ships without a colour control
+   because of it.
+4. ~~**A container writer for this disc**~~ — **done**: `ea_terf.rewrite_member`
+   plus `_lanes/preload_coherence`, with the **three** `QL01` preload caches
    kept in step — NCAA 09 ships `FE.QKL`, `GAME.QKL` and `PL.QKL` where Madden 09
    ships two. Read by this module's own parser: **564 copy entries**, 81 of them
    a container's directory and 483 a member, naming 36, 27 and 9 containers
@@ -460,7 +491,11 @@ has no salary cap, so no `SLRI`; it has bowls, a Heisman and a colour palette, s
    caches carry, and a cache left stale hands the game the wrong offsets.
    `LEAGUE.DAT`'s members are `RLE1`, for which `ea_terf` already has an encoder;
    `UNIFORM.DAT`'s and `PLADATA.DAT`'s are `LZH1`, for which it now does too.
-5. **The four CRCs recomputed on every database write.** They are already proved
-   correct on this disc's own bytes — 8,564 of 8,564 — so the check has teeth
-   before a writer exists, which is the order the Madden module used.
-6. **A boot.** Nothing built from this disc has been run.
+5. ~~**The four CRCs recomputed on every database write.**~~ — **done**:
+   `ea_tdb.recompute_crcs` on every write and `ea_tdb.verify_crcs` from the
+   destination's own bytes in the verifier. They were already proved correct on
+   this disc's own bytes — 8,564 of 8,564 — before a writer existed, which is
+   the order the Madden module used.
+6. **A boot.** Nothing built from this disc has been run. This is the one that
+   has not moved, and it is the one that decides whether any of the above is
+   worth anything to a player.

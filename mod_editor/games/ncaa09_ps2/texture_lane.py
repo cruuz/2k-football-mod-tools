@@ -128,6 +128,11 @@ class TextureLane(TerfArtLane):
     identity_document = None
     identity_tool = ""
     max_targets = MAX_TARGETS
+    #: UNIFORM.DAT's 1,200 members carry about 15,600 images between them, so a
+    #: flat cap spent on the first container leaves UIS_GEAR.DAT -- 396 gear
+    #: icons, and the one container on this disc no preload cache names --
+    #: unreachable [M]. Each container gets its own share instead.
+    max_targets_per_container = 1500
     catalog_schema = CATALOG_SCHEMA
     recipe_schema = RECIPE_SCHEMA
     write_schema = WRITE_SCHEMA
@@ -164,6 +169,7 @@ class UniformDiscArtWriteLane(TerfArtWriteLane):
     identity_document = None
     identity_tool = ""
     max_targets = MAX_TARGETS
+    max_targets_per_container = 1500
     catalog_schema = CATALOG_SCHEMA
     recipe_schema = DISC_RECIPE_SCHEMA
     write_schema = DISC_WRITE_SCHEMA

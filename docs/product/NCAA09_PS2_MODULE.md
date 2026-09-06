@@ -9,10 +9,12 @@ This document is the honest inventory: what each page does, what is measured,
 what is merely sourced, what is assumed, and — at the end — the list of things
 this module deliberately does **not** claim.
 
-**Six registry rows fill five of the fourteen pages** (§3): four inspect, two
-export, **none writes**. Nothing has been booted, and nothing on this disc has
-been rebuilt by this module. §11 answers the seven-point shipping standard for
-the module as it stands.
+**Fourteen registry rows fill twelve of the fourteen pages** (§3): **nine
+write**, two export, three inspect. Every writer is proved offline twice — on a
+synthetic disc in CI, and by hand on the retail image, with the numbers in §3a.
+**Nothing has been booted**: no image built from this disc has been run in an
+emulator or on hardware, and no row says otherwise. §11 answers the seven-point
+shipping standard for the module as it stands.
 
 **Evidence tags, on every load-bearing claim.**
 **[M]** measured — a read-only command was run against a disc this box holds and
@@ -111,148 +113,251 @@ with **six registry rows**; eight state a measured reason instead (§4);
 
 | § | page | row(s), all prefixed `ncaa09ps2.` | rung |
 |---|---|---|---|
-| 3.1 | Uniforms & Equipment | `uniforms.texture_census` | `read-only-mapped` |
-| 3.2 | Names, Numbers & Faces | `players.league_databases` | `read-only-mapped` |
-| 3.3 | Text & Team Identity | — | §4 |
-| 3.4 | Field Art & Create-Team Art | — | §4 |
-| 3.5 | Stadiums | — | §4 |
-| 3.6 | Presentation | — | §4 |
-| 3.7 | Menus & UI | `menus.text_members` | `read-only-mapped` |
+| 3.1 | Uniforms & Equipment | `uniforms.texture_census` · `uniforms.disc_art_writer` | `extract-only` · **`offline-writer-proved`** |
+| 3.2 | Names, Numbers & Faces | `players.league_databases` · `rosters.face_textures` | **`offline-writer-proved`** ×2 |
+| 3.3 | Text & Team Identity | `identity.league_records` | **`offline-writer-proved`** |
+| 3.4 | Field Art & Create-Team Art | `field_art.textures` | **`offline-writer-proved`** |
+| 3.5 | Stadiums | `stadiums.textures` | **`offline-writer-proved`** |
+| 3.6 | Presentation | `presentation.ui_textures` | **`offline-writer-proved`** |
+| 3.7 | Menus & UI | `menus.text_members` | **`offline-writer-proved`** |
 | 3.8 | The Crib | — | §4 |
 | 3.9 | Audio | `audio.streams` · `audio.banks` | `extract-only` · `extract-only` |
 | 3.10 | Gameplay | — | §4 |
-| 3.11 | Playbooks & Plays | — | §4 (the databases are on 3.2) |
+| 3.11 | Playbooks & Plays | `playbooks.databases` | **`offline-writer-proved`** |
 | 3.12 | All Textures | `textures.container_inventory` | `read-only-mapped` |
-| 3.13 | Saves | — | §4 |
+| 3.13 | Saves | `saves.draft_class` | `read-only-mapped` |
 | 3.14 | Build & Share | — | the shell's own |
 
-### 3.1 Uniforms & Equipment — `uniforms.texture_census`
+**Twelve of the fourteen pages carry a lane.** Two do not, and both reasons are
+measured rather than pending: the Crib is an ESPN NFL 2K5 feature and not an
+NCAA Football concept, and no patch site on `SLUS_217.52` has been located by
+this project — none of the five `sltiu` immediates Madden 09's playbook-editor
+patch uses is an address in this executable. A pnach writer with an empty
+translation table would be a control that can only refuse, so the Gameplay page
+carries the sentence instead.
 
-**`read-only-mapped`.** Reads the `MMAP` wrapper header of every kit, equipment
-and face texture through the shared `ea_terf.parse_mmap_header`: version, header
-size, declared payload size and the dimensions that follow the header.
+### 3a. What each writer did on the retail disc
 
-Measured on the retail disc [M]: **2,566 `MMAP` members, 0 refused**, in
-**2.7 s** —
+Every row marked `offline-writer-proved` was run twice: once by the conformance
+harness on a synthetic disc built from the formats' own rules, and once **by
+hand on the owner's own `SLUS-21752` image**.  The real-disc runs, with the
+numbers the verifier produced [M].  Every destination was deleted afterwards
+and the source's SHA-256 was re-checked and unchanged in each case.
 
-| container | members | what it is |
-|---|---:|---|
-| `UNIFORM.DAT` | 1,200 | kit textures, `LZH1`-packed |
-| `PLADATA.DAT` | 888 | player equipment, `LZH1` |
-| `UIS_GEAR.DAT` | 396 | gear icons, stored |
-| `PLYRFACE.DAT` | 64 | player faces, stored |
-| `COACFACE.DAT` | 18 | coach faces, stored |
+| lane | what was written | s | declared | verifier |
+|---|---|---:|---|---|
+| `players.league_databases` | `LEAGUE.DAT#1:PLAY:0` — `PJEN` 77, `POVR` 29 | 113 | 2 ranges / 1,872,244 B | **PASS** · 2 values read back · 6 checksum slots correct · 4 cache copies still equal what they copy · 0 undeclared changed bytes |
+| `identity.league_records` | `LEAGUE.DAT#0:TEAM:0` — `TDNA` | 76 | 4 ranges / 5,001,602 B | **PASS** · 1 value read back · 52 checksum slots · **4 cache copies rewritten and re-read** · 0 undeclared |
+| `playbooks.databases` | `GAMEDATA.DAT#4:PLYL:0` — a play name | 97 | 4 ranges / 20,202,124 B | **PASS** · 1 value read back · 40 checksum slots · **18 cache copies** · 0 undeclared |
+| `menus.text_members` | `EXAMS.DAT:0:0` — one string slot | 90 | 2 ranges / 182,744 B | **PASS** · 1 string read back · 1 bank re-read at its exact length · 0 undeclared |
+| `rosters.face_textures` | `PLYRFACE.DAT:16:0`, 128×128, flipped | 147 | 4 ranges / 12,048,172 B | **PASS** · texture decodes from the new image as the PNG given · 79 untouched members byte-identical · **74 cache copies** re-read · 0 undeclared |
+| `stadiums.textures` | `UIS_STAD.DAT:0:0`, 128×128, flipped | 87 | 4 ranges / 13,847,532 B | **PASS** · 244 untouched members byte-identical · 1 cache copy · 0 undeclared |
+| `uniforms.disc_art_writer` | `UIS_GEAR.DAT:0:0`, 128×128, flipped | 514 | 2 ranges / 6,941,144 B | **PASS** · 395 untouched members byte-identical · **0 cache copies, because no cache names this container** · 0 undeclared |
+| `field_art.textures` | `UIS_TMLO.DAT:0:0`, 128×128, flipped | 65 | 7 ranges / 18,117,900 B | **PASS** · 398 untouched members byte-identical · 9 cache copies · 0 undeclared · **the image grew** (below) |
+| `presentation.ui_textures` | `FANDATA.DAT:12:0`, 128×128, flipped | 157 | 2 ranges / 5,906,696 B | **PASS** · 256 untouched members byte-identical · 1 cache copy · 0 undeclared |
 
-Dimensions: 256×256 ×762, 64×64 ×675, 128×128 ×480, 128×64 ×326, 256×128 ×79,
-32×32 ×37, 1483×32 ×1 [M]. 206 members declare a 0-byte header and 1×3
-dimensions — a shape the wrapper parser reads and the texture parser does not,
-the same 0x400-format entries the owner's disc map records [M].
+**All nine writers were run**, one edit each. In eight of the nine the
+destination came back **2,175,041,536 bytes — the
+source's exact size** — and in all nine an adversarial flip of one byte
+**outside** every declared range was refused by the verifier with the offset
+named.
 
-Only the first **64 bytes** of a member are unpacked, because that is every byte
-the wrapper parser reads. Unpacking `UNIFORM.DAT`'s 1,200 `LZH1` members in full
-took **7 m 22 s**; at the 64-byte window the whole census takes 2.7 s [M]. The
-completeness is identical; only the cost changed.
+**The eighth is the one that grew, and that is the opt-in path working** [M].
+The flipped `UIS_TMLO.DAT` logo re-packed under `LZH1` past the extent that
+container owns, so the ISO writer relocated the file: the image went from
+2,175,041,536 to **2,175,918,080 bytes**, 428 sectors longer, and the receipt
+said so in seven declared ranges rather than two. Every art row declares
+`fixed_allocation = False` for exactly this reason — "the image keeps its length
+whenever the rebuilt container fits its extent, which is the ordinary case" is
+what those rows promise, and it is not a guarantee. Six of the seven art and
+record writes did keep the length; this one did not, and the number is in the
+receipt rather than in a footnote.
 
-**There is no kit *table* to pair this with.** Every uniform-shaped table on the
-disc — `CTTB` (104 fields), `CTCD` (45), `CTUN` (28), `USTG`, `USLG`, `USLE` —
-has **0 rows**, because they are the create-a-school tables and nobody has
-created one; Madden 09 by contrast ships `UNIF` with 270 rows [M]. A school's kit
-here **is** these textures and nothing else, which is why this page has an art
-row and no database row.
+**And the slowest one is worth its own line.** `uniforms.disc_art_writer` took
+**514 s** against 65 to 147 for every other art row, because its catalogue walks
+`UNIFORM.DAT` — 1,200 `LZH1` members carrying about 15,600 images. That is the
+7 m 22 s figure §6a records for unpacking that container in full, and any lane
+that offers its textures pays it.
 
-**It is not an exporter, and does not pretend to be.** A pixel decoder for
-`MMAP` exists in this repository — but inside the Madden 09 package, and
-`mod_editor/games/_formats/__init__.py` is explicit that *a game imports a format
-package; it never imports another game*. So the row is `read-only-mapped` and
-its refusal says exactly that. Run from a scratch harness outside the module,
-sampling 40 `MMAP` members per container, that decoder draws **1,019 of 1,063**
-and refuses **44** [M], in three groups it names: 23 palette-only entries that
-carry an alternate CLUT for another image and have no pixels of their own, 19
-that declare no palette and so are not indexed textures, and 2 whose surface does
-not satisfy the stride rule. That is a measurement of the decoder, not a
-capability of this module.
+**And one refusal, which is evidence too** [M].  The first identity trial asked
+for a three-character `TSNA`.  That grew `LEAGUE.DAT` member 0's `RLE1`
+encoding from 98,251 to 98,252 bytes, and that member is itself copied into
+`PL.QKL` — a fixed slot.  The lane refused, by name and with both sizes:
 
-**What lifts it:** move `mmap_art.py` into `_formats`. That is a shared-file
-change, not a change to this module, and it turns this row into an exporter
-unchanged.
+> `LEAGUE.DAT member 0 is copied into PL.QKL and the rewrite changed its stored
+> size from 98251 to 98252. A cached copy is a fixed slot, so this member cannot
+> be rewritten at a larger size; nothing was written.`
 
-### 3.2 Names, Numbers & Faces — `players.league_databases`
+That is the bound working on real bytes rather than on a fixture.  A name edit
+moves the encoding by **-13 to +1 bytes** [M]; most shrink, and the one that
+grew was stopped.
 
-**`read-only-mapped`.** Every EA TDB database on the disc, table by table, with
-each field's name, type, bit width and bit offset, and the four CRC-32/MPEG-2
-slots EA stores in each one verified against the file's own bytes.
+**What none of this is.** No rebuilt image has been booted. Nine writers wrote
+bytes that a verifier importing none of them re-derived from the two files, and
+whether NCAA Football 09 loads any of the results is not something this project
+has found out.
 
-Measured on the retail disc [M], in **7.5 s**:
+### 3.1 Uniforms & Equipment — the kit art, exported and written back
+
+Two rows, and they earn different rungs: `uniforms.texture_census`
+(**`extract-only`**) decodes a kit texture to PNG, and
+`uniforms.disc_art_writer` (**`offline-writer-proved`**) puts an edited one
+back into a NEW image.
+
+Measured on the retail disc [M]:
+
+| container | members | what it is | preload caches |
+|---|---:|---|---|
+| `UNIFORM.DAT` | 1,200 `MMAP` | kit textures, `LZH1`, 127,942,528 bytes | directory ×4, 3 members |
+| `PLADATA.DAT` | 888 `MMAP` | player equipment, `LZH1` | directory ×1, 8 members |
+| `UIS_GEAR.DAT` | 396 `MMAP` | gear icons, stored | **named by none** |
+
+`UIS_GEAR.DAT` is the cheapest thing on this disc to rewrite and the page says
+so: no cached directory and no cached member moves with it.
+
+**There is still no kit *table* to pair this with**, and that has not changed:
+`CTTB` (104 fields), `CTCD` (45), `CTUN` (28), `USTG`, `USLG` and `USLE` all
+have **0 rows**, because they are the create-a-school tables and nobody has
+created one; Madden 09 by contrast ships `UNIF` with 270 rows [M]. **A school's
+kit here *is* these textures and nothing else**, which is why this page has two
+art rows and no database row.
+
+**What changed since this page was a header census.** The `MMAP` pixel decoder
+was inside the Madden 09 package, and `_formats/__init__.py` is explicit that a
+game never imports another game — so the row could read a wrapper header and
+nothing more. The decoder is now `mod_editor/games/_formats/mmap_art.py` and the
+*lane* is `mod_editor/games/_lanes/terf_art.py`, which both games instantiate.
+Nothing about this disc was in the way; the repository's layout was.
+
+**One thing the move surfaced.** A flat target cap spent on the first container
+listed leaves the last one unreachable: `UNIFORM.DAT`'s 1,200 members carry
+about 15,600 images between them, so 4,000 targets never reached
+`UIS_GEAR.DAT` — the one container a user should reach first. The base now
+takes a per-container share and this row sets it to 1,500 [M].
+
+**Every replacement identity here is derived and none is confirmed.** No PCSX2
+texture dump has been paired with `SLUS-21752`. `derive_texture_names` computes
+the GS `TEX0` and CLUT hashes from the texture's own bytes, and the page says
+which kind of name it is showing. **No pack built from these names has been
+loaded in an emulator.**
+
+### 3.2 Names, Numbers & Faces — the 432 rosters, edited
+
+Two rows: `players.league_databases` (**`offline-writer-proved`**) and
+`rosters.face_textures` (**`offline-writer-proved`**).
+
+The catalogue half is unchanged and still the widest thing this module does
+[M], in **7.5 s**:
 
 ```
 582 databases   (433 in LEAGUE.DAT, 137 in GAMEDATA.DAT,
                  11 in TEMPLATE.DAT, 1 bare STRMDATA.DB)
 580 parse · 2 refused · 3,702 tables · 71,772 field definitions
-11 distinct schema shapes
 8,564 of 8,564 checksum slots hold the value they recompute to
 ```
 
-`LEAGUE.DAT` is the surprise, and it is the reason this row is on the roster
-page: **432 of its 433 databases are per-team rosters**, each holding exactly a
-`PLAY` and a `DCHT` table — **24,717 player rows** in 30,240 slots and 24,856
-depth-chart rows, 43 to 69 players per team [M].
+**What the writer edits.** `LEAGUE.DAT` members 1..432 — the per-team rosters,
+**24,717 player rows** in 30,240 slots and 24,856 depth-chart rows [M]. Per
+`PLAY` row: the squad number, the position id, the college class, the redshirt
+flag, height, weight and the twenty attribute fields; per `DCHT` row, which
+player fills a slot and how deep.
 
-**The catalogue carries field names, not field values.** A field name is the
-schema and is identical on every disc; a record's contents are the user's game
-data. A test asserts the point by searching the serialised catalogue for the
-synthetic fixture's own string values and failing if it finds one.
+**What it will never offer, and why that is a measurement.** This `PLAY` table
+carries **neither `PFNA` nor `PLNA`** — NCAA Football 09's players have no
+names, which you can read straight off the field directory — and no `PAGE`
+either, because a college player has a **class**. So the editor offers `PYER`
+(3 bits) and `PRSD` (2 bits) where Madden's offers an age, and it draws no name
+box at all. A test asserts the absence rather than trusting it.
 
-**A refused database is recorded, not dropped.** Two of the 582 declare a field
-type the shared reader does not name, and a catalogue that quietly omitted them
-would read as if they were not there. Both appear in the document with the
-reader's own sentence (§5).
+**The rating scale, which used to be an open question, is settled** [M].
+`POVR` and the twenty attributes are five bits. 3,295 records read off 62 of the
+432 rosters find **every value 0..31 in use, with 536 of them (16%) on 31** —
+the shape of a scale that saturates at its ceiling. The spinner's bound is
+therefore **31**, the field's own, and no control claims a 0–99 number. What the
+game *draws* from those five bits is still not established, and the two facts
+are kept apart. [`NCAA09_PS2_SCHEMA.md`](NCAA09_PS2_SCHEMA.md) §2 is the census.
 
-**Why there is no writer, measured rather than pending.** This disc's `PLAY`
-table has 86 fields to Madden 09's 110 and shares 37 names with it; it carries
-**neither `PFNA` nor `PLNA`**, because NCAA's players have no names, and no
-`PAGE` either. Its `POVR` and twenty attribute fields are **5 bits** wide where
-Madden's are 7, and a five-bit field holds 0..31 — so the scale a rating is on
-is not established and no spinner may claim one.
-[`NCAA09_PS2_SCHEMA.md`](NCAA09_PS2_SCHEMA.md) is the field-by-field census.
+**Why the write is bounded.** A TDB field owns a fixed run of bits in a
+fixed-stride record, so the database keeps its length. `LEAGUE.DAT`'s members
+are `RLE1`, so the *stored* size could move — and measured on the retail disc it
+does not: a `PLAY` edit in each of members 1, 5, 100 and 432 re-packs to
+**exactly** the byte count EA shipped, so the container's directory never moves
+and the two copies of it in `PL.QKL` stay valid [M]. The lane does not rely on
+that; it prices the re-pack first and rewrites every cache copy an edit
+disturbs.
 
-### 3.3 Text & Team Identity — no lane
+**The face art** is `PLYRFACE.DAT` (80 members, 64 with an `MMAP` header) and
+`COACFACE.DAT` (18) [M]. Which player a face belongs to is not established and
+**could not be from this disc alone**: there is no name in `PLAY` to join it to.
+The coaches *do* have names — `COCH.CLFN` and `COCH.CLLN` — but nothing joins a
+coach row to a face member either, and the page says so.
 
-The 432 schools are in `LEAGUE.DAT`'s `TEAM`: `TDNA` (22 bytes), `TMNA` (18) and
-`TSNA` (7) hold the names, and 29 of its 74 field names are shared with Madden
-09's `TEAM` [M]. Madden's identity writer also writes `TLNA`, `TMNC` and six
-colour bytes, and **none of those eight fields exists on this disc** [M]. A
-64-row `PACL` palette (`CRED`/`CGRN`/`CBLU` per `PCID`) is here, and the
-create-a-school `CTCD`/`CTUN` tables are here with 0 rows; which `TEAM` field
-selects a school's palette entry is not established [A]. Conferences (`CONF`, 25
-rows, `CNAM`) and divisions (`DIVI`, 10 rows, `DNAM`) are catalogued by §3.2's
-lane. The page states this rather than offering a control with nothing behind it.
+### 3.3 Text & Team Identity — `identity.league_records`
 
-### 3.4 Field Art & Create-Team Art — no lane
+**`offline-writer-proved`.** One database — `LEAGUE.DAT` member 0 — and the
+names in five of its tables [M]:
 
-`STADATA.DAT` holds 1,195 `MMAP` members and `UIS_TMLO.DAT` 399, plus 45 `SMF`
-geometry members [M]. Blocked on exactly one thing, and it is §3.1's: the `MMAP`
-pixel decoder is not in `_formats`.
+| table | rows | what this row writes |
+|---|---:|---|
+| `TEAM` | 432 | `TDNA` (22 bytes), `TMNA` (18), `TSNA` (7) |
+| `CONF` | 25 | `CNAM` (20) |
+| `DIVI` | 10 | `DNAM` (20) |
+| `STAD` | 242 | `SNAM` (30), `STNN` (18), `SCIT` (21), `SSTA` (15), `SCAP` (17-bit) |
+| `COCH` | 315 | `CLFN` (10), `CLLN` (13) |
 
-### 3.5 Stadiums — no lane
+The coaches have names on this disc even though the players do not.
 
-The disc ships a real stadium **table** — `LEAGUE.DAT`'s `STAD`, 242 rows of 56
-fields including `SNAM` (30 bytes), `STNN`, `SCIT`, `SSTA` and a 17-bit `SCAP`
-capacity [M] — which Madden 09 does not have outside its templates; §3.2's lane
-catalogues it. The **art** is another matter: `STADIUMS.DAT`'s 2,914 members are
-1,880 `SMF` and 1,034 empty, and `STADATA.DAT` adds 45 `SMF` and 4 `DMF` [M].
-**No `SMF` or `DMF` reader exists anywhere in this repository**, so the geometry
-is listed by format and left alone; the textures wait on §3.1's decoder move.
+**There is no colour control, and the reason is on the page.** Madden 09's
+identity writer writes `TDNA`/`TLNA`/`TSNA`/`TMNC` and six colour bytes.
+**`TLNA`, `TMNC` and all six colour fields are absent here** [M]. A 64-row
+`PACL` palette (`CRED`/`CGRN`/`CBLU` per `PCID`) *is* on the disc and the
+catalogue reports it as a count; `CTCD` and `CTUN`, the create-a-school colour
+tables, are here with 0 rows. Which `TEAM` field selects a school's palette
+entry is **not established** — `TPID` is 7 bits and `PACL` has 64 rows, which
+fits and is not proof [A]. So the page offers names and no picker, and a test
+asserts no colour field is ever drawn.
 
-### 3.6 Presentation — no lane
+**The bound this row lives inside.** Member 0 is `RLE1`-packed and is itself
+copied into `PL.QKL`, with its directory copied into `PL.QKL` and `FE.QKL`. A
+name edit moves the encoding by **-13 to +1 bytes** against a slot one byte
+larger than the bytes EA put in it [M]; a shorter encoding is written and its
+cache copies rewritten, and the one that grew was refused by name (§3a).
 
-`FANDATA.DAT` 244 `MMAP`, `MSCTDATA.DAT` 240 `MMAP` and 400 `DMF`,
-`LOADDATA.DAT` 46 `MMAP` (30 of them 854×480), `MOVIEDAT.DAT` 12 `MPCh` [M].
-Three separate blockers: the `MMAP` decoder move, a `DMF` model reader nobody has
-written, and a movie decoder this repository does not have and does not claim.
+### 3.4 Field Art & Create-Team Art — `field_art.textures`
+
+**`offline-writer-proved`.** `FLDDATA.DAT` (1,422 members, 1,391 `LZH1`) and
+`UIS_TMLO.DAT` (399 `LZH1` school logos) [M].
+
+**The create-team half has nothing behind it and the reason is measured**: every
+create-a-school table on this disc has 0 rows, because a created school is user
+data in a memory-card save this studio does not read. Which field or which
+school a member is remains unestablished — neither container names its members
+and no table joins a `TEAM` row to a texture.
+
+### 3.5 Stadiums — `stadiums.textures`
+
+**`offline-writer-proved`.** `STADATA.DAT` (1,289 members: 1,195 `MMAP`, 45
+`SMF`, 4 `DMF`) and `UIS_STAD.DAT` (245 stored) [M].
+
+The disc also ships a real stadium **table** — `LEAGUE.DAT`'s `STAD`, 242 rows
+of 56 fields — and its names are §3.3's, not this page's. The geometry is listed
+and left alone: **no `SMF` or `DMF` decoder exists anywhere in this repository**.
+`STADIUMS.DAT` is not opened at all — 197 MB, past the 144 MB read limit, and
+its 2,914 members are 1,880 `SMF` and 1,034 empty, so there is no texture in it.
+
+### 3.6 Presentation — `presentation.ui_textures`
+
+**`offline-writer-proved`.** `FANDATA.DAT` (257 stored crowd members),
+`MSCTDATA.DAT` (641: 240 `MMAP` and 400 `DMF`) and `LOADDATA.DAT` (46, thirty of
+them 854×480) [M].
+
+The scorebug itself is drawn by the executable from values it holds and nothing
+on this disc has been mapped to it. `MOVIEDAT.DAT`'s 12 `MPCh` streams have no
+decoder here and are not opened. Both sentences are on the page.
 
 ### 3.7 Menus & UI — `menus.text_members`
 
-**`read-only-mapped`.** Every `TEXT` string bank, measured: how many
+**`offline-writer-proved`.** Every `TEXT` string bank, measured: how many
 NUL-terminated slots, how many characters, how much room past the strings that
 are there now, and whether the member ends in a terminator.
 
@@ -276,17 +381,23 @@ a string reaches the user only through `preview`, read off their own image at th
 moment they ask for it. A test asserts the synthetic fixture's own lines are
 absent from the serialised document.
 
-The slot rule is the one that makes a future edit reversible: a slot's
-*allocation* is the room it has, running to the next slot less the terminator, so
-a bank a previous edit shortened still shows the room its padding occupies. That
-is implemented and tested; the writer that would use it is not built, because it
-needs a container writer and the three caches kept in step (§2.2).
+The slot rule is the one that makes an edit reversible: a slot's *allocation* is
+the room it has, running to the next slot less the terminator, so a bank a
+previous edit shortened still shows the room its padding occupies.
+
+**The writer that uses it is built.** `EXAMS.DAT`, `JERSEY.DAT` and
+`OSDKSTRN.DAT` are named by **none** of the three caches [M], which is what
+makes them safe to write; `GAMEDATA.DAT` — one `TEXT` member beside its 137
+playbook databases — **is** named, by `FE.QKL` and `GAME.QKL`, and is refused
+with both caches named. The lane is the shared
+`mod_editor/games/_lanes/text_banks.py`, which Madden 09's text row also
+instantiates. Real-disc proof in §3a.
 
 `FONTS.DAT` and `UIS_FONT.DAT` hold 17 `FNTS` fonts [M]; no font decoder exists
 here.
 
-**The rest of this page is art, and has no lane.** The menu textures live across
-**51 further containers** [M] — the 31 `UIS_*.DAT` (`UIS_BGSP.DAT` 689 `MMAP`,
+**The rest of this page is art.** The menu textures live across **51 further
+containers** [M] — the 31 `UIS_*.DAT` (`UIS_BGSP.DAT` 689 `MMAP`,
 `UIS_MCFL.DAT` 409, `UIS_TMLO.DAT` 399, `UIS_STAD.DAT` 244 and 27 more) and the
 20 `CAFE*.DAT`, whose members are nested `TERF` archives of Apt screens and
 textures — and they wait on the same `MMAP` decoder move as §3.1. The container
@@ -340,22 +451,45 @@ project**, and every site is per-title research: nothing found in Madden 09's
 `SLUS_217.70` applies here. The page carries no lane rather than a scaffold with
 nothing in it.
 
-### 3.11 Playbooks & Plays — no lane, and the closest near-miss on the disc
+### 3.11 Playbooks & Plays — `playbooks.databases`
 
-`GAMEDATA.DAT` holds 137 databases at members 4–140: one shared play library and
-136 playbooks, all one schema shape [M]. **Their nineteen tables are name-for-name
-identical to Madden 09's nineteen** — the closest the two discs come anywhere.
+**`offline-writer-proved`.** `GAMEDATA.DAT` holds 137 databases at members
+4–140: one shared play library and 136 playbooks, all one schema shape [M].
+**Their nineteen tables are name-for-name identical to Madden 09's nineteen** —
+the closest the two discs come anywhere.
 
-What stops the Madden playbook writer porting is one field: Madden's `PBPL`
-carries a play `name` and this one's does not, so the play names live in `PLYL`
-(192-bit strings) instead, and five widths shift [M]. **13,817 name-bearing rows**
-are on the disc: `PLYL` 4,322, `PBST` 3,266, `PBFM` 2,356, `SGF\x00` 2,086,
-`SPKF` 1,510, `SETL` 236, `FORM` 41. 2,301 of the 2,603 tables are packed exactly
-full, so a rename is possible and an insertion is not — the same ceiling Madden's
-books have.
+**One field is why the Madden writer did not port**: Madden's `PBPL` carries a
+play `name` and this one's does not, so the names live in `PLYL` (192-bit
+strings) and six further tables [M]:
 
-The databases themselves are catalogued by §3.2's lane, which is why this page
-has a note and not a duplicate row.
+| table | name-bearing rows | `name` width here |
+|---|---:|---|
+| `PLYL` | 4,322 | 192 bits |
+| `PBST` | 3,266 | 128 |
+| `PBFM` | 2,356 | 264 |
+| `SGF\x00` | 2,086 | 32 |
+| `SPKF` | 1,510 | 112 |
+| `SETL` | 236 | 144 |
+| `FORM` | 41 | 160 |
+
+**13,817 name-bearing rows**, and **2,301 of the 2,603 tables are packed exactly
+full** — so a rename is possible and an insertion is not. The lane renames and
+never adds or removes a row.
+
+That was a **new field map, not new code**: this row is the same
+`_lanes/tdb_records.TdbRecordLane` the roster and identity rows stand on.
+
+**Why the caches are cheap here.** Every one of `GAMEDATA.DAT`'s 150 members is
+**stored, codec 0** [M], so a record edit cannot change a stored size and the
+directory never moves — which matters, because two of the three caches name this
+container: its directory twice and fifteen of its members once each, including
+real playbooks at members 4, 33, 94 and 133. The real-disc trial rewrote member
+4 and the verifier re-read **18 cache copies** off the destination (§3a).
+
+**What a play *does* is not editable.** `ARTL` is 86 fields here against Madden
+09's 110 and no column of it has been decoded, so a route, an assignment or a
+blocking rule is out of reach and the row says so rather than implying
+otherwise.
 
 ### 3.12 All Textures — `textures.container_inventory`
 
@@ -371,28 +505,59 @@ container are decompressed to classify them, and every row says how many it
 sampled, so nobody reads a histogram as the whole container. The document's
 whole-disc totals (30,391 members) come from §2.
 
-### 3.13 Saves — no lane
+### 3.13 Saves — `saves.draft_class`
 
-An NCAA Football 09 memory-card save is a different source; this studio works off
-the disc. This is also where the **"Send to Madden" draft class** lives: it is a
-save the game writes at runtime, and no table on this disc holds one
-([`NCAA09_PS2_SCHEMA.md`](NCAA09_PS2_SCHEMA.md) §9).
+**`read-only-mapped`, and the only page whose source is not the disc.**
+
+At the end of a dynasty season NCAA Football exports its graduating class to a
+memory-card save that Madden imports as its draft pool —
+`BASLUS-21769LClass08` for the NCAA 09 / Madden 09 pair — and **no table on this
+disc holds one** [M]. It is produced at run time. So this row reads the save:
+138,240 bytes (270 sectors of 512), header `46 00 40 06`, **1,600 records of 86
+bytes** at offset 4 and a 636-byte zero trailer [S]. Per record it reports the
+college id, the two names, the class, the redshirt flag, overall, squad number,
+position, weight, height and the 21 rating bytes as a block.
+
+**The record shape is corroborated by this disc.** Its own `PLAY` table is 86
+fields of the same family two years apart, which is why the disc digests are
+pinned on a row whose source is a save.
+
+**It counts the empty slots, and that is the number that matters**: Madden 09
+hangs on "initializing roster management" if any of the 1,600 is zeroed [S], so
+"how many are empty" decides whether a class will load at all.
+
+**It does not write one, on purpose.** A compiler for this exact file already
+exists outside this repository, in the owner's own `NCAA-Draft-Class-Editor`;
+a second implementation of one format is how two of them start to disagree. The
+refusal says that, by name.
+
+**The identifier learned a second kind of source.** A draft class is not a disc
+and used to be refused as "no ISO9660 volume descriptor found" — a real NCAA
+Football artefact turned away for not being an ISO. `Ncaa09DiscIdentifier` now
+recognises it by length and header and says which of the two it was handed.
 
 ### 3.14 Build & Share — the shell's own page.
 
 ---
 
-## 4. Pages that state a reason instead of a lane
+## 4. The two pages that state a reason instead of a lane
 
-`game.json` carries **nine** page notes, each a sentence the shell draws under
-its own [M]. Eight are on pages with no lane — `identity`, `field_art`,
-`stadiums`, `presentation`, `crib`, `gameplay`, `playbooks`, `saves` — and the
-ninth, `rosters`, sits under a page that *has* a lane and says why that lane does
-not write. Every one names a **measured** reason: a format with no reader in this
-repository, a concept the game does not have, or a field that is not on the disc.
-"Not built yet" appears nowhere.
+`game.json` carried nine page notes when five pages had a lane. It carries
+**two** now, and both name a reason that is a fact about the game or the
+research rather than about this module's progress [M]:
 
----
+* **The Crib** is an ESPN NFL 2K5 feature and not an NCAA Football concept.
+  Empty on purpose, and it will stay empty.
+* **Gameplay**: the boot executable is `SLUS_217.52`, 7,294,796 bytes, sha256
+  `dc1b3089…9c1f71ee`, PCSX2 CRC `B0157E6C`. **No patch site on it has been
+  located by this project.** Every site is per-title research, and none of the
+  five `sltiu` immediates Madden 09's playbook-editor-caps patch uses is an
+  address in this executable — they are addresses in a different binary. A
+  pnach writer with an empty translation table is a control that can only
+  refuse, so the page carries the sentence instead of the scaffold.
+
+"Not built yet" appears nowhere, which is the same standard the nine notes were
+held to.
 
 ## 5. What the readers refused, grouped by sentence
 
@@ -430,10 +595,14 @@ No other reader refused anything: 0 of 85 containers, 0 of 30,391 members, 0 of
 | per-team rosters | 432, 24,717 player rows | the database lane |
 | playbook databases | 137, 13,817 name rows | the database lane |
 | `MMAP` headers read | 2,566 / 2,566 | the texture lane |
+| `MMAP` images drawn, sampled 60 members per container | `UIS_GEAR.DAT` 60/60, `PLADATA.DAT` 47/79, `UNIFORM.DAT` 780/840 | `mmap_art.parse` + `undecodable_reason` |
 | `TEXT` members measured | 1,247, 241,787 bytes | the text lane |
 | `SCHl` streams | 8,021, 412 decodable | the audio lane |
 | `BNKl` banks / sounds | 728 / 1,213, 753 with a rate | the audio lane |
-| preload copy entries | 564 across three caches | `containers.parse_preload_cache` |
+| preload copy entries | 564 across three caches, 47 containers | `ea_ql01.collect` |
+| writers proved on the retail disc | 6, every one PASS | §3a |
+| conformance checks | 523 of 523 | `python -m mod_editor.games conformance` |
+| lanes on the contract | 14, on 12 of 14 pages | `python -m mod_editor.games list` |
 | catalogue wall time | inventory 6.5 s · databases 7.5 s · textures 2.7 s · text 0.6 s · audio 7.2 s | the five lanes |
 
 ---
@@ -472,43 +641,60 @@ second, and should say so.
 
 ## 7. What this module does not claim
 
-1. **Nothing has been booted.** No image built from this disc exists, because no
-   lane here writes one.
-2. **No pixel is decoded.** The texture row reads headers. It says so in its own
-   refusal.
-3. **No rating scale is known.** `PLAY`'s ratings are 5 bits; what 0..31 means on
-   screen is unestablished, and no control offers a number.
-4. **No colour is editable**, because the `TEAM` table has no colour field and the
-   `TEAM` → `PACL` link is unproved.
-5. **Two databases are unread**, and the field type behind them is described, not
-   decoded.
+1. **Nothing has been booted.** Nine rows write bytes; **no image built from
+   this disc has been run**, in an emulator or on hardware. Everything in §3a is
+   a verifier re-deriving a claim from two files, and that is a different thing
+   from a game loading a disc.
+2. **No PCSX2 replacement pack has been loaded.** Every texture identity this
+   module offers is **derived** from the texture's own bytes; none is confirmed
+   by a dump, because no dump has been paired with `SLUS-21752`.
+3. **No rating scale is known** — only its **bound**. The five bits hold 0..31
+   and every value is in use; what the game draws from them is not established
+   and no control says.
+4. **No colour is editable**, because the `TEAM` table has no colour field and
+   the `TEAM` → `PACL` link is unproved.
+5. **Two databases are unread**, and the field type behind them is described,
+   not decoded (§5). With them the recruit name pool, `RCFN` (8,191 rows) and
+   `RCLN` (6,915), stays out of reach.
 6. **`SMF`, `DMF`, `MPCh` and `FNTS` are named and never opened** — 3,301, 603,
-   12 and 17 members [M]. No reader for any of them exists in this repository.
+   12 and 17 members [M]. No reader for any of them exists here.
 7. **MicroTalk is refused, not approximated** — 7,609 streams.
-8. **NCAA Football 06 is not on this box**, so the on-disc `PLAY` record could not
-   be diffed against the NCAA-06 draft-class format the owner's research decoded;
-   that research is cited as [S] and used as a reading of field meanings, not as a
-   measurement.
+8. **What a play *does* is not editable**: `ARTL`'s 86 columns are undecoded, so
+   the playbook row renames and nothing more.
+9. **Which school, player or coach an art member belongs to is unknown.** None
+   of these containers names its members, and no table joins a row to a texture.
+10. **NCAA Football 06 is not on this box**, so the on-disc `PLAY` record could
+    not be diffed against the NCAA-06 draft-class format the owner's research
+    decoded; that research is cited as [S] and used as a reading of field
+    meanings, not as a measurement.
 
----
+## 8. What the writers needed, and what is left
 
-## 8. What the writers need
+The table this section used to be said every writer this module could gain was
+a **shared** writer waiting on a schema table or one missing piece. Six of the
+eight have been built; here is the same table with the answers in it.
 
-Every writer this module could gain is a **shared** writer that already exists
-for Madden 09, waiting on a schema table or one missing piece.
+| writer | then | now |
+|---|---|---|
+| **TDB record writer** | needed a field map for this disc | **built ×3.** `_lanes/tdb_records.TdbRecordLane`, instantiated by the roster, identity and playbook rows here and by Madden 09's team-data row. The field map was the whole of the work; the lane was not written twice. |
+| **Container member rewrite** | needed the three `QL01` caches kept in step | **built.** `_lanes/preload_coherence` rewrites every stale copy or refuses by name, and the verifier re-reads them off the destination. |
+| **Text slot writer** | needed the container writer | **built.** Same base as Madden 09's. |
+| **Playbook name writer** | needed a field map, not new code | **built**, and that turned out to be exactly right. |
+| **`MMAP` art writer** | needed the decoder moved into `_formats` | **built ×6**, once the decoder moved. |
+| **Identity writer** | had "no target on this disc" | **wrong, and corrected.** `TLNA`, `TMNC` and the colours really are absent — but `TDNA`, `TMNA`, `TSNA`, `CONF.CNAM`, `DIVI.DNAM`, `STAD`'s four names and `COCH`'s two are all here. It is a *different* writer, not a port, and that is what was built. |
+| **Audio stream / bank writer** | needed the container writer and the caches | **still not built.** Both exist now, so this is the cheapest row left to lift; MicroTalk stays out of reach either way. |
+| **Executable patches** | needed translations | **still nothing.** No site on `SLUS_217.52` is mapped. |
 
-| writer | what it needs here |
-|---|---|
-| **TDB record writer** (`ea_tdb.write_records`, `recompute_crcs`) | exists and is shared. It needs a *field map* for this disc: which `PLAY` fields an editor offers, given there is no name and the ratings are 5 bits. The four CRCs are already proved on this disc's own bytes, 8,564 of 8,564, so the check has teeth before the writer exists. |
-| **Container member rewrite** (`ea_terf.rewrite_member`) | exists and is shared. It needs the **three** `QL01` caches kept in step (§2.2) and the ISO writer pointed at this disc. `LEAGUE.DAT` is `RLE1`, whose encoder `ea_terf` already has. |
-| **Text slot writer** | the format is identical to Madden 09's and this module already implements the slot-allocation rule and tests it. It needs the container writer above and nothing else. |
-| **Playbook name writer** | needs a new field map, not new code: 19 of 19 tables match by name, and the play name is in `PLYL` rather than `PBPL`. |
-| **`MMAP` art writer** | needs `mmap_art.py` moved from the Madden package into `_formats`, then the `LZH1` encoder (which now exists) for `UNIFORM.DAT` and `PLADATA.DAT`; `UIS_GEAR.DAT`, `PLYRFACE.DAT` and `COACFACE.DAT` store their members uncompressed and need no encoder at all. |
-| **Audio stream / bank writer** | the EA-XA and PS-ADPCM encoders exist and are shared. Needs the container writer and the caches; MicroTalk stays out of reach. |
-| **Identity writer** | has **no target on this disc**: `TLNA`, `TMNC` and all six colour fields are absent. It needs the `TEAM` → `PACL` link found first, and then it is a *different* writer, not a port. |
-| **Executable patches** | needs translations. None is mapped for `SLUS_217.52`. |
+**What a writer for this disc still needs**, in the order it would pay:
 
----
+1. **A boot.** One PCSX2 run of a rebuilt image is worth more than the next
+   three lanes, because it is the only thing that turns nine
+   `offline-writer-proved` rows into anything a player sees.
+2. **One PCSX2 texture dump paired with this disc**, which turns every derived
+   identity into a confirmed one across six art rows at once.
+3. **TDB field types 13 and 14 named**, which opens the recruit name pool.
+4. **The `TEAM` → `PACL` link**, which is the only thing between the identity
+   row and a colour control.
 
 ## 8a. Two things a third game broke, and what was done
 
@@ -581,97 +767,141 @@ which is the whole claim of §2.
 ## 9. Where the code is
 
 ```
+mod_editor/games/_formats/
+  ea_ql01.py         the QL01 preload-cache format: parse, attribute a copy to
+                     the container whose bytes it is, collect, build one
+  mmap_art.py        the MMAP pixel codec, shared since the art rows needed it
+mod_editor/games/_lanes/
+  iso_tools.py       the ISO writer and verifier shims, and the range helpers
+  preload_coherence.py  rewrite every stale cache copy, or refuse; and check
+  synthetic_art.py   the MMAP fixtures both games are proved on
+  tdb_records.py     TdbRecordLane -- a record edit, plan to verdict
+  terf_art.py        TerfArtLane / TerfArtWriteLane -- a texture member
+  text_banks.py      TextBankLane -- a string slot, rewritten in place
 mod_editor/games/ncaa09_ps2/
-  __init__.py        GAME, IDENTITY, the six lanes, the studio window
-  containers.py      disc access, container reports, the QL01 caches,
-                     and every synthetic source CI proves a lane on
-  disc_identity.py   which image this is
-  inventory_lane.py  §3.12
-  database_lane.py   §3.2
-  text_lane.py       §3.7
-  texture_lane.py    §3.1
-  audio_lane.py      §3.9, both rows, and the memory-mapped disc reader
-tools/validate_ncaa09_ps2_{inventory,databases,text,textures,audio}.{sh,bat}
+  __init__.py        GAME, IDENTITY, the fourteen lanes, the studio window
+  containers.py      disc access, container reports, the QL01 caches, the
+                     writer-side open_for_rewrite, and the synthetic disc
+  disc_identity.py   which image this is -- and now, which SAVE this is
+  inventory_lane.py  3.12      database_lane.py   3.2      identity_lane.py  3.3
+  text_lane.py       3.7       texture_lane.py    3.1      art_pages.py    3.4-3.6
+  playbooks_lane.py  3.11      saves_lane.py      3.13     audio_lane.py     3.9
+tools/validate_ncaa09_ps2_{inventory,databases,identity,text,textures,
+                           uniform_disc_art,art_pages,playbooks,saves,audio}.{sh,bat}
 tests/mod_editor/test_ncaa09_ps2_module.py    the harness and the fragment check
-tests/mod_editor/test_ncaa09_ps2_lanes.py     21 tests over the lanes
+tests/mod_editor/test_ncaa09_ps2_lanes.py     53 tests over the lanes
 docs/product/measured/ncaa09_ps2/tdb-schema.json
 ```
 
-Every lane runs without a window:
+Every lane runs without a window, and every one takes `--selftest` instead of
+`--source`, which runs it on a synthetic disc and needs no game data at all:
 
 ```
-python3 -m mod_editor.games.ncaa09_ps2.inventory_lane --source "<your>.iso"
-python3 -m mod_editor.games.ncaa09_ps2.database_lane  --source "<your>.iso" --out schema.json
-python3 -m mod_editor.games.ncaa09_ps2.text_lane      --source "<your>.iso"
-python3 -m mod_editor.games.ncaa09_ps2.texture_lane   --source "<your>.iso"
-python3 -m mod_editor.games.ncaa09_ps2.audio_lane     --source "<your>.iso"
+python3 -m mod_editor.games.ncaa09_ps2.database_lane   --source "<your>.iso"
+python3 -m mod_editor.games.ncaa09_ps2.identity_lane   --source "<your>.iso"
+python3 -m mod_editor.games.ncaa09_ps2.playbooks_lane  --source "<your>.iso"
+python3 -m mod_editor.games.ncaa09_ps2.text_lane       --source "<your>.iso"
+python3 -m mod_editor.games.ncaa09_ps2.texture_lane    --source "<your>.iso"
+python3 -m mod_editor.games.ncaa09_ps2.art_pages       --page stadiums --source "<your>.iso"
+python3 -m mod_editor.games.ncaa09_ps2.saves_lane      --source "<your class>.bin"
 ```
 
-and each takes `--selftest` instead, which runs it on a synthetic disc and needs
-no game data at all.
-
----
+A writer also takes `--recipe` and `--destination`, which plans, builds a NEW
+image and runs the independent verifier over the result; `--dry-run` stops after
+the plan and prints the byte ranges.
 
 ## 10. The studio
 
-`python -m mod_editor.games` lists **PS2 NCAA 09 Studio**, Ready, 6 lanes,
-alongside the other two PS2 studios. The label is composed from `console` /
-`game` / `year` in `game.json` and is typed nowhere.
+`python -m mod_editor.games` lists **PS2 NCAA 09 Studio**, Ready, **14 lanes**,
+alongside the other two PS2 studios — the same lane count Madden 09 carries.
 
-Opened headless (`QT_QPA_PLATFORM=offscreen`), the window titled
-`PS2 NCAA 09 Studio` draws **fourteen pages in the shell's order** [M]:
+Opened headless (`QT_QPA_PLATFORM=offscreen`), the window draws **fourteen pages
+in the shell's order** [M]:
 
 | # | page | widget | lane(s) |
 |---:|---|---|---|
-| 1 | Uniforms & Equipment | `LanePage` | `uniforms.texture_census` |
-| 2 | Names, Numbers & Faces | `LanePage` | `players.league_databases` |
-| 3 | Text & Team Identity | `UnavailablePanel` | — |
-| 4 | Field Art & Create-Team Art | `UnavailablePanel` | — |
-| 5 | Stadiums | `UnavailablePanel` | — |
-| 6 | Presentation | `UnavailablePanel` | — |
+| 1 | Uniforms & Equipment | two lane panels | `uniforms.texture_census`, `uniforms.disc_art_writer` |
+| 2 | Names, Numbers & Faces | two lane panels | `players.league_databases`, `rosters.face_textures` |
+| 3 | Text & Team Identity | `LanePage` | `identity.league_records` |
+| 4 | Field Art & Create-Team Art | `LanePage` | `field_art.textures` |
+| 5 | Stadiums | `LanePage` | `stadiums.textures` |
+| 6 | Presentation | `LanePage` | `presentation.ui_textures` |
 | 7 | Menus & UI | `LanePage` | `menus.text_members` |
 | 8 | The Crib | `UnavailablePanel` | — |
 | 9 | Audio | two lane panels | `audio.streams`, `audio.banks` |
 | 10 | Gameplay | `UnavailablePanel` | — |
-| 11 | Playbooks & Plays | `UnavailablePanel` | — |
+| 11 | Playbooks & Plays | `LanePage` | `playbooks.databases` |
 | 12 | All Textures | `LanePage` | `textures.container_inventory` |
-| 13 | Saves | `UnavailablePanel` | — |
+| 13 | Saves | `LanePage` | `saves.draft_class` |
 | 14 | Build & Share | `BuildPage` | the shell's own |
 
-Six lanes on five pages, eight `UnavailablePanel`s each carrying their page's
-sentence, and the shell's build page. No page is missing and none is silently
-empty.
+Fourteen lanes on twelve pages, two `UnavailablePanel`s each carrying their
+page's sentence, and the shell's build page. No page is missing and none is
+silently empty.
+
+
+
+The third game on the Game Studio shell. Like Madden 09 it ships no window of
+its own: `studio_window` points at the core shell, which draws the same fourteen
+pages every studio has. A lane reaches its page by being a lane; a page with no
+lane says why in one sentence.
+
+This document is the honest inventory: what each page does, what is measured,
+what is merely sourced, what is assumed, and — at the end — the list of things
+this module deliberately does **not** claim.
+
+**Fourteen registry rows fill twelve of the fourteen pages** (§3): **nine
+write**, two export, three inspect. Every writer is proved offline twice — on a
+synthetic disc in CI, and by hand on the retail image, with the numbers in §3a.
+**Nothing has been booted**: no image built from this disc has been run in an
+emulator or on hardware, and no row says otherwise. §11 answers the seven-point
+shipping standard for the module as it stands.
+
+**Evidence tags, on every load-bearing claim.**
+**[M]** measured — a read-only command was run against a disc this box holds and
+the number is quoted. **[S]** sourced — someone else's finding, cited.
+**[A]** assumed — inference, not verified; treat it as a question.
+
+**Retail-free.** Everything below is a name, an offset, a length, a count or a
+digest. No member payload, no decoded pixel and no string from the game appears
+here or in the code.
 
 ---
 
 ## 11. The shipping checklist
 
 The seven-point standard from `ADDING_A_GAME_MODULE.md`, answered for this
-module as it stands. **This module is not complete**, and these are the reasons.
+module as it stands.
 
-1. **Every page has its answer** — **partly.** Five pages carry a lane; eight
-   carry a measured sentence; one is the shell's. But `field_art`, `stadiums` and
-   `presentation` — and the export half of `uniforms` — are all blocked on **one**
-   thing, the `MMAP` decoder's location, which is a gap rather than a property of
-   the disc. Said plainly: this module is at the rung its readers earn, and the
-   reason the art pages are empty is a repository-layout fact, not an NCAA
-   Football fact.
-2. **Every writer is proved twice** — **not applicable: there are no writers.**
-   The two export rows are proved offline by an independent verifier that
-   re-decodes from the source and fails on tampering; neither writes to a disc.
-3. **Art round-trips** — **no.** No pixel is decoded here. §3.1.
+1. **Every page has its answer** — **yes.** Twelve pages carry a lane; two carry
+   a measured sentence; one is the shell's. Neither of the two is blocked on a
+   repository-layout fact, which is what the previous answer to this question
+   had to admit: the `MMAP` decoder's location was in the way of four pages and
+   it is not any more.
+2. **Every writer is proved twice** — **offline twice, never in game.** Each of
+   the nine writers is proved by the conformance harness on a synthetic disc and
+   by hand on the retail image (§3a), with an independent verifier that imports
+   none of the writer and an adversarial byte flip that it refuses. **Neither
+   proof is a boot**, and §7.1 says so first.
+3. **Art round-trips** — **yes.** A texture decodes to PNG, is re-indexed
+   against the member's own CLUT, is laid out again, re-packed, written into a
+   new image, and decoded back out of that image as the PNG that was given.
+   Proved on `PLYRFACE.DAT` and `UIS_STAD.DAT` on the retail disc.
 4. **Rosters, team data and text have writers with the four CRCs proved** —
-   **half.** The CRCs are proved: 8,564 of 8,564 on the disc's own databases,
-   before any write is offered, which is the order the standard asks for. The
-   writers do not exist, and §3.2 says which fields are missing.
+   **yes.** All three, and the CRCs are recomputed on every write and re-derived
+   from the destination's own bytes: 6 slots on a roster member, 52 on the
+   league database, 40 on a playbook, and 8,564 of 8,564 across the disc before
+   any write existed.
 5. **Audio, stadiums, playbooks and gameplay patches at the rung their formats
-   permit** — **audio yes** (`extract-only`; the codec that would lift it does
-   not exist publicly). **Stadiums and playbooks no**: the geometry has no reader
-   anywhere here, and the playbook writer needs a field map. **Gameplay no**: no
-   patch site is located.
-6. **Validators run in a shipped tree and on a real cmd.exe** — the five `.sh`
-   validators run in a staged tree on Linux and print their PASS lines; the five
-   `.bat` mirrors are written without parentheses inside `if` blocks and have
-   **not been run on a real cmd.exe from here**.
-7. **Nothing is claimed above its proof** — every row is `read-only-mapped` or
-   `extract-only`, no row is hidden, and §7 is the list of what is not claimed.
+   permit** — **three of four.** Stadiums and playbooks are
+   `offline-writer-proved`. Audio is still `extract-only`: the container writer
+   it was waiting on now exists, so this is the cheapest row left to lift, and
+   MicroTalk stays out of reach either way. **Gameplay: no**, and §4 says why.
+6. **Validators run in a shipped tree and on a real cmd.exe** — **half.** All
+   **ten** `.sh` validators were run inside a staged release tree and printed
+   their `NCAA09_PS2_*_VALIDATION_PASS` token there. The ten `.bat` mirrors are
+   written without parentheses inside `if` blocks and have **not been run on a
+   real cmd.exe from here**.
+7. **Nothing is claimed above its proof** — every row sits on the rung its
+   evidence earns, no row is hidden, and §7 is the list of what is not claimed.
+   The one thing that would move most of it is a boot.

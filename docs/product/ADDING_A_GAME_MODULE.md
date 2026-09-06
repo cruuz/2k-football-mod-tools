@@ -115,6 +115,57 @@ python -m mod_editor.games lane madden08_ps2 example.slots verify --source in.sl
     --destination new.slot --receipt receipt.json --out verdict.json
 ```
 
+### 3a. Before you write a lane: is it already written?
+
+`mod_editor/games/_formats/` holds the **formats** — a reader that knows a
+container and nothing about a game. `mod_editor/games/_lanes/` holds the layer
+above: the **lane shapes** two games on the same stack would otherwise write
+twice. A game composes a lane base exactly as it composes a format package, and
+still never imports a sibling game.
+
+| base | what it is | instantiated by |
+|---|---|---|
+| `_lanes/tdb_records.TdbRecordLane` | one record of one EA TDB table inside a container member, catalogue to independent verdict | Madden 09 team data; NCAA 09 rosters, identity, playbooks |
+| `_lanes/terf_art.TerfArtLane` / `TerfArtWriteLane` | an `MMAP` texture member: catalogue, decode, checked import, PCSX2 identity, export, disc write-back | Madden 09 ×5 rows, NCAA 09 ×6 rows |
+| `_lanes/text_banks.TextBankLane` | a `TEXT` string slot, rewritten in place inside its own allocation | Madden 09 and NCAA 09 menus |
+| `_lanes/preload_coherence` | rewrite every stale `QL01` cache copy or refuse; and re-check from the destination | every writer on this stack |
+| `_lanes/iso_tools` | the ISO writer and verifier import shims and the declared-range helpers | every writer that rebuilds an image |
+| `_lanes/synthetic_art` | the `MMAP` fixtures CI proves an art lane on | both games |
+
+**What a base takes as data**, and therefore what your module still writes:
+
+* `discs` — your own `containers` module. The protocol a base is entitled to
+  use is written down in `_lanes/__init__.py`;
+* the lane's identity — capability id, lane id, surface, page, title, the three
+  schema strings, and the two validators;
+* **the field map, or the container list.** This is the half that never ports.
+  Madden 09 and NCAA Football 09 share 37 `PLAY` field names out of 110 and 86;
+  NCAA's ratings are five bits where Madden's are seven; NCAA's `PBPL` has no
+  play name where Madden's does. Every one of those is a line in a tuple, and
+  none of them is a line of logic.
+
+**How much this actually saves**, measured on the second game [M]. NCAA
+Football 09's three EA TDB record rows are 452, 357 and 344 lines of field map
+and page prose, against the **1,074-line** lane each would otherwise have had to
+be; its six art rows are 259 + 348 lines against **1,651**; its text row is 274
+against **841**. Madden 09's own three shrank the same way in the same commit:
+team data 1,266 → 511, text 960 → 223, uniform art 1,753 → 243. The bases are
+3,566 lines that are now written once and tested once, and every one of them was
+already written — the move added no behaviour, it moved eleven callers onto one
+implementation.
+
+**When to leave a lane concrete.** A base that one game instantiates is a base
+in name. If the second game's lane differs in more than its field map — a
+different container format, a different write bound, a different verdict — write
+it concrete and say why in the module document. That is a smaller cost than a
+base with a flag for every difference.
+
+**If a base needs to change for your game**, change the base and re-run the
+*other* game's conformance and suites before you commit. `_lanes` is upstream of
+every module that imports it, and a base whose second caller quietly broke its
+first is worse than two copies.
+
+
 ## 4. The studio, and any other windows
 
 `GameModule.studio_window` names the window the chooser opens and the one

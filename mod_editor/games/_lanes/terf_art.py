@@ -360,6 +360,15 @@ class TerfArtLane:
     identity_tool: str = ""
     #: How many textures the catalogue offers as targets.
     max_targets = MAX_TARGETS
+    #: How many targets ONE container may take of that cap, or ``None`` for no
+    #: per-container share.  Without it the first container listed can spend
+    #: the whole budget and the last one is unreachable -- which is not a
+    #: table being a table, it is a container a user cannot open.  Measured on
+    #: NCAA Football 09: ``UNIFORM.DAT``'s 1,200 members carry about 15,600
+    #: images between them, so a flat 4,000 hid all 396 of ``UIS_GEAR.DAT``'s
+    #: -- the one container on that disc no preload cache names, and therefore
+    #: the cheapest thing on it to rewrite [M].
+    max_targets_per_container: Optional[int] = None
     catalog_schema = ""
     recipe_schema = ""
     write_schema = ""
@@ -433,6 +442,7 @@ class TerfArtLane:
                 skipped[name] = _report.note or "could not be opened as a TERF container"
                 continue
             counted = census.setdefault(name, {})
+            listed_here = 0
             for index in range(len(container)):
                 # Classify from the member's first 32 bytes -- the codec stops
                 # there -- and unpack only the textures.  ``FIELDART.DAT`` is
@@ -489,8 +499,12 @@ class TerfArtLane:
                     row["derived_names"] = derived
                     row["derived_note"] = derived_note
                     rows.append(row)
-                    if len(targets) < self.max_targets:
+                    room = len(targets) < self.max_targets and (
+                        self.max_targets_per_container is None
+                        or listed_here < self.max_targets_per_container)
+                    if room:
                         targets.append(self._target(row, note))
+                        listed_here += 1
         document = {
             "schema": self.catalog_schema,
             "source": str(source),
@@ -504,6 +518,7 @@ class TerfArtLane:
             "rows_listed": len(rows),
             "targets_listed": len(targets),
             "targets_cap": self.max_targets,
+            "targets_cap_per_container": self.max_targets_per_container,
             "skipped": skipped,
             "not_decodable": refusals,
             "members_by_format": census,
