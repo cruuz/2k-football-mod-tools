@@ -145,15 +145,19 @@ Actual kernel acceptance, load ordering and gameplay remain UNWITNESSED.
 
 ## Beta-62 owner budgets
 
-These are **planning decisions / HYPOTHESIS**, not assembled feature sizes.
+Future rows are **planning decisions / HYPOTHESIS**, not assembled feature sizes.
+The three landed rows are measured requests; integration added them to the budget fixture.
 All rows below fit together with the complete existing owner union. Amounts
 are bytes; ordinary requests use alignment 16, Senior Bowl heap alignment 4096.
 RO amounts cover immutable tables only. No address is assigned by a report
 estimate; each feature must submit its actual requests and compile for the
 returned addresses.
 
-| Future owner | RX | RW | General RO |
+| Owner (landed rows marked) | RX | RW | General RO |
 | --- | ---: | ---: | ---: |
+| nfl2k5_roster_storage (landed) | 82 | 0 | 0 |
+| nfl2k5_coverage_slider (landed) | 16 | 0 | 0 |
+| nfl2k5_scramble_tuning (landed) | 160 | 0 | 0 |
 | QB spy runtime | 2,048 | 768 | 0 |
 | Native Practice Squad screen | 4,096 | 256 | 0 |
 | Abilities phases 1 and 2 | 1,536 | 0 | 0 |
@@ -165,7 +169,7 @@ returned addresses.
 | Senior Bowl, upper code/heap estimates | 16,384 | 65,536 | 0 |
 | My Career, provisional reserve | 8,192 | 4,096 | 0 |
 | Franchise-2026 rules, provisional reserve | 8,192 | 4,096 | 0 |
-| **New-owner total** | **47,232** | **75,600** | **3,072** |
+| **New-owner total** | **47,490** | **75,600** | **3,072** |
 
 Existing owners use 6,501 RX bytes and 3,242 RW bytes. The directory reserves
 4,096 RO bytes, and music retains its separate 65,536-byte section. With every
@@ -173,7 +177,7 @@ budget row, the planner reports:
 
 | Kind | Capacity | Requested, including existing owners/directory | Free bytes | Available for more new owners before alignment |
 | --- | ---: | ---: | ---: | ---: |
-| RX | 106,496 | 53,733 | 52,763 | **51,072** |
+| RX | 106,496 | 53,991 | 52,505 | **50,800** |
 | RW | 86,016 | 78,842 | 7,174 | **4,096** |
 | General RO plus directory | 20,480 | 7,168 | 13,312 | **13,312** |
 

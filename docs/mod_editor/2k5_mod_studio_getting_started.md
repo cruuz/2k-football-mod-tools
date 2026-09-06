@@ -59,6 +59,24 @@ or *unknown image*, with a sentence saying what to do. Every refusal quotes the
 same line, so a failure says which disc you handed it and not just how many bytes
 disagreed.
 
+
+**Hi-res pack (experimental, unwitnessed).** This optional Build choice is
+off in every preset. Put a `Hi-res` folder beside your project, then choose
+that folder in Build. Use `scorebug.png` at 128 x 128, `field_logo.png` at
+512 x 512, and `helmet.png` at 512 x 512. Missing files leave their targets
+unselected. The field logo is created-team logo 33 in dry weather; the
+helmet is uniform `00H0.IFF`'s Standard/A `helmet00`. These are specific
+pilot assets, not all teams. An NFL 2K5 `.2ktexmaster` with the same basename
+can replace each PNG; choose one extension per target. Keep the atlas
+arrangement and seams. `2x detail` installs larger textures. `Original
+size` builds your retained artwork at the native dimensions. Keep the same
+folder for replay or downscaling, and use your original disc to change art
+or restore retail bytes. 128 MiB support is unavailable. Set xemu's
+rendering resolution separately; this choice has no played witness yet.
+
+See [the Hi-res pack guide](nfl2k5_hires_pack.md) for the complete limits.
+
+
 ## Make your first edit
 
 1. Open **2K5 Mod Studio** from the desktop application menu.
@@ -358,7 +376,7 @@ Build remains disabled until at least one replacement is staged.
   asset.
 
 These labels come from the same capability registry used by the build system.
-The current registry has 83 cross-title rows, including 45 Xbox NFL 2K5
+The current registry has 91 cross-title rows, including 53 Xbox NFL 2K5
 capabilities and the separate PS2 save-import bridge. No current 2K5 capability
 is labeled Coming Soon, and an asset never becomes writable merely because it
 has a preview.

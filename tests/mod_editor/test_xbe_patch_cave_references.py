@@ -286,10 +286,10 @@ class CaveReferenceTests(unittest.TestCase):
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
         proof = space.allocation_evidence(self.retail, manifest, allocated=self.patched)
         self.assertEqual(proof["legacy_encoded_references"], [])
-        if getattr(self, "scaleout", False):
+        if space.is_scaleout(self.patched):
             self.assertEqual(proof["retail_mapping_overlaps"], [])
             self.assertEqual(len(proof["pages"]), 52)
-            self.assertTrue(proof["encoded_references"])  # raw candidates stay visible
+            self.assertEqual(len(proof["encoded_references"]), 1081)  # disclosed raw inventory
         else:
             self.assertEqual(proof["encoded_references"], [])
         self.assertEqual(relocated.status(self.patched), "applied")

@@ -54,6 +54,24 @@
     16
   ],
   [
+    "nfl2k5_roster_storage",
+    "code",
+    82,
+    16
+  ],
+  [
+    "nfl2k5_coverage_slider",
+    "code",
+    16,
+    16
+  ],
+  [
+    "nfl2k5_scramble_tuning",
+    "code",
+    160,
+    16
+  ],
+  [
     "nfl2k5_qb_spy",
     "code",
     2048,

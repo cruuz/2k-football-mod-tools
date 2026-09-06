@@ -758,8 +758,10 @@ class _EmbeddedOperationGuardedHost:
         *,
         requester: str,
         require_mutation_admission: Callable[[str, str], None],
+        team_names_enabled: Callable[[], bool] | None = None,
     ) -> None:
         self._host = host
+        self._team_names_enabled = team_names_enabled or (lambda: False)
         self._requester = requester
         self._require_mutation_admission = require_mutation_admission
 
@@ -778,10 +780,33 @@ class _EmbeddedOperationGuardedHost:
     def text_catalog_snapshot(
         self, progress: ProgressSink
     ) -> Nfl2k5TextCatalog:
-        return self._host.text_catalog_snapshot(progress)
+        catalog = self._host.text_catalog_snapshot(progress)
+        overrides = self._team_name_overrides(catalog)
+        if not overrides:
+            return catalog
+        from dataclasses import replace
+        teams = []
+        for team in catalog.teams:
+            fields = dict(team.text_asset_ids)
+            if team.outer_index == 5 and "city" in fields and "nickname" in fields:
+                title = " ".join(overrides.get(fields[key], self._host.text_value(fields[key]))
+                                 for key in ("city", "nickname")).strip()
+                team = replace(team, display_name=title)
+            teams.append(team)
+        return Nfl2k5TextCatalog(catalog.banks, catalog.assets, teams, catalog.players, catalog.number_assets)
+
+    def _team_name_overrides(self, catalog=None):
+        if not self._team_names_enabled():
+            return {}
+        from mod_editor.core import nfl2k5_team_names_2026 as names
+        if catalog is None:
+            catalog = self._host.text_catalog_snapshot(lambda *_: None)
+        return names.catalog_overrides(catalog, enabled=True, value_lookup=self._host.text_value)
 
     def text_value(self, asset: TextAsset | str) -> str:
-        return self._host.text_value(asset)
+        asset_id = asset if isinstance(asset, str) else asset.asset_id
+        overrides = self._team_name_overrides()
+        return overrides[asset_id] if asset_id in overrides else self._host.text_value(asset)
 
     def number_value(self, asset: RosterNumberAsset | str) -> int:
         return self._host.number_value(asset)
@@ -790,6 +815,9 @@ class _EmbeddedOperationGuardedHost:
         self, asset: TextAsset | str, value: str, progress: ProgressSink
     ) -> object:
         self._require_mutation_admission(self._requester, "change text or a player")
+        asset_id = asset if isinstance(asset, str) else asset.asset_id
+        if asset_id in self._team_name_overrides():
+            raise ValueError("Turn off 2026 team names in Build before editing these identity fields")
         return self._host.replace_text(asset, value, progress)
 
     def replace_number(
@@ -2425,6 +2453,7 @@ class StudioMainWindow(QMainWindow):
         text_specialist_host = _EmbeddedOperationGuardedHost(
             self.facade,
             requester="text",
+            team_names_enabled=self._team_names_preview_enabled,
             require_mutation_admission=self._require_specialist_mutation_admission,
         )
         crib_specialist_host = _EmbeddedOperationGuardedHost(
@@ -8232,6 +8261,18 @@ class StudioMainWindow(QMainWindow):
         layout.addStretch(1)
         return page
 
+    def _team_names_preview_enabled(self) -> bool:
+        panel = getattr(self, "_build_panel", None)
+        if panel is None or not panel.team_names_2026_check.isChecked():
+            return False
+        source = getattr(self.facade, "source_path", None)
+        return bool(source and Path(panel.source_field.text()).resolve() == Path(source).resolve())
+
+    def _refresh_team_names_preview(self, *_args) -> None:
+        panel = getattr(self, "_text_roster_panel", None)
+        if panel is not None:
+            panel.reload()
+
     def _build_build_share_page(self) -> QWidget:
         """★ Build & Share: one copy with every patch (Build) and the .2k5patch exchange (Share)."""
 
@@ -8239,6 +8280,8 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_panel = BuildPanel(self.facade)
+        self._build_panel.team_names_2026_check.toggled.connect(self._refresh_team_names_preview)
+        self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
         self._build_panel.operation_guard = lambda: self._embedded_operation_denial("Build")
         self._build_panel.operation_state_changed.connect(self._build_operation_state_changed)
         if self._music_policy_values:

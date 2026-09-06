@@ -3485,6 +3485,192 @@
     },
     {
       "backend": {
+        "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_penalties as m; result, receipt = m.apply_chop_block(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_penalties.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_penalties.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.chop_block_toggle",
+      "input_constraints": [
+        "User-owned pinned USA default.xbe; mixed or foreign lever bytes refuse.",
+        "Existing fixed spans only; use an original source when changing incompatible flight profiles."
+      ],
+      "portme": [
+        "Complete the per-lever Noah witness list in ASTRA_GAMEPLAY_LEVERS_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+        ],
+        "scope": "Pinned byte and bounded helper proofs only. No game/loader witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "chop_block_toggle",
+            "required": true
+          }
+        ],
+        "notes": "Existing penalty profiles already repair Chop Block; this switch is independently selectable."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "existing penalty owner: case-10 pointer and reserved ten-byte stub in a 16-byte host",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Expose the existing toggle repair independently of penalty-rate tuning. Retail shares Clipping enable; the detector exists.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Repair Chop Block toggle (experimental, unwitnessed)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_penalties.py"
+    },
+    {
+      "backend": {
+        "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_coverage_slider as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_coverage_slider.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.coverage_slider",
+      "input_constraints": [
+        "User-owned pinned USA default.xbe; mixed or foreign lever bytes refuse.",
+        "For grown owners reserve the complete selected request union before any installation; no additional page is allocated by this feature."
+      ],
+      "portme": [
+        "Complete the per-lever Noah witness list in ASTRA_GAMEPLAY_LEVERS_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+        ],
+        "scope": "Pinned byte and bounded helper proofs only. No game/loader witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "coverage_slider",
+            "required": true
+          }
+        ],
+        "notes": "See WIRING.md for request union and flight exclusivity."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "two operand repoints and a named 16-byte immutable allocation",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Expand the direct ball-reaction contribution while preserving the float32 neutral point at 50.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Coverage slider response (experimental, unwitnessed)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+    },
+    {
+      "backend": {
+        "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_throw_arc as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_throw_arc.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_throw_arc.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.flatter_deep_ball",
+      "input_constraints": [
+        "User-owned pinned USA default.xbe; mixed or foreign lever bytes refuse.",
+        "Existing fixed spans only; use an original source when changing incompatible flight profiles."
+      ],
+      "portme": [
+        "Complete the per-lever Noah witness list in ASTRA_GAMEPLAY_LEVERS_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+        ],
+        "scope": "Pinned byte and bounded helper proofs only. No game/loader witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "flatter_deep_ball",
+            "required": true
+          }
+        ],
+        "notes": "See WIRING.md for request union and flight exclusivity."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "one existing lob-speed ordinate; no new executable hook or allocation",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Increase the deep lob speed knot to 25 yards per second while keeping the chosen distance curve and speeds through 35 yards.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Flatter deep flight (experimental, unwitnessed)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_throw_arc.py"
+    },
+    {
+      "backend": {
         "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes()); Path(sys.argv[3]).open('xb').write(payload); print(receipt)\" mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py",
         "operation": "write"
@@ -3617,6 +3803,68 @@
       "surface": "gameplay_tuning_sliders",
       "title": "Player momentum (experimental, unwitnessed)",
       "validation_command": "python3 tools/validate_beta61_integrated_features.py"
+    },
+    {
+      "backend": {
+        "command": "python3 -c \"import sys; from pathlib import Path; from mod_editor.core import nfl2k5_scramble_tuning as m; result, receipt = m.apply(Path(sys.argv[1]).read_bytes())\nwith Path(sys.argv[2]).open('xb') as output:\n    output.write(result)\nprint(receipt)\" <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_scramble_tuning.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_GAMEPLAY_LEVERS_REPORT.md",
+        "tests/mod_editor/test_nfl2k5_gameplay_levers.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Explicit opt-in; new switches off in all presets. Protected Build/Gameplay integration is in WIRING.md."
+      },
+      "id": "nfl2k5.gameplay.scramble_tuning",
+      "input_constraints": [
+        "User-owned pinned USA default.xbe; mixed or foreign lever bytes refuse.",
+        "For grown owners reserve the complete selected request union before any installation; no additional page is allocated by this feature."
+      ],
+      "portme": [
+        "Complete the per-lever Noah witness list in ASTRA_GAMEPLAY_LEVERS_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_GAMEPLAY_LEVERS_REPORT.md"
+        ],
+        "scope": "Pinned byte and bounded helper proofs only. No game/loader witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false by default in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "scramble_tuning",
+            "required": true
+          }
+        ],
+        "notes": "See WIRING.md for request union and flight exclusivity."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "one five-byte call and a named 160-byte selector/table allocation",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Use 65% of the native acceleration curve for live QB carriers with raw Speed <= 60. CPU bailout decisions and top speed are unchanged.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Slow-QB acceleration (experimental, unwitnessed)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_gameplay_levers.py"
     },
     {
       "backend": {
@@ -4709,6 +4957,67 @@
     },
     {
       "backend": {
+        "command": "python3 -c 'import importlib, sys; from pathlib import Path; from mod_editor.core.nfl2k5_roster_records import RosterDocument; m=importlib.import_module(sys.argv[1][:-3].replace('\"'\"'/'\"'\"', '\"'\"'.'\"'\"')); d=RosterDocument(Path(sys.argv[2]).read_bytes(), reference_year=int(sys.argv[4])); receipt=m.apply(d,m.preview(d,int(sys.argv[4]),int(sys.argv[5])))\nwith Path(sys.argv[3]).open('\"'\"'xb'\"'\"') as out: out.write(d.to_body())\nprint(receipt)' mod_editor/core/nfl2k5_roster_ages.py <source-rost> <new-copy-rost> <source-year> <target-year>",
+        "module": "mod_editor/core/nfl2k5_roster_ages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_roster_ages.py",
+        "ASTRA_ROSTERS_DATA_REPORT.md",
+        "mod_editor/gui/roster_editor_panel_qt.py",
+        "tests/mod_editor/test_rosters_data.py",
+        "tests/mod_editor/test_rosters_data_qt.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Explicit source/target season, preview and Apply in Rosters; never runs on load or Build."
+      },
+      "id": "nfl2k5.players.age_shift",
+      "input_constraints": [
+        "Explicit source/target seasons; primary NFL-flagged players aged 18..55; leap-day fallback is receipted.",
+        "Modulo-100 birth years; stale preview refusal; years pro, contracts, ratings, calendar and statistics stay unchanged."
+      ],
+      "portme": [
+        "Run Noah's signed-copy reopen and 2026-franchise age witnesses."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED; no played or screen witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "explicit season years in the codec reference window",
+            "name": "source_year / target_year",
+            "required": true
+          }
+        ],
+        "notes": "Chosen RosterDocument plus optional (pool,index) scope; never infers provenance from names or calendar."
+      },
+      "source_container": {
+        "format": "ROST/save body",
+        "hash_pins": [],
+        "resource": "Version 17 disc or version 0 save, field-relative 0x54 player records",
+        "retail_file": "User-owned main disc ROST or signed save"
+      },
+      "summary": "Preserve eligible players' September 1 ages through explicit fictional birth-date shifts, with exact changes and skips, session undo and signed-copy persistence.",
+      "surface": "players_rosters",
+      "title": "Shift roster ages to a season year (experimental)",
+      "validation_command": "QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_rosters_data_qt.py"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl_player_roster_general_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --plan <plan.json> --manifest <manifest.json> --audit <audit.json>",
         "module": "tools/nfl_player_roster_general_workflow.py",
         "operation": "write"
@@ -4790,6 +5099,68 @@
       "surface": "players_rosters",
       "title": "NFL 2K5 disc roster editor",
       "validation_command": "bash tools/validate_nfl_player_roster_general.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -c 'import importlib, sys; from pathlib import Path; m=importlib.import_module(sys.argv[1][:-3].replace('\"'\"'/'\"'\"', '\"'\"'.'\"'\"')); result, receipt=m.apply(Path(sys.argv[2]).read_bytes())\nwith Path(sys.argv[3]).open('\"'\"'xb'\"'\"') as out: out.write(result)\nprint(receipt)' mod_editor/core/nfl2k5_team_names_2026.py <source-rost> <new-copy-rost>",
+        "module": "mod_editor/core/nfl2k5_team_names_2026.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_team_names_2026.py",
+        "ASTRA_ROSTERS_DATA_REPORT.md",
+        "data/nfl2k5_team_names_2026.json",
+        "tests/mod_editor/test_nfl2k5_team_names_2026.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Explicit disc-only 2026 names with fixed-space short forms; existing saves keep their own names."
+      },
+      "id": "nfl2k5.players.team_names_2026",
+      "input_constraints": [
+        "Module-pinned manifest; 35 exact preflight cells, 17 writes, mixed/foreign refusal and zero growth.",
+        "Historic ROSTs, STRG, commentary and existing saves keep their own names."
+      ],
+      "portme": [
+        "Run Noah's new-franchise, scorebug and menu name witnesses."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED; no played or screen witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "boolean; off in every preset",
+            "name": "team_names_2026",
+            "required": true
+          }
+        ],
+        "notes": "Main ROST outer 5; team indexes 7, 8, 22, 23, 25, identity fields and independent labels."
+      },
+      "source_container": {
+        "format": "ROST resource",
+        "hash_pins": [
+          "fea1e37b7fb23887b8231d3e971b5113eeecef1d815001b9032da6b0eac8d13b"
+        ],
+        "resource": "Main ROST outer 5, 0x20 wrapper and 0x90F60 body",
+        "retail_file": "User-owned main disc ROST or signed save"
+      },
+      "summary": "One grouped pass writes 17 fixed-space modern identity/label cells; no changes to saves, STRG, asset codes or pointers.",
+      "surface": "players_rosters",
+      "title": "2026 team names (experimental)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_team_names_2026.py"
     },
     {
       "backend": {
@@ -5710,6 +6081,70 @@
     },
     {
       "backend": {
+        "command": "python3 -c \"import importlib, sys; from pathlib import Path; module = importlib.import_module(sys.argv[1][:-3].replace('/', '.')); payload, receipt = module.apply(Path(sys.argv[2]).read_bytes())\nwith Path(sys.argv[3]).open('xb') as output:\n    output.write(payload)\nprint(receipt)\" mod_editor/core/nfl2k5_roster_storage.py <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_roster_storage.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_STORAGE_GROWTH_REPORT.md",
+        "docs/mod_editor/nfl2k5_roster_storage_census.json",
+        "tests/mod_editor/test_nfl2k5_roster_storage.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in witness disc only; off in every preset."
+      },
+      "id": "nfl2k5.stadiums_fields.all_stadiums",
+      "input_constraints": [
+        "Pinned USA retail executable or a recognized composed stack with the complete owner union reserved.",
+        "All 82 original stadium records must be present in the loaded ROST. This is not a custom stadium importer.",
+        "Reserves remain limited to 12, teams to their existing records. No larger reserve or team save schema is implemented."
+      ],
+      "portme": [
+        "Run the stadium preview, controller wrap, Create a Team, game-load and signed-save witnesses in ASTRA_STORAGE_GROWTH_REPORT.md."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_STORAGE_GROWTH_REPORT.md"
+        ],
+        "scope": "Static instruction and byte-reference audits, complete owner composition and host save round trips. No native game execution, preview or save lifecycle witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in only",
+            "name": "all_stadiums",
+            "required": true
+          }
+        ],
+        "notes": "Implies xbe_space and adds nfl2k5_roster_storage.REQUESTS to the full owner union before first growth."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Ten existing instruction operands plus an 82-byte immutable named allocation in a preloaded RX page. No save arena growth.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Relocate the stadium picker ID list and update every discovered search, preview and controller bound. Keep the existing roster and save layout.",
+      "surface": "stadiums_fields",
+      "title": "All 82 Create a Team stadiums (experimental, unwitnessed)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_roster_storage.py"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl_all_texture_xiso_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --plan <plan.json> --index <extracted vc_53450030/0>",
         "module": "tools/nfl_all_texture_xiso_workflow.py",
         "operation": "write"
@@ -5788,6 +6223,90 @@
       "surface": "textures",
       "title": "NFL 2K5 All Textures \u2014 standalone and uniform-equipment editing",
       "validation_command": "bash tools/validate_nfl_all_texture_lane.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_hires_pack apply <source.iso> --folder <Hi-res> --output <new-copy.iso>",
+        "module": "mod_editor/core/nfl2k5_hires_pack.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "ASTRA_HIRES_PACK_REPORT.md",
+        "reports/hires_pack_consumers.v1.json",
+        "reports/hires_pack_build.v1.json",
+        "tests/mod_editor/test_nfl2k5_hires_pack.py",
+        "tests/mod_editor/test_nfl2k5_hires_pack_retail.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Opt-in witness disc only; off in every preset."
+      },
+      "id": "nfl2k5.textures.hires_pack",
+      "input_constraints": [
+        "Pinned USA pilot TXTR wrappers and audited executable consumer ranges; one to three explicit artwork filenames.",
+        "scorebug.png 128x128, field_logo.png 512x512, helmet.png 512x512, or same-basename NFL 2K5 .2ktexmaster. Files up to 32 MiB, expanded masters up to 64 MiB, source images up to 16 megapixels.",
+        "Shared P8 palette, native mip count, exact retail or matching authored recipe; mixed or foreign selections refuse.",
+        "Only xemu-64 is selectable and remains unwitnessed. xemu-128 and 4x texture output refuse."
+      ],
+      "portme": [
+        "Run Noah's native versus 2x artwork comparisons at xemu rendering scales 1x, 2x and 4x, including full-game memory and lifecycle checks."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game spans or discs.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "ASTRA_HIRES_PACK_REPORT.md"
+        ],
+        "scope": "Static normalized UV evidence, bounded compiler and transaction tests, and real disc builds. Exhaustive runtime consumers, guest heap headroom, rendered sampling and 128 MiB support are unproved.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in every preset; explicit experimental opt-in only",
+            "name": "hires_pack",
+            "required": true
+          },
+          {
+            "allowed": "existing folder with one to three exact pilot basenames",
+            "name": "hires_folder",
+            "required": true
+          },
+          {
+            "allowed": "1 or 2; default 2",
+            "name": "hires_scale",
+            "required": true
+          },
+          {
+            "allowed": "xemu-64 only",
+            "name": "hires_target",
+            "required": true
+          }
+        ],
+        "notes": "Build integration is specified in WIRING.md. Run after other archive writers; reject same-asset scorebug or texture edits. No executable patch or allocator owner."
+      },
+      "source_container": {
+        "format": "TXTR in segmented IFF archive in XDVDFS",
+        "hash_pins": [
+          "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+          "ea7da5c66e03f8bdf1724a73f021ccaf6b8bb4726179d449a65e783b0192a010",
+          "c6f56638ebf3c77993d87f810cd31b6d7abc2b754da8172ed5184e4bc7508725"
+        ],
+        "resource": "o346c53 score_buga; o384c0 CT33D.IFF center_logo; o3613c11 uniform 00H0.IFF helmet00",
+        "retail_file": "user-owned NFL 2K5 USA disc"
+      },
+      "summary": "Compile up to three selected pilot textures at 2x or native size and transactionally rebuild the archive in a new disc copy.",
+      "surface": "uniforms",
+      "title": "Hi-res pack (experimental, unwitnessed)",
+      "validation_command": "python3 tests/mod_editor/test_nfl2k5_hires_pack.py"
     },
     {
       "backend": {

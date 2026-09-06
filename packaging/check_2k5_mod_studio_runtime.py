@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "711d4608487a88aff82ad56dd48c27f6029aba3ab59a805c247bde5ed62ab96f",
+        "507d6e18f956743f14208365fcc7ea6c1232eb96ffff28756941795958d8b0c4",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1673,6 +1673,16 @@ def main() -> int:
         "mod_editor.core.nfl2k5_momentum_code",
         "mod_editor.core.nfl2k5_defensive_try",
         "mod_editor.core.nfl2k5_zone_drop",
+        "mod_editor.core.nfl2k5_roster_storage",
+        "mod_editor.core.nfl2k5_hires_pack",
+        "mod_editor.core.nfl2k5_hires_texture",
+        "mod_editor.core.nfl2k5_gameplay_lever",
+        "mod_editor.core.nfl2k5_coverage_slider",
+        "mod_editor.core.nfl2k5_scramble_tuning",
+        "mod_editor.core.nfl2k5_throw_arc",
+
+        "mod_editor.core.nfl2k5_roster_ages",
+        "mod_editor.core.nfl2k5_team_names_2026",
 
         "mod_editor.core.nfl2k5_cave_oracle",
         "mod_editor.gui.play_designer_qt",
@@ -1805,6 +1815,14 @@ def main() -> int:
         )
 
     modules = {name: importlib.import_module(name) for name in product_modules}
+    require(len(modules["mod_editor.core.nfl2k5_team_names_2026"].manifest()["teams"]) == 32,
+            "2026 team-name manifest missing or changed")
+    hires = modules["mod_editor.core.nfl2k5_hires_pack"]
+    texture = modules["mod_editor.core.nfl2k5_hires_texture"]
+    require(len(texture.ASSETS) == 3 and sum(sum(w*h for w, h in asset.dimensions(2)) + 1024
+            for asset in texture.ASSETS) == 718336, "Hi-res pilot texture budget changed")
+    with tempfile.TemporaryDirectory() as missing:
+        require(hires.status({}, Path(missing) / "absent") == "foreign", "Hi-res missing-art refusal changed")
     _exercise_texture_master(modules["mod_editor.core.texture_master"])
     packs = modules["mod_editor.core.nfl2k5_playbook_pack"]
     require(packs.load_pack(ROOT / "data/playbooks/softdrink_modern_defense.2k5book").schema == packs.DEFENSE_SCHEMA,
@@ -1817,6 +1835,35 @@ def main() -> int:
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PyQt5.QtWidgets import QApplication
     qt_app = QApplication.instance() or QApplication([])
+    # A 4 KiB, one-player/one-team ROST constructed here keeps the shipped
+    # closure independent of test fixtures, retail resources, and source paths.
+    records = modules["mod_editor.core.nfl2k5_roster_records"]
+    body = bytearray(4096)
+    body[12:16] = b"ROST"
+    struct.pack_into("<I", body, 16, 17)
+    def relative(field, target):
+        struct.pack_into("<i", body, field, target - field + 1)
+    relative(20, records.OBJ_OFF)
+    for count_field, table_field in records.POOL_FIELDS.values():
+        relative(table_field, 0x200)
+    struct.pack_into("<I", body, records.POOL_FIELDS["primary"][0], 1)
+    relative(0x210, 0x900)
+    relative(0x214, 0x904)
+    body[0x900:0x908] = b"A\0\0\0B\0\0\0"
+    struct.pack_into("<I", body, records.TEAM_COUNT_FIELD, 1)
+    relative(records.TEAM_TABLE_FIELD, 0x300)
+    roster_gui = modules["mod_editor.gui.roster_editor_panel_qt"]
+    roster_panel = roster_gui.RosterEditorPanel()
+    roster_panel.load_document(records.RosterDocument(body))
+    age_dialog = roster_gui.AgeShiftDialog(roster_panel)
+    require(age_dialog.source_year.value() == 2004 and age_dialog.target_year.value() == 2026
+            and age_dialog.plan is not None, "explicit age review unavailable")
+    require(roster_panel.document.to_body() == bytes(body), "age preview mutated the roster")
+    age_dialog.close()
+    age_dialog.deleteLater()
+    roster_panel.close()
+    roster_panel.deleteLater()
+    qt_app.processEvents()
     panel = modules["mod_editor.gui.music_panel_qt"].MusicPanel()
     require(panel.service is None and not panel.operation_in_progress, "empty Music panel is not idle")
     panel.close()
@@ -1898,11 +1945,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 83,
+    require(len(registry.capabilities) == 91,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 45,
+    require(len(product_catalog.capabilities) == 53,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2305,7 +2352,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=83 sections=12 nfl2k5_capabilities=45 "
+        "registry=91 sections=12 nfl2k5_capabilities=53 "
         "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

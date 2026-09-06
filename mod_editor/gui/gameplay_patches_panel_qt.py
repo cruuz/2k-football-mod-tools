@@ -46,6 +46,22 @@ PATCHES = (
     ("momentum_contact", "Running start in contact (experimental, unwitnessed)",
      "Retail: speed and weight already affect contact. Patch: a sustained running start can give "
      "the ball carrier a small extra boost through contact. Experimental / Unwitnessed. Requires player momentum."),
+    ("team_names_2026", "2026 team names",
+     "Retail: 2004 team names. Patch: modern names in the disc roster, with L.A., L Vegas, "
+     "LA and Cmdrs short forms where space is limited. Existing saves keep their names. "
+     "EXPERIMENTAL / UNWITNESSED."),
+    ("coverage_slider", "Coverage slider response (experimental)", tt.coverage_slider_patch.HELP_TEXT),
+    ("scramble_tuning", "Slow-QB acceleration (experimental)", tt.scramble_tuning_patch.HELP_TEXT),
+    ("chop_block_toggle", "Repair Chop Block toggle (experimental)", tt.penalties_patch.CHOP_BLOCK_HELP),
+    ("flatter_deep_ball", "Flatter deep flight (experimental)",
+     "EXPERIMENTAL / UNWITNESSED. Retail deep lobs use 20 yards per second. "
+     "Patch: deep lobs use 25, keeping speeds through 35 yards and the selected "
+     "distance curve. At 80 yards the equal-height preview is 3.20 seconds and "
+     "a 13.7-yard apex. Choose one flight option and start from the original source."),
+    ("all_stadiums", "All 82 Create a Team stadiums (experimental)",
+     "Retail: Create a Team offers 67 stadiums. Patch: Offers all 82 existing "
+     "stadiums. EXPERIMENTAL / UNWITNESSED. Added previews and game loading need "
+     "testing. Team and reserve limits stay the same."),
     ("defensive_try", "Defensive two-point returns (experimental)", tt.defensive_try_patch.UI_TEXT),
     ("zone_drop_cap", "Corner deep-zone backpedal (experimental, unwitnessed)",
      "Retail: corners can request full depth during their initial deep-zone drop. Patch: caps that initial "
@@ -297,7 +313,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -564,6 +580,9 @@ class GameplayPatchesPanel(QWidget):
                 plan.music_policy = "jukebox_menus" if on else "retail"
             else:
                 setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
+        if plan.flatter_deep_ball:
+            plan.throw, plan.max_deep_yards = True, 80.0
+            plan.arc, plan.realistic_flight, plan.arc_by_distance = 0.0, False, False
         if plan.scorebug_runtime:
             plan.scorebug = plan.xbe_space = True
         if plan.music_userlist:

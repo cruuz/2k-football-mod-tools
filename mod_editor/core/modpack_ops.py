@@ -439,6 +439,33 @@ def _subtract(ranges, exclusions):
             yield lo, hi
 
 
+def changed_file_operations(base_path, patched_path):
+    """Discover named allocation changes for Share using bounded directory reads.
+
+    This only selects paths. The exporter still verifies the complete operation
+    chain and every projected output byte against the author image.
+    """
+    with open(base_path, "rb") as base, open(patched_path, "rb") as patched:
+        size, patched_size = os.fstat(base.fileno()).st_size, os.fstat(patched.fileno()).st_size
+        try:
+            before, _ = m._xdvdfs_module().parse_xdvdfs(base.fileno(), size)
+            after, _ = m._xdvdfs_module().parse_xdvdfs(patched.fileno(), patched_size)
+        except ValueError:
+            if size == patched_size:
+                # The existing format-1 exporter also accepts equal-size blobs.
+                return ()
+            raise
+        m._require(before.keys() == after.keys(), "file additions/removals need a registered directory operation")
+        selected = []
+        for name, old in before.items():
+            new = after[name]
+            m._require(old.attributes == new.attributes, f"unrecognised file attributes change: {old.path}")
+            if (old.sector, old.size) != (new.sector, new.size):
+                m._require(not old.attributes & 0x10, "directory changes need a registered directory operation")
+                selected.append(new)
+        return tuple(entry.path for entry in sorted(selected, key=lambda entry: entry.byte_offset))
+
+
 def detect(base, patched, size, patched_size, partition, ranges, named_files):
     """Conservative automatic export; arbitrary operations use the explicit API.
 

@@ -32,6 +32,9 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core.errors import ValidationError
+from mod_editor.core import nfl2k5_coverage_slider as coverage_slider_patch
+from mod_editor.core import nfl2k5_scramble_tuning as scramble_tuning_patch
+from mod_editor.core import nfl2k5_penalties as penalties_patch
 
 
 ProgressSink = Callable[[str, int, int], None]
@@ -450,7 +453,9 @@ class GameplayPanel(QWidget):
                 (row.index, row.name, row.settings1, row.franchise1),
             )
         self.slider_note.setText(
-            f"Stock menu range: {model.stock_range}. {model.slider_warning}"
+            f"Stock menu range: {model.stock_range}. {model.slider_warning}\n\n"
+            + coverage_slider_patch.HELP_TEXT + "\n\n" + scramble_tuning_patch.HELP_TEXT
+            + "\n\n" + penalties_patch.CHOP_BLOCK_HELP
         )
 
         self.draft_table.setRowCount(len(model.draft_weights))

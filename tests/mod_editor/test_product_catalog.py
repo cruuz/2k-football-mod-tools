@@ -52,6 +52,14 @@ class ProductCatalogTests(unittest.TestCase):
         first = build_nfl2k5_product_catalog(self.registry)
         second = build_nfl2k5_product_catalog(self.registry)
         expected = {
+            "nfl2k5.stadiums_fields.all_stadiums",
+            "nfl2k5.players.team_names_2026",
+            "nfl2k5.players.age_shift",
+            "nfl2k5.textures.hires_pack",
+            "nfl2k5.gameplay.coverage_slider",
+            "nfl2k5.gameplay.scramble_tuning",
+            "nfl2k5.gameplay.chop_block_toggle",
+            "nfl2k5.gameplay.flatter_deep_ball",
             "nfl2k5.animations.inspect_export",
             "nfl2k5.audio.audo_wav",
             "nfl2k5.audio.ausb_fixed_range_wav",
@@ -101,7 +109,7 @@ class ProductCatalogTests(unittest.TestCase):
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 45)
+        self.assertEqual(len(first_ids), 53)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -135,16 +143,16 @@ class ProductCatalogTests(unittest.TestCase):
     def test_category_and_global_counts_match_the_registry(self) -> None:
         catalog = build_nfl2k5_product_catalog(self.registry)
         expected = {
-            ProductCategory.UNIFORMS_EQUIPMENT: (4, 3, 0, 0, 0, 1, 0),
-            ProductCategory.ROSTERS_PLAYERS: (3, 3, 0, 0, 0, 0, 0),
+            ProductCategory.UNIFORMS_EQUIPMENT: (5, 4, 0, 0, 0, 1, 0),
+            ProductCategory.ROSTERS_PLAYERS: (5, 5, 0, 0, 0, 0, 0),
             ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
             ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
-            ProductCategory.STADIUMS: (8, 3, 1, 1, 0, 3, 0),
+            ProductCategory.STADIUMS: (9, 4, 1, 1, 0, 3, 0),
             ProductCategory.SCOREBUG_PRESENTATION: (4, 2, 0, 0, 0, 2, 0),
             ProductCategory.MENUS_UI: (2, 0, 2, 0, 0, 0, 0),
             ProductCategory.CRIB: (1, 1, 0, 0, 0, 0, 0),
             ProductCategory.AUDIO: (7, 6, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (11, 5, 4, 0, 0, 0, 2),
+            ProductCategory.SLIDERS_GAMEPLAY: (15, 9, 4, 0, 0, 0, 2),
             ProductCategory.PLAYBOOKS_PLAYS: (3, 3, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
@@ -173,7 +181,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (45, 28, 7, 2, 0, 6, 2),
+            (53, 36, 7, 2, 0, 6, 2),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -226,7 +234,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 45)
+        self.assertEqual(len(seen), 53)
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

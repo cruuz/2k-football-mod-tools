@@ -508,7 +508,10 @@ class SharePanel(QWidget):
         self.export_status.setText("Comparing the two images…")
 
         def operation(progress: modpack.ProgressSink) -> object:
-            return modpack.export(base, patched, out, meta, overwrite=overwrite, progress=progress)
+            from mod_editor.core import modpack_ops
+            named_files = modpack_ops.changed_file_operations(base, patched)
+            return modpack.export(base, patched, out, meta, overwrite=overwrite, progress=progress,
+                                  file_operations=named_files)
 
         self._start(operation, self._export_done, self._export_failed)
 

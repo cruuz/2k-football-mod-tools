@@ -23,7 +23,7 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from mod_editor.core.nfl2k5_cave_manifest import Recorder
 from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, PublicTests, RETAIL, repin
-from tests.nfl2k5_allocator_stack import REQUESTS, compose
+from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
 
 LARGE = (("synthetic_scaleout", "code", 90 * 1024, 4096),
          ("synthetic_scaleout", "data", 64 * 1024, 4096),
@@ -32,13 +32,13 @@ LARGE = (("synthetic_scaleout", "code", 90 * 1024, 4096),
 
 class PlannerTests(unittest.TestCase):
     def test_large_owner_fits_and_legacy_owner_addresses_stay_exact(self):
-        before = space._legacy_allocations(REQUESTS)
+        before = space._legacy_allocations(LEGACY_REQUESTS)
         report = space.plan(REQUESTS + LARGE)
         self.assertEqual([a for a in report['allocations'] if a['owner'] in space.LEGACY_OWNERS], before)
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [106496, 86016, 20480])
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [6144, 16384, 15360])
+                         [2048, 16384, 15360])
         self.assertEqual(len(report['pages']), 52)
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -51,7 +51,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn(list(request), requests)
         report = space.plan(requests)
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [51072, 4096, 13312])
+                         [50800, 4096, 13312])
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
@@ -88,7 +88,7 @@ class PlannerTests(unittest.TestCase):
             run = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertIn('No build performed', run.stdout)
-            self.assertIn('6144 available', run.stdout)
+            self.assertIn('2048 available', run.stdout)
             run = subprocess.run(cmd + ['--json'], capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertEqual(len(json.loads(run.stdout)['pages']), 52)
@@ -175,9 +175,9 @@ class SyntheticTests(unittest.TestCase):
         self.assertEqual(space.apply(grown)[0], grown)
         with self.assertRaisesRegex(ValueError, 'differ'):
             space.apply(grown, REQUESTS)
-        legacy, _ = space.apply(self.retail, REQUESTS)
+        legacy, _ = space.apply(self.retail, LEGACY_REQUESTS)
         with self.assertRaisesRegex(ValueError, 'rebuild'):
-            space.apply(legacy, REQUESTS, scaleout=True)
+            space.apply(legacy, LEGACY_REQUESTS, scaleout=True)
         with self.assertRaisesRegex(ValueError, 'foreign'):
             space.install_read_only(grown, 'synthetic_scaleout', b'Z' * 1024)
         with self.assertRaisesRegex(ValueError, 'exact'):
@@ -240,7 +240,7 @@ class SyntheticTests(unittest.TestCase):
 
     def test_writer_growth_replay_and_rollback_on_both_write_stages(self):
         helper = PublicTests()
-        legacy, _ = space.apply(self.retail, REQUESTS)
+        legacy, _ = space.apply(self.retail, LEGACY_REQUESTS)
         helper._writer(self.retail, self.grown)
         helper._writer(legacy, self.grown)
         helper._writer(self.grown, legacy)
@@ -249,19 +249,27 @@ class SyntheticTests(unittest.TestCase):
         helper._writer(self.grown, self.grown, 'payload')
 
     @unittest.skipUnless(importlib.util.find_spec('unicorn'), 'Unicorn absent: bounded x86 page execution requires unicorn')
-    def test_third_and_tenth_rx_pages_execute_and_write_rw(self):
+    def test_synthetic_rx_pages_execute_and_write_rw(self):
         import unicorn as uc
         from unicorn import x86_const as x86
         layout = space.layout(self.grown)
         pages = [p for p in layout['pages'] if p['kind'] == 'code']
         target = next(a['va'] for a in layout['allocations'] if a['owner'] == 'synthetic_scaleout' and a['kind'] == 'data')
         owner = next(a for a in layout['allocations'] if a['owner'] == 'synthetic_scaleout' and a['kind'] == 'code')
+        # The complete union occupies page 3 before this page-aligned owner.
+        # Negative offsets used to leave INT3 at the assumed entry point.
+        owned_pages = [p for p in pages if owner['va'] <= p['va']
+                       and p['va'] + 4096 <= owner['va'] + owner['size']]
+        entries = [(owned_pages[0], 0x33333333), (owned_pages[7], 0xAAAAAAAA)]
+        self.assertGreaterEqual(owned_pages[0]['va'], space.SCALE_RUNS[0][1])
+        self.assertEqual(owned_pages[7]['va'] - owned_pages[0]['va'], 7 * 4096)
         code = bytearray(b'\xcc' * owner['size'])
-        for index, value in [(2, 0x33333333), (9, 0xAAAAAAAA)]:
-            at = pages[index]['va'] - owner['va']
+        for page, value in entries:
+            at = page['va'] - owner['va']
+            self.assertTrue(0 <= at <= owner['size'] - 11)
             code[at:at+11] = b'\xc7\x05' + struct.pack('<II', target, value) + b'\xc3'
         grown, _ = space.install_code(self.grown, 'synthetic_scaleout', bytes(code))
-        for index, value in [(2, 0x33333333), (9, 0xAAAAAAAA)]:
+        for page, value in entries:
             machine = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
             for p in layout['pages']:
                 machine.mem_map(p['va'], 4096)
@@ -277,7 +285,7 @@ class SyntheticTests(unittest.TestCase):
             machine.reg_write(x86.UC_X86_REG_EBX, 0x12345678)
             writes = []
             machine.hook_add(uc.UC_HOOK_MEM_WRITE, lambda _m, _a, va, size, val, _d: writes.append((va, size, val)))
-            machine.emu_start(pages[index]['va'], stop, count=4)
+            machine.emu_start(page['va'], stop, count=4)
             self.assertEqual(machine.reg_read(x86.UC_X86_REG_EIP), stop)
             self.assertEqual(machine.reg_read(x86.UC_X86_REG_ESP), stack + 4)
             self.assertEqual(machine.reg_read(x86.UC_X86_REG_EBX), 0x12345678)
@@ -331,7 +339,7 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(first, second)
         old = {(a['owner'], a['kind']): a for a in space.layout(legacy)['allocations']}
         for a in space.layout(first)['allocations']:
-            if (a['owner'], a['kind']) in old:
+            if a['owner'] in space.LEGACY_OWNERS:
                 self.assertEqual(a, old[a['owner'], a['kind']])
                 self.assertEqual(first[a['raw']:a['raw']+a['size']], legacy[a['raw']:a['raw']+a['size']])
         self.assertEqual(first[0xA10:space.META_COPY], legacy[0xA10:space.META_COPY])

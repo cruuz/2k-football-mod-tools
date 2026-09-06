@@ -240,13 +240,13 @@ class PatchTests(unittest.TestCase):
             self.assertEqual(manifest.overlaps(va, va + len(old), exclude_owner=storage.OWNER), [])
 
     def test_complete_union_keeps_existing_allocations_and_both_orders(self):
-        from tests.nfl2k5_allocator_stack import REQUESTS, compose
+        from tests.nfl2k5_allocator_stack import LEGACY_REQUESTS, REQUESTS, compose
         # Every beta-61 owner keeps its address; the beta-62 owners (this one included)
         # are allocated together after them and may move relative to each other.
-        previous = tuple(r for r in REQUESTS if r[0] not in space.R62_OWNERS)
+        previous = LEGACY_REQUESTS
         old = space._allocations(previous)
-        new = space._allocations(REQUESTS)
-        self.assertEqual([a for a in new if a['owner'] not in space.R62_OWNERS], old)
+        new = space.plan(REQUESTS)["allocations"]
+        self.assertEqual([a for a in new if a['owner'] in space.LEGACY_OWNERS], old)
         self.assertIn(storage.OWNER, space.R62_OWNERS)
         forward, _ = compose(self.retail)
         backward, _ = compose(self.retail, reverse=True)
