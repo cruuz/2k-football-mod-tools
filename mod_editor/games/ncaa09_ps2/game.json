@@ -17,13 +17,26 @@
     "mod_editor.games._formats.ea_terf",
     "mod_editor.games._formats.ea_tdb",
     "mod_editor.games._formats.ea_schl",
+    "mod_editor.games._formats.ea_ql01",
+    "mod_editor.games._formats.mmap_art",
+    "mod_editor.games._formats.pcsx2_texture_name",
+    "mod_editor.games._lanes.iso_tools",
+    "mod_editor.games._lanes.preload_coherence",
+    "mod_editor.games._lanes.synthetic_art",
+    "mod_editor.games._lanes.tdb_records",
+    "mod_editor.games._lanes.terf_art",
+    "mod_editor.games._lanes.text_banks",
     "mod_editor.games.ncaa09_ps2",
     "mod_editor.games.ncaa09_ps2.containers",
     "mod_editor.games.ncaa09_ps2.disc_identity",
     "mod_editor.games.ncaa09_ps2.inventory_lane",
     "mod_editor.games.ncaa09_ps2.database_lane",
+    "mod_editor.games.ncaa09_ps2.identity_lane",
     "mod_editor.games.ncaa09_ps2.text_lane",
     "mod_editor.games.ncaa09_ps2.texture_lane",
+    "mod_editor.games.ncaa09_ps2.art_pages",
+    "mod_editor.games.ncaa09_ps2.playbooks_lane",
+    "mod_editor.games.ncaa09_ps2.saves_lane",
     "mod_editor.games.ncaa09_ps2.audio_lane"
   ],
   "tool_modules": [],
@@ -33,14 +46,7 @@
     "docs/product/measured/ncaa09_ps2/*"
   ],
   "page_notes": {
-    "rosters": "NCAA Football 09's rosters are 432 separate per-team databases inside /DATA/LEAGUE.DAT, 24,717 PLAY rows in all, and this page lists every one of them with its schema. There is no writer, and the reason is measured rather than pending: this disc's PLAY table has 86 fields against Madden 09's 110, only 37 names are shared, and it carries neither PFNA nor PLNA -- NCAA's players have no names to edit. Its twenty rating fields are five bits wide where Madden's are seven, so a writer would need the scale those five bits are on established first. docs/product/NCAA09_PS2_SCHEMA.md is the field-by-field census.",
-    "identity": "The 432 schools live in LEAGUE.DAT's TEAM table: TDNA (22 bytes), TMNA (18) and TSNA (7) hold the names, and 29 of its 74 field names are shared with Madden 09's TEAM. What is NOT there is colour: Madden's TBCR/TBCG/TBCB and TB2R/TB2G/TB2B do not exist on this disc, and neither do TLNA or TMNC, so the Madden identity writer has nothing to write into. A 64-row PACL palette (CRED/CGRN/CBLU per PCID) and the empty CTCD/CTUN create-a-school tables are on the disc; which field selects a school's colours is not established here. Conferences (CONF, 25 rows) and divisions (DIVI, 10) carry CNAM and DNAM.",
-    "field_art": "STADATA.DAT holds 1,195 MMAP members and UIS_TMLO.DAT 399, plus 45 SMF geometry members. No lane draws them: the MMAP pixel decoder in this repository lives inside the Madden 09 package, and mod_editor/games/_formats says a game imports a format package and never another game. Moving that decoder into _formats is the one change that gives this page an exporter; nothing else about this disc is in the way.",
-    "stadiums": "The disc ships a real stadium table -- LEAGUE.DAT's STAD, 242 rows of 56 fields including SNAM (30 bytes), STNN, SCIT, SSTA and a 17-bit SCAP capacity -- which Madden 09 does not have outside its templates. The art is another matter: STADIUMS.DAT's 2,914 members are 1,880 SMF and 1,034 empty, and STADATA.DAT adds 45 SMF and 4 DMF. No SMF or DMF reader exists anywhere in this repository, so the geometry is listed by format and left alone, and the textures wait on the same MMAP decoder move as the field-art page.",
-    "presentation": "FANDATA.DAT (244 MMAP), MSCTDATA.DAT (240 MMAP and 400 DMF), LOADDATA.DAT (46 MMAP, 30 of them 854x480) and MOVIEDAT.DAT (12 MPCh streams) carry this page's art. None has a lane: the textures wait on the MMAP decoder move, the DMF models on a reader nobody has written, and the 12 MPCh movie streams on a decoder this repository does not have and does not claim.",
     "crib": "The Crib is an ESPN NFL 2K5 feature and not an NCAA Football concept, so this page stays empty here on purpose.",
-    "gameplay": "The boot executable is SLUS_217.52, 7,294,796 bytes, sha256 dc1b3089...9c1f71ee, PCSX2 CRC B0157E6C. No patch site on it has been located by this project, and every site is per-title research -- nothing found in Madden 09's executable applies to this one -- so this page carries no lane rather than a scaffold with nothing in it.",
-    "playbooks": "GAMEDATA.DAT holds 137 EA TDB databases at members 4 to 140: one shared play library and 136 playbooks. Their nineteen tables are name-for-name identical to Madden 09's nineteen, which is the closest this disc comes to Madden anywhere -- but the widths shift and PBPL has no name field here, so the play names are in PLYL (192-bit strings) rather than where Madden's writer looks. 13,817 name-bearing rows are on the disc. The databases are listed by the Names, Numbers & Faces page's lane; a rename writer needs the field map this disc's own schema gives, and no rebuilt container of this disc has been booted.",
-    "saves": "An NCAA Football 09 memory-card save is a different source; this studio works off the disc, so nothing here reads or writes a save."
+    "gameplay": "The boot executable is SLUS_217.52, 7,294,796 bytes, sha256 dc1b3089...9c1f71ee, PCSX2 CRC B0157E6C. No patch site on it has been located by this project, and every site is per-title research: none of the five sltiu immediates Madden 09's playbook-editor caps patch uses was found here, because they are addresses in a different executable. So this page carries no lane rather than a scaffold with nothing behind it -- a pnach writer with an empty translation table would be a control that can only refuse."
   }
 }

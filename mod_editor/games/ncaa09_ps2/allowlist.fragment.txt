@@ -26,3 +26,17 @@ tools/validate_ncaa09_ps2_text.bat
 tools/validate_ncaa09_ps2_text.sh
 tools/validate_ncaa09_ps2_textures.bat
 tools/validate_ncaa09_ps2_textures.sh
+mod_editor/games/ncaa09_ps2/art_pages.py
+mod_editor/games/ncaa09_ps2/identity_lane.py
+mod_editor/games/ncaa09_ps2/playbooks_lane.py
+mod_editor/games/ncaa09_ps2/saves_lane.py
+tools/validate_ncaa09_ps2_art_pages.sh
+tools/validate_ncaa09_ps2_art_pages.bat
+tools/validate_ncaa09_ps2_identity.sh
+tools/validate_ncaa09_ps2_identity.bat
+tools/validate_ncaa09_ps2_playbooks.sh
+tools/validate_ncaa09_ps2_playbooks.bat
+tools/validate_ncaa09_ps2_saves.sh
+tools/validate_ncaa09_ps2_saves.bat
+tools/validate_ncaa09_ps2_uniform_disc_art.sh
+tools/validate_ncaa09_ps2_uniform_disc_art.bat

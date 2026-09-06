@@ -67,12 +67,16 @@ from mod_editor.games.contract import (
 )
 
 from . import containers
+from .art_pages import FaceArtLane, FieldArtLane, PresentationArtLane, StadiumArtLane
 from .audio_lane import AudioBanksLane, AudioStreamsLane
 from .database_lane import DatabaseLane
 from .disc_identity import Ncaa09DiscIdentifier
+from .identity_lane import IdentityLane
 from .inventory_lane import InventoryLane
+from .playbooks_lane import PlaybooksLane
+from .saves_lane import DraftClassLane
 from .text_lane import TextLane
-from .texture_lane import TextureLane
+from .texture_lane import TextureLane, UniformDiscArtWriteLane
 
 HERE = Path(__file__).resolve().parent
 GAME_ID = "ncaa09_ps2"
@@ -132,11 +136,19 @@ def _registered(capability_id: str) -> bool:
 
 _CANDIDATES = (
     InventoryLane(),
-    DatabaseLane(),
-    TextLane(),
     TextureLane(),
+    UniformDiscArtWriteLane(),
+    DatabaseLane(),
+    FaceArtLane(),
+    IdentityLane(),
+    FieldArtLane(),
+    StadiumArtLane(),
+    PresentationArtLane(),
+    TextLane(),
     AudioStreamsLane(),
     AudioBanksLane(),
+    PlaybooksLane(),
+    DraftClassLane(),
 )
 LANES = tuple(lane for lane in _CANDIDATES if _registered(lane.capability_id))
 

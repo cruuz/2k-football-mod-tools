@@ -1,18 +1,59 @@
-"""The NCAA Football 09 disc's ``TEXT`` string banks, measured and never written.
+"""The disc's ``TEXT`` members: counted, measured, and rewritten in place.
 
-A ``TEXT`` member is a run of NUL-terminated 8-bit strings.  The disc carries
-**1,247 of them in four containers** -- ``EXAMS.DAT`` 1,238, ``JERSEY.DAT`` 7,
-``OSDKSTRN.DAT`` 1 and ``GAMEDATA.DAT`` 1, 241,787 bytes in all [M].
+``TEXT`` is what ``ea_terf.identify_member`` calls a member whose decompressed
+bytes are printable NUL-separated strings.  NCAA Football 09's retail disc
+carries **1,247 of them, 1,247 slots, 241,787 characters** [M] --
+``EXAMS.DAT`` 1,238, ``JERSEY.DAT`` 7, ``OSDKSTRN.DAT`` 1 and ``GAMEDATA.DAT``
+1.  The lane is the shared
+:mod:`mod_editor.games._lanes.text_banks`; this file is what points it at this
+disc and records what this disc's banks are shaped like.
 
-This lane counts them and measures each one: how many slots, how many bytes,
-how much room a slot has.  **The strings themselves are read from the user's own
-image on demand and never stored here**, which is the whole reason this is a
-measurement lane and not a dump: a string bank is game text.
+Three measurements, and all three matter to a writer [M]
+--------------------------------------------------------
 
-There is no writer.  A same-size string replacement is the shape a writer would
-take -- the slot's allocation is its room, so a shorter string fits and a longer
-one does not -- and it needs the preload caches kept in step, which is why the
-container inventory names them.
+* **Every one of the 1,247 members holds exactly one run.**  The slot histogram
+  is ``{1: 1247}``, so no member on this disc is a multi-string bank.  Madden
+  09's are a mix, and the same slot rule covers both.
+* **Not one ends in a terminator**, where Madden 09's banks are a mix.
+* **There is no padding anywhere** -- 0 spare bytes across all 1,247.
+
+So a same-allocation writer for this disc has **no slack to start with**: a
+replacement must be exactly the length it replaces, or shorter and pay for the
+terminator it introduces.  Runs go from 15 to 50,519 bytes.  That is not a
+limitation of this lane; it is what the disc is, and the budget on every target
+says so before an edit is typed.  Shortening a string *creates* slack, and
+because a slot's allocation counts the padding a previous edit left behind, the
+next catalogue offers that room again.
+
+Which containers are writable, and why
+--------------------------------------
+
+``EXAMS.DAT``, ``JERSEY.DAT`` and ``OSDKSTRN.DAT`` are named by **none** of the
+three ``QL01`` preload caches [M], which is what makes them safe to write:
+nothing carries a second copy of them for the game to read instead.
+``GAMEDATA.DAT`` -- which holds one ``TEXT`` member beside its 137 playbook
+databases -- **is** named, by ``FE.QKL`` and ``GAME.QKL``, and its directory is
+copied twice and fifteen of its members once each [M]; editing one copy and not
+the other would leave the game reading whichever it reached first, so this lane
+refuses it and says which cache names it.  The list is read off the **user's own
+image** by ``containers.preload_names`` rather than trusted from a table written
+down here.
+
+The catalogue still carries no string
+-------------------------------------
+
+A catalogue is a file that can be shipped, so the document is counts and
+digests.  The strings themselves reach a screen only through the *targets*
+built from the user's own image, or through :meth:`TextLane.preview`, which
+re-reads them from the disc on demand.  A test asserts the point by searching
+the serialised document for the synthetic fixture's own lines and failing if it
+finds one.
+
+``FONTS.DAT`` and ``UIS_FONT.DAT`` hold 17 ``FNTS`` fonts [M]; no font decoder
+exists in this repository, so the glyphs a string is drawn with are out of
+reach and this lane says so rather than implying the text is fully editable.
+
+**Nothing here has been seen in a running game.**
 
 Run it without a window::
 
@@ -27,261 +68,206 @@ import argparse
 import json
 from pathlib import Path
 import sys
-from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Mapping, Optional, Sequence, Tuple
 
-from mod_editor.games._formats import ea_terf
-from mod_editor.games.contract import (
-    Catalogue, Edit, Field, Plan, Receipt, Refusal, Target, Verdict,
+from mod_editor.games._lanes.text_banks import (
+    MAX_TARGETS,
+    PREVIEW_STRINGS,
+    PREVIEW_WIDTH,
+    SLOT_PREFIX,
+    TERMINATOR,
+    TEXT_ENCODING,
+    TextBankLane,
+    TextError,
+    encode_slot,
+    is_text_member,
+    measure,
+    parse_slot_key,
+    slot_key,
+    slots_in,
+    split_strings,
 )
+from mod_editor.games.contract import Refusal
 
 from . import containers
 
 CAPABILITY_ID = "ncaa09ps2.menus.text_members"
 LANE_ID = "menus.text_members"
-SCHEMA = "ncaa09_ps2_text_members/v1"
+SCHEMA = "ncaa09_ps2_text_inventory/v1"
+RECIPE_SCHEMA = "ncaa09_ps2_text_edit/v1"
+RECEIPT_SCHEMA = "ncaa09_ps2_text_write/v1"
 
-#: EA stored these banks in 8-bit characters.  latin-1 and never utf-8: a utf-8
-#: decoder either mangles an accented character or refuses the whole bank.
-TEXT_ENCODING = "latin-1"
+#: The containers holding ``TEXT`` members that this disc's preload caches name
+#: [M].  Exactly one does: ``GAMEDATA.DAT``, in both ``FE.QKL`` and
+#: ``GAME.QKL``.  The list a user's own image declares is read at catalogue time
+#: by :func:`containers.preload_names` and takes precedence; this is the
+#: measured floor, so an image whose caches this module cannot read still
+#: refuses the one it is known to have to.
+PRELOAD_COPIES: Mapping[str, Tuple[str, ...]] = {
+    "GAMEDATA.DAT": ("FE.QKL", "GAME.QKL"),
+}
 
-TERMINATOR = b"\x00"
+#: The three containers that carry a writable ``TEXT`` member on this disc [M].
+#: Named here for the document; the lane still discovers members by walking, so
+#: an image with a bank somewhere else lists it rather than hiding it.
+WRITABLE_TEXT_CONTAINERS = ("EXAMS.DAT", "JERSEY.DAT", "OSDKSTRN.DAT")
 
-#: How many member rows the page lists.  1,247 members is a table [M].
-MAX_MEMBER_TARGETS = 2000
-
-
-def split_strings(payload: bytes) -> Tuple[str, ...]:
-    """The NUL-separated strings in a ``TEXT`` member, decoded latin-1."""
-
-    pieces = [chunk.decode(TEXT_ENCODING) for chunk in payload.split(TERMINATOR)]
-    while pieces and not pieces[-1]:
-        pieces.pop()
-    return tuple(pieces)
-
-
-def slots_in(payload: bytes) -> Tuple[Tuple[int, int, int], ...]:
-    """Every string slot, as ``(byte offset, length, allocation)``.
-
-    A slot is one NUL-separated run of characters.  Its *length* is the string
-    there now; its *allocation* is the room it has, which runs to the next
-    slot's first byte less the terminator -- so a bank a previous edit shortened
-    still shows the room its padding occupies, and an edit stays reversible.
-    Empty runs are skipped: a slot with no bytes has no string to replace.
-    """
-
-    starts: List[Tuple[int, int]] = []
-    cursor = 0
-    for piece in payload.split(TERMINATOR):
-        if piece:
-            starts.append((cursor, len(piece)))
-        cursor += len(piece) + 1
-    tail = len(payload) - (1 if payload.endswith(TERMINATOR) else 0)
-    out: List[Tuple[int, int, int]] = []
-    for position, (offset, length) in enumerate(starts):
-        allocation = (starts[position + 1][0] - offset - 1
-                      if position + 1 < len(starts) else max(0, tail - offset))
-        out.append((offset, length, max(length, allocation)))
-    return tuple(out)
+#: What the page says about the fonts it cannot reach.
+FONT_NOTE = (
+    "FONTS.DAT and UIS_FONT.DAT hold 17 FNTS font sets and no decoder for that format "
+    "exists in this repository, so the glyphs a string is drawn with are out of reach "
+    "here. A replacement is written in latin-1, the encoding EA stored these banks in; "
+    "a character the shipped font has no glyph for will not draw, and this lane cannot "
+    "tell you which those are."
+)
 
 
-def measure(payload: bytes) -> Dict[str, Any]:
-    """What a ``TEXT`` member is, as numbers: never the strings themselves."""
+class TextLane(TextBankLane):
+    """Every ``TEXT`` member on the disc, measured; three containers' worth editable."""
 
-    slots = slots_in(payload)
-    lengths = [length for _offset, length, _room in slots]
-    return {
-        "bytes": len(payload),
-        "slots": len(slots),
-        "shortest": min(lengths) if lengths else 0,
-        "longest": max(lengths) if lengths else 0,
-        "characters": sum(lengths),
-        "padding_bytes": sum(room - length for _o, length, room in slots),
-        "ends_with_terminator": payload.endswith(TERMINATOR),
-    }
-
-
-class TextLane:
-    """The disc's ``TEXT`` banks, measured, read-only."""
-
+    discs = containers
     lane_id = LANE_ID
     capability_id = CAPABILITY_ID
     surface = "menus"
     page = "menus"
-    title = "Every TEXT string bank on the disc"
-    classification = "read-only-mapped"
-    recipe_schema = SCHEMA
+    title = "Text banks"
+    classification = "offline-writer-proved"
+    game_title = "NCAA Football 09 (PlayStation 2)"
+    schema = SCHEMA
+    recipe_schema = RECIPE_SCHEMA
+    receipt_schema = RECEIPT_SCHEMA
+    preload_copies = PRELOAD_COPIES
     validators = (
         "tools/validate_ncaa09_ps2_text.sh",
         "tools/validate_ncaa09_ps2_text.bat",
     )
-    fixed_allocation = True
-    read_only = True
 
-    REFUSAL = (
-        "This lane measures the string banks on your disc and writes nothing. A writer "
-        "would replace a string inside the room its slot already has and rewrite the "
-        "preload caches that copy the container; neither is built for NCAA Football 09 "
-        "yet, and no rebuilt container of this disc has been booted."
-    )
+    def build_catalogue(self, source: Path, *, progress=None):
+        """The base's catalogue, plus what this disc's banks are shaped like."""
 
-    def build_catalogue(self, source: Path, *,
-                        progress: Optional[Callable[[str], None]] = None) -> Catalogue:
-        image = containers.open_disc(Path(source))
-        rows: List[Dict[str, Any]] = []
-        refusals: List[Dict[str, str]] = []
-        targets: List[Target] = []
-        members = slots = characters = payload_bytes = 0
-        for name in containers.TEXT_CONTAINERS:
-            try:
-                container = containers.load_container(image, name)
-            except containers.DiscError as exc:
-                refusals.append({"reader": "containers.load_container",
-                                 "where": name, "sentence": str(exc)})
-                continue
-            for index in range(len(container)):
-                if progress is not None and index % 128 == 0:
-                    progress(f"{name} member {index} of {len(container)}…")
-                try:
-                    payload = containers.member_uncached(container, index)
-                except ea_terf.TerfError as exc:
-                    refusals.append({"reader": "ea_terf.member",
-                                     "where": f"{name}:{index}", "sentence": str(exc)})
-                    continue
-                if ea_terf.identify_member(payload) != ea_terf.FORMAT_TEXT:
-                    continue
-                row = measure(payload)
-                row.update({"container": name, "member": index})
-                members += 1
-                slots += row["slots"]
-                characters += row["characters"]
-                payload_bytes += row["bytes"]
-                rows.append(row)
-                if len(targets) < MAX_MEMBER_TARGETS:
-                    targets.append(self._member_target(row))
-        document = {
-            "schema": SCHEMA,
-            "source": str(source),
-            "containers": list(containers.TEXT_CONTAINERS),
-            "text_members": members,
-            "slots": slots,
-            "characters": characters,
-            "payload_bytes": payload_bytes,
-            "member_rows_listed": len(targets),
-            "member_rows_cap": MAX_MEMBER_TARGETS,
-            "encoding": TEXT_ENCODING,
-            "rows": rows,
-            "refusals": refusals,
-        }
-        return Catalogue(schema=SCHEMA, lane_id=self.lane_id, source=str(source),
-                         targets=tuple(targets), document=document)
+        catalogue = super().build_catalogue(source, progress=progress)
+        document = dict(catalogue.document)
+        document["fonts"] = FONT_NOTE
+        document["writable_containers"] = list(WRITABLE_TEXT_CONTAINERS)
+        from mod_editor.games.contract import Catalogue
 
-    @staticmethod
-    def _member_target(row: Mapping[str, Any]) -> Target:
-        return Target(
-            key=f"text:{row['container']}:{row['member']}",
-            label=f"{row['container']} member {row['member']}",
-            detail=" · ".join([
-                f"{row['slots']} slot(s)",
-                f"{row['characters']:,} character(s)",
-                f"{row['bytes']:,} bytes",
-                f"{row['padding_bytes']:,} byte(s) of padding",
-            ]),
-            budget="Read-only: this lane never writes to your disc.",
-            searchable=f"{row['container']} {row['member']} text",
-            raw=dict(row),
-            fields=(
-                Field("slots", "note", "Slots",
-                      "How many NUL-separated strings this bank holds.", read_only=True),
-                Field("longest", "note", "Longest string",
-                      "The longest string's length in bytes.", read_only=True),
-                Field("padding_bytes", "note", "Padding",
-                      "Bytes of room past the strings that are there now.", read_only=True),
-                Field("ends_with_terminator", "note", "Ends with a terminator",
-                      "Whether the member's last byte is a NUL.", read_only=True),
-            ),
-        )
+        return Catalogue(catalogue.schema, catalogue.lane_id, catalogue.source,
+                         catalogue.targets, document)
 
-    def preview(self, source: Path, target: Target, *,
-                limit: int = 40) -> Tuple[str, ...]:
-        """The first *limit* strings of one bank, read off the user's image now.
 
-        Nothing returned here is written to this repository; it exists so a page
-        can show the user their own text without this module ever holding it.
-        """
+def verify_build(source: Path, destination: Path,
+                 receipt_document: Mapping[str, Any]) -> dict:
+    """Re-derive, from the two images alone, that the build did what it claimed.
 
-        raw = dict(target.raw or {})
-        image = containers.open_disc(Path(source))
-        container = containers.load_container(image, str(raw.get("container")))
-        payload = containers.member_uncached(container, int(raw.get("member") or 0))
-        return split_strings(payload)[:limit]
+    The check itself is :meth:`TextBankLane.verify_build`, shared with Madden
+    09's text lane; this is the module-level spelling a caller in this package
+    uses.
+    """
 
-    def check_edit(self, target: Target, values: Mapping[str, Any]) -> Optional[str]:
-        return self.REFUSAL
-
-    def compose_recipe(self, edits: Sequence[Edit]) -> Mapping[str, Any]:
-        return {"schema": self.recipe_schema, "edits": []}
-
-    def plan(self, source: Path, recipe: Mapping[str, Any], catalogue: Catalogue) -> Plan:
-        raise Refusal(self.REFUSAL)
-
-    def build(self, source: Path, destination: Path, recipe: Mapping[str, Any],
-              catalogue: Catalogue, *, work_dir: Optional[Path] = None) -> Receipt:
-        raise Refusal(self.REFUSAL)
-
-    def verify(self, source: Path, destination: Path, receipt: Receipt) -> Verdict:
-        raise Refusal(self.REFUSAL)
-
-    def synthetic_source(self, work_dir: Path) -> Path:
-        path = Path(work_dir) / "ncaa09-ps2-text-synthetic.iso"
-        path.write_bytes(containers.build_synthetic_disc())
-        return path
-
-    def conformance_edits(self, catalogue: Catalogue) -> Tuple[Edit, ...]:
-        raise Refusal(self.REFUSAL)
+    return TextLane().verify_build(Path(source), Path(destination), receipt_document)
 
 
 def _main(argv: Optional[Sequence[str]] = None) -> int:
-    """``python -m mod_editor.games.ncaa09_ps2.text_lane --source DISC.iso``."""
+    """``python -m mod_editor.games.ncaa09_ps2.text_lane --source DISC.iso``.
+
+    With ``--recipe`` and ``--destination`` it also does the write: it plans,
+    builds a NEW image, and runs the independent verifier over the result.  The
+    source is opened read-only either way.
+    """
 
     parser = argparse.ArgumentParser(
         prog="mod_editor.games.ncaa09_ps2.text_lane",
-        description="Measure every TEXT string bank on an NCAA Football 09 (PS2) disc. "
-                    "Read-only; counts and lengths, never the strings.",
+        description="Count and edit the TEXT banks on an NCAA Football 09 (PS2) disc.",
     )
     parser.add_argument("--source", help="the user's own SLUS-21752 disc image")
     parser.add_argument("--out", help="write the catalogue document to this JSON file")
+    parser.add_argument("--preview", metavar="CONTAINER:INDEX:OFFSET",
+                        help="print the first strings of one member, read from your own disc")
+    parser.add_argument("--recipe", help="a JSON recipe of string edits")
+    parser.add_argument("--destination", help="the NEW image to write; it must not exist")
+    parser.add_argument("--report", help="write the receipt and verdict to this JSON file")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="plan the edits and print the byte ranges; write nothing")
     parser.add_argument("--selftest", action="store_true",
                         help="run the lane on its synthetic disc; needs no game data")
     arguments = parser.parse_args(list(argv) if argv is not None else None)
-    if not arguments.selftest and not arguments.source:
-        parser.error("give --source a disc image, or --selftest")
     lane = TextLane()
     try:
         if arguments.selftest:
             import tempfile
 
             with tempfile.TemporaryDirectory() as room:
-                catalogue = lane.build_catalogue(lane.synthetic_source(Path(room)))
+                source = lane.synthetic_source(Path(room))
+                catalogue = lane.build_catalogue(source)
+                edits = lane.conformance_edits(catalogue)
+                destination = Path(room) / "written.iso"
+                receipt = lane.build(source, destination, lane.compose_recipe(edits),
+                                     catalogue)
+                verdict = lane.verify(source, destination, receipt)
+                print("NCAA09_TEXT_SELFTEST %s" % ("PASS" if verdict.passed else "FAIL"))
+                if not verdict.passed:
+                    print(verdict.summary, file=sys.stderr)
+                    return 1
+                document = dict(catalogue.document)
         else:
+            if not arguments.source:
+                parser.error("give --source DISC.iso, or --selftest")
+            source = Path(arguments.source)
             catalogue = lane.build_catalogue(
-                Path(arguments.source), progress=lambda line: print(line, file=sys.stderr))
+                source, progress=lambda line: print(line, file=sys.stderr))
+            if arguments.preview:
+                wanted = arguments.preview
+                target = catalogue.target(
+                    wanted if wanted.startswith(SLOT_PREFIX) else SLOT_PREFIX + wanted)
+                for line in lane.preview(source, target):
+                    print(line)
+            document = dict(catalogue.document)
+        if arguments.out:
+            Path(arguments.out).write_text(
+                json.dumps(document, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8", newline="\n")
+        print("NCAA09_TEXT members=%d strings=%d bytes=%d listed=%d"
+              % (document["text_members"], document["strings"], document["bytes"],
+                 document["rows_listed"]))
+        if arguments.selftest or not arguments.recipe:
+            if arguments.destination and not arguments.selftest:
+                parser.error("--destination needs --recipe")
+            return 0
+        recipe = json.loads(Path(arguments.recipe).read_text(encoding="utf-8"))
+        if arguments.dry_run or not arguments.destination:
+            plan = lane.plan(source, recipe, catalogue)
+            for item in plan.declared_ranges:
+                print("would write %d byte(s) at %d (%s)"
+                      % (item.length, item.start, item.reason))
+            print("NCAA09_TEXT_PLAN targets=%d bytes=%d"
+                  % (len(plan.target_keys), plan.declared_bytes))
+            return 0
+        receipt = lane.build(source, Path(arguments.destination), recipe, catalogue)
+        verdict = lane.verify(source, Path(arguments.destination), receipt)
+        print(verdict.summary)
+        if arguments.report:
+            Path(arguments.report).write_text(
+                json.dumps({"receipt": dict(receipt.document),
+                            "verdict": {"passed": verdict.passed,
+                                        "summary": verdict.summary,
+                                        "document": dict(verdict.document)}},
+                           indent=2, sort_keys=True, default=str) + "\n",
+                encoding="utf-8", newline="\n")
+        print("NCAA09_TEXT_WRITE %s" % ("PASS" if verdict.passed else "FAIL"))
+        return 0 if verdict.passed else 1
     except Refusal as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
-    document = dict(catalogue.document)
-    if arguments.out:
-        Path(arguments.out).write_text(
-            json.dumps(document, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8", newline="\n")
-    print("TEXT members=%d slots=%d characters=%d bytes=%d"
-          % (document["text_members"], document["slots"],
-             document["characters"], document["payload_bytes"]))
-    return 0
+    except (OSError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
 
 
-__all__ = ["CAPABILITY_ID", "LANE_ID", "MAX_MEMBER_TARGETS", "SCHEMA",
-           "TERMINATOR", "TEXT_ENCODING", "TextLane", "measure", "slots_in",
-           "split_strings"]
+__all__ = ["CAPABILITY_ID", "FONT_NOTE", "LANE_ID", "MAX_TARGETS", "PRELOAD_COPIES",
+           "PREVIEW_STRINGS", "PREVIEW_WIDTH", "RECEIPT_SCHEMA", "RECIPE_SCHEMA", "SCHEMA",
+           "SLOT_PREFIX", "TERMINATOR", "TEXT_ENCODING", "TextError", "TextLane",
+           "WRITABLE_TEXT_CONTAINERS", "encode_slot", "is_text_member", "measure",
+           "parse_slot_key", "slot_key", "slots_in", "split_strings", "verify_build"]
 
 
 if __name__ == "__main__":
