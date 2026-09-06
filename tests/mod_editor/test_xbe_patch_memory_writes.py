@@ -174,6 +174,8 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_read_option_runtime as read_option
         if read_option.status(cls.patched) != "applied":
             raise AssertionError("read option owner missing from the composed XBE")
+        if read_option.read_settings(cls.patched)["model_version"] != 2:
+            raise AssertionError("revised read option controls missing from the composed XBE")
         from mod_editor.core import nfl2k5_senior_bowl as senior_bowl
         if senior_bowl.status(cls.patched) != "applied":
             raise AssertionError("Senior Bowl dormant components missing from the composed XBE")
@@ -421,15 +423,23 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
         image = XbeImage(self.patched)
         places = read_option.allocations(self.patched)
-        self.assertEqual(set(places), {'code', 'read_only'})
-        for row in places.values():
-            self.assertFalse(image.runtime_writable(row['va'], row['size']))
+        self.assertEqual(set(places), {'code', 'data', 'read_only'})
+        for kind, row in places.items():
+            self.assertEqual(image.runtime_writable(row['va'], row['size']), kind == 'data')
             self.assertNotEqual(image.section(row['va']).name, '.text')
         code = places['code']
         self.assertTrue(image.section(code['va']).executable)
         writes = absolute_writes(self.patched, [(code['va'], code['va']+read_option.assembly.LABELS['config'])])
         self.assertTrue(writes)
-        self.assertTrue(all(row['target'] is None for row in writes), writes)
+        data = places['data']
+        for row in writes:
+            if row['target'] is not None:
+                target = int(row['target'], 0)
+                self.assertTrue(row['writable'], row)
+                # Displaced retail snap store plus exclusively owned new state.
+                self.assertTrue(data['va'] <= target < data['va']+data['size']
+                                or target == 0xE602C8, row)
+
     def test_senior_bowl_dormant_components_write_only_owned_or_caller_buffers(self):
         from mod_editor.core import nfl2k5_senior_bowl as bowl, nfl2k5_senior_bowl_code as code
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes

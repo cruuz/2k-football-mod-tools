@@ -1540,13 +1540,20 @@ def make_option_design(book: Nfl2k5Playbook, body: bytes, formation_index: int,
     rec = formation_record(body, formation_index)
     codes = category_positions(body, formation_category(body, formation_index))
     kinds = [c & 31 for c in codes]
-    if (rec.type_code >= 4 or rec.qb_alignment != 1 or kinds[0] != QB
+    under_center = rec.qb_alignment == 1 and set(kinds[9:11]) == {FB, HB}
+    shotgun_read = (preset != OPTION_PRESETS[0] and rec.qb_alignment == 2
+                    and kinds[10] == HB and kinds[9] in (HB, FB, WR, TE))
+    if (rec.type_code >= 4 or not (under_center or shotgun_read) or kinds[0] != QB
             or kinds[1:6] != [T, T, C, G, G]
-            or any(k not in (TE, WR) for k in kinds[6:9]) or set(kinds[9:11]) != {FB, HB}):
-        raise ValueError('Option presets need a native under-center I formation with QB 0, C 3, receivers 6-8 and backs 9/10')
+            or any(k not in (TE, WR) for k in kinds[6:9])):
+        raise ValueError('Options need a native I formation, or Shotgun with a back for Zone read/RPO; QB 0, C 3 and receivers 6-8')
     if type(back_slot) is not int or back_slot not in (9, 10) or kinds[back_slot] not in (HB, FB):
         raise ValueError('Choose the pitch/run back in assignment slot 9 or 10')
     chains = stock_speed_option_chains(weak)
+    if shotgun_read and kinds[9] in (WR, TE):
+        # The fourth receiver blocks using the existing receiver assignment,
+        # rather than following the fullback path in the I-form donor.
+        chains[9] = [start(3), (17, [3, 0, 1, 0, 2, 0, 5 * YD, 1])]
     if back_slot != 10:
         from .nfl2k5_playbook_pack import permute_assignments
         order = list(range(11)); order[9], order[10] = order[10], order[9]
@@ -1632,7 +1639,7 @@ def compile_read_option_intent_table(compilations=()) -> tuple[bytes, dict]:
 
     This is a separate build artifact; it never mutates PLAY or turns on a
     runtime merely because an experimental data preset was authored. Two
-    reads fit the fixed 1 KiB runtime budget. Native speed options are excluded.
+    reads fit the fixed 64-byte identity table. Native speed options are excluded.
     Names and both participant scripts are checked again after native pointer
     relocation. Full resource SHA-256 pairing is checked here, before a build.
     """

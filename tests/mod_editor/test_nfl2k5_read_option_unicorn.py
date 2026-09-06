@@ -31,11 +31,11 @@ class Machine(NativeMachine):
         super().run(*args, **kwargs)
         return self.uc.reg_read(x86.UC_X86_REG_EAX)
 
-    def __init__(self, payload, resource, *, rpo=False, controller=-1, layout=0, context=8, buffer=0, direction=1):
+    def __init__(self, payload, resource, *, rpo=False, controller=-1, layout=0, context=8, buffer=0, direction=1, play_index=None):
         super().__init__(payload, patched=False, direction=direction)
         self.load_book(resource, buffer)
         self.base = 0xB75A40 + buffer*0x13390
-        self.pi = 157 if rpo else 155
+        self.pi = (157 if rpo else 155) if play_index is None else play_index
         self.qs = self.QB+0x600
         self.task = self.QB+0xE00
         self.interp = self.qs+0x41C
@@ -76,11 +76,15 @@ class Machine(NativeMachine):
         self.controller = controller
         self.edge(x=-2*direction, vx=4*direction)
         self.ready(True)
+        self.state_va = patch.allocations(payload)['data']['va']
+        self.uc.mem_write(self.P+0xD35, b'\x10')  # roster DE
+        self.u32(self.P+0x600+0x41C, self.base+0x3404+8)  # live MIN GL Pinch rush
+        self.snap_read()
         self.uc.reg_write(x86.UC_X86_REG_FPCW, 0x37F)
         self.uc.reg_write(x86.UC_X86_REG_FPTAG, 0xFFFF)
 
     def edge(self, *, x=-2, vx=4, z=-1, vz=0):
-        for off, value in ((0x30, x*91.44), (0x38, z*91.44), (0x40, vx*91.44), (0x48, vz*91.44)):
+        for off, value in ((0x30, x*91.44), (0x38, 1200+z*91.44), (0x40, vx*91.44), (0x48, vz*91.44)):
             self.f32(self.P+0x400+off, value)
 
     def ready(self, yes):
@@ -91,7 +95,7 @@ class Machine(NativeMachine):
         self.f32(self.GAME+0x400+0x10, time)
         if 0 <= self.controller <= 3:
             self.u32(0xA9B95C+self.controller*44, 0x100 if held else 0)
-            self.u32(0xA9B954+self.controller*44, 0x200 if throw else 0)
+            self.u32(0xA9B954+self.controller*44, getattr(self, 'throw_mask', 0x200) if throw else 0)
         # Actual stack geometry at1AF191 after the retail aligned prologue.
         native_sp = self.STACK-0x60
         self.u32(self.STACK-4, 0x6789)
@@ -111,6 +115,19 @@ class Machine(NativeMachine):
         if end != (stop_at or self.STOP):
             raise AssertionError(f'bounded tick failed to stop: {end:#x}')
         return self.uc.reg_read(x86.UC_X86_REG_EAX)
+
+    def snap_read(self):
+        self.run(0xB6FBD, stop_at=0xB6FC3)
+
+    def frames(self, count, **kwargs):
+        result = None
+        for _ in range(count):
+            time = self.readf(self.GAME+0x400+0x10) + 1/60
+            result = self.tick(time, **kwargs)
+        return result
+
+    def finish(self, **kwargs):
+        return self.frames(max(1, patch.MESH_FRAMES-self.get(self.state_va+20)), **kwargs)
 
     def back_result(self):
         state = self.RB+0x600
@@ -135,6 +152,8 @@ class InstructionTests(unittest.TestCase):
         cls.payload, _ = patch.apply(retail, intent_table=cls.table)
 
     def machine(self, **kwargs):
+        import gc
+        gc.collect()  # release prior Unicorn callback cycles before mapping another XBE
         return Machine(self.payload, self.resource, **kwargs)
 
     def test_cpu_crash_keep_widen_give_position_velocity_and_both_directions(self):
@@ -143,7 +162,7 @@ class InstructionTests(unittest.TestCase):
                 with self.subTest(direction=direction, x=x, vx=vx):
                     m = self.machine(direction=direction)
                     m.edge(x=x*direction, vx=vx*direction)
-                    self.assertEqual(m.tick(), 1)
+                    self.assertEqual(m.finish(), 1)
                     self.assertEqual(m.get(m.task+0x44), expected)
                     self.assertEqual(m.get(0xBE4E28+2*4), expected)
                     self.assertEqual(m.back_result(), expected)
@@ -156,18 +175,18 @@ class InstructionTests(unittest.TestCase):
                     for held, expected in ((False, 1), (True, 0)):
                         with self.subTest(controller=controller, layout=layout, context=context, held=held):
                             m = self.machine(controller=controller, layout=layout, context=context)
-                            self.assertEqual(m.tick(.349, held=held), 0)
+                            self.assertEqual(m.frames(20, held=held), 0)
                             self.assertEqual(m.get(0xBE4E28+8), 0xFFFFFFFF)
-                            self.assertEqual(m.tick(.35, held=held), 1)
-                            self.assertEqual(m.get(m.task+0x44), expected)
                             self.assertIn(0x120960, m.hits)
                             self.assertIn(0x77230, m.hits)
+                            self.assertEqual(m.finish(held=held), 1)
+                            self.assertEqual(m.get(m.task+0x44), expected)
 
     def test_release_is_sticky_reholding_and_late_input_cannot_change_commit(self):
         m = self.machine(controller=0)
         m.tick(.1, held=False)
         m.tick(.2, held=True)
-        m.tick(.35, held=True)
+        m.finish(held=True)
         self.assertEqual(m.get(m.task+0x44), 1)
         m.edge(x=-2, vx=4)
         m.tick(.4, held=True, throw=True)
@@ -177,12 +196,12 @@ class InstructionTests(unittest.TestCase):
     def test_rpo_cpu_throw_ready_default_give_unready_and_human_keep_exit(self):
         for ready, decision in ((True, 2), (False, 1)):
             m = self.machine(rpo=True); m.ready(ready)
-            m.tick()
+            m.finish()
             self.assertIn(0x19B800, m.hits)
             self.assertEqual(m.get(m.task+0x44), decision)
             self.assertEqual(m.back_result(), int(decision == 1))
         m = self.machine(rpo=True, controller=0)
-        m.tick(stop_at=0x1AF292)
+        m.frames(20); m.finish(stop_at=0x1AF292)
         self.assertEqual(m.get(m.task+0x44), 0)
         self.assertTrue(m.get(m.interp+4) & 0x20000)
         self.assertEqual(m.get(0xBE4E28+8), 0)
@@ -191,18 +210,18 @@ class InstructionTests(unittest.TestCase):
         m = self.machine(rpo=True, controller=1)
         m.tick(.2, throw=True)
         m.tick(.3, held=False)
-        m.tick(.35, held=False)
+        m.finish(held=False)
         self.assertEqual(m.get(m.task+0x44), 2)
         m.tick(.5, held=False)
         self.assertEqual(m.get(m.task+0x44), 2)
         m = self.machine(rpo=True, controller=0); m.ready(False)
-        m.tick(.2, throw=True); m.tick(.35)
+        m.tick(.2, throw=True); m.finish()
         self.assertEqual(m.get(m.task+0x44), 1)
 
     def test_native_loader_buffers_script_name_and_slot_scope(self):
         for buffer in (0, 1):
             m = self.machine(buffer=buffer)
-            m.tick()
+            m.finish()
             self.assertEqual(m.get(m.task+0x44), 0)
         for field in ('name', 'qb_script', 'back_script', 'slot', 'node', 'assignment'):
             m = self.machine()
@@ -223,7 +242,7 @@ class InstructionTests(unittest.TestCase):
         self.assertNotEqual(patch.allocations(output), patch.allocations(self.payload))
         m = Machine(output, self.resource, controller=2, layout=2, context=10)
         m.tick(.2, held=False)
-        m.tick(.35, held=True)
+        m.finish(held=True)
         self.assertEqual(m.get(m.task+0x44), 1)
         self.assertEqual(m.back_result(), 1)
 
@@ -232,25 +251,25 @@ class InstructionTests(unittest.TestCase):
             m = self.machine(rpo=rpo, controller=-1 if rpo else 0)
             m.tick(.1, held=held)
             self.assertEqual(m.back_result(), 0xFFFFFFFF)
-            m.tick(.35, held=held)
+            m.finish(held=held)
             self.assertEqual(m.run(0x1B8A20, ecx=m.interp), expected)
 
     def test_missing_read_and_nonfinite_geometry_default_give(self):
         for value in (float('nan'), float('inf'), -float('inf'), 1e8):
             m = self.machine(); m.edge(x=value)
-            m.tick(); self.assertEqual(m.get(m.task+0x44), 1)
+            m.finish(); self.assertEqual(m.get(m.task+0x44), 1)
         m = self.machine(); m.u32(m.DEF+4, 0)
-        m.tick(); self.assertEqual(m.get(m.task+0x44), 1)
+        m.finish(); self.assertEqual(m.get(m.task+0x44), 1)
 
     def test_downfield_crash_and_a_blocked_edge(self):
         for direction in (1, -1):
             m = self.machine(direction=direction)
             m.edge(x=-2*direction, vx=0, vz=-4*direction)
-            m.tick()
+            m.finish()
             self.assertEqual(m.get(m.task+0x44), 0)
         m = self.machine()
         m.u32(m.RB+0xE00+0x40, m.P)
-        m.tick()
+        m.finish()
         self.assertEqual(m.get(m.task+0x44), 1)
 
     def test_native_speed_option_pitch_keep_and_back_requests_remain_native(self):
@@ -276,23 +295,23 @@ class InstructionTests(unittest.TestCase):
 
     def test_dead_ball_lost_ownership_takeover_and_fresh_initializer_state(self):
         m = self.machine(); m.u32(0xE602B8, 15)
-        m.tick(); self.assertEqual(m.get(0xBE4E28+8), 0xFFFFFFFF)
+        m.finish(); self.assertEqual(m.get(m.task+0x44), 0)
         m = self.machine(rpo=True); m.u32(m.BALL, m.RB)
         m.tick(stop_at=0x1AF292)
         self.assertEqual(m.get(m.task+0x44), 0)
-        m = self.machine(); m.tick(); m.controller = 0; m.u32(m.QB+0x100, 0)
+        m = self.machine(); m.finish(); m.controller = 0; m.u32(m.QB+0x100, 0)
         m.tick(.4, held=False); self.assertEqual(m.get(m.task+0x44), 0)
         # The actual initializer writes the argument at1AF98D. Execute that
         # slice to reset the documented union, retaining the native callback.
         m.u32(m.STACK+0x2C, 0x41500000)
         m.run(0x1AF98D, stop_at=0x1AF994, ebx=m.task)
         m.u32(0xA9B960, 8); m.u32(0xE5FE90, 0)
-        m.tick(.1, held=False); m.tick(.35, held=False)
+        m.tick(.1, held=False); m.finish(held=False)
         self.assertEqual(m.get(m.task+0x44), 1)
 
     def test_native_new_play_clears_prior_shared_decisions_before_either_actor(self):
         m = self.machine(controller=0)
-        m.tick(held=False)
+        m.finish(held=False)
         self.assertEqual(m.get(0xBE4E28+8), 1)
         m.run(0x1AD9C0, stop_at=0x1AD9DE)
         self.assertEqual(bytes(m.uc.mem_read(0xBE4E28, 88*4)), b'\xff'*(88*4))
@@ -311,7 +330,8 @@ class InstructionTests(unittest.TestCase):
         self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_FPCW), 0x37F)
         for address, size in m.writes:
             self.assertTrue(0x3100000 <= address < m.STACK or
-                            m.task+0x40 <= address and address+size <= m.task+0x48, hex(address))
+                            m.task+0x40 <= address and address+size <= m.task+0x48 or
+                            m.state_va <= address and address+size <= m.state_va+patch.DATA_SIZE, hex(address))
 
 
 if __name__ == '__main__':

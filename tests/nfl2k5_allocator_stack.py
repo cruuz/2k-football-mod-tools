@@ -27,6 +27,8 @@ from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
                    + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS)
+# Read option v2 grows the existing owner; its live REQUESTS include RW/RO.
+# Both installation orders use this same union and require rebuild from base.
 REQUESTS = (LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
             + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS)

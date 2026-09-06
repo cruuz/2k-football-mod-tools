@@ -1,9 +1,10 @@
 """Metadata-backed mesh read. EXPERIMENTAL / UNWITNESSED, all presets off.
 
-The 1,024-byte immutable budget is split into 960 RX and 64 RO bytes. No new
-RW is taken. The custom condition owns the native task's documented +0x44
-argument, initialized on every condition entry, as its decision union. Neither
-retail task padding nor an unrelated cache is used as scratch storage.
+Version 2 grows the existing owner to 2,048 RX, 256 RW and 88 RO bytes.
+Rebuild from the supported base with the complete revised request union;
+v1 allocations are deliberately refused, never upgraded in place. The v1
+64-byte PLAY lookup remains compatible. Private state is reset at each snap
+and native new-play reset, and scoped to actor/roster/assignment identity.
 """
 from __future__ import annotations
 
@@ -16,19 +17,30 @@ from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_read_option_runtime"
-CODE_SIZE, TABLE_SIZE = 960, 64
-REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", TABLE_SIZE, 16))
+CODE_SIZE, DATA_SIZE, TABLE_SIZE, RO_SIZE = 2048, 256, 64, 88
+MESH_FRAMES, CRASH_SAMPLES = 21, 3
+AUTO_EDGE = 255
+PROMPT = struct.pack("<6f", 360, 96, 0, 1, .2, 228.6)
+REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16),
+            (OWNER, "read_only", RO_SIZE, 16))
 TABLE_SCHEMA = "nfl2k5_read_option_lookup/v1"
 HEADER = struct.Struct("<4sIII")
 RECORD = struct.Struct("<5I4B")
 MAX_RECORDS = (TABLE_SIZE - HEADER.size) // RECORD.size
-HOOKS = {"tick": (0x1AF191, bytes.fromhex("d94760d81d80414e00"))}
+HOOKS = {
+    "tick": (0x1AF191, bytes.fromhex("d94760d81d80414e00")),
+    "hud": (0x646A1, bytes.fromhex("e80a5a0900")),
+    "pass_init": (0x19C849, bytes.fromhex("c70660bb1900")),
+    "snap": (0xB6FBD, bytes.fromhex("8935c802e600")),
+    "reset": (0x1AD9C3, bytes.fromhex("b95a000000")),
+}
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: option plays use the original pitch "
     "and position rules. Patch: paired authored reads use release to give and "
     "hold the snap button to keep at the mesh. CPU QBs read the selected edge. "
-    "RPO throws require the intended receiver to be ready. The in-game prompt "
-    "and a replacement defender search are not included. All presets are off."
+    "A brief snap-button cue marks the read window. CPU reads use a live "
+    "unblocked edge and sustained movement. A receiver press during the RPO "
+    "mesh reaches the native pass request. All presets are off."
 )
 
 
@@ -41,9 +53,28 @@ def _require(ok, message):
         raise ReadOptionError(message)
 
 
-def compile_intent_table(compilations=()):
+def compile_intent_table(compilations=(), *, use_authored_edge=True):
+    """Keep paired PLAY validation; optionally leave EDGE selection to the snap.
+
+    False means there is no authored runtime defender. The required data-tier
+    opponent fixture still validates the legal native condition encoding.
+    """
     from .nfl2k5_play_library import compile_read_option_intent_table
-    return compile_read_option_intent_table(compilations)
+    _require(type(use_authored_edge) is bool, "Expected an authored EDGE policy Boolean")
+    table, receipt = compile_read_option_intent_table(compilations)
+    if use_authored_edge:
+        return table, receipt
+    rows = []
+    for record in receipt["records"]:
+        row = bytearray.fromhex(record["record"])
+        row[21] = AUTO_EDGE
+        record.update(authored_read_slot=None, record=bytes(row).hex(), edge_selection="live snap assignments")
+        rows.append(bytes(row))
+    table = (table[:HEADER.size] + b"".join(sorted(rows))).ljust(TABLE_SIZE, b"\0")
+    receipt.update(records=sorted(receipt["records"], key=lambda record: record["record"]),
+                   table_sha256=hashlib.sha256(table).hexdigest())
+    validate_intent_table(table)
+    return table, receipt
 
 
 def validate_intent_table(table):
@@ -59,17 +90,20 @@ def validate_intent_table(table):
         book, offset, qb, back, name, back_slot, read_slot, receiver, flags = RECORD.unpack(row)
         key = (book, offset)
         _require(0 <= offset - 0x3404 < 270*96 and (offset - 0x3404) % 96 == 0
-                 and back_slot in (9, 10) and read_slot < 11 and receiver in (0, 7, 8)
+                 and back_slot in (9, 10) and (read_slot < 11 or read_slot == AUTO_EDGE) and receiver in (0, 7, 8)
                  and flags == 0 and key not in keys, "Foreign read option identity or fields")
         keys.add(key)
     _require(not any(table[16+count*24:]), "Foreign read option table padding")
     return count
 
 
-def code_for(code_va, table_va):
+def code_for(code_va, table_va, data_va):
     symbols = dict(code=code_va, intent_table=table_va, original_tail=0x1AF19A,
                    result_tail=0x1AF210, lookup_actor=0x1894F0,
-                   held_command=0x120960, receiver_ready=0x19B800)
+                   held_command=0x120960, receiver_ready=0x19B800,
+                   state_data=data_va, hud_native=0xFA0B0, draw_icon=0xF97F0,
+                   hud_tail=0x646A6, pass_tail=0x19C84F, snap_tail=0xB6FC3,
+                   reset_tail=0x1AD9C8)
     result = bytearray(assembly.CODE)
     for offset, kind, symbol, value in assembly.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<I", result, offset)[0]
@@ -87,9 +121,9 @@ def sites(code_va):
 
 def allocations(payload):
     result = {a["kind"]: a for a in space.layout(payload)["allocations"] if a["owner"] == OWNER}
-    _require(set(result) == {"code", "read_only"}, "Read option allocation missing; rebuild with complete request union")
+    _require(set(result) == {"code", "data", "read_only"}, "Read option allocation missing; rebuild with complete request union")
     for _, kind, size, align in REQUESTS:
-        _require((result[kind]["size"], result[kind]["align"]) == (size, align), "Foreign Read option allocation")
+        _require((result[kind]["size"], result[kind]["align"]) == (size, align), "Old/foreign Read option allocation; rebuild from base with revised requests")
     return result
 
 
@@ -104,12 +138,16 @@ def _inspect(payload):
         code_va = code["va"]
         content = image.read(code_va, CODE_SIZE)
         table = image.read(ro["va"], TABLE_SIZE)
+        _require(image.read(places["data"]["va"], DATA_SIZE) == bytes(DATA_SIZE),
+                 "Foreign Read option initial writable state")
+        prompt = image.read(ro["va"] + TABLE_SIZE, len(PROMPT))
         if content == b"\xcc" * CODE_SIZE:
-            _require(table == bytes(TABLE_SIZE), "Mixed Read option table without runtime")
+            _require(table == bytes(TABLE_SIZE) and prompt == bytes(len(PROMPT)), "Mixed Read option table without runtime")
             table = None
         else:
-            _require(content == code_for(code_va, ro["va"]), "Foreign Read option runtime")
+            _require(content == code_for(code_va, ro["va"], places["data"]["va"]), "Foreign Read option runtime")
             validate_intent_table(table)
+            _require(prompt == PROMPT, "Foreign Read option prompt")
             installed = True
     for name, va, before, after in sites(code_va):
         _require(image.read(va, len(before)) == (after if installed else before), f"Mixed/foreign Read option {name}")
@@ -135,8 +173,10 @@ def read_settings(payload):
         state, table = _inspect(payload)
         if state != 'applied':
             return None
-        return dict(model_version=1, authored_reads=validate_intent_table(table),
-                    table_sha256=hashlib.sha256(table).hexdigest(), mesh_seconds=.35,
+        return dict(model_version=2, authored_reads=validate_intent_table(table),
+                    table_sha256=hashlib.sha256(table).hexdigest(), mesh_frames=MESH_FRAMES, crash_samples=CRASH_SAMPLES,
+                    edge_policy="snap assignments, live unblocked replacement",
+                    prompt="native snap-button icon during human mesh",
                     human_control='hold snap to keep; release to give',
                     experimental=True, runtime_witnessed=False)
     except (ValueError, TypeError, KeyError, IndexError, struct.error):
@@ -158,19 +198,19 @@ def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, 
     if table is None:
         table = compile_intent_table()[0]
     count = validate_intent_table(table)
-    receipt = dict(experimental=True, runtime_witnessed=False, tier="mesh", model_version=1,
+    receipt = dict(experimental=True, runtime_witnessed=False, tier="mesh", model_version=2,
                    authored_reads=count, table_sha256=hashlib.sha256(table).hexdigest(),
                    code_bytes=CODE_SIZE, instruction_bytes=assembly.LABELS['config'],
-                   read_only_bytes=TABLE_SIZE, data_bytes=0, changed_bytes=0, edits=[])
+                   read_only_bytes=RO_SIZE, data_bytes=DATA_SIZE, changed_bytes=0, edits=[])
     if state == "applied":
         _require(table == previous, "Different Read option intent; rebuild from the supported source")
         return payload, {**receipt, "status": "already_applied"}
     allocated, allocation_receipt = (space.apply(payload, REQUESTS, scaleout=True)
                                     if space.status(payload) == "retail" else (payload, {}))
     places = allocations(allocated)
-    content = code_for(places["code"]["va"], places["read_only"]["va"])
+    content = code_for(places["code"]["va"], places["read_only"]["va"], places["data"]["va"])
     installed, code_receipt = space.install_code(allocated, OWNER, content)
-    installed, table_receipt = space.install_read_only(installed, OWNER, table)
+    installed, table_receipt = space.install_read_only(installed, OWNER, table + PROMPT)
     image = XbeImage(installed)
     result = bytearray(installed)
     edits = []
@@ -193,6 +233,15 @@ def apply(payload: bytes, *, intent_table: bytes | None = None) -> tuple[bytes, 
 
 # Pinned dependency slices and controller tables, normalized only at our hook.
 GUARDS = (
+    (0x64670, 63, "8982b6527e0545f7fddf26e6ecb1aa2d39411bf3c520b4bfb925a46509080de5"),
+    (0xf97f0, 345, "c89e3adfe3227a7c7d450a322434a30f147b4bb0057993d51fcfca97ec1541d0"),
+    (0xf9f40, 338, "0b33d7255b461fcbfbc9895a0550af05e0dab708905d51b5c4c324178c9df5ac"),
+    (0x4f68c0, 56, "28c5d41e856e75fa9e47b37d22e81051fca12739c1b5630d5008ad092f16f34f"),
+    (0x19c740, 275, "661ab0647ceb5ff1e2243adccfc36dba60829f8d04caede6d74c2db0f86dab72"),
+    (0x19bae0, 128, "5850cdeb4b6d6e3cd8274289163077cb7a5369b7dad434de1fa5849b18bbbd3b"),
+    (0x1907d0, 27, "829ae1184284f56d36efe622c5ffc9d64ce8f91b40d5651ae09002b61e22e945"),
+    (0xb6fbd, 6, "f6e77bdc1d859dd89679fa7ed6f636f66f01ea7f568617d86ae7099e09c65675"),
+    (0x1ad9c0, 30, "eb8e528af8cc929aad10945d94b16079a94dd8fecad340cbc03a57115c2e7bb7"),
     (0x1af870, 689, "9732aeed45f78229952192e53c954f2459446cda65cfe58091a4b61753cbca0d"),
     (0x1aef80, 837, "abb3db24b4955ff8416ef62d65d06c746dedeb9465d4e470840d84a9c37450fe"),
     (0x1894f0, 86, "db73838ef658a792ff82f9c99bd4d5d2061f873d765322425d81293ab430b0dd"),

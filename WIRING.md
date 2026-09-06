@@ -7939,3 +7939,154 @@ The shared `tools/nfl2k5_playbook_position_recode.py` loose-pack header read is
 also corrected to `read(HEADER_SIZE)` inside a closed context manager. Retain
 that already-shipped file and regenerate any exact-source provider closure pin
 covering it. The naming regression forbids whole-pack reads on this path.
+
+# r62 read-option controls v2 handoff, 2026-09-06
+
+This section supersedes the earlier read-option runtime handoff's missing
+prompt/replacement search, 0.35-second snap deadline, zero-RW budget and
+under-center-only authoring statements. EXPERIMENTAL / UNWITNESSED. No protected
+file was edited. The implementation and evidence are in
+`ASTRA_READ_OPTION_CONTROLS_REPORT.md`.
+
+## Owner and rebuild policy
+
+Keep the existing `read_option_runtime` option and canonical
+`nfl2k5_read_option_runtime` owner. Its revised REQUESTS are 2,048 RX + 256 RW +
+88 RO, alignment 16 for all three. The unchanged 64-byte paired PLAY table is
+followed by an immutable HUD anchor and two policy constants. Request sets are
+immutable: rebuild from the pinned retail/base input with the complete revised
+union. Do not apply v2 over an existing v1 allocation, append a second owner,
+or overwrite an old seal. The backend refuses those inputs before mutation.
+
+`tests/nfl2k5_allocator_stack.py` and the manifest builder already import this
+owner and concatenate its live REQUESTS. Their complete union, installation,
+replay, recorder and extra-owner lists therefore include the revised owner.
+Claude must regenerate protected `data/nfl2k5_cave_reservations.json` after
+integration. The scratch manifest is a local gate input only. Add
+`read_option_runtime=False` to the manifest's dormant-base BuildPlan replacement
+when that protected BuildPlan field is integrated.
+
+## Dispatcher, settings and all four status dictionaries
+
+In protected `mod_editor/core/nfl2k5_throw_tuning.py`, retain/add the earlier
+handoff's import `nfl2k5_read_option_runtime as read_option_patch`, Boolean
+`read_option_runtime=False` and bytes-or-None `read_option_intent_table=None`
+kwargs in `_apply_all`, `write_xbe_copy`, `write_image_copy`, every forwarding
+call, `_selected_space_requests`, `_xbe_space_adapter` and the inherited
+`_defensive_try_adapter`. Validate an actual Boolean, table bytes with
+`validate_intent_table`, and require the flag when supplying a table.
+
+Append `(read_option_patch.REQUESTS if read_option_runtime else ())` to the
+selected union and include the flag in allocation and nothing-requested
+conditions. Keep `_read_option_adapter(table)` from the earlier handoff: its
+`status` delegates to the module and its `apply` calls
+`read_option_patch.apply(payload, intent_table=self.table)`. The final
+`_apply_all` owners tuple, after the allocator, must contain:
+
+```python
+(read_option_runtime, _read_option_adapter(read_option_intent_table),
+ "read_option_runtime_patch", "read option mesh controls (experimental)"),
+```
+
+Add/retain these in `_grown_status_fields(payload)`:
+
+```python
+"read_option_runtime": read_option_patch.status(payload),
+"read_option_runtime_settings": read_option_patch.read_settings(payload),
+```
+
+All four dictionaries must expose them: `read_xbe(payload)`,
+`read_image(payload)`, `write_xbe_copy(result)` and `write_image_copy(after)`.
+Settings now report `model_version=2`, `mesh_frames=21`, `crash_samples=3`, the
+installed table count/hash, cue and EDGE policy. Copy actual settings and
+receipts into inspection/build results; do not retain the v1 `mesh_seconds`
+field or advertise a fixed animation-derived mesh duration.
+
+QB spy now recognizes only fully validated read-option snap/reset neighbors
+before normalizing their exact hook spans for its full-body dependency hashes.
+Ship that compatibility change together with this owner. Do not weaken the
+neighbor validation or strip its sealed-code/table checks.
+
+## BuildPlan, paired reads and presets
+
+In protected `mod_editor/core/mod_build.py`, retain/add
+`read_option_runtime: bool = False`. Basic, Advanced and Experimental all keep
+it False. Carry it through normalization, inspection, the allocator feature
+status, final receipts and reset/preset collection. Reserve the revised union
+before installing any owner. Defer runtime installation until selected PLAY
+outputs are final, including later edits and exact compiler receipts, then
+compile the table and pass it to the final XBE pass. The early ordinary-XBE
+pass gets `read_option_runtime=False`; deferred owner reservations still include
+its revised REQUESTS. Reject enabled builds with no paired read recipes or
+more than two reads before disc copying. Omitted table on backend replay keeps
+the installed table; changed explicit settings require a rebuild.
+
+The standard compiler keeps a valid authored EDGE preference. For a runtime
+read with no authored defender, call
+`compile_intent_table(pairs, use_authored_edge=False)`: its explicit 255 sentinel
+selects from actual snap assignments. The data-tier opponent fixture remains
+necessary to validate the native PLAY graph and is not a runtime defender
+identity in this mode. No second BuildPlan option is required.
+
+The core authoring helper now also accepts native Shotgun formations with a
+back in slot 10, including `Gun: Doubles Right`, for Zone read and RPO. Empty
+Shotgun and Shotgun Speed option still refuse. Keep native positions/personnel;
+slot 9 uses the existing receiver block when it is a WR/TE. The standalone
+controls test compiles callable MIN `SD Gun Zone Read` at 134 and
+`SD Gun RPO Slant` at 31, retaining the native formation links and fixed resource
+span. These names are witness recipes, not automatically installed plays.
+
+In the off-limits `mod_editor/gui/create_play_wizard_qt.py`, replace the obsolete
+"Native under-center I personnel only" note with "Native I formations, or
+Shotgun with a back for Zone read and RPO." The `option_design` positions check
+continues to require the original native positions/personnel; update its error
+to "Option presets keep the native formation. Restore its stock positions and
+personnel first." The existing call to `make_option_design` handles the revised
+formation eligibility. Explain that the data-only tier retains geometric native
+conditions and the separate runtime checkbox enables these controls.
+
+## Gameplay Patches, Build caption, allowance and closure
+
+In protected `gameplay_patches_panel_qt.py`, the PATCHES key remains
+`read_option_runtime`, title `Read option mesh controls (experimental)`, with
+`read_option_patch.HELP_TEXT` as its description. It contains both required words
+"Retail" and "Patch" and describes the human cue, hold/release controls, live
+CPU EDGE read and RPO receiver press. Keep the key in NEEDS_IMAGE.
+
+In protected `build_panel_qt.py`, use `_option` caption
+`Read option mesh controls (experimental)` (40 characters), default False, with
+HELP_TEXT. Forward the same key through protected Studio/Gameplay collection,
+preset/reset and status paths. No extra ext-owner flag or new GUI panel is needed.
+
+Protected `packaging/release-allowlist.txt` must contain these exact lines:
+
+```text
+mod_editor/core/nfl2k5_read_option_runtime.py
+mod_editor/core/nfl2k5_read_option_runtime_code.py
+```
+
+Retain the already shipped `nfl2k5_qb_spy_runtime.py` and `nfl2k5_play_library.py`.
+The protected runtime probe/provider closures must import:
+
+```text
+mod_editor.core.nfl2k5_read_option_runtime
+mod_editor.core.nfl2k5_read_option_runtime_code
+mod_editor.core.nfl2k5_qb_spy_runtime
+mod_editor.core.nfl2k5_play_library
+```
+
+QB spy's validated-neighbor check makes the read-option module part of Spy's
+closure even when read-option controls are off. Retain the existing allocator,
+codec, inspector, writer, section-digest and cave-reader dependencies. GNU as,
+Unicorn, Capstone, corpus exports and tests are development-only dependencies.
+
+Merge the updated handoff object
+`docs/mod_editor/nfl2k5_read_option_runtime_capability.json` by existing ID
+`nfl2k5.gameplay.read_option_runtime` on `gameplay_tuning_sliders`. No new surface
+is introduced. Keep classification `offline-writer-proved`, runtime `not-tested`,
+all defaults off and the controls report's witness list. Backend and validation
+commands use `python3 -m <dotted.module> ...` for registry file-check mode.
+
+After protected wiring, verify paired Shotgun builds, disabled presets,
+missing/stale recipe refusals, the revised budget, all four status dictionaries,
+release closure and both XBE gates before offering Noah a witness disc.

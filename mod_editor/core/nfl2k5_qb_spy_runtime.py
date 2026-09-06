@@ -247,9 +247,16 @@ def _inspect(payload):
             installed = True
     for name, va, before, after in sites(code_va):
         _require(image.read(va, len(before)) == (after if installed else before), f"Mixed/foreign Spy {name}")
+    # Read option v2 shares these native lifecycle routines, at disjoint
+    # instructions. Normalize only its fully validated, sealed installation.
+    from . import nfl2k5_read_option_runtime as read_option
+    neighbors = [(name, va, old, None) for name, (va, old) in read_option.HOOKS.items()
+                 if name in ("snap", "reset")]
+    if any(image.read(va, len(old)) != old for _, va, old, _ in neighbors):
+        _require(read_option.status(payload) == "applied", "Foreign Read option lifecycle neighbor")
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
-        for _name, address, before, _after in sites(code_va):
+        for _name, address, before, _after in sites(code_va) + neighbors:
             if va <= address and address + len(before) <= va + size:
                 content[address-va:address-va+len(before)] = before
         _require(hashlib.sha256(content).hexdigest() == digest, f"Foreign Spy dependency at {va:#x}")

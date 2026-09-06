@@ -9,24 +9,26 @@
     "ASTRA_READ_OPTION_RUNTIME_REPORT.md",
     "tests/mod_editor/test_nfl2k5_read_option_runtime.py",
     "tests/mod_editor/test_nfl2k5_read_option_unicorn.py",
-    "tools/nfl2k5_read_option_runtime.S"
+    "tools/nfl2k5_read_option_runtime.S",
+    "ASTRA_READ_OPTION_CONTROLS_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_read_option_controls.py"
   ],
   "game": "nfl2k5_xbox",
   "gui": {
     "default_enabled": false,
     "expose": true,
     "mode": "edit",
-    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. No in-game prompt or live replacement-edge search in this bounded first runtime. Protected integration is in WIRING.md."
+    "reason": "EXPERIMENTAL / UNWITNESSED. All presets off. Human read cue, live replacement EDGE, frame sampling and RPO native pass request have bounded instruction proofs. Protected integration is in WIRING.md."
   },
   "id": "nfl2k5.gameplay.read_option_runtime",
   "input_constraints": [
     "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes.",
     "At most two authored read plays, bound to exact PLAY/compiler receipt pairs. Empty table is dormant.",
-    "RPO receiver must be slot 7 or 8; receiver slot 6 shares the snap button. Native speed options are excluded."
+    "RPO receiver must be slot 7 or 8; receiver slot 6 shares the snap button. Native speed options are excluded.",
+    "Version 1 request sets require rebuilding from the base. An explicit automatic-EDGE table uses snap assignments instead of an authored defender."
   ],
   "portme": [
-    "Complete the pending prompt and live unblocked-edge fallback before describing the full brief as implemented.",
-    "Run Noah's paired witness list in ASTRA_READ_OPTION_RUNTIME_REPORT.md."
+    "Run Noah's paired Shotgun, EDGE crash/wide, RPO slant and lifecycle witness list in ASTRA_READ_OPTION_CONTROLS_REPORT.md."
   ],
   "public_distribution": {
     "game_data": "never-bundle-retail-data",
@@ -36,9 +38,9 @@
   },
   "runtime": {
     "status": "not-tested",
-    "scope": "Bounded installed instructions, native loader, held input tables, receiver readiness, synchronization and branch exits proved. Game boot, movement, mesh/throw animation and defensive responsibility unwitnessed.",
+    "scope": "Bounded installed instructions prove the human-only native HUD cue, snap assignment selection, live unblocked replacement, 21-tick window, hysteresis and RPO receiver press through the native pass initializer to the native throw-request store. Task allocation, GPU submission and aim calculation are fixture boundaries. Game boot, transfers, mesh/throw animation and defense remain unwitnessed.",
     "evidence": [
-      "ASTRA_READ_OPTION_RUNTIME_REPORT.md"
+      "ASTRA_READ_OPTION_CONTROLS_REPORT.md"
     ]
   },
   "selectors": {
@@ -49,18 +51,18 @@
         "allowed": "false in Basic, Advanced and Experimental; explicit opt-in"
       }
     ],
-    "notes": "Two paired authored reads. Human release to give, hold to keep; RPO uses its receiver button during the .35-second logical snap window."
+    "notes": "Two paired authored reads. Human release to give, hold to keep; RPO accepts its receiver press during the first 20 distinct live mesh simulation ticks and commits on tick 21. Native I and supported Shotgun authoring; no rendered-frame timing claim."
   },
   "source_container": {
     "format": "XBE in XDVDFS",
     "hash_pins": [
       "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
     ],
-    "resource": "one pinned 9-byte live hook, 960 RX bytes and 64 RO bytes; no new RW allocation",
+    "resource": "Five pinned live hooks; existing owner rebuilt from base with 2048 RX, 256 RW and 88 RO bytes.",
     "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
   },
   "summary": "Paired custom reads latch give, keep or pass with modern hold-to-keep controls and a CPU edge read.",
   "surface": "gameplay_tuning_sliders",
   "title": "Read option mesh controls (experimental, unwitnessed)",
-  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_runtime"
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_read_option_controls"
 }
