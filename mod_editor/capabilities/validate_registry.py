@@ -54,21 +54,21 @@ SURFACE_GAMES["crib_assets"] = ("nfl2k5_xbox",)
 # it with the read-only disc inventory (nfl2k5ps2.textures.disc_inventory).
 SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox") + ("madden09_ps2",) + ("ncaa09_ps2",) + ("mvp05_ps2",)
 # PS2 staged surfaces (each must carry at least one nfl2k5_ps2 row):
-SURFACE_GAMES["saves"] = _ESTABLISHED_GAMES
+SURFACE_GAMES["saves"] = _ESTABLISHED_GAMES + ("ncaa09_ps2",)
 # PS2 Phase 2 on-disc writers (each surface carries an nfl2k5ps2.* row):
 SURFACE_GAMES["uniforms"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",) + ("mvp05_ps2",)
 # PS2 Phase 2 on-disc writers (each surface carries an nfl2k5ps2.* row):
-SURFACE_GAMES["colors"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("mvp05_ps2",)
 SURFACE_GAMES["audio"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",) + ("mvp05_ps2",)
 SURFACE_GAMES["menus"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",) + ("mvp05_ps2",)
 SURFACE_GAMES["players_rosters"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",) + ("mvp05_ps2",)
-SURFACE_GAMES["scripts_config"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("mvp05_ps2",)
-SURFACE_GAMES["stadiums_fields"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("mvp05_ps2",)
 # nfl2k5_ps2 rows join these surfaces' coverage rule:
 SURFACE_GAMES["gameplay_tuning_sliders"] = _ESTABLISHED_GAMES + ("madden09_ps2",)
 # madden09_ps2 covers these surfaces (one row each):
-SURFACE_GAMES["scorebug_presentation"] = _LEGACY_GAMES + ("madden09_ps2",) + ("mvp05_ps2",)
-SURFACE_GAMES["portraits_faces"] = _LEGACY_GAMES + ("madden09_ps2",) + ("mvp05_ps2",)
+SURFACE_GAMES["colors"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",)
+SURFACE_GAMES["scripts_config"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",)
+SURFACE_GAMES["stadiums_fields"] = _ESTABLISHED_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",)
+SURFACE_GAMES["scorebug_presentation"] = _LEGACY_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",)
+SURFACE_GAMES["portraits_faces"] = _LEGACY_GAMES + ("madden09_ps2",) + ("ncaa09_ps2",)
 CLASSIFICATIONS = (
     "extract-only",
     "offline-writer-proved",

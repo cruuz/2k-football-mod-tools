@@ -5034,152 +5034,713 @@
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.games.ncaa09_ps2.text_lane --source <SLUS-21752.iso> [--out <report.json>] [--selftest]",
-        "module": "mod_editor/games/ncaa09_ps2/text_lane.py",
-        "operation": "inspect"
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 field_art.textures build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/ncaa09_ps2/art_pages.py",
+        "operation": "write"
       },
-      "classification": "read-only-mapped",
+      "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
         "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
-        "tests/mod_editor/test_ncaa09_ps2_module.py"
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
+        "docs/product/NCAA09_PS2_ART_PAGES.md"
       ],
       "game": "ncaa09_ps2",
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "view",
-        "reason": "Surfaced on the Menus & UI page of the PS2 NCAA 09 Studio as a table with a preview and no editor: a writer would replace a string inside the room its slot already has and rewrite the three QL01 preload caches that copy the container, and neither is built for this game."
+        "mode": "edit",
+        "reason": "Surfaced on the Field Art & Create-Team Art page of the PS2 NCAA 09 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page repeats the row's own sentence about the create-a-school tables being empty, so a user is not left looking for a control that could only refuse."
       },
-      "id": "ncaa09ps2.menus.text_members",
+      "id": "ncaa09ps2.field_art.textures",
       "input_constraints": [
-        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
-        "Counts and lengths in the catalogue; a string reaches the user only through the preview, read off their own image at the moment they ask for it.",
-        "latin-1 and never utf-8: EA stored 8-bit characters, and a utf-8 decoder either mangles an accented character or refuses the whole bank.",
-        "Bounded: at most 2,000 member rows are listed as targets while the document's totals stay complete."
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist; the source is never touched.",
+        "One texture, one PNG, one write. A PNG must be exactly the texture's size and is indexed against the member's own CLUT, keeping the index the file already used wherever a pixel is unchanged; a colour the palette does not hold lands on the nearest one it does and the receipt reports the worst channel error.",
+        "Fixed allocation wherever it fits: the rebuilt member is re-packed under the codec that fits the slot it already owns, and the receipt says which codec and how many bytes. A rewrite that would grow the container past its ISO extent is refused rather than relocated.",
+        "The preload caches are part of the write. FLDDATA.DAT's directory is copied once into the preload caches and 21 of its members; UIS_TMLO.DAT's directory once and eight of its members. Every copy the edit disturbs is rewritten from the container's own new bytes, and a CARRIED member whose stored size changed is refused by name, because a cached copy is a fixed slot.",
+        "It does not create a team: the create-a-school colour and uniform tables are shipped with 0 rows. It does not know which field or which school a member is; neither container names its members.",
+        "The verifier imports none of the writer: it re-decodes the texture out of the destination, compares every untouched member byte for byte, re-reads every preload-cache copy off the NEW image, and fails on a byte changed outside the declared ranges."
       ],
       "portme": [
-        "Build the same-allocation string writer the Madden 09 module already has, once a container writer for this disc exists and the three QL01 caches can be kept in step.",
-        "Join a bank to the screen that draws it. None of the four containers names its members.",
-        "Read the 17 FNTS fonts in FONTS.DAT and UIS_FONT.DAT; no font decoder exists here."
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
+        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "metadata-only",
-        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "rule": "Ship the lane, the shared EA TERF reader and writer, the MMAP codec, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness.",
+        "scope": "Offline only. Every step is proved against the user's own bytes -- the member decodes back to the pixels that were given, the container keeps the layout rules the retail discs follow, every untouched member is byte-identical, every preload-cache copy still equals what it copies, and the image-level verifier re-derives every declared byte from the two files -- and NO rebuilt NCAA Football 09 container has ever been booted in an emulator or on hardware. That the game loads the result is not claimed anywhere.",
         "status": "not-applicable"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "EXAMS.DAT | JERSEY.DAT | OSDKSTRN.DAT | GAMEDATA.DAT",
-            "name": "container",
-            "required": false
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
           },
           {
-            "allowed": "0..memberCount-1 within one container",
-            "name": "member",
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
             "required": false
           }
         ],
-        "notes": "Filters over a read-only table with a preview. The GUI must not offer a string edit: no writer for this disc's containers exists."
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
       },
       "source_container": {
-        "format": "TEXT member: NUL-terminated 8-bit strings, byte-aligned, inside a stored TERF member",
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
         "hash_pins": [
           "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
           "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
         ],
-        "resource": "1,247 TEXT members, 1,247 slots, 241,787 bytes",
+        "resource": "FLDDATA.DAT's directory is copied once into the preload caches and 21 of its members; UIS_TMLO.DAT's directory once and eight of its members.",
         "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "Measure every TEXT string bank on a user's SLUS-21752 ISO: how many NUL-terminated slots, how many characters, how many bytes of room past the strings that are there now, and whether the member ends in a terminator. Measured on the retail disc: 1,247 TEXT members in four containers -- EXAMS.DAT 1,238, JERSEY.DAT 7, OSDKSTRN.DAT 1 and GAMEDATA.DAT 1 -- 241,787 bytes in all. The strings are read from the user's own image on demand for a preview and are never stored in this repository.",
+      "summary": "Replace a field or school-logo texture on a user's SLUS-21752 disc and write a NEW image. Measured on the retail disc: FLDDATA.DAT holds 1,422 members, 1,391 of them LZH1-packed, and UIS_TMLO.DAT 399 LZH1 school marks. The create-team half of this page has nothing behind it and the reason is measured rather than pending: every create-a-school table on this disc -- CTTB, CTCD, CTUN, USTG, USLG, USLE -- has 0 rows, because a created school is user data in a memory-card save this studio does not read. Nothing has been booted.",
+      "surface": "stadiums_fields",
+      "title": "NCAA 09 (PS2) field and school-logo textures",
+      "validation_command": "bash tools/validate_ncaa09_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 identity.league_records build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/ncaa09_ps2/identity_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Text & Team Identity page of the PS2 NCAA 09 Studio as an editor, one target per school, conference, division, stadium and coach -- 1,024 rows on the retail image. Each offers the names its table carries, with the field's own byte budget on screen. The page must NOT draw a colour control: this disc's TEAM table has no colour field, the 64-row PACL palette is read into the catalogue and shown as a count, and which TEAM field selects a school's palette entry is not established. Refusals are inline, a dry run resolves every edit before any image exists, and the lane's independent verifier gives the verdict."
+      },
+      "id": "ncaa09ps2.identity.league_records",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist.",
+        "Only LEAGUE.DAT member 0 is written. Members 1 to 432 are the per-team rosters and belong to the Names, Numbers & Faces page's row.",
+        "Eleven fields, named: TDNA, TMNA, TSNA on TEAM; CNAM on CONF; DNAM on DIVI; SNAM, STNN, SCIT, SSTA and SCAP on STAD; CLFN and CLLN on COCH. Each name is written as latin-1 and NUL-padded to its own field, one byte short of the width so the terminator survives.",
+        "No colour is written, because there is no colour field to write into. PACL's 64 rows of CRED/CGRN/CBLU are read and reported as a count; CTCD and CTUN, the create-a-school colour tables, have 0 rows. Which TEAM field selects a palette entry is a question, and a question does not belong in an editor.",
+        "Fixed allocation: a TDB field owns a fixed run of bits in a fixed-stride record, and the RLE1-packed member is re-packed and must fit the slot it owns. Measured on the retail disc, a name edit moves the encoding by -13 to +1 bytes against a slot that is one byte larger than the bytes EA put in it, so a longer name can be refused by name and by the number of bytes over.",
+        "The preload caches are part of the write: LEAGUE.DAT member 0 is itself copied into PL.QKL and its directory into PL.QKL and FE.QKL. Every copy an edit disturbs is rewritten from the container's own new bytes and re-read off the destination by the verifier; a copy that would have to GROW is refused, because a cached copy is a fixed slot."
+      ],
+      "portme": [
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing a renamed school on the team-select screen. Nothing here has been booted.",
+        "The TEAM -> PACL link is the one thing that would give this page a colour control. TPID is 7 bits and PACL has 64 rows, which fits and is not proof.",
+        "Not offered: the school names spelled as prose in the 1,247 TEXT string banks, which the Menus & UI page's row edits string by string; and the create-a-school tables, which are shipped with 0 rows."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers and writers, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not. Every edited value reads back from the destination's own container, member, table and record; every byte of an edited database that differs from the source lies in a declared field span or a checksum slot; all four CRC-32/MPEG-2 checksums agree with the bytes that are there; every preload-cache copy of a rewritten container still equals what it copies, re-read off the NEW image; and the independent ISO9660 verifier re-derives every declared byte from the two files. NO rebuilt NCAA Football 09 disc has been booted in an emulator or on hardware.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "row:/DATA/LEAGUE.DAT#0:<TEAM|CONF|DIVI|STAD|COCH>:<record>",
+            "name": "row",
+            "required": true
+          },
+          {
+            "allowed": "TDNA, TMNA, TSNA; CNAM; DNAM; SNAM, STNN, SCIT, SSTA, SCAP; CLFN, CLLN",
+            "name": "values",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "The GUI must not offer a colour picker, TLNA or TMNC -- none of the three exists on this disc -- and must not offer TPID as if it selected a palette entry. It must not offer a row to be added or removed, and must not offer LEAGUE.DAT members 1 to 432."
+      },
+      "source_container": {
+        "format": "EA TDB v8 tables inside one RLE1-packed member of a COMP-chained EA TERF container. TEAM is 74 fields and 124 bytes; CONF 8 and 28; DIVI 3 and 24; STAD 56 and 156; COCH 42 and 64.",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "432 schools, 25 conferences, 10 divisions, 242 stadiums, 315 coaches -- 1,024 editable rows in one database; a 64-row PACL palette read and not written",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Edit the names in /DATA/LEAGUE.DAT member 0, the league database, on a user's SLUS-21752 disc: 432 schools (TDNA 22 bytes, TMNA 18, TSNA 7), 25 conferences (CNAM), 10 divisions (DNAM), 242 stadiums (SNAM, STNN, SCIT, SSTA and a 17-bit SCAP capacity) and 315 coaches (CLFN, CLLN). The coaches have names on this disc even though the players do not. What is NOT here is colour: Madden 09's TBCR/TBCG/TBCB and TB2R/TB2G/TB2B are all absent, and so are TLNA and TMNC -- so this row offers names and no colour picker, and says why. Nothing has been booted.",
+      "surface": "colors",
+      "title": "NCAA 09 (PS2) school, conference, stadium and coach names",
+      "validation_command": "bash tools/validate_ncaa09_ps2_identity.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 menus.text_members build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/ncaa09_ps2/text_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Menus & UI page of the PS2 NCAA 09 Studio as an editor, one target per string slot. Each target carries the room it has -- which on this disc is exactly the length of the string that is there, because no bank ships with padding -- and a replacement that does not fit is refused inline with the number of characters it has to lose. A preview re-reads the strings off the user's own disc on demand; the catalogue document never carries one. GAMEDATA.DAT's one bank is listed read-only with the sentence naming the two caches that copy it."
+      },
+      "id": "ncaa09ps2.menus.text_members",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist.",
+        "A string slot is a fixed allocation. A shorter replacement is padded to the slot with the format's own terminator, so the string the game reads ends where the replacement ends and every byte after it inside the slot is a NUL; a longer one is refused with the length it has to fit. Because the allocation counts the padding a previous edit left behind, shortening a string does not spend it.",
+        "EXAMS.DAT, JERSEY.DAT and OSDKSTRN.DAT are named by NONE of the three QL01 preload caches, which is what makes them safe to write. GAMEDATA.DAT IS named, by FE.QKL and GAME.QKL, and is refused with the sentence naming them: editing one copy and not the other would leave the game reading whichever it reached first. The list is read off the user's own image rather than trusted from a table written down here.",
+        "latin-1 and never utf-8: that is the encoding EA stored these banks in, and a character outside it is refused by name rather than mangled. FONTS.DAT and UIS_FONT.DAT hold 17 FNTS font sets and no decoder for that format exists here, so which characters actually have a glyph is not something this row can tell you.",
+        "Nothing moves: the member keeps its exact byte count, so the container does, so the ISO extent does, and the destination image is the source's exact size. The verifier imports none of the writer -- it re-reads every edited slot out of the destination, compares every untouched member byte for byte, and fails on a byte changed outside the declared ranges.",
+        "The catalogue carries no string. Counts, lengths and digests only; a string reaches a screen through a target or a preview, both read from the user's own image."
+      ],
+      "portme": [
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced string on the screen that draws it. Nothing here has been booted.",
+        "GAMEDATA.DAT's one bank needs the preload-cache rewrite the art and roster rows already do; it is refused here rather than written half.",
+        "No FNTS decoder exists in this repository, so a replacement that uses a character the shipped font has no glyph for cannot be caught before it is written."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF reader and writer, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. Every edited slot reads back from the destination, every untouched member of every rebuilt container is byte-identical, the two images are the same size, and the independent ISO9660 verifier re-derives every declared byte from the two files. NO rebuilt NCAA Football 09 disc has been booted.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "text:<container>:<member>:<byte offset>, as the catalogue writes it",
+            "name": "slot",
+            "required": true
+          },
+          {
+            "allowed": "latin-1 text no longer than the slot's own allocation",
+            "name": "new_text",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One slot, one string, one write. The GUI must not offer a slot in GAMEDATA.DAT, must not offer a string longer than its slot, and must not imply the font can be changed: no FNTS decoder exists here."
+      },
+      "source_container": {
+        "format": "TEXT members -- printable NUL-separated strings -- inside EA TERF containers inside an ISO9660 DVD image. A slot is one NUL-separated run, addressed by its byte offset in the member.",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "1,247 TEXT members, 1,247 slots, 241,787 characters; 1,246 of them in three containers no preload cache names",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Measure every TEXT string bank on a user's SLUS-21752 ISO and rewrite a string in place. Measured on the retail disc in 0.6 s: 1,247 TEXT members, 1,247 slots, 241,787 characters -- EXAMS.DAT 1,238, JERSEY.DAT 7, OSDKSTRN.DAT 1, GAMEDATA.DAT 1. Three things about their shape decide what a writer can do here, and all three are measured: every one of the 1,247 members holds exactly ONE run, not one ends in a terminator, and there is NO padding anywhere -- 0 spare bytes across all 1,247. So a replacement must be exactly the length it replaces, or shorter and pay for the terminator it introduces, and the budget on every target says so before an edit is typed. Runs go from 15 to 50,519 bytes. Nothing has been booted.",
       "surface": "menus",
       "title": "NCAA 09 (PS2) TEXT string banks",
       "validation_command": "bash tools/validate_ncaa09_ps2_text.sh"
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.games.ncaa09_ps2.database_lane --source <SLUS-21752.iso> [--out <report.json>] [--selftest]",
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 playbooks.databases build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/ncaa09_ps2/playbooks_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Playbooks & Plays page of the PS2 NCAA 09 Studio as an editor, one target per named row of every playbook. Each offers one control -- the name -- with the field's own byte budget on screen, because every other column of a play is a number whose meaning is not established here. The page must not offer a play to be added: every table on this disc is packed full and there is no spare row."
+      },
+      "id": "ncaa09ps2.playbooks.databases",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist.",
+        "Only GAMEDATA.DAT is written, and inside it only a member whose own table names mark it a playbook -- at least fifteen of the nineteen the format declares.",
+        "One field per table: the name. PLYL, PBST, PBFM, SGF, SPKF, SETL and FORM carry one; PBPL on this disc does not, which is the single reason the Madden 09 playbook writer does not port.",
+        "No row is added or removed. 2,301 of the 2,603 tables across the 137 databases are packed exactly full, so an insertion has nowhere to go and is refused rather than attempted.",
+        "Fixed allocation, and cheaply: a TDB field owns a fixed run of bits in a fixed-stride record, and every one of GAMEDATA.DAT's 150 members is stored (codec 0), so a record edit cannot change a member's stored size either and the container's directory never moves. GAMEDATA.DAT IS named by two of the three preload caches -- its directory twice and fifteen of its members once each -- and every copy an edit disturbs is rewritten at the same length.",
+        "All four CRC-32/MPEG-2 checksum sites are recomputed on every write and re-derived from the destination's own bytes by a verifier that imports none of the writer."
+      ],
+      "portme": [
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the renamed play in a team's playbook. Nothing here has been booted.",
+        "What a play DOES is not editable here: ARTL is 86 fields on this disc against Madden 09's 110 and no column of it has been decoded, so a route, an assignment or a blocking rule is out of reach and this row does not pretend otherwise.",
+        "Which of the 136 books belongs to which school is not established: GAMEDATA.DAT names no member and no table on this disc joins a TEAM row to a playbook member."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers and writers, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not. Every edited value reads back from the destination's own container, member, table and record; every byte of an edited database that differs from the source lies in a declared field span or a checksum slot; all four CRC-32/MPEG-2 checksums agree with the bytes that are there; every preload-cache copy of a rewritten container still equals what it copies, re-read off the NEW image; and the independent ISO9660 verifier re-derives every declared byte from the two files. NO rebuilt NCAA Football 09 disc has been booted in an emulator or on hardware.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "row:/DATA/GAMEDATA.DAT#<member 4..140>:<PLYL|PBST|PBFM|SGF|SPKF|SETL|FORM>:<record>",
+            "name": "row",
+            "required": true
+          },
+          {
+            "allowed": "name -- latin-1 text up to the field's own byte budget less the terminator",
+            "name": "values",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One row, one name, one write. The GUI must not offer PBPL as a place a play name lives -- on this disc it has no name field -- must not offer a row to be added or removed, and must not offer a route or an assignment: no column of ARTL has been decoded here."
+      },
+      "source_container": {
+        "format": "EA TDB v8 databases stored uncompressed as members 4 to 140 of a DATA-chained EA TERF container. Nineteen tables per database, seven of them carrying a name; the name widths differ from Madden 09's on five of the seven.",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "137 databases, 2,603 tables, 13,817 name-bearing rows; 2,301 tables packed exactly full",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Rename a play, formation, set or package in the 137 EA TDB databases at members 4 to 140 of /DATA/GAMEDATA.DAT on a user's SLUS-21752 disc: one shared play library and 136 playbooks, all one schema shape. Their nineteen tables are name-for-name identical to Madden NFL 09's nineteen, which is the closest the two discs come anywhere -- but Madden's PBPL carries a play name and this one's does not, so the names live in PLYL (192-bit strings) and in six further tables instead. 13,817 name-bearing rows: PLYL 4,322, PBST 3,266, PBFM 2,356, SGF 2,086, SPKF 1,510, SETL 236, FORM 41. 2,301 of the 2,603 tables are packed exactly full, so a rename is possible and an insertion is not. Nothing has been booted.",
+      "surface": "scripts_config",
+      "title": "NCAA 09 (PS2) playbooks and play names",
+      "validation_command": "bash tools/validate_ncaa09_ps2_playbooks.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 players.league_databases build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
         "module": "mod_editor/games/ncaa09_ps2/database_lane.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
+        "docs/product/measured/ncaa09_ps2/tdb-schema.json"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 NCAA 09 Studio as an editor, one target per player row of the 432 rosters. The controls are the squad number, the position id, the college class, the redshirt flag, height, weight and the twenty attribute fields; the depth chart's three fields are editable beside them. The page must not draw a name field -- there is none on this disc -- and must not draw a 0-99 rating spinner: these fields are FIVE bits and the bound is 31, which is what the editor offers. Budgets and refusals are inline, a dry run resolves every edit before any image exists, and the lane's independent verifier gives the verdict."
+      },
+      "id": "ncaa09ps2.players.league_databases",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist.",
+        "Only LEAGUE.DAT members 1 to 432 are written. Member 0 is the league database and belongs to the Text & Team Identity page's row; GAMEDATA.DAT's 137 databases are the playbooks and belong to the Playbooks & Plays row; TEMPLATE.DAT holds the fresh-dynasty templates; STRMDATA.DB has no PLAY table at all. One page owns one set of bytes.",
+        "The ratings are five bits wide, not seven, and the editor's bound is the field's own: 0 to 31. Reading 3,295 records off 62 of the 432 rosters finds every value 0..31 in use with 16% of players sitting on 31, which is the shape of a scale that saturates at its top. What the game DRAWS from those five bits is not established here and no control claims a 0-99 number.",
+        "Fixed allocation twice over: a TDB field owns a fixed run of bits in a fixed-stride record, so the database cannot change length, and the member is re-packed under its own RLE1 codec and must fit the slot it already owns. Measured on the retail disc, a PLAY edit in each of members 1, 5, 100 and 432 re-packs to exactly the byte count EA shipped, so the container's directory does not move.",
+        "The preload caches are part of the write: LEAGUE.DAT's directory is copied twice and its member 0 once, and every copy an edit disturbs is rewritten from the container's own new bytes. All four CRC-32/MPEG-2 checksum sites are recomputed on every write and re-derived from the destination's own bytes by the verifier, which imports none of the writer.",
+        "No row is added or removed, and no PGID is renumbered: a depth-chart slot names a player by the PGID his PLAY row already carries."
+      ],
+      "portme": [
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the edited squad number and class on a team's roster screen. Nothing here has been booted.",
+        "Two of the 582 databases stay unread: STRMDATA.DB and TEMPLATE.DAT member 3 declare TDB field types 13 and 14, which the shared reader does not name. Naming them would open RCFN (8,191 rows) and RCLN (6,915), the recruit first-name and last-name pool -- the one place on this disc where player names live.",
+        "What the five-bit ratings mean on a rating screen is not established. One frame of the game beside one record would settle it, and until it is settled no control here offers a 0-99 number."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF and EA TDB readers and writers, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only: bytes proven, pixels not. Every edited value reads back from the destination's own container, member, table and record; every byte of an edited database that differs from the source lies in a declared field span or a checksum slot; all four CRC-32/MPEG-2 checksums agree with the bytes that are there; every preload-cache copy of a rewritten container still equals what it copies, re-read off the NEW image; and the independent ISO9660 verifier re-derives every declared byte from the two files. NO rebuilt NCAA Football 09 disc has been booted in an emulator or on hardware.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "row:/DATA/LEAGUE.DAT#<member 1..432>:<PLAY|DCHT>:<record>, as the catalogue writes it",
+            "name": "row",
+            "required": true
+          },
+          {
+            "allowed": "PJEN, PPOS, PYER, PRSD, PHGT, PWGT and the twenty attribute fields for a PLAY row; PGID, PPOS and ddep for a DCHT row. -1 keeps a value.",
+            "name": "values",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One row, one recipe, one write. The GUI must not offer a player NAME field: this disc's PLAY table has none. It must not offer an age: a college player has a class, and PYER is what the disc stores. It must not offer a 0-99 rating: the fields are five bits and the bound is 31. It must not offer LEAGUE.DAT member 0, GAMEDATA.DAT, TEMPLATE.DAT or STRMDATA.DB, and it must not offer a row to be added or removed."
+      },
+      "source_container": {
+        "format": "EA TDB v8 databases inside RLE1-packed members of a COMP-chained EA TERF container inside an ISO9660 DVD image. PLAY is 86 fields and 52 bytes per record, the same shape in 437 of the disc's 439 PLAY tables; DCHT is 3 fields and 4 bytes.",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "582 databases, 3,702 tables, 71,772 field definitions; 432 per-team rosters holding 24,717 PLAY rows and 24,856 DCHT rows; 8,564 checksum slots, all correct before any write",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Catalogue all 582 EA TDB databases on a user's SLUS-21752 disc -- table by table, with every field's name, type, bit width and bit offset -- and edit the 432 per-team roster databases inside /DATA/LEAGUE.DAT. Measured on the retail disc: 580 of 582 parse, 3,702 tables, 71,772 field definitions, and 8,564 of 8,564 CRC-32/MPEG-2 checksum slots hold the value they recompute to. LEAGUE.DAT members 1 to 432 are one PLAY and one DCHT table each: 24,717 player rows in 30,240 slots, 43 to 69 per team. There is NO name to edit -- this PLAY table carries neither PFNA nor PLNA, because NCAA Football 09's players have no names -- and no PAGE either, so the editor offers PYER (class) and PRSD (redshirt) in its place. Nothing has been booted.",
+      "surface": "players_rosters",
+      "title": "NCAA 09 (PS2) team rosters and every EA TDB database on the disc",
+      "validation_command": "bash tools/validate_ncaa09_ps2_databases.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 presentation.ui_textures build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/ncaa09_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
+        "docs/product/NCAA09_PS2_ART_PAGES.md"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Presentation page of the PS2 NCAA 09 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page repeats the row's own sentence that the scorebug is executable-drawn and that the 400 DMF models and the 12 MPCh movie streams have no decoder here."
+      },
+      "id": "ncaa09ps2.presentation.ui_textures",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist; the source is never touched.",
+        "One texture, one PNG, one write. A PNG must be exactly the texture's size and is indexed against the member's own CLUT, keeping the index the file already used wherever a pixel is unchanged; a colour the palette does not hold lands on the nearest one it does and the receipt reports the worst channel error.",
+        "Fixed allocation wherever it fits: the rebuilt member is re-packed under the codec that fits the slot it already owns, and the receipt says which codec and how many bytes. A rewrite that would grow the container past its ISO extent is refused rather than relocated.",
+        "The preload caches are part of the write. FANDATA.DAT's directory is copied once into the preload caches and none of its members; MSCTDATA.DAT's once and 12 of its members; LOADDATA.DAT's three times and 27 of its members. Every copy the edit disturbs is rewritten from the container's own new bytes, and a CARRIED member whose stored size changed is refused by name, because a cached copy is a fixed slot.",
+        "It does not touch MSCTDATA.DAT's 400 DMF models or MOVIEDAT.DAT's 12 MPCh movie streams, and it does not lay out the scorebug: that is drawn by the executable and no patch site for it has been located on SLUS_217.52.",
+        "The verifier imports none of the writer: it re-decodes the texture out of the destination, compares every untouched member byte for byte, re-reads every preload-cache copy off the NEW image, and fails on a byte changed outside the declared ranges."
+      ],
+      "portme": [
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
+        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF reader and writer, the MMAP codec, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. Every step is proved against the user's own bytes -- the member decodes back to the pixels that were given, the container keeps the layout rules the retail discs follow, every untouched member is byte-identical, every preload-cache copy still equals what it copies, and the image-level verifier re-derives every declared byte from the two files -- and NO rebuilt NCAA Football 09 container has ever been booted in an emulator or on hardware. That the game loads the result is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "FANDATA.DAT's directory is copied once into the preload caches and none of its members; MSCTDATA.DAT's once and 12 of its members; LOADDATA.DAT's three times and 27 of its members.",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Replace a presentation texture on a user's SLUS-21752 disc and write a NEW image. Measured on the retail disc: FANDATA.DAT 257 stored crowd members, MSCTDATA.DAT 641 members (240 MMAP textures and 400 DMF animated models) and LOADDATA.DAT 46 members, 30 of them 854x480. The scorebug itself is drawn by the executable from values it holds and nothing on this disc has been mapped to it; MOVIEDAT.DAT's 12 MPCh streams have no decoder here and are not opened. Nothing has been booted.",
+      "surface": "scorebug_presentation",
+      "title": "NCAA 09 (PS2) crowd, mascot, trophy and load-screen textures",
+      "validation_command": "bash tools/validate_ncaa09_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 rosters.face_textures build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/ncaa09_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
+        "docs/product/NCAA09_PS2_ART_PAGES.md"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 NCAA 09 Studio beside the roster row: pick a face, give back a PNG of exactly its size, and Build writes a NEW disc image. The page repeats the row's own sentence that no join from a face member to a player exists on this disc, so a user is not led to expect one."
+      },
+      "id": "ncaa09ps2.rosters.face_textures",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist; the source is never touched.",
+        "One texture, one PNG, one write. A PNG must be exactly the texture's size and is indexed against the member's own CLUT, keeping the index the file already used wherever a pixel is unchanged; a colour the palette does not hold lands on the nearest one it does and the receipt reports the worst channel error.",
+        "Fixed allocation wherever it fits: the rebuilt member is re-packed under the codec that fits the slot it already owns, and the receipt says which codec and how many bytes. A rewrite that would grow the container past its ISO extent is refused rather than relocated.",
+        "The preload caches are part of the write. PLYRFACE.DAT's directory is copied twice into the preload caches and 54 of its members once each; COACFACE.DAT's directory twice and four of its members. Every copy the edit disturbs is rewritten from the container's own new bytes, and a CARRIED member whose stored size changed is refused by name, because a cached copy is a fixed slot.",
+        "It does not edit a player's class, number or ratings -- those are the roster row on the same page -- and it does not know which player or coach a face is.",
+        "The verifier imports none of the writer: it re-decodes the texture out of the destination, compares every untouched member byte for byte, re-reads every preload-cache copy off the NEW image, and fails on a byte changed outside the declared ranges."
+      ],
+      "portme": [
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
+        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF reader and writer, the MMAP codec, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. Every step is proved against the user's own bytes -- the member decodes back to the pixels that were given, the container keeps the layout rules the retail discs follow, every untouched member is byte-identical, every preload-cache copy still equals what it copies, and the image-level verifier re-derives every declared byte from the two files -- and NO rebuilt NCAA Football 09 container has ever been booted in an emulator or on hardware. That the game loads the result is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "PLYRFACE.DAT's directory is copied twice into the preload caches and 54 of its members once each; COACFACE.DAT's directory twice and four of its members.",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Replace a player or coach face texture on a user's SLUS-21752 disc and write a NEW image. Measured on the retail disc: PLYRFACE.DAT holds 80 stored members, 64 of them carrying an MMAP wrapper header, and COACFACE.DAT 18. Which player a face belongs to is not established and could not be from this disc alone: its PLAY table carries neither PFNA nor PLNA, because NCAA Football 09's players have no names. The coaches DO have names -- COCH.CLFN and COCH.CLLN -- but nothing joins a coach row to a face member. Nothing has been booted.",
+      "surface": "portraits_faces",
+      "title": "NCAA 09 (PS2) player and coach face textures",
+      "validation_command": "bash tools/validate_ncaa09_ps2_art_pages.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.ncaa09_ps2.saves_lane --source <CLASS.bin> [--out <catalogue.json>] [--selftest]",
+        "module": "mod_editor/games/ncaa09_ps2/saves_lane.py",
         "operation": "inspect"
       },
       "classification": "read-only-mapped",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
         "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
-        "tests/mod_editor/test_ncaa09_ps2_module.py"
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py"
       ],
       "game": "ncaa09_ps2",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "view",
-        "reason": "Surfaced on the Names, Numbers & Faces page of the PS2 NCAA 09 Studio as a table and no editor. There is no roster writer and the reason is measured, not pending: this disc's PLAY table shares 37 of its 86 field names with Madden 09's 110 and carries neither PFNA nor PLNA, so there is no name to write; its rating fields are five bits wide where Madden's are seven, and the scale those five bits are on is not established."
+        "reason": "Surfaced on the Saves page of the PS2 NCAA 09 Studio as a target table, one row per non-empty pick, showing the name, position, college id and overall each record carries. There is no editor: the page states, in the row's own words, that a compiler for this exact file already exists outside this repository and that a second implementation of one format is how two of them start to disagree."
       },
-      "id": "ncaa09ps2.players.league_databases",
+      "id": "ncaa09ps2.saves.draft_class",
       "input_constraints": [
-        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
-        "Schema only: table names, record strides, row counts, capacities and each field's name, type, width and offset. A record's contents are never read, and a test asserts the point by searching the serialised catalogue for the synthetic fixture's own string values and failing if it finds one.",
-        "A database the shared reader refuses is recorded with the reader's own sentence rather than dropped: two of this disc's 582 declare a field type the reader does not name, and a catalogue that omitted them would read as if they were not there.",
-        "Bounded: at most 700 database rows are listed as targets while the document's totals stay complete."
+        "Read-only, and the source is a SAVE rather than a disc: a file that is not exactly 138,240 bytes or does not start with 46 00 40 06 is refused with both what was wanted and what was found, and with the memory-card directory name.",
+        "The catalogue carries counts, offsets, lengths and a digest of the user's own file. No record's contents are in the document; a name reaches a screen only through the target list, read from the file when it is asked for.",
+        "Eleven fields per record are read and reported: the college id, the first and last name, the college year, the redshirt flag, overall, squad number, position, weight, height, and the 21 rating bytes as a block. Which byte is which rating is the owner's own research and is cited rather than restated as a measurement.",
+        "No writer: check_edit refuses every value, and plan, build and compose_recipe raise the same sentence. It names the NCAA-Draft-Class-Editor, which builds this file from canonical draft data and packs it into a memory-card container.",
+        "An all-zero record is counted and reported, because Madden 09 hangs on 'initializing roster management' if any of the 1,600 slots is empty -- so 'how many are empty' is the one number that decides whether a class will load at all."
       ],
       "portme": [
-        "Name TDB field types 13 and 14. Eighteen fields of STRMDATA.DB and two of TEMPLATE.DAT member 3 declare them, always at a bit offset that is a multiple of 32 and always with a width larger than the record itself, which is what refuses those two databases today.",
-        "Establish the scale of PLAY's five-bit rating fields before any roster writer offers a spinner; a five-bit field holds 0..31, whatever the game shows.",
-        "Decide which of TEAM's 74 fields selects a school's colours from the 64-row PACL palette. TPID is seven bits wide and PACL has 64 rows, which fits and is not proof."
+        "A writer is deliberately not built here. If one is ever wanted, the position labels it would draw from are on the disc: LEAGUE.DAT member 0's DRPS (17 rows), PLPS (21) and POSG (10).",
+        "The memory-card CONTAINER formats -- MaxDrive .max and PSU -- are not read here; this row takes the raw 138,240-byte file a container tool has already unpacked.",
+        "PPRO in TEMPLATE.DAT member 1 is the per-player professional projection a dynasty accumulates: 4 fields, capacity 75, and 0 rows on the disc."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "metadata-only",
-        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "rule": "Ship the lane and its self-test and the synthetic class CI proves it on; the user's save and every byte read out of it stay with the user.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness.",
+        "scope": "Read-only: nothing is written anywhere, so there is no runtime behaviour to witness. Whether a class this row reports as valid actually loads in Madden is not something this row establishes.",
         "status": "not-applicable"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "LEAGUE.DAT | GAMEDATA.DAT | TEMPLATE.DAT | STRMDATA.DB",
-            "name": "container",
-            "required": false
+            "allowed": "pick:<0..1599>, as the catalogue writes it",
+            "name": "pick",
+            "required": true
           },
           {
-            "allowed": "0..memberCount-1 within one container",
-            "name": "member",
-            "required": false
-          },
-          {
-            "allowed": "a 16-character schema digest from the catalogue",
-            "name": "schema",
+            "allowed": "free text kept in the receipt",
+            "name": "note",
             "required": false
           }
         ],
-        "notes": "Filters over a read-only table. The GUI must not offer a record edit: no writer for this disc's databases exists."
+        "notes": "Inspect only. The GUI must not offer an edit, a rebuild or an export of the class: this row reads one and says where the writer is."
       },
       "source_container": {
-        "format": "EA TDB v8, little-endian, bit-packed LSB-first, four CRC-32/MPEG-2 slots per database; packed as RLE1 or stored TERF members, plus one bare file",
+        "format": "The NCAA Football send-to-Madden memory-card save: a 4-byte header, 1,600 records of 86 bytes, and a 636-byte zero trailer padding the file to 270 512-byte sectors.",
         "hash_pins": [
           "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
           "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
         ],
-        "resource": "582 databases, 3,702 tables, 71,772 field definitions, 8,564 checksum slots",
+        "resource": "138,240 bytes; 1,600 records of 86 bytes; the same record family as the disc's own 86-field PLAY table",
+        "retail_file": "User-owned NCAA Football 09 draft class exported from the user's own memory card as BASLUS-21769LClass08. The disc digests are pinned because this row's reading of the record is corroborated against that disc's own PLAY table."
+      },
+      "summary": "Recognise and read the memory-card draft class NCAA Football writes for Madden NFL -- BASLUS-21769LClass08 for the NCAA 09 / Madden 09 pair -- and say what is in it. The file is exactly 138,240 bytes (270 sectors of 512), starts with 46 00 40 06, and holds 1,600 records of 86 bytes at offset 4 with a 636-byte zero trailer. NO table on this disc holds one: it is produced at run time, so this page's source is the save and not the ISO, and a disc handed to it is refused with a sentence naming what it wants. The record shape is corroborated by the disc's own PLAY table, 86 fields of the same family two years apart. It reads; it does not write, and the refusal names where the compiler is.",
+      "surface": "saves",
+      "title": "NCAA 09 (PS2) send-to-Madden draft class",
+      "validation_command": "bash tools/validate_ncaa09_ps2_saves.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 stadiums.textures build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
+        "module": "mod_editor/games/ncaa09_ps2/art_pages.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
+        "docs/product/NCAA09_PS2_ART_PAGES.md"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Surfaced on the Stadiums page of the PS2 NCAA 09 Studio: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page repeats the row's own sentences -- the geometry in the same containers has no decoder, STADIUMS.DAT is past the read limit and carries no texture, and no rebuilt NCAA Football 09 container has been booted."
+      },
+      "id": "ncaa09ps2.stadiums.textures",
+      "input_constraints": [
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist; the source is never touched.",
+        "One texture, one PNG, one write. A PNG must be exactly the texture's size and is indexed against the member's own CLUT, keeping the index the file already used wherever a pixel is unchanged; a colour the palette does not hold lands on the nearest one it does and the receipt reports the worst channel error.",
+        "Fixed allocation wherever it fits: the rebuilt member is re-packed under the codec that fits the slot it already owns, and the receipt says which codec and how many bytes. A rewrite that would grow the container past its ISO extent is refused rather than relocated.",
+        "The preload caches are part of the write. STADATA.DAT's directory is copied twice into the preload caches and 45 of its members once each; UIS_STAD.DAT's directory once and none of its members. Every copy the edit disturbs is rewritten from the container's own new bytes, and a CARRIED member whose stored size changed is refused by name, because a cached copy is a fixed slot.",
+        "It does not touch the 45 SMF and 4 DMF members in STADATA.DAT, and it does not edit a stadium's name, city or capacity -- those are LEAGUE.DAT's STAD table and belong to the identity row.",
+        "The verifier imports none of the writer: it re-decodes the texture out of the destination, compares every untouched member byte for byte, re-reads every preload-cache copy off the NEW image, and fails on a byte changed outside the declared ranges."
+      ],
+      "portme": [
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
+        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF reader and writer, the MMAP codec, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline only. Every step is proved against the user's own bytes -- the member decodes back to the pixels that were given, the container keeps the layout rules the retail discs follow, every untouched member is byte-identical, every preload-cache copy still equals what it copies, and the image-level verifier re-derives every declared byte from the two files -- and NO rebuilt NCAA Football 09 container has ever been booted in an emulator or on hardware. That the game loads the result is not claimed anywhere.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "STADATA.DAT's directory is copied twice into the preload caches and 45 of its members once each; UIS_STAD.DAT's directory once and none of its members.",
         "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "Catalogue every EA TDB database on a user's SLUS-21752 ISO, table by table, with each field's name, type, bit width and bit offset, and verify the four CRC-32/MPEG-2 slots EA stores in each. Measured on the retail disc: 582 databases -- 433 in LEAGUE.DAT (one league database and 432 per-team rosters holding 24,717 PLAY rows), 137 in GAMEDATA.DAT (one shared play library and 136 playbooks), 11 in TEMPLATE.DAT and the bare STRMDATA.DB -- 3,702 tables, 71,772 field definitions, 11 distinct schema shapes, and 8,564 of 8,564 checksum slots holding the value they recompute to. Two databases are refused by the shared reader and recorded with its own sentence. Field names and widths only; no record's contents are read.",
-      "surface": "players_rosters",
-      "title": "NCAA 09 (PS2) league, roster and playbook databases",
-      "validation_command": "bash tools/validate_ncaa09_ps2_databases.sh"
+      "summary": "Replace a stadium texture on a user's SLUS-21752 disc and write a NEW image. Measured on the retail disc: STADATA.DAT holds 1,289 members -- 1,195 MMAP textures, 45 SMF static geometry and 4 DMF animated models -- and UIS_STAD.DAT 245 stored members. The geometry is listed and left alone: no SMF or DMF decoder exists anywhere in this repository. STADIUMS.DAT is not opened at all -- 197 MB, past this module's 144 MB read limit, and its 2,914 members are 1,880 SMF and 1,034 empty, so there is no texture in it. The stadium NAMES are a different row, on the Text & Team Identity page. Nothing has been booted.",
+      "surface": "stadiums_fields",
+      "title": "NCAA 09 (PS2) stadium textures",
+      "validation_command": "bash tools/validate_ncaa09_ps2_art_pages.sh"
     },
     {
       "backend": {
@@ -5266,74 +5827,157 @@
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.games.ncaa09_ps2.texture_lane --source <SLUS-21752.iso> [--out <report.json>] [--selftest]",
+        "command": "python3 -m mod_editor.games lane ncaa09_ps2 uniforms.disc_art_writer build --source <SLUS-21752.iso> --destination <NEW.iso> --recipe <recipe.json> --catalogue <catalogue.json> --receipt <receipt.json>",
         "module": "mod_editor/games/ncaa09_ps2/texture_lane.py",
-        "operation": "inspect"
+        "operation": "write"
       },
-      "classification": "read-only-mapped",
+      "classification": "offline-writer-proved",
       "evidence": [
         "docs/product/NCAA09_PS2_MODULE.md",
         "docs/product/NCAA09_PS2_SCHEMA.md",
-        "docs/product/measured/ncaa09_ps2/tdb-schema.json",
-        "tests/mod_editor/test_ncaa09_ps2_module.py"
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
+        "docs/product/NCAA09_PS2_ART_PAGES.md"
       ],
       "game": "ncaa09_ps2",
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "view",
-        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio as a table and no editor. It is not an exporter and does not pretend to be: the MMAP pixel decoder is now a shared format package (mod_editor/games/_formats/mmap_art.py) and within this module's reach, but this lane still reads headers only. Exporting a PNG needs an export path, its own independent verifier and a measurement on this disc, none of which exist yet, so the row says so instead of drawing a disabled Export button."
+        "mode": "edit",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio as an editor beside the export row: pick a texture, give back a PNG of exactly its size, and Build writes a NEW disc image. The page repeats the row's own sentences -- there is no kit table on this disc to pair the art with, every replacement identity is derived rather than dump-confirmed, and no rebuilt NCAA Football 09 container has been booted -- so a user is told what the offline proof does and does not cover before building anything."
       },
-      "id": "ncaa09ps2.uniforms.texture_census",
+      "id": "ncaa09ps2.uniforms.disc_art_writer",
       "input_constraints": [
-        "Read-only: the ISO is opened for reading and never modified; plan, build and verify refuse by contract.",
-        "Header only: what the member's own MMAP wrapper declares. No pixel is decoded, no palette is read and no PNG is produced.",
-        "Bounded: UNIFORM.DAT is 127,942,528 bytes and is read whole; a container over 144 MB is listed with its size and left unread.",
-        "Bounded target list: at most 3,000 member rows are listed while the document's totals stay complete."
+        "Read-only source: the ISO is opened for reading and a build writes a NEW image that must not already exist; the source is never touched.",
+        "One texture, one PNG, one write. A PNG must be exactly the texture's size and is indexed against the member's own CLUT, keeping the index the file already used wherever a pixel is unchanged; a colour the palette does not hold lands on the nearest one it does and the receipt reports the worst channel error.",
+        "Fixed allocation wherever it fits: the rebuilt member is re-packed under the codec that fits the slot it already owns, and the receipt says which codec and how many bytes. A rewrite that would grow the container past its ISO extent is refused rather than relocated.",
+        "The preload caches are part of the write. UNIFORM.DAT's directory is copied four times into the preload caches and three of its members once each; PLADATA.DAT's directory once and eight of its members; UIS_GEAR.DAT is named by none of the three caches at all, which makes it the cheapest target on the disc. Every copy the edit disturbs is rewritten from the container's own new bytes, and a CARRIED member whose stored size changed is refused by name, because a cached copy is a fixed slot.",
+        "It does not edit a kit RECORD, because there is none: CTTB (104 fields), CTCD (45), CTUN (28), USTG, USLG and USLE all have 0 rows on this disc. It does not know which school a member belongs to; the container names nothing and no table joins a TEAM row to a texture.",
+        "The verifier imports none of the writer: it re-decodes the texture out of the destination, compares every untouched member byte for byte, re-reads every preload-cache copy off the NEW image, and fails on a byte changed outside the declared ranges."
       ],
       "portme": [
-        "Give this lane a PNG export through the shared decoder, mod_editor/games/_formats/mmap_art.py: the decoder moved into _formats, so the import barrier that filed this row read-only-mapped is gone and only the lane's own export path, its independent verifier and evidence on this disc are still missing. Run from a scratch harness outside any game module, sampling 40 MMAP members per container, that decoder draws 1,019 of 1,063 and refuses 44 in three groups: 23 palette-only entries with no pixels of their own, 19 that declare no palette, and 2 whose surface does not satisfy the stride rule. That is a measurement of the decoder, not a claim about this module; this row earns extract-only when the lane exports and a verifier proves it.",
-        "An LZH1 encoder is needed before any rewrite of UNIFORM.DAT, PLADATA.DAT or UIS_TMLO.DAT, whose members are LZH1-packed; PLYRFACE.DAT and UIS_GEAR.DAT store theirs uncompressed.",
-        "Join a texture to the school it dresses. None of the five containers names its members."
+        "A runtime witness would be a PCSX2 boot of a rebuilt image showing the replaced texture on screen. Nothing here has been booted.",
+        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. Pairing one dump with this disc would confirm the names and is the single cheapest thing that lifts this row's art half.",
+        "Which school, stadium or player a member belongs to is not established: none of these containers names its members, and no table on this disc joins a row to a texture."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "metadata-only",
-        "rule": "Ship the lane, the shared EA TERF, EA TDB and EA SCHl readers it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "rule": "Ship the lane, the shared EA TERF reader and writer, the MMAP codec, the ISO9660 writer and its independent verifier, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness.",
+        "scope": "Offline only. Every step is proved against the user's own bytes -- the member decodes back to the pixels that were given, the container keeps the layout rules the retail discs follow, every untouched member is byte-identical, every preload-cache copy still equals what it copies, and the image-level verifier re-derives every declared byte from the two files -- and NO rebuilt NCAA Football 09 container has ever been booted in an emulator or on hardware. That the game loads the result is not claimed anywhere.",
         "status": "not-applicable"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "UNIFORM.DAT | PLADATA.DAT | UIS_GEAR.DAT | PLYRFACE.DAT | COACFACE.DAT",
-            "name": "container",
-            "required": false
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
           },
           {
-            "allowed": "0..memberCount-1 within one container",
-            "name": "member",
+            "allowed": "a path to an 8-bit non-interlaced PNG of exactly the texture's size",
+            "name": "png",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
             "required": false
           }
         ],
-        "notes": "Filters over a read-only table. The GUI must not offer an export or an import: this lane reads MMAP wrapper headers and decodes no pixel."
+        "notes": "One texture, one PNG, one write. The GUI must not offer an SMF, DMF or MPCh export from this row: no decoder for any of the three exists in this repository. It must not offer a PCSX2 pack either -- every name for this disc is derived and none is dump-confirmed."
       },
       "source_container": {
-        "format": "MMAP texture wrapper: a 40-byte header declaring a version, a 00 01 02 03 marker, a payload size and three ascending sizes, with width and height in the four bytes that follow it; stored or LZH1-packed inside a TERF member",
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. A rewrite re-indexes the pixels against the member's own CLUT, lays the member out again through mmap_art.encode, re-packs it under LZH1 or stored, and replaces the container inside the extent it owns.",
         "hash_pins": [
           "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
           "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
         ],
-        "resource": "2,566 MMAP members in the five kit and face containers; 6,978 disc-wide",
+        "resource": "UNIFORM.DAT's directory is copied four times into the preload caches and three of its members once each; PLADATA.DAT's directory once and eight of its members; UIS_GEAR.DAT is named by none of the three caches at all, which makes it the cheapest target on the disc.",
         "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
       },
-      "summary": "Read the MMAP wrapper header of every kit, equipment and face texture on a user's SLUS-21752 ISO through the shared TERF reader: version, header size, declared payload size and the dimensions that follow the header. Measured on the retail disc: 2,566 MMAP members across five containers -- UNIFORM.DAT 1,200, PLADATA.DAT 888, UIS_GEAR.DAT 396, PLYRFACE.DAT 64 and COACFACE.DAT 18 -- against 6,978 MMAP members disc-wide. No pixel is decoded and no PNG is written: this lane reads the wrapper header and stops there. The MMAP pixel decoder is a shared format package (mod_editor/games/_formats/mmap_art.py) that this module may import, and this row will say so differently on the day the lane exports and a verifier proves it.",
+      "summary": "Replace a kit, equipment or gear texture on a user's SLUS-21752 disc and write a NEW image. Measured on the retail disc: 2,484 MMAP members across UNIFORM.DAT (1,200 LZH1 kit textures in a 127,942,528-byte container), PLADATA.DAT (888 LZH1 equipment textures) and UIS_GEAR.DAT (396 stored gear icons). There is no kit TABLE to pair them with -- every create-a-school uniform table on this disc has 0 rows, where Madden 09 ships UNIF with 270 -- so a school's kit here IS these textures and nothing else. Nothing has been booted.",
       "surface": "uniforms",
-      "title": "NCAA 09 (PS2) kit, equipment and face textures",
+      "title": "NCAA 09 (PS2) kit, equipment and gear textures, written back",
+      "validation_command": "bash tools/validate_ncaa09_ps2_uniform_disc_art.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.games.ncaa09_ps2.texture_lane --source <SLUS-21752.iso> [--out <catalogue.json>] [--export <manifest.json>] [--selftest]",
+        "module": "mod_editor/games/ncaa09_ps2/texture_lane.py",
+        "operation": "export"
+      },
+      "classification": "extract-only",
+      "evidence": [
+        "docs/product/NCAA09_PS2_MODULE.md",
+        "docs/product/NCAA09_PS2_SCHEMA.md",
+        "tests/mod_editor/test_ncaa09_ps2_module.py",
+        "tests/mod_editor/test_ncaa09_ps2_lanes.py",
+        "docs/product/NCAA09_PS2_ART_PAGES.md"
+      ],
+      "game": "ncaa09_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "export",
+        "reason": "Surfaced on the Uniforms & Equipment page of the PS2 NCAA 09 Studio with preview and Export PNG. The write half is the disc-art row beside it, which earns a different rung and says so. The page repeats this row's own sentence that no kit table exists on this disc to pair the art with, and that every PCSX2 replacement identity it offers is derived rather than dump-confirmed."
+      },
+      "id": "ncaa09ps2.uniforms.texture_census",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading and an export writes only where the user asks; the source is never touched.",
+        "An export writes a NEW manifest and a NEW folder of PNGs beside it, neither of which may already exist, and refuses a destination that is the source.",
+        "verify re-decodes every exported file from the user's own disc BY KEY -- not through the catalogue that produced the receipt -- and fails on a tampered PNG, on an undeclared file in the export folder, and on a missing one.",
+        "A member that is not an MMAP texture is listed by format and left alone. So is an MMAP entry the decoder will not draw: a palette-only entry carrying an alternate CLUT and no pixels of its own, one that declares no palette, and one whose surface does not satisfy the stride rule. Each is refused by name rather than drawn wrong.",
+        "No PCSX2 texture dump has been paired with SLUS-21752, so every replacement identity this row offers is DERIVED from the texture's own bytes and none is confirmed. No pack built from those names has been loaded in an emulator.",
+        "The catalogue carries counts, dimensions, offsets and digests -- never a pixel."
+      ],
+      "portme": [
+        "Pairing one PCSX2 texture dump with this disc would turn every derived name into a confirmed one, and is the single cheapest thing that lifts this row.",
+        "Which school a member belongs to is not established: UNIFORM.DAT names none of its members and no table on this disc joins a TEAM row to a texture.",
+        "Unpacking UNIFORM.DAT's 1,200 LZH1 members in full costs about 7 minutes; the census at a 64-byte window costs 2.7 s. An export pays the first number, and the page says so."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the lane, the shared EA TERF reader and the MMAP codec it imports, their self-tests and the synthetic sources CI proves them on; the user's ISO and every byte read out of it stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Extract-only: the exporter writes local PNGs and no path writes anything into the game or the emulator, so there is no runtime behaviour to witness.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "<container>:<member>:<image>, as the catalogue writes it",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "free text kept in the receipt",
+            "name": "note",
+            "required": false
+          }
+        ],
+        "notes": "Export writes one PNG per selected texture. There is no import from this row: the disc-art row beside it is the writer, and it is a separate row because it earns a separate rung."
+      },
+      "source_container": {
+        "format": "MMAP members inside EA TERF containers inside an ISO9660 DVD image. MMAP is a table-of-tables: an image table, a surface table one row per mip level, a palette table and a name table, each addressed by an offset in the 40-byte header.",
+        "hash_pins": [
+          "dc1b30895ad548d1ee960368998bb0e61be3c8a611c54490f1599c6e9c1f71ee",
+          "e15ba4d0a3a7139f4e60023c6e045c306d95aca62eb5d483cb8414b4b9fb7de8"
+        ],
+        "resource": "2,484 MMAP members across three containers; 1,200 kit textures, 888 equipment textures, 396 gear icons",
+        "retail_file": "User-owned NCAA Football 09 (USA) PlayStation 2 ISO, SLUS-21752 NTSC-U. One image is recognised by its boot-ELF digest; any other NCAA Football 09 re-cut is listed as an unknown edition and nothing is claimed about it."
+      },
+      "summary": "Catalogue every kit, equipment and gear MMAP texture on a user's SLUS-21752 ISO and export it as a PNG. Measured on the retail disc: 2,484 MMAP members across UNIFORM.DAT (1,200 LZH1 kit textures), PLADATA.DAT (888 LZH1 equipment textures) and UIS_GEAR.DAT (396 stored gear icons). The pixel decoder is the shared MMAP codec, the same one Madden 09's art rows use. There is no kit TABLE to pair the art with -- every create-a-school uniform table on this disc has 0 rows, where Madden 09 ships UNIF with 270 -- so a school's kit here IS these textures and nothing else. A PNG comes out; nothing goes back in from this row, which is the disc-writer row beside it.",
+      "surface": "uniforms",
+      "title": "NCAA 09 (PS2) kit, equipment and gear textures",
       "validation_command": "bash tools/validate_ncaa09_ps2_textures.sh"
     },
     {

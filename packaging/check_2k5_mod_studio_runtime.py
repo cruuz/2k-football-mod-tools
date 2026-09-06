@@ -1889,6 +1889,18 @@ def main() -> int:
         "mod_editor.games.mvp05_ps2.art_lane",
         "mod_editor.games.mvp05_ps2.audio_lane",
         "mod_editor.games.mvp05_ps2.inventory_lane",
+        "mod_editor.games._formats.ea_ql01",
+        "mod_editor.games._formats.mmap_art",
+        "mod_editor.games._lanes.iso_tools",
+        "mod_editor.games._lanes.preload_coherence",
+        "mod_editor.games._lanes.synthetic_art",
+        "mod_editor.games._lanes.tdb_records",
+        "mod_editor.games._lanes.terf_art",
+        "mod_editor.games._lanes.text_banks",
+        "mod_editor.games.ncaa09_ps2.identity_lane",
+        "mod_editor.games.ncaa09_ps2.art_pages",
+        "mod_editor.games.ncaa09_ps2.playbooks_lane",
+        "mod_editor.games.ncaa09_ps2.saves_lane",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1994,7 +2006,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 125,
+    require(len(registry.capabilities) == 133,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -2401,7 +2413,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=125 sections=12 nfl2k5_capabilities=45 "
+        "registry=133 sections=12 nfl2k5_capabilities=45 "
         "reports=16 reviewed_metadata=23 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

@@ -655,3 +655,26 @@ tools/validate_mvp05_ps2_inventory.bat
 mod_editor/games/_formats/ea_big.py
 mod_editor/games/_formats/ea_shps.py
 mod_editor/games/_formats/ea_csv_db.py
+# ncaa09_ps2: shipped by the game module (mod_editor/games/ncaa09_ps2/allowlist.fragment.txt).
+mod_editor/games/_formats/ea_ql01.py
+mod_editor/games/_lanes/__init__.py
+mod_editor/games/_lanes/iso_tools.py
+mod_editor/games/_lanes/preload_coherence.py
+mod_editor/games/_lanes/synthetic_art.py
+mod_editor/games/_lanes/tdb_records.py
+mod_editor/games/_lanes/terf_art.py
+mod_editor/games/_lanes/text_banks.py
+mod_editor/games/ncaa09_ps2/art_pages.py
+mod_editor/games/ncaa09_ps2/identity_lane.py
+mod_editor/games/ncaa09_ps2/playbooks_lane.py
+mod_editor/games/ncaa09_ps2/saves_lane.py
+tools/validate_ncaa09_ps2_art_pages.sh
+tools/validate_ncaa09_ps2_art_pages.bat
+tools/validate_ncaa09_ps2_identity.sh
+tools/validate_ncaa09_ps2_identity.bat
+tools/validate_ncaa09_ps2_playbooks.sh
+tools/validate_ncaa09_ps2_playbooks.bat
+tools/validate_ncaa09_ps2_saves.sh
+tools/validate_ncaa09_ps2_saves.bat
+tools/validate_ncaa09_ps2_uniform_disc_art.sh
+tools/validate_ncaa09_ps2_uniform_disc_art.bat
