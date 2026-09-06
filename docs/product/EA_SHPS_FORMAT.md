@@ -225,7 +225,10 @@ still needs to produce something a person can look at.
 | Madden NFL 06 (USA), same archive | 38 | 94 | 94 | 0 |
 
 Every refusal on MVP is a `0x0E` or a `0x01` image; there is no third kind
-[M]. The largest bank measured holds 198 images; the largest image 512×512.
+[M]. The largest bank measured holds 198 images; the most common sizes are
+64×64 (3,934), 128×128 (3,833), 16×32 (2,337) and 32×32 (2,317), the largest
+decoded image is 512×512, and the largest of any kind is a 1024×256 `0x0E`
+block.
 
 ---
 

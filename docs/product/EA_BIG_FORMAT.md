@@ -73,9 +73,10 @@ are the file system of the disc, not its content.
 Each of these breaks every entry of an archive, so each has a test.
 
 1. **The length word is the only little-endian integer in the file** [M].
-   Read the whole header one way and either the length is impossible (BE on
-   MVP's `/DATA/MODELS.BIG`: 1,398,915,079 for a 122,887,425-byte file) or the
-   count is (LE on the same file: 1,241,513,984 entries). `BigArchive` reads
+   Read the whole header one way and either the length is wrong or the count
+   is. MVP's `/DATA/MODELS.BIG` is 122,887,425 bytes and declares 2,505
+   entries: read entirely big-endian its length is 18,699,015, and read
+   entirely little-endian its count is 3,372,810,240. `BigArchive` reads
    the length word **both** ways, reports which one matched
    (`size_endian`), and refuses a count outside 1..200,000 by name — "reading
    the header with the wrong byte order produces exactly this".
