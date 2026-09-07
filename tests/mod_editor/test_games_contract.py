@@ -283,12 +283,14 @@ class DiscoveryTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.root, True)
 
     def test_discovery_fails_closed_per_package(self) -> None:
-        write_fake_game(self.root, "okgame", GOOD_GAME_SOURCE, _manifest("okgame"))
+        # Distinct ``game`` words: the studio label is composed from console,
+        # game and year, and ``manifests`` refuses two modules that share one.
+        write_fake_game(self.root, "okgame", GOOD_GAME_SOURCE, _manifest("okgame", game="OK"))
         write_fake_game(self.root, "oldgame", GOOD_GAME_SOURCE,
-                        _manifest("oldgame", contract="vc_game_module/v9"))
+                        _manifest("oldgame", game="Old", contract="vc_game_module/v9"))
         write_fake_game(self.root, "crashgame", "import a_dependency_nobody_has\n",
-                        _manifest("crashgame"))
-        write_fake_game(self.root, "nogame", "GAME = None\n", _manifest("nogame"))
+                        _manifest("crashgame", game="Crash"))
+        write_fake_game(self.root, "nogame", "GAME = None\n", _manifest("nogame", game="No"))
         write_fake_game(self.root, "notagame", "X = 1\n", None)  # no manifest: ignored
         (self.root / "_formats").mkdir()
         (self.root / "_formats" / "__init__.py").write_text("", encoding="utf-8", newline="\n")
@@ -312,6 +314,25 @@ class DiscoveryTests(unittest.TestCase):
         report = games.discover(self.root)
         self.assertEqual(report.game_ids, ("okgame",), [(item.directory, item.reason) for item in report.refused])
         self.assertTrue(any("manifest says" in item.reason for item in report.refused))
+
+    def test_two_modules_may_not_share_a_studio_label(self) -> None:
+        """Blitz 2003 shipped with Blitz 2002's year and so with its label (2026-09-06).
+
+        Both modules loaded and both worked; the chooser simply offered the same
+        words twice, and the only way to tell which row was which was to open one.
+        A gate that reads manifests refuses the pair instead.
+        """
+
+        write_fake_game(self.root, "okgame", GOOD_GAME_SOURCE, _manifest("okgame", game="OK"))
+        write_fake_game(self.root, "twinlabel", GOOD_GAME_SOURCE,
+                        _manifest("twinlabel", game="OK"))
+        with self.assertRaisesRegex(contract.ContractError, "Studio label 'TC OK 1 Studio'"):
+            games.manifests(self.root)
+        # The distinguishing field is the label's own, not merely any field.
+        shutil.rmtree(self.root / "twinlabel")
+        write_fake_game(self.root, "twinlabel", GOOD_GAME_SOURCE,
+                        _manifest("twinlabel", game="OK", year="2"))
+        self.assertEqual([m.game_id for m in games.manifests(self.root)], ["okgame", "twinlabel"])
 
     def test_discovery_works_through_a_symlinked_or_aliased_root(self) -> None:
         """macOS gives /var/... for /private/var/...; Windows gives short names. Both must load."""

@@ -171,6 +171,7 @@ def manifests(root: Optional[Path] = None) -> tuple[GameManifest, ...]:
 
     found: list[GameManifest] = []
     seen: dict[str, str] = {}
+    seen_labels: dict[str, str] = {}
     for directory in _candidate_directories(_resolved_root(root)):
         if not (directory / MANIFEST_NAME).is_file():
             continue
@@ -180,7 +181,17 @@ def manifests(root: Optional[Path] = None) -> tuple[GameManifest, ...]:
                 f"Game id {manifest.game_id!r} is declared by both "
                 f"{seen[manifest.game_id]} and {directory.name}."
             )
+        label = manifest.studio_label
+        if label in seen_labels:
+            raise ContractError(
+                f"Studio label {label!r} is declared by both "
+                f"{seen_labels[label]} and {directory.name}. The label is built from "
+                "the manifest's console, game and year, so two modules that differ "
+                "only by a field the label does not use are indistinguishable in the "
+                "chooser."
+            )
         seen[manifest.game_id] = directory.name
+        seen_labels[label] = directory.name
         found.append(manifest)
     return tuple(found)
 
