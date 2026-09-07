@@ -575,11 +575,15 @@ def repin_dict_entry(plan: Plan, pin_file: str, relative: str) -> None:
     text = plan.read(pin_file)
     pattern = re.compile(r'("' + re.escape(relative) + r'"\s*:\s*\n?\s*")([0-9a-f]{64})(")')
     found = pattern.findall(text)
-    if len(found) != 1:
-        raise ApplyError(f"{relative}: expected one dict pin in {pin_file}, found {len(found)}")
-    if found[0][1] != current:
+    # providers.py carries one pin dict per provider, so a file can legitimately be pinned
+    # more than once; repin every occurrence and refuse only when the file is pinned nowhere.
+    if not found:
+        raise ApplyError(f"{relative}: expected at least one dict pin in {pin_file}, found none")
+    stale = [f for f in found if f[1] != current]
+    if stale:
         text = pattern.sub(lambda match: match.group(1) + current + match.group(3), text)
-        plan.log.append(f"[repin] {pin_file}: {relative} {found[0][1][:12]} -> {current[:12]}")
+        plan.log.append(
+            f"[repin] {pin_file}: {relative} x{len(stale)} {stale[0][1][:12]} -> {current[:12]}")
         plan.stage(pin_file, text)
 
 

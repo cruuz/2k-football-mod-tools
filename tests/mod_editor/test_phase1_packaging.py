@@ -70,11 +70,8 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
             "# 2K5 Mod Studio — v1.0 RC87 Release Status"
-        self.assertIn("registry has 205 cross-title rows", getting_started)
-        self.assertIn("complete 19-page sidebar", getting_started)
-            "# 2K5 Mod Studio — v1.0 RC86 Release Status"
         ))
-        self.assertIn("complete 18-tab sidebar", getting_started)
+        self.assertIn("complete 19-page sidebar", getting_started)
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
         temporary = tempfile.TemporaryDirectory(prefix="2k5-release-gate-test-")

@@ -626,10 +626,13 @@ class RegistryTests(unittest.TestCase):
             rules = lanes.registry_rules(lane.id)
             self.assertTrue(rules, lane.id)
             scope = lanes.registry_scope(lane.id)
-            # Every lane is proved offline; audio is additionally runtime-proved
-            # for exactly one recorded slot (menu-appear_01, heard on a cold boot).
+            # A lane's scope sentence states how far its evidence reaches, and there
+            # are now three shapes: proved offline only; runtime-proved for one
+            # recorded audio slot (heard on a cold boot); and runtime-proved
+            # headlessly on pixels, bounded by the savestate the harness restored.
             self.assertTrue(scope.startswith("Offline only")
-                            or scope.startswith("Runtime-proved for exactly one recorded selector"), lane.id)
+                            or scope.startswith("Runtime-proved for exactly one recorded selector")
+                            or scope.startswith("Runtime-proved headlessly"), lane.id)
             self.assertTrue(lane.caveats and lane.time_note and lane.summary)
 
     def test_no_caveat_claims_a_screen_or_a_speaker(self) -> None:
