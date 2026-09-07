@@ -255,7 +255,7 @@ class IdentityTests(UniformArtFixture):
                                  f"%llx is not zero padded: {name}")
 
     def test_the_property_word_sets_the_tcc_bit(self) -> None:
-        """``bits = PSM | TW<<6 | TH<<10 | TCC<<14`` -- PS2_M1_PLAN §4 WP1 step 1."""
+        """``bits = PSM | TW<<6 | TH<<10 | TCC<<14``, the word PCSX2 hashes a name from."""
 
         for target in self.catalogue.targets:
             row = dict(target.raw)
