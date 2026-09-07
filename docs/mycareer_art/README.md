@@ -1,37 +1,74 @@
 # MyCareer apartment hub art (Fable, 2026-09-07)
 
-Authored art for the MyCareer hub ("the apartment"), to the native constraints in
+Art for the MyCareer hub ("the apartment"), to the native constraints in
 `ASTRA_MYCAREER_MODE_DESIGN.md`, section "ASSET REQUEST LIST for the Fable art
-agent". Nothing here is a game pixel: `build.py` draws every texture from scratch
-(procedural plaster, a dusk skyline, flat-shaded props) and the two mockups compose
-them the way the hub would. The Crib room materials named in the design were studied
-for style only; see "Style sources" below.
+agent". The backdrop is a real ESPN NFL 2K5 texture, the skyline the Crib's windows
+look out on, recomposed for the hub slot. The three atlases are drawn by `build.py`.
 
 ```
-build.py                    renders everything below, deterministically (seeded grain)
-mycareer_apartment.png      512x512 RGBA hub background, opaque, 7 P8 mips in game
-mycareer_panels.png         256x128 RGBA panel backing atlas, 5 mips
-mycareer_calendar.png       128x128 RGBA calendar icon atlas, 5 mips
-mycareer_focus.png          128x32 RGBA focus-row highlight, 1 mip (provisional)
-hub_mockup_640x480.png      the composed hub at 4:3, for Noah to react to
-hub_mockup_wide.png         the composed hub at 16:9 (side art, unstretched UI)
-manifest.json               object, tile, icon and crop rectangles the checker verifies
-art_check.json              the checker's report for the committed PNGs
-previews/                   the P8 result at mip 0 and each full mip chain, per asset
+build.py                        renders the atlases, composes the backdrop and mockups, writes manifest.json
+backdrop_recipe.json            THE BACKDROP: which game texture, where it sits, how it is continued and shaded
+backdrop_recipe_alt_day.json    review alternate, the same view by day
+backdrop_recipe_alt_framed.json review alternate, the skyline framed in the Crib's plaster and mahogany
+mycareer_panels.png             256x128 RGBA panel backing atlas, 5 mips (committed)
+mycareer_calendar.png           128x128 RGBA calendar icon atlas, 5 mips (committed)
+mycareer_focus.png              128x32 RGBA focus-row highlight, 1 mip, provisional (committed)
+mycareer_apartment.png          512x512 RGBA backdrop, 7 P8 mips in game (LOCAL, composed from your disc)
+hub_mockup_640x480.png          the composed hub at 4:3 (LOCAL)
+hub_mockup_wide.png             the composed hub at 16:9, side art, unstretched UI (LOCAL)
+manifest.json                   layer, tile, icon and crop rectangles plus backdrop provenance
+art_check.json                  the checker's report for the current files
+previews/                       the P8 result at mip 0 and each mip chain (apartment previews LOCAL)
 ```
+
+LOCAL means composed on your machine and ignored by git: this repository carries no
+retail pixels, only the recipe and the Studio's own decoder path.
 
 Regenerate and verify:
 
 ```sh
-python3 docs/mycareer_art/build.py                          # rewrites the PNGs and manifest.json
+python3 docs/mycareer_art/build.py                          # atlases + backdrop + mockups (needs the source cache)
+python3 docs/mycareer_art/build.py --recipe docs/mycareer_art/backdrop_recipe_alt_framed.json --out /tmp/framed
 python3 tools/mycareer_art_check.py                         # JSON report, exit 1 on any failure
 python3 tools/mycareer_art_check.py --reference             # pure-Python quantize_levels mapping (slower, same result)
 python3 tools/mycareer_art_check.py --preview-dir docs/mycareer_art/previews --json docs/mycareer_art/art_check.json
 python3 -m pytest tests/mod_editor/test_mycareer_art.py -q
 ```
 
-Needs Pillow and numpy. The mockups use Arial Bold as the retail-font stand-in
-(DejaVu Sans Bold if it is absent); the game's own face is squarer and a touch wider.
+The backdrop needs the Studio's private source cache for your disc (open the XISO in
+Mod Studio once, or point `NFL2K5_SOURCE_CACHE_ROOT` at it). Without it `build.py`
+still renders the atlases and says so; the backdrop tests skip. Needs Pillow and numpy;
+the mockups use Arial Bold as the retail-font stand-in (DejaVu Sans Bold if absent).
+
+## The backdrop
+
+`crib_scene_texture:skybox_night:0` (asset `nfl2k5.crib.scene.c0006.t000`, 512x256 P8,
+six mips, outer package 4248) is the night skyline the Crib's windows look out on, a
+photograph of San Francisco with lit windows and a purple dusk sky. It is decoded from
+your disc through `mod_editor.core.nfl2k5_crib.Nfl2k5CribIO`, which checks the pixels
+against the catalog's pinned hash, and composed by `build.py` from the recipe:
+
+* placed at native scale in texture rows 112..368 (the whole width), so it fills the
+  wide crop's centre and sits centred in the 4:3 crop;
+* continued above (rows 0..112) and below (368..512) with its own edge rows, blurred
+  along x and eased toward near black (`extend`): the sky simply darkens upward, the
+  band under the window reads as shadow, and the footer sits on plain dark;
+* the left third held in shadow (`shade`: 0.30 at the left edge easing to 1.0 by
+  x 330) so white menu text reads over the lit windows;
+* sigma 1.0 grain, which the photograph mostly supplies already.
+
+No pixel is drawn. The recipe carries the selector, the asset id, the rectangle and
+these three treatments; `manifest.json` records the same provenance after each build.
+
+Why this asset: no pre-rendered room or menu backdrop exists in the game. A census of
+all 57,208 TXTR chunks by video size found no 512x512 multi-mip texture at all, and the
+six 512x512 single-mip ones are the air hockey, dart and paper football text atlases
+and the VIP registration screen. Decoding every TXTR-headed package (1,023 of them)
+and viewing every texture 256x192 or larger found team logos, the coach's office
+wall-photo and diploma atlases, player heads, number sheets and the ESPN shield.
+The Crib's own textures are materials (plaster, wood, bar counter, paintings,
+screens) plus the two skyboxes; the skybox is the only full-frame photographic still
+with a room meaning, and it is exactly the old Crib view Noah asked for.
 
 ## Layout contract
 
@@ -45,24 +82,9 @@ x 44..302 from y 142; summary panel at x 332..596; controller footer at y 432.
   with the unstretched 640x480 UI centred on it (the wide hook contracts characters
   itself). The UI then covers texture x 90..422, so x 0..90 and 422..512 are side art.
 
-The texture is composed for both: the hero band (jersey, window, drape, lamp) sits at
-rows 112..300 to the right of the title; the left third is held in shadow for the menu
-text; the floor band under the columns carries the gear; rows 0..64 and 448..512 are
-never shown at 4:3 and only continue the ceiling and floor.
-
-| object (texture px, half open) | rect | crop class |
-| --- | --- | --- |
-| window (dusk skyline, lit stadium) | 336,116 .. 466,276 | core |
-| framed jersey (mahogany frame, black mat) | 250,112 .. 310,180 | core |
-| sofa with a football | 262,292 .. 430,392 | core |
-| television on a stand, dark corner | 10,246 .. 88,356 | core |
-| floor gear (duffel, helmet, football, cleats) | 36,352 .. 264,400 | core |
-| side table with a plant | 438,268 .. 480,356 | core |
-| drape (one panel, pulled left) | 316,98 .. 332,302 | accent |
-| pop-art helmet canvas | 474,106 .. 510,156 | accent (clipped at 4:3's right edge) |
-| floor lamp (the warm key light) | 476,160 .. 514,374 | accent (pole runs past the wide crop) |
-
-"Core" objects must sit inside the wide crop and the 4:3 crop; the checker enforces it.
+The skyline layer (rows 112..368) is the one core object; the checker requires it inside
+both crops. Rows 0..64 and 448..512 are never shown at 4:3 and only continue sky and
+shadow.
 
 ## Native results
 
@@ -75,24 +97,20 @@ byte-identical to `quantize_levels` by the test; `--reference` runs the original
 
 | asset | mips (index bytes) | chain colours | palette entries | max / p99.5 channel error | RMS |
 | --- | --- | ---: | ---: | --- | ---: |
-| mycareer_apartment.png | 512,256,128,64,32,16,8 (349,504) | 31,410 | 254 | 43 / 21 | 2.99 |
+| mycareer_apartment.png (night skyline) | 512..8, 7 levels (349,504) | 21,548 | 256 | 12 / 6 | 1.44 |
 | mycareer_panels.png | 256x128 .. 16x8 (43,648) | 436 | 256 | 2 / 1 | 0.19 |
 | mycareer_calendar.png | 128 .. 8 (21,824) | 478 | 256 | 12 / 7 | 0.56 |
 | mycareer_focus.png | 128x32 (4,096) | 33 | 33 | 0 / 0 | 0.00 |
 
-The apartment's worst single-pixel errors are anti-aliased edges where cool and warm
-hues meet (window mullions, the jersey frame's inner edge); 99.5% of chain pixels are
-within 21 levels. Banding is measured as the difference between the 7x7 box-blurred
-luma of the original and of the P8 result inside the smooth regions (a hard 20-level
-band reads as about 10 here): sky 5.0 max / 4.0 p99, wall 2.0 / 1.0, floor 3.0 / 2.0,
-limits 8 / 6. The dusk gradient carries a sigma 6 grain on purpose: without it the
-shared palette gives the sky about ten entries and the gradient steps visibly
-(measured 13 / 5); with it the steps dissolve into a photographic grain like the
-Crib's own skybox.
+Banding is measured as the difference between the 7x7 box-blurred luma of the original
+and of the P8 result inside the smooth regions (a hard 20-level band reads as about
+10): sky 2.0 max / 1.0 p99, top extension 2.0 / 1.0, bottom extension 2.0 / 1.0,
+limits 8 / 6. The photograph's own grain is why a 256-entry palette holds it so well.
 
-Calm zones for the runtime text (4:3 mapping): menu column mean luma 85 (limit 96),
-99th percentile 161 (limit 170), mean gradient 2.6 (limit 7); summary column mean
-gradient 6.3 (limit 12); footer band mean luma 45, gradient 2.8.
+Calm zones for the runtime text (4:3 mapping): menu column mean luma 22 (limit 96),
+99th percentile 70 (limit 170), mean gradient 8.1 (limit 9); summary column mean
+gradient 14.0 (limit 16, it sits under an opaque card and tiles of at least 65%
+opacity); footer band mean luma 3, gradient 1.5.
 
 ## Panel atlas
 
@@ -104,7 +122,7 @@ Padding between tiles is at least 4 px and stays fully transparent.
 | summary_opaque | 4,4 .. 132,100 | opaque navy card, red accent bar, top rule | 12 | player summary |
 | opponent_translucent | 140,4 .. 252,60 | alpha 176 navy, 1 px border | 8 | next opponent / calendar strip |
 | balance_translucent | 140,68 .. 252,116 | alpha 168 warm dark, gold bottom rule | 8 | upgrade balance |
-| ribbon_translucent | 4,108 .. 132,124 | alpha 140 black ribbon | 4 | footer / row separators |
+| ribbon_translucent | 4,108 .. 132,124 | alpha 140 black ribbon | 4 | footer / row separators, or a menu backing |
 
 ## Calendar atlas
 
@@ -132,15 +150,15 @@ the end caps at their native size if the native template allows a 9-slice. One m
 authored because the asset request asks for one; if the slot Astra assigns needs more,
 the checker's `SPECS` entry is the only place to change and the chain will regenerate.
 
-## Style sources (looked at, not copied)
+## Alternates
 
-`crib_scene_texture:room:2` (plaster wall and ceiling), `room:22` (bar monitor),
-`room:31` and `room:32` (ESPN and Crib screens), `room:37` and `room:38` (pop-art
-football paintings), `crib_scene_texture:skybox_day:0` and `skybox_night:0` (the
-skyline), `framed_jersey:0` (the mahogany frame). The apartment borrows their
-vocabulary: grey plaster warmed by a lamp, a dark CRT with its screen off, a framed
-shirt in a red-brown frame with a black mat, a small flat-colour pop-art canvas, and a
-purple dusk over a skyline with lit windows. Every pixel is drawn by `build.py`.
+Two more recipes exist for Noah to compare, built with
+`build.py --recipe ... --out <folder> --mockup-prefix alt_...`. They are not the
+deliverable and do not pass the strict calm-column limits: the day skyline is too
+bright for white text even shaded, and the framed variant (the skyline seen through a
+window in the Crib's own plaster wall, `room:2` tiled, with the Crib's mahogany frame
+material `framed_jersey:0` nine-sliced as the frame) is a little busier under the menu
+than the limit allows. Both use real textures only.
 
 ## Mockups
 

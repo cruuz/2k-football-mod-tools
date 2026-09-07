@@ -1,10 +1,16 @@
 """MyCareer apartment hub art: native P8 constraints, layout safety, reproducibility.
 
-The art under docs/mycareer_art is authored by docs/mycareer_art/build.py and
-checked by tools/mycareer_art_check.py. These tests pin three things: the
-checker's mip and palette code is the repo's own P8 approach (byte-identical
-to nfl_tset_png_import), the shipped PNGs pass every native constraint from the
-MyCareer asset request, and the renderer reproduces them exactly.
+The atlases under docs/mycareer_art are authored by docs/mycareer_art/build.py
+and committed. The backdrop is a real NFL 2K5 texture (the Crib's skyline)
+composed from backdrop_recipe.json out of the user's private source cache at
+build time and never committed, so the tests that need it skip on a machine
+without that cache. tools/mycareer_art_check.py verifies everything.
+
+These tests pin: the checker's mip and palette code is the repo's own P8
+approach (byte-identical to nfl_tset_png_import); the atlases pass their native
+constraints without any game data; the manifest pins the layout specification;
+and, where the cache exists, the composed backdrop passes every constraint, the
+build is byte-for-byte reproducible and the checker refuses broken assets.
 """
 from __future__ import annotations
 
@@ -23,6 +29,7 @@ HAVE_IMAGES = all(importlib.util.find_spec(name) for name in ("PIL", "numpy"))
 ART = ROOT / "docs" / "mycareer_art"
 CHECK = ROOT / "tools" / "mycareer_art_check.py"
 BUILD = ART / "build.py"
+ATLASES = ("mycareer_panels.png", "mycareer_calendar.png", "mycareer_focus.png")
 
 
 def _load(path: Path, name: str):
@@ -30,6 +37,18 @@ def _load(path: Path, name: str):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _have_cache() -> bool:
+    if not HAVE_IMAGES:
+        return False
+    try:
+        return _load(BUILD, "mycareer_art_build").find_source_cache_root() is not None
+    except Exception:  # noqa: BLE001 - a broken cache is the same as no cache for these tests
+        return False
+
+
+HAVE_CACHE = _have_cache()
 
 
 @unittest.skipUnless(HAVE_IMAGES, "Pillow and numpy are required for the art checks")
@@ -83,35 +102,29 @@ class QuantizerParityTests(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_IMAGES, "Pillow and numpy are required for the art checks")
-class ShippedArtTests(unittest.TestCase):
+class CommittedArtTests(unittest.TestCase):
+    """Everything that is in the repository must pass without any game data."""
+
     def setUp(self):
         self.check = _load(CHECK, "mycareer_art_check")
+        self.manifest = json.loads((ART / "manifest.json").read_text(encoding="utf-8"))
 
-    def test_every_asset_meets_its_native_specification(self):
-        report = self.check.check_folder(ART)
-        failures = [a for a in report["assets"] if not a.get("ok")]
-        self.assertEqual(failures, [], json.dumps(failures, indent=2))
-        by_name = {a["file"]: a for a in report["assets"]}
-        for name, spec in self.check.SPECS.items():
-            asset = by_name[name]
-            self.assertEqual(asset["size"], list(spec["size"]))
-            self.assertEqual(asset["mips"]["count"], spec["mips"])
-            self.assertEqual(asset["mips"]["index_bytes"], spec["index_bytes"])
-            self.assertLessEqual(asset["palette"]["entries"], 256)
-            self.assertEqual(asset["palette"]["palette_bytes"], 1024)
-        apartment = by_name["mycareer_apartment.png"]
-        self.assertEqual(apartment["mips"]["dimensions"][0], [512, 512])
-        self.assertEqual(apartment["mips"]["dimensions"][-1], [8, 8])
-        self.assertEqual(apartment["alpha"], {"min": 255, "max": 255, "distinct": 1})
-        self.assertIn("menu", apartment["calm_zones"])
-        self.assertIn("sky", apartment["banding"])
-        self.assertEqual(sorted(by_name["mycareer_calendar.png"]["icons"])[:5],
-                         sorted(["played", "upcoming", "bye", "practice", "request", "current", "milestone"])[:5])
-        self.assertEqual(by_name["hub_mockup_640x480.png"]["size"], [640, 480])
-        self.assertEqual(by_name["hub_mockup_wide.png"]["size"], [854, 480])
+    def test_atlases_meet_their_native_specification(self):
+        for name in ATLASES:
+            result = self.check.check_asset(ART, name, self.manifest)
+            self.assertTrue(result["ok"], name)
+            spec = self.check.SPECS[name]
+            self.assertEqual(result["size"], list(spec["size"]))
+            self.assertEqual(result["mips"]["count"], spec["mips"])
+            self.assertEqual(result["mips"]["index_bytes"], spec["index_bytes"])
+            self.assertLessEqual(result["palette"]["entries"], 256)
+            self.assertEqual(result["palette"]["palette_bytes"], 1024)
+        icons = self.manifest["calendar"]["icons"]
+        for name in ("played", "upcoming", "bye", "practice", "request"):
+            self.assertIn(name, icons)
 
     def test_manifest_pins_the_layout_specification(self):
-        manifest = json.loads((ART / "manifest.json").read_text(encoding="utf-8"))
+        manifest = self.manifest
         self.assertEqual(manifest["crop_43"], [0, 64, 512, 448])
         self.assertEqual(manifest["crop_wide"], [0, 112, 512, 400])
         ui = manifest["ui"]
@@ -123,47 +136,93 @@ class ShippedArtTests(unittest.TestCase):
         for name in manifest["core_objects"]:
             x0, y0, x1, y1 = manifest["objects"][name]
             self.assertTrue(0 <= x0 < x1 <= 512 and 112 <= y0 < y1 <= 400, name)
+        self.assertFalse(manifest["backdrop"]["retail_pixels_committed"])
+
+    def test_recipe_names_only_catalogued_crib_textures(self):
+        from mod_editor.core.nfl2k5_crib import load_nfl2k5_crib_catalog
+        catalog = load_nfl2k5_crib_catalog()
+        for path in sorted(ART.glob("backdrop_recipe*.json")):
+            recipe = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(recipe["schema"], "mycareer_backdrop_recipe/v1", path.name)
+            self.assertEqual(recipe["canvas"], [512, 512], path.name)
+            for layer in recipe["layers"]:
+                asset = catalog.by_selector(layer["selector"])
+                self.assertEqual(asset.asset_id, layer["asset_id"], path.name)
+                x0, y0, x1, y1 = layer["rect"]
+                self.assertTrue(0 <= x0 < x1 <= 512 and 0 <= y0 < y1 <= 512, path.name)
+                if layer.get("fit", "exact") == "exact":
+                    self.assertEqual((x1 - x0, y1 - y0), (asset.width, asset.height), path.name)
+
+    def test_committed_pngs_carry_no_backdrop(self):
+        tracked = subprocess.run(["git", "ls-files", "docs/mycareer_art"], cwd=ROOT,
+                                 capture_output=True, text=True, check=False).stdout.split()
+        if not tracked:
+            self.skipTest("not a git checkout")
+        for path in tracked:
+            self.assertNotIn("mycareer_apartment", path)
+            self.assertNotIn("hub_mockup", path)
+
+
+@unittest.skipUnless(HAVE_CACHE, "the composed backdrop needs the user's NFL 2K5 source cache")
+class ComposedBackdropTests(unittest.TestCase):
+    def setUp(self):
+        self.check = _load(CHECK, "mycareer_art_check")
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.out = Path(self.tmp.name) / "render"
+        completed = subprocess.run([sys.executable, str(BUILD), "--out", str(self.out), "--require-backdrop"],
+                                   capture_output=True, text=True, timeout=600)
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+
+    def test_build_is_reproducible_and_matches_the_committed_files(self):
+        for name in ATLASES + ("manifest.json",):
+            self.assertEqual((self.out / name).read_bytes(), (ART / name).read_bytes(), name)
+        again = Path(self.tmp.name) / "again"
+        completed = subprocess.run([sys.executable, str(BUILD), "--out", str(again), "--require-backdrop"],
+                                   capture_output=True, text=True, timeout=600)
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        for name in ("mycareer_apartment.png", "hub_mockup_640x480.png", "hub_mockup_wide.png"):
+            self.assertEqual((self.out / name).read_bytes(), (again / name).read_bytes(), name)
+
+    def test_composed_backdrop_meets_every_constraint(self):
+        report = self.check.check_folder(self.out)
+        failures = [a for a in report["assets"] if not a.get("ok")]
+        self.assertEqual(failures, [], json.dumps(failures, indent=2))
+        by_name = {a["file"]: a for a in report["assets"]}
+        apartment = by_name["mycareer_apartment.png"]
+        self.assertEqual(apartment["mips"]["dimensions"][0], [512, 512])
+        self.assertEqual(apartment["mips"]["dimensions"][-1], [8, 8])
+        self.assertEqual(apartment["mips"]["index_bytes"], 349_504)
+        self.assertLessEqual(apartment["palette"]["entries"], 256)
+        self.assertEqual(apartment["alpha"], {"min": 255, "max": 255, "distinct": 1})
+        self.assertIn("menu", apartment["calm_zones"])
+        self.assertIn("sky", apartment["banding"])
+        self.assertEqual(by_name["hub_mockup_640x480.png"]["size"], [640, 480])
+        self.assertEqual(by_name["hub_mockup_wide.png"]["size"], [854, 480])
 
     def test_cli_reports_and_exits_zero(self):
-        completed = subprocess.run([sys.executable, str(CHECK), str(ART)], capture_output=True, text=True, timeout=600)
+        completed = subprocess.run([sys.executable, str(CHECK), str(self.out)], capture_output=True, text=True, timeout=600)
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
-        report = json.loads(completed.stdout)
-        self.assertTrue(report["ok"])
+        self.assertTrue(json.loads(completed.stdout)["ok"])
 
     def test_checker_refuses_a_broken_asset(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            work = Path(tmp) / "art"
-            shutil.copytree(ART, work)
-            from PIL import Image
-            with Image.open(work / "mycareer_apartment.png") as im:
-                arr = im.convert("RGBA")
-            arr.putalpha(200)                       # a translucent background is a native error
-            arr.save(work / "mycareer_apartment.png")
-            with Image.open(work / "mycareer_focus.png") as im:
-                focus = im.convert("RGBA").resize((64, 32))
-            focus.save(work / "mycareer_focus.png")   # wrong slot size
-            report = self.check.check_folder(work)
-            self.assertFalse(report["ok"])
-            errors = {a["file"]: a.get("error", "") for a in report["assets"]}
-            self.assertIn("opaque", errors["mycareer_apartment.png"])
-            self.assertIn("128x32", errors["mycareer_focus.png"])
-            self.assertTrue(all(a["ok"] for a in report["assets"]
-                                if a["file"] in ("mycareer_panels.png", "mycareer_calendar.png")))
-
-
-@unittest.skipUnless(HAVE_IMAGES, "Pillow and numpy are required for the art checks")
-class RenderReproducibilityTests(unittest.TestCase):
-    def test_build_reproduces_the_shipped_textures_and_manifest(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            out = Path(tmp) / "render"
-            completed = subprocess.run([sys.executable, str(BUILD), "--out", str(out)],
-                                       capture_output=True, text=True, timeout=600)
-            self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
-            for name in ("mycareer_apartment.png", "mycareer_panels.png", "mycareer_calendar.png",
-                         "mycareer_focus.png", "manifest.json"):
-                self.assertEqual((out / name).read_bytes(), (ART / name).read_bytes(), name)
-            for name in ("hub_mockup_640x480.png", "hub_mockup_wide.png"):
-                self.assertTrue((out / name).is_file(), name)
+        work = Path(self.tmp.name) / "broken"
+        shutil.copytree(self.out, work)
+        from PIL import Image
+        with Image.open(work / "mycareer_apartment.png") as im:
+            arr = im.convert("RGBA")
+        arr.putalpha(200)                       # a translucent background is a native error
+        arr.save(work / "mycareer_apartment.png")
+        with Image.open(work / "mycareer_focus.png") as im:
+            focus = im.convert("RGBA").resize((64, 32))
+        focus.save(work / "mycareer_focus.png")   # wrong slot size
+        report = self.check.check_folder(work)
+        self.assertFalse(report["ok"])
+        errors = {a["file"]: a.get("error", "") for a in report["assets"]}
+        self.assertIn("opaque", errors["mycareer_apartment.png"])
+        self.assertIn("128x32", errors["mycareer_focus.png"])
+        self.assertTrue(all(a["ok"] for a in report["assets"]
+                            if a["file"] in ("mycareer_panels.png", "mycareer_calendar.png")))
 
 
 if __name__ == "__main__":

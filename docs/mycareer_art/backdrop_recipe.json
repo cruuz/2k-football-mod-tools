@@ -1,0 +1,69 @@
+{
+  "schema": "mycareer_backdrop_recipe/v1",
+  "name": "crib_skyline_night",
+  "note": "The skyline the Crib's windows look out on, at night: ESPN NFL 2K5 scene texture crib_scene_texture:skybox_night:0 (512x256, decoded from the user's own disc through the Crib catalog). Placed at native scale, continued above and below with its own edge rows eased to near black, the menu column held in shadow. No drawn pixels.",
+  "canvas": [
+    512,
+    512
+  ],
+  "background": [
+    6,
+    6,
+    12
+  ],
+  "seed": 20260907,
+  "layers": [
+    {
+      "selector": "crib_scene_texture:skybox_night:0",
+      "asset_id": "nfl2k5.crib.scene.c0006.t000",
+      "rect": [
+        0,
+        112,
+        512,
+        368
+      ],
+      "fit": "exact",
+      "core": true,
+      "extend": {
+        "top": 112,
+        "bottom": 144,
+        "fade_to": [
+          4,
+          4,
+          10
+        ],
+        "strength": 0.85,
+        "grain": 2.0
+      }
+    }
+  ],
+  "shade": {
+    "from_x": 0,
+    "to_x": 330,
+    "min": 0.3,
+    "power": 1.6
+  },
+  "grain": {
+    "sigma": 1.0
+  },
+  "smooth_rects": {
+    "sky": [
+      40,
+      120,
+      470,
+      190
+    ],
+    "top_extension": [
+      40,
+      64,
+      470,
+      110
+    ],
+    "bottom_extension": [
+      40,
+      380,
+      470,
+      446
+    ]
+  }
+}

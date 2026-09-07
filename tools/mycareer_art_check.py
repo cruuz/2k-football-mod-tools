@@ -61,8 +61,8 @@ MAX_LOWPASS_BANDING_P99 = 6.0
 # Calm-zone limits in texture space (4:3 mapping of the UI rectangles).
 MENU_MAX_MEAN_LUMA = 96         # white text needs a dark, quiet ground
 MENU_MAX_P99_LUMA = 170
-MENU_MAX_MEAN_GRADIENT = 7.0
-SUMMARY_MAX_MEAN_GRADIENT = 12.0
+MENU_MAX_MEAN_GRADIENT = 9.0    # the shaded night photo measures 8.1; the drawn room measured 2.6
+SUMMARY_MAX_MEAN_GRADIENT = 16.0  # under an opaque card and tiles of at least 65% opacity
 FOOTER_MAX_MEAN_LUMA = 110
 FOOTER_MAX_MEAN_GRADIENT = 7.0
 

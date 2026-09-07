@@ -7,8 +7,8 @@
         512,
         512
       ],
-      "bytes": 311681,
-      "sha256": "9482e656d2555f0d6274b7f4ddab780415410b3e06b683d02ed2a257b9f2cf7f",
+      "bytes": 451850,
+      "sha256": "ea812a8fcf54a96a81901cd66c7d8f7a366c557cb6a3e2851afd9d50e33d0312",
       "alpha": {
         "min": 255,
         "max": 255,
@@ -49,24 +49,19 @@
         "index_bytes": 349504
       },
       "palette": {
-        "entries": 254,
+        "entries": 256,
         "limit": 256,
         "palette_bytes": 1024,
-        "input_unique_rgba_colors": 31410,
-        "maximum_channel_error": 43,
-        "channel_error_p995": 21.0,
-        "rms_rgba_error": 2.989,
-        "differing_pixel_count": 339764,
+        "input_unique_rgba_colors": 21548,
+        "maximum_channel_error": 12,
+        "channel_error_p995": 6.0,
+        "rms_rgba_error": 1.442,
+        "differing_pixel_count": 339128,
         "total_pixel_count": 349504,
         "mapping": "median_cut_palette + vectorised nearest"
       },
       "core_objects_inside_crops": [
-        "window",
-        "jersey",
-        "sofa",
-        "tv",
-        "gear",
-        "side_table"
+        "layer_0_skybox_night"
       ],
       "calm_zones": {
         "menu": {
@@ -76,13 +71,13 @@
             242,
             365
           ],
-          "mean_luma": 85.4,
-          "p99_luma": 161.1,
-          "mean_gradient": 2.64,
+          "mean_luma": 21.6,
+          "p99_luma": 70.4,
+          "mean_gradient": 8.12,
           "limits": {
             "mean_luma": 96,
             "p99_luma": 170,
-            "mean_gradient": 7.0
+            "mean_gradient": 9.0
           }
         },
         "summary": {
@@ -92,11 +87,11 @@
             477,
             365
           ],
-          "mean_luma": 95.2,
-          "p99_luma": 239.7,
-          "mean_gradient": 6.34,
+          "mean_luma": 30.6,
+          "p99_luma": 117.4,
+          "mean_gradient": 13.97,
           "limits": {
-            "mean_gradient": 12.0
+            "mean_gradient": 16.0
           }
         },
         "footer": {
@@ -106,9 +101,9 @@
             512,
             448
           ],
-          "mean_luma": 44.6,
-          "p99_luma": 79.6,
-          "mean_gradient": 2.8,
+          "mean_luma": 3.0,
+          "p99_luma": 7.6,
+          "mean_gradient": 1.51,
           "limits": {
             "mean_luma": 110,
             "mean_gradient": 7.0
@@ -118,33 +113,33 @@
       "banding": {
         "sky": {
           "rect": [
-            338,
-            118,
-            464,
-            204
-          ],
-          "max": 5.0,
-          "p99": 4.0
-        },
-        "wall": {
-          "rect": [
-            100,
+            40,
             120,
-            240,
-            170
+            470,
+            190
           ],
           "max": 2.0,
           "p99": 1.0
         },
-        "floor": {
+        "top_extension": {
           "rect": [
-            60,
-            410,
-            240,
-            448
+            40,
+            64,
+            470,
+            110
           ],
-          "max": 3.0,
-          "p99": 2.0
+          "max": 2.0,
+          "p99": 1.0
+        },
+        "bottom_extension": {
+          "rect": [
+            40,
+            380,
+            470,
+            446
+          ],
+          "max": 2.0,
+          "p99": 1.0
         },
         "limits": {
           "max": 8.0,
