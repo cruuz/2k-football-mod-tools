@@ -118,8 +118,8 @@
   "seven_on_seven_book": "refused: the practice book is foreign, not retail; refusing",
   "disc_size": 6300499968,
   "disc_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
-  "preset_xbe_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
-  "stack_xbe_sha256": "db98ff8fe5d75c0e0e815f891147f5aceee7e145939f62e4d36f841331020137",
+  "preset_xbe_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
+  "stack_xbe_sha256": "26d3ad30c9b45dc2f33ae0a3b39bb7035adf3dfa4cfc25b0744d234e6a7e3b5d",
   "section_digests_verified": true,
   "allocator_layout": {
     "status": "applied",
@@ -289,12 +289,21 @@
         "owner_offset": 0
       },
       {
+        "owner": "nfl2k5_camera",
+        "kind": "code",
+        "size": 64,
+        "align": 16,
+        "va": 21866544,
+        "raw": 12101680,
+        "owner_offset": 0
+      },
+      {
         "owner": "nfl2k5_coverage_slider",
         "kind": "code",
         "size": 16,
         "align": 16,
-        "va": 21866544,
-        "raw": 12101680,
+        "va": 21866608,
+        "raw": 12101744,
         "owner_offset": 0
       },
       {
@@ -302,8 +311,8 @@
         "kind": "code",
         "size": 2048,
         "align": 16,
-        "va": 21866560,
-        "raw": 12101696,
+        "va": 21866624,
+        "raw": 12101760,
         "owner_offset": 0
       },
       {
@@ -320,8 +329,8 @@
         "kind": "code",
         "size": 5120,
         "align": 16,
-        "va": 21868608,
-        "raw": 12103744,
+        "va": 21868672,
+        "raw": 12103808,
         "owner_offset": 0
       },
       {
@@ -338,8 +347,8 @@
         "kind": "code",
         "size": 496,
         "align": 16,
-        "va": 21873728,
-        "raw": 12108864,
+        "va": 21873792,
+        "raw": 12108928,
         "owner_offset": 0
       },
       {
@@ -347,8 +356,8 @@
         "kind": "code",
         "size": 2048,
         "align": 16,
-        "va": 21874224,
-        "raw": 12109360,
+        "va": 21874288,
+        "raw": 12109424,
         "owner_offset": 0
       },
       {
@@ -374,8 +383,8 @@
         "kind": "code",
         "size": 8192,
         "align": 16,
-        "va": 21876272,
-        "raw": 12111408,
+        "va": 21876336,
+        "raw": 12111472,
         "owner_offset": 0
       },
       {
@@ -392,8 +401,8 @@
         "kind": "code",
         "size": 4096,
         "align": 16,
-        "va": 21884464,
-        "raw": 12119600,
+        "va": 21884528,
+        "raw": 12119664,
         "owner_offset": 0
       },
       {
@@ -410,8 +419,8 @@
         "kind": "code",
         "size": 2048,
         "align": 16,
-        "va": 21888560,
-        "raw": 12123696,
+        "va": 21888624,
+        "raw": 12123760,
         "owner_offset": 0
       },
       {
@@ -437,8 +446,8 @@
         "kind": "code",
         "size": 2048,
         "align": 16,
-        "va": 21890608,
-        "raw": 12125744,
+        "va": 21890672,
+        "raw": 12125808,
         "owner_offset": 0
       },
       {
@@ -464,8 +473,8 @@
         "kind": "code",
         "size": 82,
         "align": 16,
-        "va": 21892656,
-        "raw": 12127792,
+        "va": 21892720,
+        "raw": 12127856,
         "owner_offset": 0
       },
       {
@@ -473,8 +482,8 @@
         "kind": "code",
         "size": 160,
         "align": 16,
-        "va": 21892752,
-        "raw": 12127888,
+        "va": 21892816,
+        "raw": 12127952,
         "owner_offset": 0
       },
       {
@@ -482,8 +491,8 @@
         "kind": "code",
         "size": 640,
         "align": 16,
-        "va": 21892912,
-        "raw": 12128048,
+        "va": 21892976,
+        "raw": 12128112,
         "owner_offset": 0
       },
       {
@@ -491,8 +500,8 @@
         "kind": "code",
         "size": 4096,
         "align": 16,
-        "va": 21893552,
-        "raw": 12128688,
+        "va": 21893616,
+        "raw": 12128752,
         "owner_offset": 0
       },
       {
@@ -509,8 +518,8 @@
         "kind": "code",
         "size": 8192,
         "align": 16,
-        "va": 21897648,
-        "raw": 12132784,
+        "va": 21897712,
+        "raw": 12132848,
         "owner_offset": 0
       },
       {
@@ -634,13 +643,18 @@
             "end": 21866544
           },
           {
-            "owner": "nfl2k5_coverage_slider",
+            "owner": "nfl2k5_camera",
             "start": 21866544,
-            "end": 21866560
+            "end": 21866608
+          },
+          {
+            "owner": "nfl2k5_coverage_slider",
+            "start": 21866608,
+            "end": 21866624
           },
           {
             "owner": "nfl2k5_defensive_try_stats",
-            "start": 21866560,
+            "start": 21866624,
             "end": 21868544
           }
         ]
@@ -657,11 +671,11 @@
           {
             "owner": "nfl2k5_defensive_try_stats",
             "start": 21868544,
-            "end": 21868608
+            "end": 21868672
           },
           {
             "owner": "nfl2k5_franchise_2026",
-            "start": 21868608,
+            "start": 21868672,
             "end": 21872640
           }
         ]
@@ -678,21 +692,21 @@
           {
             "owner": "nfl2k5_franchise_2026",
             "start": 21872640,
-            "end": 21873728
+            "end": 21873792
           },
           {
             "owner": "nfl2k5_guardian_overlay",
-            "start": 21873728,
-            "end": 21874224
+            "start": 21873792,
+            "end": 21874288
           },
           {
             "owner": "nfl2k5_music_playlist",
-            "start": 21874224,
-            "end": 21876272
+            "start": 21874288,
+            "end": 21876336
           },
           {
             "owner": "nfl2k5_my_career",
-            "start": 21876272,
+            "start": 21876336,
             "end": 21876736
           }
         ]
@@ -725,11 +739,11 @@
           {
             "owner": "nfl2k5_my_career",
             "start": 21880832,
-            "end": 21884464
+            "end": 21884528
           },
           {
             "owner": "nfl2k5_practice_squad_screen",
-            "start": 21884464,
+            "start": 21884528,
             "end": 21884928
           }
         ]
@@ -746,11 +760,11 @@
           {
             "owner": "nfl2k5_practice_squad_screen",
             "start": 21884928,
-            "end": 21888560
+            "end": 21888624
           },
           {
             "owner": "nfl2k5_qb_spy",
-            "start": 21888560,
+            "start": 21888624,
             "end": 21889024
           }
         ]
@@ -767,26 +781,26 @@
           {
             "owner": "nfl2k5_qb_spy",
             "start": 21889024,
-            "end": 21890608
+            "end": 21890672
           },
           {
             "owner": "nfl2k5_read_option_runtime",
-            "start": 21890608,
-            "end": 21892656
+            "start": 21890672,
+            "end": 21892720
           },
           {
             "owner": "nfl2k5_roster_storage",
-            "start": 21892656,
-            "end": 21892738
+            "start": 21892720,
+            "end": 21892802
           },
           {
             "owner": "nfl2k5_scramble_tuning",
-            "start": 21892752,
-            "end": 21892912
+            "start": 21892816,
+            "end": 21892976
           },
           {
             "owner": "nfl2k5_screen_hooks",
-            "start": 21892912,
+            "start": 21892976,
             "end": 21893120
           }
         ]
@@ -803,11 +817,11 @@
           {
             "owner": "nfl2k5_screen_hooks",
             "start": 21893120,
-            "end": 21893552
+            "end": 21893616
           },
           {
             "owner": "nfl2k5_senior_bowl",
-            "start": 21893552,
+            "start": 21893616,
             "end": 21897216
           }
         ]
@@ -824,11 +838,11 @@
           {
             "owner": "nfl2k5_senior_bowl",
             "start": 21897216,
-            "end": 21897648
+            "end": 21897712
           },
           {
             "owner": "nfl2k5_roster_arena_growth",
-            "start": 21897648,
+            "start": 21897712,
             "end": 21901312
           }
         ]
@@ -856,12 +870,12 @@
         "raw": 12140544,
         "flags": 54,
         "size": 4096,
-        "free_bytes": 3664,
+        "free_bytes": 3600,
         "children": [
           {
             "owner": "nfl2k5_roster_arena_growth",
             "start": 21905408,
-            "end": 21905840
+            "end": 21905904
           }
         ]
       },
@@ -1678,9 +1692,9 @@
       "code": {
         "pages": 26,
         "capacity_bytes": 106496,
-        "requested_bytes": 48343,
-        "free_bytes": 58153,
-        "available_bytes": 56912
+        "requested_bytes": 48407,
+        "free_bytes": 58089,
+        "available_bytes": 56848
       },
       "data": {
         "pages": 21,
@@ -1740,7 +1754,7 @@
     "all_stadiums"
   ],
   "source_sha256": {
-    "mod_editor/core/mod_build.py": "b5bc7455e73c39829cf948e31b7a24ee3b3565ec48497f5df4392a1be1171bc0",
+    "mod_editor/core/mod_build.py": "758c16cc564fac78fcbbf22c49d99b185d20500ae4c482cd9312c9f179804253",
     "mod_editor/core/nfl2k5_abilities_runtime.py": "7d425857b3e96ef03229962812b43ca120f81d7868c8690a221f62519c26918a",
     "mod_editor/core/nfl2k5_abilities_runtime_code.py": "e669415b75928ccbc3fce88fac0435654c87ad7573891274c0d7637f39f9da3b",
     "mod_editor/core/nfl2k5_accel_ramp.py": "95014c753d46faed2e75e545d992794bb62965a9bbe6407057d3626395c6e862",
@@ -1752,7 +1766,7 @@
     "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
     "mod_editor/core/nfl2k5_calendar_engine.py": "796246b2248eddda3a0e57ed791b53cc1446fe3a3128ad39397ababe873ab841",
     "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
-    "mod_editor/core/nfl2k5_camera.py": "5f645e4a104d5660a00ddc07a4ee7721bf08b209258ca91ac8f5bcd140934f24",
+    "mod_editor/core/nfl2k5_camera.py": "3089cffc699b95ec7e95587cf7f7bc8eee145891570d41d3cf82a40af16f09fb",
     "mod_editor/core/nfl2k5_catch_slider.py": "c69f022b6328abcb0dcb74fef277297ac6d6471a96790559ef43ecc7cae26abe",
     "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",
     "mod_editor/core/nfl2k5_crib_reclaim.py": "93f87645b362bc23778c23f5b770eeedb3ef12666fc2262c0d5cee390ec1636b",
@@ -1798,7 +1812,7 @@
     "mod_editor/core/nfl2k5_music_policy.py": "55fd403a150b0350f3d4576a7a5c8187948cbb8daf36ef7426036c6c441dc023",
     "mod_editor/core/nfl2k5_music_storage.py": "db13a224f6e04e2ebbe0f7639946e2e6c9626500939614a44f2539a25137904b",
     "mod_editor/core/nfl2k5_my_career.py": "6c100d316c041605a5183783440eaf1420eb48f76132c37abadbbd282adb939f",
-    "mod_editor/core/nfl2k5_my_career_code.py": "96e892aac20fcb8e9dd4b53852527f26f12370196e11cf7e10b19b63c4da53f4",
+    "mod_editor/core/nfl2k5_my_career_code.py": "4de735d9f7ca608022dcaa0ad40d0fa38874cf233b561b30fc87eae71c2d3172",
     "mod_editor/core/nfl2k5_overtime.py": "9621106101e1ce6d0bccb35ab5a2051cc8d68e9ed2fcdf2af87a13342855bbd5",
     "mod_editor/core/nfl2k5_p8_texture_writer.py": "4a519adf657eeb5ecbf8be6a8cba99411cbd0e5843bf55d7bd7e142723498485",
     "mod_editor/core/nfl2k5_penalties.py": "f4d3b4e703136aea3c49d224c93b08960083403d4a0c4dc6df85f37536151a3e",
@@ -1857,7 +1871,7 @@
     "mod_editor/core/nfl2k5_team_names_2026.py": "60c5c6be99a1d24098a63422fadbd1af8010df599822548d11195d1f03f8e082",
     "mod_editor/core/nfl2k5_text_catalog.py": "5d9e254b9688c50e1085794de710eaaee6b9071bec6ca345653d0febfb987b38",
     "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-    "mod_editor/core/nfl2k5_throw_tuning.py": "32aed3ac6e0080d96d8fa153e810be9e8210e748844243e8877e4f2c6be7d288",
+    "mod_editor/core/nfl2k5_throw_tuning.py": "75f30d805309d915402483fd4cf23dc0802129f79b242073e67b3a1622fef34e",
     "mod_editor/core/nfl2k5_uniform_choice.py": "485a0b64855836d03573381281b079a9cdab814996fa83b894046d8b29f93d6a",
     "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
     "mod_editor/core/nfl2k5_widescreen.py": "e3c24be27e02098ef981349aa9a1008b26d022bf655c0c0c6e4e70557c0f0f43",
@@ -6589,75 +6603,10 @@
       ]
     },
     {
-      "owner": "nfl2k5_camera",
-      "function": "apply",
-      "before_sha256": "bf4446a97cf22a29e598921bdf57178c9c6a097524e48d2db1dcb9f654a1f77a",
-      "after_sha256": "8681239527f9f4e35f0e580bf67bb08d417582e51ea1fa3c957ccfe7b99514b7",
-      "changed_bytes": 42,
-      "file_runs": [
-        [
-          "0x66c",
-          "0x67a"
-        ],
-        [
-          "0x67b",
-          "0x680"
-        ],
-        [
-          "0xa7df12",
-          "0xa7df14"
-        ],
-        [
-          "0xa7df62",
-          "0xa7df64"
-        ],
-        [
-          "0xa7dfb2",
-          "0xa7dfb4"
-        ],
-        [
-          "0xa7e002",
-          "0xa7e004"
-        ],
-        [
-          "0xa7e046",
-          "0xa7e048"
-        ],
-        [
-          "0xa7e04a",
-          "0xa7e04c"
-        ],
-        [
-          "0xa7e052",
-          "0xa7e054"
-        ],
-        [
-          "0xa7e066",
-          "0xa7e068"
-        ],
-        [
-          "0xa7e069",
-          "0xa7e06b"
-        ],
-        [
-          "0xa7e0a2",
-          "0xa7e0a4"
-        ],
-        [
-          "0xa7e0f2",
-          "0xa7e0f3"
-        ],
-        [
-          "0xa7e109",
-          "0xa7e10b"
-        ]
-      ]
-    },
-    {
       "owner": "nfl2k5_widescreen",
       "function": "apply",
-      "before_sha256": "8681239527f9f4e35f0e580bf67bb08d417582e51ea1fa3c957ccfe7b99514b7",
-      "after_sha256": "a8c574165a17ab6ec16e4e585e9a44d93d78f59015663486f5c4a536dee21e99",
+      "before_sha256": "bf4446a97cf22a29e598921bdf57178c9c6a097524e48d2db1dcb9f654a1f77a",
+      "after_sha256": "74d63da39dbe8c819aa69ef6e669747125b25041f3f8b7da8470c9111e33d37e",
       "changed_bytes": 912,
       "file_runs": [
         [
@@ -6757,8 +6706,8 @@
     {
       "owner": "nfl2k5_modern_naming",
       "function": "apply",
-      "before_sha256": "a8c574165a17ab6ec16e4e585e9a44d93d78f59015663486f5c4a536dee21e99",
-      "after_sha256": "4894c6c5c0a73c66f78eca745f81a09b8b4644f7e8880e7c08f7d61f2b4443f9",
+      "before_sha256": "74d63da39dbe8c819aa69ef6e669747125b25041f3f8b7da8470c9111e33d37e",
+      "after_sha256": "66f239e456471833f67102f8b28c0dacfc22db076c76cf672bdcb5d605dadb8d",
       "changed_bytes": 408,
       "file_runs": [
         [
@@ -8322,8 +8271,8 @@
     {
       "owner": "nfl2k5_overtime",
       "function": "apply",
-      "before_sha256": "4894c6c5c0a73c66f78eca745f81a09b8b4644f7e8880e7c08f7d61f2b4443f9",
-      "after_sha256": "f9751c9544c88acbfdc1c7b2ffc0d093eb95a0751c0ef980d6900631f23048e3",
+      "before_sha256": "66f239e456471833f67102f8b28c0dacfc22db076c76cf672bdcb5d605dadb8d",
+      "after_sha256": "15b469a9f77cf95f9ca81b396c2ba13e947e5088aa104aac02f62c72edfd393f",
       "changed_bytes": 661,
       "file_runs": [
         [
@@ -8423,8 +8372,8 @@
     {
       "owner": "nfl2k5_team_column",
       "function": "apply",
-      "before_sha256": "f9751c9544c88acbfdc1c7b2ffc0d093eb95a0751c0ef980d6900631f23048e3",
-      "after_sha256": "cf8ab23c1fcb4c46b2e7fbd87b41b4592290f02c820b10ecdd8b65e7fc98b936",
+      "before_sha256": "15b469a9f77cf95f9ca81b396c2ba13e947e5088aa104aac02f62c72edfd393f",
+      "after_sha256": "ac6cfdce6fa3f1ec8b6c94de053972d03fc054c83dca0fec85d8d06da48d55c1",
       "changed_bytes": 699,
       "file_runs": [
         [
@@ -8704,8 +8653,8 @@
     {
       "owner": "nfl2k5_position_row",
       "function": "apply",
-      "before_sha256": "cf8ab23c1fcb4c46b2e7fbd87b41b4592290f02c820b10ecdd8b65e7fc98b936",
-      "after_sha256": "8ca10e9487a60bbf590696b65fd6260a12567b546848ac075bf4b35cf775c379",
+      "before_sha256": "ac6cfdce6fa3f1ec8b6c94de053972d03fc054c83dca0fec85d8d06da48d55c1",
+      "after_sha256": "a3b1d6e2e371795079dd069a57f1fc3c5c526f86a93d64bfb1a4d42bbe2c659e",
       "changed_bytes": 34,
       "file_runs": [
         [
@@ -8749,8 +8698,8 @@
     {
       "owner": "nfl2k5_probowl_order",
       "function": "apply",
-      "before_sha256": "8ca10e9487a60bbf590696b65fd6260a12567b546848ac075bf4b35cf775c379",
-      "after_sha256": "367c86e7ddd0c616d1fad66fea23a51be45470004bb3a34cda70c40957ccba82",
+      "before_sha256": "a3b1d6e2e371795079dd069a57f1fc3c5c526f86a93d64bfb1a4d42bbe2c659e",
+      "after_sha256": "ede0c2bdfd14ce243ca1ae3376b95d88f4d91cff65d3d3cac288071fa7681955",
       "changed_bytes": 37,
       "file_runs": [
         [
@@ -8798,9 +8747,9 @@
     {
       "owner": "nfl2k5_penalties",
       "function": "apply",
-      "before_sha256": "367c86e7ddd0c616d1fad66fea23a51be45470004bb3a34cda70c40957ccba82",
-      "after_sha256": "4cc5135469e57129e388fbef08305ad83003eaf15ac59c71d7ea3ddefc1542b0",
-      "changed_bytes": 140,
+      "before_sha256": "ede0c2bdfd14ce243ca1ae3376b95d88f4d91cff65d3d3cac288071fa7681955",
+      "after_sha256": "c0e1db5d605500fc6d6a2a1d33954cc241d5a5e06ccd93cd45ac198530eb9f4a",
+      "changed_bytes": 142,
       "file_runs": [
         [
           "0x394",
@@ -8812,14 +8761,6 @@
         ],
         [
           "0x66c",
-          "0x66f"
-        ],
-        [
-          "0x670",
-          "0x677"
-        ],
-        [
-          "0x678",
           "0x680"
         ],
         [
@@ -8915,8 +8856,8 @@
     {
       "owner": "nfl2k5_kick_laces",
       "function": "apply",
-      "before_sha256": "4cc5135469e57129e388fbef08305ad83003eaf15ac59c71d7ea3ddefc1542b0",
-      "after_sha256": "208f90508e24fc34a5067b467ef63332412b78194b82ddfa408558f36856a279",
+      "before_sha256": "c0e1db5d605500fc6d6a2a1d33954cc241d5a5e06ccd93cd45ac198530eb9f4a",
+      "after_sha256": "701582f33a61927c0e90d93bf62f098e6c912d50cc5db521b13dd0f02affe648",
       "changed_bytes": 165,
       "file_runs": [
         [
@@ -8948,8 +8889,8 @@
     {
       "owner": "nfl2k5_franchise_practice",
       "function": "apply",
-      "before_sha256": "208f90508e24fc34a5067b467ef63332412b78194b82ddfa408558f36856a279",
-      "after_sha256": "266c918a2152938dc2e807209a2b98a33bbe09cf50019042f89c7da800090bc4",
+      "before_sha256": "701582f33a61927c0e90d93bf62f098e6c912d50cc5db521b13dd0f02affe648",
+      "after_sha256": "a13a9b4310df06bb90e4d089563f48045ff4f8fecf89d915b69a5b9304ff717b",
       "changed_bytes": 424,
       "file_runs": [
         [
@@ -9117,8 +9058,8 @@
     {
       "owner": "nfl2k5_prospect_names",
       "function": "xbe_apply",
-      "before_sha256": "266c918a2152938dc2e807209a2b98a33bbe09cf50019042f89c7da800090bc4",
-      "after_sha256": "2261ceca5dbceb49623ff10be72449cd2fd47c02a5ecb28a6dceb506b313fcb7",
+      "before_sha256": "a13a9b4310df06bb90e4d089563f48045ff4f8fecf89d915b69a5b9304ff717b",
+      "after_sha256": "e811100d3961736d2e6a9c66312ebc0f7335689c205fb905686b390047c631fc",
       "changed_bytes": 53,
       "file_runs": [
         [
@@ -9138,8 +9079,8 @@
     {
       "owner": "nfl2k5_player_star",
       "function": "apply",
-      "before_sha256": "2261ceca5dbceb49623ff10be72449cd2fd47c02a5ecb28a6dceb506b313fcb7",
-      "after_sha256": "d9eb74189665defadb3dd8b6bf480d4511b2cfdda67a946c38de1295989ab045",
+      "before_sha256": "e811100d3961736d2e6a9c66312ebc0f7335689c205fb905686b390047c631fc",
+      "after_sha256": "038e9e226b63ed61e86545df7c610a7b9268a5002c83fc704fa19150acafc08c",
       "changed_bytes": 481,
       "file_runs": [
         [
@@ -9219,8 +9160,8 @@
     {
       "owner": "nfl2k5_dynamic_kickoff",
       "function": "apply",
-      "before_sha256": "d9eb74189665defadb3dd8b6bf480d4511b2cfdda67a946c38de1295989ab045",
-      "after_sha256": "b40bc7a9d5d92ef0b54aeb5330774ccd49dc6f178929c5cb6cf14c515e0da804",
+      "before_sha256": "038e9e226b63ed61e86545df7c610a7b9268a5002c83fc704fa19150acafc08c",
+      "after_sha256": "c966d115d909feb70d7640dc77a1bea128f47e79ea5a7df1e82094de617197cc",
       "changed_bytes": 2008,
       "file_runs": [
         [
@@ -9420,8 +9361,8 @@
     {
       "owner": "nfl2k5_practice_squad",
       "function": "apply",
-      "before_sha256": "b40bc7a9d5d92ef0b54aeb5330774ccd49dc6f178929c5cb6cf14c515e0da804",
-      "after_sha256": "153ba6a54e29c2dc59f20e4b2b644b90471985002418747ccd4dea1d57ba65c8",
+      "before_sha256": "c966d115d909feb70d7640dc77a1bea128f47e79ea5a7df1e82094de617197cc",
+      "after_sha256": "4e0bb24b06837bdec77e4b884fa1cb845719f6456532f52b52dc54a7a91a0ab5",
       "changed_bytes": 3364,
       "file_runs": [
         [
@@ -9837,8 +9778,8 @@
     {
       "owner": "nfl2k5_depth_locks",
       "function": "apply",
-      "before_sha256": "153ba6a54e29c2dc59f20e4b2b644b90471985002418747ccd4dea1d57ba65c8",
-      "after_sha256": "1f668a66de94e3bdd437a8d33f1a8a47a6611756cdc27f81ff4ed565fa8cc064",
+      "before_sha256": "4e0bb24b06837bdec77e4b884fa1cb845719f6456532f52b52dc54a7a91a0ab5",
+      "after_sha256": "bae24e4741ef5458fd27052c0fec129c8c64f6cfd5d4dd2c0fcc66e3b1495835",
       "changed_bytes": 925,
       "file_runs": [
         [
@@ -9958,8 +9899,8 @@
     {
       "owner": "nfl2k5_season_cap",
       "function": "apply",
-      "before_sha256": "1f668a66de94e3bdd437a8d33f1a8a47a6611756cdc27f81ff4ed565fa8cc064",
-      "after_sha256": "1e4e4fd27c442e0e034154a83a1e29e0b7c40544245cfa57b696b9af0793075d",
+      "before_sha256": "bae24e4741ef5458fd27052c0fec129c8c64f6cfd5d4dd2c0fcc66e3b1495835",
+      "after_sha256": "98b685815046f5ab687693fac776f4d945db8b5ebd02b10603377a8ceb2e6414",
       "changed_bytes": 20,
       "file_runs": [
         [
@@ -9975,8 +9916,8 @@
     {
       "owner": "nfl2k5_practice_reserves",
       "function": "apply",
-      "before_sha256": "1e4e4fd27c442e0e034154a83a1e29e0b7c40544245cfa57b696b9af0793075d",
-      "after_sha256": "7aad4f09f92947fc276a292e03b23bea5e89208888c3b679aafab4dad93fa3e5",
+      "before_sha256": "98b685815046f5ab687693fac776f4d945db8b5ebd02b10603377a8ceb2e6414",
+      "after_sha256": "b4a1a05eecbf2faf6631721346e28e9f150154a27e546a0505166d73a7f143dc",
       "changed_bytes": 188,
       "file_runs": [
         [
@@ -10004,8 +9945,8 @@
     {
       "owner": "nfl2k5_uniform_choice",
       "function": "apply",
-      "before_sha256": "7aad4f09f92947fc276a292e03b23bea5e89208888c3b679aafab4dad93fa3e5",
-      "after_sha256": "0e1041ed6b734e6b73b4fe0f80657318ac6319a49dde10c511d41bc7f36bb0cc",
+      "before_sha256": "b4a1a05eecbf2faf6631721346e28e9f150154a27e546a0505166d73a7f143dc",
+      "after_sha256": "49715ca168350cacb094970ee1ce99d35d4152abd8f795bd8ea17702eabb4c21",
       "changed_bytes": 331,
       "file_runs": [
         [
@@ -10089,8 +10030,8 @@
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "0e1041ed6b734e6b73b4fe0f80657318ac6319a49dde10c511d41bc7f36bb0cc",
-      "after_sha256": "f8825e4a8546e327b0b7ed06866a6cb9691a7c9c06f9c498de3171d293e51672",
+      "before_sha256": "49715ca168350cacb094970ee1ce99d35d4152abd8f795bd8ea17702eabb4c21",
+      "after_sha256": "7e7f5b1c03bc9989ddabef5d7b2b074f7b6ee7289d0b56027345cc65d5b03252",
       "changed_bytes": 684,
       "file_runs": [
         [
@@ -10150,8 +10091,8 @@
     {
       "owner": "nfl2k5_hud_layout",
       "function": "apply",
-      "before_sha256": "f8825e4a8546e327b0b7ed06866a6cb9691a7c9c06f9c498de3171d293e51672",
-      "after_sha256": "ce357d98e42355301fa6c66a6a268bee2c705a10bf2c801f8ce6140e5e2f224f",
+      "before_sha256": "7e7f5b1c03bc9989ddabef5d7b2b074f7b6ee7289d0b56027345cc65d5b03252",
+      "after_sha256": "1d1c1a08893a827b3f9af75c6c96c915b4d5d380e75c4c94b6bff0c71d663768",
       "changed_bytes": 25,
       "file_runs": [
         [
@@ -10171,16 +10112,16 @@
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "5d936bed5737aba4482de4215999efd5c6afd0588fcdefb41b9a4efc45d4befa",
-      "after_sha256": "5d936bed5737aba4482de4215999efd5c6afd0588fcdefb41b9a4efc45d4befa",
+      "before_sha256": "51b81efc30cc3905f3b94da14ce88304e678e75cebd97e5455814714d88b00e0",
+      "after_sha256": "51b81efc30cc3905f3b94da14ce88304e678e75cebd97e5455814714d88b00e0",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_ingame",
       "function": "apply_xbe",
-      "before_sha256": "f8825e4a8546e327b0b7ed06866a6cb9691a7c9c06f9c498de3171d293e51672",
-      "after_sha256": "5d936bed5737aba4482de4215999efd5c6afd0588fcdefb41b9a4efc45d4befa",
+      "before_sha256": "7e7f5b1c03bc9989ddabef5d7b2b074f7b6ee7289d0b56027345cc65d5b03252",
+      "after_sha256": "51b81efc30cc3905f3b94da14ce88304e678e75cebd97e5455814714d88b00e0",
       "changed_bytes": 152,
       "file_runs": [
         [
@@ -10340,8 +10281,8 @@
     {
       "owner": "nfl2k5_position_pools",
       "function": "apply",
-      "before_sha256": "5d936bed5737aba4482de4215999efd5c6afd0588fcdefb41b9a4efc45d4befa",
-      "after_sha256": "dcbb0f6b4274ed0056ae78e3cc19ad79bdf02f34708cf744cb0574d6eb6cb965",
+      "before_sha256": "51b81efc30cc3905f3b94da14ce88304e678e75cebd97e5455814714d88b00e0",
+      "after_sha256": "5f2b45e927e49c0884b2cf3d06833276832080ea68c057eeb2b98d60e82efbb6",
       "changed_bytes": 655,
       "file_runs": [
         [
@@ -11865,8 +11806,8 @@
     {
       "owner": "nfl2k5_depth_chart_rows",
       "function": "apply",
-      "before_sha256": "dcbb0f6b4274ed0056ae78e3cc19ad79bdf02f34708cf744cb0574d6eb6cb965",
-      "after_sha256": "255f8db55f7f0d4c3c4cd0bdc7e3bfb07044d8b1b3c8b88172222222abd8274d",
+      "before_sha256": "5f2b45e927e49c0884b2cf3d06833276832080ea68c057eeb2b98d60e82efbb6",
+      "after_sha256": "89aa249f35693329facf79dd96a164316eb75c0a455d39afb66d02ea222509de",
       "changed_bytes": 74031,
       "file_runs": [
         [
@@ -12114,8 +12055,8 @@
     {
       "owner": "nfl2k5_season_length",
       "function": "apply",
-      "before_sha256": "255f8db55f7f0d4c3c4cd0bdc7e3bfb07044d8b1b3c8b88172222222abd8274d",
-      "after_sha256": "4482bfdb66f62fc5767dbb4505616c7039ba777e135db956f7e26d0fb49f8d39",
+      "before_sha256": "89aa249f35693329facf79dd96a164316eb75c0a455d39afb66d02ea222509de",
+      "after_sha256": "be5f43439e42b155e2918a28649ef1c217c03eda89f798c103166b87082bfa1f",
       "changed_bytes": 3818,
       "file_runs": [
         [
@@ -13151,8 +13092,8 @@
     {
       "owner": "nfl2k5_playoff_picture",
       "function": "apply",
-      "before_sha256": "4482bfdb66f62fc5767dbb4505616c7039ba777e135db956f7e26d0fb49f8d39",
-      "after_sha256": "e7e6e0ec6466ed5b471f6564707aa3d98ed142eca6d3277d2990aae06e36bde3",
+      "before_sha256": "be5f43439e42b155e2918a28649ef1c217c03eda89f798c103166b87082bfa1f",
+      "after_sha256": "82dc4870e58dc640a89ac19f26e3175f3b242dcb86f37306b7c69241db9cc60b",
       "changed_bytes": 603,
       "file_runs": [
         [
@@ -13169,10 +13110,10 @@
         ],
         [
           "0x66c",
-          "0x672"
+          "0x674"
         ],
         [
-          "0x673",
+          "0x675",
           "0x680"
         ],
         [
@@ -14072,9 +14013,9 @@
     {
       "owner": "nfl2k5_xbe_space",
       "function": "apply",
-      "before_sha256": "e7e6e0ec6466ed5b471f6564707aa3d98ed142eca6d3277d2990aae06e36bde3",
-      "after_sha256": "b680041e3d0ac4968e5dbdddfb3e13276fb1427fcfd6582ed3d55a1afb33d9d5",
-      "changed_bytes": 279862,
+      "before_sha256": "82dc4870e58dc640a89ac19f26e3175f3b242dcb86f37306b7c69241db9cc60b",
+      "after_sha256": "7bd395a433b73efdd3f036ab5fa3847eb79458e2a5790563b779c00fc7403cbc",
+      "changed_bytes": 279861,
       "file_runs": [
         [
           "0x108",
@@ -14490,6 +14431,10 @@
         ],
         [
           "0x97c",
+          "0x98e"
+        ],
+        [
+          "0x98f",
           "0x99d"
         ],
         [
@@ -14635,19 +14580,188 @@
       ]
     },
     {
+      "owner": "nfl2k5_camera",
+      "function": "apply",
+      "before_sha256": "7bd395a433b73efdd3f036ab5fa3847eb79458e2a5790563b779c00fc7403cbc",
+      "after_sha256": "534983ab2292ebb3a1081f708e442656779a2198e8d852e7b73c91365f642e0a",
+      "changed_bytes": 251,
+      "file_runs": [
+        [
+          "0x394",
+          "0x3a8"
+        ],
+        [
+          "0x66c",
+          "0x680"
+        ],
+        [
+          "0x90c",
+          "0x920"
+        ],
+        [
+          "0x97c",
+          "0x990"
+        ],
+        [
+          "0xdb4",
+          "0xdd4"
+        ],
+        [
+          "0x954c3",
+          "0x954c5"
+        ],
+        [
+          "0x955ec",
+          "0x955f0"
+        ],
+        [
+          "0xd3c6b",
+          "0xd3c6c"
+        ],
+        [
+          "0x15d1d6",
+          "0x15d1d9"
+        ],
+        [
+          "0x15e7b3",
+          "0x15e7b6"
+        ],
+        [
+          "0x15e866",
+          "0x15e869"
+        ],
+        [
+          "0xa7e226",
+          "0xa7e228"
+        ],
+        [
+          "0xa7e22a",
+          "0xa7e22c"
+        ],
+        [
+          "0xa7e246",
+          "0xa7e248"
+        ],
+        [
+          "0xa7e249",
+          "0xa7e24b"
+        ],
+        [
+          "0xa7e27a",
+          "0xa7e27c"
+        ],
+        [
+          "0xa7e295",
+          "0xa7e298"
+        ],
+        [
+          "0xa7e29a",
+          "0xa7e29b"
+        ],
+        [
+          "0xa7e2c6",
+          "0xa7e2c8"
+        ],
+        [
+          "0xa7e2ca",
+          "0xa7e2cc"
+        ],
+        [
+          "0xa7e2e5",
+          "0xa7e2e8"
+        ],
+        [
+          "0xa7e2e9",
+          "0xa7e2eb"
+        ],
+        [
+          "0xa7e31a",
+          "0xa7e31c"
+        ],
+        [
+          "0xa7e335",
+          "0xa7e338"
+        ],
+        [
+          "0xa7e33a",
+          "0xa7e33b"
+        ],
+        [
+          "0xa7e366",
+          "0xa7e368"
+        ],
+        [
+          "0xa7e36a",
+          "0xa7e36c"
+        ],
+        [
+          "0xa7e385",
+          "0xa7e388"
+        ],
+        [
+          "0xa7e389",
+          "0xa7e38b"
+        ],
+        [
+          "0xa7e3b6",
+          "0xa7e3b8"
+        ],
+        [
+          "0xa7e3ba",
+          "0xa7e3bb"
+        ],
+        [
+          "0xa7e3d5",
+          "0xa7e3d8"
+        ],
+        [
+          "0xa7e3d9",
+          "0xa7e3db"
+        ],
+        [
+          "0xa7e406",
+          "0xa7e407"
+        ],
+        [
+          "0xa7e40a",
+          "0xa7e40c"
+        ],
+        [
+          "0xa7e426",
+          "0xa7e428"
+        ],
+        [
+          "0xa7e429",
+          "0xa7e42b"
+        ],
+        [
+          "0xb8a400",
+          "0xb8a417"
+        ],
+        [
+          "0xb8a420",
+          "0xb8a430"
+        ],
+        [
+          "0xbb600c",
+          "0xbb602b"
+        ]
+      ]
+    },
+    {
       "owner": "nfl2k5_season_cap",
       "function": "apply",
-      "before_sha256": "b680041e3d0ac4968e5dbdddfb3e13276fb1427fcfd6582ed3d55a1afb33d9d5",
-      "after_sha256": "b680041e3d0ac4968e5dbdddfb3e13276fb1427fcfd6582ed3d55a1afb33d9d5",
+      "before_sha256": "534983ab2292ebb3a1081f708e442656779a2198e8d852e7b73c91365f642e0a",
+      "after_sha256": "534983ab2292ebb3a1081f708e442656779a2198e8d852e7b73c91365f642e0a",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_calendar_engine",
       "function": "apply",
-      "before_sha256": "b680041e3d0ac4968e5dbdddfb3e13276fb1427fcfd6582ed3d55a1afb33d9d5",
-      "after_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
-      "changed_bytes": 3378,
+      "before_sha256": "534983ab2292ebb3a1081f708e442656779a2198e8d852e7b73c91365f642e0a",
+      "after_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
+      "changed_bytes": 3379,
       "file_runs": [
         [
           "0x394",
@@ -14959,10 +15073,6 @@
         ],
         [
           "0xbb600c",
-          "0xbb6023"
-        ],
-        [
-          "0xbb6024",
           "0xbb6034"
         ],
         [
@@ -16314,32 +16424,32 @@
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
-      "after_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
+      "before_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
+      "after_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_ingame",
       "function": "apply_xbe",
-      "before_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
-      "after_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
+      "before_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
+      "after_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
-      "after_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
+      "before_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
+      "after_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_ingame",
       "function": "apply_xbe",
-      "before_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
-      "after_sha256": "83cd8595792d2062d7b5f7de5ccfc6f03ac37f1269157fb0bb4f243e39d36a45",
+      "before_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
+      "after_sha256": "11a1c32b8d0d3e8b7cc3d2f896937a77e0e3b9045d20ce87434d7a86ff63f9e6",
       "changed_bytes": 0,
       "file_runs": []
     },
@@ -21058,75 +21168,10 @@
       ]
     },
     {
-      "owner": "nfl2k5_camera",
-      "function": "apply",
-      "before_sha256": "bf4446a97cf22a29e598921bdf57178c9c6a097524e48d2db1dcb9f654a1f77a",
-      "after_sha256": "8681239527f9f4e35f0e580bf67bb08d417582e51ea1fa3c957ccfe7b99514b7",
-      "changed_bytes": 42,
-      "file_runs": [
-        [
-          "0x66c",
-          "0x67a"
-        ],
-        [
-          "0x67b",
-          "0x680"
-        ],
-        [
-          "0xa7df12",
-          "0xa7df14"
-        ],
-        [
-          "0xa7df62",
-          "0xa7df64"
-        ],
-        [
-          "0xa7dfb2",
-          "0xa7dfb4"
-        ],
-        [
-          "0xa7e002",
-          "0xa7e004"
-        ],
-        [
-          "0xa7e046",
-          "0xa7e048"
-        ],
-        [
-          "0xa7e04a",
-          "0xa7e04c"
-        ],
-        [
-          "0xa7e052",
-          "0xa7e054"
-        ],
-        [
-          "0xa7e066",
-          "0xa7e068"
-        ],
-        [
-          "0xa7e069",
-          "0xa7e06b"
-        ],
-        [
-          "0xa7e0a2",
-          "0xa7e0a4"
-        ],
-        [
-          "0xa7e0f2",
-          "0xa7e0f3"
-        ],
-        [
-          "0xa7e109",
-          "0xa7e10b"
-        ]
-      ]
-    },
-    {
       "owner": "nfl2k5_widescreen",
       "function": "apply",
-      "before_sha256": "8681239527f9f4e35f0e580bf67bb08d417582e51ea1fa3c957ccfe7b99514b7",
-      "after_sha256": "a8c574165a17ab6ec16e4e585e9a44d93d78f59015663486f5c4a536dee21e99",
+      "before_sha256": "bf4446a97cf22a29e598921bdf57178c9c6a097524e48d2db1dcb9f654a1f77a",
+      "after_sha256": "74d63da39dbe8c819aa69ef6e669747125b25041f3f8b7da8470c9111e33d37e",
       "changed_bytes": 912,
       "file_runs": [
         [
@@ -21226,8 +21271,8 @@
     {
       "owner": "nfl2k5_modern_naming",
       "function": "apply",
-      "before_sha256": "a8c574165a17ab6ec16e4e585e9a44d93d78f59015663486f5c4a536dee21e99",
-      "after_sha256": "4894c6c5c0a73c66f78eca745f81a09b8b4644f7e8880e7c08f7d61f2b4443f9",
+      "before_sha256": "74d63da39dbe8c819aa69ef6e669747125b25041f3f8b7da8470c9111e33d37e",
+      "after_sha256": "66f239e456471833f67102f8b28c0dacfc22db076c76cf672bdcb5d605dadb8d",
       "changed_bytes": 408,
       "file_runs": [
         [
@@ -22791,8 +22836,8 @@
     {
       "owner": "nfl2k5_overtime",
       "function": "apply",
-      "before_sha256": "4894c6c5c0a73c66f78eca745f81a09b8b4644f7e8880e7c08f7d61f2b4443f9",
-      "after_sha256": "f9751c9544c88acbfdc1c7b2ffc0d093eb95a0751c0ef980d6900631f23048e3",
+      "before_sha256": "66f239e456471833f67102f8b28c0dacfc22db076c76cf672bdcb5d605dadb8d",
+      "after_sha256": "15b469a9f77cf95f9ca81b396c2ba13e947e5088aa104aac02f62c72edfd393f",
       "changed_bytes": 661,
       "file_runs": [
         [
@@ -22892,8 +22937,8 @@
     {
       "owner": "nfl2k5_team_column",
       "function": "apply",
-      "before_sha256": "f9751c9544c88acbfdc1c7b2ffc0d093eb95a0751c0ef980d6900631f23048e3",
-      "after_sha256": "cf8ab23c1fcb4c46b2e7fbd87b41b4592290f02c820b10ecdd8b65e7fc98b936",
+      "before_sha256": "15b469a9f77cf95f9ca81b396c2ba13e947e5088aa104aac02f62c72edfd393f",
+      "after_sha256": "ac6cfdce6fa3f1ec8b6c94de053972d03fc054c83dca0fec85d8d06da48d55c1",
       "changed_bytes": 699,
       "file_runs": [
         [
@@ -23173,8 +23218,8 @@
     {
       "owner": "nfl2k5_position_row",
       "function": "apply",
-      "before_sha256": "cf8ab23c1fcb4c46b2e7fbd87b41b4592290f02c820b10ecdd8b65e7fc98b936",
-      "after_sha256": "8ca10e9487a60bbf590696b65fd6260a12567b546848ac075bf4b35cf775c379",
+      "before_sha256": "ac6cfdce6fa3f1ec8b6c94de053972d03fc054c83dca0fec85d8d06da48d55c1",
+      "after_sha256": "a3b1d6e2e371795079dd069a57f1fc3c5c526f86a93d64bfb1a4d42bbe2c659e",
       "changed_bytes": 34,
       "file_runs": [
         [
@@ -23218,8 +23263,8 @@
     {
       "owner": "nfl2k5_probowl_order",
       "function": "apply",
-      "before_sha256": "8ca10e9487a60bbf590696b65fd6260a12567b546848ac075bf4b35cf775c379",
-      "after_sha256": "367c86e7ddd0c616d1fad66fea23a51be45470004bb3a34cda70c40957ccba82",
+      "before_sha256": "a3b1d6e2e371795079dd069a57f1fc3c5c526f86a93d64bfb1a4d42bbe2c659e",
+      "after_sha256": "ede0c2bdfd14ce243ca1ae3376b95d88f4d91cff65d3d3cac288071fa7681955",
       "changed_bytes": 37,
       "file_runs": [
         [
@@ -23267,9 +23312,9 @@
     {
       "owner": "nfl2k5_penalties",
       "function": "apply",
-      "before_sha256": "367c86e7ddd0c616d1fad66fea23a51be45470004bb3a34cda70c40957ccba82",
-      "after_sha256": "4cc5135469e57129e388fbef08305ad83003eaf15ac59c71d7ea3ddefc1542b0",
-      "changed_bytes": 140,
+      "before_sha256": "ede0c2bdfd14ce243ca1ae3376b95d88f4d91cff65d3d3cac288071fa7681955",
+      "after_sha256": "c0e1db5d605500fc6d6a2a1d33954cc241d5a5e06ccd93cd45ac198530eb9f4a",
+      "changed_bytes": 142,
       "file_runs": [
         [
           "0x394",
@@ -23281,14 +23326,6 @@
         ],
         [
           "0x66c",
-          "0x66f"
-        ],
-        [
-          "0x670",
-          "0x677"
-        ],
-        [
-          "0x678",
           "0x680"
         ],
         [
@@ -23384,8 +23421,8 @@
     {
       "owner": "nfl2k5_kick_laces",
       "function": "apply",
-      "before_sha256": "4cc5135469e57129e388fbef08305ad83003eaf15ac59c71d7ea3ddefc1542b0",
-      "after_sha256": "208f90508e24fc34a5067b467ef63332412b78194b82ddfa408558f36856a279",
+      "before_sha256": "c0e1db5d605500fc6d6a2a1d33954cc241d5a5e06ccd93cd45ac198530eb9f4a",
+      "after_sha256": "701582f33a61927c0e90d93bf62f098e6c912d50cc5db521b13dd0f02affe648",
       "changed_bytes": 165,
       "file_runs": [
         [
@@ -23417,8 +23454,8 @@
     {
       "owner": "nfl2k5_franchise_practice",
       "function": "apply",
-      "before_sha256": "208f90508e24fc34a5067b467ef63332412b78194b82ddfa408558f36856a279",
-      "after_sha256": "266c918a2152938dc2e807209a2b98a33bbe09cf50019042f89c7da800090bc4",
+      "before_sha256": "701582f33a61927c0e90d93bf62f098e6c912d50cc5db521b13dd0f02affe648",
+      "after_sha256": "a13a9b4310df06bb90e4d089563f48045ff4f8fecf89d915b69a5b9304ff717b",
       "changed_bytes": 424,
       "file_runs": [
         [
@@ -23586,8 +23623,8 @@
     {
       "owner": "nfl2k5_prospect_names",
       "function": "xbe_apply",
-      "before_sha256": "266c918a2152938dc2e807209a2b98a33bbe09cf50019042f89c7da800090bc4",
-      "after_sha256": "2261ceca5dbceb49623ff10be72449cd2fd47c02a5ecb28a6dceb506b313fcb7",
+      "before_sha256": "a13a9b4310df06bb90e4d089563f48045ff4f8fecf89d915b69a5b9304ff717b",
+      "after_sha256": "e811100d3961736d2e6a9c66312ebc0f7335689c205fb905686b390047c631fc",
       "changed_bytes": 53,
       "file_runs": [
         [
@@ -23607,8 +23644,8 @@
     {
       "owner": "nfl2k5_player_star",
       "function": "apply",
-      "before_sha256": "2261ceca5dbceb49623ff10be72449cd2fd47c02a5ecb28a6dceb506b313fcb7",
-      "after_sha256": "d9eb74189665defadb3dd8b6bf480d4511b2cfdda67a946c38de1295989ab045",
+      "before_sha256": "e811100d3961736d2e6a9c66312ebc0f7335689c205fb905686b390047c631fc",
+      "after_sha256": "038e9e226b63ed61e86545df7c610a7b9268a5002c83fc704fa19150acafc08c",
       "changed_bytes": 481,
       "file_runs": [
         [
@@ -23688,8 +23725,8 @@
     {
       "owner": "nfl2k5_dynamic_kickoff",
       "function": "apply",
-      "before_sha256": "d9eb74189665defadb3dd8b6bf480d4511b2cfdda67a946c38de1295989ab045",
-      "after_sha256": "b40bc7a9d5d92ef0b54aeb5330774ccd49dc6f178929c5cb6cf14c515e0da804",
+      "before_sha256": "038e9e226b63ed61e86545df7c610a7b9268a5002c83fc704fa19150acafc08c",
+      "after_sha256": "c966d115d909feb70d7640dc77a1bea128f47e79ea5a7df1e82094de617197cc",
       "changed_bytes": 2008,
       "file_runs": [
         [
@@ -23889,8 +23926,8 @@
     {
       "owner": "nfl2k5_practice_squad",
       "function": "apply",
-      "before_sha256": "b40bc7a9d5d92ef0b54aeb5330774ccd49dc6f178929c5cb6cf14c515e0da804",
-      "after_sha256": "153ba6a54e29c2dc59f20e4b2b644b90471985002418747ccd4dea1d57ba65c8",
+      "before_sha256": "c966d115d909feb70d7640dc77a1bea128f47e79ea5a7df1e82094de617197cc",
+      "after_sha256": "4e0bb24b06837bdec77e4b884fa1cb845719f6456532f52b52dc54a7a91a0ab5",
       "changed_bytes": 3364,
       "file_runs": [
         [
@@ -24306,8 +24343,8 @@
     {
       "owner": "nfl2k5_depth_locks",
       "function": "apply",
-      "before_sha256": "153ba6a54e29c2dc59f20e4b2b644b90471985002418747ccd4dea1d57ba65c8",
-      "after_sha256": "1f668a66de94e3bdd437a8d33f1a8a47a6611756cdc27f81ff4ed565fa8cc064",
+      "before_sha256": "4e0bb24b06837bdec77e4b884fa1cb845719f6456532f52b52dc54a7a91a0ab5",
+      "after_sha256": "bae24e4741ef5458fd27052c0fec129c8c64f6cfd5d4dd2c0fcc66e3b1495835",
       "changed_bytes": 925,
       "file_runs": [
         [
@@ -24427,8 +24464,8 @@
     {
       "owner": "nfl2k5_practice_reserves",
       "function": "apply",
-      "before_sha256": "1f668a66de94e3bdd437a8d33f1a8a47a6611756cdc27f81ff4ed565fa8cc064",
-      "after_sha256": "227b93a763dcd2ed3165efa2890ee7d3c59fc430955c3a64002df8254dc27d26",
+      "before_sha256": "bae24e4741ef5458fd27052c0fec129c8c64f6cfd5d4dd2c0fcc66e3b1495835",
+      "after_sha256": "c33d951c70f52254e3e40b5ce47e9888ee73f2807b36d4412783c3bda4d39698",
       "changed_bytes": 188,
       "file_runs": [
         [
@@ -24456,8 +24493,8 @@
     {
       "owner": "nfl2k5_uniform_choice",
       "function": "apply",
-      "before_sha256": "227b93a763dcd2ed3165efa2890ee7d3c59fc430955c3a64002df8254dc27d26",
-      "after_sha256": "3cb3eed784608bf918948e50858103ecf0e1bd6581ae2f23a6cc1f52f2b111d1",
+      "before_sha256": "c33d951c70f52254e3e40b5ce47e9888ee73f2807b36d4412783c3bda4d39698",
+      "after_sha256": "715b403dea3365ba7df44d47bd009c50120d58f16c012980504f18b077b72982",
       "changed_bytes": 331,
       "file_runs": [
         [
@@ -24541,8 +24578,8 @@
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "3cb3eed784608bf918948e50858103ecf0e1bd6581ae2f23a6cc1f52f2b111d1",
-      "after_sha256": "c42d81a36845a475d1e8d393d7409f1fe204fe4bb8ad95a46b3d44197c2e5212",
+      "before_sha256": "715b403dea3365ba7df44d47bd009c50120d58f16c012980504f18b077b72982",
+      "after_sha256": "0b2a3d3d265947babab56d77bef927b9f1de15a5b39889b83f02c0fe9d71305f",
       "changed_bytes": 684,
       "file_runs": [
         [
@@ -24602,8 +24639,8 @@
     {
       "owner": "nfl2k5_hud_layout",
       "function": "apply",
-      "before_sha256": "c42d81a36845a475d1e8d393d7409f1fe204fe4bb8ad95a46b3d44197c2e5212",
-      "after_sha256": "981a71c54e24f03f03de5126165bc39c2175ef054498769d9de907fb62601702",
+      "before_sha256": "0b2a3d3d265947babab56d77bef927b9f1de15a5b39889b83f02c0fe9d71305f",
+      "after_sha256": "9a1ab29a8f8b33efee3b0c0df50ceed84e19a75c6d5a5753a58034f9eb9cb54d",
       "changed_bytes": 25,
       "file_runs": [
         [
@@ -24623,16 +24660,16 @@
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "d0253094b6ed20dd2c49250c6d6650fab04022fd22eaebbf58832ed95274f8c1",
-      "after_sha256": "d0253094b6ed20dd2c49250c6d6650fab04022fd22eaebbf58832ed95274f8c1",
+      "before_sha256": "addafee9a21c2da706e776d895528e86462f79d91788deb6a5e5f456b7aa4631",
+      "after_sha256": "addafee9a21c2da706e776d895528e86462f79d91788deb6a5e5f456b7aa4631",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_ingame",
       "function": "apply_xbe",
-      "before_sha256": "c42d81a36845a475d1e8d393d7409f1fe204fe4bb8ad95a46b3d44197c2e5212",
-      "after_sha256": "d0253094b6ed20dd2c49250c6d6650fab04022fd22eaebbf58832ed95274f8c1",
+      "before_sha256": "0b2a3d3d265947babab56d77bef927b9f1de15a5b39889b83f02c0fe9d71305f",
+      "after_sha256": "addafee9a21c2da706e776d895528e86462f79d91788deb6a5e5f456b7aa4631",
       "changed_bytes": 153,
       "file_runs": [
         [
@@ -24792,8 +24829,8 @@
     {
       "owner": "nfl2k5_position_pools",
       "function": "apply",
-      "before_sha256": "d0253094b6ed20dd2c49250c6d6650fab04022fd22eaebbf58832ed95274f8c1",
-      "after_sha256": "27a2478149fb8cd518ccb493a3639b1a83c63a62e432cdd68d7d94fd4b513533",
+      "before_sha256": "addafee9a21c2da706e776d895528e86462f79d91788deb6a5e5f456b7aa4631",
+      "after_sha256": "f524f0ca5b281ae7e6b1ae682be038441551b14b4bf35469499b873993ccfd62",
       "changed_bytes": 655,
       "file_runs": [
         [
@@ -26317,8 +26354,8 @@
     {
       "owner": "nfl2k5_depth_chart_rows",
       "function": "apply",
-      "before_sha256": "27a2478149fb8cd518ccb493a3639b1a83c63a62e432cdd68d7d94fd4b513533",
-      "after_sha256": "fb901f1ca94e88cc2108c50035d06dfdd1ac0a4846e83635d3a8dab0dcd3ff4f",
+      "before_sha256": "f524f0ca5b281ae7e6b1ae682be038441551b14b4bf35469499b873993ccfd62",
+      "after_sha256": "69edbe4899bb70d1c725b45c6d6c63d141232181ad00cf47fcb595073269eb1d",
       "changed_bytes": 74031,
       "file_runs": [
         [
@@ -26566,8 +26603,8 @@
     {
       "owner": "nfl2k5_season_length",
       "function": "apply",
-      "before_sha256": "fb901f1ca94e88cc2108c50035d06dfdd1ac0a4846e83635d3a8dab0dcd3ff4f",
-      "after_sha256": "13adc8901a38acb842ce35f289eac66d57e8ddbccea3d6203b58a4c5ca2c13a7",
+      "before_sha256": "69edbe4899bb70d1c725b45c6d6c63d141232181ad00cf47fcb595073269eb1d",
+      "after_sha256": "97c5ec4374dcc39304c6bf4a691cdb3b6b04997303a78403723d7482889feb92",
       "changed_bytes": 3818,
       "file_runs": [
         [
@@ -27603,8 +27640,8 @@
     {
       "owner": "nfl2k5_playoff_picture",
       "function": "apply",
-      "before_sha256": "13adc8901a38acb842ce35f289eac66d57e8ddbccea3d6203b58a4c5ca2c13a7",
-      "after_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
+      "before_sha256": "97c5ec4374dcc39304c6bf4a691cdb3b6b04997303a78403723d7482889feb92",
+      "after_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
       "changed_bytes": 603,
       "file_runs": [
         [
@@ -27621,10 +27658,10 @@
         ],
         [
           "0x66c",
-          "0x672"
+          "0x674"
         ],
         [
-          "0x673",
+          "0x675",
           "0x680"
         ],
         [
@@ -28524,40 +28561,40 @@
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
-      "after_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
+      "before_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
+      "after_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_ingame",
       "function": "apply_xbe",
-      "before_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
-      "after_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
+      "before_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
+      "after_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
-      "after_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
+      "before_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
+      "after_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_ingame",
       "function": "apply_xbe",
-      "before_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
-      "after_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
+      "before_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
+      "after_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_seven_on_seven",
       "function": "apply",
-      "before_sha256": "c3c3009bff86a010f4399eaec307c94d6b45ca5042eef49d957286d49c04be2a",
-      "after_sha256": "e99b22a23d612103348c81b2907d9ceb368608d805a0be6f72b7fea87f88a31d",
+      "before_sha256": "ccb0efcdfd9ed72435c6bc6f346e3e6c831ee76a4b1806ee2f9d8aaf3c803f7d",
+      "after_sha256": "c4d38c72fe7598bf4d8fc0695fe1047b2dcde35fad91652f2b9fde38c8e95a83",
       "changed_bytes": 284,
       "file_runs": [
         [
@@ -28633,32 +28670,32 @@
     {
       "owner": "nfl2k5_practice_squad",
       "function": "apply",
-      "before_sha256": "e99b22a23d612103348c81b2907d9ceb368608d805a0be6f72b7fea87f88a31d",
-      "after_sha256": "e99b22a23d612103348c81b2907d9ceb368608d805a0be6f72b7fea87f88a31d",
+      "before_sha256": "c4d38c72fe7598bf4d8fc0695fe1047b2dcde35fad91652f2b9fde38c8e95a83",
+      "after_sha256": "c4d38c72fe7598bf4d8fc0695fe1047b2dcde35fad91652f2b9fde38c8e95a83",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_franchise_practice",
       "function": "apply",
-      "before_sha256": "e99b22a23d612103348c81b2907d9ceb368608d805a0be6f72b7fea87f88a31d",
-      "after_sha256": "e99b22a23d612103348c81b2907d9ceb368608d805a0be6f72b7fea87f88a31d",
+      "before_sha256": "c4d38c72fe7598bf4d8fc0695fe1047b2dcde35fad91652f2b9fde38c8e95a83",
+      "after_sha256": "c4d38c72fe7598bf4d8fc0695fe1047b2dcde35fad91652f2b9fde38c8e95a83",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_practice_reserves",
       "function": "apply",
-      "before_sha256": "e99b22a23d612103348c81b2907d9ceb368608d805a0be6f72b7fea87f88a31d",
-      "after_sha256": "e99b22a23d612103348c81b2907d9ceb368608d805a0be6f72b7fea87f88a31d",
+      "before_sha256": "c4d38c72fe7598bf4d8fc0695fe1047b2dcde35fad91652f2b9fde38c8e95a83",
+      "after_sha256": "c4d38c72fe7598bf4d8fc0695fe1047b2dcde35fad91652f2b9fde38c8e95a83",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_xbe_space",
       "function": "apply",
-      "before_sha256": "e99b22a23d612103348c81b2907d9ceb368608d805a0be6f72b7fea87f88a31d",
-      "after_sha256": "5c7a5b08226e4f9f2a94488515852a55b5673e6a158208cde20f790db8f22991",
+      "before_sha256": "c4d38c72fe7598bf4d8fc0695fe1047b2dcde35fad91652f2b9fde38c8e95a83",
+      "after_sha256": "f0e53fa569967448c43035b7f6f73cb463d8bba50dd2d9345376eca044aa7fcd",
       "changed_bytes": 279862,
       "file_runs": [
         [
@@ -29220,11 +29257,180 @@
       ]
     },
     {
+      "owner": "nfl2k5_camera",
+      "function": "apply",
+      "before_sha256": "f0e53fa569967448c43035b7f6f73cb463d8bba50dd2d9345376eca044aa7fcd",
+      "after_sha256": "21ec956b4ed813e0e98838bce54d101b4ec15a7f6f1794f1f7e8ae9475abf234",
+      "changed_bytes": 255,
+      "file_runs": [
+        [
+          "0x394",
+          "0x3a8"
+        ],
+        [
+          "0x66c",
+          "0x680"
+        ],
+        [
+          "0x90c",
+          "0x920"
+        ],
+        [
+          "0x97c",
+          "0x990"
+        ],
+        [
+          "0xdb4",
+          "0xdd4"
+        ],
+        [
+          "0x954c3",
+          "0x954c5"
+        ],
+        [
+          "0x955ec",
+          "0x955f0"
+        ],
+        [
+          "0xd3c6b",
+          "0xd3c6c"
+        ],
+        [
+          "0x15d1d5",
+          "0x15d1d9"
+        ],
+        [
+          "0x15e7b2",
+          "0x15e7b6"
+        ],
+        [
+          "0x15e865",
+          "0x15e869"
+        ],
+        [
+          "0xa7e226",
+          "0xa7e228"
+        ],
+        [
+          "0xa7e22a",
+          "0xa7e22c"
+        ],
+        [
+          "0xa7e246",
+          "0xa7e248"
+        ],
+        [
+          "0xa7e249",
+          "0xa7e24b"
+        ],
+        [
+          "0xa7e27a",
+          "0xa7e27c"
+        ],
+        [
+          "0xa7e295",
+          "0xa7e298"
+        ],
+        [
+          "0xa7e29a",
+          "0xa7e29b"
+        ],
+        [
+          "0xa7e2c6",
+          "0xa7e2c8"
+        ],
+        [
+          "0xa7e2ca",
+          "0xa7e2cc"
+        ],
+        [
+          "0xa7e2e5",
+          "0xa7e2e8"
+        ],
+        [
+          "0xa7e2e9",
+          "0xa7e2eb"
+        ],
+        [
+          "0xa7e31a",
+          "0xa7e31c"
+        ],
+        [
+          "0xa7e335",
+          "0xa7e338"
+        ],
+        [
+          "0xa7e33a",
+          "0xa7e33b"
+        ],
+        [
+          "0xa7e366",
+          "0xa7e368"
+        ],
+        [
+          "0xa7e36a",
+          "0xa7e36c"
+        ],
+        [
+          "0xa7e385",
+          "0xa7e388"
+        ],
+        [
+          "0xa7e389",
+          "0xa7e38b"
+        ],
+        [
+          "0xa7e3b6",
+          "0xa7e3b8"
+        ],
+        [
+          "0xa7e3ba",
+          "0xa7e3bb"
+        ],
+        [
+          "0xa7e3d5",
+          "0xa7e3d8"
+        ],
+        [
+          "0xa7e3d9",
+          "0xa7e3db"
+        ],
+        [
+          "0xa7e406",
+          "0xa7e407"
+        ],
+        [
+          "0xa7e40a",
+          "0xa7e40c"
+        ],
+        [
+          "0xa7e426",
+          "0xa7e428"
+        ],
+        [
+          "0xa7e429",
+          "0xa7e42b"
+        ],
+        [
+          "0xb8a830",
+          "0xb8a847"
+        ],
+        [
+          "0xb8a850",
+          "0xb8a860"
+        ],
+        [
+          "0xbb600c",
+          "0xbb602c"
+        ]
+      ]
+    },
+    {
       "owner": "nfl2k5_roster_storage",
       "function": "apply",
-      "before_sha256": "5c7a5b08226e4f9f2a94488515852a55b5673e6a158208cde20f790db8f22991",
-      "after_sha256": "75710ad71d1cedc22421eddfe61a0f6d5a173394f2d0bae828ed6da201584f72",
-      "changed_bytes": 225,
+      "before_sha256": "21ec956b4ed813e0e98838bce54d101b4ec15a7f6f1794f1f7e8ae9475abf234",
+      "after_sha256": "c4c3c8469f32bb39e5e9625936dd8856d24984ebd65d3f97be7539bf3b1e888b",
+      "changed_bytes": 221,
       "file_runs": [
         [
           "0x394",
@@ -29240,10 +29446,14 @@
         ],
         [
           "0xdb4",
+          "0xdc8"
+        ],
+        [
+          "0xdc9",
           "0xdd4"
         ],
         [
-          "0x3091c4",
+          "0x3091c5",
           "0x3091c8"
         ],
         [
@@ -29259,7 +29469,7 @@
           "0x30928f"
         ],
         [
-          "0x3092cb",
+          "0x3092cc",
           "0x3092cf"
         ],
         [
@@ -29267,7 +29477,7 @@
           "0x3092da"
         ],
         [
-          "0x309343",
+          "0x309344",
           "0x309347"
         ],
         [
@@ -29283,8 +29493,8 @@
           "0x30aa00"
         ],
         [
-          "0xb90e30",
-          "0xb90e82"
+          "0xb90e70",
+          "0xb90ec2"
         ],
         [
           "0xbb600c",
@@ -29295,8 +29505,8 @@
     {
       "owner": "nfl2k5_defensive_try",
       "function": "apply",
-      "before_sha256": "75710ad71d1cedc22421eddfe61a0f6d5a173394f2d0bae828ed6da201584f72",
-      "after_sha256": "5a8b912f76fccd87fe55e6e6cc00727b3dfc34a7b0f3c262b2c51df57273a514",
+      "before_sha256": "c4c3c8469f32bb39e5e9625936dd8856d24984ebd65d3f97be7539bf3b1e888b",
+      "after_sha256": "81afe6f5ee2d4635fcb10bcbc993713a2b48fb84ca0a14f80a9c74f11fa41737",
       "changed_bytes": 3066,
       "file_runs": [
         [
@@ -29472,19 +29682,19 @@
           "0xb8957e"
         ],
         [
-          "0xb8a840",
-          "0xb8ac99"
+          "0xb8a880",
+          "0xb8acd9"
         ],
         [
-          "0xb8ac9a",
-          "0xb8aca2"
+          "0xb8acda",
+          "0xb8ace2"
         ],
         [
           "0xbb600c",
-          "0xbb6017"
+          "0xbb6015"
         ],
         [
-          "0xbb6018",
+          "0xbb6016",
           "0xbb604a"
         ],
         [
@@ -31072,8 +31282,8 @@
     {
       "owner": "nfl2k5_zone_drop",
       "function": "apply",
-      "before_sha256": "5a8b912f76fccd87fe55e6e6cc00727b3dfc34a7b0f3c262b2c51df57273a514",
-      "after_sha256": "b31cf24ad7c49f4e419a4c36919c23f169f5e1ffc3ba6b37d82ca170bb22e1f9",
+      "before_sha256": "81afe6f5ee2d4635fcb10bcbc993713a2b48fb84ca0a14f80a9c74f11fa41737",
+      "after_sha256": "c91766d2ced7d7cc203a605dad672aa5278ef7b0a01c9656cc501f168782bc80",
       "changed_bytes": 206,
       "file_runs": [
         [
@@ -31109,8 +31319,8 @@
     {
       "owner": "nfl2k5_dynamic_kickoff_relocated",
       "function": "apply",
-      "before_sha256": "b31cf24ad7c49f4e419a4c36919c23f169f5e1ffc3ba6b37d82ca170bb22e1f9",
-      "after_sha256": "af5b2884e72e03846023f45b1a33cccf61f0c4c5d0fbe8ea8c6c4fd280baaf9c",
+      "before_sha256": "c91766d2ced7d7cc203a605dad672aa5278ef7b0a01c9656cc501f168782bc80",
+      "after_sha256": "5c0cc4a78b2b9d6f7f42e707b1126e1ae7e1ce91f43cfa05634430ea3addb929",
       "changed_bytes": 2119,
       "file_runs": [
         [
@@ -31214,24 +31424,24 @@
     {
       "owner": "nfl2k5_boot_logo",
       "function": "apply",
-      "before_sha256": "af5b2884e72e03846023f45b1a33cccf61f0c4c5d0fbe8ea8c6c4fd280baaf9c",
-      "after_sha256": "af5b2884e72e03846023f45b1a33cccf61f0c4c5d0fbe8ea8c6c4fd280baaf9c",
+      "before_sha256": "5c0cc4a78b2b9d6f7f42e707b1126e1ae7e1ce91f43cfa05634430ea3addb929",
+      "after_sha256": "5c0cc4a78b2b9d6f7f42e707b1126e1ae7e1ce91f43cfa05634430ea3addb929",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_ingame",
       "function": "apply_xbe",
-      "before_sha256": "af5b2884e72e03846023f45b1a33cccf61f0c4c5d0fbe8ea8c6c4fd280baaf9c",
-      "after_sha256": "af5b2884e72e03846023f45b1a33cccf61f0c4c5d0fbe8ea8c6c4fd280baaf9c",
+      "before_sha256": "5c0cc4a78b2b9d6f7f42e707b1126e1ae7e1ce91f43cfa05634430ea3addb929",
+      "after_sha256": "5c0cc4a78b2b9d6f7f42e707b1126e1ae7e1ce91f43cfa05634430ea3addb929",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_scorebug_runtime",
       "function": "apply",
-      "before_sha256": "af5b2884e72e03846023f45b1a33cccf61f0c4c5d0fbe8ea8c6c4fd280baaf9c",
-      "after_sha256": "62d5e9a752cc6a0c7d68e8f6bcd86e4ec51005f7269f987355e1d30951138e04",
+      "before_sha256": "5c0cc4a78b2b9d6f7f42e707b1126e1ae7e1ce91f43cfa05634430ea3addb929",
+      "after_sha256": "69fba35eeb612a372e03ef05e4d668450e89888dff6d08488c16f2da7848344a",
       "changed_bytes": 1360,
       "file_runs": [
         [
@@ -31271,9 +31481,9 @@
     {
       "owner": "nfl2k5_momentum",
       "function": "apply",
-      "before_sha256": "62d5e9a752cc6a0c7d68e8f6bcd86e4ec51005f7269f987355e1d30951138e04",
-      "after_sha256": "9799ad81272cda1ff33ace06a9aeff596b252aebb5ac35071dd481e2d17793f9",
-      "changed_bytes": 1566,
+      "before_sha256": "69fba35eeb612a372e03ef05e4d668450e89888dff6d08488c16f2da7848344a",
+      "after_sha256": "2021a7b846910bef1c8d3d886f6a274aa355444de0321cc2a2ba68913add3a54",
+      "changed_bytes": 1565,
       "file_runs": [
         [
           "0x394",
@@ -31285,6 +31495,10 @@
         ],
         [
           "0x8d4",
+          "0x8e0"
+        ],
+        [
+          "0x8e1",
           "0x8e8"
         ],
         [
@@ -31352,8 +31566,8 @@
     {
       "owner": "nfl2k5_coverage_slider",
       "function": "apply",
-      "before_sha256": "9799ad81272cda1ff33ace06a9aeff596b252aebb5ac35071dd481e2d17793f9",
-      "after_sha256": "7746044c303da2f1dbd2083d923e7a6c0ac040ed0a006b3252fabe4255152279",
+      "before_sha256": "2021a7b846910bef1c8d3d886f6a274aa355444de0321cc2a2ba68913add3a54",
+      "after_sha256": "d1db539e4fcdd1b3011111ebc334d8370366f77621886be85de75b87ebf56567",
       "changed_bytes": 140,
       "file_runs": [
         [
@@ -31381,8 +31595,8 @@
           "0x1e4332"
         ],
         [
-          "0xb8a830",
-          "0xb8a838"
+          "0xb8a870",
+          "0xb8a878"
         ],
         [
           "0xbb600c",
@@ -31393,8 +31607,8 @@
     {
       "owner": "nfl2k5_scramble_tuning",
       "function": "apply",
-      "before_sha256": "7746044c303da2f1dbd2083d923e7a6c0ac040ed0a006b3252fabe4255152279",
-      "after_sha256": "c4e7ca756964a27b244628f4a5fe78887b25cde08ba2a75eaebb643a9aec8827",
+      "before_sha256": "d1db539e4fcdd1b3011111ebc334d8370366f77621886be85de75b87ebf56567",
+      "after_sha256": "7b207c45860479156c3f6c3f0ca993ebe28c1ceb8ead2cfef11c1e1d1a455d80",
       "changed_bytes": 241,
       "file_runs": [
         [
@@ -31418,20 +31632,20 @@
           "0x1cf1aa"
         ],
         [
-          "0xb90e90",
-          "0xb90ed5"
+          "0xb90ed0",
+          "0xb90f15"
         ],
         [
-          "0xb90ed6",
-          "0xb90ed7"
+          "0xb90f16",
+          "0xb90f17"
         ],
         [
-          "0xb90f00",
-          "0xb90f0d"
+          "0xb90f40",
+          "0xb90f4d"
         ],
         [
-          "0xb90f0e",
-          "0xb90f2c"
+          "0xb90f4e",
+          "0xb90f6c"
         ],
         [
           "0xbb600c",
@@ -31442,8 +31656,8 @@
     {
       "owner": "nfl2k5_music_playlist",
       "function": "apply",
-      "before_sha256": "c4e7ca756964a27b244628f4a5fe78887b25cde08ba2a75eaebb643a9aec8827",
-      "after_sha256": "0279ceb59396e34d88791e7c693179f65b02cf58a1c7f15f649ded8a969e17ce",
+      "before_sha256": "7b207c45860479156c3f6c3f0ca993ebe28c1ceb8ead2cfef11c1e1d1a455d80",
+      "after_sha256": "1d31fd97455f27c90e717850ee7e771e06b61db0fe15d0517fd45ed929794fd6",
       "changed_bytes": 2324,
       "file_runs": [
         [
@@ -31459,7 +31673,7 @@
           "0x990"
         ],
         [
-          "0xdb4",
+          "0xdb5",
           "0xdd4"
         ],
         [
@@ -31492,10 +31706,6 @@
         ],
         [
           "0x26f6b0",
-          "0x26f6b2"
-        ],
-        [
-          "0x26f6b3",
           "0x26f6b5"
         ],
         [
@@ -31543,36 +31753,36 @@
           "0x315e27"
         ],
         [
-          "0xb8c630",
-          "0xb8c8c4"
+          "0xb8c670",
+          "0xb8c904"
         ],
         [
-          "0xb8c8c5",
-          "0xb8c8ce"
+          "0xb8c905",
+          "0xb8c90e"
         ],
         [
-          "0xb8c8cf",
-          "0xb8c8e3"
+          "0xb8c90f",
+          "0xb8c923"
         ],
         [
-          "0xb8c8e4",
-          "0xb8c8ec"
+          "0xb8c924",
+          "0xb8c92c"
         ],
         [
-          "0xb8c8ed",
-          "0xb8c94a"
+          "0xb8c92d",
+          "0xb8c98a"
         ],
         [
-          "0xb8c94b",
-          "0xb8ca71"
+          "0xb8c98b",
+          "0xb8cab1"
         ],
         [
-          "0xb8ca72",
-          "0xb8cb45"
+          "0xb8cab2",
+          "0xb8cb85"
         ],
         [
-          "0xb8cb46",
-          "0xb8ccc9"
+          "0xb8cb86",
+          "0xb8cd09"
         ],
         [
           "0xbb600c",
@@ -32043,8 +32253,8 @@
     {
       "owner": "nfl2k5_practice_squad_screen",
       "function": "apply",
-      "before_sha256": "0279ceb59396e34d88791e7c693179f65b02cf58a1c7f15f649ded8a969e17ce",
-      "after_sha256": "0d85c5d40fa9561f9a26d0abf3ae0a9b808d176f40fa189ebc9d8956d1689442",
+      "before_sha256": "1d31fd97455f27c90e717850ee7e771e06b61db0fe15d0517fd45ed929794fd6",
+      "after_sha256": "076caf04fcf50a72d1e1614326e10384ed40010b1bcb7939caf26f842826626b",
       "changed_bytes": 3673,
       "file_runs": [
         [
@@ -32061,10 +32271,6 @@
         ],
         [
           "0xdb4",
-          "0xdbb"
-        ],
-        [
-          "0xdbc",
           "0xdd4"
         ],
         [
@@ -32072,55 +32278,59 @@
           "0x5176c4"
         ],
         [
-          "0xb8ee30",
-          "0xb8f36e"
+          "0xb8ee70",
+          "0xb8f3ae"
         ],
         [
-          "0xb8f370",
-          "0xb8f509"
+          "0xb8f3b0",
+          "0xb8f549"
         ],
         [
-          "0xb8f50a",
-          "0xb8f521"
+          "0xb8f54a",
+          "0xb8f561"
         ],
         [
-          "0xb8f522",
-          "0xb8f621"
+          "0xb8f562",
+          "0xb8f661"
         ],
         [
-          "0xb8f622",
-          "0xb8f639"
+          "0xb8f662",
+          "0xb8f679"
         ],
         [
-          "0xb8f63a",
-          "0xb8fac2"
+          "0xb8f67a",
+          "0xb8fb02"
         ],
         [
-          "0xb8fac4",
-          "0xb8fad2"
+          "0xb8fb04",
+          "0xb8fb12"
         ],
         [
-          "0xb8fad4",
-          "0xb8fae6"
+          "0xb8fb14",
+          "0xb8fb26"
         ],
         [
-          "0xb8fae8",
-          "0xb8fb06"
+          "0xb8fb28",
+          "0xb8fb46"
         ],
         [
-          "0xb8fb08",
-          "0xb8fb16"
+          "0xb8fb48",
+          "0xb8fb56"
         ],
         [
-          "0xb8fb18",
-          "0xb8fbea"
+          "0xb8fb58",
+          "0xb8fc2a"
         ],
         [
-          "0xb8fbec",
-          "0xb8fc1c"
+          "0xb8fc2c",
+          "0xb8fc5c"
         ],
         [
           "0xbb600c",
+          "0xbb6026"
+        ],
+        [
+          "0xbb6027",
           "0xbb602c"
         ]
       ]
@@ -32128,8 +32338,8 @@
     {
       "owner": "nfl2k5_abilities_runtime",
       "function": "apply",
-      "before_sha256": "0d85c5d40fa9561f9a26d0abf3ae0a9b808d176f40fa189ebc9d8956d1689442",
-      "after_sha256": "58669cccaf59aa5ac7b68db8b7a8fa1ed4687669c987518838f6cfeb4f11bb7d",
+      "before_sha256": "076caf04fcf50a72d1e1614326e10384ed40010b1bcb7939caf26f842826626b",
+      "after_sha256": "7ab0e18f57072e7dcc431cac7824076fd4bf037f14a9c99e98d68a92d1085fc2",
       "changed_bytes": 1221,
       "file_runs": [
         [
@@ -32193,9 +32403,9 @@
     {
       "owner": "nfl2k5_qb_spy",
       "function": "apply",
-      "before_sha256": "58669cccaf59aa5ac7b68db8b7a8fa1ed4687669c987518838f6cfeb4f11bb7d",
-      "after_sha256": "5fc50e6b917dbdeed559e0b82dc03e65047d25eb7d242c40d83c86fd8f8d19d9",
-      "changed_bytes": 2009,
+      "before_sha256": "7ab0e18f57072e7dcc431cac7824076fd4bf037f14a9c99e98d68a92d1085fc2",
+      "after_sha256": "72879c594584e0726a9262c10fe516c48b31b48051a6ff7b7a4c24d8ad6c4afc",
+      "changed_bytes": 2010,
       "file_runs": [
         [
           "0x394",
@@ -32274,51 +32484,47 @@
           "0x2ee136"
         ],
         [
-          "0xb8fe30",
-          "0xb9015a"
+          "0xb8fe70",
+          "0xb9019a"
         ],
         [
-          "0xb9015b",
-          "0xb90186"
+          "0xb9019b",
+          "0xb901c6"
         ],
         [
-          "0xb90187",
-          "0xb90227"
+          "0xb901c7",
+          "0xb90267"
         ],
         [
-          "0xb90228",
-          "0xb90232"
+          "0xb90268",
+          "0xb90272"
         ],
         [
-          "0xb90233",
-          "0xb904d7"
+          "0xb90273",
+          "0xb90517"
         ],
         [
-          "0xb904d8",
-          "0xb904e5"
+          "0xb90518",
+          "0xb90525"
         ],
         [
-          "0xb904e6",
-          "0xb904f0"
+          "0xb90526",
+          "0xb90530"
         ],
         [
-          "0xb904f1",
-          "0xb904fb"
+          "0xb90531",
+          "0xb9053b"
         ],
         [
-          "0xb904fc",
-          "0xb904fd"
+          "0xb9053c",
+          "0xb9053d"
         ],
         [
-          "0xb90500",
-          "0xb90518"
+          "0xb90540",
+          "0xb90558"
         ],
         [
           "0xbb600c",
-          "0xbb6027"
-        ],
-        [
-          "0xbb6028",
           "0xbb604c"
         ],
         [
@@ -32330,8 +32536,8 @@
     {
       "owner": "nfl2k5_season_cap",
       "function": "apply",
-      "before_sha256": "5fc50e6b917dbdeed559e0b82dc03e65047d25eb7d242c40d83c86fd8f8d19d9",
-      "after_sha256": "03b5c76833bfc23dc1553f06a0fec2c955373f0cc0bb806462462899d95fda9e",
+      "before_sha256": "72879c594584e0726a9262c10fe516c48b31b48051a6ff7b7a4c24d8ad6c4afc",
+      "after_sha256": "53729bf5a97af2409adadba5e761cf8565c24ae1c189f3ddd68d044328f14ebe",
       "changed_bytes": 21,
       "file_runs": [
         [
@@ -32347,8 +32553,8 @@
     {
       "owner": "nfl2k5_calendar_engine",
       "function": "apply",
-      "before_sha256": "5fc50e6b917dbdeed559e0b82dc03e65047d25eb7d242c40d83c86fd8f8d19d9",
-      "after_sha256": "0811caaf00b7dcc9206a898896de8bc6d4aa052c888ed0326e61df6d9cc58d28",
+      "before_sha256": "72879c594584e0726a9262c10fe516c48b31b48051a6ff7b7a4c24d8ad6c4afc",
+      "after_sha256": "38d1edebbce897d3e0c5f06ea1bab5ec190c1955afeef75a9243cb25826a604a",
       "changed_bytes": 3379,
       "file_runs": [
         [
@@ -34024,9 +34230,9 @@
     {
       "owner": "nfl2k5_read_option_runtime",
       "function": "apply",
-      "before_sha256": "0811caaf00b7dcc9206a898896de8bc6d4aa052c888ed0326e61df6d9cc58d28",
-      "after_sha256": "28ba49149cae6daf80c778bd43cab792f0fa5144d75084453cf03eab2807199a",
-      "changed_bytes": 2246,
+      "before_sha256": "38d1edebbce897d3e0c5f06ea1bab5ec190c1955afeef75a9243cb25826a604a",
+      "after_sha256": "be01b71c947cb1f70aff1c5f17731b3495ec7a7fc371323b05c55c938e215b72",
+      "changed_bytes": 2247,
       "file_runs": [
         [
           "0x394",
@@ -34065,28 +34271,24 @@
           "0x19f19a"
         ],
         [
-          "0xb90630",
-          "0xb90870"
+          "0xb90670",
+          "0xb908b0"
         ],
         [
-          "0xb90871",
-          "0xb90930"
+          "0xb908b1",
+          "0xb909c7"
         ],
         [
-          "0xb90931",
-          "0xb90987"
+          "0xb909c8",
+          "0xb909e2"
         ],
         [
-          "0xb90988",
-          "0xb909a2"
+          "0xb909e3",
+          "0xb90bfe"
         ],
         [
-          "0xb909a3",
-          "0xb90bbe"
-        ],
-        [
-          "0xb90bbf",
-          "0xb90e2d"
+          "0xb90bff",
+          "0xb90e6d"
         ],
         [
           "0xbb600c",
@@ -34113,9 +34315,9 @@
     {
       "owner": "nfl2k5_franchise_2026",
       "function": "apply",
-      "before_sha256": "28ba49149cae6daf80c778bd43cab792f0fa5144d75084453cf03eab2807199a",
-      "after_sha256": "997a8092a8c9ca2555c7e511debc0c0cc5c850364d11957a15b148298db2cea3",
-      "changed_bytes": 5123,
+      "before_sha256": "be01b71c947cb1f70aff1c5f17731b3495ec7a7fc371323b05c55c938e215b72",
+      "after_sha256": "a399d5755155e7071efc9e0bb627bced2370f7ee73123864b8829d527f1339f7",
+      "changed_bytes": 5122,
       "file_runs": [
         [
           "0x90c",
@@ -34127,31 +34329,35 @@
         ],
         [
           "0xdb4",
+          "0xdc8"
+        ],
+        [
+          "0xdc9",
           "0xdd4"
         ],
         [
-          "0xb8b040",
-          "0xb8b2aa"
+          "0xb8b080",
+          "0xb8b2ea"
         ],
         [
-          "0xb8b2ab",
-          "0xb8b423"
+          "0xb8b2eb",
+          "0xb8b463"
         ],
         [
-          "0xb8b424",
-          "0xb8b4af"
+          "0xb8b464",
+          "0xb8b4ef"
         ],
         [
-          "0xb8b4b0",
-          "0xb8b5d6"
+          "0xb8b4f0",
+          "0xb8b616"
         ],
         [
-          "0xb8b5d7",
-          "0xb8bb19"
+          "0xb8b617",
+          "0xb8bb59"
         ],
         [
-          "0xb8bb1a",
-          "0xb8c3e0"
+          "0xb8bb5a",
+          "0xb8c420"
         ],
         [
           "0xbb600c",
@@ -34162,12 +34368,16 @@
     {
       "owner": "nfl2k5_senior_bowl",
       "function": "apply",
-      "before_sha256": "997a8092a8c9ca2555c7e511debc0c0cc5c850364d11957a15b148298db2cea3",
-      "after_sha256": "cb246f9153251f353f60ff47bfa92e27fdfa2c2d0e97a45c088c98c8c76a66ff",
+      "before_sha256": "a399d5755155e7071efc9e0bb627bced2370f7ee73123864b8829d527f1339f7",
+      "after_sha256": "1d7a27030166c11819325f802caefd89ede69c4aa4f68248fe617599531e4c47",
       "changed_bytes": 1279,
       "file_runs": [
         [
           "0x90c",
+          "0x91c"
+        ],
+        [
+          "0x91d",
           "0x920"
         ],
         [
@@ -34179,31 +34389,27 @@
           "0xdd4"
         ],
         [
-          "0xb911b0",
-          "0xb9148b"
+          "0xb911f0",
+          "0xb914cb"
         ],
         [
-          "0xb9148c",
-          "0xb91492"
+          "0xb914cc",
+          "0xb914d2"
         ],
         [
-          "0xb91493",
-          "0xb914ca"
+          "0xb914d3",
+          "0xb9150a"
         ],
         [
-          "0xb914cb",
-          "0xb914fe"
+          "0xb9150b",
+          "0xb9153e"
         ],
         [
-          "0xb914ff",
-          "0xb9164c"
+          "0xb9153f",
+          "0xb9168c"
         ],
         [
           "0xbb600c",
-          "0xbb6011"
-        ],
-        [
-          "0xbb6012",
           "0xbb602c"
         ]
       ]
@@ -34211,8 +34417,8 @@
     {
       "owner": "nfl2k5_animation_xbe",
       "function": "apply",
-      "before_sha256": "cb246f9153251f353f60ff47bfa92e27fdfa2c2d0e97a45c088c98c8c76a66ff",
-      "after_sha256": "c98ce5327ef4e651e6e17feb3b78a23dc95f938c4349190cf1e957086dcc557b",
+      "before_sha256": "1d7a27030166c11819325f802caefd89ede69c4aa4f68248fe617599531e4c47",
+      "after_sha256": "f26c33f4b22731a9fcbcb057928ec6a7d9a8dc44e914a2d86120308be4ba1785",
       "changed_bytes": 21,
       "file_runs": [
         [
@@ -34228,9 +34434,9 @@
     {
       "owner": "nfl2k5_guardian_overlay",
       "function": "apply",
-      "before_sha256": "c98ce5327ef4e651e6e17feb3b78a23dc95f938c4349190cf1e957086dcc557b",
-      "after_sha256": "f73f8d8fedba55cca9f487b77943effb0f1e8c55a49cdee93b11307f160464ad",
-      "changed_bytes": 625,
+      "before_sha256": "f26c33f4b22731a9fcbcb057928ec6a7d9a8dc44e914a2d86120308be4ba1785",
+      "after_sha256": "80f9b4cc7822aa02ad11b63858ddbaa7b46bdd483bc7dd246dfacd28355cdf21",
+      "changed_bytes": 627,
       "file_runs": [
         [
           "0x394",
@@ -34238,10 +34444,6 @@
         ],
         [
           "0x90c",
-          "0x910"
-        ],
-        [
-          "0x911",
           "0x920"
         ],
         [
@@ -34250,10 +34452,6 @@
         ],
         [
           "0xdb4",
-          "0xdcf"
-        ],
-        [
-          "0xdd0",
           "0xdd4"
         ],
         [
@@ -34269,12 +34467,12 @@
           "0xb16d5"
         ],
         [
-          "0xb8c440",
-          "0xb8c60b"
+          "0xb8c480",
+          "0xb8c64b"
         ],
         [
-          "0xb8c60c",
-          "0xb8c622"
+          "0xb8c64c",
+          "0xb8c662"
         ],
         [
           "0xbb600c",
@@ -34285,9 +34483,9 @@
     {
       "owner": "nfl2k5_my_career",
       "function": "apply",
-      "before_sha256": "f73f8d8fedba55cca9f487b77943effb0f1e8c55a49cdee93b11307f160464ad",
-      "after_sha256": "3cae458fdb0c0b4fba799dc437ba944d62f8d52e681c494a904c32c3d585f288",
-      "changed_bytes": 5976,
+      "before_sha256": "80f9b4cc7822aa02ad11b63858ddbaa7b46bdd483bc7dd246dfacd28355cdf21",
+      "after_sha256": "2813bd0cf913ca25c6ccb93cc2f7fb242e131440e3e826b45f54aca25144c5a8",
+      "changed_bytes": 5984,
       "file_runs": [
         [
           "0x394",
@@ -34299,6 +34497,10 @@
         ],
         [
           "0x90c",
+          "0x913"
+        ],
+        [
+          "0x914",
           "0x920"
         ],
         [
@@ -34410,12 +34612,12 @@
           "0x4f69e0"
         ],
         [
-          "0xb8ce30",
-          "0xb8dcde"
+          "0xb8ce70",
+          "0xb8dd27"
         ],
         [
-          "0xb8dce0",
-          "0xb8e46a"
+          "0xb8dd28",
+          "0xb8e4b2"
         ],
         [
           "0xbb600c",
@@ -34426,8 +34628,8 @@
     {
       "owner": "nfl2k5_crib_reclaim",
       "function": "apply",
-      "before_sha256": "3cae458fdb0c0b4fba799dc437ba944d62f8d52e681c494a904c32c3d585f288",
-      "after_sha256": "a6d719ce7b823618cb0884c2c9628fec585987a0b4f97c3625d8cf7aa805e67b",
+      "before_sha256": "2813bd0cf913ca25c6ccb93cc2f7fb242e131440e3e826b45f54aca25144c5a8",
+      "after_sha256": "0285f5ea3b0c4ddb63d7f505741d2751262d4f611654f13f13d69cb23e694a18",
       "changed_bytes": 25,
       "file_runs": [
         [
@@ -34443,9 +34645,9 @@
     {
       "owner": "nfl2k5_screen_hooks",
       "function": "apply",
-      "before_sha256": "a6d719ce7b823618cb0884c2c9628fec585987a0b4f97c3625d8cf7aa805e67b",
-      "after_sha256": "4d0d1201b4e584bf672ddcef5539ba3becf5bfbe0cf04e3e3cca96e78d1cef96",
-      "changed_bytes": 746,
+      "before_sha256": "0285f5ea3b0c4ddb63d7f505741d2751262d4f611654f13f13d69cb23e694a18",
+      "after_sha256": "df0bda56938c68d8cd1f1bc476123ed871e15931f58117cfcf7185ac147720b7",
+      "changed_bytes": 747,
       "file_runs": [
         [
           "0x394",
@@ -34453,10 +34655,6 @@
         ],
         [
           "0x90c",
-          "0x915"
-        ],
-        [
-          "0x916",
           "0x920"
         ],
         [
@@ -34476,12 +34674,12 @@
           "0x22ecdb"
         ],
         [
-          "0xb90f30",
-          "0xb90f6d"
+          "0xb90f70",
+          "0xb90fad"
         ],
         [
-          "0xb90f6e",
-          "0xb91190"
+          "0xb90fae",
+          "0xb911d0"
         ],
         [
           "0xbb600c",
@@ -34492,8 +34690,8 @@
     {
       "owner": "nfl2k5_roster_arena_growth",
       "function": "apply",
-      "before_sha256": "4d0d1201b4e584bf672ddcef5539ba3becf5bfbe0cf04e3e3cca96e78d1cef96",
-      "after_sha256": "f3e29fdfccf1694edc156f93fb875e2db725fec442c0c4ff3cf247714d413569",
+      "before_sha256": "df0bda56938c68d8cd1f1bc476123ed871e15931f58117cfcf7185ac147720b7",
+      "after_sha256": "82de50e0c037547115aac373c972d7699ddb0af736c32e1c064b6fa2e8566ba0",
       "changed_bytes": 8387,
       "file_runs": [
         [
@@ -34621,84 +34819,84 @@
           "0x3de111"
         ],
         [
-          "0xb921b0",
-          "0xb929b5"
+          "0xb921f0",
+          "0xb929f5"
         ],
         [
-          "0xb929b6",
-          "0xb92a02"
+          "0xb929f6",
+          "0xb92a42"
         ],
         [
-          "0xb92a03",
-          "0xb92f7a"
+          "0xb92a43",
+          "0xb92fba"
         ],
         [
-          "0xb92f7b",
-          "0xb93606"
+          "0xb92fbb",
+          "0xb93646"
         ],
         [
-          "0xb93607",
-          "0xb937f8"
+          "0xb93647",
+          "0xb93838"
         ],
         [
-          "0xb937f9",
-          "0xb93804"
+          "0xb93839",
+          "0xb93844"
         ],
         [
-          "0xb93805",
-          "0xb9381d"
+          "0xb93845",
+          "0xb9385d"
         ],
         [
-          "0xb9381e",
-          "0xb93833"
+          "0xb9385e",
+          "0xb93873"
         ],
         [
-          "0xb93834",
-          "0xb93835"
+          "0xb93874",
+          "0xb93875"
         ],
         [
-          "0xb93836",
-          "0xb938df"
+          "0xb93876",
+          "0xb9391f"
         ],
         [
-          "0xb938e0",
-          "0xb93a58"
+          "0xb93920",
+          "0xb93a98"
         ],
         [
-          "0xb93a59",
-          "0xb93aa5"
+          "0xb93a99",
+          "0xb93ae5"
         ],
         [
-          "0xb93aa6",
-          "0xb93ae4"
+          "0xb93ae6",
+          "0xb93b24"
         ],
         [
-          "0xb93ae5",
-          "0xb93c03"
+          "0xb93b25",
+          "0xb93c43"
         ],
         [
-          "0xb93c04",
-          "0xb93d02"
+          "0xb93c44",
+          "0xb93d42"
         ],
         [
-          "0xb93d03",
-          "0xb93e59"
+          "0xb93d43",
+          "0xb93e99"
         ],
         [
-          "0xb93e5a",
-          "0xb93e89"
+          "0xb93e9a",
+          "0xb93ec9"
         ],
         [
-          "0xb93e8a",
-          "0xb93f7e"
+          "0xb93eca",
+          "0xb93fbe"
         ],
         [
-          "0xb93f7f",
-          "0xb940f6"
+          "0xb93fbf",
+          "0xb94136"
         ],
         [
-          "0xb940f8",
-          "0xb940fc"
+          "0xb94138",
+          "0xb9413c"
         ],
         [
           "0xbb600c",
@@ -34726,16 +34924,16 @@
     {
       "owner": "nfl2k5_xbe_space",
       "function": "apply",
-      "before_sha256": "f3e29fdfccf1694edc156f93fb875e2db725fec442c0c4ff3cf247714d413569",
-      "after_sha256": "f3e29fdfccf1694edc156f93fb875e2db725fec442c0c4ff3cf247714d413569",
+      "before_sha256": "82de50e0c037547115aac373c972d7699ddb0af736c32e1c064b6fa2e8566ba0",
+      "after_sha256": "82de50e0c037547115aac373c972d7699ddb0af736c32e1c064b6fa2e8566ba0",
       "changed_bytes": 0,
       "file_runs": []
     },
     {
       "owner": "nfl2k5_music_metadata",
       "function": "apply",
-      "before_sha256": "f3e29fdfccf1694edc156f93fb875e2db725fec442c0c4ff3cf247714d413569",
-      "after_sha256": "db98ff8fe5d75c0e0e815f891147f5aceee7e145939f62e4d36f841331020137",
+      "before_sha256": "82de50e0c037547115aac373c972d7699ddb0af736c32e1c064b6fa2e8566ba0",
+      "after_sha256": "26d3ad30c9b45dc2f33ae0a3b39bb7035adf3dfa4cfc25b0744d234e6a7e3b5d",
       "changed_bytes": 20526,
       "file_runs": [
         [
@@ -53631,6 +53829,13 @@
       "start": "0x10394",
       "end": "0x103a8",
       "size": 20,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10394",
+      "end": "0x103a8",
+      "size": 20,
       "owner": "nfl2k5_catch_slider",
       "basis": "observed byte diff"
     },
@@ -54350,23 +54555,9 @@
     },
     {
       "start": "0x1066c",
-      "end": "0x1066f",
-      "size": 3,
-      "owner": "nfl2k5_penalties",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x1066c",
-      "end": "0x10672",
-      "size": 6,
+      "end": "0x10674",
+      "size": 8,
       "owner": "nfl2k5_playoff_picture",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x1066c",
-      "end": "0x1067a",
-      "size": 14,
-      "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
@@ -54374,6 +54565,13 @@
       "end": "0x1067f",
       "size": 19,
       "owner": "nfl2k5_draft_ai",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1066c",
+      "end": "0x10680",
+      "size": 20,
+      "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
@@ -54401,6 +54599,13 @@
       "start": "0x1066c",
       "end": "0x10680",
       "size": 20,
+      "owner": "nfl2k5_penalties",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1066c",
+      "end": "0x10680",
+      "size": 20,
       "owner": "nfl2k5_scorebug_ingame",
       "basis": "observed byte diff"
     },
@@ -54412,31 +54617,10 @@
       "basis": "observed byte diff"
     },
     {
-      "start": "0x10670",
-      "end": "0x10677",
-      "size": 7,
-      "owner": "nfl2k5_penalties",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x10673",
+      "start": "0x10675",
       "end": "0x10680",
-      "size": 13,
+      "size": 11,
       "owner": "nfl2k5_playoff_picture",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x10678",
-      "end": "0x10680",
-      "size": 8,
-      "owner": "nfl2k5_penalties",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x1067b",
-      "end": "0x10680",
-      "size": 5,
-      "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
@@ -54812,6 +54996,13 @@
     },
     {
       "start": "0x108d4",
+      "end": "0x108e0",
+      "size": 12,
+      "owner": "nfl2k5_momentum",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x108d4",
       "end": "0x108e8",
       "size": 20,
       "owner": "nfl2k5_defensive_try",
@@ -54821,14 +55012,14 @@
       "start": "0x108d4",
       "end": "0x108e8",
       "size": 20,
-      "owner": "nfl2k5_momentum",
+      "owner": "nfl2k5_zone_drop",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x108d4",
+      "start": "0x108e1",
       "end": "0x108e8",
-      "size": 20,
-      "owner": "nfl2k5_zone_drop",
+      "size": 7,
+      "owner": "nfl2k5_momentum",
       "basis": "observed byte diff"
     },
     {
@@ -54847,16 +55038,16 @@
     },
     {
       "start": "0x1090c",
-      "end": "0x10910",
-      "size": 4,
-      "owner": "nfl2k5_guardian_overlay",
+      "end": "0x10913",
+      "size": 7,
+      "owner": "nfl2k5_my_career",
       "basis": "observed byte diff"
     },
     {
       "start": "0x1090c",
-      "end": "0x10915",
-      "size": 9,
-      "owner": "nfl2k5_screen_hooks",
+      "end": "0x1091c",
+      "size": 16,
+      "owner": "nfl2k5_senior_bowl",
       "basis": "observed byte diff"
     },
     {
@@ -54871,6 +55062,13 @@
       "end": "0x10920",
       "size": 20,
       "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1090c",
+      "end": "0x10920",
+      "size": 20,
+      "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
@@ -54898,14 +55096,14 @@
       "start": "0x1090c",
       "end": "0x10920",
       "size": 20,
-      "owner": "nfl2k5_music_playlist",
+      "owner": "nfl2k5_guardian_overlay",
       "basis": "observed byte diff"
     },
     {
       "start": "0x1090c",
       "end": "0x10920",
       "size": 20,
-      "owner": "nfl2k5_my_career",
+      "owner": "nfl2k5_music_playlist",
       "basis": "observed byte diff"
     },
     {
@@ -54954,7 +55152,7 @@
       "start": "0x1090c",
       "end": "0x10920",
       "size": 20,
-      "owner": "nfl2k5_senior_bowl",
+      "owner": "nfl2k5_screen_hooks",
       "basis": "observed byte diff"
     },
     {
@@ -54965,17 +55163,17 @@
       "basis": "observed byte diff"
     },
     {
-      "start": "0x10911",
+      "start": "0x10914",
       "end": "0x10920",
-      "size": 15,
-      "owner": "nfl2k5_guardian_overlay",
+      "size": 12,
+      "owner": "nfl2k5_my_career",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x10916",
+      "start": "0x1091d",
       "end": "0x10920",
-      "size": 10,
-      "owner": "nfl2k5_screen_hooks",
+      "size": 3,
+      "owner": "nfl2k5_senior_bowl",
       "basis": "observed byte diff"
     },
     {
@@ -55043,6 +55241,13 @@
     },
     {
       "start": "0x1097c",
+      "end": "0x1098e",
+      "size": 18,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1097c",
       "end": "0x10990",
       "size": 20,
       "owner": "nfl2k5_abilities_runtime",
@@ -55053,6 +55258,13 @@
       "end": "0x10990",
       "size": 20,
       "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1097c",
+      "end": "0x10990",
+      "size": 20,
+      "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
@@ -55185,6 +55397,13 @@
       "start": "0x1097c",
       "end": "0x1099d",
       "size": 33,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1098f",
+      "end": "0x1099d",
+      "size": 14,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -55589,16 +55808,16 @@
     },
     {
       "start": "0x10db4",
-      "end": "0x10dbb",
-      "size": 7,
-      "owner": "nfl2k5_practice_squad_screen",
+      "end": "0x10dc8",
+      "size": 20,
+      "owner": "nfl2k5_franchise_2026",
       "basis": "observed byte diff"
     },
     {
       "start": "0x10db4",
-      "end": "0x10dcf",
-      "size": 27,
-      "owner": "nfl2k5_guardian_overlay",
+      "end": "0x10dc8",
+      "size": 20,
+      "owner": "nfl2k5_roster_storage",
       "basis": "observed byte diff"
     },
     {
@@ -55613,6 +55832,13 @@
       "end": "0x10dd4",
       "size": 32,
       "owner": "nfl2k5_calendar_engine",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10db4",
+      "end": "0x10dd4",
+      "size": 32,
+      "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
@@ -55640,7 +55866,7 @@
       "start": "0x10db4",
       "end": "0x10dd4",
       "size": 32,
-      "owner": "nfl2k5_franchise_2026",
+      "owner": "nfl2k5_guardian_overlay",
       "basis": "observed byte diff"
     },
     {
@@ -55654,14 +55880,14 @@
       "start": "0x10db4",
       "end": "0x10dd4",
       "size": 32,
-      "owner": "nfl2k5_music_playlist",
+      "owner": "nfl2k5_my_career",
       "basis": "observed byte diff"
     },
     {
       "start": "0x10db4",
       "end": "0x10dd4",
       "size": 32,
-      "owner": "nfl2k5_my_career",
+      "owner": "nfl2k5_practice_squad_screen",
       "basis": "observed byte diff"
     },
     {
@@ -55683,13 +55909,6 @@
       "end": "0x10dd4",
       "size": 32,
       "owner": "nfl2k5_roster_arena_growth",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x10db4",
-      "end": "0x10dd4",
-      "size": 32,
-      "owner": "nfl2k5_roster_storage",
       "basis": "observed byte diff"
     },
     {
@@ -55728,17 +55947,24 @@
       "basis": "observed byte diff"
     },
     {
-      "start": "0x10dbc",
+      "start": "0x10db5",
       "end": "0x10dd4",
-      "size": 24,
-      "owner": "nfl2k5_practice_squad_screen",
+      "size": 31,
+      "owner": "nfl2k5_music_playlist",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x10dd0",
+      "start": "0x10dc9",
       "end": "0x10dd4",
-      "size": 4,
-      "owner": "nfl2k5_guardian_overlay",
+      "size": 11,
+      "owner": "nfl2k5_franchise_2026",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10dc9",
+      "end": "0x10dd4",
+      "size": 11,
+      "owner": "nfl2k5_roster_storage",
       "basis": "observed byte diff"
     },
     {
@@ -56439,6 +56665,34 @@
       "end": "0xa5495",
       "size": 5,
       "owner": "nfl2k5_my_career",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa54c3",
+      "end": "0xa54c5",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: spectator_session_choice"
+    },
+    {
+      "start": "0xa54c3",
+      "end": "0xa54c5",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa55eb",
+      "end": "0xa55f0",
+      "size": 5,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: game_entry_far"
+    },
+    {
+      "start": "0xa55ec",
+      "end": "0xa55f0",
+      "size": 4,
+      "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
@@ -57440,6 +57694,20 @@
       "end": "0xe3405",
       "size": 3,
       "owner": "nfl2k5_seven_on_seven",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xe3c68",
+      "end": "0xe3c70",
+      "size": 8,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: fresh_settings_far"
+    },
+    {
+      "start": "0xe3c6b",
+      "end": "0xe3c6c",
+      "size": 1,
+      "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
@@ -58701,6 +58969,69 @@
       "size": 1,
       "owner": "nfl2k5_season_length",
       "basis": "season group site: headline_conference"
+    },
+    {
+      "start": "0x16d1d4",
+      "end": "0x16d1d9",
+      "size": 5,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: settings_load_far"
+    },
+    {
+      "start": "0x16d1d5",
+      "end": "0x16d1d9",
+      "size": 4,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x16d1d6",
+      "end": "0x16d1d9",
+      "size": 3,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x16e7b1",
+      "end": "0x16e7b6",
+      "size": 5,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: franchise_load_far"
+    },
+    {
+      "start": "0x16e7b2",
+      "end": "0x16e7b6",
+      "size": 4,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x16e7b3",
+      "end": "0x16e7b6",
+      "size": 3,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x16e864",
+      "end": "0x16e869",
+      "size": 5,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: settings_reload_far"
+    },
+    {
+      "start": "0x16e865",
+      "end": "0x16e869",
+      "size": 4,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x16e866",
+      "end": "0x16e869",
+      "size": 3,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
     },
     {
       "start": "0x17aa34",
@@ -62659,22 +62990,15 @@
     },
     {
       "start": "0x27f6b0",
-      "end": "0x27f6b2",
-      "size": 2,
-      "owner": "nfl2k5_music_playlist",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x27f6b0",
       "end": "0x27f6b5",
       "size": 5,
       "owner": "nfl2k5_music_playlist",
       "basis": "declared edit: pause"
     },
     {
-      "start": "0x27f6b3",
+      "start": "0x27f6b0",
       "end": "0x27f6b5",
-      "size": 2,
+      "size": 5,
       "owner": "nfl2k5_music_playlist",
       "basis": "observed byte diff"
     },
@@ -65136,9 +65460,9 @@
       "basis": "declared edit: stadium_picker_operand"
     },
     {
-      "start": "0x3191c4",
+      "start": "0x3191c5",
       "end": "0x3191c8",
-      "size": 4,
+      "size": 3,
       "owner": "nfl2k5_roster_storage",
       "basis": "observed byte diff"
     },
@@ -65192,9 +65516,9 @@
       "basis": "declared edit: stadium_picker_operand"
     },
     {
-      "start": "0x3192cb",
+      "start": "0x3192cc",
       "end": "0x3192cf",
-      "size": 4,
+      "size": 3,
       "owner": "nfl2k5_roster_storage",
       "basis": "observed byte diff"
     },
@@ -65220,9 +65544,9 @@
       "basis": "declared edit: stadium_picker_operand"
     },
     {
-      "start": "0x319343",
+      "start": "0x319344",
       "end": "0x319347",
-      "size": 4,
+      "size": 3,
       "owner": "nfl2k5_roster_storage",
       "basis": "observed byte diff"
     },
@@ -74782,85 +75106,232 @@
       "basis": "runtime dword: AWAY_VALUE_VA"
     },
     {
-      "start": "0xa88892",
-      "end": "0xa88894",
+      "start": "0xa88b90",
+      "end": "0xa88be0",
+      "size": 80,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: far_state_9"
+    },
+    {
+      "start": "0xa88ba6",
+      "end": "0xa88ba8",
       "size": 2,
       "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
-      "start": "0xa888e2",
-      "end": "0xa888e4",
+      "start": "0xa88baa",
+      "end": "0xa88bac",
       "size": 2,
       "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
-      "start": "0xa88932",
-      "end": "0xa88934",
+      "start": "0xa88bc6",
+      "end": "0xa88bc8",
       "size": 2,
       "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
-      "start": "0xa88982",
-      "end": "0xa88984",
+      "start": "0xa88bc9",
+      "end": "0xa88bcb",
       "size": 2,
       "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
-      "start": "0xa889c6",
-      "end": "0xa889c8",
+      "start": "0xa88be0",
+      "end": "0xa88c30",
+      "size": 80,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: far_state_13"
+    },
+    {
+      "start": "0xa88bfa",
+      "end": "0xa88bfc",
       "size": 2,
       "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
-      "start": "0xa889ca",
-      "end": "0xa889cc",
-      "size": 2,
+      "start": "0xa88c15",
+      "end": "0xa88c18",
+      "size": 3,
       "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
-      "start": "0xa889d2",
-      "end": "0xa889d4",
-      "size": 2,
-      "owner": "nfl2k5_camera",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0xa889e6",
-      "end": "0xa889e8",
-      "size": 2,
-      "owner": "nfl2k5_camera",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0xa889e9",
-      "end": "0xa889eb",
-      "size": 2,
-      "owner": "nfl2k5_camera",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0xa88a22",
-      "end": "0xa88a24",
-      "size": 2,
-      "owner": "nfl2k5_camera",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0xa88a72",
-      "end": "0xa88a73",
+      "start": "0xa88c1a",
+      "end": "0xa88c1b",
       "size": 1,
       "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
     },
     {
-      "start": "0xa88a89",
-      "end": "0xa88a8b",
+      "start": "0xa88c30",
+      "end": "0xa88c80",
+      "size": 80,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: far_state_17"
+    },
+    {
+      "start": "0xa88c46",
+      "end": "0xa88c48",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88c4a",
+      "end": "0xa88c4c",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88c65",
+      "end": "0xa88c68",
+      "size": 3,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88c69",
+      "end": "0xa88c6b",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88c80",
+      "end": "0xa88cd0",
+      "size": 80,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: far_state_18"
+    },
+    {
+      "start": "0xa88c9a",
+      "end": "0xa88c9c",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88cb5",
+      "end": "0xa88cb8",
+      "size": 3,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88cba",
+      "end": "0xa88cbb",
+      "size": 1,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88cd0",
+      "end": "0xa88d20",
+      "size": 80,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: far_state_19"
+    },
+    {
+      "start": "0xa88ce6",
+      "end": "0xa88ce8",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88cea",
+      "end": "0xa88cec",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88d05",
+      "end": "0xa88d08",
+      "size": 3,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88d09",
+      "end": "0xa88d0b",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88d20",
+      "end": "0xa88d70",
+      "size": 80,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: far_state_16"
+    },
+    {
+      "start": "0xa88d36",
+      "end": "0xa88d38",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88d3a",
+      "end": "0xa88d3b",
+      "size": 1,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88d55",
+      "end": "0xa88d58",
+      "size": 3,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88d59",
+      "end": "0xa88d5b",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88d70",
+      "end": "0xa88dc0",
+      "size": 80,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: far_state_15"
+    },
+    {
+      "start": "0xa88d86",
+      "end": "0xa88d87",
+      "size": 1,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88d8a",
+      "end": "0xa88d8c",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88da6",
+      "end": "0xa88da8",
+      "size": 2,
+      "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0xa88da9",
+      "end": "0xa88dab",
       "size": 2,
       "owner": "nfl2k5_camera",
       "basis": "observed byte diff"
@@ -116747,6 +117218,27 @@
       "basis": "observed byte diff"
     },
     {
+      "start": "0x14da400",
+      "end": "0x14da417",
+      "size": 23,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14da400",
+      "end": "0x14da440",
+      "size": 64,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: owned_camera_wrappers"
+    },
+    {
+      "start": "0x14da420",
+      "end": "0x14da430",
+      "size": 16,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
       "start": "0x14da430",
       "end": "0x14da665",
       "size": 565,
@@ -116783,42 +117275,70 @@
     },
     {
       "start": "0x14da830",
-      "end": "0x14da838",
+      "end": "0x14da847",
+      "size": 23,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14da830",
+      "end": "0x14da870",
+      "size": 64,
+      "owner": "nfl2k5_camera",
+      "basis": "declared edit: owned_camera_wrappers"
+    },
+    {
+      "start": "0x14da830",
+      "end": "0x14da870",
+      "size": 64,
+      "owner": "nfl2k5_camera",
+      "basis": "named code allocation"
+    },
+    {
+      "start": "0x14da850",
+      "end": "0x14da860",
+      "size": 16,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x14da870",
+      "end": "0x14da878",
       "size": 8,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14da830",
-      "end": "0x14da840",
+      "start": "0x14da870",
+      "end": "0x14da880",
       "size": 16,
       "owner": "nfl2k5_coverage_slider",
       "basis": "declared edit: immutable_allocation"
     },
     {
-      "start": "0x14da830",
-      "end": "0x14da840",
+      "start": "0x14da870",
+      "end": "0x14da880",
       "size": 16,
       "owner": "nfl2k5_coverage_slider",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14da840",
-      "end": "0x14dac99",
+      "start": "0x14da880",
+      "end": "0x14dacd9",
       "size": 1113,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14da840",
-      "end": "0x14db040",
+      "start": "0x14da880",
+      "end": "0x14db080",
       "size": 2048,
       "owner": "nfl2k5_defensive_try_stats",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14dac9a",
-      "end": "0x14daca2",
+      "start": "0x14dacda",
+      "end": "0x14dace2",
       "size": 8,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -116831,50 +117351,50 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14db040",
-      "end": "0x14db2aa",
+      "start": "0x14db080",
+      "end": "0x14db2ea",
       "size": 618,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14db040",
-      "end": "0x14dc440",
+      "start": "0x14db080",
+      "end": "0x14dc480",
       "size": 5120,
       "owner": "nfl2k5_franchise_2026",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14db2ab",
-      "end": "0x14db423",
+      "start": "0x14db2eb",
+      "end": "0x14db463",
       "size": 376,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14db424",
-      "end": "0x14db4af",
+      "start": "0x14db464",
+      "end": "0x14db4ef",
       "size": 139,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14db4b0",
-      "end": "0x14db5d6",
+      "start": "0x14db4f0",
+      "end": "0x14db616",
       "size": 294,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14db5d7",
-      "end": "0x14dbb19",
+      "start": "0x14db617",
+      "end": "0x14dbb59",
       "size": 1346,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dbb1a",
-      "end": "0x14dc3e0",
+      "start": "0x14dbb5a",
+      "end": "0x14dc420",
       "size": 2246,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -116887,99 +117407,99 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14dc440",
-      "end": "0x14dc60b",
+      "start": "0x14dc480",
+      "end": "0x14dc64b",
       "size": 459,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dc440",
-      "end": "0x14dc630",
+      "start": "0x14dc480",
+      "end": "0x14dc670",
       "size": 496,
       "owner": "nfl2k5_guardian_overlay",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14dc60c",
-      "end": "0x14dc622",
+      "start": "0x14dc64c",
+      "end": "0x14dc662",
       "size": 22,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dc630",
-      "end": "0x14dc8c4",
+      "start": "0x14dc670",
+      "end": "0x14dc904",
       "size": 660,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dc630",
-      "end": "0x14dce30",
+      "start": "0x14dc670",
+      "end": "0x14dce70",
       "size": 2048,
       "owner": "nfl2k5_music_playlist",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14dc8c5",
-      "end": "0x14dc8ce",
+      "start": "0x14dc905",
+      "end": "0x14dc90e",
       "size": 9,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dc8cf",
-      "end": "0x14dc8e3",
+      "start": "0x14dc90f",
+      "end": "0x14dc923",
       "size": 20,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dc8e4",
-      "end": "0x14dc8ec",
+      "start": "0x14dc924",
+      "end": "0x14dc92c",
       "size": 8,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dc8ed",
-      "end": "0x14dc94a",
+      "start": "0x14dc92d",
+      "end": "0x14dc98a",
       "size": 93,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dc94b",
-      "end": "0x14dca71",
+      "start": "0x14dc98b",
+      "end": "0x14dcab1",
       "size": 294,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dca72",
-      "end": "0x14dcb45",
+      "start": "0x14dcab2",
+      "end": "0x14dcb85",
       "size": 211,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dcb46",
-      "end": "0x14dccc9",
+      "start": "0x14dcb86",
+      "end": "0x14dcd09",
       "size": 387,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dce30",
-      "end": "0x14ddcde",
-      "size": 3758,
+      "start": "0x14dce70",
+      "end": "0x14ddd27",
+      "size": 3767,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dce30",
-      "end": "0x14dee30",
+      "start": "0x14dce70",
+      "end": "0x14dee70",
       "size": 8192,
       "owner": "nfl2k5_my_career",
       "basis": "named code allocation"
@@ -116992,8 +117512,8 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14ddce0",
-      "end": "0x14de46a",
+      "start": "0x14ddd28",
+      "end": "0x14de4b2",
       "size": 1930,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -117006,15 +117526,15 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14dee30",
-      "end": "0x14df36e",
+      "start": "0x14dee70",
+      "end": "0x14df3ae",
       "size": 1342,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dee30",
-      "end": "0x14dfe30",
+      "start": "0x14dee70",
+      "end": "0x14dfe70",
       "size": 4096,
       "owner": "nfl2k5_practice_squad_screen",
       "basis": "named code allocation"
@@ -117027,92 +117547,92 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14df370",
-      "end": "0x14df509",
+      "start": "0x14df3b0",
+      "end": "0x14df549",
       "size": 409,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14df50a",
-      "end": "0x14df521",
+      "start": "0x14df54a",
+      "end": "0x14df561",
       "size": 23,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14df522",
-      "end": "0x14df621",
+      "start": "0x14df562",
+      "end": "0x14df661",
       "size": 255,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14df622",
-      "end": "0x14df639",
+      "start": "0x14df662",
+      "end": "0x14df679",
       "size": 23,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14df63a",
-      "end": "0x14dfac2",
+      "start": "0x14df67a",
+      "end": "0x14dfb02",
       "size": 1160,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dfac4",
-      "end": "0x14dfad2",
+      "start": "0x14dfb04",
+      "end": "0x14dfb12",
       "size": 14,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dfad4",
-      "end": "0x14dfae6",
+      "start": "0x14dfb14",
+      "end": "0x14dfb26",
       "size": 18,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dfae8",
-      "end": "0x14dfb06",
+      "start": "0x14dfb28",
+      "end": "0x14dfb46",
       "size": 30,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dfb08",
-      "end": "0x14dfb16",
+      "start": "0x14dfb48",
+      "end": "0x14dfb56",
       "size": 14,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dfb18",
-      "end": "0x14dfbea",
+      "start": "0x14dfb58",
+      "end": "0x14dfc2a",
       "size": 210,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dfbec",
-      "end": "0x14dfc1c",
+      "start": "0x14dfc2c",
+      "end": "0x14dfc5c",
       "size": 48,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dfe30",
-      "end": "0x14e015a",
+      "start": "0x14dfe70",
+      "end": "0x14e019a",
       "size": 810,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14dfe30",
-      "end": "0x14e0630",
+      "start": "0x14dfe70",
+      "end": "0x14e0670",
       "size": 2048,
       "owner": "nfl2k5_qb_spy",
       "basis": "named code allocation"
@@ -117125,197 +117645,190 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14e015b",
-      "end": "0x14e0186",
+      "start": "0x14e019b",
+      "end": "0x14e01c6",
       "size": 43,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0187",
-      "end": "0x14e0227",
+      "start": "0x14e01c7",
+      "end": "0x14e0267",
       "size": 160,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0228",
-      "end": "0x14e0232",
+      "start": "0x14e0268",
+      "end": "0x14e0272",
       "size": 10,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0233",
-      "end": "0x14e04d7",
+      "start": "0x14e0273",
+      "end": "0x14e0517",
       "size": 676,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e04d8",
-      "end": "0x14e04e5",
+      "start": "0x14e0518",
+      "end": "0x14e0525",
       "size": 13,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e04e6",
-      "end": "0x14e04f0",
+      "start": "0x14e0526",
+      "end": "0x14e0530",
       "size": 10,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e04f1",
-      "end": "0x14e04fb",
+      "start": "0x14e0531",
+      "end": "0x14e053b",
       "size": 10,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e04fc",
-      "end": "0x14e04fd",
+      "start": "0x14e053c",
+      "end": "0x14e053d",
       "size": 1,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0500",
-      "end": "0x14e0518",
+      "start": "0x14e0540",
+      "end": "0x14e0558",
       "size": 24,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0630",
-      "end": "0x14e0870",
+      "start": "0x14e0670",
+      "end": "0x14e08b0",
       "size": 576,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0630",
-      "end": "0x14e0e30",
+      "start": "0x14e0670",
+      "end": "0x14e0e70",
       "size": 2048,
       "owner": "nfl2k5_read_option_runtime",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14e0871",
-      "end": "0x14e0930",
-      "size": 191,
+      "start": "0x14e08b1",
+      "end": "0x14e09c7",
+      "size": 278,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0931",
-      "end": "0x14e0987",
-      "size": 86,
-      "owner": "nfl2k5_xbe_space",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x14e0988",
-      "end": "0x14e09a2",
+      "start": "0x14e09c8",
+      "end": "0x14e09e2",
       "size": 26,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e09a3",
-      "end": "0x14e0bbe",
+      "start": "0x14e09e3",
+      "end": "0x14e0bfe",
       "size": 539,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0bbf",
-      "end": "0x14e0e2d",
+      "start": "0x14e0bff",
+      "end": "0x14e0e6d",
       "size": 622,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0e30",
-      "end": "0x14e0e82",
+      "start": "0x14e0e70",
+      "end": "0x14e0ec2",
       "size": 82,
       "owner": "nfl2k5_roster_storage",
       "basis": "declared edit: stadium_ids"
     },
     {
-      "start": "0x14e0e30",
-      "end": "0x14e0e82",
+      "start": "0x14e0e70",
+      "end": "0x14e0ec2",
       "size": 82,
       "owner": "nfl2k5_roster_storage",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14e0e30",
-      "end": "0x14e0e82",
+      "start": "0x14e0e70",
+      "end": "0x14e0ec2",
       "size": 82,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0e90",
-      "end": "0x14e0ed5",
+      "start": "0x14e0ed0",
+      "end": "0x14e0f15",
       "size": 69,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0e90",
-      "end": "0x14e0f30",
+      "start": "0x14e0ed0",
+      "end": "0x14e0f70",
       "size": 160,
       "owner": "nfl2k5_scramble_tuning",
       "basis": "declared edit: immutable_allocation"
     },
     {
-      "start": "0x14e0e90",
-      "end": "0x14e0f30",
+      "start": "0x14e0ed0",
+      "end": "0x14e0f70",
       "size": 160,
       "owner": "nfl2k5_scramble_tuning",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14e0ed6",
-      "end": "0x14e0ed7",
+      "start": "0x14e0f16",
+      "end": "0x14e0f17",
       "size": 1,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0f00",
-      "end": "0x14e0f0d",
+      "start": "0x14e0f40",
+      "end": "0x14e0f4d",
       "size": 13,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0f0e",
-      "end": "0x14e0f2c",
+      "start": "0x14e0f4e",
+      "end": "0x14e0f6c",
       "size": 30,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0f30",
-      "end": "0x14e0f6d",
+      "start": "0x14e0f70",
+      "end": "0x14e0fad",
       "size": 61,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e0f30",
-      "end": "0x14e11b0",
+      "start": "0x14e0f70",
+      "end": "0x14e11f0",
       "size": 640,
       "owner": "nfl2k5_screen_hooks",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14e0f6e",
-      "end": "0x14e1190",
+      "start": "0x14e0fae",
+      "end": "0x14e11d0",
       "size": 546,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -117328,43 +117841,43 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14e11b0",
-      "end": "0x14e148b",
+      "start": "0x14e11f0",
+      "end": "0x14e14cb",
       "size": 731,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e11b0",
-      "end": "0x14e21b0",
+      "start": "0x14e11f0",
+      "end": "0x14e21f0",
       "size": 4096,
       "owner": "nfl2k5_senior_bowl",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14e148c",
-      "end": "0x14e1492",
+      "start": "0x14e14cc",
+      "end": "0x14e14d2",
       "size": 6,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e1493",
-      "end": "0x14e14ca",
+      "start": "0x14e14d3",
+      "end": "0x14e150a",
       "size": 55,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e14cb",
-      "end": "0x14e14fe",
+      "start": "0x14e150b",
+      "end": "0x14e153e",
       "size": 51,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e14ff",
-      "end": "0x14e164c",
+      "start": "0x14e153f",
+      "end": "0x14e168c",
       "size": 333,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -117377,36 +117890,36 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14e21b0",
-      "end": "0x14e29b5",
+      "start": "0x14e21f0",
+      "end": "0x14e29f5",
       "size": 2053,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e21b0",
-      "end": "0x14e41b0",
+      "start": "0x14e21f0",
+      "end": "0x14e41f0",
       "size": 8192,
       "owner": "nfl2k5_roster_arena_growth",
       "basis": "named code allocation"
     },
     {
-      "start": "0x14e29b6",
-      "end": "0x14e2a02",
+      "start": "0x14e29f6",
+      "end": "0x14e2a42",
       "size": 76,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e2a03",
-      "end": "0x14e2f7a",
+      "start": "0x14e2a43",
+      "end": "0x14e2fba",
       "size": 1399,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e2f7b",
-      "end": "0x14e3606",
+      "start": "0x14e2fbb",
+      "end": "0x14e3646",
       "size": 1675,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -117419,106 +117932,106 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14e3607",
-      "end": "0x14e37f8",
+      "start": "0x14e3647",
+      "end": "0x14e3838",
       "size": 497,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e37f9",
-      "end": "0x14e3804",
+      "start": "0x14e3839",
+      "end": "0x14e3844",
       "size": 11,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3805",
-      "end": "0x14e381d",
+      "start": "0x14e3845",
+      "end": "0x14e385d",
       "size": 24,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e381e",
-      "end": "0x14e3833",
+      "start": "0x14e385e",
+      "end": "0x14e3873",
       "size": 21,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3834",
-      "end": "0x14e3835",
+      "start": "0x14e3874",
+      "end": "0x14e3875",
       "size": 1,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3836",
-      "end": "0x14e38df",
+      "start": "0x14e3876",
+      "end": "0x14e391f",
       "size": 169,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e38e0",
-      "end": "0x14e3a58",
+      "start": "0x14e3920",
+      "end": "0x14e3a98",
       "size": 376,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3a59",
-      "end": "0x14e3aa5",
+      "start": "0x14e3a99",
+      "end": "0x14e3ae5",
       "size": 76,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3aa6",
-      "end": "0x14e3ae4",
+      "start": "0x14e3ae6",
+      "end": "0x14e3b24",
       "size": 62,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3ae5",
-      "end": "0x14e3c03",
+      "start": "0x14e3b25",
+      "end": "0x14e3c43",
       "size": 286,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3c04",
-      "end": "0x14e3d02",
+      "start": "0x14e3c44",
+      "end": "0x14e3d42",
       "size": 254,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3d03",
-      "end": "0x14e3e59",
+      "start": "0x14e3d43",
+      "end": "0x14e3e99",
       "size": 342,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3e5a",
-      "end": "0x14e3e89",
+      "start": "0x14e3e9a",
+      "end": "0x14e3ec9",
       "size": 47,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3e8a",
-      "end": "0x14e3f7e",
+      "start": "0x14e3eca",
+      "end": "0x14e3fbe",
       "size": 244,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x14e3f7f",
-      "end": "0x14e40f6",
+      "start": "0x14e3fbf",
+      "end": "0x14e4136",
       "size": 375,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -117531,8 +118044,8 @@
       "basis": "owned grown code page; all unused bytes reserved"
     },
     {
-      "start": "0x14e40f8",
-      "end": "0x14e40fc",
+      "start": "0x14e4138",
+      "end": "0x14e413c",
       "size": 4,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
@@ -117833,29 +118346,22 @@
     },
     {
       "start": "0x150600c",
-      "end": "0x1506011",
-      "size": 5,
+      "end": "0x1506015",
+      "size": 9,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
       "start": "0x150600c",
-      "end": "0x1506017",
-      "size": 11,
+      "end": "0x1506026",
+      "size": 26,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
       "start": "0x150600c",
-      "end": "0x1506023",
-      "size": 23,
-      "owner": "nfl2k5_xbe_space",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x150600c",
-      "end": "0x1506027",
-      "size": 27,
+      "end": "0x150602b",
+      "size": 31,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
@@ -117868,36 +118374,29 @@
     },
     {
       "start": "0x150600c",
+      "end": "0x1506034",
+      "size": 40,
+      "owner": "nfl2k5_xbe_space",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x150600c",
       "end": "0x150604c",
       "size": 64,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1506012",
-      "end": "0x150602c",
-      "size": 26,
-      "owner": "nfl2k5_xbe_space",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x1506018",
+      "start": "0x1506016",
       "end": "0x150604a",
-      "size": 50,
+      "size": 52,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
     {
-      "start": "0x1506024",
-      "end": "0x1506034",
-      "size": 16,
-      "owner": "nfl2k5_xbe_space",
-      "basis": "observed byte diff"
-    },
-    {
-      "start": "0x1506028",
-      "end": "0x150604c",
-      "size": 36,
+      "start": "0x1506027",
+      "end": "0x150602c",
+      "size": 5,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
     },
