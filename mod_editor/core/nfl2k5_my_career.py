@@ -1,10 +1,12 @@
-"""MyCareer QB experiment on native Franchise. EXPERIMENTAL / UNWITNESSED.
+"""MyCareer, any position, on native Franchise. EXPERIMENTAL / UNWITNESSED.
 
-The setup service edits one existing prospect through the roster writer. It
-requires a real draft-stage save; it never synthesizes an offseason transition.
-The executable carries a sealed, pointer-free setup, while a bounded native
-checkpoint journal pairs later MyCareer state with the exact Franchise bytes.
-No VIP field, roster padding, retail cave or save-format extension is used.
+The setup service edits one existing prospect at the chosen position through
+the roster writer. It requires a real draft-stage save; it never synthesizes
+an offseason transition. The executable carries a sealed, pointer-free setup,
+while a bounded native checkpoint journal pairs later MyCareer state with the
+exact Franchise bytes. The Game Modes row that launched First Person Football
+becomes the MyCareer action. No VIP field, roster padding, retail cave or
+save-format extension is used.
 """
 from __future__ import annotations
 
@@ -26,30 +28,63 @@ from .nfl2k5_cave_oracle import XbeImage
 OWNER = "nfl2k5_my_career"
 CODE_SIZE, DATA_SIZE = 8192, 4096
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
-SCHEMA = "nfl2k5_my_career/v1"
+SCHEMA = "nfl2k5_my_career/v2"
 MAGIC = b"MCQB0001"
 STATE_SIZE, LEDGER_OFFSET, LEDGER_LIMIT = 1280, 256, 64
+RECIPE_OFFSET, POSITION_OFFSET, STARTER_LOCK_OFFSET, STARTER_DONE_OFFSET = 96, 96 + 0x35, 180, 184
 SAVE_SIZE = 720044
+POSITION_COUNT = 17
 PENDING, PROSPECT, ACTIVE, UNSIGNED, RESERVE, LOST = range(1, 7)
 HELP_TEXT = (
-    "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team. Patch: "
-    "MyCareer follows one created QB, MyPlayer, through the normal draft. "
-    "The CPU manages the club and teammates. Play whole team games with a "
-    "Standard or Far camera. Other fixtures use whole-game simulation. "
-    "Create a setup from a Franchise save at the draft, then include it in Build."
+    "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team and Game Modes "
+    "offers First Person Football. Patch: the First Person Football row becomes "
+    "MyCareer, which follows one created player, MyPlayer, at any of the 17 "
+    "positions through the normal draft. The CPU manages the club, the depth chart "
+    "and the other players; input stays on MyPlayer's body, with a Standard or Far "
+    "camera. Other fixtures use whole-game simulation. Create a setup from a "
+    "Franchise save at the draft, then include it in Build. First Person Football "
+    "remains a Franchise Settings toggle."
 )
 WITNESS_LIST = (
+    "From Game Modes choose MyCareer: a build without a setup only explains itself; a configured build opens Load / Save.",
     "Create MyPlayer from a real draft save, load the built game and finish the normal draft.",
-    "Check the draft log, signing destination, roster identity and CPU roster decisions.",
+    "Check the draft log, signing destination, roster identity, depth row and CPU roster decisions at the chosen position.",
     "At kickoff, snap, handoff, catch, interception, fumble, punt, PAT and overtime, input stays on MyPlayer.",
-    "On the bench, injury, substitution and defense, input reaches no replacement and the CPU keeps playing.",
+    "On the bench, injury, substitution and the other unit's plays, input reaches no replacement and the CPU keeps playing.",
+    "Check what the sticks and buttons do for MyPlayer's position before the snap, during the play and after the whistle.",
     "Check CPU play selection, the other ten players and every GM shortcut and back path.",
     "Check Standard and Far tracking, sideline movement, replays and return to ordinary Franchise.",
     "Play every career-team fixture and simulate other fixtures through the normal schedule.",
     "Save, cold reload and replay a week: XP is credited once; test missing and damaged checkpoints.",
     "Check undrafted, unsigned, reserve, trade, release, retirement and a recycled roster slot.",
     "Finish a season, playoffs and offseason, then save and reload again.",
+    "Confirm First Person Football still toggles from Franchise Settings.",
 )
+# Per position group: what the retail engine gives a human-bound body, as far as
+# offline evidence goes. Binding is position-agnostic (proved: the input walk
+# 0x1563F0 decodes every on-field entity whose controller ID is not -1, and the
+# port context comes from that entity's own block through 0x1565F0/0x120880).
+# What each context lets the player do on the field is HYPOTHESIS until played.
+POSITION_CONTRACT = {
+    "QB": ("proved: retail human quarterback control (context tables 3/9/10); templates Pocket/Scrambling/Balanced",
+           "hypothesis: the CPU-called play still waits for MyPlayer's snap; passing icons and scramble are retail"),
+    "RB": ("proved: retail ball-carrier control after the handoff (contexts 8/10); HB and FB templates",
+           "hypothesis: before the handoff MyPlayer's body must reach the mesh point himself"),
+    "WR": ("proved: retail ball-carrier control after a catch; Speed/Hands/Balanced WR templates",
+           "hypothesis: route running and the catch before the ball arrives are the receiver's own context, unwitnessed outside First Person Football"),
+    "TE": ("proved: retail ball-carrier control after a catch; Catching/Blocking/Balanced TE templates",
+           "hypothesis: route running, blocking and the catch before the ball arrives are the body's own context, unwitnessed outside First Person Football"),
+    "OL": ("proved: prospect replacement, identity and camera follow the body; no retail create-a-player template, generated ratings kept",
+           "hypothesis: blocking stays the body's own behaviour; stick input may only steer him"),
+    "DL": ("proved: retail defender control (context 16); no retail template, generated ratings kept",
+           "hypothesis: rush moves and shed follow the defender context every play"),
+    "LB": ("proved: retail defender control (context 16); OLB and ILB templates",
+           "hypothesis: coverage drops and blitz paths follow the defender context every play"),
+    "DB": ("proved: retail defender control (context 16); CB, FS and SS templates",
+           "hypothesis: coverage assignments, swat and interception follow the defender context every play"),
+    "K/P": ("proved: retail kick-meter control (context 2); K and P templates",
+            "hypothesis: the CPU calls the kick and MyPlayer only sees the field on kicks and punts"),
+}
 
 
 class MyCareerError(ValueError):
@@ -99,6 +134,9 @@ def validate_state(state, payload=None):
     require(all(struct.unpack_from("<I", state, recipe)[0] == struct.unpack_from("<I", state, identity)[0]
                 for recipe, identity in ((96, 84), (112, 88), (116, 92))),
             "MyPlayer recipe pointer offsets differ from its identity")
+    require(state[POSITION_OFFSET] < POSITION_COUNT, "MyPlayer position code is not one of the 17 retail codes")
+    require(struct.unpack_from("<I", state, STARTER_LOCK_OFFSET)[0] <= 1
+            and struct.unpack_from("<I", state, STARTER_DONE_OFFSET)[0] <= 1, "invalid MyPlayer starter lock flags")
     if payload is not None:
         require(struct.unpack_from("<2I", state, 16) == save_key(payload),
                 "MyCareer checkpoint belongs to different Franchise bytes")
@@ -137,6 +175,37 @@ def award_week(state, *, year, stage, week, fixture, committed, appeared):
     return seal_state(out), {"awarded": reward, "duplicate": False, "committed": True, "key": key}
 
 
+def position_of(state):
+    """The MyPlayer position code sealed in a validated setup or checkpoint."""
+    return validate_state(state)[POSITION_OFFSET]
+
+
+def starter_lock_of(state):
+    return bool(struct.unpack_from("<I", validate_state(state), STARTER_LOCK_OFFSET)[0])
+
+
+def position_label(code):
+    from . import nfl2k5_roster_records as rr
+    return rr.position_name(code)
+
+
+def position_group(code):
+    from . import nfl2k5_roster_records as rr
+    name = rr.position_name(code)
+    for group, members in rr.POSITION_GROUPS.items():
+        if name in members:
+            return group
+    raise MyCareerError(f"position {code} belongs to no group")
+
+
+def describe_setup(state):
+    state = validate_state(state)
+    code = state[POSITION_OFFSET]
+    proved, hypothesis = POSITION_CONTRACT[position_group(code)]
+    return {"position": position_label(code), "position_code": code, "group": position_group(code),
+            "starter_lock": starter_lock_of(state), "proved": proved, "hypothesis": hypothesis}
+
+
 def read_setup(source):
     if source is None:
         return bytes(STATE_SIZE)
@@ -146,38 +215,59 @@ def read_setup(source):
         path = Path(source).resolve()
         require(path.stat().st_size <= 16384, "MyCareer setup exceeds 16 KiB")
         source = json.loads(path.read_text(encoding="utf-8"))
-    require(isinstance(source, dict) and set(source) == {"schema", "mode", "myplayer", "state", "save_sha256"}
-            and source["schema"] == SCHEMA and source["mode"] == "MyCareer", "unsupported MyCareer setup")
+    require(isinstance(source, dict) and source.get("mode") == "MyCareer", "unsupported MyCareer setup")
+    require(source.get("schema") != "nfl2k5_my_career/v1",
+            "this MyCareer.json predates position choice; create MyPlayer again on the MyCareer page")
+    require(set(source) == {"schema", "mode", "myplayer", "position", "state", "save_sha256"}
+            and source["schema"] == SCHEMA, "unsupported MyCareer setup")
     require(isinstance(source["state"], str) and len(source["state"]) == STATE_SIZE * 2,
             "invalid MyCareer setup bytes")
-    state = bytes.fromhex(source["state"])
-    return validate_state(state)
+    state = validate_state(bytes.fromhex(source["state"]))
+    require(source["position"] == position_label(state[POSITION_OFFSET]),
+            "MyCareer setup position label disagrees with its sealed state")
+    return state
 
 
-def prepare(payload, *, first, last, template=0, port=0, camera=0, token=None):
-    """Prepare one existing QB after class generation in a genuine draft save.
+def templates_for(position):
+    """The retail create-a-player templates for a position code; () for C/G/T/DT/DE."""
+    from . import nfl2k5_roster_records as rr
+    return rr.templates_for_position(position)
+
+
+def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, starter_lock=True, token=None):
+    """Prepare one existing prospect at the chosen position in a genuine draft save.
 
     Returns fixed-length save bytes, setup JSON and an exact receipt. Publication
     and EXTRA signing belong to prepare_save/SaveContainer. No team assignment.
+    Positions with retail create-a-player templates (QB K P WR CB FS SS HB FB TE
+    OLB ILB) take one of their three templates or None; C, G, T, DT and DE have
+    no retail template, so MyPlayer keeps the generated prospect's ratings.
     """
     from . import nfl2k5_roster_records as rr, nfl2k5_franchise_save as fs
     save_key(payload)
     require(payload[fs.SEASON_BLOCK + fs.S_MODE] == 2, "the save is not Franchise")
     # Retail stage table 0x515140: Combine is 4, Draft is 5, Signing is 6.
     require(payload[fs.SEASON_BLOCK + fs.S_STAGE] == 5, "MyCareer setup requires an existing NFL Draft stage save")
-    require(type(template) is int and 0 <= template < 3 and type(port) is int and 0 <= port < 8
-            and type(camera) is int and camera in (0, 1), "choose a QB template, port 1..8 and Standard/Far")
+    code = rr.position_code(position)
+    require(0 <= code < POSITION_COUNT, "choose one of the 17 retail positions")
+    choices = templates_for(code)
+    require(template is None or (type(template) is int and 0 <= template < len(choices)),
+            f"{rr.position_name(code)} offers {len(choices)} retail templates; choose one of them or None")
+    require(type(port) is int and 0 <= port < 8 and type(camera) is int and camera in (0, 1)
+            and type(starter_lock) is bool, "choose port 1..8, Standard/Far and a boolean starter lock")
     doc = rr.RosterDocument(payload, base=rr.find_block_base(payload))
     candidates = [p for p in doc.players if p.pool == "primary" and not p.teams and
-                  p.offset not in doc.free_agents and p.record.get("position") == 0 and
+                  p.offset not in doc.free_agents and p.record.get("position") == code and
                   p.record.get("player_type") & 0x10]
-    require(bool(candidates), "no unassigned eligible QB prospect remains; regenerate through the game first")
+    require(bool(candidates), f"no unassigned eligible {rr.position_name(code)} prospect remains; "
+            "regenerate through the game first or choose another position")
     player = candidates[0]
     before = bytes(payload[player.offset:player.offset + 84])
     doc.set_name(player, "first", first)
     doc.set_name(player, "last", last)
-    rr.apply_template(player.record, rr.create_player_templates()[template])
-    player.record.set("position", 0)
+    if template is not None:
+        rr.apply_template(player.record, choices[template])
+    player.record.set("position", code)
     player.record.set("years_pro", 0)
     player.record.set("player_type", player.record.get("player_type") | 0x10)
     result = bytearray(doc.to_body())
@@ -199,17 +289,25 @@ def prepare(payload, *, first, last, template=0, port=0, camera=0, token=None):
     state[40:56] = creation
     struct.pack_into("<I", state, 56, 0xFFFFFFFF)  # current club is discovered after the draft
     struct.pack_into("<3I", state, 84, *name_offsets)
-    state[96:180] = result[player.offset:player.offset + 84]
+    state[RECIPE_OFFSET:RECIPE_OFFSET + 84] = result[player.offset:player.offset + 84]
     # Serialized record pointers become root-relative integers in the recipe.
     for field, offset in zip((0, 16, 20), name_offsets):
-        struct.pack_into("<I", state, 96 + field, offset)
+        struct.pack_into("<I", state, RECIPE_OFFSET + field, offset)
+    require(state[POSITION_OFFSET] == code, "MyPlayer recipe position disagrees with the chosen position")
+    struct.pack_into("<2I", state, STARTER_LOCK_OFFSET, int(starter_lock), 0)
     state = seal_state(state)
     validate_state(state, result)
     setup = {"schema": SCHEMA, "mode": "MyCareer", "myplayer": chosen.display,
-             "state": state.hex(), "save_sha256": hashlib.sha256(result).hexdigest()}
+             "position": rr.position_name(code), "state": state.hex(),
+             "save_sha256": hashlib.sha256(result).hexdigest()}
     receipt = {"mode": "MyCareer", "myplayer": chosen.display, "experimental": True,
                "runtime_witnessed": False, "pool": "primary", "index": player.index,
-               "token": str(uuid.UUID(bytes=creation)), "template": template,
+               "position": rr.position_name(code), "position_code": code,
+               "position_group": position_group(code), "starter_lock": starter_lock,
+               "contract": dict(zip(("proved", "hypothesis"), POSITION_CONTRACT[position_group(code)])),
+               "token": str(uuid.UUID(bytes=creation)),
+               "template": None if template is None else choices[template].label,
+               "ratings": "retail create-a-player template" if template is not None else "generated prospect ratings kept",
                "record_offset": player.offset, "record_before": before.hex(),
                "record_after": result[player.offset:player.offset + 84].hex(),
                "changed_bytes": sum(a != b for a, b in zip(payload, result)),
@@ -450,19 +548,27 @@ def main(argv=None):
     create.add_argument("output", type=Path)
     create.add_argument("--first", required=True)
     create.add_argument("--last", required=True)
-    create.add_argument("--template", type=int, choices=range(3), default=0)
+    create.add_argument("--position", default="QB",
+                        help="one of the 17 retail position names or codes (QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE)")
+    create.add_argument("--template", default="0",
+                        help="retail create-a-player template 0..2 for the position, or 'generated' to keep the prospect's ratings")
     create.add_argument("--port", type=int, choices=range(1, 9), default=1)
     create.add_argument("--camera", choices=("Standard", "Far"), default="Standard")
+    create.add_argument("--no-starter-lock", action="store_true",
+                        help="do not place MyPlayer on depth row 1 with a rank lock at his first active club")
     args = parser.parse_args(argv)
     if args.command == "info":
         result = {"mode": "MyCareer", "experimental": True, "runtime_witnessed": False,
-                  "requests": REQUESTS, "help": HELP_TEXT, "witness_list": WITNESS_LIST}
+                  "requests": REQUESTS, "help": HELP_TEXT, "witness_list": WITNESS_LIST,
+                  "position_contract": POSITION_CONTRACT}
     elif args.command == "status":
         require(args.xbe.stat().st_size <= 16 * 1024**2, "XBE exceeds 16 MiB")
         result = {"MyCareer": status(args.xbe.read_bytes())}
     else:
+        template = None if args.template == "generated" else int(args.template)
         result = prepare_save(args.source, args.output, first=args.first, last=args.last,
-                              template=args.template, port=args.port - 1, camera=(args.camera == "Far") * 1)
+                              position=args.position, template=template, port=args.port - 1,
+                              camera=(args.camera == "Far") * 1, starter_lock=not args.no_starter_lock)
     print(json.dumps(result, indent=2))
 
 

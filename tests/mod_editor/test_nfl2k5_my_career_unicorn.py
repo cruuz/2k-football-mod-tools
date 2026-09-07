@@ -8,7 +8,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_my_career as c
-from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256
+from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 from tests.nfl2k5_my_career_fixture import XBE, HAVE_UC, Machine, prepared
 
 
@@ -268,6 +268,130 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(len(journal), 1)
         c.validate_state(journal[0], self.save)
         self.assertEqual(self.handles, {99: "game"})
+
+    # Game Modes row route. The retail list dispatcher 0x150020 reads the screen
+    # stack (ECX): [+0x100] depth, slot [depth*8] = top descriptor, slot +4 =
+    # cursor, [+0x10C] = list state; each state entry is 0x2C bytes with the
+    # row pointer at +0x14 and hidden/disabled words at +0x18/+0x1C. Row kind
+    # 9 maps to case 3 through the byte table at 0x15024C and calls [row+0x28].
+    MENU_STACK, MENU_STATE = Machine.BODIES + 0x10000, Machine.BODIES + 0x12000
+
+    def _menu(self, m, row=1, pressed=0x100):
+        S, M = self.MENU_STACK, self.MENU_STATE
+        m.put(S + 0x100, 2)                       # Main Menu, then Game Modes on top
+        m.put(S + 2 * 8, 0x5015CC)                # Game Modes descriptor: screen ID byte 0x11
+        m.put(S + 2 * 8 + 4, row)                 # cursor on the chosen row
+        m.put(S + 0x10C, M)
+        m.put(M + 8, 6)                           # six rows before the kind-3 terminator
+        for i in range(6):
+            m.put(M + i * 0x2C + 0x14, 0x501460 + i * 0x34)
+        m.put(M + 0xA7C, 2)
+        m.put(0xBD8050, 1)
+        m.stub(0x2498A0, lambda: m.ret(0))                         # no modal transition pending
+        m.stub(0x709B0, lambda: m.ret(1))                          # every port connected
+        m.stub(0xF3780, lambda: m.ret(0, pop=4))                   # no repeat/dpad input
+        m.stub(0xF3750, lambda: m.ret(pressed if m.reg("EDX") == 0 else 0, pop=4))
+        m.stub(0x2C8880, lambda: m.ret())                          # dispatcher tail
+        m.stub(0x6E4E0, lambda: m.ret(0, pop=4))                   # descriptor event send
+        m.stub(0xF3180, lambda: m.ret())
+        m.stub(0xF3680, lambda: m.ret())
+        dialogs = []
+
+        def dialog():                                              # modal retail message box
+            sp = m.reg("ESP")
+            dialogs.append((m.reg("ECX"), m.reg("EDX"), [m.get(sp + 4 * i) for i in range(1, 7)]))
+            m.ret(0xFFFFFFFF, pop=24)
+        m.stub(0x14E440, dialog)
+        return S, M, dialogs
+
+    def test_game_modes_row_dispatches_to_entry_dialog_and_load_save(self):
+        m = self.machine()
+        S, M, dialogs = self._menu(m)
+        im = XbeImage(self.payload)
+        self.assertEqual(struct.unpack("<I", im.read(0x501494, 4))[0], 9)
+        self.assertEqual(struct.unpack("<I", im.read(0x5014BC, 4))[0], m.labels["entry"])
+        m.call(0x150020, ecx=S, budget=400000)
+        # Case 3 reached entry: the sealed setup seeds the live state and entry is requested.
+        self.assertEqual(m.get(M + 0x594), 0)
+        self.assertEqual(m.get(m.state + 2580), 1)
+        self.assertEqual(bytes(m.uc.mem_read(m.state, 1280)), bytes(self.seed[:24]) + struct.pack("<I", c.LOST) + bytes(self.seed[28:56]) + b"\xff" * 4 + bytes(self.seed[60:]))
+        self.assertEqual(m.get(m.state + 2576), 7)
+        self.assertEqual(len(dialogs), 1)
+        ecx, edx, args = dialogs[0]
+        self.assertEqual((ecx, edx), (0xE3C040, m.labels["title_text"]))
+        self.assertEqual(args, [0x5042FC, 0, m.labels["entry_help"], 0, 0xFFFFFFFF, 0])
+        self.assertEqual(bytes(m.uc.mem_read(edx, 18)).decode("utf-16le"), "MyCareer\0")
+        # Native 0x6E390 then pushed Load / Save onto the same screen stack.
+        self.assertEqual(m.get(S + 0x100), 3)
+        self.assertEqual(m.get(S + 3 * 8), 0x508DF0)
+        self.assertEqual(m.get(S + 0x108), 1)
+        for name, value in (("EBX", 0x11111111), ("ESI", 0x22222222), ("EDI", 0x33333333), ("EBP", 0x44444444)):
+            self.assertEqual(m.reg(name), value, name)
+
+    def test_retail_row_bytes_push_team_select_and_neighbours_keep_their_targets(self):
+        m = self.machine()
+        S, M, dialogs = self._menu(m)
+        # The retail First Person Football row: kind 0, its label, Team Select, no action.
+        for va, value in ((0x501494, 0), (0x501498, 0xE7D5C4), (0x50149C, 0x526948), (0x5014BC, 0)):
+            m.put(va, value)
+        m.call(0x150020, ecx=S, budget=400000)
+        self.assertEqual(dialogs, [])
+        self.assertEqual((m.get(S + 0x100), m.get(S + 3 * 8)), (3, 0x526948))
+        self.assertEqual(m.get(m.state + 2580), 0)
+        for row, target in ((0, 0x500DC8), (2, 0x529AE0), (3, 0x529344), (4, 0x501298), (5, 0x501434)):
+            with self.subTest(row=row):
+                other = self.machine()
+                S2, _, d2 = self._menu(other, row=row)
+                other.call(0x150020, ecx=S2, budget=400000)
+                self.assertEqual((d2, other.get(S2 + 0x100), other.get(S2 + 3 * 8)), ([], 3, target))
+                self.assertEqual(other.get(other.state + 2580), 0)
+
+    def test_unconfigured_build_explains_itself_and_pushes_nothing(self):
+        payload = c.apply(XBE.read_bytes())[0]
+        m = Machine(payload)
+        S, M, dialogs = self._menu(m)
+        m.call(0x150020, ecx=S, budget=400000)
+        self.assertEqual(len(dialogs), 1)
+        self.assertEqual(dialogs[0][1], m.labels["title_text"])
+        self.assertEqual(dialogs[0][2][2], m.labels["no_setup_help"])
+        self.assertEqual(m.get(S + 0x100), 2)
+        self.assertEqual(m.get(m.state + 2580), 0)
+        self.assertEqual(bytes(m.uc.mem_read(m.state, 1280)), bytes(1280))
+        for name, value in (("EBX", 0x11111111), ("ESI", 0x22222222), ("EDI", 0x33333333), ("EBP", 0x44444444)):
+            self.assertEqual(m.reg(name), value, name)
+
+    def test_identity_follows_the_recipe_position_for_a_wide_receiver(self):
+        save, setup, _ = prepared("WR")
+        payload = c.apply(XBE.read_bytes(), setup=setup)[0]
+        m = Machine(payload, save, c.read_setup(setup))
+        self.assertEqual(m.uc.mem_read(m.player + 0x35, 1), b"\x03")
+        self.assertEqual(m.call("primary"), m.player)
+        m.activate()
+        self.assertEqual(m.get(m.state + 24), c.ACTIVE)
+        body = m.bodies()
+        self.assertEqual(m.get(m.state + 2568), body)
+        self.assertEqual(m.get(0xBD8210), 0)
+        m.uc.mem_write(m.player + 0x35, b"\x00")
+        self.assertEqual(m.call("primary"), 0)
+        self.assertEqual(m.get(m.state + 24), c.LOST)
+
+    def test_starter_lock_writes_depth_row_one_and_rank_bit_once(self):
+        m = self.machine()
+        m.activate()
+        self.assertEqual(m.get(m.state + 24), c.ACTIVE)
+        self.assertEqual(struct.unpack("<H", m.uc.mem_read(m.player + 0x28, 2))[0] & 0x1C00, 0)
+        self.assertEqual(m.uc.mem_read(m.player + 0x52, 1), b"\x01")
+        self.assertEqual(m.get(m.state + c.STARTER_DONE_OFFSET), 1)
+        m.uc.mem_write(m.player + 0x28, struct.pack("<H", 0x0800))
+        m.call("resolve_team")
+        self.assertEqual(struct.unpack("<H", m.uc.mem_read(m.player + 0x28, 2))[0], 0x0800)
+        save, setup, _ = prepared(starter_lock=False)
+        quiet = Machine(c.apply(XBE.read_bytes(), setup=setup)[0], save, c.read_setup(setup))
+        quiet.activate()
+        self.assertEqual(quiet.get(quiet.state + 24), c.ACTIVE)
+        self.assertEqual(struct.unpack("<H", quiet.uc.mem_read(quiet.player + 0x28, 2))[0] & 0x1C00, 0x0C00)
+        self.assertEqual(quiet.uc.mem_read(quiet.player + 0x52, 1), b"\x00")
+        self.assertEqual(quiet.get(quiet.state + c.STARTER_DONE_OFFSET), 0)
 
     def _journal(self, m):
         self.IO = 0x2400000

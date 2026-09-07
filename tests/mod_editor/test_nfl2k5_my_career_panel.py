@@ -60,6 +60,40 @@ class PanelTests(unittest.TestCase):
         self.assertEqual(self.page.result.text(), "draft stage required")
         self.assertTrue(self.page.create_button.isEnabled())
 
+    def test_position_choice_drives_templates_contract_and_options(self):
+        from mod_editor.core import nfl2k5_my_career as career
+        self.assertEqual(self.page.position.count(), career.POSITION_COUNT)
+        self.assertEqual(self.page.position.currentData(), 0)
+        self.assertEqual([self.page.template.itemText(i) for i in range(self.page.template.count())],
+                         ["Pocket QB", "Scrambling QB", "Balanced QB"])
+        self.assertTrue(self.page.contract.text().startswith("QB: proved"))
+        self.page.position.setCurrentIndex(16)
+        self.assertEqual(self.page.position.currentText(), "DE (Defensive End)")
+        self.assertEqual(self.page.template.count(), 1)
+        self.assertIsNone(self.page.template.currentData())
+        self.assertIn("generated", self.page.template.currentText())
+        self.assertTrue(self.page.contract.text().startswith("DL: proved"))
+        self.page.position.setCurrentIndex(3)
+        self.assertEqual([self.page.template.itemText(i) for i in range(3)], ["Speed WR", "Hands WR", "Balanced WR"])
+        self.page.template.setCurrentIndex(1)
+        self.assertTrue(self.page.starter.isChecked())
+        self.page.starter.setChecked(False)
+        self.page.save.setText("source.zip")
+        self.page.output.setText("new-folder")
+        self.page.first.setText("My")
+        self.page.last.setText("Player")
+        self.page.camera.setCurrentIndex(1)
+        self.page.port.setValue(3)
+        with mock.patch.object(self.module.career, "prepare_save",
+                               return_value={"output": "new-folder", "myplayer": "My Player", "position": "WR"}) as prepare:
+            self.page._create()
+            self.finish()
+        self.assertEqual(prepare.call_args.args, ("source.zip", "new-folder"))
+        self.assertEqual(prepare.call_args.kwargs, dict(first="My", last="Player", position=3, template=1,
+                                                        port=2, camera=1, starter_lock=False))
+        self.assertIn("(WR)", self.page.result.text())
+        self.assertIn("Game Modes", self.page.result.text())
+
     def test_review_is_invalidated_when_image_changes(self):
         self.page.set_source("one.iso")
         with mock.patch.object(self.module.crib, "plan", return_value={"disc_bytes_reclaimed": 1024}):

@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, Qt, pyqtSignal
-from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QGroupBox, QHBoxLayout,
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QFormLayout, QGroupBox, QHBoxLayout,
                             QLabel, QLineEdit, QPushButton, QSpinBox, QVBoxLayout, QWidget)
 
 from mod_editor.core import nfl2k5_my_career as career
@@ -65,16 +65,26 @@ class MyCareerPanel(QWidget):
         self.last.setMaxLength(30)
         form.addRow("First name", self.first)
         form.addRow("Last name", self.last)
+        self.position = QComboBox()
+        for code in range(career.POSITION_COUNT):
+            self.position.addItem(f"{roster.position_name(code)} ({roster.position_long_name(code)})", code)
+        self.position.currentIndexChanged.connect(self._position_changed)
+        form.addRow("Position", self.position)
         self.template = QComboBox()
-        for template in roster.create_player_templates()[:3]:
-            self.template.addItem(template.label, template.index)
-        form.addRow("QB style", self.template)
+        form.addRow("Ratings", self.template)
+        self.contract = QLabel()
+        self.contract.setWordWrap(True)
+        form.addRow("On the field", self.contract)
+        self.starter = QCheckBox("Lock MyPlayer as a starter at his first club (depth row 1 with a rank lock)")
+        self.starter.setChecked(True)
+        form.addRow(self.starter)
         self.port = QSpinBox()
         self.port.setRange(1, 8)
         form.addRow("Controller", self.port)
         self.camera = QComboBox()
         self.camera.addItems(["Standard", "Far"])
         form.addRow("Camera", self.camera)
+        self._position_changed()
         self.output = QLineEdit()
         self.output.setPlaceholderText("A new folder for the signed save and setup")
         choose_output = QPushButton("Choose folder")
@@ -120,6 +130,18 @@ class MyCareerPanel(QWidget):
 
     def set_source(self, source):
         self.image.setText(str(source or ""))
+
+    def _position_changed(self):
+        """Templates follow the position: three retail styles, or the generated ratings."""
+        code = self.position.currentData()
+        self.template.clear()
+        for template in career.templates_for(code):
+            self.template.addItem(template.label, template.variant)
+        if self.template.count() == 0:
+            self.template.addItem("Keep the generated prospect ratings (no retail template)", None)
+        group = career.position_group(code)
+        proved, hypothesis = career.POSITION_CONTRACT[group]
+        self.contract.setText(f"{group}: {proved}. {hypothesis}. Nothing is witnessed in play.")
 
     def _invalidate_plan(self):
         self._plan = None
@@ -170,14 +192,16 @@ class MyCareerPanel(QWidget):
             self.result.setText("Choose the draft save and output folder, and enter MyPlayer's first and last name.")
             return
         options = dict(first=self.first.text().strip(), last=self.last.text().strip(),
-                       template=self.template.currentData(), port=self.port.value() - 1,
-                       camera=self.camera.currentIndex())
+                       position=self.position.currentData(), template=self.template.currentData(),
+                       port=self.port.value() - 1, camera=self.camera.currentIndex(),
+                       starter_lock=self.starter.isChecked())
 
         def done(receipt):
             self.setup_path = str(Path(receipt["output"]) / "MyCareer.json")
             self.setup_ready.emit(self.setup_path)
-            self.result.setText(f"Created {receipt['myplayer']}. Import MyCareer.zip as a save, then enable "
-                                "MyCareer in Build with the matching MyCareer.json setup. The normal draft chooses the team.")
+            self.result.setText(f"Created {receipt['myplayer']} ({receipt.get('position', '?')}). Import MyCareer.zip as a "
+                                "save, then enable MyCareer in Build with the matching MyCareer.json setup. The normal "
+                                "draft chooses the team; choose MyCareer from Game Modes in the built game.")
 
         self._run(lambda: career.prepare_save(source, output, **options), done)
 

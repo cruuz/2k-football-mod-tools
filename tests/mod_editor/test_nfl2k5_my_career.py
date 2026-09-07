@@ -90,6 +90,100 @@ class SetupTests(unittest.TestCase):
             self.assertFalse(list(root.glob(".mycareer-*")))
 
 
+class AnyPositionTests(unittest.TestCase):
+    def test_every_retail_position_prepares_with_its_template_rule(self):
+        for code in range(c.POSITION_COUNT):
+            name = rr.position_name(code)
+            choices = c.templates_for(code)
+            with self.subTest(position=name):
+                result, setup, receipt = prepared(code)
+                doc = rr.RosterDocument(result, base=rr.find_block_base(result))
+                player = doc.players[-1]
+                self.assertEqual(player.record.get("position"), code)
+                self.assertEqual(player.display, "My Player")
+                self.assertEqual(player.record.get("years_pro"), 0)
+                self.assertTrue(player.record.get("player_type") & 0x10)
+                self.assertFalse(player.teams)
+                state = c.read_setup(setup)
+                self.assertEqual(c.position_of(state), code)
+                self.assertEqual(setup["position"], name)
+                self.assertTrue(c.starter_lock_of(state))
+                self.assertEqual(struct.unpack_from("<I", state, c.STARTER_DONE_OFFSET)[0], 0)
+                self.assertEqual(receipt["position_group"], c.position_group(code))
+                self.assertIn(receipt["position_group"], c.POSITION_CONTRACT)
+                self.assertEqual(len(result), len(draft_save(code)))
+                if choices:
+                    self.assertEqual(receipt["template"], choices[0].label)
+                    self.assertEqual(choices[0].position_code, code)
+                    self.assertEqual(len(choices), 3)
+                else:
+                    self.assertIsNone(receipt["template"])
+                    self.assertIn("generated", receipt["ratings"])
+                    self.assertIn(name, ("C", "G", "T", "DT", "DE"))
+
+    def test_generated_ratings_are_kept_when_no_template_is_chosen(self):
+        before = draft_save("WR")
+        doc = rr.RosterDocument(before, base=rr.find_block_base(before))
+        ratings = {k: doc.players[-1].record.get(k) for k in rr.RATING_BYTE_ORDER}
+        result, _, receipt = prepared("WR", template=None)
+        after = rr.RosterDocument(result, base=rr.find_block_base(result)).players[-1]
+        self.assertEqual({k: after.record.get(k) for k in rr.RATING_BYTE_ORDER}, ratings)
+        self.assertIsNone(receipt["template"])
+        result, _, receipt = prepared("WR", template=2)
+        after = rr.RosterDocument(result, base=rr.find_block_base(result)).players[-1]
+        self.assertEqual(after.record.get("speed"), 80)
+        self.assertEqual(receipt["template"], "Balanced WR")
+
+    def test_template_position_and_starter_refusals(self):
+        with self.assertRaisesRegex(c.MyCareerError, "0 retail templates"):
+            prepared("DE", template=0)
+        with self.assertRaisesRegex(c.MyCareerError, "3 retail templates"):
+            prepared("QB", template=3)
+        with self.assertRaises(rr.RosterRecordError):
+            prepared("XX")
+        with self.assertRaisesRegex(c.MyCareerError, "no unassigned eligible WR prospect"):
+            c.prepare(draft_save("QB"), first="My", last="Player", position="WR", template=0)
+        with self.assertRaisesRegex(c.MyCareerError, "starter lock"):
+            prepared("QB", starter_lock=1)
+        _, setup, _ = prepared("QB", starter_lock=False)
+        self.assertFalse(c.starter_lock_of(c.read_setup(setup)))
+
+    def test_state_bounds_cover_position_and_starter_flags(self):
+        state = bytearray(c.read_setup(prepared("HB")[1]))
+        bad = bytearray(state)
+        bad[c.POSITION_OFFSET] = 17
+        with self.assertRaisesRegex(c.MyCareerError, "17 retail"):
+            c.validate_state(c.seal_state(bad))
+        for offset in (c.STARTER_LOCK_OFFSET, c.STARTER_DONE_OFFSET):
+            bad = bytearray(state)
+            struct.pack_into("<I", bad, offset, 2)
+            with self.assertRaisesRegex(c.MyCareerError, "starter lock"):
+                c.validate_state(c.seal_state(bad))
+
+    def test_v1_setup_is_refused_and_v2_label_must_match(self):
+        _, setup, _ = prepared("CB")
+        old = dict(setup)
+        old["schema"] = "nfl2k5_my_career/v1"
+        del old["position"]
+        with self.assertRaisesRegex(c.MyCareerError, "predates position choice"):
+            c.read_setup(old)
+        wrong = dict(setup)
+        wrong["position"] = "QB"
+        with self.assertRaisesRegex(c.MyCareerError, "disagrees"):
+            c.read_setup(wrong)
+        described = c.describe_setup(c.read_setup(setup))
+        self.assertEqual((described["position"], described["group"], described["starter_lock"]), ("CB", "DB", True))
+        self.assertTrue(described["proved"].startswith("proved"))
+        self.assertTrue(described["hypothesis"].startswith("hypothesis"))
+
+    def test_menu_and_title_labels_equal_the_naming_owner_contract(self):
+        from mod_editor.core import nfl2k5_modern_naming as naming
+        for label, role in (("mode_text", "menu_row"), ("title_text", "screen_title")):
+            at = c.assembly.LABELS[label]
+            self.assertEqual(c.assembly.CODE[at:at + 20], naming.career_text(role, 20), label)
+        self.assertLessEqual(len(c.assembly.CODE) + c.STATE_SIZE, c.CODE_SIZE)
+
+
 @unittest.skipUnless(XBE.is_file(), "pinned USA retail default.xbe is absent")
 class WriterTests(unittest.TestCase):
     @classmethod

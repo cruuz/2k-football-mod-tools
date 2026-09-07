@@ -3,12 +3,16 @@
  * 2560 primary ptr, 2564 match ptr, 2568 entity ptr, 2572 appearance key.
  * 2576 error, 2580 requested entry, 2588 club pointer. 2600..2631 journal path.
  * 2640 visited-controller count, 2800..3311 validated controller pointers.
+ * Checkpoint 96..179 is the immutable 84-byte MyPlayer recipe; its position
+ * byte (checkpoint 149) is the identity's position, so MyPlayer can be any
+ * of the 17 retail position codes. Checkpoint 180 requests the starter lock;
+ * 184 records that it was written once.
  * All state belongs to the allocator's 4096-byte RW request.
  */
 .intel_syntax noprefix
 .code32
 .text
-.global entry, mode_text, attach, copy, reset, assign, automatic, team_reset
+.global entry, mode_text, title_text, attach, copy, reset, assign, automatic, team_reset
 .global manual, transfer, generation, draft, sim, navigation, cpu_management
 .global camera, camera_focus, screen_dispatch, load_complete, save_read, save_write
 .global front_office, gameplan, enabled, primary, resolve_team, rebind, inject
@@ -65,7 +69,9 @@ primary:
  test eax, eax
  jz primary_done
  add eax, edx
- cmp BYTE PTR [eax+0x35], 0
+ /* The identity's position is the recipe's, not a fixed QB code. */
+ mov cl, BYTE PTR [state+96+0x35]
+ cmp BYTE PTR [eax+0x35], cl
  jne primary_lost
  cmp DWORD PTR [state+24], 1
  je primary_valid
@@ -161,8 +167,21 @@ resolve_next:
  je resolve_done
  mov DWORD PTR [state+24], 3
  cmp DWORD PTR [state+80], 0
- je resolve_done
+ je resolve_starter
  mov DWORD PTR [state+24], 5
+ jmp resolve_done
+resolve_starter:
+ /* Once, on the first active club: depth row 1 at MyPlayer's own position
+  * plus the rank lock bit that nfl2k5_depth_locks keeps through the weekly
+  * ratings sort. Without that owner the bit is inert and the row is only an
+  * initial placement. HYPOTHESIS for the CPU depth chart; never rewritten. */
+ cmp DWORD PTR [state+180], 1
+ jne resolve_done
+ cmp DWORD PTR [state+184], 0
+ jne resolve_done
+ mov DWORD PTR [state+184], 1
+ and WORD PTR [ebp+0x28], 0xe3ff
+ or BYTE PTR [ebp+0x52], 1
  jmp resolve_done
 resolve_prospect:
  mov DWORD PTR [state+24], 2
@@ -272,7 +291,7 @@ load_complete:
  push OFFSET FLAT:missing_help
  push 0
  push 0x5042fc
- mov edx, OFFSET FLAT:mode_text
+ mov edx, OFFSET FLAT:title_text
  mov ecx, 0xe3c040
  mov eax, 0x14e440
  call eax
@@ -869,6 +888,12 @@ check_state:
  jae check_done
  cmp DWORD PTR [ebx+64], 1000000
  ja check_done
+ cmp BYTE PTR [ebx+96+0x35], 17
+ jae check_done
+ cmp DWORD PTR [ebx+180], 1
+ ja check_done
+ cmp DWORD PTR [ebx+184], 1
+ ja check_done
  mov eax, DWORD PTR [ebx+40]
  or eax, DWORD PTR [ebx+44]
  or eax, DWORD PTR [ebx+48]
@@ -1131,15 +1156,20 @@ write_original:
  push 0x1d9c5
  ret
 
-/* Reuse native Load / Save rather than FPP's forced exhibition settings. */
+/* The Game Modes row action. The native list dispatcher (0x150020, row kind
+ * 9 through the 0x15024C case table) calls [row+0x28] with ECX = the screen
+ * stack object and EDX = its state entry, then pops EBX/EBP/ESI/EDI and
+ * returns; pushad/popad and the retail dialog (0x14E070 saves EBX/ESI/EDI,
+ * ret 0x28; wrapper 0x14E440 ret 0x18) keep that contract. A configured
+ * build reuses native Load / Save rather than FPP's forced exhibition
+ * settings; a build without a sealed setup only explains itself. */
 entry:
- mov DWORD PTR [state+2580], 1
  mov DWORD PTR [state+2652], 0
  pushad
  mov esi, OFFSET FLAT:seed
  call check_state
  test eax, eax
- jz entry_seed_done
+ jz entry_unconfigured
  mov edi, OFFSET FLAT:state
  mov ecx, 320
  cld
@@ -1147,7 +1177,7 @@ entry:
  mov DWORD PTR [state+24], 6
  mov DWORD PTR [state+56], -1
  mov DWORD PTR [state+2576], 7
-entry_seed_done:
+ mov DWORD PTR [state+2580], 1
  popad
  push ecx
  push 0
@@ -1156,7 +1186,7 @@ entry_seed_done:
  push OFFSET FLAT:entry_help
  push 0
  push 0x5042fc
- mov edx, OFFSET FLAT:mode_text
+ mov edx, OFFSET FLAT:title_text
  mov ecx, 0xe3c040
  mov eax, 0x14e440
  call eax
@@ -1164,11 +1194,35 @@ entry_seed_done:
  mov edx, 0x508df0
  mov eax, 0x6e390
  jmp eax
+entry_unconfigured:
+ popad
+ /* No setup is sealed in this executable: nothing can pair, so no Load /
+  * Save screen is pushed and no MyCareer entry is requested. */
+ mov DWORD PTR [state+2580], 0
+ push ecx
+ push 0
+ push -1
+ push 0
+ push OFFSET FLAT:no_setup_help
+ push 0
+ push 0x5042fc
+ mov edx, OFFSET FLAT:title_text
+ mov ecx, 0xe3c040
+ mov eax, 0x14e440
+ call eax
+ pop ecx
+ ret
 .balign 4, 0xcc
+/* Both 20-byte labels equal nfl2k5_modern_naming.career_text("menu_row") and
+ * career_text("screen_title"); test_nfl2k5_my_career pins that contract. */
 mode_text:
- .short 77,121,67,97,114,101,101,114,0
+ .short 77,121,67,97,114,101,101,114,0,0
+title_text:
+ .short 77,121,67,97,114,101,101,114,0,0
 entry_help:
  .string16 "EXPERIMENTAL / UNWITNESSED. Load the Franchise draft save prepared on the MyCareer page in Studio. Keep the matching setup in Build."
+no_setup_help:
+ .string16 "This build has no MyCareer setup. Create MyPlayer on the MyCareer page in Studio, include MyCareer.json in Build, then load the paired save from this menu."
 missing_help:
  .string16 "MyCareer checkpoint is missing or does not match this save. MyPlayer input is disabled. Reload a matching save and checkpoint, or choose the ordinary Franchise menu."
 journal_path:

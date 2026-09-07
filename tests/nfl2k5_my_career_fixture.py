@@ -16,17 +16,20 @@ HAVE_UC = importlib.util.find_spec("unicorn") is not None
 TOKEN = "12345678-1234-5678-1234-567812345678"
 
 
-def draft_save():
+def draft_save(position=0):
+    """The synthetic Franchise at NFL Draft stage; its last player is an unassigned prospect."""
     payload = bytearray(synthetic_franchise())
     payload[fs.SEASON_BLOCK + fs.S_STAGE] = 5
     doc = rr.RosterDocument(payload, base=rr.find_block_base(payload))
-    doc.players[-1].record.set("position", 0)
+    doc.players[-1].record.set("position", rr.position_code(position))
     doc.players[-1].record.set("player_type", 16)
     return doc.to_body()
 
 
-def prepared():
-    return career.prepare(draft_save(), first="My", last="Player", token=TOKEN)
+def prepared(position=0, **options):
+    code = rr.position_code(position)
+    options.setdefault("template", 0 if career.templates_for(code) else None)
+    return career.prepare(draft_save(code), first="My", last="Player", position=code, token=TOKEN, **options)
 
 
 class Machine:

@@ -9291,3 +9291,81 @@ already updated in `mod_editor/core/providers.py`. No new capability registry
 entry is needed; the retail camera inspector remains a retail map. No release
 tag, protected build module, allowlist, runtime-closure file or GUI file was
 changed here. The new behavior remains EXPERIMENTAL / UNWITNESSED.
+## r63 MyCareer: Game Modes row and any position (2026-09-07)
+
+Branch `fable/r63-mycareer`, base `1749663`. The MyCareer owner
+(`mod_editor/core/nfl2k5_my_career.py`, `tools/nfl2k5_my_career.S`, generated
+`nfl2k5_my_career_code.py`), its Studio page, fixture and tests changed. The
+owner's allocator request is unchanged at `8192 RX / 4096 RW`; the byte
+template grew from 4,418 to 4,896 bytes (6,176 of 8,192 with the sealed
+setup), so the budget fixture, `tests/nfl2k5_allocator_stack.py`, both gates
+and the manifest builder need no edit. EXPERIMENTAL / UNWITNESSED remains.
+
+What changed in the unprotected owner:
+
+1. The First Person Football row of Game Modes (`0x501494`) is the MyCareer
+   action, as before. The action is now proved through the retail list
+   dispatcher (`0x150020`, kind 9, case table `0x15024C`) by
+   `test_nfl2k5_my_career_unicorn.py`. A build whose sealed setup is empty
+   shows a native message and pushes nothing; a configured build shows the
+   entry message and pushes native Load / Save (`0x508DF0`). Both 20-byte
+   labels equal `nfl2k5_modern_naming.career_text("menu_row")` and
+   `career_text("screen_title")` (test-pinned).
+2. MyPlayer can be any of the 17 retail positions. `prepare(..., position=,
+   template=, starter_lock=)` replaces the first eligible prospect at that
+   position; QB K P WR CB FS SS HB FB TE OLB ILB take one of their three
+   retail create-a-player templates or `None`; C G T DT DE keep the generated
+   prospect ratings. The runtime identity compares the record's position with
+   the sealed recipe's position byte (checkpoint 149), no longer a fixed QB.
+3. Optional starter lock (default on): at MyPlayer's first active club the
+   owner writes depth row 1 plus the `nfl2k5_depth_locks` rank bit once;
+   checkpoint words 180/184 carry the request and the once flag.
+4. `MyCareer.json` is schema `nfl2k5_my_career/v2` with a `position` key. A
+   v1 setup is refused with a message that says to create MyPlayer again.
+
+### Protected text: mod_editor/gui/beta62_options.py
+
+Replace the `my_career` row's literal help with the owner's text so the shared
+Build and Gameplay captions describe any position and the Game Modes entry:
+
+```python
+("my_career", "MyCareer (experimental)", tt.my_career_patch.HELP_TEXT),
+```
+
+No `BuildPlan` field, preset default, dispatcher argument, `_apply_all`
+tuple, status dictionary, `NEEDS_IMAGE` entry, allowlist line or
+runtime-closure import changes: `read_setup` keeps its signature and the
+Build path still calls only `my_career_patch.read_setup(plan.my_career_setup)`.
+If Build should refuse a stale v1 setup before copying, no change is needed
+either; `read_setup` raises `MyCareerError` with the message above.
+
+### Protected registry: mod_editor/capabilities/registry.v1.json
+
+Replace the `nfl2k5.mode.my_career` object with the updated object in
+`docs/mod_editor/nfl2k5_my_career_capabilities.json` (summary, backend
+command, input constraints, evidence and runtime scope now describe any
+position, the Game Modes entry and `FABLE_MYCAREER_REPORT.md`). The merged
+registry validates with `validate_data(..., check_files=False)`; with file
+checks on, the new evidence paths resolve once the report is committed.
+Keep the crib object as it is.
+
+### Release manifest
+
+`data/nfl2k5_cave_reservations.json` pins `mod_editor/core/nfl2k5_my_career.py`
+and `nfl2k5_my_career_code.py` by SHA-256; both changed. Regenerate the
+manifest with the existing `tools/nfl2k5_cave_oracle.py manifest --xiso ...
+--work-dir ...` real-disc workflow when the main drive has room for its
+disposable 6+ GB image (this session had 101 GB free, at the floor, so it did
+not). The default manifest at this base also carries a stale `nfl2k5_camera`
+span `0x14DA400..0x14DA440` ("declared edit: owned_camera_wrappers") whose
+containing allocation is absent from the manifest's own `allocator_layout`
+(the camera allocation is at `0x14DA830`), so
+`tests/nfl2k5_allocator_stack.manifest_for_allocated_union` refuses the
+default JSON in `test_xbe_patch_cave_references.py` and in
+`test_nfl2k5_my_career_manifest.py` independent of this change (the previous
+manifest `75bbd8b` has the same span). The recorder in
+`test_nfl2k5_guardian_manifest.py` refuses the allocator's own scale-out
+reservation at the untouched base as well (verified with this branch's paths
+stashed). Neither refusal was weakened; regenerating the release manifest
+clears both, and the memory-writes gate (79, both orders) and the pairwise
+suite (77) pass with this change.
