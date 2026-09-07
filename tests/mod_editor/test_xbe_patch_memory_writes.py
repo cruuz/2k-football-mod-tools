@@ -122,6 +122,9 @@ class PatchWriteTests(unittest.TestCase):
         # Camera now needs 64 owned code bytes; the full union installs it. No
         # allocation may be sealed by the earlier protected dispatcher pass.
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
+        if autosave.status(cls.patched) != "applied" or autosave.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Franchise Auto Save missing from the complete owner union")
         from mod_editor.core import nfl2k5_camera as camera
         if camera.status(cls.patched) != "applied" or camera.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Paired Standard/Far framing and pass limits missing from complete owner union")
@@ -534,6 +537,26 @@ class PatchWriteTests(unittest.TestCase):
         self.assertTrue(all(row["target"] is None for row in writes), writes)
         # Bounded Unicorn proves destinations: the native QB task+0x60 and
         # temporary stack saves. No persistent classifier state exists.
+
+    def test_franchise_autosave_uses_owned_rw_and_native_save_context_only(self):
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, absolute_writes
+        owned = autosave.allocations(self.patched)
+        image = XbeImage(self.patched)
+        self.assertFalse(image.section(owned['code']['va']).writable)
+        self.assertTrue(image.section(owned['code']['va']).executable)
+        self.assertTrue(image.section(owned['data']['va']).writable)
+        self.assertFalse(image.section(owned['data']['va']).executable)
+        self.assertFalse(image.section(owned['read_only']['va']).writable)
+        writes = absolute_writes(self.patched, [(owned['code']['va'], owned['code']['va']+len(autosave.assembly.CODE))])
+        self.assertTrue(writes)
+        for write in writes:
+            if write['target'] is None:
+                continue  # Bounded native tests cover serializer destination and stack.
+            va = int(write['target'], 0)
+            self.assertTrue(write['writable'], write)
+            self.assertTrue(owned['data']['va'] <= va < owned['data']['va']+autosave.DATA_SIZE
+                            or va in (0xE5FFE4, 0xBDBDA4), write)
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class ScorebugReferenceWrites(unittest.TestCase):

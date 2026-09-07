@@ -238,5 +238,23 @@
   "code",
   64,
   16
+ ],
+ [
+  "nfl2k5_franchise_autosave",
+  "code",
+  1536,
+  16
+ ],
+ [
+  "nfl2k5_franchise_autosave",
+  "data",
+  128,
+  16
+ ],
+ [
+  "nfl2k5_franchise_autosave",
+  "read_only",
+  512,
+  16
  ]
 ]

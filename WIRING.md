@@ -10245,3 +10245,189 @@ the proposed 128-byte tail. No inline-state writer, extra hook, product option,
 native-hub recipe or setup-guard removal is ready to wire from this continuation.
 The read-only audit's `--save` option and creation-boundary suite remain
 development-only, with no new runtime-closure or allowlist import.
+# r63 Franchise Auto Save handoff (2026-09-07)
+
+Owner: `mod_editor/core/nfl2k5_franchise_autosave.py`; evidence and witness list:
+`ASTRA_FRANCHISE_AUTOSAVE_REPORT.md`. EXPERIMENTAL / UNWITNESSED. This appendix
+specifies the protected product edits; those files were deliberately not edited.
+The standalone backend, assembly, capability object, manifest builder registration
+and both complete XBE gate unions are implemented in this change.
+
+## Dispatcher: `mod_editor/core/nfl2k5_throw_tuning.py`
+
+Import `nfl2k5_franchise_autosave as franchise_autosave_patch`. Add strict boolean
+`franchise_autosave=False` to `_apply_all`, `write_xbe_copy`, `write_image_copy`,
+`_validate_r62_options`, `_selected_space_requests` and `_xbe_space_adapter`.
+Thread it through all callers, including the validation call inside the request
+selector. Add the key to both `R62_RUNTIME_KEYS` and `R62_SPACE_KEYS`; the existing
+`_r62_options`, `_r62_space_options` and `_deferred_r62_options` then carry/defer it
+with the rest of the selected allocator union. Add it to the boolean validation
+sequence in `_validate_r62_options` and every public no-options predicate.
+
+Append to `_selected_space_requests`:
+
+```python
++ (franchise_autosave_patch.REQUESTS if franchise_autosave else ())
+```
+
+Forward `franchise_autosave=franchise_autosave` inside `_xbe_space_adapter` and
+include the flag in its `self.scaleout` expression. Include it in every predicate
+that selects the allocator transaction, including `_apply_all`'s allocator row.
+Do not install this owner before planning and reserving the full selected union.
+No settings adapter is needed; `apply(payload)` has no additional parameters.
+Add this exact tuple to `_apply_all`'s final owners, after the allocator entry:
+
+```python
+(franchise_autosave, franchise_autosave_patch,
+ "franchise_autosave_patch", "Franchise Auto Save (experimental)")
+```
+
+The four public status dictionaries must return
+`"franchise_autosave": franchise_autosave_patch.status(payload)` (substitute
+`result` or `after` for their final-byte variable): `read_xbe`, `read_image`,
+`write_xbe_copy`, and `write_image_copy`. The current tree already expands
+`_grown_status_fields` in all four, so put the field there once; verify all four
+public results. Keep installation status separate from the live Off/On switch.
+The backend cannot inspect a running game's current switch from an offline XBE.
+Expose the subreceipt under `franchise_autosave_patch`; propagate it into the
+write/build receipt alongside the other owner receipts and changed-byte count.
+
+For `write_image_copy`, include the flag in `defer_grown`, in the complete
+`_selected_space_requests` calls passed to paired/grown image writers, and in the
+last `_apply_all` pass. Keep it false during any early pass that must remain
+retail-size. Use the existing grown-XBE image writer to relocate the executable;
+never write a 12,300,288-byte XBE into the old retail extent. No PLAY/ROST/archive
+resource or asset pass is needed. The direct module CLI is a bounded standalone
+XBE-to-new-XBE tool, not a disc editor.
+
+## BuildPlan, presets and availability: `mod_editor/core/mod_build.py`
+
+Add `franchise_autosave: bool = False` to `BuildPlan`, include it in
+`wants_xbe_patch()`, strict option normalization/validation, capability availability
+module checks and source status projection. Make it available when the backend
+can import. Add it to the `_core_module` availability mapping with
+`nfl2k5_franchise_autosave`; do not tie availability to MyCareer or Franchise
+Practice, because both standalone and composed Desk layouts are supported.
+
+Set `franchise_autosave=False` in `basic`, `True` in `softdrink_advanced`, and
+`True` in `softdrink_experimental`. These are installation presets. The in-game
+switch starts **Off**, and an existing save restores its saved word. A new
+franchise needs one manual save to establish a destination. No default save
+name, storage device or slot number is inferred.
+
+Normalize enabled Auto Save to `xbe_space=True`. Add it to the predicate near
+`momentum_on` that defers grown owners, the `replace(..., camera=False, ...)`
+early-XBE selection (also `franchise_autosave=False` there), the final grown-owner
+predicate, and the final `tt.write_copy` kwargs. When using `R62_RUNTIME_KEYS`,
+ensure the new BuildPlan field is picked up by `_build_r62_values`; avoid duplicate
+explicit and `**r62` kwargs. Include the flag and subreceipt in the corresponding
+build steps, scan/status key list and receipts. Preserve one immutable allocator
+union across all later camera, scoreboard and roster passes.
+
+## Shared UI wiring (protected panels)
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, add a `PATCHES` row:
+
+```python
+("franchise_autosave", "Franchise Auto Save (experimental)",
+ tt.franchise_autosave_patch.HELP_TEXT)
+```
+
+`HELP_TEXT` contains both **Retail** and **Patch** and the required
+EXPERIMENTAL / UNWITNESSED label. Add `franchise_autosave` to `NEEDS_IMAGE`:
+the Studio patch surface must use its existing grown-image pipeline, even though
+all feature resources are inside the XBE. Include the option in source-only
+eligibility, availability/status display, selection and writer kwargs.
+
+In `mod_editor/gui/build_panel_qt.py`, add:
+
+```python
+self.franchise_autosave_check = self._option(
+    pl, "franchise_autosave", "Franchise Auto Save (experimental)",
+    tt.franchise_autosave_patch.HELP_TEXT)
+```
+
+Caption length is **34** characters, below 60. Wire its refresh signal, preset
+mapping, capability gate, BuildPlan creation, selected-options summary, reset and
+wants-patch check. Retain the experimental help text. If these paths use a shared
+UI key table, add the key there through the coordinating owner; no feature panel
+or setup file is needed. In `studio_qt.py` and `gameplay_panel_qt.py`, forward the
+same key wherever the shared patch/build selections or source status are copied;
+do not create a second independent toggle model.
+
+The native row at `0x500B24` becomes **Auto Save**. The existing Coach's Desk ->
+Options -> Franchise Options row at `0x52BB68` becomes the same **Auto Save**
+switch. Generic Game Options has nine occupied rows and no proved spare, so do
+not insert a generic Options row. Both replacements preserve the native Off/On
+choice renderer, row size, row order and number of rows.
+
+## Packaging, capability registry and closure
+
+Add these literal source allowlist lines to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_franchise_autosave.py
+mod_editor/core/nfl2k5_franchise_autosave_code.py
+tools/nfl2k5_franchise_autosave.S
+tools/nfl2k5_franchise_autosave_assemble.py
+docs/mod_editor/nfl2k5_franchise_autosave_capability.json
+ASTRA_FRANCHISE_AUTOSAVE_REPORT.md
+```
+
+The executable template lives in `_code.py` and its source is `.S`. Include the two standalone tests and
+`tests/nfl2k5_franchise_autosave_fixture.py` only if the existing package policy
+ships test sources. Never include the brief, scratch evidence, retail executable,
+save buffers or a generated disc.
+
+In `packaging/check_2k5_mod_studio_runtime.py`, add these import-closure entries:
+
+```python
+"mod_editor.core.nfl2k5_franchise_autosave",
+"mod_editor.core.nfl2k5_franchise_autosave_code",
+```
+
+Existing dependencies must remain in closure: `nfl2k5_xbe_space`,
+`nfl2k5_bump_strength`, `nfl2k5_cave_oracle`, `nfl2k5_franchise_practice` and
+`nfl2k5_music_playlist`. The last two recognize only their fully validated
+installed table/dispatcher changes. No GNU assembler, Capstone or Unicorn is
+needed to apply the packaged runtime; GNU `as --32` is only a development
+regeneration tool, and Unicorn/Capstone are optional test dependencies.
+
+Merge the exact object from
+`docs/mod_editor/nfl2k5_franchise_autosave_capability.json` into
+`mod_editor/capabilities/registry.v1.json`, sort capability IDs, and run the
+existing strict registry validator with file checks. Keep classification
+`offline-writer-proved`, runtime `not-tested`, and GUI default false (Basic).
+Both backend and validation commands use `python3 -m <dotted.module>`.
+Do not promote this to runtime-proved before Noah's witness.
+
+Checkout limitation: full registry file-check mode currently stops at the
+pre-existing missing `docs/research/apf_audio.md`. The feature test validates
+the merged schema and strictly resolves every new object reference/command.
+Run the full registry check in the coordinating checkout with its existing
+research evidence present; do not weaken the validator or forge missing files.
+
+## Manifest and coordinating acceptance
+
+Already implemented: `tests/nfl2k5_allocator_stack.py` request union and both
+compose orders; budget fixture; manifest builder append/owner/observer lists,
+`all_requests`, final and synthetic owner passes and extra-owner list; both XBE
+gates' explicit Auto Save checks. The protected release manifest predates this
+owner. Gates project each exact new live edit only after pinning its retail bytes,
+validating the complete installed owner, and rejecting other-owner overlap.
+This test-only projection never writes or relaxes the production manifest.
+
+Claude must regenerate `data/nfl2k5_cave_reservations.json` using the existing
+`tools/nfl2k5_cave_oracle.py manifest` command after the protected wiring lands.
+In the manifest builder's separate retail-size seed `replace`, also disable
+`franchise_autosave` once the new preset enables it. Its explicit complete-union
+probe installs Auto Save afterward. Use temporary disc storage that is deleted
+on every exit, keep root free space above 100 GB, and retain only receipts.
+
+Run the two standalone feature suites, assembly `--check`, strict capability
+validator, complete memory-write and cave-reference gates, and the existing
+BuildPlan/preset/source-status/runtime-closure tests after wiring. Assert all
+four status dictionaries report retail on base and applied on the installed
+copy, false makes no feature edits, both enabled presets reserve the three
+requests, and the final grown-image pass remains replay-identical. Do not change
+release/version tags as part of this handoff.

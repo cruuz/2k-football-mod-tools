@@ -25,6 +25,7 @@ from mod_editor.core import nfl2k5_my_career as my_career
 from mod_editor.core import nfl2k5_crib_reclaim as crib_reclaim
 from mod_editor.core import nfl2k5_screen_hooks as screen_hooks
 from mod_editor.core import nfl2k5_roster_arena_growth as arena_growth
+from mod_editor.core import nfl2k5_franchise_autosave as autosave
 
 
 LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
@@ -33,7 +34,7 @@ LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
 # Both installation orders use this same union and require rebuild from base.
 REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
-            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS)
+            + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 
@@ -72,7 +73,7 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
               (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
-              (my_career, {}), (crib_reclaim, {}),
+              (my_career, {}), (crib_reclaim, {}), (autosave, {}),
               (screen_hooks, {}),
               (arena_growth, dict(created_teams_extra=2)))
     order = tuple(reversed(owners)) if reverse else owners
@@ -162,6 +163,20 @@ def manifest_for_allocated_union(manifest, retail, allocated):
         # A union without either kickoff owner (camera-only seeds, for example)
         # must still carry the retail bytes at the separation hook.
         raise AssertionError("kickoff separation changed without a kickoff owner")
+    # The release manifest is protected and predates this owner. Project only
+    # its pinned live edits after validating the full installed owner. Do not
+    # grant a range exemption for arbitrary changes near the native save code.
+    if autosave.status(allocated) == "applied":
+        owned = autosave.allocations(allocated)
+        installed_image = XbeImage(allocated)
+        for name, va, before, after in autosave.sites(owned["code"]["va"], owned["read_only"]["va"]):
+            if image.read(va, len(before)) != before or installed_image.read(va, len(after)) != after:
+                raise AssertionError(f"Auto Save live edit pin differs: {name}")
+            if any(r.detail.split(":", 1)[0] != autosave.OWNER
+                   for r in manifest.overlaps(va, va+len(before))):
+                raise AssertionError(f"Auto Save overlaps a different owner: {name}")
+            spans.append(dict(start=hex(va), end=hex(va+len(before)), size=len(before),
+                              owner=autosave.OWNER, basis=f"test-only pinned live edit: {name}"))
     document = {**manifest.document, "spans": spans, "allocator_layout": layout,
-                "model": "Test-only allocation projection plus pinned kickoff separation live hook"}
+                "model": "Test-only allocation projection plus pinned kickoff and Auto Save live hooks"}
     return ReservationManifest(document, XbeImage(retail))

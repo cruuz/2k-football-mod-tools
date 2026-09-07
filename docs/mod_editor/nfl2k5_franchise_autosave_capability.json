@@ -1,0 +1,67 @@
+{
+  "backend": {
+    "command": "python3 -m mod_editor.core.nfl2k5_franchise_autosave apply source.xbe autosave.xbe",
+    "module": "mod_editor/core/nfl2k5_franchise_autosave.py",
+    "operation": "write"
+  },
+  "classification": "offline-writer-proved",
+  "evidence": [
+    "ASTRA_FRANCHISE_AUTOSAVE_REPORT.md",
+    "tests/mod_editor/test_nfl2k5_franchise_autosave.py",
+    "tests/mod_editor/test_nfl2k5_franchise_autosave_unicorn.py",
+    "tools/nfl2k5_franchise_autosave.S"
+  ],
+  "game": "nfl2k5_xbox",
+  "gui": {
+    "default_enabled": false,
+    "expose": true,
+    "mode": "edit",
+    "reason": "EXPERIMENTAL / UNWITNESSED. Basic off, Advanced and Experimental on. The installed in-game switch starts Off. Protected product wiring is specified in WIRING.md."
+  },
+  "id": "nfl2k5.gameplay.franchise_autosave",
+  "input_constraints": [
+    "Pinned USA default.xbe or a verified composition; reserve the entire selected owner union before applying any grown owner.",
+    "A successful manual Save Franchise or Load Franchise chooses the current device and full save name. A new franchise needs one manual save.",
+    "Auto Save must be On. Only completed native Franchise games qualify; saving waits for two quiet topmost Coach's Desk updates after game teardown.",
+    "Reuses the former First Person Football word in the native Franchise save. Loading an old save with that word set enables Auto Save; loading an Auto Save save in retail reinterprets it as First Person Football."
+  ],
+  "portme": [
+    "Apply the exact protected dispatcher, BuildPlan, preset, GUI, packaging and manifest handoff in WIRING.md.",
+    "Run Noah's played-game, simulated-game, failure and forced-quit/reload witness list in ASTRA_FRANCHISE_AUTOSAVE_REPORT.md."
+  ],
+  "public_distribution": {
+    "game_data": "never-bundle-retail-data",
+    "mod_payload": "user-authored-inputs-and-recipes",
+    "rule": "Distribute source and patch recipes. Never distribute the generated executable or retail disc bytes.",
+    "tooling": "source-and-schemas-only"
+  },
+  "runtime": {
+    "evidence": [
+      "ASTRA_FRANCHISE_AUTOSAVE_REPORT.md"
+    ],
+    "scope": "Bounded installed x86 tests execute native game completion, Desk dispatch, manual save routing, progress/failure selection and settings reload. Storage services and drawing are substituted. Real signed saves, controller navigation, visual timing and long sessions remain unwitnessed.",
+    "status": "not-tested"
+  },
+  "selectors": {
+    "fields": [
+      {
+        "allowed": "boolean; Basic false, Advanced true, Experimental true; separate in-game Off/On switch",
+        "name": "franchise_autosave",
+        "required": true
+      }
+    ],
+    "notes": "Retail: save Franchise manually. Patch: optional automatic save to the current slot after completed games return to Coach's Desk. Multiple results before one return produce one save of the latest state."
+  },
+  "source_container": {
+    "format": "XBE in XDVDFS",
+    "hash_pins": [
+      "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    ],
+    "resource": "21 pinned native edit spans; allocator v3 owner with 1536 RX, 128 RW and 512 RO bytes; no archive edits or save-size growth",
+    "retail_file": "user-owned NFL 2K5 USA default.xbe"
+  },
+  "summary": "Adds Auto Save Off/On to Franchise settings and Franchise Options, then reuses the native save transaction after completed games return to Coach's Desk.",
+  "surface": "gameplay_tuning_sliders",
+  "title": "Franchise Auto Save (experimental, unwitnessed)",
+  "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_franchise_autosave"
+}

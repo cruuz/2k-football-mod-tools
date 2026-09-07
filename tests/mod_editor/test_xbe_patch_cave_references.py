@@ -79,6 +79,9 @@ class CaveReferenceTests(unittest.TestCase):
         # Camera now needs 64 owned code bytes; the full union installs it. No
         # allocation may be sealed by the earlier protected dispatcher pass.
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
+        if autosave.status(cls.patched) != "applied" or autosave.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Franchise Auto Save missing from the complete owner union")
         from mod_editor.core import nfl2k5_camera as camera
         if camera.status(cls.patched) != "applied" or camera.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Paired Standard/Far framing and pass limits missing from complete owner union")
@@ -620,7 +623,27 @@ class CaveReferenceTests(unittest.TestCase):
                 self.assertEqual(self.manifest.overlaps(int(reservation['start'],0),
                     int(reservation['end'],0),exclude_owner=camera.OWNER), [], reservation)
 
-@unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
+    def test_franchise_autosave_hooks_have_no_interior_entry_or_foreign_owner(self):
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        owned = autosave.allocations(self.patched)
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        for name, va, original, _ in autosave.HOOKS:
+            before = bytes.fromhex(original)
+            self.assertEqual(sum(i.size for i in md.disasm(before, va)), len(before), name)
+            self.assertEqual(sum(i.size for i in md.disasm(image.read(va, len(before)), va)), len(before), name)
+            for target in range(va+1, va+len(before)):
+                self.assertFalse(self.targets.get(target, []), (name, hex(target)))
+        for name, va, before, _ in autosave.sites(owned['code']['va'], owned['read_only']['va']):
+            self.assertEqual(self.manifest.overlaps(va, va+len(before), exclude_owner=autosave.OWNER), [], name)
+            self.assertTrue(self.manifest.overlaps(va, va+len(before)), name)
+        for allocation in owned.values():
+            va, end = allocation['va'], allocation['va']+allocation['size']
+            self.assertEqual({at: refs for at, refs in self.targets.items() if va <= at < end}, {})
+            self.assertTrue(all(r.detail.split(':', 1)[0] == 'nfl2k5_xbe_space'
+                                for r in self.manifest.overlaps(va, end, exclude_owner=autosave.OWNER)))
+
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class ScorebugReferenceReservations(unittest.TestCase):
     def test_scorebug_uses_existing_reserved_constants_and_no_new_cave(self):
