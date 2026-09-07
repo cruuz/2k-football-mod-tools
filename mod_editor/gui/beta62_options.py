@@ -2,15 +2,16 @@
 from mod_editor.core import nfl2k5_throw_tuning as tt
 
 SCOREBUG_HELP = (
-    "Retail: Uses the original scoreboard. Patch: Installs new repaintable ESPN artwork, "
-    "with a left mark, dark team blocks, larger white scores, a red down cell and a light clock cell. "
-    "Team abbreviations and possession stay live. Choose a scorebar folder to use your own art. "
-    "Team colours and live timeout marks need separate runtime work. "
-    "Moves the kick meter up and hides the lineup strip. EXPERIMENTAL / UNWITNESSED v10.")
+    "Retail: Uses the original scoreboard. Patch: Uses the Raiders at Texans "
+    "broadcast layout with neutral panels, white scores, a red down box and a "
+    "light clock strip. A scorebar folder overrides this with your painted "
+    "template. Moves the kick meter up and hides the lineup strip. "
+    "EXPERIMENTAL / UNWITNESSED; fonts and colours still differ.")
 SCOREBUG_RUNTIME_HELP = (
-    "Retail: Uses the original team panels and timeout display. Patch: Adds team logos, remaining timeout "
-    "marks, score flashes, down refresh and a red play clock below five seconds. The previous version froze "
-    "when a tester entered a game. EXPERIMENTAL / UNWITNESSED v2; use the report's CLI probes on a separate disc copy.")
+    "Retail: Uses the original team panels. Patch: Adds team gradients, logos, "
+    "small wordmarks and live timeout marks to the experimental scorebar. "
+    "Diagnostic only and off in every preset. EXPERIMENTAL / UNWITNESSED; "
+    "the game-entry freeze remains unresolved. Keep the six probe choices.")
 PRACTICE_HELP = (
     "Retail: Practice is available from Game Modes. Patch: adds Practice below Schedule on the Coach's Desk. "
     "Practice uses your franchise roster and returns to the Coach's Desk when you quit. "

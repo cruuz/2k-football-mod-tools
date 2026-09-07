@@ -1803,6 +1803,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_scorebug_resources",
         "mod_editor.core.nfl2k5_scorebug_ingame",
         "mod_editor.core.nfl2k5_scorebug_template",
+        "mod_editor.core.nfl2k5_scorebug_exact",
         "mod_editor.core.nfl2k5_music_policy",
         "mod_editor.core.nfl2k5_music_catalog",
         "mod_editor.core.nfl2k5_music_build",
