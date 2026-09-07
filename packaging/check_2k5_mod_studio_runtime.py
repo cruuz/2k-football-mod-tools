@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "81a72698ba3442893ecb8124338bb847cfbb9140e9b82e4a4a27206390de016c",
+        "f5a48f2364cad77bca7452d4e1dd85caa5cf27342e5801f2189a7a03baae54e3",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1803,6 +1803,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_scorebug_resources",
         "mod_editor.core.nfl2k5_scorebug_ingame",
         "mod_editor.core.nfl2k5_scorebug_template",
+        "mod_editor.core.nfl2k5_scorebug_author",
         "mod_editor.core.nfl2k5_scorebug_exact",
         "mod_editor.core.nfl2k5_music_policy",
         "mod_editor.core.nfl2k5_music_catalog",
@@ -1813,6 +1814,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_music_archive",
         "mod_editor.studio.music_service",
         "mod_editor.gui.music_panel_qt",
+        "mod_editor.gui.scorebug_studio_panel_qt",
         "mod_editor.core.nfl2k5_animation_bones",
         "mod_editor.core.nfl2k5_animation_import",
         "mod_editor.core.nfl2k5_animation_xbe",
@@ -1928,6 +1930,18 @@ def main() -> int:
     panel.close()
     panel.deleteLater()
     qt_app.processEvents()
+    studio = modules["mod_editor.core.nfl2k5_scorebug_author"]
+    require([item.id for item in studio.presets()] == ["reference_v10", "fable_espn", "plain_dark", "retail_like"],
+            "Scorebar Studio preset registry changed")
+    with tempfile.TemporaryDirectory() as scratch:
+        receipt = studio.Document.from_preset("plain_dark").save_folder(Path(scratch) / "bar")
+        require(receipt["slot"]["fits"] and receipt["template"]["colours"] <= 128,
+                "Scorebar Studio export no longer fits the scorebar slot")
+    scorebar_page = modules["mod_editor.gui.scorebug_studio_panel_qt"].ScorebugStudioPanel()
+    require(scorebar_page.layer_list.count() == 8 and not scorebar_page.is_dirty, "Scorebar Studio page is not idle")
+    scorebar_page.close()
+    scorebar_page.deleteLater()
+    qt_app.processEvents()
     runtime = modules["mod_editor.core.nfl2k5_scorebug_runtime"]
     require(bool(runtime.REQUESTS) and runtime.status(b"bad") == "foreign", "runtime scorebug gate changed")
     art = modules["mod_editor.core.nfl2k5_scorebug_resources"]
@@ -2010,11 +2024,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 109,
+    require(len(registry.capabilities) == 110,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 71,
+    require(len(product_catalog.capabilities) == 72,
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2417,7 +2431,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=109 sections=12 nfl2k5_capabilities=71 "
+        "registry=110 sections=12 nfl2k5_capabilities=72 "
         "reports=16 reviewed_metadata=24 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

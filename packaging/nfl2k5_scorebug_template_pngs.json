@@ -516,6 +516,66 @@
       "sha256": "528526899be07449670d3c74e674b1c62349f8818516b38dd022dda8d50a7bff",
       "width": 64,
       "height": 32
+    },
+    "docs/mod_editor/scorebug_studio/page_fable_down.png": {
+      "size": 274311,
+      "sha256": "932f31ce9ae3e50544a969b4fe5ead9e0a9cec2d05762c6e7e044d2f6f772d63",
+      "width": 1601,
+      "height": 936
+    },
+    "docs/mod_editor/scorebug_studio/page_plain_wide_teams.png": {
+      "size": 240304,
+      "sha256": "ef131697031d7e97e0dea30216f07bdf79263f14c7d55c0fd3175ccccf6b380d",
+      "width": 1601,
+      "height": 936
+    },
+    "docs/mod_editor/scorebug_studio/page_reference.png": {
+      "size": 246888,
+      "sha256": "3ee49a21ac494e42ffdc07f39eaf06dceab5db3bcaa3e3ddb918466d262b275a",
+      "width": 1601,
+      "height": 880
+    },
+    "docs/mod_editor/scorebug_studio/preset_fable_espn.png": {
+      "size": 23475,
+      "sha256": "a50d152fa1a84c36f9edfe2f2c439982d2512a4c0ba4737d666c524524aba770",
+      "width": 640,
+      "height": 480
+    },
+    "docs/mod_editor/scorebug_studio/preset_plain_dark.png": {
+      "size": 21725,
+      "sha256": "5da45d6baa8fd974bc03257da76612a96dde750f9f172788ddc3e78a3bae6aa6",
+      "width": 640,
+      "height": 480
+    },
+    "docs/mod_editor/scorebug_studio/preset_reference_v10.png": {
+      "size": 22942,
+      "sha256": "882e4692582afcefbe7497b290094a7d559a54b88411d9ffb12ee864b0927f90",
+      "width": 640,
+      "height": 480
+    },
+    "docs/mod_editor/scorebug_studio/preset_retail_like.png": {
+      "size": 20307,
+      "sha256": "b3765eb2092b6a0cefca0b82c7e66c80a7d3fc09e5fbcdfc2a2d2c4a22b1b4c5",
+      "width": 640,
+      "height": 480
+    },
+    "docs/mod_editor/scorebug_studio/states_fable.png": {
+      "size": 40109,
+      "sha256": "1b5095f2e4368a88dbd91808a5551a3b09afc9135c059873537990b940593e12",
+      "width": 1000,
+      "height": 560
+    },
+    "docs/mod_editor/scorebug_studio/team_preview_NO_MIA.png": {
+      "size": 8508,
+      "sha256": "d89e8dade06b7dc31842005c611c95f61ba009672f8df77b878471a8a85f4dce",
+      "width": 1000,
+      "height": 140
+    },
+    "docs/mod_editor/scorebug_studio/widescreen_fable.png": {
+      "size": 32447,
+      "sha256": "4b738bc82986e71a6b0ea6da8cbdc707d67d21d9889437abbb0b09ac48192113",
+      "width": 854,
+      "height": 480
     }
   }
 }

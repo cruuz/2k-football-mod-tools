@@ -127,6 +127,7 @@ from mod_editor.gui.animations_panel_qt import AnimationsPanel
 from mod_editor.gui.play_info_panel_qt import PlayInfoPanel
 from mod_editor.gui.senior_bowl_panel_qt import SeniorBowlPanel
 from mod_editor.gui.my_career_panel_qt import MyCareerPanel
+from mod_editor.gui.scorebug_studio_panel_qt import ScorebugStudioPanel
 from mod_editor.gui.stadium_blender_panel_qt import StadiumBlenderPanel, texture_import_summary
 from mod_editor.gui.roster_editor_panel_qt import RosterEditorPanel
 from mod_editor.gui.gameplay_patches_panel_qt import TEXT_PATCHES, GameplayPatchesPanel
@@ -2547,6 +2548,12 @@ class StudioMainWindow(QMainWindow):
         career_item.setSizeHint(QSize(210, 44))
         career_item.setToolTip("Prepare MyPlayer, a created quarterback, and the paired draft save. Experimental and unwitnessed.")
         self.navigation.addItem(career_item)
+        scorebar_item = QListWidgetItem("  Scorebar")
+        scorebar_item.setData(Qt.UserRole, "scorebar")
+        scorebar_item.setSizeHint(QSize(210, 44))
+        scorebar_item.setToolTip("Design the in-game scorebar: pick a preset, recolour each part or use your "
+                                 "own pictures, then hand the folder to Build. Experimental and unwitnessed.")
+        self.navigation.addItem(scorebar_item)
         build_item = QListWidgetItem("  ★ Build & Share")
         build_item.setData(Qt.UserRole, "build_share")
         build_item.setSizeHint(QSize(210, 44))
@@ -2831,6 +2838,9 @@ class StudioMainWindow(QMainWindow):
         self._my_career_panel = MyCareerPanel()
         self._my_career_panel.setup_ready.connect(self._my_career_setup_ready)
         self.pages.addWidget(self._page_scroll_host(self._my_career_panel))
+        self._scorebar_panel = ScorebugStudioPanel()
+        self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
+        self.pages.addWidget(self._page_scroll_host(self._scorebar_panel))
         self._build_share_page = self._build_build_share_page()
         self.pages.addWidget(self._page_scroll_host(self._build_share_page))
         workspace_layout.addWidget(self.pages, 1)
@@ -8447,6 +8457,15 @@ class StudioMainWindow(QMainWindow):
             self._capture_music_build_settings()
             self._mark_workspace_changed()
 
+    def _scorebar_folder_chosen(self, folder: str) -> None:
+        """Scorebar Studio saved a folder: fill the Build tab's scorebar folder field."""
+        if self._build_panel is None:
+            return
+        self._build_panel.scorebug_folder_field.setText(folder)
+        self._capture_music_build_settings()
+        self._mark_workspace_changed()
+        self._set_status("Scorebar folder handed to Build. Tick Experimental ESPN scorebar on the Build tab.")
+
     def _my_career_setup_ready(self, path):
         self._build_panel.set_my_career_setup(path)
         self._capture_music_build_settings()
@@ -8616,7 +8635,7 @@ class StudioMainWindow(QMainWindow):
             return
         if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
-            titles = ("Rosters", "Models", "Animations", "Create a Play", "MyCareer", "Build & Share")
+            titles = ("Rosters", "Models", "Animations", "Create a Play", "MyCareer", "Scorebar", "Build & Share")
             self.page_title.setText(titles[special] if special < len(titles) else "")
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]
