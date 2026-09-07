@@ -1,0 +1,219 @@
+{
+  "schema": "mycareer_art/v1",
+  "seed": 20260907,
+  "ui": {
+    "content": [
+      36,
+      28,
+      604,
+      452
+    ],
+    "menu": [
+      44,
+      142,
+      302,
+      376
+    ],
+    "summary": [
+      332,
+      142,
+      596,
+      376
+    ],
+    "footer_y": 432,
+    "row_height": 26,
+    "rows": 9
+  },
+  "crop_43": [
+    0,
+    64,
+    512,
+    448
+  ],
+  "crop_wide": [
+    0,
+    112,
+    512,
+    400
+  ],
+  "objects": {
+    "window": [
+      336,
+      116,
+      466,
+      276
+    ],
+    "jersey": [
+      250,
+      112,
+      310,
+      180
+    ],
+    "painting": [
+      474,
+      106,
+      510,
+      156
+    ],
+    "lamp": [
+      476,
+      160,
+      514,
+      374
+    ],
+    "tv": [
+      10,
+      246,
+      88,
+      356
+    ],
+    "sofa": [
+      262,
+      292,
+      430,
+      392
+    ],
+    "side_table": [
+      438,
+      268,
+      480,
+      356
+    ],
+    "gear": [
+      36,
+      352,
+      264,
+      400
+    ],
+    "drape": [
+      316,
+      98,
+      332,
+      302
+    ]
+  },
+  "core_objects": [
+    "window",
+    "jersey",
+    "sofa",
+    "tv",
+    "gear",
+    "side_table"
+  ],
+  "smooth_rects": {
+    "sky": [
+      338,
+      118,
+      464,
+      204
+    ],
+    "wall": [
+      100,
+      120,
+      240,
+      170
+    ],
+    "floor": [
+      60,
+      410,
+      240,
+      448
+    ]
+  },
+  "panel_tiles": {
+    "summary_opaque": {
+      "rect": [
+        4,
+        4,
+        132,
+        100
+      ],
+      "kind": "opaque",
+      "nine_slice_inset": 12
+    },
+    "opponent_translucent": {
+      "rect": [
+        140,
+        4,
+        252,
+        60
+      ],
+      "kind": "translucent",
+      "nine_slice_inset": 8
+    },
+    "balance_translucent": {
+      "rect": [
+        140,
+        68,
+        252,
+        116
+      ],
+      "kind": "translucent",
+      "nine_slice_inset": 8
+    },
+    "ribbon_translucent": {
+      "rect": [
+        4,
+        108,
+        132,
+        124
+      ],
+      "kind": "translucent",
+      "nine_slice_inset": 4
+    }
+  },
+  "calendar": {
+    "cell": 32,
+    "icons": {
+      "played": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "upcoming": [
+        32,
+        0,
+        64,
+        32
+      ],
+      "bye": [
+        64,
+        0,
+        96,
+        32
+      ],
+      "practice": [
+        96,
+        0,
+        128,
+        32
+      ],
+      "request": [
+        0,
+        32,
+        32,
+        64
+      ],
+      "current": [
+        32,
+        32,
+        64,
+        64
+      ],
+      "milestone": [
+        64,
+        32,
+        96,
+        64
+      ]
+    }
+  },
+  "focus": {
+    "stretch_columns": [
+      12,
+      116
+    ],
+    "rim_px": 2
+  }
+}
