@@ -1,0 +1,258 @@
+[
+  {
+    "abbr": "ARI",
+    "city": "Arizona",
+    "nickname": "Cardinals",
+    "primary_hex": "#97233F",
+    "secondary_hex": "#000000",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "ATL",
+    "city": "Atlanta",
+    "nickname": "Falcons",
+    "primary_hex": "#A71930",
+    "secondary_hex": "#000000",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "BAL",
+    "city": "Baltimore",
+    "nickname": "Ravens",
+    "primary_hex": "#241773",
+    "secondary_hex": "#000000",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "BUF",
+    "city": "Buffalo",
+    "nickname": "Bills",
+    "primary_hex": "#00338D",
+    "secondary_hex": "#C60C30",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "CAR",
+    "city": "Carolina",
+    "nickname": "Panthers",
+    "primary_hex": "#0085CA",
+    "secondary_hex": "#101820",
+    "text_on_primary": "#000000"
+  },
+  {
+    "abbr": "CHI",
+    "city": "Chicago",
+    "nickname": "Bears",
+    "primary_hex": "#0B162A",
+    "secondary_hex": "#C83803",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "CIN",
+    "city": "Cincinnati",
+    "nickname": "Bengals",
+    "primary_hex": "#FB4F14",
+    "secondary_hex": "#000000",
+    "text_on_primary": "#000000"
+  },
+  {
+    "abbr": "CLE",
+    "city": "Cleveland",
+    "nickname": "Browns",
+    "primary_hex": "#311D00",
+    "secondary_hex": "#FF3C00",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "DAL",
+    "city": "Dallas",
+    "nickname": "Cowboys",
+    "primary_hex": "#003594",
+    "secondary_hex": "#869397",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "DEN",
+    "city": "Denver",
+    "nickname": "Broncos",
+    "primary_hex": "#FB4F14",
+    "secondary_hex": "#002244",
+    "text_on_primary": "#000000"
+  },
+  {
+    "abbr": "DET",
+    "city": "Detroit",
+    "nickname": "Lions",
+    "primary_hex": "#0076B6",
+    "secondary_hex": "#B0B7BC",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "GB",
+    "city": "Green Bay",
+    "nickname": "Packers",
+    "primary_hex": "#203731",
+    "secondary_hex": "#FFB612",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "HOU",
+    "city": "Houston",
+    "nickname": "Texans",
+    "primary_hex": "#03202F",
+    "secondary_hex": "#A71930",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "IND",
+    "city": "Indianapolis",
+    "nickname": "Colts",
+    "primary_hex": "#002C5F",
+    "secondary_hex": "#A2AAAD",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "JAX",
+    "city": "Jacksonville",
+    "nickname": "Jaguars",
+    "primary_hex": "#006778",
+    "secondary_hex": "#D7A22A",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "KC",
+    "city": "Kansas City",
+    "nickname": "Chiefs",
+    "primary_hex": "#E31837",
+    "secondary_hex": "#FFB81C",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "LAC",
+    "city": "Los Angeles",
+    "nickname": "Chargers",
+    "primary_hex": "#0080C6",
+    "secondary_hex": "#FFC20E",
+    "text_on_primary": "#000000"
+  },
+  {
+    "abbr": "LAR",
+    "city": "Los Angeles",
+    "nickname": "Rams",
+    "primary_hex": "#003594",
+    "secondary_hex": "#FFD100",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "LV",
+    "city": "Las Vegas",
+    "nickname": "Raiders",
+    "primary_hex": "#000000",
+    "secondary_hex": "#A5ACAF",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "MIA",
+    "city": "Miami",
+    "nickname": "Dolphins",
+    "primary_hex": "#008E97",
+    "secondary_hex": "#FC4C02",
+    "text_on_primary": "#000000"
+  },
+  {
+    "abbr": "MIN",
+    "city": "Minnesota",
+    "nickname": "Vikings",
+    "primary_hex": "#4F2683",
+    "secondary_hex": "#FFC62F",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "NE",
+    "city": "New England",
+    "nickname": "Patriots",
+    "primary_hex": "#002244",
+    "secondary_hex": "#C60C30",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "NO",
+    "city": "New Orleans",
+    "nickname": "Saints",
+    "primary_hex": "#D3BC8D",
+    "secondary_hex": "#101820",
+    "text_on_primary": "#000000"
+  },
+  {
+    "abbr": "NYG",
+    "city": "New York",
+    "nickname": "Giants",
+    "primary_hex": "#0B2265",
+    "secondary_hex": "#A71930",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "NYJ",
+    "city": "New York",
+    "nickname": "Jets",
+    "primary_hex": "#125740",
+    "secondary_hex": "#000000",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "PHI",
+    "city": "Philadelphia",
+    "nickname": "Eagles",
+    "primary_hex": "#004C54",
+    "secondary_hex": "#A5ACAF",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "PIT",
+    "city": "Pittsburgh",
+    "nickname": "Steelers",
+    "primary_hex": "#101820",
+    "secondary_hex": "#FFB612",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "SEA",
+    "city": "Seattle",
+    "nickname": "Seahawks",
+    "primary_hex": "#002244",
+    "secondary_hex": "#69BE28",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "SF",
+    "city": "San Francisco",
+    "nickname": "49ers",
+    "primary_hex": "#AA0000",
+    "secondary_hex": "#B3995D",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "TB",
+    "city": "Tampa Bay",
+    "nickname": "Buccaneers",
+    "primary_hex": "#D50A0A",
+    "secondary_hex": "#34302B",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "TEN",
+    "city": "Tennessee",
+    "nickname": "Titans",
+    "primary_hex": "#0C2340",
+    "secondary_hex": "#4B92DB",
+    "text_on_primary": "#FFFFFF"
+  },
+  {
+    "abbr": "WAS",
+    "city": "Washington",
+    "nickname": "Commanders",
+    "primary_hex": "#5A1414",
+    "secondary_hex": "#FFB612",
+    "text_on_primary": "#FFFFFF"
+  }
+]

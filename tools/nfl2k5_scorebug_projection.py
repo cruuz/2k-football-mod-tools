@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prove static v9 and reconstruct v8 with bounded native execution and retail fonts.
+"""Prove the current static bar and reconstruct v8 with bounded native execution.
 
 This research tool is not imported by the application. It installs no scorebug
 runtime code. Geometry, text bindings and glyph submissions run on the CPU;
@@ -218,8 +218,8 @@ def read_fonts(pack):
     return fonts
 
 
-def static_receipts(payload, spans):
-    """Exact v9 replay and native overlapping decompression receipts."""
+def static_receipts(payload, spans, *, scorebug_folder=None):
+    """Exact current-template replay and native overlapping decompression receipts."""
     patched, xbe_receipt = r.apply_xbe(payload)
     if r.apply_xbe(patched)[0] != patched:
         raise ValueError('static XBE replay changed bytes')
@@ -228,8 +228,8 @@ def static_receipts(payload, spans):
     try:
         for name in ('score_bug', 'score_buga'):
             before = spans[name]
-            after, receipt = r.apply(before, name, inputs=spans)
-            if r.apply(after, name)[0] != after:
+            after, receipt = r.apply(before, name, scorebug_folder=scorebug_folder)
+            if r.apply(after, name, scorebug_folder=scorebug_folder)[0] != after:
                 raise ValueError('static resource replay changed bytes')
             chunk, decoded, _ = r.decode(after)
             size = chunk.system_bytes + chunk.video_bytes
@@ -246,7 +246,7 @@ def static_receipts(payload, spans):
                               'wrapper_plus_14_after': struct.unpack_from('<I', after, 20)[0]})
     finally:
         m.close()
-    return dict(version=r.VERSION, v9=True, xbe=xbe_receipt, xbe_replay_identical=True,
+    return dict(version=r.VERSION, static=True, v10=True, xbe=xbe_receipt, xbe_replay_identical=True,
                 runtime_hooks=[dict(va=hex(va), bytes=original.hex()) for va, original in STATIC_CALLS],
                 resources=resources, temporary_disc_created=False)
 
@@ -668,96 +668,10 @@ def v8_baseline(spans):
 
 
 def main(argv=None):
-    from PIL import Image, ImageDraw
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--pack', required=True, type=Path)
-    parser.add_argument('--xbe', required=True, type=Path)
-    parser.add_argument('--output', required=True, type=Path)
-    parser.add_argument('--witness', type=Path)
-    args = parser.parse_args(argv)
-    args.output.mkdir(parents=True, exist_ok=True)
-    with args.pack.open('rb') as stream:
-        view = art.PackView.from_fd(stream.fileno(), 0, args.pack.stat().st_size)
-        spans = {n: view[v['pack_offset']:v['pack_offset']+v['span_size']] for n,v in art.RESOURCES.items()}
-    after = r.decode(r.apply(spans['score_bug'], 'score_bug')[0])[1]
-    new_atlas = r.apply(spans['score_buga'], 'score_buga', inputs=spans)[0]
-    fonts = read_fonts(args.pack)
-    payload = args.xbe.read_bytes()
-    before, old_atlas = v8_baseline(spans)
-    receipts = dict(schema='nfl2k5_scorebug_v9_audit/v1', status='PASS_STATIC_V9',
-                    v9_installed=True, runtime_witnessed=False,
-                    xbe_sha256=r.digest(payload), scene_sha256=r.digest(after),
-                    atlas_sha256=r.digest(new_atlas), reference_rails=reference_rails(),
-                    team_material_hook=r.TEAM_MATERIAL_HOOK,
-                    native_code_pins=validate_native_code(payload),
-                    static_receipts=static_receipts(payload, spans),
-                    fonts={f.name: f.decoded_sha256 for f in fonts}, projections={})
-    for baseline in (True, False):
-        decoded, texture = (before, old_atlas) if baseline else (after, new_atlas)
-        for widescreen in (False, True):
-            for mode in ((0,) if baseline else (0, 1)):
-                prefix = 'before_v9_v8' if baseline else 'after_v9'
-                name = prefix + ('_wide' if widescreen else '') + ('_mode1' if mode else '') + '_640x480'
-                capture = {}
-                geometry = native_geometry(payload, decoded, widescreen=widescreen, mode=mode,
-                                           texture_span=texture, fonts=fonts, capture=capture,
-                                           baseline_v8=baseline)
-                try:
-                    geometry.update(native_text_draw(capture))
-                    geometry.update(render_native(decoded, texture, fonts, geometry, args.output / (name + '.png')))
-                    geometry['containment_failures'] = containment_failures(geometry)
-                    geometry['inside_actual_frame_failures'] = containment_failures(geometry, geometry['frame'], .02)
-                    if not baseline:
-                        if geometry['containment_failures'] or geometry['inside_actual_frame_failures']:
-                            raise ValueError('v9 containment failed: ' + name)
-                        render_native(decoded, texture, fonts, geometry,
-                                      args.output / (name + '_cull.png'), cull_positive=True)
-                        mark = 'zz_ESPN_bug1' if mode else 'zz_ESPN_bug'
-                        if geometry['winding'][mark] != dict(positive=0, negative=2):
-                            raise ValueError('v9 ESPN winding differs from the frame')
-                        if not widescreen and mode == 0:
-                            receipts['team_binding_cases'] = native_team_binding_audit(capture)
-                    elif not geometry['containment_failures']:
-                        raise ValueError('negative control unexpectedly accepts v8')
-                finally:
-                    capture['machine'].close()
-                receipts['projections'][name] = geometry
-                print(name, json.dumps(dict(frame=geometry['frame'], failures=geometry['containment_failures'])), flush=True)
-    from PIL import ImageChops
-    for wide_suffix in ('', '_wide'):
-        first = args.output / ('after_v9' + wide_suffix + '_640x480.png')
-        second = args.output / ('after_v9' + wide_suffix + '_mode1_640x480.png')
-        with Image.open(first) as left, Image.open(second) as right:
-            if ImageChops.difference(left, right).getbbox() is not None:
-                raise ValueError('direction modes render different bars')
-    receipts['direction_modes_pixel_identical'] = True
-    target_path = ROOT / 'docs/scorebug_ingame/target_NO_MIA.png'
-    with Image.open(target_path) as source:
-        target = source.convert('RGB').resize((640, 480), Image.Resampling.LANCZOS)
-    receipts['target'] = dict(path=target_path.name, sha256=r.digest(target_path.read_bytes()),
-                            provenance='supplied staged mockup, not a broadcast capture',
-                            use='rail bounds, neutral frame colour and 96x24 disc-derived mark; brief controls cell layout')
-    sheet = Image.new('RGB', (1920, 512), '#101010')
-    for i, (path, label) in enumerate((
-            (args.output / 'before_v9_v8_640x480.png', 'BEFORE: V8 NATIVE RECONSTRUCTION'),
-            (args.output / 'after_v9_640x480.png', 'AFTER: V9 STATIC / EXPERIMENTAL / UNWITNESSED'),
-            (target_path, 'TARGET: SUPPLIED STAGED MOCKUP'))):
-        with Image.open(path) as source:
-            panel = source.convert('RGB').resize((640, 480), Image.Resampling.LANCZOS)
-        sheet.paste(panel, (640 * i, 32))
-        ImageDraw.Draw(sheet).text((640 * i + 8, 10), label, fill='white')
-    sheet.save(args.output / 'v9_before_after_target.png')
-    with Image.open(args.output / 'after_v9_640x480.png') as source:
-        overlay = Image.blend(target, source.convert('RGB'), .5)
-    pen = ImageDraw.Draw(overlay)
-    pen.rectangle(reference_rails(), outline='#00ffff', width=1)
-    pen.text((8, 24), '50% TARGET + 50% V9 / CYAN: REFERENCE RAILS', fill='white')
-    overlay.save(args.output / 'v9_target_overlay.png')
-    if args.witness is not None:
-        receipts['witness'] = dict(path=args.witness.name, sha256=r.digest(args.witness.read_bytes()),
-                                   role='historical v8 witness only; no v9 gameplay witness')
-    (args.output / 'v9_native_audit.json').write_text(json.dumps(receipts, indent=2)+'\n', encoding='utf-8')
-    return 0
+    # The public CLI follows the current writer. Never overwrite the preserved
+    # v9 evidence with v10 resources under historical filenames.
+    from nfl2k5_scorebug_template_proof import main as prove_template
+    return prove_template(argv)
 
 
 if __name__ == '__main__':

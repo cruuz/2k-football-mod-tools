@@ -1,4 +1,4 @@
-"""Standalone v9 resource, native-driver data and transaction checks. No emulator."""
+"""Standalone v10 resource, native-driver data and transaction checks. No emulator."""
 from __future__ import annotations
 
 import os
@@ -81,7 +81,7 @@ class RetailTests(unittest.TestCase):
             allowed=(L.S0<=i<L.S0+L.VCOUNT*6 or L.SHAPE+0x10<=i<L.SHAPE+0x2c
                      or (L.S1<=i<L.S1+L.VCOUNT*10 and
                          (4<=(i-L.S1)%10<8 or ((i-L.S1)%10<4 and
-                          ((48<=(i-L.S1)//10<64) or (96<=(i-L.S1)//10<262)))))
+                          ((48<=(i-L.S1)//10<80) or (96<=(i-L.S1)//10<262)))))
                      or any(L.TBASE+t*0x70+0x40<=i<L.TBASE+t*0x70+0x5c for t in range(L.TCOUNT)))
             self.assertTrue(allowed,hex(i))
         self.assertEqual(L.strips(before),L.strips(after))
@@ -95,10 +95,10 @@ class RetailTests(unittest.TestCase):
         for v in range(274,286):
             self.assertEqual(m.pos[v],m.pos[v-12])
             self.assertEqual(m.uv_edit[v],m.uv_edit[v-12])
-        self.assertEqual(r.WATERMARK,(-232,7,-136,31))
+        self.assertEqual(r.WATERMARK,(-232,7,-164,31))
         for name,xyz in r.ANCHORS.items():
             self.assertEqual(m.world[r.layout.T[name]],list(xyz))
-        self.assertEqual(r.PILL[0],r.PILL[2])
+        self.assertLess(r.PILL[0],r.PILL[2])
         for parent in (23,26):self.assertEqual(m.world[parent][1],19)
 
     def test_xbe_idempotence_guards_shared_shield_and_native_animation(self):
@@ -177,7 +177,7 @@ class RetailTests(unittest.TestCase):
                 with path.open("r+b") as stream:stream.seek(bad_off);stream.write(self.inputs["score_buga"])
                 self.assertEqual(r.image_status(path),"retail")
                 receipt=r.apply_in_place(path)
-                self.assertEqual(receipt['layout'],'espn-reference-v9')
+                self.assertEqual(receipt['layout'],'espn-reference-v10')
                 self.assertFalse(receipt['team_material_hook']['runtime_bound'])
                 self.assertEqual(receipt["state_before"],"retail")
                 self.assertEqual(r.image_status(path),"applied")

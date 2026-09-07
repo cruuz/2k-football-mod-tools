@@ -1,0 +1,521 @@
+{
+  "schema": "nfl2k5_scorebug_template_pngs/v1",
+  "files": {
+    "docs/scorebug_template/1x/away_block.png": {
+      "size": 128,
+      "sha256": "0a64f4c4d9bb3e704ef760a11f9410154ff7c27b0a0b126281f87e32b48c3692",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/1x/away_score.png": {
+      "size": 96,
+      "sha256": "2dc0ba576ff6059d27c7b3f203a377ac3830be6c3cdc1e772997b3c044b06483",
+      "width": 12,
+      "height": 16
+    },
+    "docs/scorebug_template/1x/clock_quarter.png": {
+      "size": 191,
+      "sha256": "23b042f907bd604342caabefa9794519f81973fbedbee703e2ffbd3a0a862a16",
+      "width": 64,
+      "height": 12
+    },
+    "docs/scorebug_template/1x/down.png": {
+      "size": 211,
+      "sha256": "f575bc6f0d53a1fea75a067167bba8a210d21e8896ce72bea75138f5abb268d6",
+      "width": 64,
+      "height": 12
+    },
+    "docs/scorebug_template/1x/frame.png": {
+      "size": 138,
+      "sha256": "e3e208146a8157deece12ccc87258e685cd7bfa51a1ac51d179ae0a5cabfc575",
+      "width": 64,
+      "height": 8
+    },
+    "docs/scorebug_template/1x/home_block.png": {
+      "size": 127,
+      "sha256": "1a4fdd88d749d481a6b23876770741339fc8972167ee74a83d65201fd6f45b61",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/1x/home_score.png": {
+      "size": 96,
+      "sha256": "2dc0ba576ff6059d27c7b3f203a377ac3830be6c3cdc1e772997b3c044b06483",
+      "width": 12,
+      "height": 16
+    },
+    "docs/scorebug_template/1x/left_mark.png": {
+      "size": 507,
+      "sha256": "1d9e9cb200566ff9b09c6d5e1ecefe7bc5bf117424a6b6cef62ae6bff9a41fb6",
+      "width": 64,
+      "height": 16
+    },
+    "docs/scorebug_template/2x/away_block.png": {
+      "size": 188,
+      "sha256": "3340dc59c3be80e16ac42ba49eb3d516497d44fa07ea58465ed92447c8ecbc54",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/2x/away_score.png": {
+      "size": 120,
+      "sha256": "516b1deced5b9e0373dac62f1830e3aba400acc09cac9988f76552b27901c7b9",
+      "width": 24,
+      "height": 32
+    },
+    "docs/scorebug_template/2x/clock_quarter.png": {
+      "size": 245,
+      "sha256": "c2069b9ad0be5692cabb469932339a7a8c0330e74163c54fbce3bc91cd434884",
+      "width": 128,
+      "height": 24
+    },
+    "docs/scorebug_template/2x/down.png": {
+      "size": 282,
+      "sha256": "cb9a0705353cdf6e140052bd294a9c89ab1babeb78d7fe429015e06ac9ff2b72",
+      "width": 128,
+      "height": 24
+    },
+    "docs/scorebug_template/2x/frame.png": {
+      "size": 175,
+      "sha256": "83b17aa0016e4ed2cda682b7322fa7e7a1b1bddcae326cb37139d82569a7f9ea",
+      "width": 128,
+      "height": 16
+    },
+    "docs/scorebug_template/2x/home_block.png": {
+      "size": 187,
+      "sha256": "c9f4f49c0d4599c54c4f54e86d4c2986064badaa2282cdf8758c6ba44f553b4f",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/2x/home_score.png": {
+      "size": 120,
+      "sha256": "516b1deced5b9e0373dac62f1830e3aba400acc09cac9988f76552b27901c7b9",
+      "width": 24,
+      "height": 32
+    },
+    "docs/scorebug_template/2x/left_mark.png": {
+      "size": 624,
+      "sha256": "f5428da0ff9e996bcc6d3febd5c26e176822d9002bbcb60ace39bc2eb0c02185",
+      "width": 128,
+      "height": 32
+    },
+    "docs/scorebug_template/atlas_1x.png": {
+      "size": 958,
+      "sha256": "e23fc15dca1f0918d1f282e67afcf0ac6e4a8834490b9d6c964dd0315dfc040c",
+      "width": 64,
+      "height": 64
+    },
+    "docs/scorebug_template/atlas_2x.png": {
+      "size": 1260,
+      "sha256": "f8e58c2ff75eb72cc710b63f25b6349f3f34b6d92522e8cac020ebc0a8f37000",
+      "width": 128,
+      "height": 128
+    },
+    "docs/scorebug_template/glyphs/1x/broadcast_glyphs.png": {
+      "size": 1254,
+      "sha256": "b2c83008f78f201f9c49202d79e45b3d66e42456e5b54a465a3750835c84cb91",
+      "width": 256,
+      "height": 128
+    },
+    "docs/scorebug_template/glyphs/2x/broadcast_glyphs.png": {
+      "size": 2018,
+      "sha256": "6fa672395955127b4fb102d744fa1d6d66066627058647c50b16ba9c56517ac8",
+      "width": 512,
+      "height": 256
+    },
+    "docs/scorebug_template/optional/1x/timeout_marks.png": {
+      "size": 90,
+      "sha256": "d1eae4f504204f9c340a235e7797e9d8ccfd42975418e0e220287f86a535b9db",
+      "width": 12,
+      "height": 2
+    },
+    "docs/scorebug_template/optional/2x/timeout_marks.png": {
+      "size": 95,
+      "sha256": "1f1acf4111110d97f6023ca004b60f622afc8d51051492a4fb4ad79b1d23d0de",
+      "width": 24,
+      "height": 4
+    },
+    "docs/scorebug_template/teams/1x/ARI.png": {
+      "size": 128,
+      "sha256": "2ec83c18eb44dcbba615069244d526882d646060c9bac36d1b92e47a16067580",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/ATL.png": {
+      "size": 127,
+      "sha256": "0eeeb6c2d6deeb9b6b3dfe1ae4cd9bbec77eed586572bcfe54c3a00c4f801e8e",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/BAL.png": {
+      "size": 124,
+      "sha256": "de2b804addcf64b892a77d2ff4a4adb10c1984940667202e04d92cf4ebd75b08",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/BUF.png": {
+      "size": 128,
+      "sha256": "ee7446edb221d7520139893110923ed85cde94fcf797dde932251f0b006075f7",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/CAR.png": {
+      "size": 128,
+      "sha256": "9eb0c4243160c5239d30c6f9a1a9eb98d5d062e42406d88d389f6a36cdbb98c0",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/CHI.png": {
+      "size": 130,
+      "sha256": "9b428ac36c5c3cdedc3c7bd8f2dda8bba26b98de5e51dc8a79428688236b9dc3",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/CIN.png": {
+      "size": 126,
+      "sha256": "b7899d8f9baa9e598887430cd051bd5d40a04478f5ee2be6eaa11b244840ee86",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/CLE.png": {
+      "size": 135,
+      "sha256": "1855d931cf7339e8a16659869314d9b72b86eb5aa7a8173557b40ec4b11974c2",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/DAL.png": {
+      "size": 128,
+      "sha256": "02b1568a7cdf8e71b295ea66bc8f341decabf8c2d333a0462d28675c649a0ed4",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/DEN.png": {
+      "size": 126,
+      "sha256": "b7899d8f9baa9e598887430cd051bd5d40a04478f5ee2be6eaa11b244840ee86",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/DET.png": {
+      "size": 128,
+      "sha256": "c98ae318c253fa7d6c0c34833712dbceec7a019ca9dcb268366a5f115ec05fea",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/GB.png": {
+      "size": 134,
+      "sha256": "9bc3974612ff485cc489c004775c48be54070224cb9eed4809cd48d20557482c",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/HOU.png": {
+      "size": 128,
+      "sha256": "cd7e5d4c88977d7c1dc79b7da101d73e511c59bad3532e14508e93fecfee53ca",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/IND.png": {
+      "size": 128,
+      "sha256": "958ba110b3d021e17eafc642a4696d35cdfa4d4c4af634037bf6b2d565c9dcb3",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/JAX.png": {
+      "size": 126,
+      "sha256": "f6ce5798521ee1e22ae333132f70c60ee71c309f2489d795945282d560533407",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/KC.png": {
+      "size": 129,
+      "sha256": "b68340cb298fabefee51482880e15b39ca78fbf83d31243c64a987514a784a57",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/LAC.png": {
+      "size": 128,
+      "sha256": "d885e687cd56aa674f3a723375ca04a5ac72edcb01c007fa984f36e021a4b210",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/LAR.png": {
+      "size": 128,
+      "sha256": "02b1568a7cdf8e71b295ea66bc8f341decabf8c2d333a0462d28675c649a0ed4",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/LV.png": {
+      "size": 123,
+      "sha256": "9231f0eacbb7e294634d79f06cb188f1dffa3fce934bf431e80807a2b7b35aba",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/MIA.png": {
+      "size": 126,
+      "sha256": "26d01f408de59f6339cc728a213574d11c88a009538160fadd7f40a1d92f7ffb",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/MIN.png": {
+      "size": 128,
+      "sha256": "1e468294578e84c753aedab1a9dafb039578529d46f5b46b0a914d5312833785",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/NE.png": {
+      "size": 128,
+      "sha256": "fe2de1be51e02c579d01a5f91172f85e7a08bff60dabd0e1377b7e6f5614e026",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/NO.png": {
+      "size": 129,
+      "sha256": "307fc67ef465f34f6b3847dc766eca4333d3c861149cc9a7ac2b423fcdb3681d",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/NYG.png": {
+      "size": 124,
+      "sha256": "668681b8adb0e96a91db353d94c95ee71a802de44c0f6e36967b68b379a660da",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/NYJ.png": {
+      "size": 125,
+      "sha256": "6446d9ac176837fc802c91bdd8e19110ed188ebf1ff05eeddd51d4c3820c9d34",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/PHI.png": {
+      "size": 126,
+      "sha256": "e74c368414bdcaa63fea0dbf8020ad829ae91ab2052061c6d86a8e34cd8bcb00",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/PIT.png": {
+      "size": 132,
+      "sha256": "22f34ca546c2b71abaac52d97d0f33400e9d204c1d042059a8ce1eaf72ee6406",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/SEA.png": {
+      "size": 128,
+      "sha256": "fe2de1be51e02c579d01a5f91172f85e7a08bff60dabd0e1377b7e6f5614e026",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/SF.png": {
+      "size": 125,
+      "sha256": "9196385eb08bbd1faab54348a431b91c3efe3ffebecbcdc91ef44502f6dc51f3",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/TB.png": {
+      "size": 123,
+      "sha256": "b65e7b52a44d4b792d036c60a366ebce147a3f04496fa2923319e7ab7980c779",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/TEN.png": {
+      "size": 130,
+      "sha256": "d687d397ece3a5682c4f3d2296a760972e84654b6854989db44862a37feac112",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/1x/WAS.png": {
+      "size": 125,
+      "sha256": "48ffb8e3e685102c1fc41732b0953a5cd0ff22400ec6ac4b8076371cbed889b2",
+      "width": 32,
+      "height": 16
+    },
+    "docs/scorebug_template/teams/2x/ARI.png": {
+      "size": 194,
+      "sha256": "6990ef68a01494ba34b60727ee338602bcb4aa5a013d4212dd76aadcc333a70e",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/ATL.png": {
+      "size": 194,
+      "sha256": "81c3c1afd4c617b3ded871f0c7a1c6d61eb61ed2f68ff1b21eb94598c67e7e25",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/BAL.png": {
+      "size": 191,
+      "sha256": "8f48eb05b802e87b4f4e54e3d1e7fa3ba35df1d4905f23026640205c6d9c3208",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/BUF.png": {
+      "size": 195,
+      "sha256": "21535ddc6b19eca6ba3aa17344029f6b52f04098f36ac8b783e4dd5f0a3ea4ac",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/CAR.png": {
+      "size": 196,
+      "sha256": "a00064841a68a7cbae19e6f54ab0dca3bcc07734c87f57a38a7d800f18fb97dc",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/CHI.png": {
+      "size": 194,
+      "sha256": "4828fee007ac29de87b37594a3eaee8682196c04385d08cff153e94cc649015b",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/CIN.png": {
+      "size": 194,
+      "sha256": "a6d8fa32d96cd1ae4f9d08f666900207572d14a27e8f92649c516fec4f23068c",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/CLE.png": {
+      "size": 199,
+      "sha256": "5bd6b1fc640372aebc5fa2be3861b7b40f24e2461b964e0344b64e74ad1bec6d",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/DAL.png": {
+      "size": 194,
+      "sha256": "4b5c823d73bdfab69659cf8fa0e92d8ef450e4c8e80b16e048886b06c7589f5f",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/DEN.png": {
+      "size": 194,
+      "sha256": "a6d8fa32d96cd1ae4f9d08f666900207572d14a27e8f92649c516fec4f23068c",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/DET.png": {
+      "size": 196,
+      "sha256": "d03e497bdcd2b18f9ed17555a19fcc1dffdb92c773e596dfe181a5fa5b5da675",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/GB.png": {
+      "size": 200,
+      "sha256": "d16c7296471b663db5d2f9dde5de06e27047cf7409fce91d82dcf63be27737bb",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/HOU.png": {
+      "size": 194,
+      "sha256": "c097a6b7e43f649b51f1b80ece8e879c08228348dff7c4a9411e7afccb9382e4",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/IND.png": {
+      "size": 192,
+      "sha256": "6f1d4a3cc6e950064a0b11ab56b319ca9ec479f53b48bd2a51988d065224df68",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/JAX.png": {
+      "size": 191,
+      "sha256": "beaeb35b7be2a0f3a77aa665a1d65448b8c2f9c0a32f7aaa907001040307fd22",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/KC.png": {
+      "size": 195,
+      "sha256": "66b7a08c394968b8460ebd5e7a55b7459568c9dfc9e74a31f60b2eb5cbe885db",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/LAC.png": {
+      "size": 196,
+      "sha256": "852fee44a98b056d880e74ad7b438d0a3fa20bccb047cda548bd73fae0de279c",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/LAR.png": {
+      "size": 194,
+      "sha256": "4b5c823d73bdfab69659cf8fa0e92d8ef450e4c8e80b16e048886b06c7589f5f",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/LV.png": {
+      "size": 182,
+      "sha256": "2f5aeb6386bafb690c5666a3eee961030a3b13bb660282a4b6761a3c3d5b010c",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/MIA.png": {
+      "size": 193,
+      "sha256": "8fff6164c4a1ace187c2d36d800f55be5e4515721ab7d20d7649ed152fb09504",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/MIN.png": {
+      "size": 194,
+      "sha256": "91ee811329e5977dd067e5f51496fe637dab5d27e65382547e2a4f71785924f7",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/NE.png": {
+      "size": 192,
+      "sha256": "c61dd3a0e2fe4c33c9c5f7da4c61237f67bd0af266e09d28c8bf5911a019de92",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/NO.png": {
+      "size": 197,
+      "sha256": "3a28e472cd3607c0e80d864685c43eae32bed4aa420fbbf9bdc94fa2de1fb909",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/NYG.png": {
+      "size": 189,
+      "sha256": "534124c3969f49f1aec39e07f20d300d6126d2e9fcf75962de4585ddab8e9eaf",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/NYJ.png": {
+      "size": 191,
+      "sha256": "b813771048158c73281fd21798c55c4f08845a5e571b456caf7adac0428ae614",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/PHI.png": {
+      "size": 188,
+      "sha256": "57d17b34521052dfac509954a597c6489f45f9e6261ca4c8de5e6a29542c88d1",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/PIT.png": {
+      "size": 194,
+      "sha256": "8d52bc7fecb4947d190bf5aa689bcfbdda3fc07bc4a165761213d53d2afc5d28",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/SEA.png": {
+      "size": 192,
+      "sha256": "c61dd3a0e2fe4c33c9c5f7da4c61237f67bd0af266e09d28c8bf5911a019de92",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/SF.png": {
+      "size": 189,
+      "sha256": "f54166fb9633ca2802b1257e52d76ec60243d8db640bd3f55f86acba3c9819eb",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/TB.png": {
+      "size": 188,
+      "sha256": "95431ab3869143f518e79f5ac0e699e7d7bdd6998d0035ba65f392a909282240",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/TEN.png": {
+      "size": 196,
+      "sha256": "3c5c6c78cede6161e59e951e11be023f9be38588ae3be55742d9f7f7439dbdbb",
+      "width": 64,
+      "height": 32
+    },
+    "docs/scorebug_template/teams/2x/WAS.png": {
+      "size": 187,
+      "sha256": "528526899be07449670d3c74e674b1c62349f8818516b38dd022dda8d50a7bff",
+      "width": 64,
+      "height": 32
+    }
+  }
+}

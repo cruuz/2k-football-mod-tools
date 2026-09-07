@@ -1,0 +1,1067 @@
+{
+  "schema": "nfl2k5_scorebug_glyph_source/v1",
+  "atlas_size": [
+    256,
+    128
+  ],
+  "metrics": {
+    "32": {
+      "character": " ",
+      "rect": [
+        0,
+        0,
+        16,
+        20
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "33": {
+      "character": "!",
+      "rect": [
+        16,
+        0,
+        32,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "34": {
+      "character": "\"",
+      "rect": [
+        32,
+        0,
+        48,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "35": {
+      "character": "#",
+      "rect": [
+        48,
+        0,
+        64,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "36": {
+      "character": "$",
+      "rect": [
+        64,
+        0,
+        80,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "37": {
+      "character": "%",
+      "rect": [
+        80,
+        0,
+        96,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "38": {
+      "character": "&",
+      "rect": [
+        96,
+        0,
+        112,
+        20
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "39": {
+      "character": "'",
+      "rect": [
+        112,
+        0,
+        128,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "40": {
+      "character": "(",
+      "rect": [
+        128,
+        0,
+        144,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "41": {
+      "character": ")",
+      "rect": [
+        144,
+        0,
+        160,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "42": {
+      "character": "*",
+      "rect": [
+        160,
+        0,
+        176,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "43": {
+      "character": "+",
+      "rect": [
+        176,
+        0,
+        192,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "44": {
+      "character": ",",
+      "rect": [
+        192,
+        0,
+        208,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "45": {
+      "character": "-",
+      "rect": [
+        208,
+        0,
+        224,
+        20
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "46": {
+      "character": ".",
+      "rect": [
+        224,
+        0,
+        240,
+        20
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "47": {
+      "character": "/",
+      "rect": [
+        240,
+        0,
+        256,
+        20
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "48": {
+      "character": "0",
+      "rect": [
+        0,
+        20,
+        16,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "49": {
+      "character": "1",
+      "rect": [
+        16,
+        20,
+        32,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "50": {
+      "character": "2",
+      "rect": [
+        32,
+        20,
+        48,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "51": {
+      "character": "3",
+      "rect": [
+        48,
+        20,
+        64,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "52": {
+      "character": "4",
+      "rect": [
+        64,
+        20,
+        80,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "53": {
+      "character": "5",
+      "rect": [
+        80,
+        20,
+        96,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "54": {
+      "character": "6",
+      "rect": [
+        96,
+        20,
+        112,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "55": {
+      "character": "7",
+      "rect": [
+        112,
+        20,
+        128,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "56": {
+      "character": "8",
+      "rect": [
+        128,
+        20,
+        144,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "57": {
+      "character": "9",
+      "rect": [
+        144,
+        20,
+        160,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "58": {
+      "character": ":",
+      "rect": [
+        160,
+        20,
+        176,
+        40
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "59": {
+      "character": ";",
+      "rect": [
+        176,
+        20,
+        192,
+        40
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "60": {
+      "character": "<",
+      "rect": [
+        192,
+        20,
+        208,
+        40
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "61": {
+      "character": "=",
+      "rect": [
+        208,
+        20,
+        224,
+        40
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "62": {
+      "character": ">",
+      "rect": [
+        224,
+        20,
+        240,
+        40
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "63": {
+      "character": "?",
+      "rect": [
+        240,
+        20,
+        256,
+        40
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "64": {
+      "character": "@",
+      "rect": [
+        0,
+        40,
+        16,
+        60
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "65": {
+      "character": "A",
+      "rect": [
+        16,
+        40,
+        32,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "66": {
+      "character": "B",
+      "rect": [
+        32,
+        40,
+        48,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "67": {
+      "character": "C",
+      "rect": [
+        48,
+        40,
+        64,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "68": {
+      "character": "D",
+      "rect": [
+        64,
+        40,
+        80,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "69": {
+      "character": "E",
+      "rect": [
+        80,
+        40,
+        96,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "70": {
+      "character": "F",
+      "rect": [
+        96,
+        40,
+        112,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "71": {
+      "character": "G",
+      "rect": [
+        112,
+        40,
+        128,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "72": {
+      "character": "H",
+      "rect": [
+        128,
+        40,
+        144,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "73": {
+      "character": "I",
+      "rect": [
+        144,
+        40,
+        160,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "74": {
+      "character": "J",
+      "rect": [
+        160,
+        40,
+        176,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "75": {
+      "character": "K",
+      "rect": [
+        176,
+        40,
+        192,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "76": {
+      "character": "L",
+      "rect": [
+        192,
+        40,
+        208,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "77": {
+      "character": "M",
+      "rect": [
+        208,
+        40,
+        224,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "78": {
+      "character": "N",
+      "rect": [
+        224,
+        40,
+        240,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "79": {
+      "character": "O",
+      "rect": [
+        240,
+        40,
+        256,
+        60
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "80": {
+      "character": "P",
+      "rect": [
+        0,
+        60,
+        16,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "81": {
+      "character": "Q",
+      "rect": [
+        16,
+        60,
+        32,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "82": {
+      "character": "R",
+      "rect": [
+        32,
+        60,
+        48,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "83": {
+      "character": "S",
+      "rect": [
+        48,
+        60,
+        64,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "84": {
+      "character": "T",
+      "rect": [
+        64,
+        60,
+        80,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "85": {
+      "character": "U",
+      "rect": [
+        80,
+        60,
+        96,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "86": {
+      "character": "V",
+      "rect": [
+        96,
+        60,
+        112,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "87": {
+      "character": "W",
+      "rect": [
+        112,
+        60,
+        128,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "88": {
+      "character": "X",
+      "rect": [
+        128,
+        60,
+        144,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "89": {
+      "character": "Y",
+      "rect": [
+        144,
+        60,
+        160,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "90": {
+      "character": "Z",
+      "rect": [
+        160,
+        60,
+        176,
+        80
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "91": {
+      "character": "[",
+      "rect": [
+        176,
+        60,
+        192,
+        80
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "92": {
+      "character": "\\",
+      "rect": [
+        192,
+        60,
+        208,
+        80
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "93": {
+      "character": "]",
+      "rect": [
+        208,
+        60,
+        224,
+        80
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "94": {
+      "character": "^",
+      "rect": [
+        224,
+        60,
+        240,
+        80
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "95": {
+      "character": "_",
+      "rect": [
+        240,
+        60,
+        256,
+        80
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "96": {
+      "character": "`",
+      "rect": [
+        0,
+        80,
+        16,
+        100
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "97": {
+      "character": "a",
+      "rect": [
+        16,
+        80,
+        32,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "98": {
+      "character": "b",
+      "rect": [
+        32,
+        80,
+        48,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "99": {
+      "character": "c",
+      "rect": [
+        48,
+        80,
+        64,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "100": {
+      "character": "d",
+      "rect": [
+        64,
+        80,
+        80,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "101": {
+      "character": "e",
+      "rect": [
+        80,
+        80,
+        96,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "102": {
+      "character": "f",
+      "rect": [
+        96,
+        80,
+        112,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "103": {
+      "character": "g",
+      "rect": [
+        112,
+        80,
+        128,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "104": {
+      "character": "h",
+      "rect": [
+        128,
+        80,
+        144,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "105": {
+      "character": "i",
+      "rect": [
+        144,
+        80,
+        160,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "106": {
+      "character": "j",
+      "rect": [
+        160,
+        80,
+        176,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "107": {
+      "character": "k",
+      "rect": [
+        176,
+        80,
+        192,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "108": {
+      "character": "l",
+      "rect": [
+        192,
+        80,
+        208,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "109": {
+      "character": "m",
+      "rect": [
+        208,
+        80,
+        224,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "110": {
+      "character": "n",
+      "rect": [
+        224,
+        80,
+        240,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "111": {
+      "character": "o",
+      "rect": [
+        240,
+        80,
+        256,
+        100
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "112": {
+      "character": "p",
+      "rect": [
+        0,
+        100,
+        16,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "113": {
+      "character": "q",
+      "rect": [
+        16,
+        100,
+        32,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "114": {
+      "character": "r",
+      "rect": [
+        32,
+        100,
+        48,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "115": {
+      "character": "s",
+      "rect": [
+        48,
+        100,
+        64,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "116": {
+      "character": "t",
+      "rect": [
+        64,
+        100,
+        80,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "117": {
+      "character": "u",
+      "rect": [
+        80,
+        100,
+        96,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "118": {
+      "character": "v",
+      "rect": [
+        96,
+        100,
+        112,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "119": {
+      "character": "w",
+      "rect": [
+        112,
+        100,
+        128,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "120": {
+      "character": "x",
+      "rect": [
+        128,
+        100,
+        144,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "121": {
+      "character": "y",
+      "rect": [
+        144,
+        100,
+        160,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "122": {
+      "character": "z",
+      "rect": [
+        160,
+        100,
+        176,
+        120
+      ],
+      "advance": 12,
+      "supported": true
+    },
+    "123": {
+      "character": "{",
+      "rect": [
+        176,
+        100,
+        192,
+        120
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "124": {
+      "character": "|",
+      "rect": [
+        192,
+        100,
+        208,
+        120
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "125": {
+      "character": "}",
+      "rect": [
+        208,
+        100,
+        224,
+        120
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "126": {
+      "character": "~",
+      "rect": [
+        224,
+        100,
+        240,
+        120
+      ],
+      "advance": 12,
+      "supported": false
+    },
+    "127": {
+      "character": "\u007f",
+      "rect": [
+        240,
+        100,
+        256,
+        120
+      ],
+      "advance": 12,
+      "supported": false
+    }
+  },
+  "installed": false,
+  "reason": "The static bar binds shared FONT objects, not digital_font. An isolated FONT resource and selector are required to install this sheet."
+}

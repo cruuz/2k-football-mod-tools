@@ -2,7 +2,8 @@
 
 Runtime team selection and new event hooks are specified in the accompanying report.
 This module installs the neutral fallback and retains retail score rotation. It never
-installs a fixed matchup into a generic game image. Disc artwork is derived locally.
+installs a fixed matchup into a generic game image. V10 art is authored in the
+shipped modular template; retail bytes supply resource structure, never pixels.
 """
 from __future__ import annotations
 
@@ -23,7 +24,7 @@ import nfl_vc_lz_fill as fill
 import nfl2k5_scorebug_layout as layout
 from . import nfl2k5_bump_strength as bs
 
-VERSION = "espn-reference-v9"
+VERSION = "espn-reference-v10"
 PACK_SIZE = 193710080
 # FUN_00066670 insets a 720x480 framebuffer by (40,16). The reference
 # describes the active 640-column image. Its intended root y=424 therefore
@@ -43,20 +44,15 @@ V8_ANCHORS = {"away_city": (-218, 14, -64), "home_city": (127, 14, -64),
            "drop_down": (-3, 27, -4), "drop_clock": (61, 2, -4)}
 
 # Active 640-column coordinates are (320+x, 424-y). One 476x48 frame;
-# the right cell has two text baselines to fit native font1's longest down.
+# the middle has two baselines for the down label and recessed clock cell.
 # Text object +30/+34 are shadow offsets, NOT glyph scale.
 FRAME = (-236.0, -5.0, 240.0, 43.0)
-PANELS = {"away": (-132.0, -3.0, -34.0, 41.0), "home": (-34.0, -3.0, 64.0, 41.0)}
-STRIP = (66.0, -3.0, 236.0, 41.0)
-PILL = (150.0, 0.0, 150.0, 0.0)  # no separate tab geometry
-WATERMARK = (-232.0, 7.0, -136.0, 31.0)  # 96x24 reference art, left cell
-FRAME_COLOR = (19, 20, 25, 255)  # literal neutral frame fill in target_NO_MIA
-ANCHORS = {"away_city": (-130, 10, -64), "home_city": (-32, 10, -64),
-           "away_score": (-52, 10, -59), "home_score": (46, 10, -59),
-           "quarter": (84, 20, -4), "clock_a": (180, 20, -4), "clock_b": (180, 20, -4),
-           "drop_down": (150, 0, -4), "drop_clock": (214, 20, -4),
-           "drop_yellow": (150, 0, -4), "drop_red": (150, 0, -4),
-           "drop_ball_on": (110, 20, -4), "drop_hangtime": (150, 0, -4)}
+PANELS = {"away": (-160.0, -3.0, -46.0, 41.0), "home": (118.0, -3.0, 238.0, 41.0)}
+STRIP = (-42.0, -3.0, 114.0, 19.0)
+PILL = (-42.0, 20.0, 114.0, 41.0)
+WATERMARK = (-232.0, 7.0, -164.0, 31.0)
+FRAME_COLOR = (19, 20, 25, 255)  # historical v9 mockup fill, used only by atlas_v9
+from .nfl2k5_scorebug_template import ANCHORS
 # Static zscore_buga shares one texture for both parents. Future runtime
 # selection must split it using the existing staging contract, never bake a team.
 TEAM_MATERIAL_HOOK = {"static_material": "zscore_buga", "away_parent": "away_score1",
@@ -136,7 +132,7 @@ def atlas_v8(inputs: dict[str, bytes]):
     return im
 
 
-def atlas(inputs: dict[str, bytes]):
+def atlas_v9(inputs: dict[str, bytes]):
     """Neutral v9 atlas; retain the disc-derived ESPN art at reference size.
 
     The source-art resolver supplies pinned espn1/nflShield1 from the user's
@@ -151,6 +147,18 @@ def atlas(inputs: dict[str, bytes]):
     # Panel, former tab and clock regions are all the reference dark block.
     # In particular row 30 columns 48/53/58 contain no timeout decoration.
     return im
+
+
+def atlas(inputs: dict[str, bytes] | None = None, *, scorebug_folder=None):
+    """V10's authored pixels. The legacy inputs argument is intentionally unused."""
+    from .nfl2k5_scorebug_template import compile_folder
+    return compile_folder(scorebug_folder).image
+
+
+def template_uv(region, x, y):
+    from .nfl2k5_scorebug_template import REGIONS as regions
+    a, b, c, d = regions[region]
+    return ((a + .5 + x * (c - a - 1)) / 32 - 1, (b + .5 + y * (d - b - 1)) / 32 - 1)
 
 
 def encode_atlas(template: bytes, image) -> tuple[bytes, dict]:
@@ -260,6 +268,11 @@ def mesh(retail: bytes, *, baseline_v7: bool = False):
             if m.tindex[v] == parent:
                 x, y, z = m.pos[v]
                 m.pos[v] = [layout._lin(x, old[0], old[2], box[0], box[2]), y, z]
+                u = (x - old[0]) / (old[2] - old[0])
+                vv = (old[3] - y) / (old[3] - old[1])
+                # The native settled parent reflects Y. Reverse the source V
+                # so authored highlights stay at the top after score rotation.
+                m.uv_edit[v] = template_uv(side, u, 1 - vv)
                 struct.pack_into("<I", m.buf, layout.S1 + v * 10, 0xffffffff)
     # Both frame command streams start with four distinct strip indices.
     # Use the same two triangles, collapse the rest, and retain the commands.
@@ -269,7 +282,7 @@ def mesh(retail: bytes, *, baseline_v7: bool = False):
             u, vv = corners[min(v - first, 3)]
             a, b, c, d = FRAME
             m.pos[v] = [a + u * (c - a), d - vv * (d - b), 0]
-            m.uv_edit[v] = uv("frame", u, vv)
+            m.uv_edit[v] = template_uv("frame", u, vv)
             struct.pack_into("<I", m.buf, layout.S1 + v * 10, 0xffffffff)
     for v in range(layout.VCOUNT):
         ti, material = m.group(v)
@@ -278,9 +291,17 @@ def mesh(retail: bytes, *, baseline_v7: bool = False):
             a, b, c, d = V8_STRIP
             m.pos[v] = [layout._lin(x, a, c, STRIP[0], STRIP[2]),
                         layout._lin(y, b, d, STRIP[1], STRIP[3]), -3]
+            m.uv_edit[v] = template_uv("strip", (x-a)/(c-a), (d-y)/(d-b))
             struct.pack_into("<I", m.buf, layout.S1 + v * 10, 0xffffffff)
-        elif ti in (11, 13, 17, 19, 21):
-            # Keep native text/visibility bindings; omit all detached tab art.
+        elif ti == 11:
+            x, y, _ = m.pos[v]
+            a, b, c, d = V8_PILL
+            u, vv = (x-a)/(c-a), (d-y)/(d-b)
+            m.pos[v] = [PILL[0] + u*(PILL[2]-PILL[0]), PILL[3] - vv*(PILL[3]-PILL[1]), -3]
+            m.uv_edit[v] = template_uv("down", u, vv)
+            struct.pack_into("<I", m.buf, layout.S1 + v * 10, 0xffffffff)
+        elif ti in (13, 17, 19, 21):
+            # Event text stays bound; its native visibility controls the label.
             m.pos[v] = [150, 0, -3]
         elif material.startswith("zz_ESPN_bug"):
             a, b, c, d = WATERMARK
@@ -288,7 +309,7 @@ def mesh(retail: bytes, *, baseline_v7: bool = False):
             corners = ((0, 1), (1, 0), (0, 0), (0, 1), (1, 1), (1, 0))
             u, vv = corners[(v - 262) % 6]
             m.pos[v] = [a + u * (c - a), d - vv * (d - b), -64]
-            m.uv_edit[v] = uv("mark", u, vv)
+            m.uv_edit[v] = template_uv("mark", u, vv)
             if (v - 262) % 12 < 6:
                 m.pos[v] = [a, d, -63.5]
     for name, xyz in ANCHORS.items():
@@ -301,7 +322,7 @@ def mesh(retail: bytes, *, baseline_v7: bool = False):
 
 def serialize(m) -> bytes:
     # Retain the shared v8 quantization interval for reproducible historical and
-    # runtime spans. V9 repacks only the existing streams and transform fields.
+    # runtime spans. V10 repacks only existing streams and transform fields.
     buf = bytearray(m.buf)
     scale, offset = 420.0, (-20.0, 100.0, -29.5)
     struct.pack_into("<f", buf, layout.SHAPE + 0x10, scale)
@@ -321,18 +342,29 @@ def serialize(m) -> bytes:
     return bytes(buf)
 
 
-def status(payload: bytes, resource: str) -> str:
+def status(payload: bytes, resource: str, *, scorebug_folder=None, _compiled_template=None) -> str:
     if resource not in ("score_bug", "score_buga"):
         raise ScorebugError("unsupported writable scorebug resource")
     if digest(payload) == RESOURCES[resource]["span_sha256"]:
         return "retail"
+    if scorebug_folder is not None and resource == "score_buga":
+        from .nfl2k5_scorebug_template import compile_folder, encode_span
+        compiled = _compiled_template or compile_folder(scorebug_folder)
+        try:
+            expected, _ = encode_span(payload, compiled)
+        except (ValueError, struct.error, tx.TxtrError, IndexError):
+            return "foreign"
+        return "applied" if payload == expected else "foreign"
     if digest(payload) == PATCHED_SHA256.get(resource):
         return "applied"
     return "foreign"
 
 
-def apply(payload: bytes, resource: str, *, inputs: dict[str, bytes] | None = None) -> tuple[bytes, dict]:
-    before = status(payload, resource)
+def apply(payload: bytes, resource: str, *, inputs: dict[str, bytes] | None = None,
+          scorebug_folder=None, _compiled_template=None) -> tuple[bytes, dict]:
+    from .nfl2k5_scorebug_template import compile_folder, encode_span
+    compiled = (_compiled_template or compile_folder(scorebug_folder)) if resource == "score_buga" else None
+    before = status(payload, resource, scorebug_folder=scorebug_folder, _compiled_template=compiled)
     if before == "foreign":
         raise ScorebugError(f"{resource}: foreign edits")
     detail = {}
@@ -343,9 +375,11 @@ def apply(payload: bytes, resource: str, *, inputs: dict[str, bytes] | None = No
             result, info = layout.refit(payload, serialize(mesh(decoded)))
             detail["filled_bytes"] = info.filled_bytes
         else:
-            result, detail = encode_atlas(payload, atlas(inputs or {}))
-        if PATCHED_SHA256 and digest(result) != PATCHED_SHA256[resource]:
+            result, detail = encode_span(payload, compiled)
+        if (resource == "score_bug" or scorebug_folder is None) and PATCHED_SHA256 and digest(result) != PATCHED_SHA256[resource]:
             raise ScorebugError(f"{resource}: generated bytes differ from the pinned build")
+    if compiled is not None:
+        detail["template"] = compiled.receipt
     return result, {"version": VERSION, "resource": resource, "state_before": before, "span_size": len(result),
                     "sha256_before": digest(payload), "sha256_after": digest(result),
                     "wrapper_identical": result[:32] == payload[:32], **detail}
@@ -370,10 +404,18 @@ def xbe_specs(*, baseline_v8: bool = False):
         colors.update({0xA958E4: (0xff000000, 0xffffffff), 0xA958E8: (0xff000000, 0xffffffff),
                        0xA95AB8: (0xff000000, 0xffffffff), 0xA95B28: (0xff000000, 0xffffffff),
                        0xA95B98: (0xffc0c0c0, 0xffffffff), 0xA95C08: (0xffc0c0c0, 0xffffffff)})
+        # The broadcast's recessed clock is light; keep its live text dark.
+        for va, old in ((0xA958E4, 0xff000000), (0xA958E8, 0xff000000),
+                        (0xA9590C, 0xffc0c0c0), (0xA95910, 0xffc0c0c0),
+                        (0xA95934, 0xffc0c0c0), (0xA95938, 0xffc0c0c0),
+                        (0xA95A48, 0xffc0c0c0)):
+            colors[va] = (old, 0xff111118)
+        for va in (0xA95950, 0xA95988):
+            specs.append((va, struct.pack("<I", 0), struct.pack("<I", 1), "score FONT slot: larger font2"))
     for va,(old,new) in colors.items():
         specs.append((va,struct.pack("<I",old),struct.pack("<I",new),"text contrast"))
     for i,name in enumerate(layout.ELEMENT_NAMES):
-        # v9 retains native formatting/visibility but has no detached sliding tab.
+        # Static cells retain native formatting/visibility without sliding out.
         direction = (.2,0.,0.) if baseline_v8 and i == 0 else (0.,0.,0.)
         specs.append((layout.ELEMENT_RECORDS+i*0x70+0x18,layout.RETAIL_ELEMENT_DIR,struct.pack("<3f",*direction),name+" direction"))
     specs.append((0xA959F0,struct.pack("<f",.5),struct.pack("<f",.2),"down slide duration"))
@@ -451,21 +493,27 @@ def animation_catalogue(payload: bytes) -> dict:
             "under_5_color":False,"drop_yellow_label":"FLAG","drop_red_label":"FUMBLE"}
 
 
-def image_plan(fd: int, size: int):
+def image_plan(fd: int, size: int, *, scorebug_folder=None):
     from . import nfl2k5_throw_tuning as tt
+    from .nfl2k5_scorebug_template import compile_folder
+    compiled = compile_folder(scorebug_folder)
     base, length = layout.xc.pack_extent(fd,size,"0")
     if length != PACK_SIZE:
         raise ScorebugError("pack 0 size changed")
-    current = {n:layout._pread(fd,r["span_size"],base+r["pack_offset"]) for n,r in RESOURCES.items() if n != "shield_espn"}
+    current = {n:layout._pread(fd,RESOURCES[n]["span_size"],base+RESOURCES[n]["pack_offset"])
+               for n in ("score_bug", "score_buga")}
     xoff,xlen = tt.image_xbe_extent(fd,size)
+    if xlen > 16 * 1024 * 1024:
+        raise ScorebugError("scorebug executable exceeds the 16 MB read limit")
     xbe = layout._pread(fd,xlen,xoff)
-    states = [status(current[n],n) for n in ("score_bug","score_buga")] + [xbe_status(xbe)]
+    states = [status(current[n],n,scorebug_folder=scorebug_folder,_compiled_template=compiled)
+              for n in ("score_bug","score_buga")] + [xbe_status(xbe)]
     if "foreign" in states or len(set(states)) != 1:
         raise ScorebugError("scorebug resources are mixed or foreign")
     new_xbe, xr = apply_xbe(xbe)
     jobs, receipts = [(xoff,xbe,new_xbe)], []
     for n in ("score_bug","score_buga"):
-        new,rec = apply(current[n],n,inputs=current)
+        new,rec = apply(current[n],n,scorebug_folder=scorebug_folder,_compiled_template=compiled)
         absolute = base+RESOURCES[n]["pack_offset"]
         jobs.append((absolute,current[n],new))
         receipts.append({"absolute":absolute,**rec})
@@ -474,19 +522,20 @@ def image_plan(fd: int, size: int):
                   "wrapper_identical":all(r["wrapper_identical"] for r in receipts),
                   "runtime_team_logos":False,"timeout_dimming":False,"under_5_color":False,
                   "team_material_hook":dict(TEAM_MATERIAL_HOOK),
-                  "animation":"retail score rotation and native text visibility; no detached tab"}
+                  "template":compiled.receipt,
+                  "animation":"retail score rotation and native text visibility; cells remain inside the frame"}
 
 
-def image_status(path: Path) -> str:
+def image_status(path: Path, *, scorebug_folder=None) -> str:
     try:
         with Path(path).open("rb") as stream:
-            _,receipt = image_plan(stream.fileno(),os.fstat(stream.fileno()).st_size)
+            _,receipt = image_plan(stream.fileno(),os.fstat(stream.fileno()).st_size,scorebug_folder=scorebug_folder)
         return receipt["state_before"]
     except (OSError,ValueError,struct.error,SystemExit,KeyError):
         return "foreign"
 
 
-def apply_in_place(path: Path) -> dict:
+def apply_in_place(path: Path, *, scorebug_folder=None) -> dict:
     """For the build's output copy. Preflight every span, then write/read back.
 
     The journal remains in memory until readback succeeds; an I/O exception attempts
@@ -494,7 +543,7 @@ def apply_in_place(path: Path) -> dict:
     """
     with Path(path).open("r+b") as stream:
         fd = stream.fileno()
-        jobs,receipt = image_plan(fd,os.fstat(fd).st_size)
+        jobs,receipt = image_plan(fd,os.fstat(fd).st_size,scorebug_folder=scorebug_folder)
         touched = []
         try:
             for off,before,after in jobs:
@@ -593,16 +642,17 @@ def stage_binding_scene(span: bytes, *, runtime: bool = False) -> tuple[bytes, d
                    "disable_element":2,"experimental":True,"witnessed":False}
 
 
-def preview_data(source: Path):
+def preview_data(source: Path, *, scorebug_folder=None):
     with Path(source).open("rb") as stream:
         fd=stream.fileno()
         base,size=layout.xc.pack_extent(fd,os.fstat(fd).st_size,"0")
         if size != PACK_SIZE:
             raise ScorebugError("pack 0 size changed")
-        spans={n:layout._pread(fd,r["span_size"],base+r["pack_offset"]) for n,r in RESOURCES.items()}
+        spans={n:layout._pread(fd,RESOURCES[n]["span_size"],base+RESOURCES[n]["pack_offset"])
+               for n in ("score_bug", "score_buga")}
     replacement_scene,_=apply(spans["score_bug"],"score_bug")
     m=layout.Mesh(decode(replacement_scene)[1], static=True)
-    replacement,_=apply(spans["score_buga"],"score_buga",inputs=spans)
+    replacement,_=apply(spans["score_buga"],"score_buga",scorebug_folder=scorebug_folder)
     chunk,decoded,_=decode(replacement)
     from PIL import Image
     tex=tx.parse_texture(decoded,chunk)

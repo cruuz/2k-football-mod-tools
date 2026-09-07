@@ -298,6 +298,39 @@ REVIEWED_ICON_SHA256 = (
     "76fdffd1de77aa7ed53ba87076e995b7443f3cc379981c1241f7c9c108f5a18f"
 )
 
+# V10's new pixel art is distributable; retail PNGs remain forbidden. Each
+# exception is an exact reviewed path, byte count, hash and PNG dimension.
+SCOREBUG_TEMPLATE_PNG_CATALOG = "packaging/nfl2k5_scorebug_template_pngs.json"
+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "8c5369eab12910a99562da909c1a0aea59de2a5137f6169daa1ad1a2d49137f9"
+
+
+def _scorebug_template_pngs(root: Path) -> dict:
+    catalog = root / SCOREBUG_TEMPLATE_PNG_CATALOG
+    if not catalog.exists():
+        return {}
+    with catalog.open("rb") as stream:
+        data = stream.read(128 * 1024 + 1)
+    if (len(data) > 128 * 1024
+            or hashlib.sha256(data).hexdigest() != SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256):
+        raise ReleaseCheckError("reviewed scorebar PNG catalog hash changed")
+    document = json.loads(data)
+    if document.get("schema") != "nfl2k5_scorebug_template_pngs/v1":
+        raise ReleaseCheckError("reviewed scorebar PNG catalog schema changed")
+    return document["files"]
+
+
+def _validate_scorebug_template_png(path: Path, relative: str, info, contract: dict) -> None:
+    import struct
+    if info.st_size != contract["size"] or info.st_size > 512 * 1024:
+        raise ReleaseCheckError(f"reviewed scorebar PNG size changed: {relative}")
+    with path.open("rb") as stream:
+        data = stream.read(info.st_size + 1)
+    if (hashlib.sha256(data).hexdigest() != contract["sha256"]
+            or data[:16] != b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR"
+            or len(data) < 24
+            or struct.unpack_from(">II", data, 16) != (contract["width"], contract["height"])):
+        raise ReleaseCheckError(f"reviewed scorebar PNG identity changed: {relative}")
+
 # Reject only the two known workstation prefixes.  Build the strings from
 # fragments so this allowlisted checker does not contain the private paths it
 # is designed to detect in staged text.
@@ -529,6 +562,8 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     total_bytes = 0
     reviewed_metadata_count = 0
     reviewed_icon_count = 0
+    reviewed_scorebug_png_count = 0
+    scorebug_pngs = _scorebug_template_pngs(release_root)
     for path, info in _iter_tree(release_root):
         relative_path = PurePosixPath(path.relative_to(release_root).as_posix())
         relative = relative_path.as_posix()
@@ -568,6 +603,12 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             total_bytes += info.st_size
             continue
         suffix = path.suffix.casefold()
+        if relative in scorebug_pngs:
+            _validate_scorebug_template_png(path, relative, info, scorebug_pngs[relative])
+            reviewed_scorebug_png_count += 1
+            seen_files.add(relative)
+            total_bytes += info.st_size
+            continue
         if suffix in FORBIDDEN_SUFFIXES:
             raise ReleaseCheckError(f"retail/container/media suffix is forbidden: {relative}")
         if suffix not in ALLOWED_SUFFIXES and path.name.casefold() not in ALLOWED_SUFFIXLESS_NAMES:
@@ -633,6 +674,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         "total_bytes": total_bytes,
         "reviewed_metadata_file_count": reviewed_metadata_count,
         "reviewed_icon_count": reviewed_icon_count,
+        "reviewed_scorebug_template_png_count": reviewed_scorebug_png_count,
         "private_generated_inventories_included": False,
         "retail_payloads_included": False,
         "symlinks_included": False,

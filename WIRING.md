@@ -1,3 +1,337 @@
+# r63 static ESPN scorebug v10 and repaintable template (2026-09-07)
+
+The existing `scorebug` checkbox installs **`espn-reference-v10`** now. The
+new authoring folder compiler and exact-palette writer are implemented. All
+protected files and shared GUI panels are unchanged. This section supersedes
+the v9 help-text handoff below, but does not change the diagnostic runtime's
+status, default or known entry freeze. See `ASTRA_SCOREBUG_V10_REPORT.md` and
+`docs/scorebug_template/README.md`.
+
+## Protected BuildPlan and Build tab changes for Claude
+
+The Build tab already has `hires_folder_field`, a `QLineEdit` and a
+`Choose folder...` button under the Hi-res option. Use that exact pattern for
+the requested scorebar folder. These edits are specified here because
+`mod_build.py` and `build_panel_qt.py` are protected by the brief, not because
+the feature lacks a compiler.
+
+1. In `mod_editor/core/mod_build.py`, add `scorebug_folder: str = ""` directly
+   after `BuildPlan.scorebug`. Keep that field empty in Basic, Advanced and
+   Experimental. Preserve `scorebug=False` in Basic/Advanced and `True` in
+   Experimental, as on this stack; `scorebug_runtime=False` in every preset.
+   Normalize the folder with type checking and `.strip()`. A nonempty folder
+   requires `scorebug=True`, an image input and `scorebug_runtime=False`.
+   Do not enable any allocator or runtime flag for this field.
+2. Before the image-copy/target-write stage, preflight the selected template
+   against the source using the existing bounded image planner:
+
+   ```python
+   if plan.scorebug and not plan.scorebug_runtime:
+       scorebar = _core_module("nfl2k5_scorebug_ingame")
+       with source.open("rb") as stream:
+           scorebar.image_plan(stream.fileno(), os.fstat(stream.fileno()).st_size,
+                               scorebug_folder=plan.scorebug_folder or None)
+   ```
+
+   This checks every PNG, palette, fixed-span fit, source identity and XBE
+   before creating a multi-gigabyte copy. Discard the returned bounded jobs;
+   the output-side transaction preflights again against the composed bytes.
+   The actual presentation step at the existing `plan.scorebug and not
+   plan.scorebug_runtime` branch changes one call to:
+
+   ```python
+   rec = sbl.apply_in_place(target, scorebug_folder=plan.scorebug_folder or None)
+   ```
+
+   The existing `steps.append({"step": "scorebug", **rec})` retains the complete
+   source-layer and installed-byte receipts. Retain the present Hi-res
+   scorebug-family conflict check. No new final-pass XBE writer or deferral
+   is needed: both folder and default installs use the same executable fields.
+3. In `mod_editor/gui/build_panel_qt.py`, retain `_option` caption
+   **`Experimental ESPN scorebar`** (26 characters), `needs_image=True`,
+   `NOT_TESTED`, and shared help/details. Add a row immediately below it with
+   `scorebug_folder_field`, placeholder **`Optional: choose your scorebar folder`**,
+   accessible name **`Scorebar artwork folder`**, and a **`Choose folder...`**
+   button. `_choose_scorebug_folder` uses
+   `QFileDialog.getExistingDirectory(self, "Choose scorebar artwork folder", ...)`.
+   Connect `textChanged` to `_refresh`; enable the field/button only while the
+   static checkbox is available/selected and `scorebug_runtime` is unselected.
+   Blank selects the shipped template. Add the active folder to `_plan()` as
+   `scorebug_folder=...`, the build summary, and any cached validation identity.
+   Preserve the text while disabled, but pass an empty field to the plan when
+   the diagnostic runtime is selected so dormant custom art cannot mix with it.
+4. Build's preflight may call `compile_folder` for immediate plain errors, but
+   keep the source planner in step 2: PNG validation alone cannot prove VC-LZ
+   fit. Forward the compiler's `ValueError` message through the existing build
+   error handling. Do not swallow an invalid folder or silently use default art.
+
+## Dispatcher and the four status dictionaries
+
+No new `_apply_all` owner tuple, adapter, request union, `_selected_space_requests`
+flag or `_xbe_space_adapter` flag is required. **Do not add a `scorebug_folder`
+kwarg to `_apply_all`.** This is a source-art argument for the static image
+writer, not an executable-only patch. Its implemented keyword is
+`nfl2k5_scorebug_layout.apply_in_place(..., scorebug_folder=...)`, which delegates
+to `nfl2k5_scorebug_ingame.apply_in_place`.
+
+The four existing `scorebug_xbe` entries in `nfl2k5_throw_tuning.py` remain
+`scorebug_reference.xbe_status(payload/result/after)` in `read_xbe`, `read_image`,
+the `_apply_all` result and the final image result. There is no folder-dependent
+XBE state: all artwork shares the same pinned fields. Keep existing
+`scorebug_runtime` and `scorebug_runtime_resources` entries unchanged. For a
+folder-aware static resource badge use
+`nfl2k5_scorebug_layout.status(image, scorebug_folder=folder or None)`;
+do not substitute the runtime resource status. A foreign template refuses.
+
+Both executable gates already compose this static owner through
+`tests/nfl2k5_allocator_stack.compose`, before the complete runtime owner union
+in both orders and both scaleout variants. There are zero new RX/RW/RO bytes
+and no new cave or owner. The two font-slot edits are ordinary existing data
+words, not allocations. Claude alone regenerates the protected cave manifest
+and refreshes source digests after integration. Do not copy an audit manifest
+or native resource into the release.
+
+## Shared help, Gameplay Patches and registry
+
+In shared `mod_editor/gui/beta62_options.py`, replace `SCOREBUG_HELP` with:
+
+```python
+SCOREBUG_HELP = (
+    "Retail: Uses the original scoreboard. Patch: Installs new repaintable ESPN artwork, "
+    "with a left mark, dark team blocks, larger white scores, a red down cell and a light clock cell. "
+    "Team abbreviations and possession stay live. Choose a scorebar folder to use your own art. "
+    "Team colours and live timeout marks need separate runtime work. "
+    "Moves the kick meter up and hides the lineup strip. EXPERIMENTAL / UNWITNESSED v10.")
+```
+
+The existing Gameplay Patches `PATCHES` scorebug row keeps that shared text,
+which contains **Retail** and **Patch**. `scorebug` stays in `NEEDS_IMAGE`.
+There is no second checkbox or runtime promotion. The folder field belongs
+to Build's existing presentation source-folder pattern.
+
+Merge the complete schema-valid object from
+`docs/mod_editor/nfl2k5_scorebug_template_capability.json` into the canonical
+capability registry, keeping the existing texture-editor and runtime rows.
+The new ID is `nfl2k5.scorebug_presentation.template`; its backend command is
+`python3 -m mod_editor.core.nfl2k5_scorebug_template apply` and validation is
+`python3 -m tests.mod_editor.test_nfl2k5_scorebug_template`. The real GUI wiring
+must land before publishing the row. It is offline-writer-proved, runtime
+not-tested, and explicitly distinguishes staged glyphs/team art from live use.
+
+## Release integration
+
+`packaging/check_2k5_mod_studio_release.py` is not protected by this brief and
+now implements the required narrow new-art exception. The immutable
+`packaging/nfl2k5_scorebug_template_pngs.json` catalog pins each reviewed PNG's
+exact path, size, SHA-256 and dimensions. The checker pins the catalog itself.
+All other PNGs remain forbidden, including an unlisted PNG under the template
+directory or a reviewed image renamed elsewhere. No broad PNG or `assets/`
+exception is needed. Standalone staged-template and rejection tests cover it.
+
+Add `mod_editor.core.nfl2k5_scorebug_template` to the explicit import list in
+protected `packaging/check_2k5_mod_studio_runtime.py`, beside `...scorebug_ingame`.
+Its new dependency is Pillow, already required by the Studio. The product
+compiler uses no system font, SVG renderer, Unicorn, Capstone or network.
+The authoring regeneration tool also uses only Python/Pillow. The native proof
+tools stay developer-only; do not import them into the product closure.
+Refresh the existing provider/runtime source digest inventories for the changed
+modules during the normal integration pass.
+
+Add the following exact lines to protected `packaging/release-allowlist.txt`
+(deduplicate existing lines). Every `docs/scorebug_template/` source file is
+included so Noah gets both scales, the layer/master vectors, all 32 palettes,
+the optional marks and the staged glyph source. The broadcast photo and native
+render/audit files in `docs/scorebug_ingame/` remain evidence, outside the runtime
+package. Never package generated native SCNE/TXTR, a disc, pack or executable.
+
+```text
+mod_editor/core/nfl2k5_scorebug_template.py
+tools/nfl2k5_scorebug_template_art.py
+packaging/nfl2k5_scorebug_template_pngs.json
+docs/mod_editor/nfl2k5_scorebug_template_capability.json
+docs/scorebug_template/1x/away_block.png
+docs/scorebug_template/1x/away_block.svg
+docs/scorebug_template/1x/away_score.png
+docs/scorebug_template/1x/away_score.svg
+docs/scorebug_template/1x/clock_quarter.png
+docs/scorebug_template/1x/clock_quarter.svg
+docs/scorebug_template/1x/down.png
+docs/scorebug_template/1x/down.svg
+docs/scorebug_template/1x/frame.png
+docs/scorebug_template/1x/frame.svg
+docs/scorebug_template/1x/home_block.png
+docs/scorebug_template/1x/home_block.svg
+docs/scorebug_template/1x/home_score.png
+docs/scorebug_template/1x/home_score.svg
+docs/scorebug_template/1x/left_mark.png
+docs/scorebug_template/1x/left_mark.svg
+docs/scorebug_template/2x/away_block.png
+docs/scorebug_template/2x/away_block.svg
+docs/scorebug_template/2x/away_score.png
+docs/scorebug_template/2x/away_score.svg
+docs/scorebug_template/2x/clock_quarter.png
+docs/scorebug_template/2x/clock_quarter.svg
+docs/scorebug_template/2x/down.png
+docs/scorebug_template/2x/down.svg
+docs/scorebug_template/2x/frame.png
+docs/scorebug_template/2x/frame.svg
+docs/scorebug_template/2x/home_block.png
+docs/scorebug_template/2x/home_block.svg
+docs/scorebug_template/2x/home_score.png
+docs/scorebug_template/2x/home_score.svg
+docs/scorebug_template/2x/left_mark.png
+docs/scorebug_template/2x/left_mark.svg
+docs/scorebug_template/README.md
+docs/scorebug_template/atlas_1x.png
+docs/scorebug_template/atlas_2x.png
+docs/scorebug_template/game_state.json
+docs/scorebug_template/glyphs/1x/broadcast_glyphs.png
+docs/scorebug_template/glyphs/1x/broadcast_glyphs.svg
+docs/scorebug_template/glyphs/2x/broadcast_glyphs.png
+docs/scorebug_template/glyphs/2x/broadcast_glyphs.svg
+docs/scorebug_template/glyphs/glyphs.json
+docs/scorebug_template/layout.json
+docs/scorebug_template/lineage/espn_nfl_watermark.svg
+docs/scorebug_template/lineage/scorebug_master.svg
+docs/scorebug_template/master_1x.svg
+docs/scorebug_template/master_2x.svg
+docs/scorebug_template/optional/1x/timeout_marks.png
+docs/scorebug_template/optional/1x/timeout_marks.svg
+docs/scorebug_template/optional/2x/timeout_marks.png
+docs/scorebug_template/optional/2x/timeout_marks.svg
+docs/scorebug_template/teams/1x/ARI.png
+docs/scorebug_template/teams/1x/ARI.svg
+docs/scorebug_template/teams/1x/ATL.png
+docs/scorebug_template/teams/1x/ATL.svg
+docs/scorebug_template/teams/1x/BAL.png
+docs/scorebug_template/teams/1x/BAL.svg
+docs/scorebug_template/teams/1x/BUF.png
+docs/scorebug_template/teams/1x/BUF.svg
+docs/scorebug_template/teams/1x/CAR.png
+docs/scorebug_template/teams/1x/CAR.svg
+docs/scorebug_template/teams/1x/CHI.png
+docs/scorebug_template/teams/1x/CHI.svg
+docs/scorebug_template/teams/1x/CIN.png
+docs/scorebug_template/teams/1x/CIN.svg
+docs/scorebug_template/teams/1x/CLE.png
+docs/scorebug_template/teams/1x/CLE.svg
+docs/scorebug_template/teams/1x/DAL.png
+docs/scorebug_template/teams/1x/DAL.svg
+docs/scorebug_template/teams/1x/DEN.png
+docs/scorebug_template/teams/1x/DEN.svg
+docs/scorebug_template/teams/1x/DET.png
+docs/scorebug_template/teams/1x/DET.svg
+docs/scorebug_template/teams/1x/GB.png
+docs/scorebug_template/teams/1x/GB.svg
+docs/scorebug_template/teams/1x/HOU.png
+docs/scorebug_template/teams/1x/HOU.svg
+docs/scorebug_template/teams/1x/IND.png
+docs/scorebug_template/teams/1x/IND.svg
+docs/scorebug_template/teams/1x/JAX.png
+docs/scorebug_template/teams/1x/JAX.svg
+docs/scorebug_template/teams/1x/KC.png
+docs/scorebug_template/teams/1x/KC.svg
+docs/scorebug_template/teams/1x/LAC.png
+docs/scorebug_template/teams/1x/LAC.svg
+docs/scorebug_template/teams/1x/LAR.png
+docs/scorebug_template/teams/1x/LAR.svg
+docs/scorebug_template/teams/1x/LV.png
+docs/scorebug_template/teams/1x/LV.svg
+docs/scorebug_template/teams/1x/MIA.png
+docs/scorebug_template/teams/1x/MIA.svg
+docs/scorebug_template/teams/1x/MIN.png
+docs/scorebug_template/teams/1x/MIN.svg
+docs/scorebug_template/teams/1x/NE.png
+docs/scorebug_template/teams/1x/NE.svg
+docs/scorebug_template/teams/1x/NO.png
+docs/scorebug_template/teams/1x/NO.svg
+docs/scorebug_template/teams/1x/NYG.png
+docs/scorebug_template/teams/1x/NYG.svg
+docs/scorebug_template/teams/1x/NYJ.png
+docs/scorebug_template/teams/1x/NYJ.svg
+docs/scorebug_template/teams/1x/PHI.png
+docs/scorebug_template/teams/1x/PHI.svg
+docs/scorebug_template/teams/1x/PIT.png
+docs/scorebug_template/teams/1x/PIT.svg
+docs/scorebug_template/teams/1x/SEA.png
+docs/scorebug_template/teams/1x/SEA.svg
+docs/scorebug_template/teams/1x/SF.png
+docs/scorebug_template/teams/1x/SF.svg
+docs/scorebug_template/teams/1x/TB.png
+docs/scorebug_template/teams/1x/TB.svg
+docs/scorebug_template/teams/1x/TEN.png
+docs/scorebug_template/teams/1x/TEN.svg
+docs/scorebug_template/teams/1x/WAS.png
+docs/scorebug_template/teams/1x/WAS.svg
+docs/scorebug_template/teams/2x/ARI.png
+docs/scorebug_template/teams/2x/ARI.svg
+docs/scorebug_template/teams/2x/ATL.png
+docs/scorebug_template/teams/2x/ATL.svg
+docs/scorebug_template/teams/2x/BAL.png
+docs/scorebug_template/teams/2x/BAL.svg
+docs/scorebug_template/teams/2x/BUF.png
+docs/scorebug_template/teams/2x/BUF.svg
+docs/scorebug_template/teams/2x/CAR.png
+docs/scorebug_template/teams/2x/CAR.svg
+docs/scorebug_template/teams/2x/CHI.png
+docs/scorebug_template/teams/2x/CHI.svg
+docs/scorebug_template/teams/2x/CIN.png
+docs/scorebug_template/teams/2x/CIN.svg
+docs/scorebug_template/teams/2x/CLE.png
+docs/scorebug_template/teams/2x/CLE.svg
+docs/scorebug_template/teams/2x/DAL.png
+docs/scorebug_template/teams/2x/DAL.svg
+docs/scorebug_template/teams/2x/DEN.png
+docs/scorebug_template/teams/2x/DEN.svg
+docs/scorebug_template/teams/2x/DET.png
+docs/scorebug_template/teams/2x/DET.svg
+docs/scorebug_template/teams/2x/GB.png
+docs/scorebug_template/teams/2x/GB.svg
+docs/scorebug_template/teams/2x/HOU.png
+docs/scorebug_template/teams/2x/HOU.svg
+docs/scorebug_template/teams/2x/IND.png
+docs/scorebug_template/teams/2x/IND.svg
+docs/scorebug_template/teams/2x/JAX.png
+docs/scorebug_template/teams/2x/JAX.svg
+docs/scorebug_template/teams/2x/KC.png
+docs/scorebug_template/teams/2x/KC.svg
+docs/scorebug_template/teams/2x/LAC.png
+docs/scorebug_template/teams/2x/LAC.svg
+docs/scorebug_template/teams/2x/LAR.png
+docs/scorebug_template/teams/2x/LAR.svg
+docs/scorebug_template/teams/2x/LV.png
+docs/scorebug_template/teams/2x/LV.svg
+docs/scorebug_template/teams/2x/MIA.png
+docs/scorebug_template/teams/2x/MIA.svg
+docs/scorebug_template/teams/2x/MIN.png
+docs/scorebug_template/teams/2x/MIN.svg
+docs/scorebug_template/teams/2x/NE.png
+docs/scorebug_template/teams/2x/NE.svg
+docs/scorebug_template/teams/2x/NO.png
+docs/scorebug_template/teams/2x/NO.svg
+docs/scorebug_template/teams/2x/NYG.png
+docs/scorebug_template/teams/2x/NYG.svg
+docs/scorebug_template/teams/2x/NYJ.png
+docs/scorebug_template/teams/2x/NYJ.svg
+docs/scorebug_template/teams/2x/PHI.png
+docs/scorebug_template/teams/2x/PHI.svg
+docs/scorebug_template/teams/2x/PIT.png
+docs/scorebug_template/teams/2x/PIT.svg
+docs/scorebug_template/teams/2x/SEA.png
+docs/scorebug_template/teams/2x/SEA.svg
+docs/scorebug_template/teams/2x/SF.png
+docs/scorebug_template/teams/2x/SF.svg
+docs/scorebug_template/teams/2x/TB.png
+docs/scorebug_template/teams/2x/TB.svg
+docs/scorebug_template/teams/2x/TEN.png
+docs/scorebug_template/teams/2x/TEN.svg
+docs/scorebug_template/teams/2x/WAS.png
+docs/scorebug_template/teams/2x/WAS.svg
+docs/scorebug_template/teams.json
+```
+
+---
+
 # r63 static ESPN scorebug v9 (2026-09-06)
 
 The existing `scorebug` option now installs `espn-reference-v9`. No new option,

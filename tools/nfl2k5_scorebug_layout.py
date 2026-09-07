@@ -847,16 +847,17 @@ def _legacy_apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements
     return receipt
 
 
-def status(xiso: Path) -> str:
+def status(xiso: Path, *, scorebug_folder=None) -> str:
     from mod_editor.core import nfl2k5_scorebug_ingame as reference
-    return reference.image_status(xiso)
+    return reference.image_status(xiso, scorebug_folder=scorebug_folder)
 
 
-def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool = True) -> dict:
+def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool = True,
+                   scorebug_folder=None) -> dict:
     from mod_editor.core import nfl2k5_scorebug_ingame as reference
     if not textures:
         raise ValueError("the reference scene requires its matching atlas")
-    return reference.apply_in_place(xiso)
+    return reference.apply_in_place(xiso, scorebug_folder=scorebug_folder)
 
 
 def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: bool = False,
@@ -932,7 +933,12 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
             px-=width/2
         color=(255,255,255,255) if name in ("away_city","home_city","away_score","home_score","drop_down") else (17,17,24,255)
         if not legacy:
-            color = (192,192,0,255) if name == "home_city" else (255,255,255,255)
+            if name == "home_city":
+                color = (192,192,0,255)
+            elif name in ("quarter", "clock_a", "clock_b", "drop_clock"):
+                color = (17,17,24,255)
+            else:
+                color = (255,255,255,255)
         color = (text_colors or {}).get(name, color)
         if text_scale_x == 1:
             dr.text((px,py),text,font=font,fill=color,anchor="ls")

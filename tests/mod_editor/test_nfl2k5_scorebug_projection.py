@@ -1,4 +1,4 @@
-"""Native static v9 acceptance, with hash-pinned v8 negative controls."""
+"""Native static v10 acceptance, with hash-pinned v8 negative controls."""
 from __future__ import annotations
 import importlib.util
 from pathlib import Path
@@ -38,7 +38,7 @@ class ProjectionTests(unittest.TestCase):
         cls.addClassCleanup(cls.capture['machine'].close)
         cls.normal.update(native_text_draw(cls.capture))
 
-    def test_both_reference_rails_and_actual_frame_contain_v9(self):
+    def test_both_reference_rails_and_actual_frame_contain_v10(self):
         from PIL import Image
         path=ROOT/'docs/scorebug_ingame/target_NO_MIA.png'
         if not path.is_file():self.skipTest('target_NO_MIA.png reference absent')
@@ -178,7 +178,7 @@ class ProjectionTests(unittest.TestCase):
                     self.assertEqual(rows[callback]['text'],value)
                 self.assertEqual(rows[yellow]['color'],'0xffc0c000')
                 self.assertEqual(containment_failures({**self.normal,**drawn},self.normal['frame'],.02),{})
-                for callback,left,right in (('0xfc070',188,286),('0xfc050',286,384)):
+                for callback,left,right in (('0xfc070',160,274),('0xfc050',438,558)):
                     xs=[v['screen'][0] for v in rows[callback]['vertices']]
                     self.assertGreaterEqual(min(xs),left)
                     self.assertLessEqual(max(xs),right)
@@ -201,13 +201,18 @@ class ProjectionTests(unittest.TestCase):
         words={struct.unpack_from('<I',self.after,r.layout.S1+i*10)[0] for i in range(48,64)}
         self.assertEqual(words,{0xffffffff})
         for row in self.normal['draws']:
-            expected='0xffc0c000' if row['callback']=='0xfc010' else '0xffffffff'
+            expected=('0xffc0c000' if row['callback']=='0xfc010' else
+                      '0xff111118' if row['callback'] in ('0xfc090','0xfc100','0xfc150','0xfbe30') else '0xffffffff')
             self.assertEqual(row['color'],expected)
             self.assertTrue(all(v['color']==expected for v in row['vertices']))
         atlas=r.atlas(self.spans)
-        for y in range(16,48):
-            for x in range(64):self.assertEqual(atlas.getpixel((x,y)),r.FRAME_COLOR)
-        self.assertEqual(self.normal['objects']['dscore_buga'][0],self.normal['objects']['dscore_buga'][2])
+        self.assertEqual(len(set(atlas.getdata())),16)
+        self.assertLess(self.normal['objects']['dscore_buga'][0],self.normal['objects']['dscore_buga'][2])
+        for row in self.normal['draws']:
+            if row['callback'] in ('0xfc050','0xfc070'):
+                self.assertEqual(row['font'],'font2')
+                ys=[v['screen'][1] for v in row['vertices']]
+                self.assertAlmostEqual(max(ys)-min(ys),25,delta=.01)
 
     def test_all_32_static_team_bindings_ignore_team_identity(self):
         rows=native_team_binding_audit(self.capture)
@@ -231,8 +236,8 @@ class ProjectionTests(unittest.TestCase):
     def test_static_replay_and_native_overlap_keep_retail_wrapper_plus_14(self):
         receipt=static_receipts(self.xbe,self.spans)
         self.assertTrue(receipt['xbe_replay_identical'])
-        self.assertTrue(receipt['v9'])
-        self.assertEqual(receipt['version'],'espn-reference-v9')
+        self.assertTrue(receipt['v10'])
+        self.assertEqual(receipt['version'],'espn-reference-v10')
         self.assertFalse(receipt['temporary_disc_created'])
         for resource in receipt['resources']:
             self.assertTrue(resource['wrapper_identical'])
@@ -246,15 +251,15 @@ class ProjectionTests(unittest.TestCase):
             proof=render_native(self.after,self.atlas,self.fonts,self.normal,target)
             self.assertEqual(proof['winding']['zz_ESPN_bug'],dict(positive=0,negative=2))
             self.assertEqual(proof['winding']['yscore_buga1'],dict(positive=0,negative=2))
-            self.assertEqual(proof['winding']['dscore_buga'],dict(positive=0,negative=0))
+            self.assertEqual(proof['winding']['dscore_buga'],dict(positive=0,negative=12))
             self.assertFalse(proof['raster_policy']['gpu_state_proved'])
             culled=Path(tmp).resolve()/'culled.png'
             render_native(self.after,self.atlas,self.fonts,self.normal,culled,cull_positive=True)
             mark=self.normal['objects']['zz_ESPN_bug']
-            for actual,expected in zip(mark,[88,393,184,417]):
+            for actual,expected in zip(mark,[88,393,156,417]):
                 self.assertAlmostEqual(actual,expected,delta=.02)
             with Image.open(target) as first,Image.open(culled) as second:
-                box=(88,393,184,417)
+                box=(88,393,156,417)
                 self.assertIsNone(ImageChops.difference(first.crop(box),second.crop(box)).getbbox())
                 self.assertGreater(sum(min(px)>180 for px in first.crop(box).getdata()),100)
 
