@@ -31,6 +31,13 @@ from mod_editor.gui.studio_qt import (  # noqa: E402
 from mod_editor.studio.facade import Nfl2k5StudioFacade  # noqa: E402
 from mod_editor.studio.uniform_bundle import TEAM_KIT_MANIFEST  # noqa: E402
 
+if os.environ.get("ASTRA_TEST_TEAMKIT_PROPOSAL") == "1":
+    from mod_editor.gui import studio_qt
+    from tests.mod_editor.test_teamkit_import_wiring import proposed_source
+    _proposal_namespace = dict(studio_qt.__dict__)
+    exec(compile(proposed_source(), "<Team Kit GUI proposal>", "exec"), _proposal_namespace)
+    StudioMainWindow = _proposal_namespace["StudioMainWindow"]
+
 
 class _LockCheckingTeamKitService:
     def __init__(self, lock: object, calls: list[tuple[object, ...]]) -> None:
@@ -170,7 +177,7 @@ class _WindowTeamKitFacade(BrowseOnlyFacade):
             message="Complete paired Team Kit exported privately.",
         )
 
-    def import_team_kit(self, source: Path, progress: object) -> object:
+    def import_team_kit(self, source: Path, progress: object, *, expected_set_selectors=None) -> object:
         if self.import_error is not None:
             raise self.import_error
         progress("Validating all kit PNGs", 79, 79)
@@ -188,7 +195,7 @@ class _WindowTeamKitFacade(BrowseOnlyFacade):
             changed_count=self.import_changed,
             set_selectors=("18H0", "18A0"),
             message=(
-                "Imported 2 changed components as one Undo action."
+                "Imported 2 changed components as one Undo action. Your source XISO was not changed."
                 if self.import_changed else
                 "All decoded pixels matched; nothing was staged."
             ),
@@ -341,7 +348,9 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
             )
             return SimpleNamespace(path=destination)
 
-        def import_private(source: Path, progress: object) -> object:
+        def import_private(source: Path, progress: object, *, expected_set_selectors=None) -> object:
+            if expected_set_selectors is not None:
+                self.assertEqual(expected_set_selectors, ("18H0",))
             manifest = json.loads(
                 (source / TEAM_KIT_MANIFEST).read_text(encoding="utf-8")
             )
@@ -353,7 +362,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
                         written.getpixel((written.width // 2, written.height // 2))[0],
                         digit * 20,
                     )
-            return SimpleNamespace(changed_count=10)
+            return SimpleNamespace(changed_count=10, message="Imported ten exact game slots as one Undo action.")
 
         self.facade.export_team_kit_sets = export_private  # type: ignore[method-assign]
         self.facade.import_team_kit = import_private  # type: ignore[method-assign]
@@ -370,6 +379,10 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
             mock.patch(
                 "mod_editor.gui.studio_qt.QMessageBox.information",
                 side_effect=lambda _parent, _title, text: receipts.append(text),
+            ),
+            mock.patch(
+                "mod_editor.gui.studio_qt.QMessageBox.exec_",
+                new=lambda box: receipts.append(box.text()) or QMessageBox.Ok,
             ),
         ):
             self.window._choose_digit_sheet_import()
@@ -459,6 +472,10 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
                 "mod_editor.gui.studio_qt.QMessageBox.information",
                 side_effect=lambda _parent, _title, text: receipts.append(text),
             ),
+            mock.patch(
+                "mod_editor.gui.studio_qt.QMessageBox.exec_",
+                new=lambda box: receipts.append(box.text()) or QMessageBox.Ok,
+            ),
         ):
             self.window._choose_team_kit_import()
         self.assertEqual(self.facade.calls[-1], ("import", edited))
@@ -481,6 +498,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
                 return_value=str(edited),
             ),
             mock.patch("mod_editor.gui.studio_qt.QMessageBox.information"),
+            mock.patch("mod_editor.gui.studio_qt.QMessageBox.exec_", return_value=QMessageBox.Ok),
         ):
             self.window._choose_team_kit_import()
         self.assertEqual(emitted, [0])

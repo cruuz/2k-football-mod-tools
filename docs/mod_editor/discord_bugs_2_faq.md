@@ -3,6 +3,24 @@
 These editor changes require the integration described in WIRING.md. Gameplay
 results remain experimental and unwitnessed until the listed comparisons are played.
 
+- **Team Kit bundle into another project.** On the current beta, work around
+  the "working pixels changed after export for Torso / Jersey" error by
+  exporting a fresh Team Kit **from the main project**, for the same team,
+  style and sides. Copy your edited PNGs over the matching files in that new
+  export, keeping their names and dimensions. Keep the new manifest and guide,
+  then import that bundle into the main project. Its baselines now match;
+  only the components you edited change. Do not copy untouched PNGs from the
+  old bundle over the main project's existing edits.
+  The r64 correction is **EXPERIMENTAL / UNWITNESSED** and needs the protected
+  UI handoff in WIRING.md. It accepts edited PNGs from another project using
+  the same original source. Untouched bundle components preserve the main
+  project's edits, including number sheets. Edited components replace that
+  slot and report whether they replaced source or your earlier edit. The
+  receipt lists imported, skipped unchanged and overwritten components;
+  an immediate repeat keeps that receipt and adds no Undo action. Choose the
+  matching team, style and sides in Team Kit before import. Horizontal sheets
+  and kits can be imported in either order; the last edited PNG for a digit
+  wins. Save the replacement-only `.2k5mod` to share; keep working kits private.
 - **How do I arrange a 0-9 sheet?** Use equal cells in one row, one column,
   five columns by two rows, or two columns by five rows, and select that layout.
   Read left to right, then top to bottom, starting at 0. See

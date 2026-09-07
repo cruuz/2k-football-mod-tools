@@ -10737,3 +10737,242 @@ Budget: use the existing Senior Bowl 65,536 RW / MyCareer 4,096 RW allocations
 first. A source/coach/stat snapshot and recovery ledger must be counted. The
 Unicorn fixture's 2 MiB arena is not a request for Xbox memory. This revision
 claims zero additional RX/RW/RO and leaves the 4,096-byte spare RW untouched.
+
+
+# r64 Team Kit cross-project import handoff
+
+EXPERIMENTAL / UNWITNESSED. The importer, session transaction route, component
+receipts, bounded PNG decode cache and FAQ are implemented in unprotected files.
+This section is the exact remaining protected GUI/runtime-checker integration.
+No protected file was edited. No game patch or executable allocation is involved.
+
+Apply `tests/fixtures/discord_teamkit_import_wiring.patch` to
+`mod_editor/gui/studio_qt.py`. `git apply --check` passes. The three dedicated
+proposal checks pass, and the full seven-test Team Kit product integration
+suite passes with `ASTRA_TEST_TEAMKIT_PROPOSAL=1`, which executes this exact
+source in memory. The existing integration doubles accept the added optional
+selection argument and both dialog APIs, so that suite also passes before wiring.
+
+The current GUI uses `result.message` for status but hardcodes the old modal
+text. The patch gives Team Kit and number sheets the same component receipt:
+summary in the panel, the same counts in status and the dialog, and imported,
+skipped and overwritten lists in the dialog's expandable Details and the panel
+summary tooltip. Each row names the physical set, group and label, so HOME/AWAY
+jerseys and Jersey/Helmet/Arm digits cannot be confused. Only `changed_count`
+marks the project dirty, triggers recovery and emits the mutation count.
+
+The selected scope is captured before the worker begins. HOME/AWAY/BOTH use the
+selected team's exact physical style; SELECTED uses the explicitly selected sets.
+The facade forwards `expected_set_selectors` to the service under its existing
+lock. Mismatched team, style or sides refuse before any session mutation. The
+number-sheet bridge passes its single physical set explicitly and retains the
+bugs-2 splitter and layouts unchanged.
+
+The shipped panel has a private-export warning and the global edit-count/status
+rows; it does not have a dedicated last-import receipt row. The patch adds one
+small summary label under that warning instead of changing the global project
+edit count into a per-import count. The label retains the last receipt while
+ordinary component refreshes continue showing current Modified/Original state.
+
+Exact GUI patch:
+
+```diff
+--- a/mod_editor/gui/studio_qt.py
++++ b/mod_editor/gui/studio_qt.py
+@@ -418,7 +418,8 @@
+     ) -> object: ...
+
+     def import_team_kit(
+-        self, source: Path, progress: ProgressSink
++        self, source: Path, progress: ProgressSink,
++        *, expected_set_selectors: Sequence[str] | None = None,
+     ) -> object: ...
+
+     def uniform_colors(
+@@ -3181,6 +3182,9 @@
+         self.team_kit_warning.setWordWrap(True)
+         team_kit_header.addWidget(team_kit_title)
+         team_kit_header.addWidget(self.team_kit_warning)
++        self.team_kit_receipt_summary = QLabel("No Team Kit import yet.")
++        self.team_kit_receipt_summary.setWordWrap(True)
++        team_kit_header.addWidget(self.team_kit_receipt_summary)
+         team_kit_layout.addLayout(team_kit_header)
+         team_kit_scope_note = (
+             "All 45 socks, elbow pads, gloves, long sleeves, shoes and wristbands of the "
+@@ -6922,9 +6926,40 @@
+             blocking=True,
+         )
+
++    def _team_kit_import_selectors(self) -> tuple[str, ...]:
++        uniform_set = self._selected_set
++        if uniform_set is None:
++            raise ValidationError("Choose a team and style before importing a Team Kit.")
++        scope = str(self.team_kit_scope.currentData() or "BOTH")
++        if scope == "SELECTED":
++            return self._selected_uniform_set_selectors()
++        sides = ("HOME", "AWAY") if scope == "BOTH" else (scope,)
++        return tuple(self.uniform_catalog.uniform_set_for(
++            uniform_set.asset_code, side, uniform_set.variant,
++        ).selector for side in sides)
++
++    def _show_team_kit_import_result(self, result: object, title: str) -> None:
++        message = _result_message(result, "Team Kit import complete.")
++        summary = str(getattr(result, "summary", message))
++        details = str(getattr(result, "details", ""))
++        self._set_status(message)
++        self.team_kit_receipt_summary.setText(summary)
++        self.team_kit_receipt_summary.setToolTip(details)
++        box = QMessageBox(self)
++        box.setWindowTitle(title)
++        box.setIcon(QMessageBox.Information)
++        box.setText(message)
++        box.setDetailedText(details)
++        box.exec_()
++
+     def _choose_team_kit_import(self) -> None:
+         if not bool(getattr(self.facade, "source_ready", False)):
+             self._show_error("Load your NFL 2K5 XISO before importing a Team Kit.")
++            return
++        try:
++            expected_selectors = self._team_kit_import_selectors()
++        except ValidationError as exc:
++            self._show_error(str(exc))
+             return
+         container = str(self.team_kit_container.currentData() or "folder")
+         if container == "zip":
+@@ -6946,8 +6981,6 @@
+
+         def success(result: object) -> None:
+             changed = int(getattr(result, "changed_count", 0))
+-            total = int(getattr(result, "asset_count", 0))
+-            selectors = tuple(getattr(result, "set_selectors", ()))
+             self._set_status(_result_message(
+                 result,
+                 f"Imported {changed} changed Team Kit components.",
+@@ -6959,23 +6992,12 @@
+             else:
+                 self._refresh_edit_state(rebuild_components=True)
+             self.team_kit_imported.emit(changed)
+-            QMessageBox.information(
+-                self,
+-                "Team Kit import complete",
+-                (
+-                    f"Validated all {total} components for "
+-                    f"{', '.join(selectors) or 'the bundled physical set(s)'}.\n\n"
+-                    f"{changed} pixel-changed component"
+-                    f"{'s were' if changed != 1 else ' was'} staged together as "
+-                    "one Undo action.\n\nYour source XISO was not changed."
+-                    if changed else
+-                    f"Validated all {total} components. Their decoded pixels match "
+-                    "the export, so nothing was staged and no Undo action was added."
+-                ),
+-            )
++            self._show_team_kit_import_result(result, "Team Kit import complete")
+
+         self._start_task(
+-            lambda progress: self.facade.import_team_kit(source, progress),
++            lambda progress: self.facade.import_team_kit(
++                source, progress, expected_set_selectors=expected_selectors,
++            ),
+             success,
+             label="Validating and importing the complete Team Kit",
+             blocking=True,
+@@ -7043,7 +7065,7 @@
+             progress("Splitting the 0–9 sheet", 0, 12)
+             outputs = split_digit_sheet(source, targets, orientation=orientation)
+             with tempfile.TemporaryDirectory(prefix="2k5-digit-sheet-") as temporary:
+-                root = Path(temporary)
++                root = Path(temporary).resolve(strict=True)
+                 kit = root / "team-kit"
+                 self.facade.export_team_kit_sets(
+                     (uniform_set.selector,),
+@@ -7084,7 +7106,8 @@
+                     )
+                 progress("Validating all ten digits as one import", 11, 12)
+                 result = self.facade.import_team_kit(
+-                    kit, lambda _label, _completed, _total: None
++                    kit, lambda _label, _completed, _total: None,
++                    expected_set_selectors=(uniform_set.selector,),
+                 )
+             progress("Digit sheet imported", 12, 12)
+             return result
+@@ -7098,14 +7121,7 @@
+             else:
+                 self._refresh_edit_state(rebuild_components=True)
+             self.team_kit_imported.emit(changed)
+-            QMessageBox.information(
+-                self,
+-                "Digit sheet import complete",
+-                f"{label} for {uniform_set.selector} were split into ten exact "
+-                f"game slots. {changed} changed digit"
+-                f"{'s were' if changed != 1 else ' was'} staged as one Undo action.\n\n"
+-                "The source XISO was not changed.",
+-            )
++            self._show_team_kit_import_result(result, "Digit sheet import complete")
+
+         self._start_task(
+             operation,
+```
+
+Protected runtime pins: in
+`packaging/check_2k5_mod_studio_runtime.py`, update these two existing entries
+of `RC29_AUDIO_ANNOTATION_RUNTIME_PINS` after applying the GUI patch:
+
+```python
+    "mod_editor/gui/studio_qt.py":
+        "6ae2ba04efe92077acadcdbe20a146cf7495b8a066d35842f32ceb1de42d3352",
+    "mod_editor/studio/facade.py":
+        "a6423e1455a673cb115f71037a132d6d858ea8d1a39d5d2c923580dd35f77d6d",
+```
+
+Those are SHA-256 hashes of the exact proposal and current facade, respectively;
+recompute only if integration changes either file further. The existing Team Kit
+runtime exercise still uses the same set count, paths, service and private guide.
+
+Other required handoff fields, explicitly reviewed:
+
+- Dispatcher `_apply_all` tuple, kwarg and four status dictionaries: no changes;
+  no XBE owner or patch is added. Both executable gates and cave reservations are
+  outside this editor-only change.
+- BuildPlan field, normalization, deferral and Basic/Advanced/Experimental
+  presets: no changes. There is no new build option.
+- Gameplay Patches `PATCHES` text / Retail / Patch / `NEEDS_IMAGE`: no row or
+  flag is added. This is the existing Team Kit editor operation.
+- Build tab `_option` caption: none.
+- Allowlist: no new lines. The modified production modules are already listed:
+  `mod_editor/core/nfl2k5_asset_io.py`,
+  `mod_editor/core/nfl2k5_extended_visual_io.py`,
+  `mod_editor/studio/uniform_bundle.py`, `mod_editor/studio/facade.py`, and
+  `mod_editor/gui/studio_qt.py`; the FAQ is already allowlisted at
+  `docs/mod_editor/discord_bugs_2_faq.md`. Tests and the developer benchmark are
+  not runtime files and should not be shipped as product dependencies.
+- Runtime-closure imports: no new module names; existing visual IO, bundle and
+  facade entries remain. Added OrderedDict, Lock and WeakKeyDictionary are
+  standard-library imports. Do not broaden provider ownership for this cache.
+- Capability registry: no new capability or changed command; this extends the
+  existing uniform/Team Kit operation. Do not edit registry evidence to hide
+  the checkout's unrelated missing `docs/research/apf_audio.md`.
+
+Performance: the actual `_populate_components` table method measured 0.002655 s
+before and 0.002560 s after at 351 edits (offscreen Qt). No GUI performance patch
+is needed from that evidence. The actual save path called by protected
+`StudioMainWindow._save_recovery_snapshot` via `Nfl2k5StudioFacade.save_recovery_project`
+and `StudioSession.save_shareable_project` repeatedly decoded every original and
+replacement. The unprotected IO cache changes a 351-edit save from 23.134902 s to
+0.089388 s in the bounded benchmark. Cold open remains 23.4 s. Keep recovery's
+source lock, session revision checks, save validation and dirty handling intact.
+
+Validation commands (Linux/macOS use `:` in PYTHONPATH; use `;` on Windows):
+
+```sh
+export PYTHONPATH="$PWD:$PWD/tools"
+export QT_QPA_PLATFORM=offscreen
+python3 tests/mod_editor/test_uniform_bundle_cross_project.py
+python3 tests/mod_editor/test_visual_decode_cache.py
+python3 tests/mod_editor/test_teamkit_import_wiring.py
+ASTRA_TEST_TEAMKIT_PROPOSAL=1 python3 tests/mod_editor/test_team_kit_product_integration.py
+```
+
+After applying the fixture to the real source, run the ordinary integration
+suite without `ASTRA_TEST_TEAMKIT_PROPOSAL`; that flag applies the still-pending
+patch in memory and is only for review on the pre-integration base.

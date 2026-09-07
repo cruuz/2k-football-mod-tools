@@ -3252,12 +3252,18 @@ class Nfl2k5StudioFacade:
         self,
         source: Path,
         progress: ProgressSink,
+        *,
+        expected_set_selectors: Sequence[str] | None = None,
     ) -> object:
         """Validate and stage an edited Team Kit as one locked session action."""
 
         with self._lock:
             session = self._require_session()
             service = self._team_kit_service_factory(self.uniform_catalog, session)
+            if expected_set_selectors is not None:
+                return service.import_edited(
+                    source, expected_set_selectors=expected_set_selectors, progress=progress,
+                )
             return service.import_edited(source, progress=progress)
 
     def replace_asset(

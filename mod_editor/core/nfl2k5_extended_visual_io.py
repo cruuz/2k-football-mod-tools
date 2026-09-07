@@ -20,7 +20,7 @@ from typing import Any
 
 from . import platform_compat
 from .errors import ValidationError
-from .nfl2k5_asset_io import Nfl2k5AssetIO
+from .nfl2k5_asset_io import Nfl2k5AssetIO, _decode_png
 from .nfl2k5_extended_visual_catalog import (
     ExtendedVisualAsset,
     VisualReportPaths,
@@ -41,7 +41,6 @@ import nfl_player_portrait_png_import as portrait_import  # noqa: E402
 import nfl_player_portrait_targets as portrait_targets  # noqa: E402
 import nfl_all_texture_xiso_workflow as p8_workflow  # noqa: E402
 import nfl_scorebug_png_import as scorebug_import  # noqa: E402
-import nfl_tset_png_import as png_codec  # noqa: E402
 from nfl_txtr import (TextureInfo, decode_chunk, decode_dxt1, encode_rgba_png,  # noqa: E402
                       parse_chunks, parse_texture, texture_to_rgba)
 
@@ -64,7 +63,7 @@ def _canonical_png(width: int, height: int, rgba: bytes) -> bytes:
         raise ValidationError("Decoded artwork has the wrong pixel byte count")
     payload = encode_rgba_png(width, height, rgba)
     try:
-        reparsed = png_codec.decode_rgba_png(payload, (width, height))
+        reparsed = _decode_png(payload, (width, height))
     except ValueError as exc:
         raise ValidationError("Exported PNG failed its strict image recheck") from exc
     if reparsed != (width, height, rgba):
@@ -141,7 +140,7 @@ class Nfl2k5ExtendedVisualIO:
                     )
                 ):
                     raise ValueError("invalid cached dimensions")
-                width, height, rgba = png_codec.decode_rgba_png(
+                width, height, rgba = _decode_png(
                     payload,
                     (recorded_dimensions[0], recorded_dimensions[1]),
                 )
@@ -181,7 +180,7 @@ class Nfl2k5ExtendedVisualIO:
                 self._decoder(asset) if self._decoder is not None
                 else self._decode_original(asset)
             )
-            width, height, reparsed = png_codec.decode_rgba_png(
+            width, height, reparsed = _decode_png(
                 png, asset.dimensions
             )
         except ValidationError:
@@ -259,7 +258,7 @@ class Nfl2k5ExtendedVisualIO:
         ):
             raise ValidationError("That PNG changed while Mod Studio was reading it")
         try:
-            width, height, rgba = png_codec.decode_rgba_png(
+            width, height, rgba = _decode_png(
                 payload, asset.dimensions
             )
         except ValueError as exc:
