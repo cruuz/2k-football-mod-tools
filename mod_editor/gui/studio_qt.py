@@ -1936,7 +1936,7 @@ class StudioMainWindow(QMainWindow):
             setter(state)
         return state
 
-    def _restore_music_build_settings(self):
+    def _restore_music_build_settings(self, keep_current_when_empty=False):
         from mod_editor.core import nfl2k5_music_playlist as playlist
         getter = getattr(self.facade, "project_build_settings", None)
         from mod_editor.core import nfl2k5_build_settings as saved
@@ -1946,7 +1946,14 @@ class StudioMainWindow(QMainWindow):
         try:
             self._music_playlist_document = document
             if self._build_panel is not None:
-                self._build_panel.restore_project_build_settings(state)
+                if keep_current_when_empty and not any(key in state for key in saved.FEATURE_KEYS):
+                    # A freshly inspected source with no saved project choices keeps the current
+                    # selections (a preset applied right after inspection, for example); an explicit
+                    # project open still restores every choice, absent ones to their defaults.
+                    self._build_panel.restore_music_build_settings(
+                        {key: state[key] for key in saved.MUSIC_KEYS if key in state})
+                else:
+                    self._build_panel.restore_project_build_settings(state)
                 link = getattr(self, "_gameplay_build_link", None)
                 if link is not None:
                     link.refresh_from_build()
@@ -7809,7 +7816,7 @@ class StudioMainWindow(QMainWindow):
             finally:
                 self._restoring_music_playlist = False
             self._music_playlist_catalog = state.get("music_playlist_catalog")
-            self._restore_music_build_settings()
+            self._restore_music_build_settings(keep_current_when_empty=True)
             if state.get("music_playlist_catalog_error"):
                 self.statusBar().showMessage(f"Playlist library unavailable: {state['music_playlist_catalog_error']}", 8000)
             self._describe_source_pill(state)
