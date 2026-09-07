@@ -759,6 +759,9 @@ def _new_output_path(path: Path) -> Path:
         output.lstat()
     except FileNotFoundError:
         return output
+    if output.is_file() and not output.is_symlink():
+        from .image_use import assert_image_available
+        assert_image_available(output)
     raise OutputRefusedError(
         f"The output already exists and was not changed: {output}. "
         "Choose a new filename or move the existing file first."

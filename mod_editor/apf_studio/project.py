@@ -40,6 +40,7 @@ from .helmet_crest_design import (
     HelmetCrestDesignError,
     validate_metadata as validate_helmet_crest_metadata,
 )
+from .field_art import FIELD_ART_EDIT_KIND, validate_field_art_metadata
 from mod_editor.core import platform_compat
 from mod_editor.core.platform_compat import fsync_directory
 from mod_editor.core.apf2k8_package_map_writer import (
@@ -1365,11 +1366,15 @@ def _validated_metadata(
     value = dict(metadata)
     if (
         kind == HELMET_CREST_DESIGN_KIND
-        and asset_id == HELMET_CREST_DESIGN_EDIT_ID
     ):
         try:
             return validate_helmet_crest_metadata(asset_id, kind, value)
         except HelmetCrestDesignError as exc:
+            raise ProjectError(str(exc)) from exc
+    if kind == FIELD_ART_EDIT_KIND:
+        try:
+            return validate_field_art_metadata(asset_id, value)
+        except ValueError as exc:
             raise ProjectError(str(exc)) from exc
     if kind == "uniform":
         allowed = {

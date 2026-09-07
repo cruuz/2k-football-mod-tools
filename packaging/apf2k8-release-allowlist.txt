@@ -20,6 +20,8 @@ docs/mod_editor/apf2k8_retail_crest_channel_audit.json
 docs/mod_editor/apf2k8_external_xma1_encoder.md
 docs/mod_editor/apf2k8_mod_studio_changelog.md
 docs/mod_editor/apf2k8_mod_studio_getting_started.md
+docs/mod_editor/discord_bugs_2_faq.md
+docs/mod_editor/number_sheets.md
 docs/mod_editor/high_resolution_texture_authoring.md
 docs/mod_editor/apf2k8_text_bank_authoring.md
 docs/product/APF_32_TEAM_53_ROSTER_FEASIBILITY.md

@@ -3550,6 +3550,8 @@ class Nfl2k5StudioFacade:
         return result
 
     def launch_xemu(self, progress: ProgressSink) -> object:
+        from mod_editor.core.image_use import assert_image_available
+
         command = self.xemu_command
         with self._lock:
             result = self._last_build
@@ -3561,6 +3563,7 @@ class Nfl2k5StudioFacade:
         if result is None or not result.output_xiso.is_file() \
                 or result.output_xiso.is_symlink():
             raise ValidationError("Build a modded XISO before launching xemu.")
+        assert_image_available(result.output_xiso)
         progress("Starting xemu", 0, 1)
         argv = _xemu_launch_argv(command, result.output_xiso)
         if sys.platform == "win32":

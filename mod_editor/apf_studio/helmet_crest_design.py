@@ -29,6 +29,27 @@ class HelmetCrestDesignError(ValueError):
     """The shareable crest-design identity or fixed profile is invalid."""
 
 
+def crest_edit_id(asset_index: int) -> str:
+    return f"{HELMET_CREST_DESIGN_EDIT_ID}:{asset_index}"
+
+
+def validate_crest_set(modifications) -> None:
+    """Retail crests compose; the global full-shell carrier stays single-owner."""
+    rows = [m for m in modifications if m.kind == HELMET_CREST_DESIGN_KIND]
+    slots = set()
+    for row in rows:
+        value = validate_metadata(row.asset_id, row.kind, row.metadata)
+        slot = value["crest_asset_index"]
+        if slot in slots:
+            raise HelmetCrestDesignError(f"Crest slot {slot} is selected twice")
+        slots.add(slot)
+    if len(rows) > 1 and any(m.metadata["profile"] == FULL_SHELL_CREST_PROFILE for m in rows):
+        raise HelmetCrestDesignError(
+            "Multiple team crests need the Retail side-decal profile. "
+            "The full-shell profile changes a shared helmet model; revert it before adding another team."
+        )
+
+
 def profile_scope(profile: str) -> str:
     if profile == RETAIL_CREST_PROFILE:
         return RETAIL_COVERAGE_SCOPE
@@ -109,7 +130,7 @@ def validate_metadata(
     fit = value.get("fit_visible_mask")
     detail = value.get("detail_sha256")
     if (
-        asset_id != HELMET_CREST_DESIGN_EDIT_ID
+        asset_id not in {HELMET_CREST_DESIGN_EDIT_ID, crest_edit_id(asset_index)}
         or kind != HELMET_CREST_DESIGN_KIND
         or not required <= set(value) <= required | {"detail_sha256"}
         or (

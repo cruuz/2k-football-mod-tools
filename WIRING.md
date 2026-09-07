@@ -9978,3 +9978,160 @@ selected from retail FONT objects, and the static play-clock format operand.
 A separate local glyph atlas has **not** been installed. The requested pixel
 match and glyph-binding fallback remain gaps; the report gives the measured
 font limits and the evidence required before claiming they are solved.
+
+---
+
+# r63 Discord bugs, batch 2, 2026-09-07
+
+See `ASTRA_DISCORD_BUGS_2_REPORT.md`. Editor core changes are implemented in
+unprotected files. Gameplay conclusions are **EXPERIMENTAL / UNWITNESSED**;
+this job adds no executable owner or resource patch. Do not infer a runtime
+fix from the editor tests. No protected source file or other GUI panel was
+edited in this worktree.
+
+## Concrete protected-source proposal
+
+`tests/fixtures/discord_bugs_2_wiring.patch` contains exact, compilable diffs
+for the following four files. It passes `git apply --check`. The standalone
+`tests/mod_editor/test_discord_bugs_2_wiring.py` applies the hunks in memory
+and exercises the actual proposed functions/classes; it never changes the
+protected source files. Six checks pass, including offscreen Qt. Setting
+`ASTRA_TEST_UNWIRED=1` reproduces defects against the current files.
+
+1. `mod_editor/gui/studio_qt.py`: import `SHEET_HELP` and `SHEET_LAYOUTS` from
+   `nfl2k5_digit_sheet`; show the shared tooltip; after choosing jersey/helmet/
+   arm, select one row, one column, five columns/two rows, or two columns/five
+   rows. Pass the selected key as `orientation` to `split_digit_sheet`. Keep
+   existing target-family validation and asynchronous ten-digit import.
+2. `mod_editor/core/mod_build.py`, `build`: preserve the original-source
+   rejection and add samefile/hardlink rejection. Before any expensive build,
+   call `previous_target = check_image_destination(target,
+   overwrite=plan.overwrite)`. Replace final `os.replace` with
+   `publish_image(directory / target.name, target, previous_target)` after all
+   readers are closed. The shared helper is `mod_editor.core.image_use`.
+   A new destination uses atomic no-replace; an existing destination is probed
+   before and after the work and must retain its identity/size/mtime. An image
+   observed open in another process gets the eject/close-emulators message.
+3. `mod_editor/core/nfl2k5_throw_tuning.py`, `_transactional_image_writer`:
+   use the same destination preflight and final `publish_image`, preserving
+   its source/link checks, temporary-directory cleanup and final receipt path.
+   This wraps both existing copied-image entry points. Never probe our own
+   staging image while its writer is open. The cached Studio build service's
+   existing no-replace publication and new occupied-output explanation, plus
+   the Studio facade's actual launch probe, are already implemented.
+4. `mod_editor/apf_studio/gui.py` (also off limits under the brief's other-GUI
+   collision rule): `ApfFieldArtPanel` stages/reverts through the shared facade,
+   reads authoritative session state, and emits `modifiedChanged` through
+   `FieldArtStudioPage`. The multi-edit copied-volume action says to use Build
+   Game Folder. `ApfTeamLogoPanel` looks up `session.crest_modification` for the
+   selected team; it no longer jumps back to the last legacy-ID team, reverts
+   only the selected asset, and clears stale placement/master state when
+   switching. Save authoring master passes that team's `crest_asset_index`,
+   captured on the UI thread before starting the worker.
+
+Apply the fixture only once the corresponding protected files are reconciled
+with other jobs. After it lands, run the same behavior checks against the
+integrated files (the fixture's preimage checks intentionally reject source
+drift), then the ordinary desktop tests and clean runtime closure. The fixture
+is test/review material, not an application runtime dependency.
+
+## Required release closure
+
+Add these exact lines to protected `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/image_use.py
+docs/mod_editor/number_sheets.md
+docs/mod_editor/discord_bugs_2_faq.md
+```
+
+The changed digit splitter, Studio facade and cached build service are already
+listed. Add these imports to protected
+`packaging/check_2k5_mod_studio_runtime.py` alongside the existing core imports:
+
+```python
+"mod_editor.core.image_use",
+"mod_editor.core.nfl2k5_digit_sheet",
+```
+
+Deduplicate if another integration adds them first. `image_use` adds standard
+library dependencies only; macOS needs its existing system `lsof`. Keep the
+real Windows CreateFileW branch and exclusive-share refusal, not a POSIX-only
+flock substitute. Run native Windows/macOS held-reader checks before declaring
+those platforms verified. Linux visibility and the final POSIX check/rename
+race are documented limitations, not a mandatory-lock claim.
+
+Refresh `RC29_AUDIO_ANNOTATION_RUNTIME_PINS` for the changed
+`mod_editor/studio/facade.py` and, after wiring, `mod_editor/gui/studio_qt.py`
+from their final reviewed bytes. Keep other owners' pins intact; a current
+tree cannot pass that protected gate by retaining the old facade digest.
+Do not add these editor helpers to a native XBE provider ownership list merely
+to silence a source-pin mismatch.
+
+The unprotected APF allowlist already gained both help pages. The existing
+product list already imports `mod_editor.apf_studio.field_art`; its tool list
+now explicitly imports `apf_field_art_patch` and `apf_logocache_patch`.
+All 104 product/tool imports and literal import closure pass. Full APF clean
+stage validation remains blocked by four absent vendored extract-xiso files:
+`BUILDING-THE-BUNDLED-BINARIES.md`, `LICENSE.TXT`, `build/extract-xiso`, and
+`build/extract-xiso.exe`, beneath `tools/vendor/extract-xiso/`. Restore the
+already-pinned distribution inputs through the normal release process, then
+run `packaging/check_apf2k8_mod_studio_runtime.py` from a clean allowlist stage.
+Do not relax extractor hashes or admit the development `reports` directory.
+
+## Dispatcher, status, presets and capability checklist
+
+These items are explicitly unchanged because this batch fixes existing editor
+surfaces and researches existing gameplay owners; it installs no new patch:
+
+- `_apply_all` dispatcher tuple and corresponding patch kwarg: **no addition**.
+  `_selected_space_requests`, `_xbe_space_adapter`, final owner tuple and
+  `_grown_status_fields`: **no addition**. Existing dynamic kickoff, screen,
+  abilities, Momentum, playlist and content-owner entries remain as shipped.
+- All four status dictionaries (XBE inspect, image inspect, apply result and
+  copied-image result): **no new key and no altered status policy**. Preserve
+  each existing owner's Retail/applied/foreign refusal, before/after payload
+  handling and paired archive status. The file-use probe is host editor state,
+  not an XBE `status(payload)` owner.
+- `BuildPlan` field: **none**. Basic/Advanced/Experimental: **no new opt-in and
+  no preset changes**. Existing Basic/Advanced leave dynamic/alignment false;
+  Experimental enables both. Current normalization already makes dynamic
+  enable alignment/kick rules and disable old kick power. Keep runtime scorebug
+  diagnostic and off in all presets. Do not claim this investigation measured
+  a preset's FPS cost.
+- Gameplay Patches `PATCHES` row and `NEEDS_IMAGE`: **no new row/member**.
+  These are import/build/launch fixes, not selectable gameplay patches. If
+  updating existing owner descriptions after a played bisect, retain literal
+  `Retail` and `Patch` descriptions and existing `NEEDS_IMAGE` requirements.
+  No speculative blocking, muff, widescreen or boot fix belongs in that list.
+- Build tab `_option` caption (maximum 60 characters): **none added**. Keep
+  the existing build actions. The short sheet-layout labels and APF action
+  explanations are supplied in the concrete fixture, not as gameplay options.
+- Capability registry: **no new surface**. Existing number import, APF helmet
+  crest and `apf2k8.field_art.base_texture` capabilities remain. On GUI landing,
+  update the existing Field Art description/evidence to mention shared project
+  staging/Build Game Folder and `test_discord_bugs_2.py`, retaining native
+  writer selectors, fixed-span/mip limits and runtime `not-tested`. Multiple
+  crests support Retail side decals only; do not advertise independent
+  full-shell geometry. No new CLI or fabricated module command is needed.
+- Allocator fixture, both owner gate unions, cave manifest and memory budgets:
+  **unchanged**, since no executable bytes or owner requests changed. Claude
+  need not reserve a cave for these editor operations.
+
+## Bounded gameplay follow-up decisions
+
+B19: first classify the abilities charge consumers and capture normal/hurry-up
+assignment/clock/charge state. Only a proved noncarrier-block consumer justifies
+a native-policy exception; a screen reset change needs a stale-clock witness.
+Use the existing owner's allocation and composition gates if a later change
+is justified. No speculative new hook is handed off.
+
+B13/B5/B6: retest current widescreen and kickoff v3; do not duplicate already
+landed camera, alignment or nearest-threat code. Separate punt muffs from
+kickoff hold jitter. A screen-edge witness must identify the drawing surface.
+
+B8/B20: use the report's phase-specific one-owner matrix and exact size table.
+Compare a matching allocator-only control, keep required XBE/archive pairings,
+and use existing scorebug diagnostic probes. Capture stopped PC/I/O/heap/GPU
+state and frame counters; looping audio is not proof of a music failure.
+No per-owner gameplay fix or runtime performance claim is ready to publish.

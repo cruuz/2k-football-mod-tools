@@ -641,15 +641,17 @@ class ApfStudioFacade:
         editor_transform: Mapping[str, object],
         high_resolution_scale: int,
         native_baseline_png: Path | None = None,
+        crest_asset_index: int | None = None,
         progress: Progress = _noop,
     ) -> Path:
         """Save the original crest art beside the exact staged native mask."""
 
         with self._session_lock:
             progress("Validating full-resolution helmet-logo master", 0, 2)
-            modification = self.require_session().modification(
-                HELMET_CREST_DESIGN_EDIT_ID
-            )
+            session = self.require_session()
+            modification = (session.crest_modification(crest_asset_index)
+                            if crest_asset_index is not None
+                            else session.modification(HELMET_CREST_DESIGN_EDIT_ID))
             if modification is None:
                 raise FacadeError(
                     "Import and place a helmet logo before saving its authoring master."
@@ -657,7 +659,7 @@ class ApfStudioFacade:
             output = save_texture_master_bundle(
                 source_image=source_image,
                 destination=destination,
-                asset_id=HELMET_CREST_DESIGN_EDIT_ID,
+                asset_id=modification.asset_id,
                 editor_target="apf2k8_xbox360-helmet-crest",
                 native_width=self._TEAM_LOGO_PNG_SIZE[0],
                 native_height=self._TEAM_LOGO_PNG_SIZE[1],
@@ -853,9 +855,11 @@ class ApfStudioFacade:
             staged = self._validate_editor_png(
                 supplied_png, (target.width, target.height), target.name
             )
-            self._staged_field_art[target.key] = staged
+            modification = self.require_session().replace_field_art(target.key, staged)
+            self._staged_field_art[target.key] = modification.replacement_path
+            self.last_build = None
             progress(f"{target.name} PNG staged", 1, 1)
-            return staged
+            return modification.replacement_path
 
     def revert_field_art(
         self,
@@ -866,11 +870,24 @@ class ApfStudioFacade:
 
         with self._session_lock:
             if target_key is None:
-                had = bool(self._staged_field_art)
+                from .field_art import FIELD_ART_EDIT_KIND
+                session = self.require_session()
+                ids = [m.asset_id for m in session.modifications if m.kind == FIELD_ART_EDIT_KIND]
+                had = bool(ids)
+                for asset_id in ids:
+                    session.revert(asset_id)
                 self._staged_field_art = {}
+                if had:
+                    self.last_build = None
                 return had
             key = self._field_art_target(target_key).key
-            return self._staged_field_art.pop(key, None) is not None
+            from .field_art import field_art_metadata
+            asset_id, _metadata = field_art_metadata(*key)
+            result = self.require_session().revert(asset_id)
+            self._staged_field_art.pop(key, None)
+            if result:
+                self.last_build = None
+            return result
 
     def build_field_art(
         self,
@@ -886,7 +903,10 @@ class ApfStudioFacade:
             if source is None:
                 raise FacadeError("Load your APF 2K8 game first")
             target = self._field_art_target(target_key)
-            staged = self._staged_field_art.get(target.key)
+            from .field_art import field_art_metadata
+            asset_id, _metadata = field_art_metadata(*target.key)
+            modification = self.require_session().modification(asset_id)
+            staged = modification.replacement_path if modification else None
             if staged is None:
                 raise FacadeError(
                     f"Stage an exact {target.width}x{target.height} {target.name} "

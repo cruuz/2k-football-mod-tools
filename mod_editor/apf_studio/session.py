@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from contextlib import nullcontext
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from io import BytesIO
 import hashlib
 import hmac
@@ -123,6 +123,8 @@ from .project import (
     save_project as write_project_archive,
 )
 from .number_targets import lookup as lookup_number_target
+from .field_art import FIELD_ART_EDIT_KIND, field_art_metadata, validate_field_art_metadata
+from .helmet_crest_design import crest_edit_id, validate_crest_set
 from .player_positions import PlayerPositionsError
 
 
@@ -246,6 +248,10 @@ class ApfSession:
 
     def modification(self, asset_id: str) -> Modification | None:
         return self._modifications.get(asset_id)
+
+    def crest_modification(self, asset_index: int) -> Modification | None:
+        return next((m for m in self.modifications if m.kind == HELMET_CREST_DESIGN_KIND
+                     and m.metadata["crest_asset_index"] == asset_index), None)
 
     @property
     def audio_annotations(self) -> tuple[AudioCueAnnotation, ...]:
@@ -1730,7 +1736,35 @@ class ApfSession:
             replacement_sha256=digest,
             metadata=target_metadata,
         )
-        self._set(HELMET_CREST_DESIGN_EDIT_ID, modification)
+        # Keep the legacy ID for the most recently edited crest so old UI
+        # callers still find it. Earlier teams get stable, slot-qualified IDs.
+        updated = dict(self._modifications)
+        previous = updated.pop(HELMET_CREST_DESIGN_EDIT_ID, None)
+        if previous is not None:
+            old_slot = int(previous.metadata["crest_asset_index"])
+            if old_slot != crest_asset_index:
+                old_id = crest_edit_id(old_slot)
+                updated[old_id] = replace(previous, asset_id=old_id)
+        updated.pop(crest_edit_id(crest_asset_index), None)
+        updated[HELMET_CREST_DESIGN_EDIT_ID] = modification
+        try:
+            validate_crest_set(updated.values())
+        except HelmetCrestDesignError as exc:
+            raise SessionError(str(exc)) from exc
+        self._record_undo()
+        self._modifications = updated
+        return modification
+
+    def replace_field_art(self, target_key: tuple[int, int], supplied_png: Path) -> Modification:
+        try:
+            asset_id, metadata = field_art_metadata(*target_key)
+        except ValueError as exc:
+            raise SessionError(str(exc)) from exc
+        data, digest = self._validated_png(supplied_png, width=metadata["width"],
+                                          height=metadata["height"], contract="field_art")
+        stored = self._store_replacement(asset_id, digest, data)
+        modification = Modification(asset_id, FIELD_ART_EDIT_KIND, stored, digest, metadata)
+        self._set(asset_id, modification)
         return modification
 
     def replace_uniform(self, asset: UniformAsset | str, supplied_png: Path) -> Modification:
@@ -3179,7 +3213,6 @@ class ApfSession:
                 suffix = ".png"
                 if (
                     modification.kind == HELMET_CREST_DESIGN_KIND
-                    and modification.asset_id == HELMET_CREST_DESIGN_EDIT_ID
                 ):
                     data, digest = self._validated_png(
                         modification.replacement_path,
@@ -3241,6 +3274,13 @@ class ApfSession:
                                 "Project full-shell helmet crest is not a semantic "
                                 f"APF region mask: {exc}"
                             ) from exc
+                elif modification.kind == FIELD_ART_EDIT_KIND:
+                    try:
+                        target_metadata = validate_field_art_metadata(modification.asset_id, modification.metadata)
+                    except ValueError as exc:
+                        raise SessionError(str(exc)) from exc
+                    data, digest = self._validated_png(modification.replacement_path,
+                        width=target_metadata["width"], height=target_metadata["height"], contract="field_art")
                 elif modification.kind == "uniform":
                     asset = self.catalog.uniform(modification.asset_id)
                     data, digest = self._validated_png(
@@ -3713,6 +3753,10 @@ class ApfSession:
                         metadata=modification.metadata,
                     )
                 )
+            try:
+                validate_crest_set(validated)
+            except HelmetCrestDesignError as exc:
+                raise SessionError(str(exc)) from exc
             master_play_modifications = {
                 item.asset_id: item
                 for item in validated
