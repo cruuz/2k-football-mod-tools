@@ -8,7 +8,7 @@ refuses pins that do not match the entry for the current `CONTRACT_VERSION`.
 `python -m mod_editor.games pins --release` drops the marker when the version ships.
 
 ## 1.0 (unreleased)
-pins: 39330e2a1c8cc5caafa993a6fa2f54272b4fba7f479d803fdab1dbdd4727c061
+pins: 33282c10675b8cab0b50a30754b114260589d849af93b058401aee0b06f26129
 
 First version. A game is a directory `mod_editor/games/<game>/` with a `game.json`
 manifest, a registry fragment, an allowlist fragment, its own pins and a module-level
@@ -40,7 +40,11 @@ Also in 1.0, for the same reason — the Game Studio shell (RC86, work package A
   are required: `load_manifest` refuses a manifest without them with a sentence naming them.
   `title` and `platform` stay as the long forms. Optional `page_notes` maps a page id to one
   sentence saying why that page has no lane yet. Conformance refuses a module whose own code or
-  manifest spells the composed label out.
+  manifest spells the composed label out. `manifests()` also refuses two modules that compose
+  the *same* label, naming both directories: the label is the only name a person sees in the
+  chooser, and two rows reading alike are indistinguishable without opening one. The guard sits
+  on the manifest path, not on discovery, so a gate fails loudly while an installed copy never
+  loses a studio over a cosmetic clash.
 - **`GameModule.studio_window`** (required, must name one of `windows`) and `GameModule.studio`.
   The chooser now lists one row per module — its studio — and opens that window;
   `python -m mod_editor.games open <game>` opens it with no `--window`.
