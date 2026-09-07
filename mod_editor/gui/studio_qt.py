@@ -418,7 +418,8 @@ class StudioFacade(Protocol):
     ) -> object: ...
 
     def import_team_kit(
-        self, source: Path, progress: ProgressSink
+        self, source: Path, progress: ProgressSink,
+        *, expected_set_selectors: Sequence[str] | None = None,
     ) -> object: ...
 
     def uniform_colors(
@@ -3181,6 +3182,9 @@ class StudioMainWindow(QMainWindow):
         self.team_kit_warning.setWordWrap(True)
         team_kit_header.addWidget(team_kit_title)
         team_kit_header.addWidget(self.team_kit_warning)
+        self.team_kit_receipt_summary = QLabel("No Team Kit import yet.")
+        self.team_kit_receipt_summary.setWordWrap(True)
+        team_kit_header.addWidget(self.team_kit_receipt_summary)
         team_kit_layout.addLayout(team_kit_header)
         team_kit_scope_note = (
             "All 45 socks, elbow pads, gloves, long sleeves, shoes and wristbands of the "
@@ -6922,9 +6926,40 @@ class StudioMainWindow(QMainWindow):
             blocking=True,
         )
 
+    def _team_kit_import_selectors(self) -> tuple[str, ...]:
+        uniform_set = self._selected_set
+        if uniform_set is None:
+            raise ValidationError("Choose a team and style before importing a Team Kit.")
+        scope = str(self.team_kit_scope.currentData() or "BOTH")
+        if scope == "SELECTED":
+            return self._selected_uniform_set_selectors()
+        sides = ("HOME", "AWAY") if scope == "BOTH" else (scope,)
+        return tuple(self.uniform_catalog.uniform_set_for(
+            uniform_set.asset_code, side, uniform_set.variant,
+        ).selector for side in sides)
+
+    def _show_team_kit_import_result(self, result: object, title: str) -> None:
+        message = _result_message(result, "Team Kit import complete.")
+        summary = str(getattr(result, "summary", message))
+        details = str(getattr(result, "details", ""))
+        self._set_status(message)
+        self.team_kit_receipt_summary.setText(summary)
+        self.team_kit_receipt_summary.setToolTip(details)
+        box = QMessageBox(self)
+        box.setWindowTitle(title)
+        box.setIcon(QMessageBox.Information)
+        box.setText(message)
+        box.setDetailedText(details)
+        box.exec_()
+
     def _choose_team_kit_import(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
             self._show_error("Load your NFL 2K5 XISO before importing a Team Kit.")
+            return
+        try:
+            expected_selectors = self._team_kit_import_selectors()
+        except ValidationError as exc:
+            self._show_error(str(exc))
             return
         container = str(self.team_kit_container.currentData() or "folder")
         if container == "zip":
@@ -6946,8 +6981,6 @@ class StudioMainWindow(QMainWindow):
 
         def success(result: object) -> None:
             changed = int(getattr(result, "changed_count", 0))
-            total = int(getattr(result, "asset_count", 0))
-            selectors = tuple(getattr(result, "set_selectors", ()))
             self._set_status(_result_message(
                 result,
                 f"Imported {changed} changed Team Kit components.",
@@ -6959,23 +6992,12 @@ class StudioMainWindow(QMainWindow):
             else:
                 self._refresh_edit_state(rebuild_components=True)
             self.team_kit_imported.emit(changed)
-            QMessageBox.information(
-                self,
-                "Team Kit import complete",
-                (
-                    f"Validated all {total} components for "
-                    f"{', '.join(selectors) or 'the bundled physical set(s)'}.\n\n"
-                    f"{changed} pixel-changed component"
-                    f"{'s were' if changed != 1 else ' was'} staged together as "
-                    "one Undo action.\n\nYour source XISO was not changed."
-                    if changed else
-                    f"Validated all {total} components. Their decoded pixels match "
-                    "the export, so nothing was staged and no Undo action was added."
-                ),
-            )
+            self._show_team_kit_import_result(result, "Team Kit import complete")
 
         self._start_task(
-            lambda progress: self.facade.import_team_kit(source, progress),
+            lambda progress: self.facade.import_team_kit(
+                source, progress, expected_set_selectors=expected_selectors,
+            ),
             success,
             label="Validating and importing the complete Team Kit",
             blocking=True,
@@ -7043,7 +7065,7 @@ class StudioMainWindow(QMainWindow):
             progress("Splitting the 0–9 sheet", 0, 12)
             outputs = split_digit_sheet(source, targets, orientation=orientation)
             with tempfile.TemporaryDirectory(prefix="2k5-digit-sheet-") as temporary:
-                root = Path(temporary)
+                root = Path(temporary).resolve(strict=True)
                 kit = root / "team-kit"
                 self.facade.export_team_kit_sets(
                     (uniform_set.selector,),
@@ -7084,7 +7106,8 @@ class StudioMainWindow(QMainWindow):
                     )
                 progress("Validating all ten digits as one import", 11, 12)
                 result = self.facade.import_team_kit(
-                    kit, lambda _label, _completed, _total: None
+                    kit, lambda _label, _completed, _total: None,
+                    expected_set_selectors=(uniform_set.selector,),
                 )
             progress("Digit sheet imported", 12, 12)
             return result
@@ -7098,14 +7121,7 @@ class StudioMainWindow(QMainWindow):
             else:
                 self._refresh_edit_state(rebuild_components=True)
             self.team_kit_imported.emit(changed)
-            QMessageBox.information(
-                self,
-                "Digit sheet import complete",
-                f"{label} for {uniform_set.selector} were split into ten exact "
-                f"game slots. {changed} changed digit"
-                f"{'s were' if changed != 1 else ' was'} staged as one Undo action.\n\n"
-                "The source XISO was not changed.",
-            )
+            self._show_team_kit_import_result(result, "Digit sheet import complete")
 
         self._start_task(
             operation,

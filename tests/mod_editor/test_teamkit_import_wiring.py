@@ -20,7 +20,10 @@ from mod_editor.studio.uniform_bundle import TeamKitBundleImportResult, TeamKitC
 
 def proposed_source():
     path = "mod_editor/gui/studio_qt.py"
-    source = (ROOT / path).read_text().splitlines(True)
+    text = (ROOT / path).read_text()
+    if "def _show_team_kit_import_result(" in text and "def _team_kit_import_selectors(" in text:
+        return text  # the proposal is wired on this stack: execute the shipped source itself
+    source = text.splitlines(True)
     lines = (ROOT / "tests/fixtures/discord_teamkit_import_wiring.patch").read_text().splitlines(True)
     assert lines[:2] == [f"--- a/{path}\n", f"+++ b/{path}\n"]
     output, cursor, i = [], 0, 2
