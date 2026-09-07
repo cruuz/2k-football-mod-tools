@@ -2576,7 +2576,7 @@ class RosterEditorPanel(QWidget):
             path, _filter = QFileDialog.getSaveFileName(self, "Export age shift receipt", "age-shift.json", "JSON (*.json)")
         if path:
             Path(path).write_text(json.dumps({"schema": "nfl2k5_roster_age_shift_receipts/v1",
-                                             "receipts": self.age_shift_receipts}, indent=2) + "\n", encoding="utf-8")
+                                             "receipts": self.age_shift_receipts}, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     def advance_years_pro(self, visible_only: bool = False) -> int:
         if self.document is None:

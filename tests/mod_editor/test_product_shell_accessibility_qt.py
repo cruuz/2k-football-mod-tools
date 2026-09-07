@@ -122,7 +122,7 @@ class ProductShellAccessibilityTests(unittest.TestCase):
                 self.two_k5._text_roster_panel.tabs.tabText(index)
                 for index in range(self.two_k5._text_roster_panel.tabs.count())
             ],
-            ["All Text"],
+            ["All Text", "Modern mode names"],
         )
 
     def test_shell_status_and_build_actions_have_screen_reader_copy(self) -> None:

@@ -247,8 +247,8 @@ def prepare_save(source, output, **options):
         directory = Path(temp).resolve() / "result"
         directory.mkdir()
         signed = container.write(directory / "MyCareer.zip", payload)
-        (directory / "MyCareer.json").write_text(json.dumps(setup, indent=2) + "\n", encoding="utf-8")
-        (directory / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+        (directory / "MyCareer.json").write_text(json.dumps(setup, indent=2) + "\n", encoding="utf-8", newline="\n")
+        (directory / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8", newline="\n")
         require(read_setup(directory / "MyCareer.json") == read_setup(setup), "MyCareer setup readback failed")
         os.replace(directory, output)
     return {**receipt, "output": str(output), "signed": signed["signed"]}

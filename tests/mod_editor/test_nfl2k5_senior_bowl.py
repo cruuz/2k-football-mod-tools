@@ -217,7 +217,8 @@ class PublicTests(unittest.TestCase):
         from mod_editor.capabilities.validate_registry import validate_data
         registry = json.loads((ROOT / "mod_editor/capabilities/registry.v1.json").read_text())
         row = json.loads((ROOT / "docs/mod_editor/nfl2k5_senior_bowl_capability.json").read_text())[0]
-        registry["capabilities"] = sorted(registry["capabilities"] + [row], key=lambda r: r["id"])
+        if not any(r["id"] == row["id"] for r in registry["capabilities"]):  # merged in beta 62
+            registry["capabilities"] = sorted(registry["capabilities"] + [row], key=lambda r: r["id"])
         validate_data(registry, check_files=False)
         for p in (row["backend"]["module"], *row["evidence"]):
             self.assertTrue((ROOT / p).is_file(), p)

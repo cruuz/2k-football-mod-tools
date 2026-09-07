@@ -72,7 +72,7 @@ def compile_bundle(gltf: Path, index: Path, inventory: Path, destination: Path) 
             # Remove paths to disposable staged PNGs from the durable receipt.
             for row in report.get('input_pngs', []):
                 row.pop('path', None)
-            (destination/'receipt.json').write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')
+            (destination/'receipt.json').write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8', newline='\n')
         except BaseException:
             shutil.rmtree(destination)
             raise

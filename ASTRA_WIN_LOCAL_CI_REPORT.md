@@ -132,6 +132,9 @@ here only for readability.
 | `test_ux_open_disc_hook_qt.py` | LEAN CHECKOUT | L17: `FileNotFoundError: [WinError 3] Path not found: '…/reports/assets/nfl2k5_team_select_card_inventory.json'` |  |
 | `test_visual_export_and_preview.py` | LEAN CHECKOUT | L28: `mod_editor.core.nfl2k5_extended_visual_catalog.ExtendedVisualCatalogError: Player portrait report is missing: …/reports/assets/nfl2k5_player_portrait_compatibility.json` |  |
 | `test_workspace_recovery.py` | WINE GAP | L9: `AssertionError: ValidationError not raised` | symlink creation succeeds but Wine cannot stat or identify the resulting link. |
+| `test_2k5_uniform_equipment_export.py` | UNKNOWN | UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 110708 |  |
+| `test_disc_memory_budget.py` | WINE GAP | AssertionError: 0 == 0 |  |
+| `test_music_panel_qt.py` | WINE GAP | mod_editor.core.nfl2k5_audio_source_fingerprints.AudioSourceFingerprintError: Private source-audio inventory changed during publication |  |
 
 ## Precise Wine skips
 

@@ -1090,7 +1090,9 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _toggle_boxes(self) -> tuple[QCheckBox, ...]:
-        return tuple(box for box in self.findChildren(QCheckBox)
+        # Feature toggles only. Sub-option preferences that default on (caps for everyone
+        # in practice, the hi-res family list) must not make a fresh panel look customised.
+        return tuple(box for box in self._boxes().values()
                      if box not in (self.realistic_check, self.arc_by_distance_check))
 
     def apply_preset(self, name: str) -> dict[str, list[str]]:

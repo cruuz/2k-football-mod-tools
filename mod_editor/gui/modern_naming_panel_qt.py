@@ -99,6 +99,8 @@ class ModernNamingPanel(QWidget):
                 f"MyCareer menu: {labels['menu_row']}. Title: {labels['screen_title']}. "
                 "The career feature installs those screens. Practice, Tournament, Season, "
                 "Coach's Desk and The Crib keep their names. Team Create keeps its name; MyTeam is a card mode.")
-        except (OSError, ValueError, KeyError, TypeError) as exc:
+        except (OSError, ValueError, KeyError, TypeError, RuntimeError) as exc:
+            # RuntimeError: the editing backend is not connected (catalog-only builds and
+            # the shell tests); a Qt slot must show the reason instead of aborting.
             self.model.set_rows([])
             self.summary.setText(f"Modern names unavailable: {exc}")

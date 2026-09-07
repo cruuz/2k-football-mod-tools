@@ -440,7 +440,7 @@ def main(argv=None) -> int:
                                         manifest_path=args.manifest)
         rendered = json.dumps(result, indent=2, ensure_ascii=False) + "\n"
         if args.receipt:
-            args.receipt.write_text(rendered, encoding="utf-8")
+            args.receipt.write_text(rendered, encoding="utf-8", newline="\n")
         print(rendered, end="")
         return 1 if isinstance(result, dict) and result.get("status") == "foreign" else 0
     except (OSError, ValueError, IndexError, struct.error) as exc:

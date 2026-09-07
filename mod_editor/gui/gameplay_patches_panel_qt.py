@@ -679,7 +679,7 @@ class GameplayPatchesPanel(QWidget):
             if not enabled:
                 self.checks["music_userlist"].setChecked(False)
         settings = (self._state or {}).get("momentum_settings") or {}
-        if settings.get("status") in ("applied", "foreign"):
+        if settings.get("status") in ("applied", "foreign") and getattr(self, "momentum_level", None) is not None:
             self.momentum_level.setEnabled(False)
         if settings.get("status") in ("applied", "foreign"):
             for key in ("momentum", "momentum_contact", "momentum_collisions"):
