@@ -539,8 +539,18 @@ def bump_rc(plan: Plan, old: str, new: str, section_path: Path, status_heading: 
     plan.edit(GETTING_STARTED, [(f"# 2K5 Mod Studio v1.0 RC{old} — Getting Started", f"# 2K5 Mod Studio v1.0 RC{new} — Getting Started")])
     plan.edit(STATUS, [
         (f"# 2K5 Mod Studio — v1.0 RC{old} Release Status", f"# 2K5 Mod Studio — v1.0 RC{new} Release Status"),
-        (f"Source/UI versions are **2K5 RC{old}** and **APF alpha.84**.", f"Source/UI versions are **2K5 RC{new}** and **APF alpha.84**."),
     ])
+    # The banner sentence has been worded two ways across releases -- "Source/UI versions are
+    # **2K5 RCnn** and **APF alpha.84**." and "Source/UI version is **2K5 RCnn**." -- so take
+    # whichever the file actually uses, and refuse when neither appears exactly once so a future
+    # rewording fails loudly instead of being silently skipped.
+    status_text = plan.read(STATUS)
+    banners = [f"Source/UI versions are **2K5 RC{old}** and **APF alpha.84**.",
+               f"Source/UI version is **2K5 RC{old}**."]
+    present = [b for b in banners if status_text.count(b) == 1]
+    if len(present) != 1:
+        raise ApplyError(f"{STATUS}: expected exactly one known 'Source/UI version' banner naming RC{old}")
+    plan.edit(STATUS, [(present[0], present[0].replace(f"RC{old}", f"RC{new}"))])
     changelog = plan.read(CHANGELOG)
     head = f"## v1.0 RC{old} "
     if changelog.count(head) != 1:

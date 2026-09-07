@@ -1,6 +1,41 @@
 # 2K5 Mod Studio — Product Changelog
 
-## v1.0 RC88 — PS2 Madden 09 Studio: every page answered (unreleased)
+## v1.0 RC87 — eight PlayStation 2 studios on top of Beta 62 (unreleased)
+
+- **Eight PlayStation 2 studios.** *PS2 NCAA 09*, *PS2 MVP Baseball 2005*, *PS2 NFL Blitz 2002*,
+  *PS2 NFL Blitz 2003*, *PS2 NFL Street* and *PS2 NFL Street 3* join *PS2 NFL 2K5* and *PS2 Madden 09*. Every one of
+  the eight answers all fourteen shell pages, and the registry carries **180 rows across ten game/platform targets**,
+  of which **98 belong to the eight PS2 studios: 65 write, 17 export, 14 inspect, one is a witnessed writer and one is
+  declared unknown**. Each studio's page under `docs/product/` says what it edits, what stays read-only and why.
+- **Three container families read that could not be read before.** The EA archive-and-image stack behind MVP Baseball,
+  the Midway pack behind the Blitz discs, and the stored-archive-plus-RenderWare stack behind the Blitz and Street
+  titles. Their readers live in `mod_editor/games/_formats/` and are shared, so a further disc in any of those families
+  is a container map and a field map rather than new engineering.
+- **The lane bases are the reason a studio is now small.** `mod_editor/games/_lanes/` carries the record lane, the
+  texture lane, the text-bank lane, the container inventory, the disc walk, the audio export pair and the preload-cache
+  coherence that every EA title needs. The two NFL Street studios instantiate them and add no lane shape of their own.
+- **Every writer is proved offline, and none has been booted.** A build writes a **new** image, never the source; a
+  verifier that shares no code with the writer re-reads the destination's own bytes and requires every changed byte
+  inside a declared range with everything else identical. That is the whole claim. **One row on the PS2 side is
+  `runtime-proved`** — NFL 2K5's exact-slot audio replacement, witnessed before this release — and the other 65 writers
+  are `offline-writer-proved` and await a boot.
+- **MVP Baseball's uniforms became editable.** The kit a player wears is an ordinary indexed image in `MODELS.BIG`;
+  21,767 of that archive's 30,535 images are writable today, including the whole low-detail kit, both helmets, the cap,
+  sleeves, gloves, wristband, laces and all 16,110 nameplate letters and squad-number digits. The high-detail jersey,
+  trousers, shoes, chest and shin pieces and every face are a block codec the reader does not decode, and the page says
+  so with counts.
+- **Research documentation is no longer carried in this repository.** The format specifications, schema censuses and
+  measurement narratives that were in RC88 have been removed; each studio's page is a capability summary for someone
+  holding their own disc. Nothing that ships or runs was removed with them.
+- **Upstream Beta 62 is merged, and the registry is one file again.** Eighty-four commits of upstream work — the APF
+  and Xbox NFL 2K5 lanes, the hi-res texture families, the cave and XBE gates and the stadium tooling — sit beside the
+  eight PS2 studios. Xbox NFL 2K5 grows from 45 rows to 70; the registry carries **205 rows over ten game/platform
+  targets**; every PS2 studio keeps its conformance count unchanged.
+- **Version numbering follows upstream from here.** This fork had been incrementing its own release candidates
+  independently, so RC85 through RC88 exist twice in this changelog with different content. Ours are marked
+  `(ps2-lane fork)`; this entry and everything after it continue upstream's line.
+
+## v1.0 RC88 (ps2-lane fork) — PS2 Madden 09 Studio: every page answered (unreleased)
 ## v1.0 RC86 — read option with modern controls, MyCareer and MyNFL naming, widescreen v3, the play rules library, 82 stadiums, roster arena growth, the scaled-out executable space and twenty more experimental owners (2026-09-06)
 
 Beta 62 was built by GPT-6 Astra under Claude's review, one bounded session per feature, three integration sessions on
@@ -191,7 +226,7 @@ If you play one thing from this beta, make it the read option (tick it on the Ex
   instead of moving the one that was there — leaving pins on 86, 89 and 99 rows that no file carries any more, and a
   truncated paragraph in the getting-started guide. The live numbers are pinned once each.
 
-## v1.0 RC87 — PS2 Madden 09 Studio (unreleased)
+## v1.0 RC87 (ps2-lane fork) — PS2 Madden 09 Studio (unreleased)
 
 - **A second studio.** *Select other games…* now lists two rows. **PS2 Madden 09 Studio** works off your own Madden
   NFL 09 (PlayStation 2) disc image, `SLUS-21770` — the retail USA disc or the community's **Deluxe** rebuild, which
@@ -273,7 +308,7 @@ If you play one thing from this beta, make it the read option (tick it on the Ex
   replace a packed member. Both limits are written down in `docs/product/MADDEN09_PS2_MODULE.md` rather than worked
   around.
 
-## v1.0 RC86 — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container (unreleased)
+## v1.0 RC86 (ps2-lane fork) — one studio per game: the Game Studio shell, PS2 uniform art off the disc, the EA container (unreleased)
 
 - **Select other games… lists studios**, one row per game, labelled console, game, year: **PS2 NFL 2K5 Studio**. Open it
   and the game's studio appears; the Xbox studio's File menu keeps that entry and the chooser, and the three PS2 side
@@ -293,7 +328,7 @@ If you play one thing from this beta, make it the read option (tick it on the Ex
   the PlayStation 2 Madden / NCAA disc container read and written, LZH1 and RLE1
   members decoded. The substrate for **PS2 Madden 09 Studio** in the next release.
 
-## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
+## v1.0 RC85 (ps2-lane fork) — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
 
 - **PS2 NFL 2K5 Studio.** The PS2 disc window is now named the way every game's studio will be, console, game, year:
   File ▸ PS2 NFL 2K5 Studio…, and it is the first window **Select other games…** offers for the PS2 module (it was

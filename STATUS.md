@@ -1,8 +1,10 @@
-# 2K5 Mod Studio — v1.0 RC88 Release Status
+# 2K5 Mod Studio — v1.0 RC87 Release Status
+
+## Beta 65 (unreleased) — Eight PS2 studios on upstream Beta 62; every writer offline-proved, none booted
 
 ## Beta 64 (unreleased) — PS2 Madden 09 Studio: every page answered
 
-Source/UI version is **2K5 RC88**. Everything below is offline-proved or read-only; **nothing here has been booted**,
+Source/UI version is **2K5 RC87**. Everything below is offline-proved or read-only; **nothing here has been booted**,
 and no Madden 09 row is `runtime-proved`.
 
 - **Fourteen pages, fourteen rows, eleven of them writing.** *PS2 Madden 09 Studio* now carries a lane on **eleven of
