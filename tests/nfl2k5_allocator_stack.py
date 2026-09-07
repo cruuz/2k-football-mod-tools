@@ -150,12 +150,18 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     if any(r.detail.split(":", 1)[0] not in ("nfl2k5_dynamic_kickoff", kickoff.OWNER)
            for r in manifest.overlaps(va, va + len(original))):
         raise AssertionError("kickoff separation overlaps a different owner")
-    code, data = kickoff._sites(allocated)
-    _, labels = kickoff.code_for(legacy_kickoff._settings(), code["va"], data["va"])
-    if XbeImage(allocated).read(va, len(original)) != legacy_kickoff._hook_bytes("separation", labels):
-        raise AssertionError("kickoff separation owner hook differs")
-    spans.append(dict(start=hex(va), end=hex(va + len(original)), size=len(original),
-                      owner=kickoff.OWNER, basis="test-only pinned live edit: separation"))
+    installed = XbeImage(allocated).read(va, len(original))
+    if kickoff.status(allocated) == "applied":
+        code, data = kickoff._sites(allocated)
+        _, labels = kickoff.code_for(legacy_kickoff._settings(), code["va"], data["va"])
+        if installed != legacy_kickoff._hook_bytes("separation", labels):
+            raise AssertionError("kickoff separation owner hook differs")
+        spans.append(dict(start=hex(va), end=hex(va + len(original)), size=len(original),
+                          owner=kickoff.OWNER, basis="test-only pinned live edit: separation"))
+    elif installed != original and legacy_kickoff.status(allocated) != "applied":
+        # A union without either kickoff owner (camera-only seeds, for example)
+        # must still carry the retail bytes at the separation hook.
+        raise AssertionError("kickoff separation changed without a kickoff owner")
     document = {**manifest.document, "spans": spans, "allocator_layout": layout,
                 "model": "Test-only allocation projection plus pinned kickoff separation live hook"}
     return ReservationManifest(document, XbeImage(retail))
