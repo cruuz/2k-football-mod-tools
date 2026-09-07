@@ -1,3 +1,266 @@
+# r63 Scorebar Studio: an easy scorebug editor page (2026-09-07)
+
+Branch `fable/r63-scorebug-studio`, base `b2948b8`. **EXPERIMENTAL / UNWITNESSED.**
+Delivered outside every protected file: the document model
+`mod_editor/core/nfl2k5_scorebug_author.py`, the page
+`mod_editor/gui/scorebug_studio_panel_qt.py`, the preset registry
+`data/nfl2k5_scorebug_studio_presets.json`, the guide
+`docs/mod_editor/scorebug_studio.md` with `docs/mod_editor/scorebug_studio/*.png`,
+the capability object `docs/mod_editor/nfl2k5_scorebug_studio_capability.json`,
+the tests `tests/mod_editor/test_nfl2k5_scorebug_author.py` and
+`tests/mod_editor/test_scorebug_studio_panel_qt.py`, and
+`FABLE_SCOREBUG_STUDIO_REPORT.md`. The page writes a template folder; the
+existing static `scorebug` option and `scorebug_folder` field install it. Nothing
+below adds an owner, a cave, a preset flag or a BuildPlan field. The protected
+`nfl2k5_scorebug_template.py`, `nfl2k5_scorebug_ingame.py`,
+`nfl2k5_scorebug_resources.py` and `nfl2k5_scorebug_exact.py` are untouched.
+
+## Page registration in protected `mod_editor/gui/studio_qt.py`
+
+Naming: the sidebar row and header title are **`Scorebar`** (plain word, no
+star until Noah has witnessed a Studio-made bar in-game, no em dashes). The page
+title inside is "Scorebar Studio".
+
+1. Import, beside the `MyCareerPanel` import (line 129):
+
+   ```python
+   from mod_editor.gui.scorebug_studio_panel_qt import ScorebugStudioPanel
+   ```
+
+2. Navigation row, directly after the `career_item` block and before
+   `build_item` (lines 2545 to 2549):
+
+   ```python
+   scorebar_item = QListWidgetItem("  Scorebar")
+   scorebar_item.setData(Qt.UserRole, "scorebar")
+   scorebar_item.setSizeHint(QSize(210, 44))
+   scorebar_item.setToolTip("Design the in-game scorebar: pick a preset, recolour each part or use your "
+                            "own pictures, then hand the folder to Build. Experimental and unwitnessed.")
+   self.navigation.addItem(scorebar_item)
+   ```
+
+3. Page, directly after
+   `self.pages.addWidget(self._page_scroll_host(self._my_career_panel))` (line 2833)
+   and before `self._build_share_page = self._build_build_share_page()`:
+
+   ```python
+   self._scorebar_panel = ScorebugStudioPanel()
+   self._scorebar_panel.folder_chosen.connect(self._scorebar_folder_chosen)
+   self.pages.addWidget(self._page_scroll_host(self._scorebar_panel))
+   ```
+
+   Row order and page order must match: the shell connects
+   `navigation.currentRowChanged` to `pages.setCurrentIndex`.
+
+4. Handler, beside `_my_career_setup_ready` (line 8450). The page has already
+   saved and compiled the folder before it emits:
+
+   ```python
+   def _scorebar_folder_chosen(self, folder: str) -> None:
+       """Scorebar Studio saved a folder: fill the Build tab's scorebar folder field."""
+       if self._build_panel is None:
+           return
+       self._build_panel.scorebug_folder_field.setText(folder)
+       self._capture_music_build_settings()
+       self._mark_workspace_changed()
+       self._set_status("Scorebar folder handed to Build. Tick Experimental ESPN scorebar on the Build tab.")
+   ```
+
+   Do not tick `scorebug_check` from here. It is an Experimental-only option with
+   `needs_image=True` and its own preset gating; the page's own result text tells
+   the user to tick it. The field keeps its text while disabled and `_plan()`
+   already passes it only when the static option is on and the diagnostic runtime
+   is off (build_panel_qt.py lines 1281 and 1473).
+
+5. `_update_header_title` (line 8613): the special titles tuple becomes
+   `("Rosters", "Models", "Animations", "Create a Play", "MyCareer", "Scorebar", "Build & Share")`.
+
+6. `_refresh_entered_page`, `_refresh_action_bar_for_page` and the source hooks
+   need nothing: the page reads no disc and holds no source.
+
+7. Tests that pin the row order, to update in the same commit:
+   `tests/mod_editor/test_studio_shell_layout_qt.py::test_navigation_rows_and_pages_line_up`
+   expects `1 + len(PRODUCT_CATEGORY_ORDER) + 7` rows, `rows[-7] == "★ Rosters"`,
+   `rows[-6] == "★ Models"`, `rows[-5] == "Animations"`, `rows[-4] == "★ Create a Play"`,
+   `rows[-3] == "MyCareer"`, `rows[-2] == "Scorebar"`, `rows[-1] == "★ Build & Share"`;
+   `test_header_title_follows_every_row` follows from step 5. Add to
+   `tests/mod_editor/test_beta62_integration3_qt.py` the same shape as the
+   MyCareer check:
+
+   ```python
+   StudioMainWindow._scorebar_folder_chosen(host, '/tmp/my scorebar')
+   self.assertEqual(self.panel.scorebug_folder_field.text(), '/tmp/my scorebar')
+   self.assertFalse(self.panel.scorebug_check.isChecked())
+   ```
+
+   (`host` needs `_set_status`; a `lambda *_: None` on the namespace is enough.)
+
+## Protected `mod_editor/gui/build_panel_qt.py` and `mod_build.py`
+
+No edits. `scorebug_folder_field` (line 682, accessible name "Scorebar artwork
+folder") already feeds `BuildPlan.scorebug_folder`, and the v10 section above
+describes the preflight through `nfl2k5_scorebug_ingame.image_plan`. A folder
+saved by the page is a complete `nfl2k5_scorebug_template/v1` folder
+(`layout.json` copied from the preset's contract, `1x/`, `2x/`, `images/`,
+`scorebar_studio.json`); the extra two entries are ignored by the compiler.
+
+## Protected `packaging/release-allowlist.txt`
+
+Add these exact lines (deduplicate):
+
+```text
+mod_editor/core/nfl2k5_scorebug_author.py
+mod_editor/gui/scorebug_studio_panel_qt.py
+data/nfl2k5_scorebug_studio_presets.json
+docs/mod_editor/nfl2k5_scorebug_studio_capability.json
+docs/mod_editor/scorebug_studio.md
+```
+
+The presets reference only `docs/scorebug_template/1x/left_mark.png` and
+`docs/scorebug_template/2x/left_mark.png`, both already allowlisted and in the
+reviewed PNG catalog. The guide's ten PNGs under `docs/mod_editor/scorebug_studio/`
+are new authored art (drawn field, stand-in glyphs, page screenshots; no retail
+pixels). To ship them, add the ten lines
+`docs/mod_editor/scorebug_studio/<name>.png` to the allowlist and merge the
+block below into `packaging/nfl2k5_scorebug_template_pngs.json` (`files`), then
+recompute `SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256` in
+`packaging/check_2k5_mod_studio_release.py` with `sha256sum` over the catalog
+file. Neither file is protected, but the parallel exact-bar session adds to the
+same catalog, so this merge is left to the integrator. If the PNGs are not
+shipped, leave the guide line out as well rather than ship broken image links.
+
+```json
+{
+  "docs/mod_editor/scorebug_studio/page_fable_down.png": {
+    "size": 274311,
+    "sha256": "932f31ce9ae3e50544a969b4fe5ead9e0a9cec2d05762c6e7e044d2f6f772d63",
+    "width": 1601,
+    "height": 936
+  },
+  "docs/mod_editor/scorebug_studio/page_plain_wide_teams.png": {
+    "size": 240304,
+    "sha256": "ef131697031d7e97e0dea30216f07bdf79263f14c7d55c0fd3175ccccf6b380d",
+    "width": 1601,
+    "height": 936
+  },
+  "docs/mod_editor/scorebug_studio/page_reference.png": {
+    "size": 246888,
+    "sha256": "3ee49a21ac494e42ffdc07f39eaf06dceab5db3bcaa3e3ddb918466d262b275a",
+    "width": 1601,
+    "height": 880
+  },
+  "docs/mod_editor/scorebug_studio/preset_fable_espn.png": {
+    "size": 23475,
+    "sha256": "a50d152fa1a84c36f9edfe2f2c439982d2512a4c0ba4737d666c524524aba770",
+    "width": 640,
+    "height": 480
+  },
+  "docs/mod_editor/scorebug_studio/preset_plain_dark.png": {
+    "size": 21725,
+    "sha256": "5da45d6baa8fd974bc03257da76612a96dde750f9f172788ddc3e78a3bae6aa6",
+    "width": 640,
+    "height": 480
+  },
+  "docs/mod_editor/scorebug_studio/preset_reference_v10.png": {
+    "size": 22942,
+    "sha256": "882e4692582afcefbe7497b290094a7d559a54b88411d9ffb12ee864b0927f90",
+    "width": 640,
+    "height": 480
+  },
+  "docs/mod_editor/scorebug_studio/preset_retail_like.png": {
+    "size": 20307,
+    "sha256": "b3765eb2092b6a0cefca0b82c7e66c80a7d3fc09e5fbcdfc2a2d2c4a22b1b4c5",
+    "width": 640,
+    "height": 480
+  },
+  "docs/mod_editor/scorebug_studio/states_fable.png": {
+    "size": 40109,
+    "sha256": "1b5095f2e4368a88dbd91808a5551a3b09afc9135c059873537990b940593e12",
+    "width": 1000,
+    "height": 560
+  },
+  "docs/mod_editor/scorebug_studio/team_preview_NO_MIA.png": {
+    "size": 8508,
+    "sha256": "d89e8dade06b7dc31842005c611c95f61ba009672f8df77b878471a8a85f4dce",
+    "width": 1000,
+    "height": 140
+  },
+  "docs/mod_editor/scorebug_studio/widescreen_fable.png": {
+    "size": 32447,
+    "sha256": "4b738bc82986e71a6b0ea6da8cbdc707d67d21d9889437abbb0b09ac48192113",
+    "width": 854,
+    "height": 480
+  }
+}
+```
+
+
+## Protected `packaging/check_2k5_mod_studio_runtime.py`
+
+Add `"mod_editor.core.nfl2k5_scorebug_author"` beside
+`"mod_editor.core.nfl2k5_scorebug_template"` and
+`"mod_editor.gui.scorebug_studio_panel_qt"` beside `"mod_editor.gui.music_panel_qt"`
+in the explicit product module list. Both use only Pillow and PyQt5 (the model
+imports no Qt, numpy, Unicorn or network). After the existing Music panel
+exercise (which already has `qt_app` and `tempfile` in scope), add:
+
+```python
+    studio = modules["mod_editor.core.nfl2k5_scorebug_author"]
+    require([item.id for item in studio.presets()] == ["reference_v10", "fable_espn", "plain_dark", "retail_like"],
+            "Scorebar Studio preset registry changed")
+    with tempfile.TemporaryDirectory() as scratch:
+        receipt = studio.Document.from_preset("plain_dark").save_folder(Path(scratch) / "bar")
+        require(receipt["slot"]["fits"] and receipt["template"]["colours"] <= 128,
+                "Scorebar Studio export no longer fits the scorebar slot")
+    scorebar_page = modules["mod_editor.gui.scorebug_studio_panel_qt"].ScorebugStudioPanel()
+    require(scorebar_page.layer_list.count() == 8 and not scorebar_page.is_dirty, "Scorebar Studio page is not idle")
+    scorebar_page.close()
+    scorebar_page.deleteLater()
+    qt_app.processEvents()
+```
+
+## Capability registry object
+
+Merge the single object in `docs/mod_editor/nfl2k5_scorebug_studio_capability.json`
+into protected `mod_editor/capabilities/registry.v1.json`, in sorted id order
+between `nfl2k5.scorebug_presentation.shield_espn_runtime` and
+`nfl2k5.scorebug_presentation.template`. Its id is
+`nfl2k5.scorebug_presentation.studio`, surface `scorebug_presentation` (the
+existing presentation surface, so it lands on the Presentation page's cards),
+classification `offline-writer-proved`, runtime `not-tested`, gui `expose: true`,
+`default_enabled: false`, `mode: edit`. Validated here with
+`validate_data(check_files=False)` on a sorted copy: 110 capabilities, valid.
+`check_files=True` fails in this worktree only on an older row's
+`docs/research/apf_audio.md` (gitignored research), not on this object; every
+file this object names exists after this commit. Then run
+`python3 -m unittest tests.mod_editor.test_validate_all_capabilities tests.mod_editor.test_no_capability_is_invisible`.
+
+## Provider pins
+
+No repin is required. `mod_editor/core/providers.py` pins the build bundle;
+neither new module is part of it, and `nfl2k5_scorebug_template.py` (pin
+`368ceb6e…`) is unchanged, so the Studio's folders flow through the already
+pinned compiler. If Claude decides to pin the model module because the runtime
+closure imports it, add
+`"mod_editor/core/nfl2k5_scorebug_author.py": "<sha256>"` to `module_pins` and
+run `python3 packaging/repin.py --apply`; `repin.py` recomputes it from the
+committed bytes.
+
+## After wiring, run
+
+```sh
+QT_QPA_PLATFORM=offscreen python3 -m unittest \
+  tests.mod_editor.test_nfl2k5_scorebug_author \
+  tests.mod_editor.test_scorebug_studio_panel_qt \
+  tests.mod_editor.test_nfl2k5_scorebug_template \
+  tests.mod_editor.test_studio_shell_layout_qt \
+  tests.mod_editor.test_beta62_integration3_qt \
+  tests.mod_editor.test_validate_all_capabilities \
+  tests.mod_editor.test_no_capability_is_invisible \
+  tests.mod_editor.test_shipped_tools_posix_only
+python3 packaging/check_2k5_mod_studio_runtime.py
+```
+
 ## r63-scorebug-exact2 integration, 2026-09-07
 
 This section supersedes contradictory default-selection statements in the

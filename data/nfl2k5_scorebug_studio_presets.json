@@ -1,0 +1,65 @@
+{
+  "schema": "nfl2k5_scorebug_studio_presets/v1",
+  "note": "Scorebar Studio presets. A 'folder' preset opens any valid nfl2k5_scorebug_template/v1 folder as picture layers; add one with a JSON row only. A 'paint' preset is simple colours, blends, rounding and borders for the eight fixed cells, with optional pictures listed by repository-relative path. Colours are #RRGGBBAA. Blend angle 0 runs left to right and 90 top to bottom. Rounding and border widths are atlas tile pixels.",
+  "presets": [
+    {
+      "id": "reference_v10",
+      "title": "Reference (v10)",
+      "kind": "folder",
+      "folder": "docs/scorebug_template",
+      "summary": "The shipped repaintable ESPN scorebar. Every part opens as a picture you can keep or replace.",
+      "note": "Saving it back unchanged is pixel for pixel identical. Choose Use colours instead on a part to repaint it with the controls."
+    },
+    {
+      "id": "fable_espn",
+      "title": "Fable ESPN template",
+      "kind": "paint",
+      "summary": "The Fable broadcast design's colours on the game's fixed cells: a near-black body, dark team blocks, a red down banner over a light clock strip.",
+      "note": "The Fable design's own cell geometry cannot fit the fixed atlas, so this preset carries its palette and shapes with the reference mark, not its exact pixels.",
+      "layers": {
+        "frame": {"fill": "#101217FF", "gradient": {"stops": ["#1B1F27FF", "#0E1015FF"], "angle": 90}, "radius": 1, "border": {"colour": "#2C313AFF", "width": 1}, "opacity": 100, "image": null, "sample_text": null},
+        "left_mark": {"fill": "#00000000", "gradient": null, "radius": 0, "border": null, "opacity": 100, "image": {"fit": "tile", "clip": false, "crop": null, "name": "left_mark.png", "sources": [{"scale": "1x", "file": "docs/scorebug_template/1x/left_mark.png"}, {"scale": "2x", "file": "docs/scorebug_template/2x/left_mark.png"}]}, "sample_text": null},
+        "away_block": {"fill": "#131419FF", "gradient": {"stops": ["#1C2028FF", "#101217FF"], "angle": 90}, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": "NO"},
+        "away_score": {"fill": "#0B0E13FF", "gradient": null, "radius": 1, "border": null, "opacity": 100, "image": null, "sample_text": "0"},
+        "home_block": {"fill": "#131419FF", "gradient": {"stops": ["#1C2028FF", "#101217FF"], "angle": 90}, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": "MIA"},
+        "home_score": {"fill": "#0B0E13FF", "gradient": null, "radius": 1, "border": null, "opacity": 100, "image": null, "sample_text": "0"},
+        "down": {"fill": "#D0021BFF", "gradient": {"stops": ["#E0142DFF", "#B8021AFF"], "angle": 90}, "radius": 1, "border": {"colour": "#8E0212FF", "width": 1}, "opacity": 100, "image": null, "sample_text": "1st & 10"},
+        "clock_quarter": {"fill": "#EBEEF2FF", "gradient": {"stops": ["#FFFFFFFF", "#EBEEF2FF"], "angle": 90}, "radius": 2, "border": {"colour": "#747A82FF", "width": 1}, "opacity": 100, "image": null, "sample_text": "1st|13:10|:12"}
+      }
+    },
+    {
+      "id": "plain_dark",
+      "title": "Plain dark",
+      "kind": "paint",
+      "summary": "A clean dark bar made from colours only, with an empty mark cell for your own picture.",
+      "note": "Put your own picture in the ESPN mark cell with Use my image, then recolour the rest.",
+      "layers": {
+        "frame": {"fill": "#14161BFF", "gradient": {"stops": ["#23262DFF", "#0E1014FF"], "angle": 90}, "radius": 1, "border": {"colour": "#3A3F48FF", "width": 1}, "opacity": 100, "image": null, "sample_text": null},
+        "left_mark": {"fill": "#00000000", "gradient": null, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": null},
+        "away_block": {"fill": "#1E2128FF", "gradient": {"stops": ["#262A32FF", "#161920FF"], "angle": 0}, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": "OAK"},
+        "away_score": {"fill": "#0F1114FF", "gradient": null, "radius": 1, "border": null, "opacity": 100, "image": null, "sample_text": "0"},
+        "home_block": {"fill": "#1E2128FF", "gradient": {"stops": ["#161920FF", "#262A32FF"], "angle": 0}, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": "GB"},
+        "home_score": {"fill": "#0F1114FF", "gradient": null, "radius": 1, "border": null, "opacity": 100, "image": null, "sample_text": "0"},
+        "down": {"fill": "#B3121FFF", "gradient": {"stops": ["#C81A2AFF", "#8F0A16FF"], "angle": 90}, "radius": 1, "border": {"colour": "#5E0510FF", "width": 1}, "opacity": 100, "image": null, "sample_text": "1st & 10"},
+        "clock_quarter": {"fill": "#E9EBEFFF", "gradient": {"stops": ["#FFFFFFFF", "#E1E4EAFF"], "angle": 90}, "radius": 2, "border": {"colour": "#6B7078FF", "width": 1}, "opacity": 100, "image": null, "sample_text": "1st|13:10|:12"}
+      }
+    },
+    {
+      "id": "retail_like",
+      "title": "Retail-like",
+      "kind": "paint",
+      "summary": "An approximation of the original scoreboard from colours alone: grey fading to black, dark team blocks, black score cells, a red down tab and a white clock strip. No retail pixels are copied.",
+      "note": "The original bar has no left mark cell; its network mark sits elsewhere on screen, so this preset leaves that cell empty. The exact retail texture cannot be reproduced from simple settings.",
+      "layers": {
+        "frame": {"fill": "#202128FF", "gradient": {"stops": ["#9AA0AAFF", "#2A2B32FF", "#0A0A0EFF"], "angle": 90}, "radius": 1, "border": null, "opacity": 100, "image": null, "sample_text": null},
+        "left_mark": {"fill": "#00000000", "gradient": null, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": null},
+        "away_block": {"fill": "#2D2D32FF", "gradient": {"stops": ["#3A3A40FF", "#1E1E24FF"], "angle": 0}, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": "TB"},
+        "away_score": {"fill": "#000000FF", "gradient": null, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": "0"},
+        "home_block": {"fill": "#2D2D32FF", "gradient": {"stops": ["#1E1E24FF", "#3A3A40FF"], "angle": 0}, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": "NE"},
+        "home_score": {"fill": "#000000FF", "gradient": null, "radius": 0, "border": null, "opacity": 100, "image": null, "sample_text": "0"},
+        "down": {"fill": "#CC0009FF", "gradient": null, "radius": 1, "border": {"colour": "#7A0002FF", "width": 1}, "opacity": 100, "image": null, "sample_text": "1st & 10"},
+        "clock_quarter": {"fill": "#F4F4F6FF", "gradient": null, "radius": 2, "border": {"colour": "#8F8F97FF", "width": 1}, "opacity": 100, "image": null, "sample_text": "1st|13:10|:12"}
+      }
+    }
+  ]
+}
