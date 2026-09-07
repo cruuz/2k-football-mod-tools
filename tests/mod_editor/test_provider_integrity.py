@@ -199,7 +199,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [232, 9, 8, 9, 8, 9]  # +2 Franchise Auto Save owner + byte template, +10 wave-A runtime modules and their byte templates, +1 scorebar template compiler, +1 broadcast-exact scorebar, +1 build outcome measure, +1 image destination check, +1 scorebar fonts (beta 62); the hi-res and 2026-name modules load via mod_build, not the backend closure,
+            [233, 9, 8, 9, 8, 9]  # +1 scorebar v3 helper, +2 Franchise Auto Save owner + byte template, +10 wave-A runtime modules and their byte templates, +1 scorebar template compiler, +1 broadcast-exact scorebar, +1 build outcome measure, +1 image destination check, +1 scorebar fonts (beta 62); the hi-res and 2026-name modules load via mod_build, not the backend closure,
         )
         for provider in providers:
             entries = [provider.backend_module]

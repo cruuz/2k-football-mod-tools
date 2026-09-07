@@ -6576,7 +6576,7 @@
         "default_enabled": false,
         "expose": true,
         "mode": "edit",
-        "reason": "Install the experimental neutral v7 bottom scorebar with its matching atlas, white clock strip, ESPN corner mark and down-panel slide. Team logos and event hooks use the separate paired runtime installation. Unwitnessed in game."
+        "reason": "Install the experimental static bottom scorebar (v3): each team's primary color on its panel, white scores, yellow possession, a red down box and separate quarter, game clock and play clock cells that stay visible through the play with live values, a ball-on and event row, matching atlas and ESPN corner mark. Team logos and live timeout marks use the separate paired runtime installation, which stays diagnostic. Unwitnessed in game."
       },
       "id": "nfl2k5.scorebug_presentation.inventory",
       "input_constraints": [

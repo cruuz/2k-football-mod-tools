@@ -98,6 +98,7 @@ mod_editor/core/nfl2k5_safe_text_banks.py
 mod_editor/core/nfl2k5_save_writer.py
 mod_editor/core/nfl2k5_scorebug_source_art.py
 mod_editor/core/nfl2k5_scorebug_template.py
+mod_editor/core/nfl2k5_scorebar_v3.py
 mod_editor/core/nfl2k5_scorebug_exact.py
 mod_editor/core/nfl2k5_scorebug_fonts.py
 tools/nfl2k5_scorebug_template_art.py

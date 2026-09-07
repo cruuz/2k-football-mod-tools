@@ -467,6 +467,7 @@ def availability() -> dict[str, bool]:
         "music_library": _core_module("nfl2k5_music_banks") is not None,
         "scorebug": (_tools_module("nfl2k5_scorebug_layout") is not None
                      and _core_module("nfl2k5_scorebug_source_art") is not None
+                     and _core_module("nfl2k5_scorebar_v3") is not None
                      and _scorebug_art_available()),
         "edge_rename": _core_module("nfl2k5_edge_rename") is not None,
         "commentary": _tools_module("nfl2k5_commentary_swap") is not None,

@@ -1807,6 +1807,7 @@ def main() -> int:
         "mod_editor.core.build_feedback",
         "mod_editor.core.image_use",
         "mod_editor.core.nfl2k5_digit_sheet",
+        "mod_editor.core.nfl2k5_scorebar_v3",
         "mod_editor.core.nfl2k5_scorebug_exact",
         "mod_editor.core.nfl2k5_scorebug_fonts",
         "mod_editor.core.nfl2k5_music_policy",
