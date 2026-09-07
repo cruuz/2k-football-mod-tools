@@ -1,5 +1,33 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC89 — eight PS2 studios, and the research moved out (unreleased)
+
+- **Eight PlayStation 2 studios, where RC88 had two.** *PS2 NCAA 09*, *PS2 MVP Baseball 2005*, *PS2 NFL Blitz 2002*,
+  *PS2 NFL Blitz 2003*, *PS2 NFL Street* and *PS2 NFL Street 3* join *PS2 NFL 2K5* and *PS2 Madden 09*. Every one of
+  the eight answers all fourteen shell pages, and the registry carries **180 rows across ten game/platform targets**,
+  of which **98 belong to the eight PS2 studios: 65 write, 17 export, 14 inspect, one is a witnessed writer and one is
+  declared unknown**. Each studio's page under `docs/product/` says what it edits, what stays read-only and why.
+- **Three container families read that could not be read before.** The EA archive-and-image stack behind MVP Baseball,
+  the Midway pack behind the Blitz discs, and the stored-archive-plus-RenderWare stack behind the Blitz and Street
+  titles. Their readers live in `mod_editor/games/_formats/` and are shared, so a further disc in any of those families
+  is a container map and a field map rather than new engineering.
+- **The lane bases are the reason a studio is now small.** `mod_editor/games/_lanes/` carries the record lane, the
+  texture lane, the text-bank lane, the container inventory, the disc walk, the audio export pair and the preload-cache
+  coherence that every EA title needs. The two NFL Street studios instantiate them and add no lane shape of their own.
+- **Every writer is proved offline, and none has been booted.** A build writes a **new** image, never the source; a
+  verifier that shares no code with the writer re-reads the destination's own bytes and requires every changed byte
+  inside a declared range with everything else identical. That is the whole claim. **One row on the PS2 side is
+  `runtime-proved`** — NFL 2K5's exact-slot audio replacement, witnessed before this release — and the other 65 writers
+  are `offline-writer-proved` and await a boot.
+- **MVP Baseball's uniforms became editable.** The kit a player wears is an ordinary indexed image in `MODELS.BIG`;
+  21,767 of that archive's 30,535 images are writable today, including the whole low-detail kit, both helmets, the cap,
+  sleeves, gloves, wristband, laces and all 16,110 nameplate letters and squad-number digits. The high-detail jersey,
+  trousers, shoes, chest and shin pieces and every face are a block codec the reader does not decode, and the page says
+  so with counts.
+- **Research documentation is no longer carried in this repository.** The format specifications, schema censuses and
+  measurement narratives that were in RC88 have been removed; each studio's page is a capability summary for someone
+  holding their own disc. Nothing that ships or runs was removed with them.
+
 ## v1.0 RC88 — PS2 Madden 09 Studio: every page answered (unreleased)
 
 - **Every page of the second studio now has an answer.** *PS2 Madden 09 Studio* fills **eleven of the shell's
