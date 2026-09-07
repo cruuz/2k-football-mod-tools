@@ -21,10 +21,14 @@ for the complete list.
 
 ## Fixed
 
-- Franchise Practice quits to the Coach's Desk instead of the main menu.
+- Franchise Practice exit: a correction was attempted; Noah still saw the main-menu exit, so it stays open.
 - The Franchise schedule lists every playoff game and lets you edit dates and kickoff times before the teams are known.
 - The experimental patch pack exports again (chained growth of two files).
 - Rosters: exact undo on play-style buckets; the scramble parity toggle says what it does.
+
+## First witnesses
+
+- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
@@ -106,6 +110,10 @@ Nothing was removed, only folded away.
   the reviewed H7A encoder refuse itself silently); the encoder now says why when it is refused.
 - The overall-rating estimate on ★ Rosters was a flat average for EDGE and LB under one pool.
 
+## First witnesses
+
+- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
+
 ## Not in this release
 
 7-on-7 practice stays hidden. The in-game checklists for every experimental patch are in the
@@ -149,6 +157,10 @@ and the three audible slots.
   retail name so one group shows.
 - TEAM column: rows the history data did not cover now show the player's 2004 club (logged as
   inferred); only folded rows and 2004 free agents show "--".
+
+## First witnesses
+
+- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
@@ -195,6 +207,10 @@ roster-editor phase 2. Everything new is unwitnessed in game unless a tester say
 - Build & Share left the texture-project buttons greyed after a build and Launch Latest Build did
   not know about the copy; both fixed. Help gains Join the Discord.
 
+## First witnesses
+
+- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
+
 ## Not in this release
 
 7-on-7 practice is built but hidden until it is witnessed through a snap. The SOFTDRINK patch
@@ -240,6 +256,10 @@ and EXPERIMENTAL presets. Unwitnessed in game so far; please report what you see
   it. On xemu with the Complex BIOS the old discs boot regardless; this closes the risk elsewhere.
 - A disc save name typed without an extension produced a file xemu's picker could not see. A bare
   name now gets `.xiso.iso`.
+
+## First witnesses
+
+- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
