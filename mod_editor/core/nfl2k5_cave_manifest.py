@@ -156,6 +156,12 @@ class Recorder:
                 off = int(off, 0) if isinstance(off, str) else off
                 va = post_image.va_for_offset(off)
             if isinstance(va, int) and isinstance(size, int) and size > 0:
+                # An owner's write into its own named allocation is published from the
+                # FINAL layout by finish(); the dormant-owner probe can place the same
+                # owner at a different offset, so a declared edit inside a grown page
+                # would pin a stale address (the camera owner's wrapper slot did).
+                if any(r["va"] <= va < r["va"] + r["size"] for r in grown_regions if not r.get("music")):
+                    continue
                 self.reserve(va, size, owner, "declared edit: " + str(edit.get("label", "site")))
         if owner == "nfl2k5_season_length":
             for group in receipt["groups"]:
