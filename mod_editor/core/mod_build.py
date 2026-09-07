@@ -933,8 +933,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if not isinstance(plan.hires_families, (tuple, list)) or any(type(x) is not str for x in plan.hires_families):
         raise ValueError("Hi-res families must be a list of family names")
     families = tuple(plan.hires_families)
-    if len(set(families)) != len(families) or set(families) - set(_core_module("nfl2k5_hires_pack").FAMILIES):
+    hires_module = _core_module("nfl2k5_hires_pack")
+    known_families = set(hires_module.FAMILIES) if hires_module is not None else set(families)
+    if len(set(families)) != len(families) or set(families) - known_families:
         raise ValueError("Unknown or duplicate Hi-res family selection")
+    if plan.hires_pack and hires_module is None:
+        raise ValueError("The Hi-res pack is not available in this installation")
     if plan.hires_pack and not families:
         raise ValueError("Select at least one Hi-res family")
     plan = replace(plan, hires_families=families)
