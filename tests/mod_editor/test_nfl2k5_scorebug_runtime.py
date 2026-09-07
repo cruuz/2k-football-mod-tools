@@ -187,6 +187,7 @@ class ExecutionTests(unittest.TestCase):
         cls.payload=kickoff.apply(r.apply(space.apply(XBE.read_bytes(),r.REQUESTS+kickoff.REQUESTS)[0])[0])[0]
         with PACK.open('rb') as stream:
             record=art.RESOURCES['score_buga'];stream.seek(record['pack_offset']);cls.template=stream.read(record['span_size'])
+            cls.font_spans = art.scoped_fonts.compile_collection(art.PackView.from_fd(stream.fileno(), 0, PACK.stat().st_size))
         # Native descriptor, pixels and names are real compiler output; single
         # neutral source pixels suffice for ABI tests across all texture names.
         cls.panel=next(art.panel_states(b'',None,'away'))
@@ -266,11 +267,16 @@ class ExecutionTests(unittest.TestCase):
         m.put(0xb09598,start)
         m.run(0x43a20,ecx=m.context,limit=200)
         self.assertIn(0x48ff0,m.visits)  # old retail end is no longer EOF
-        for i in range(art.RUNTIME_TEXTURE_COUNT):
-            m.put(0xb09598,start+i*art.RUNTIME_TEXTURE_SPAN+32)
+        at = start
+        spans = self.spans + list(self.font_spans)
+        for i, span in enumerate(spans):
+            m.uc.mem_write(header, span[:32])
+            m.put(0xb09598,at+32)
             m.run(0x438d0,(m.context,),edx=0xb09598,limit=250)
-            self.assertEqual(m.get(0xb09598),start+(i+1)*art.RUNTIME_TEXTURE_SPAN)
-            self.assertIn(0x48ff0 if i+1<art.RUNTIME_TEXTURE_COUNT else 0x43880,m.visits)
+            at += len(span)
+            self.assertEqual(m.get(0xb09598),at)
+            self.assertIn(0x48ff0 if i+1<len(spans) else 0x43880,m.visits)
+        self.assertEqual(at, end)
         self.assertNotIn(0x48ff0,m.visits)
 
     def test_native_visibility_and_slide_driver_after_new_down(self):

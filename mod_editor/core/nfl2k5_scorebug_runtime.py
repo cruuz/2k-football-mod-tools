@@ -1,7 +1,7 @@
 """EXPERIMENTAL / UNWITNESSED scorebug events in owned RX/RW pages.
 
-The companion resource compiler loads native TXTRs with the HUD collection.
-Only loader-returned texture descriptors are bound; no raw pixel pointer is used.
+The companion compiler loads native TXTRs and private FONTs with the HUD collection.
+Only loader-returned descriptors are bound; no raw pixel pointer is used.
 Reserve the union of REQUESTS and other owners before applying either patch.
 """
 from __future__ import annotations
@@ -9,6 +9,7 @@ from __future__ import annotations
 import struct
 
 from . import nfl2k5_xbe_space as space
+from . import nfl2k5_scorebug_fonts as fonts
 from . import nfl2k5_scorebug_ingame as scene
 from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, section_digest
@@ -19,9 +20,12 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
 # State: scene, populated, two material pointers, eight resident texture pointers,
-# two scores, two flash timers, down, possession, ball/line positions, phase.
+# two scores, two flash timers, down, possession, ball/line positions, phase,
+# normal/compact score FONT descriptors. All state stays inside 128 bytes.
 SCENE, POPULATED, MATERIALS, TEXTURES = 0, 4, 8, 16
 SCORES, FLASH, DOWN, POSSESSION, BALL, LINE, PHASE = 48, 56, 64, 68, 72, 76, 80
+FONT_SCORE, FONT_COMPACT = 84, 88
+SCORE_FONTS = (0xa95968, 0xa959a0)
 HOME_CONTEXT, AWAY_CONTEXT = 0xB30864, 0xB30A58
 SCORE_POINTERS = (0xE5FC28, 0xE5FC68)
 SCORE_COLORS = (0xA95958, 0xA95990)
@@ -72,7 +76,37 @@ def code_for(code_va, data_va):
         b("836108fe"); jump("e9", f"setup_side_done{side}")
         a.label(f"setup_hide{side}"); b("83490801")
         a.label(f"setup_side_done{side}")
-    store(0xA95B00, 0)  # stop native hangtime from hiding the repurposed home panel
+    b("31c0")
+    absop("a3", 0xA95B00)  # stop native hangtime from hiding the repurposed home panel
+    if fonts.CHEVRON:
+        # A later game's missing FONT must not expose the old white city text.
+        for va in (0xa95898, 0xa958c0): absop("a3", va)
+    # Only descriptors returned by the real FONT registry are installed.
+    # Missing resources retain the native FONT pointers from FC1A0's caller.
+    for index, name_va in enumerate(fonts.NAME_VAS):
+        b("68" + _u(name_va)); call("find_font")
+        b("85c0"); a.j8("74", f"font_missing{index}")
+        if index == 0:
+            b("b9105aa900 ba06000000")
+            a.label("font_elements")
+            b("8901 83c170 4a"); a.j8("75", "font_elements")
+        elif index == 1:
+            for va in (0xa95918, 0xa95940): absop("a3", va)
+        elif index == 2:
+            absop("a3", data_va + FONT_SCORE)
+            for va in SCORE_FONTS: absop("a3", va)
+        elif index == 3:
+            absop("a3", data_va + FONT_COMPACT)
+        elif index == 4 and fonts.CHEVRON:
+            for va in (0xa958a0, 0xa958c8): absop("a3", va)
+            for va in (0xa95898, 0xa958c0): store(va, WHITE)
+            for side, va in enumerate((0xa95884, 0xa958ac)):
+                a.label(f"possession_callback{side}"); store(va, 0)
+        elif index == 5:
+            absop("a3", 0xa958f0)
+        elif index == 6:
+            absop("a3", 0xa95a80)
+        a.label(f"font_missing{index}")
     a.label("setup_done"); _restore(a); b("c3")
 
     # A real stdcall call site: forward its float argument, native RET 4 consumes
@@ -102,6 +136,22 @@ def code_for(code_va, data_va):
         a.label(f"hide{side}"); b("83490801")
         a.label(f"no_material{side}")
         b("8b10")
+        if fonts.COMPACT_SCORES:
+            absop("8b0d", data_va + FONT_SCORE)
+            a.j8("e3", f"score_font_done{side}")  # JECXZ retains the native fallback.
+            b("83fa64"); a.j8("7d", f"score_font_compact{side}")
+            # A flip can still draw the old cached string after a score drops.
+            # Check BOTH second/third UTF-16 digits: after "999" -> "9", the
+            # third slot may contain stale bytes beyond the second-slot NUL.
+            for offset in (6,8):
+                absop("803d", SCORE_FONTS[side] + offset); b("00")
+                a.j8("74", f"score_font_store{side}")
+            a.label(f"score_font_compact{side}")
+            absop("a1", data_va + FONT_COMPACT); b("85c0")
+            a.j8("74", f"score_font_store{side}")
+            b("8bc8")
+            a.label(f"score_font_store{side}"); absop("890d", SCORE_FONTS[side])
+            a.label(f"score_font_done{side}")
         absop("833d", data_va + POPULATED); b("00"); jump("0f84", f"seed{side}")
         absop("3b15", data_va + SCORES + side * 4); jump("0f84", f"seed{side}")
         store(data_va + FLASH + side * 4, struct.unpack("<I", struct.pack("<f", .18))[0])
@@ -164,10 +214,39 @@ def code_for(code_va, data_va):
     a.call(0x449E0); b("5a 89542404")
     a.label("texture_found"); b("8904b7 46 83fe04"); jump("0f82", "texture_loop")
     b("83c410 c3")
-    content = a.assemble()
+    # Forward the original UTF-16 name through the real stdcall registry.
+    # Its RET 4 consumes the copy; ours consumes the original argument.
+    a.label("find_font")
+    b("ff742404 ba464f4e54 31c9"); a.call(0x449e0); b("c20400")
+    if fonts.CHEVRON:
+        # Native city callbacks fill the caller's UTF-16 scratch buffer.
+        # Exactly one glyph avoids team-name-length-dependent alpha overdraw.
+        a.label("possession_text"); b("c70176000000 c3")
+    # Shorten only local branches whose whole displacement already fits.
+    # Every target and external call is reassembled after each shrinking pass.
+    while True:
+        a.assemble()
+        changed, offset = False, 0
+        for index, item in enumerate(a.items):
+            size = a._size(item)
+            if isinstance(item, tuple) and item[0] == "j32":
+                opcode, label = item[1:]
+                delta = a.labels[label] - offset - size
+                short = (b"\xeb" if opcode == b"\xe9" else
+                         bytes((opcode[1] - 0x10,)) if len(opcode) == 2 and opcode[0] == 0x0f else None)
+                if short is not None and -128 <= delta <= 127:
+                    a.items[index] = ("j8", short, label)
+                    changed = True
+            offset += size
+        if not changed: break
+    content = bytearray(a.assemble())
+    if fonts.CHEVRON:
+        for side in (0,1):
+            struct.pack_into('<I', content, a.labels[f"possession_callback{side}"]+6,
+                             code_va+a.labels['possession_text'])
     if len(content) > CODE_SIZE:
         raise ValueError(f"scorebug code exceeds its named allocation: {len(content)}")
-    return content.ljust(CODE_SIZE, b"\xcc"), {k: code_va + v for k, v in a.labels.items()}
+    return bytes(content).ljust(CODE_SIZE, b"\xcc"), {k: code_va + v for k, v in a.labels.items()}
 
 
 def sites(payload):
@@ -185,9 +264,18 @@ def hook_bytes(name, labels):
 
 def _abi_valid(payload):
     from .nfl2k5_scorebug_resources import RUNTIME_ABI_GUARDS
+    for va, name in zip(fonts.NAME_VAS, fonts.NAMES):
+        wanted = (name + "\0").encode("utf-16le")
+        off = scene.layout.sbpos.va_to_off(payload, va)
+        if payload[off:off+len(wanted)] != wanted:
+            return False
+    for va, callback in ((0xa95884,0xfc010),(0xa958ac,0xfc030)):
+        off = scene.layout.sbpos.va_to_off(payload,va)
+        if payload[off:off+4] != struct.pack('<I',callback):
+            return False
     normal = [(va, old) for va, old, _, _ in scene.xbe_specs()]
     normal += list(HOOKS.values())
-    for va, size, sha in RUNTIME_ABI_GUARDS:
+    for va, size, sha in (*RUNTIME_ABI_GUARDS, *fonts.CODE_GUARDS):
         off = scene.layout.sbpos.va_to_off(payload, va)
         body = bytearray(payload[off:off + size])
         for address, old in normal:
@@ -218,7 +306,7 @@ def status(payload):
             off = scene.layout.sbpos.va_to_off(payload, va)
             if payload[off:off + 5] != expected[name]:
                 return "foreign"
-        if code_state == "applied" and scene.xbe_status(payload) != "applied":
+        if code_state == "applied" and scene.xbe_status(payload, scorebug_folder=None) != "applied":
             return "foreign"
         return code_state
     except (ValueError, KeyError, IndexError, struct.error, SystemExit):
@@ -255,4 +343,4 @@ def apply(payload):
                         code_va=hex(code["va"]), data_va=hex(data["va"]), edits=edits,
                         allocation=ar, installation=ir, scorebug=sr,
                         reservations=space.reservations(result),
-                        requires_resources="scorebug-runtime-v3-broadcast-exact; XBE alone does not install logos")
+                        requires_resources="scorebug-runtime-v4-scoped-fonts; XBE alone does not install logos")

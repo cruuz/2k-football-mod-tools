@@ -1,0 +1,277 @@
+{
+  "append_bytes": 337120,
+  "code_budget": 1408,
+  "code_used": 1395,
+  "data_budget": 128,
+  "experimental": true,
+  "loader_code_guards": [
+    [
+      281440,
+      416,
+      "e449609d313477fca240813a743a81ac758d92530dc3cc1b407668c7eb6b7a70"
+    ],
+    [
+      299712,
+      196,
+      "b4b63f4548b405b27fb3d791a2769e7380ac2b9be9e17b415efc155573c41ecd"
+    ],
+    [
+      1033056,
+      842,
+      "9170acbe42aa1311f72b7af90c56c4f3f7de0832421eec262e9ddd2d88ea3dcb"
+    ]
+  ],
+  "measurement_version": 4,
+  "native_heap_bytes": 337792,
+  "native_resources": [
+    {
+      "global_slot_changed": false,
+      "name": "score_bug",
+      "object": "0x407f440",
+      "range_pointer": "0x407f500",
+      "span_sha256": "b26c32ab54c2a4148a07d6d38e0ce63d51257a52594b28939285db56457fe35a",
+      "system_bytes": 9600,
+      "video_bytes": 17408
+    },
+    {
+      "global_slot_changed": false,
+      "name": "dscore_buga",
+      "object": "0x4085dc0",
+      "range_pointer": "0x4085e80",
+      "span_sha256": "e1413c9318b83529b793fd6b463abbcb25b2902ef893b6a9ba9fd5e2e894db2e",
+      "system_bytes": 9728,
+      "video_bytes": 66560
+    },
+    {
+      "global_slot_changed": false,
+      "name": "score_buga",
+      "object": "0x40987c0",
+      "range_pointer": "0x4098880",
+      "span_sha256": "d4d44f6ac40ce5c255e0cffa46fe5e69d7f54535c7f7d244cc376db28433edec",
+      "system_bytes": 9728,
+      "video_bytes": 66560
+    },
+    {
+      "global_slot_changed": false,
+      "name": "zscore_buga",
+      "object": "0x40ab1c0",
+      "range_pointer": "0x40ab280",
+      "span_sha256": "23e01fbb1830c24a7088148e3a88d54b71b6ee700236bf3832f1edc64d8c086e",
+      "system_bytes": 9728,
+      "video_bytes": 66560
+    },
+    {
+      "global_slot_changed": false,
+      "name": "hscore_buga",
+      "object": "0x40bdbc0",
+      "range_pointer": "0x40bdc80",
+      "span_sha256": "120ac4e63e47f1d6819ea72905706377c1e493b43a19ba37fbe6820ce71432e3",
+      "system_bytes": 9600,
+      "video_bytes": 17408
+    },
+    {
+      "global_slot_changed": false,
+      "name": "core_bug",
+      "object": "0x40c4540",
+      "range_pointer": "0x40c4600",
+      "span_sha256": "f80bda2260b98540ab9836e2f67d2700adac073a69eec9cd7bcb43379d2049f2",
+      "system_bytes": 9600,
+      "video_bytes": 17408
+    },
+    {
+      "global_slot_changed": false,
+      "name": "ore_bug",
+      "object": "0x40caec0",
+      "range_pointer": "0x40caf80",
+      "span_sha256": "aff2b1d328b41ba64eb88f7c8c8ca984239f398e74ef03ba0453c76b2986da19",
+      "system_bytes": 9600,
+      "video_bytes": 17408
+    }
+  ],
+  "scales": [
+    [
+      3,
+      0.63,
+      0.76
+    ],
+    [
+      7,
+      0.375,
+      0.47
+    ],
+    [
+      7,
+      0.75,
+      1.14
+    ],
+    [
+      7,
+      0.58,
+      1.14
+    ],
+    [
+      3,
+      1.0,
+      1.0
+    ],
+    [
+      3,
+      0.44,
+      0.57
+    ],
+    [
+      3,
+      0.61,
+      0.67
+    ]
+  ],
+  "selected_iteration": 773,
+  "static_fallback": "Retail FONT4/FONT8; private descriptors belong only to the diagnostic runtime collection.",
+  "text": {
+    "0xfbe30": {
+      "font": "ore_bug",
+      "max_error_px": 0.4533284505208144,
+      "native_quad_box": [
+        344.2200012207031,
+        434.67999267578125,
+        352.8800048828125,
+        442.04998779296875
+      ],
+      "reference_ink_box": [
+        344.3333333333333,
+        434.962962962963,
+        353.3333333333333,
+        442.0148148148148
+      ],
+      "rendered_ink_box": [
+        344,
+        435,
+        353,
+        442
+      ],
+      "rendered_ink_max_error_px": 0.3333333333333144,
+      "text": "12"
+    },
+    "0xfc050": {
+      "font": "score_buga",
+      "max_error_px": 0.3320571978886733,
+      "native_quad_box": [
+        378.49810230731964,
+        415.8840176677693,
+        394.99872386455536,
+        438.68487721445945
+      ],
+      "reference_ink_box": [
+        378.3333333333333,
+        415.8814814814815,
+        394.6666666666667,
+        438.6962962962963
+      ],
+      "rendered_ink_box": [
+        379,
+        416,
+        395,
+        438
+      ],
+      "rendered_ink_max_error_px": 0.696296296296282,
+      "text": "0"
+    },
+    "0xfc070": {
+      "font": "score_buga",
+      "max_error_px": 0.3345331748326714,
+      "native_quad_box": [
+        244.00119984149933,
+        415.8840176677693,
+        260.50182139873505,
+        438.68487721445945
+      ],
+      "reference_ink_box": [
+        243.66666666666666,
+        415.8814814814815,
+        260.3333333333333,
+        438.6962962962963
+      ],
+      "rendered_ink_box": [
+        244,
+        416,
+        260,
+        438
+      ],
+      "rendered_ink_max_error_px": 0.696296296296282,
+      "text": "0"
+    },
+    "0xfc090": {
+      "font": "core_bug",
+      "max_error_px": 0.4648270218460766,
+      "native_quad_box": [
+        286.8800048828125,
+        435.2799987792969,
+        296.0799865722656,
+        441.54998779296875
+      ],
+      "reference_ink_box": [
+        287.0,
+        434.962962962963,
+        296.0,
+        442.0148148148148
+      ],
+      "rendered_ink_box": [
+        287,
+        435,
+        296,
+        441
+      ],
+      "rendered_ink_max_error_px": 1.0148148148148266,
+      "text": "1st"
+    },
+    "0xfc150": {
+      "font": "dscore_buga",
+      "max_error_px": 0.625,
+      "native_quad_box": [
+        304.375,
+        434.2900085449219,
+        335.625,
+        443.69000244140625
+      ],
+      "reference_ink_box": [
+        304.6666666666667,
+        434.1333333333333,
+        335.0,
+        443.6740740740741
+      ],
+      "rendered_ink_box": [
+        304,
+        434,
+        336,
+        444
+      ],
+      "rendered_ink_max_error_px": 1.0,
+      "text": "13:10"
+    },
+    "0xfc7d0": {
+      "font": "score_bug",
+      "max_error_px": 0.8918603967737226,
+      "native_quad_box": [
+        300.260009765625,
+        413.0400085449219,
+        339.0400085449219,
+        422.1600036621094
+      ],
+      "reference_ink_box": [
+        300.6666666666667,
+        412.14814814814815,
+        339.3333333333333,
+        421.27407407407406
+      ],
+      "rendered_ink_box": [
+        301,
+        413,
+        339,
+        421
+      ],
+      "rendered_ink_max_error_px": 0.8518518518518476,
+      "text": "1st & 10"
+    }
+  },
+  "witnessed": false
+}

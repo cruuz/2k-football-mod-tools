@@ -12,6 +12,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_nfl2k5_scorebug_runtime import Machine, XBE, PACK, HAVE_UC, r, art
+from mod_editor.core import nfl2k5_scorebug_fonts as fonts
 
 
 class Collection:
@@ -20,6 +21,7 @@ class Collection:
         self.m = m = Machine(payload)
         m.uc.mem_map(m.HEAP + 0x400000, 12 * 1024 * 1024)
         self.pack, self.pending, self.reads, self.registered = pack, [], [], []
+        self.registered_fonts = []
         self.closed = False
         heap = m.alloc(0x100)
         pool = m.alloc(heap_bytes)
@@ -29,12 +31,15 @@ class Collection:
         m.record = True
         self.heap, self.free_before = heap, m.get(heap + 0x88)
         m.put(0xb12034, heap)
-        handlers = m.alloc(32)
+        handlers = m.alloc(48)
         m.put(handlers, handlers + 16)
         m.put(handlers + 8, int.from_bytes(b'TXTR', 'little'))
         m.put(handlers + 12, 0x44f10)
         m.put(handlers + 24, int.from_bytes(b'AUSB', 'little'))
         m.put(handlers + 28, 0x45940)
+        m.put(handlers + 16, handlers + 32)
+        m.put(handlers + 40, int.from_bytes(b'FONT', 'little'))
+        m.put(handlers + 44, 0x44c10)
         m.put(0xb0957c, handlers)
         m.put(0xb09584, 1)
         m.put(0xb09598, art.HUD_START)
@@ -61,6 +66,8 @@ class Collection:
                 self.reads.append((lo, size, callback))
             elif va == 0x44da0:
                 self.registered.append(m.uc.reg_read(m.x.UC_X86_REG_ECX))
+            elif va == 0x44b60:
+                self.registered_fonts.append(m.uc.reg_read(m.x.UC_X86_REG_ECX))
             elif va == 0x48fc0:
                 self.closed = True
         m.uc.hook_add(unicorn.UC_HOOK_CODE, event)
@@ -89,6 +96,7 @@ class Collection:
             raise AssertionError('native collection did not finish exactly at EOF')
         return {'events': events, 'max_callback_instructions': worst,
                 'registered_txtr': len(self.registered),
+                'registered_font': len(self.registered_fonts),
                 'heap_bytes': self.free_before - m.get(self.heap + 0x88)}
 
 
@@ -109,8 +117,9 @@ class NativeTests(unittest.TestCase):
         new = Collection(self.payload, self.pack)
         after = new.run()
         self.assertEqual(after['registered_txtr'] - before['registered_txtr'], 264)
-        self.assertEqual(after['events'] - before['events'], 528)
-        self.assertEqual(after['heap_bytes'] - before['heap_bytes'], 264 * 5376)
+        self.assertEqual(after['registered_font'] - before['registered_font'], len(fonts.NAMES))
+        self.assertEqual(after['events'] - before['events'], 528 + 2 * len(fonts.NAMES))
+        self.assertEqual(after['heap_bytes'] - before['heap_bytes'], 264 * 5376 + fonts.HEAP_BYTES)
         m = new.m
         for obj in new.registered:
             name = bytes(m.uc.mem_read(m.get(obj + 0x10), 16)).decode('utf-16le').split('\0')[0]
@@ -125,6 +134,10 @@ class NativeTests(unittest.TestCase):
         m.setup()
         self.assertEqual(m.get(m.mats['hscore_buga'] + 0x30), m.textures['sb16h3'])
         self.assertEqual(m.get(m.mats['zscore_buga'] + 0x30), m.textures['sb27a3'])
+        descriptors = {m.get(root + 20) for root in new.registered_fonts}
+        for pointer in (0xa95a10, 0xa95918, 0xa95940, 0xa95968, 0xa959a0, 0xa958f0, 0xa95a80):
+            self.assertIn(m.get(pointer), descriptors, hex(pointer))
+            self.assertNotEqual(m.get(pointer), 0)
         # Dropping every appended wrapper via the old EOF returns NULL, not a wait.
         old.m.identity('16', '27'); old.m.setup()
         self.assertEqual(old.m.get(old.m.mats['hscore_buga'] + 0x30), 0)
@@ -137,8 +150,9 @@ class NativeTests(unittest.TestCase):
         m = c.m
         m.put(0xb09598, art.HUD_START + art.HUD_SIZE)
         rec = c.run()
-        self.assertEqual(rec['events'], 264)
+        self.assertEqual(rec['events'], 264 + len(fonts.NAMES))
         self.assertEqual(rec['registered_txtr'], 0)
+        self.assertEqual(rec['registered_font'], 0)
         self.assertEqual(rec['heap_bytes'], 0)
         m.identity(); m.setup(); m.update()
         self.assertEqual(m.get(m.mats['hscore_buga'] + 0x30), 0)

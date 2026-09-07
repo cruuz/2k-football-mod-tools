@@ -1,349 +1,129 @@
-# r63 scorebug broadcast comparison
+# r63-scorebug-exact2 delivery
 
-**EXPERIMENTAL / UNWITNESSED. The requested 1:1 result was not achieved.**
-This delivery replaces the mockup-derived scene with a measured broadcast
-layout, supplies static and optional runtime layers, and retains 26 comparison
-iterations and native validation. Geometry meets the one-pixel boundary target
-under the documented viewport mapping. Pixel edges, colours and text do not.
-The requested custom glyph-atlas binding is also **not implemented**. These
-are outstanding requirements, not claims deferred to a successful game test.
+**EXPERIMENTAL / UNWITNESSED. The integration and seven ordered residual passes are complete, followed by a joint local plateau check. A 1:1 gameplay match was not achieved. The game-entry freeze remains OPEN.**
 
-The existing `scorebug` option installs `espn-broadcast-exact-v1`. The existing
-`scorebug_runtime` option installs `scorebug-runtime-v3-broadcast-exact` and
-remains off in every preset. The reported game-entry freeze is unresolved.
-No emulator application, GUI, audio, network, disc build or push was run.
-Unicorn was used for the bounded native CPU proofs requested by the brief.
+The existing `scorebug` default is `espn-broadcast-exact-v1`. Supplying `scorebug_folder` retains the landed `espn-reference-v10` compiler, mesh, native fonts and byte identities. The diagnostic runtime is `scorebug-runtime-v4-scoped-fonts` and remains off in every preset. Its private fonts, team artwork, possession marker and compact scores require the runtime collection and hooks. The static default keeps neutral panels and retail fonts, including its remaining three-digit crowding.
 
-## Reference and final output
+Job A was committed early as `14a1ecb3c890d71d64ea79c79e63b3202f59713f` and delivered in `.scratch/integration.bundle` with `.scratch/INTEGRATION_DONE`. The shared Git metadata is read-only; all later commits use isolated metadata under `.scratch/delivery.git`, explicit file paths and the branch `astra/r63-scorebug-exact2`. `.scratch/final.bundle` contains every delivery commit since `b1674723c7f8a3b063ca61c15dabd78c5e6b5d48`; `.scratch/FINAL_DONE` records the final SHA. Neither the brief nor `.scratch` is committed. No push was performed.
 
-The sole target is [the supplied real LV/HOU broadcast](docs/scorebug_ingame/reference_LV_HOU_broadcast.jpeg).
-Its SHA-256 is
-`f88b98687827c753882d8c5186eb186095510228b039c6d7a2e9e9d88e725e14`.
-The earlier `target_*.png` images are not acceptance targets.
+## Reference and review artifacts
 
-![Measured real broadcast crop](docs/scorebug_ingame/exact/reference_crop.png)
+The sole target is [the supplied LV/HOU broadcast](docs/scorebug_ingame/reference_LV_HOU_broadcast.jpeg), 1920 x 1080, SHA-256 `f88b98687827c753882d8c5186eb186095510228b039c6d7a2e9e9d88e725e14`. Mockup images are not acceptance targets. Reference pixels are never substituted into generated art or glyphs.
 
-![Reference, installed static inputs, installed runtime inputs](docs/scorebug_ingame/exact/final_side_by_side.png)
+![Reference, static inputs and runtime inputs](docs/scorebug_ingame/exact/final_side_by_side.png)
 
-![Every retained iteration, static left and runtime right](docs/scorebug_ingame/exact/iteration_strip.png)
+Review the [full 932-iteration strip](docs/scorebug_ingame/exact/iteration_strip.png), [stage overview](docs/scorebug_ingame/exact/stage_overview.png), [all scores](docs/scorebug_ingame/exact/scores.json), [final local plateau evidence](docs/scorebug_ingame/exact/region_plateaus.json), [native submissions](docs/scorebug_ingame/exact/native_audit.json), [font binding proof](docs/scorebug_ingame/exact/font_binding.json), [runtime state proofs](docs/scorebug_ingame/exact/runtime_state_proofs.json), and [all 32 panel pairs](docs/scorebug_ingame/exact/all_32_native_panels.png). Every generated game-like image is a software raster of captured native submissions, not a screenshot of gameplay.
 
-These generated images are **software rasters of native submissions**, not
-screenshots of gameplay. Reference pixels are never substituted into generated
-scoreboard art or text. The reference column and normalized reference files
-are explicitly labelled comparison inputs.
+## Measurement and stopping decision
 
-| Evidence | Artifact |
-| --- | --- |
-| Source rectangles, transform and uncertainty | [measurement.json](docs/scorebug_ingame/exact/measurement.json) |
-| Every score, selected iteration, both aspects/modes | [scores.json](docs/scorebug_ingame/exact/scores.json) |
-| Native positions, glyph quads, material names, code and byte receipts | [native_audit.json](docs/scorebug_ingame/exact/native_audit.json) |
-| Source-dependent compiler identities | [compiler_pins.json](docs/scorebug_ingame/exact/compiler_pins.json) |
-| All 32 compiled panel pairs and logo provenance | [panel sheet](docs/scorebug_ingame/exact/all_32_native_panels.png), [inventory](docs/scorebug_ingame/exact/panel_inventory.json) |
-| Retail font limits | [font study](docs/scorebug_ingame/exact/font_study.json), [glyph sheet](docs/scorebug_ingame/exact/retail_font_study.png) |
-| Six real-image preflights and XBE replay | [probe_matrix.json](docs/scorebug_ingame/exact/probe_matrix.json) |
-| Standalone validation and development failures | [validation.json](docs/scorebug_ingame/exact/validation.json) |
+The photographic rails are [434, 942, 1488, 1054], with approximately two source pixels of edge uncertainty. The documented viewport mapping is `x = source_x / 3`, `y = 16 + source_y * 448 / 1080`. This produces [144.667, 406.756, 496.000, 453.215] in a 640 x 480 HUD and respects the native 16-pixel vertical inset. Widescreen v3 contracts X by 27/32 about 320. This is a framing decision, not a claim about console overscan or pixel aspect.
 
-## Measurement decision
+Metric v4 removes components touching a text ROI edge and isolated specks below three source pixels. The old quarter box included a five-pixel capsule-rim fragment. Its corrected ink box is 9.0 x 7.0519 HUD pixels; the original measurements remain in the retained history. Other reference text boxes are unchanged. Native quad boxes include transparent glyph padding and cannot prove font-outline equality. All five regions are re-scored for every retained candidate; frame edges are measured over a two-pixel perimeter ring.
 
-The JPEG transition band gives outer rails **[434, 942, 1488, 1054]**, with
-approximately two source pixels of edge uncertainty. Region bounds are:
+Iteration **773** is installed. The final joint pass contains **56 settled coordinates**. Earlier passes retain wider searches and alternative rim, corner, separator, weight and lettering families. The final pass tests neighboring palette values, logo dimensions/positions, font scales, whole/subpixel anchor movements, weights, quarter capitals, separator choices and possession dimensions/position, then rechecks the compact font. No coordinate improves the final objective beyond its recorded threshold. Whole-pixel probes prevent native rounding from producing a false subpixel plateau.
 
-| Region | Source rectangle |
-| --- | --- |
-| Left panel | [438, 946, 834, 1049] |
-| Centre pill | [831, 947, 1089, 987] |
-| Clock strip | [839, 992, 1083, 1045] |
-| Right panel | [1088, 946, 1484, 1049] |
+The joint objective is the equal-weight mean of the five region RGB errors, with a strong penalty for losing the one-pixel text or possession fit. Compact-font width is optimized independently for three pixels of pill clearance. Some regions overlap: moving a logo can improve the rim score while worsening the panel score. `region_plateaus.json` retains these isolated gains and opposing regressions. This is a bounded local plateau of the documented objective and model families, not independent global minima for every region, and not pixel equality.
 
-I chose to fit the full broadcast into the native active viewport:
-`x = source_x / 3`, `y = 16 + source_y * 448 / 1080`.
-The installed frame is therefore **[144.667, 406.756, 496.000, 453.215]**
-in 640x480 HUD coordinates. The native root stays at (320,408), and the
-projection includes the existing 16-pixel inset. A naive full-height 480 fit
-puts the bottom at 468.444, below the native clipping boundary of 464.
+The table shows the final checkpoint for each stage; superseded quarter and cell attempts remain in `scores.json`.
 
-This mapping is a documented framing decision, not a measurement of console
-pixel aspect or TV overscan. The 0.01-pixel native agreement below is numerical
-agreement with this mapping and must not be confused with the JPEG's much
-larger measurement uncertainty. Widescreen v3 contracts X by 27/32 about 320;
-Y is unchanged. The comparator applies the same contraction to its wide
-reference, retaining both underlying 640x480 projections for review.
+| Pass | Selected iteration | Mean runtime RGB MAE | Recorded coordinates |
+| --- | ---: | ---: | ---: |
+| fonts | 88 | 42.7824 | 20 |
+| rim | 136 | 32.3967 | 8 |
+| quarter | 168 | 31.6079 | 12 |
+| cells | 257 | 31.1596 | 22 |
+| weights | 294 | 30.1325 | 16 |
+| logos | 438 | 27.0755 | 40 |
+| chevron | 469 | 26.9012 | 8 |
+| compact | 495 | 26.9012 | 2 |
+| plateau | 773 | 25.2797 | 168 |
 
-The literal photograph has a **light** play-clock field with dark digits and
-thin separators, despite the brief calling it a dark cell. I followed the
-photograph. It also has no distinct TEXANS wordmark above the logo. The runtime
-panel includes the requested authored wordmark, which is an intentional
-remaining discrepancy. RAIDERS is already present in the source shield.
+The first-pass iteration 19 had mean runtime RGB MAE 51.2642. The final value is **25.2797**. Earlier iterations 00..04 used a different rim mask and are not directly comparable. Quarter metric corrections affect text-box scores, not regional RGB errors.
 
-## What changed
-
-`mod_editor/core/nfl2k5_scorebug_exact.py` authors the new scene/atlas and panel
-pixels. `nfl2k5_scorebug_ingame.py` retains its writer, preflight, rollback,
-status and replay API; v8/v9 generators remain explicitly historical helpers.
-Old or mixed patched inputs are refused rather than silently migrated.
-
-The static layer uses the existing 64x64 P8 atlas and fixed scene spans. It
-contains a neutral dark frame, thin rim, red pill, light clock strip, six
-white decorative timeout dashes, white native scores and dark clock text.
-Obsolete tabs and both network marks collapse to degenerate geometry inside
-the frame. Native team abbreviations are transparent, including their native
-possession colour. The existing kick-meter move, lineup hiding, root slots
-and boot-logo reservation behaviour are retained.
-
-Native ordinary text selects retail **FONT4**, and scores select **FONT8**.
-Anchors are derived from the measured cells and checked through real native
-FONT submissions. The play-clock formatter's `MOV EDX` operand at `0xFBE43`
-now addresses the existing `%02d` suffix at `0xE6C43A`; the UTF-16 literal,
-rounding, callback ABI and urgency logic remain intact. All new XBE fields
-pin their retail bytes and participate in mixed/foreign refusal.
-
-The runtime layer uses the existing owner's actual `zscore_buga` away and
-`hscore_buga` home material bindings. It compiles 32 teams plus neutral,
-two orientations, and four timeout counts: **264 native TXTRs**. Each is
-128x32 P8 in a 5,280-byte uncompressed wrapper. Logo pixels come from the
-pinned retail team textures. Gradients follow the supplied team colours;
-LV silver and HOU red override their metadata primary colours to follow the
-photograph. Home gradients reverse, but logo pixels and lettering do not.
-Other wordmarks use authored, portable condensed pixel capitals. These are
-not official team typography, and historical retail logos remain historical.
-
-The four states of a panel now share one palette. Independently quantizing
-states caused unrelated logo/gradient pixels to change when a timeout was
-used; the new native image-difference test caught this, and now only the
-selected side's dash band changes. UV endpoints address actual 128x32 texel
-centres. The collection remains 1,393,920 appended bytes, with 1,394,688 bytes
-of aligned pack growth. The existing archive writer owns every relocation.
-
-**Runtime hook instructions, ABI, requests and behaviour were not rewritten.**
-The runtime module's only edit is its required-resource version string. Its
-existing allocation remains 1,408 RX bytes and 128 RW bytes. Score flashes,
-down refresh, play-clock urgency, missing-texture handling, created-team
-fallback and timeout sources remain the existing owner's implementation.
-There is no new allocation or cave.
-
-## Comparator, iteration and stopping point
-
-`tools/nfl2k5_scorebug_exact.py` uses the corrected native projection harness.
-Each trial serializes and refits the scene, decodes installed bytes, loads the
-real atlas/panels, executes native setup/frame/text code and rasterizes the
-captured positions, glyph UVs, vertex colours and texture descriptors.
-The runtime renderer refuses a missing descriptor map rather than filling in
-an arbitrary atlas. Its material receipts identify `sb37h3` and `sb20a3` in
-the photographed HOU/LV fixture. No text strings are drawn by a substitute
-preview font.
-
-Per-region scores include RGB mean absolute error (0..255), a 16-bin RGB
-histogram Wasserstein distance, symmetric pixel-edge distances, native
-boundary errors and text quad versus reference ink boxes. Frame colour/edge
-metrics use a two-pixel perimeter ring. Static neutral panels retain their
-full-reference colour error but have `native_box=null`: they are not falsely
-reported as independently observed team-panel boundaries.
-
-Iterations 00..04 retain the initial metric, which included the entire frame
-interior in the rim score. Iterations 05..25 use the corrected perimeter
-metric. The initial results remain in `scores_initial.json`; do not compare
-those scores numerically across metric versions. Iteration 18 repeats the
-v9 control; iteration 19 includes the adjusted anchors, shared timeout
-palette and corrected UVs. Iterations 20..25 retain rejected red-bias
-neighbours. **Iteration 19 is selected**, with red bias -20.
-
-The final red-channel coordinate descent tested steps 4, 2 and 1. It stopped
-when no candidate improved the combined static/runtime regional mean by
-0.005. The -22 neighbour improves that sum by less than 0.001, so the stopping
-rule retains -20. This is a **local palette plateau**, not global convergence
-of all scene, font, logo and blend parameters. It does not satisfy the brief's
-one-pixel pixel-edge and small-colour-tolerance requirements.
-
-| 4:3 region | Runtime boundary error, px | Static RGB MAE | Runtime RGB MAE | Runtime pixel-edge p95, px |
+| 4:3 region | Native boundary error, px | Static RGB MAE | Runtime RGB MAE | Runtime edge p95, px |
 | --- | ---: | ---: | ---: | ---: |
-| Frame rim | 0.0063 | 76.829 | 72.733 | 44.000 |
-| Left panel | 0.0054 | 48.966 | 37.445 | 3.114 |
-| Centre pill | 0.0056 | 43.990 | 43.990 | 7.211 |
-| Clock strip | 0.0050 | 65.414 | 65.991 | 1.414 |
-| Right panel | 0.0051 | 42.401 | 36.163 | 8.944 |
+| centre pill | 0.0056 | 43.692 | 24.860 | 10.770 |
+| clock strip | 0.0050 | 64.117 | 38.666 | 1.000 |
+| frame rim | 0.0063 | 30.205 | 19.179 | 7.000 |
+| left panel | 0.0054 | 48.486 | 22.370 | 2.000 |
+| right panel | 0.0051 | 42.278 | 21.323 | 1.414 |
 
-The large rim edge-distance tail is a real failure of the raster comparison,
-including photograph/AA/gradient transitions within the narrow mask; it is
-not replaced with the much smaller mesh-boundary metric. Static shared-region
-boundary errors match the runtime values. Static panel boundaries are absent.
-Both native placement modes render identically in each layer/aspect. Mean
-regional RGB MAE is 55.520 static / 51.264 runtime in 4:3 and 54.855 / 50.496
-in widescreen. The v9 control's static value is 73.883 under the same corrected
-4:3 metric. All eight final acceptance records report `exact_match=false`.
+Acceptance remains boundary error <= 1 pixel, region RGB MAE <= 8, pixel-edge p95 <= 1 pixel, text-box error <= 1 pixel and full containment. All eight static/runtime, aspect and placement-mode records still report `exact_match=false`. The small native boundary errors are numerical agreement with the chosen mapping; they are not evidence of subpixel accuracy in the JPEG or GPU raster.
 
-Final 4:3 text-box errors are 2.874 px for scores, 5.333 for quarter, 3.667
-for game clock, 3.333 for play clock and 10.667 for down/distance. Native quad
-boxes include transparent padding; source ink boxes come from thresholded
-JPEG regions. They are useful mismatch measurements, not font-outline proofs.
+| Native text / callback | Private FONT | Native quad error, HUD px | Visible ink error, HUD px |
+| --- | --- | ---: | ---: |
+| 12 (0xfbe30) | ore_bug | 0.4533 | 0.3333 |
+| 0 (0xfc050) | score_buga | 0.3321 | 0.6963 |
+| 0 (0xfc070) | score_buga | 0.3345 | 0.6963 |
+| 1st (0xfc090) | core_bug | 0.4648 | 1.0148 |
+| 13:10 (0xfc150) | dscore_buga | 0.6250 | 1.0000 |
+| 1st & 10 (0xfc7d0) | score_bug | 0.8919 | 0.8519 |
 
-## PROVED and HYPOTHESIS
+Visible-ink boxes are a separate threshold diagnostic at HUD resolution, with ROI-edge fragments excluded. The quarter label retains a 1.0148-pixel ink-boundary residual. This makes the difference between a fitted native quad and fitted visible text explicit; the original acceptance criteria were not weakened.
 
-**PROVED by the bounded offline inputs and tests:**
+## What changed and what is proved
 
-- The measured scene boundaries, eight final layer/aspect/mode combinations,
-  visible winding, and containment predicate. Static checks also exercise
-  score rotations at 0, .25, .5, .75 and .999, slides, 100/999 scores,
-  overtime, possession changes, clock format boundaries and alternate events.
-- Both fixed spans keep their entire 32-byte wrappers. `score_bug` is 4,832
-  bytes, `score_buga` 2,432 bytes, and both wrapper `+0x14` scratch fields
-  remain **16**. The native in-place decompressor matches the compiler's
-  decoded SHA-256 values. The atlas fits at 43 palette colours.
-- Static XBE/resource replay, runtime collection identities, all six probe
-  resource statuses, real-disc read-only preflights, and XBE replay. Foreign
-  bytes, mixed resources, bad tails/indexes and injected transaction failures
-  are rejected or rolled back by the existing writer tests.
-- All 139 existing HUD wrappers and all 4,323 archive index entries retain
-  their contracts; the suffix and unrelated packs retain their contents.
-  Test fixtures seed the actual index/HUD/logo spans and use sparse zero holes
-  for unused space, preserving logical writer/readback checks without a full
-  pack or disc copy.
-- Native collection loading completes under explicit host I/O completion:
-  188 to 716 events, 44 to 308 registered TXTRs, and 678,144 to 2,097,408
-  native heap bytes. The increment is 264 textures and 264 * 5,376 heap bytes.
-  Allocation-failure, old-EOF/missing-resource and bounded wait tests pass.
-- Both complete XBE gates compose owners in forward/reverse orders and the
-  scale-out union. The play-clock operand is checked as a complete five-byte
-  `MOV EDX` instruction and against the unchanged literal, not disassembled
-  as if its four operand bytes were a new cave.
+**PROVED by the pinned offline inputs and standalone tests:**
 
-**HYPOTHESIS / UNWITNESSED:**
+- Default and folder builds have distinct coherent scene identities. Status readers recognize complete shipped exact-v1 and v10 inputs; explicit writers refuse cross-version, mixed, foreign, v8 and v9 inputs before mutation. Custom folder inspection requires that folder. V10 source PNGs/compiler are unchanged. Original v10 assertions are retained in dedicated suites with explicit folder selection; two template test calls now explicitly select their folder.
+- The v10 XBE remains `0d0eee5163c1d5edbc41a8a0a522f3c55d74e9c5699f078aab37bd9e01b8d23f`, scene span `8bf58e95bdc4ddbfe627ee705165f7a639d5ba033dc3d6c9732f622ef3e364f2`, and atlas span `a208b56329eec1dc285dfc8f04dcf66883b62d502c549ed70583d2fb7b0b1609`.
+- Seven private native FONT resources clone pinned FONT4/FONT8 glyphs and bind only scorebug descriptors through the real registry. The original FONT resources and all nine global FONT slots remain unchanged. Native registration, field-relative relocation, glyph UVs, missing-resource fallback and foreign loader/name/callback refusal are tested. Per-glyph mask weighting preserves every numeral and clock punctuation. Quarter-only superscript S/T use the existing capital glyph masks.
+- Thin silver/red reflections, corner/separator alternatives, text weights, tiny lettering and native logo contours were compared in order. The reference has no separate TEXANS wordmark; it is removed. RAIDERS remains part of the retail shield. Other teams retain portable authored small capitals and their pinned retail logos; historical logos are still historical.
+- The possession marker uses an authored private FONT glyph and a seven-byte owned callback that writes one UTF-16 character into the caller's scratch buffer. The native possession predicate chooses its side and opacity. Team-name length cannot change its glyph count or alpha. Missing FONT lookup clears the marker colour, and native setup restores the actual retail city-label font selector.
+- Each score independently selects its compact descriptor when the current or cached native score has three digits. Checking both cached character slots avoids stale bytes after a NUL. A discovered 333-to-99 early-flip overlap is fixed; 99-to-100, 999, return to two/one digits, NULL descriptors, all 900 three-digit widths, six flip phases, both aspects and both placement modes are tested. Three-digit clearance is at least three HUD pixels before widescreen contraction. These are engineering containment measurements; no three-digit reference photograph exists.
+- The existing owner uses **1395 of 1408 RX bytes and 128 RW bytes**, with no new owner or allocation. Local branch shortening and a shared stdcall lookup wrapper keep all behavior inside that budget. Runtime state stays in RW memory; the one-glyph callback writes the native caller's buffer. The complete existing ABI, section digests and both XBE gate orders remain checked.
+- Seven FONTs add 337,120 archive bytes and 337,792 native heap bytes. The full collection retains 264 TXTRs plus seven FONTs. Original 139 resource wrappers, archive index relocation, suffix content, exact receipts, replay, rollback and native asynchronous completion remain checked. Static scene/atlas spans preserve all 32 wrapper bytes, including +0x14, and native overlapping decompression matches the installed bytes.
+- The exact-only play-clock operand at `0x000FBE43` points at the existing `%02d` suffix at `0xE6C43A`. The entire MOV instruction and unchanged UTF-16 literal are guarded; the original formatter and rounding remain native. The folder build retains its original colon and operands.
 
-- Actual console/TV scaling, blend/depth/filter state and clipping. The
-  rasterizer is an explicit software model, not an NV2A implementation.
-- Game-entry stability, asynchronous GPU completion, retail heap pressure,
-  full-game/replay/cutscene transitions and every on-screen runtime effect.
-  Passing fixture callbacks does not identify or fix the reported freeze.
-- Visual equality. Even perfect GPU agreement would not fix the demonstrated
-  glyph widths, cap heights, wordmark/logo differences or missing details.
+Evidence JSON is published by replacing complete snapshots, preserving the prior file if serialization fails. The projection fixture now groups adjacent pages with identical permissions, preserving the exact permission union and unmapped gaps. It applies runtime code only in memory, executes native setup/frame/text paths, and derives text from actual FONT descriptor metrics and glyph submissions. GPU boundaries, selected world predicates and animation phase inputs are explicit fixture replacements.
 
-## Outstanding requirements
+## Remaining hypotheses and gameplay witness
 
-**Custom glyph atlas and binding:** the nine retail font resources were
-measured. FONT4 is the smallest direct native down-string candidate at
-59x12 ink pixels; the normalized reference is approximately 38.7x9.1.
-FONT8's zero is 22x20 versus approximately 16.5x22.8 in the reference.
-The ordinary text object's `+0x30/+0x34` fields are shadow offsets, not
-scaling controls, and native score matrices are rebuilt each frame.
-Repainting the shared `digital_font` TXTR would not bind these actual FONT
-objects. Replacing global FONT4/FONT8 would also change unrelated UI.
-I did not install either shortcut. A scoped native FONT resource/descriptor
-binding is still required; this delivery does not contain or claim that
-fallback. This is a substantive unfinished part of the brief.
+**HYPOTHESIS / unproved:** the software alpha, filtering, depth, culling and pixel-centre model matches NV2A output; the reconstructed contour/weight choices look the same after console video output; and the expanded collection can enter a real game. FONT4/FONT8 outline shapes and P8 logo resolution remain visible residuals even where cap sizes fit. JPEG/video filtering and reflective highlights are not reproduced exactly. The default static layer intentionally keeps neutral artwork and retail font sizing. These are current limitations, not promises of a successful 1:1 witness.
 
-The thin rim and its silver/red reflections, pill/clock radii, separators,
-text weights, exact logo contours, tiny team lettering and possession
-chevron still differ. Suppressing native team abbreviations also removes
-their yellow possession cue; no matching replacement chevron is installed.
-Three-digit scores remain within the overall frame but can crowd the centre
-cells. Static dashes are decorative and never claim to track timeouts.
+No game, emulator application, GUI display, audio or network was run. Bounded Unicorn CPU execution was used only for the requested offline proofs. The freeze has not been assigned a cause: completing the native loader fixture does not prove GPU completion or game entry. Every probe below has a fresh read-only real-disc preflight and identical XBE/resource replay; no profile has a gameplay witness for this compiler.
 
-The freeze remains unresolved, and no runtime preset promotion is justified.
-The necessary protected packaging/help/manifest changes are specified in
-[WIRING.md](WIRING.md), not applied in this branch. A released build needs
-that integration. These remaining items prevent a truthful claim that the
-brief's full 1:1 goal is complete.
+| Probe | Hooks | TXTRs | Private FONTs | Added native heap bytes | Game entry |
+| --- | --- | ---: | ---: | ---: | --- |
+| transport | no | 0 | 0 | 0 | UNWITNESSED |
+| hooks | yes | 0 | 0 | 0 | UNWITNESSED |
+| resources | no | 264 | 7 | 1,757,056 | UNWITNESSED |
+| neutral | yes | 8 | 7 | 380,800 | UNWITNESSED |
+| pair | yes | 24 | 7 | 466,816 | UNWITNESSED |
+| full | yes | 264 | 7 | 1,757,056 | UNWITNESSED |
 
-## Six-profile freeze witness matrix
+Noah's witness list:
 
-The diagnostic recipe and pair identity remain those of the prior v8 probe:
-**NE/TB plus neutral**, not the LV/HOU comparison pair.
+1. Try the six profiles from the same clean source and record the first failing profile, exact entry point and reproducibility. Keep transport, hooks, resources, neutral, pair and full results separate. Test the pair profile with its documented TB/NE teams.
+2. Capture LV at HOU at 0-0, 1st & 10, 13:10 and a 12-second play clock in both aspect ratios and placement modes. Compare the final scorebar with the sole supplied broadcast, including fonts, rim, clock separators and logo clipping.
+3. Check possession on both sides, all timeout counts independently, score flashes, a new down, field-goal/punt/event labels, clock urgency below five seconds, the ten-minute formatter change, later quarters and overtime.
+4. Exercise one-, two- and three-digit scores, both halves of the native flip, reset/new-game behavior, created-team neutral fallback and another matchup. Confirm the private fonts do not change menus, rosters or any other HUD.
+5. Build a painted v10 folder and verify its original presentation and replay. Check the kick meter, lineup suppression, font fallback and a second game without restarting.
 
-| Profile | Hooks | Appended TXTRs | Pack growth | Intended isolation |
-| --- | --- | ---: | ---: | --- |
-| transport | No | 0 | 0 | Existing transport with changed HUD bytes |
-| hooks | Yes | 0 | 0 | Missing-resource hook path |
-| resources | No | 264 | 1,394,688 | Collection loading without hooks |
-| neutral | Yes | 8 | 43,008 | Neutral bindings and timeout states |
-| pair | Yes | 24 | 126,976 | NE/TB and fallback, both orientations |
-| full | Yes | 264 | 1,394,688 | All team resources and existing hooks |
+## Validation and protected-file handoff
 
-Every row preflights the real input XISO without writing it, reports applied
-resource/static status for the proposed result, and has identical XBE replay.
-Hook status is retail for transport/resources and applied for the other four.
-Every row's gameplay result is **UNWITNESSED**, not pass. See the complete
-receipt and proposed XBE hashes in `probe_matrix.json`.
+The three opt-in legacy visibility cases also pass using their existing Create-a-Play source fixture. Final validation: **320 passed, 4 precise historical/evidence skips**, across 17 standalone suites. Peak test RSS was 516,308 KiB, below the two-GiB limit. [validation.json](docs/scorebug_ingame/exact/validation.json) contains the complete commands, skip reasons, timings, source hashes and development findings. The early integration separately passed 307 tests with seven skips; its evidence remains in [integration_validation.json](docs/scorebug_ingame/exact/integration_validation.json).
 
-Noah's witness list, after integration into disposable builds:
+| Standalone command | Passed | Skipped | Peak RSS, KiB |
+| --- | ---: | ---: | ---: |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py -v` | 8 | 0 | 292,664 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_fonts.py -v` | 9 | 0 | 306,060 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py -v` | 11 | 0 | 139,156 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_native.py -v` | 4 | 0 | 217,508 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py -v` | 14 | 0 | 306,112 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py -v` | 6 | 0 | 168,140 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py -v` | 12 | 0 | 286,776 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py -v` | 10 | 3 | 48,552 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_template.py -v` | 19 | 0 | 139,916 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_template_release.py -v` | 5 | 0 | 33,272 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py -v` | 5 | 0 | 30,208 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_v10_ingame.py -v` | 11 | 0 | 149,576 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_v10_projection.py -v` | 14 | 0 | 289,076 |
+| `python3 tests/mod_editor/test_nfl2k5_scorebug_versions.py -v` | 4 | 0 | 159,832 |
+| `python3 tests/mod_editor/test_xbe_patch_cave_references.py -v` | 95 | 0 | 516,308 |
+| `python3 tests/mod_editor/test_xbe_patch_memory_writes.py -v` | 79 | 0 | 314,792 |
+| `NFL2K5_SCOREBUG_EMULATION_TEST=1 python3 tests/nfl2k5_scorebug_layout_test.py -v` | 14 | 1 | 154,044 |
 
-1. Keep an ordinary static-only control. In LV at HOU, record 4:3 and
-   widescreen captures at the same score/quarter/clock, plus the screen's
-   output mode and any TV scaling. Confirm placement before assessing shape.
-2. Compare all six profiles on the same NE/TB entry route. Record entry
-   success/freeze, last visible frame, elapsed time, build/probe/hash and
-   whether a warm restart differs from a cold start. Do not call a successful
-   one-profile entry a freeze fix.
-3. For a profile that enters successfully, use a timeout on each team and
-   verify 3/2/1/0 dashes independently, without other panel pixels changing.
-   Check possession, score changes/rotation, under-five play-clock colour,
-   down changes, 9:59/10:00, quarter changes and overtime.
-4. Exercise both drive directions, kickoff/punt/field-goal screens, FLAG,
-   FUMBLE, ball position, halftime, pause, replay, cutscene, return to menu
-   and a second matchup. Confirm no exposed collapsed mark or lost panel.
-5. Check home/away gradients and unmoved lettering for all 32 teams and
-   created-team fallback. Check 100+ scores for centre-cell crowding.
+[WIRING.md](WIRING.md) specifies the two new product allowlist/import entries, both shared help strings, the existing folder override, dispatcher/status fields, presets, captions and manifest regeneration. Protected files and shared GUI files were not edited. The existing folder field remains `str = ""` and is passed as `folder or None` to the writer. Runtime remains diagnostic and disabled by default.
 
-## Validation, resource limits and delivery
-
-All commands use standalone `python3 file.py` with
-`QT_QPA_PLATFORM=offscreen`, timed using `/usr/bin/time -v`. The final results,
-precise skips and earlier development failures are recorded in
-`docs/scorebug_ingame/exact/validation.json`. The tables below are filled from
-those final logs before committing.
-
-| Standalone suite | Passed | Skipped | Wall seconds | Peak RSS, KiB |
-| --- | ---: | ---: | ---: | ---: |
-| `tests/nfl2k5_scorebug_layout_test.py` | 11 | 4 | 2.323 | 146,504 |
-| `tests/mod_editor/test_nfl2k5_scorebug_exact.py` | 7 | 0 | 138.386 | 208,584 |
-| `tests/mod_editor/test_nfl2k5_scorebug_ingame.py` | 11 | 0 | 8.697 | 137,756 |
-| `tests/mod_editor/test_nfl2k5_scorebug_native.py` | 4 | 0 | 134.963 | 203,212 |
-| `tests/mod_editor/test_nfl2k5_scorebug_projection.py` | 14 | 0 | 442.934 | 335,744 |
-| `tests/mod_editor/test_nfl2k5_scorebug_resources.py` | 6 | 0 | 102.408 | 168,716 |
-| `tests/mod_editor/test_nfl2k5_scorebug_runtime.py` | 12 | 0 | 117.332 | 243,960 |
-| `tests/mod_editor/test_nfl2k5_scorebug_source_art.py` | 10 | 3 | 0.494 | 48,100 |
-| `tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py` | 5 | 0 | 0.186 | 30,608 |
-| `tests/mod_editor/test_xbe_patch_cave_references.py` | 95 | 0 | 385.686 | 502,756 |
-| `tests/mod_editor/test_xbe_patch_memory_writes.py` | 79 | 0 | 295.651 | 314,268 |
-
-**Total: 254 passed, 7 skipped, 0 failures across 11 standalone suites.**
-The final receipt-flag assertion also passed separately after its naming change.
-The seven skips are three absent legacy source-art comparison inputs, one
-absent intermediate glTF, and three older opt-in bounded CPU fixtures.
-The current projection/native/runtime CPU suites ran without skips.
-Python compilation and `git diff --check` also passed.
-
-No whole disc or archive pack was loaded into RAM. Archive access uses bounded
-`PackView` reads. The probe preflight peaked at 173,400 KiB RSS. The largest
-standalone suite peaked below 0.5 GiB, well under the 2 GiB test limit. Recorded
-free space remained above **100,000,000,000 bytes**; this is decimal GB, not a
-claim of 100 GiB. The final evidence directory is about 5 MiB and `.scratch`
-is below 200 MiB, including the delivery bundle. No disposable disc remains.
-
-The branch starts at `ddec83f`. Input sources include the supplied Fable
-layout/atlas template, SVG lineage, actual retail logo/FONT spans, prior
-scorebug ESPN/ingame/runtime/fix/v9 reports, allocator scale-out report and
-RC85 baseline. No parallel compiler branch is required. All protected files
-are untouched; the one `WIRING.md` addition supersedes the older scorebug v9
-handoff without deleting unrelated handoffs.
-
-Shared Git staging refused to create `index.lock` because its metadata is
-read-only. The authorized fallback creates the commit using isolated metadata
-and **114 explicit paths**, excluding `ASTRA_BRIEF.md` and `.scratch/` from
-the commit. Delivery is `.scratch/r63-scorebug-exact.bundle`, with
-commit/base/bundle identities in `.scratch/DELIVERY.json`. The verified bundle
-contains only this work and requires the existing base commit. The original
-worktree HEAD is unchanged. Nothing is pushed.
-
-Reproduce the authored candidate from the pinned retail extraction:
-
-```sh
-python3 tools/nfl2k5_scorebug_exact.py \
-  --pack '<retail extraction>/ESPN NFL 2K5 (USA)/vc_53450030/0' \
-  --xbe '<retail extraction>/ESPN NFL 2K5 (USA)/default.xbe' \
-  --output '<new evidence directory>'
-```
-
-`--accept-palette` explicitly updates the chosen red bias and compiler pins in
-an authoring checkout. `--audit-only` verifies an existing completed selection
-and refreshes the native audits, both aspect scores, font study and panel
-inventory. The older projection CLI delegates to this comparator. It cannot
-turn an offline image into a witnessed game result.
+Only bounded source slices were read. Synthetic IO fixtures and logs use `.scratch`; temporary fixtures are deleted on exit. No disposable disc or pack copy remains. The delivery audit records protected-path checks, free space, scratch size and bundle verification separately in `.scratch/DELIVERY.json` and the completion markers.

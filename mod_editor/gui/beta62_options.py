@@ -8,8 +8,9 @@ SCOREBUG_HELP = (
     "template. Moves the kick meter up and hides the lineup strip. "
     "EXPERIMENTAL / UNWITNESSED; fonts and colours still differ.")
 SCOREBUG_RUNTIME_HELP = (
-    "Retail: Uses the original team panels. Patch: Adds team gradients, logos, "
-    "small wordmarks and live timeout marks to the experimental scorebar. "
+    "Retail: Uses the original team panels and text. Patch: Adds team gradients, "
+    "logos, live timeout marks, resized text, a white possession marker and "
+    "room for three-digit scores to the experimental scorebar. "
     "Diagnostic only and off in every preset. EXPERIMENTAL / UNWITNESSED; "
     "the game-entry freeze remains unresolved. Keep the six probe choices.")
 PRACTICE_HELP = (

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Project broadcast scenes and reconstruct historical inputs with native FONT submissions.
 
-This research tool is not imported by the application. It installs no scorebug
-runtime code. Geometry, text bindings and glyph submissions run on the CPU;
+This research tool is not imported by the application. Runtime code is applied
+only to an in-memory CPU fixture. Geometry, text bindings and glyph submissions run on the CPU;
 the final software raster is explicitly a model of unexecuted GPU state.
 """
 from __future__ import annotations
@@ -48,7 +48,7 @@ def validate_native_code(payload):
 
 
 class StaticMachine:
-    """Bounded native CPU fixture with no scorebug runtime installation.
+    """Bounded native CPU fixture for static or diagnostic runtime inputs.
 
     Scene relocation, name lookup, text bindings and score transforms run from
     the supplied executable. Heap, game state, font IDs and GPU boundaries are
@@ -71,13 +71,23 @@ class StaticMachine:
                 pages[page] = pages.get(page, 0) | flags
         self.uc.mem_map(image.base, 4096)
         self.uc.mem_write(image.base, payload[:image.headers_size])
-        for page in pages:
-            self.uc.mem_map(page, 4096)
+        # Preserve the exact page permission union and every unmapped gap, but
+        # avoid thousands of separate Unicorn regions for adjacent pages.
+        # The latter made every repeated native FONT trial spend seconds in
+        # mem_map before executing a single game instruction.
+        regions = []
+        for page, flags in sorted(pages.items()):
+            if regions and regions[-1][1] == page and regions[-1][2] == flags:
+                regions[-1][1] += 4096
+            else:
+                regions.append([page,page+4096,flags])
+        for start, end, _flags in regions:
+            self.uc.mem_map(start, end-start)
         for s in image.sections:
             if s.flags & 2:
                 self.uc.mem_write(s.start, payload[s.raw:s.raw + s.raw_size])
-        for page, flags in pages.items():
-            self.uc.mem_protect(page, 4096, flags)
+        for start, end, flags in regions:
+            self.uc.mem_protect(start, end-start, flags)
         self.uc.mem_map(self.HEAP, 0x400000)
         self.uc.mem_map(self.STACK, 0x10000)
         self.uc.mem_map(self.STOP, 4096, uc.UC_PROT_READ | uc.UC_PROT_EXEC)
@@ -199,6 +209,62 @@ class StaticMachine:
             self.fonts[obj] = font
 
 
+    def load_private_font(self, span, font):
+        """Real FONT registration/relocation, without writing a global slot."""
+        original_slots = bytes(self.uc.mem_read(0xa90ecc, 9 * 4))
+        chunk, decoded, _ = r.decode(span)
+        at = self.alloc(len(decoded))
+        self.uc.mem_write(at, decoded)
+        self.put(0xb12074, at + chunk.system_bytes)
+        self.run(0x43e30, (0x44b80,), ecx=at, edx=0x44b60, limit=30000)
+        obj = self.get(at + 20)
+        if obj != at + font.object_offset:
+            raise ValueError('native private FONT descriptor differs from its serialized pointer')
+        changed_slots = bytes(self.uc.mem_read(0xa90ecc, 9 * 4)) != original_slots
+        if changed_slots:
+            raise ValueError('private FONT registration changed the global FONT table')
+        self.fonts[obj] = font
+        return dict(name=font.name, object=hex(obj), span_sha256=r.digest(span),
+                    range_pointer=hex(self.get(obj+8)), system_bytes=chunk.system_bytes,
+                    video_bytes=chunk.video_bytes, global_slot_changed=changed_slots)
+
+
+def private_font(span, source):
+    """Parse installed metrics independently of the author's scale parameters."""
+    from dataclasses import replace
+    from nfl_main_menu_font import field_pointer, Glyph
+    chunk, decoded, _ = r.decode(span)
+    _, obj = field_pointer(decoded, 20, chunk.system_bytes)
+    _, name_at = field_pointer(decoded, 16, chunk.system_bytes)
+    text = decoded[name_at:obj].decode('utf-16le').split('\0')[0]
+    minimum, maximum, count = struct.unpack_from('<HHI', decoded, obj)
+    _, range_at = field_pointer(decoded, obj+8, chunk.system_bytes)
+    glyphs, ranges = [], []
+    for i in range(count):
+        at = range_at + i*8
+        first, last = struct.unpack_from('<HH', decoded, at)
+        _, glyph_at = field_pointer(decoded, at+4, chunk.system_bytes)
+        if not minimum <= first <= last <= maximum or glyph_at+(last-first+1)*96 > chunk.system_bytes:
+            raise ValueError('private FONT glyph range exceeds its system buffer')
+        ranges.append(dict(index=i, first_codepoint=first, last_codepoint=last,
+                           record_offset=at, glyph_records_offset=glyph_at, glyph_count=last-first+1))
+        for cp in range(first, last+1):
+            off = glyph_at + (cp-first)*96
+            glyphs.append(Glyph(cp, off, struct.unpack_from('<I',decoded,off)[0],
+                                struct.unpack_from('<16f',decoded,off+16),
+                                struct.unpack_from('<4f',decoded,off+80)))
+    video = decoded[chunk.system_bytes:]
+    pixels = source.width * source.height
+    return replace(source, name=text, decoded=decoded, decoded_sha256=r.digest(decoded),
+                   object_offset=obj, range_offset=range_at, minimum=minimum, maximum=maximum,
+                   range_count=count, space_advance=struct.unpack_from('<I',decoded,obj+12)[0],
+                   line_advance=struct.unpack_from('<I',decoded,obj+16)[0],
+                   graphics_descriptor_offset=obj+64, glyphs=tuple(glyphs), ranges=tuple(ranges),
+                   swizzled_indices=video[:pixels],
+                   linear_indices=r.tx.unswizzle_2d(video[:pixels],source.width,source.height,1),
+                   palette=video[pixels:pixels+64],palette_tail=video[pixels+64:])
+
+
 def read_fonts(pack):
     """Read only the bounded FONT outer, using the existing pinned parser."""
     from nfl_outer import parse_archive, read_entry_bytes
@@ -253,11 +319,23 @@ def static_receipts(payload, spans, *, scorebug_folder=None):
                 resources=resources, temporary_disc_created=False)
 
 
+from functools import lru_cache
+
+
+@lru_cache(maxsize=4)
+def _runtime_payload(payload, code_identity):
+    # Cache the immutable writer result during coordinate trials. The key
+    # includes the emitted hook bytes so authored variants cannot alias.
+    from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+    return runtime.apply(payload)[0]
+
+
 def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, slide=1.0,
                     score_transforms=True, score_phase=0.0, texture_span=None, fonts=None,
                     capture=None, baseline_v8=False, visible_elements=(0, 1),
                     score_values=(0, 0), previous_scores=(0, 0), baseline_v9=False,
-                    runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None):
+                    runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None, runtime_fonts=(),
+                    possession='home'):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
@@ -291,8 +369,12 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         if baseline_v8 or baseline_v9:
             raise ValueError('historical scene cannot use the current runtime')
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
-        payload = runtime.apply(payload)[0]
+        payload = _runtime_payload(payload, runtime.code_for(0, 0)[0])
     m = StaticMachine(payload)
+    if possession not in ('home','away'):
+        m.close()
+        raise ValueError('unknown possession fixture side')
+    m.put(0xe60280,0xe5fc20 if possession == 'home' else 0xe5fc60)
     if identity is not None:
         m.identity(**identity)
     m.put(m.home, score_values[0])
@@ -313,6 +395,13 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         m.uc.mem_write(0xef850, bytes.fromhex('b801000000c3'))
     else:
         m.load_fonts(fonts)
+    private_receipts = []
+    if runtime_fonts:
+        if runtime_textures is None or fonts is None or scorebug_folder is not None:
+            raise ValueError('private fonts require the exact runtime and retail font sources')
+        from mod_editor.core import nfl2k5_scorebug_fonts as scoped
+        for span, (slot, _sx, _sy) in zip(runtime_fonts, scoped.SCALES):
+            private_receipts.append(m.load_private_font(span, private_font(span, fonts[slot])))
     m.put(0xa6a9d0, 720); m.put(0xa6a9d4, 480)
     m.run(0xfccd0, limit=500000)
     instance = m.get(0xa9552c)
@@ -394,7 +483,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     viewport = list(floats(wide.ACTIVE_CAMERA_VA + 0x250, 8))
     if capture is not None:
         capture.update(machine=m, matrices=matrices, body=body, project=project,
-                       texture_spans=loaded_textures)
+                       texture_spans=loaded_textures, private_fonts=private_receipts)
     else:
         m.close()
     return dict(schema='nfl2k5_scorebug_native_projection/v2', experimental=True, runtime_witnessed=False,
@@ -403,7 +492,8 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 native_camera=list(camera), hud_viewport=viewport,
                 positions=positions, world_positions=world_positions, anchors=anchors,
                 materials=materials, objects=objects, score_transforms=score_transforms,
-                scorebug_runtime_installed=runtime_textures is not None,
+                scorebug_runtime_installed=runtime_textures is not None, private_fonts=private_receipts,
+                possession=possession,
                 static_version='espn-reference-v8' if baseline_v8 else 'espn-reference-v9' if baseline_v9 else r.scene_version(scorebug_folder=scorebug_folder),
                 score_phase=score_phase, score_values=list(score_values), previous_scores=list(previous_scores),
                 visible_elements=list(visible_elements),

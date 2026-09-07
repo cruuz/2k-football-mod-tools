@@ -21,6 +21,7 @@ import nfl2k5_scorebug_projection as projection
 from mod_editor.core import nfl2k5_scorebug_exact as exact
 from mod_editor.core import nfl2k5_scorebug_ingame as scene
 from mod_editor.core import nfl2k5_scorebug_resources as art
+from mod_editor.core import nfl2k5_scorebug_fonts as scoped
 
 REFERENCE = ROOT / "docs/scorebug_ingame/reference_LV_HOU_broadcast.jpeg"
 TEXT_ROIS = {
@@ -31,7 +32,22 @@ TEXT_ROIS = {
 
 
 def write_json(path, value):
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    # Readers and Git may inspect a long-running loop's evidence between trials.
+    # Publish a complete snapshot instead of truncating their mapped input.
+    import os
+    import tempfile
+    path = Path(path).resolve()
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", newline="\n",
+                dir=path.parent, prefix="." + path.name + ".", suffix=".tmp", delete=False) as stream:
+            temporary = Path(stream.name)
+            json.dump(value, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def reference():
@@ -61,17 +77,38 @@ def wide_reference(target):
 
 
 def reference_text_boxes(source):
+    from collections import deque
     import numpy as np
     pixels = np.asarray(source)
     result = {}
     for callback, (a, b, c, d) in TEXT_ROIS.items():
         roi = pixels[b:d, a:c].astype(float)
         hit = roi.min(axis=2) > 190 if callback in ("0xfc070", "0xfc050", "0xfc7d0") else roi.max(axis=2) < 100
-        ys, xs = np.where(hit)
-        if not len(xs):
+        # Border fragments are not glyphs. In the quarter ROI a five-pixel
+        # capsule-rim component touches the lower/left ROI edge; including it
+        # falsely measured 12.7x10.8 instead of the actual 9.0x7.05 text.
+        seen = np.zeros_like(hit)
+        ink = []
+        for y, x in np.argwhere(hit):
+            if seen[y, x]:
+                continue
+            queue, component = deque([(int(y), int(x))]), []
+            seen[y, x] = True
+            while queue:
+                yy, xx = queue.popleft()
+                component.append((yy, xx))
+                for dy in (-1, 0, 1):
+                    for dx in (-1, 0, 1):
+                        ny, nx = yy+dy, xx+dx
+                        if 0 <= ny < hit.shape[0] and 0 <= nx < hit.shape[1] and hit[ny, nx] and not seen[ny, nx]:
+                            seen[ny, nx] = True
+                            queue.append((ny, nx))
+            if len(component) >= 3 and not any(y in (0, hit.shape[0]-1) or x in (0, hit.shape[1]-1) for y,x in component):
+                ink.extend(component)
+        if not ink:
             raise ValueError("no reference text in " + callback)
-        result[callback] = list(exact.hud_box((a + int(xs.min()), b + int(ys.min()),
-                                               a + int(xs.max()) + 1, b + int(ys.max()) + 1)))
+        ys, xs = zip(*ink)
+        result[callback] = list(exact.hud_box((a + min(xs), b + min(ys), a + max(xs) + 1, b + max(ys) + 1)))
     return result
 
 
@@ -97,6 +134,39 @@ def edge_distance(first, second, mask=None):
     values = distances(a, b) + distances(b, a)
     return dict(mean_px=float(np.mean(values)), p95_px=float(np.percentile(values, 95)),
                 max_px=max(values), reference_edges=len(a), rendered_edges=len(b))
+
+
+def rendered_text_ink(pixels, callback, widescreen=False):
+    """Separate threshold diagnostic; this does not replace native quad metrics.
+
+    The photographed ROIs are mapped into the HUD raster. Components touching
+    their edge include clock-rim fragments and the home possession marker.
+    One HUD pixel already covers more than the source's three-pixel speck limit.
+    """
+    import numpy as np
+    box = list(exact.hud_box(TEXT_ROIS[callback]))
+    if widescreen:
+        for i in (0,2): box[i] = 320+(box[i]-320)*27/32
+    a,b,c,d = map(round,box)
+    roi = pixels[b:d,a:c]
+    if not roi.size: return None
+    hit = roi.min(axis=2)>190 if callback in ('0xfc050','0xfc070','0xfc7d0') else roi.max(axis=2)<100
+    seen = np.zeros_like(hit);ink = []
+    for y,x in np.argwhere(hit):
+        if seen[y,x]: continue
+        queue,component = [(int(y),int(x))],[];seen[y,x] = True
+        while queue:
+            yy,xx = queue.pop();component.append((yy,xx))
+            for dy in (-1,0,1):
+                for dx in (-1,0,1):
+                    ny,nx = yy+dy,xx+dx
+                    if 0<=ny<hit.shape[0] and 0<=nx<hit.shape[1] and hit[ny,nx] and not seen[ny,nx]:
+                        seen[ny,nx] = True;queue.append((ny,nx))
+        if not any(y in (0,hit.shape[0]-1) or x in (0,hit.shape[1]-1) for y,x in component):
+            ink.extend(component)
+    if not ink: return None
+    ys,xs = zip(*ink)
+    return [a+min(xs),b+min(ys),a+max(xs)+1,b+max(ys)+1]
 
 
 def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False):
@@ -144,6 +214,9 @@ def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False):
         texts[callback] = dict(text=row["text"], font=row["font"], native_quad_box=actual,
                                reference_ink_box=target,
                                max_error_px=max(abs(x - y) for x, y in zip(actual, target)))
+        ink = rendered_text_ink(out,callback,geometry["widescreen"])
+        texts[callback]['rendered_ink_box'] = ink
+        texts[callback]['rendered_ink_max_error_px'] = None if ink is None else max(abs(x-y) for x,y in zip(ink,target))
     limits = dict(native_boundary_px=1, edge_p95_px=1, rgb_mae=8, text_box_px=1)
     measured = [row for row in regions.values() if not row["neutral_subset"]]
     passed = all(row["native_boundary_error_px"] is not None and row["native_boundary_error_px"] <= 1
@@ -154,7 +227,7 @@ def compare(reference_image, rendered, geometry, text_boxes, *, runtime=False):
                 mean_region_rgb_mae=sum(v["rgb_mae"] for v in regions.values()) / len(regions),
                 containment=projection.containment_failures(geometry, geometry["frame"], .02),
                 exact_match=passed,
-                metric_limits="Native quad bounds include transparent glyph padding. Pixel edges include text/logos; static neutral panels intentionally omit team art.")
+                metric_limits="Native quad bounds include transparent glyph padding. Rendered-ink boxes are a separate threshold diagnostic at HUD resolution with ROI-edge components excluded. Pixel edges include text/logos; static neutral panels intentionally omit team art.")
 
 
 class Build:
@@ -173,13 +246,17 @@ class Build:
                 v = art.TEAM_LOGOS[team]
                 span = self.view[v["pack_offset"]:v["pack_offset"] + v["span_size"]]
                 self.panels.extend(art._compiled_panels(self.spans["score_buga"], span, team, side))
+            self.font_spans = scoped.compile_collection(self.view)
+            self.private_fonts = [projection.private_font(span, self.fonts[slot])
+                                  for span, (slot, _sx, _sy) in zip(self.font_spans, scoped.SCALES)]
             self._files = stack.pop_all()
 
     def close(self):
         self._files.close()
 
     def render(self, path, *, runtime=False, widescreen=False, mode=0, historical=False,
-               atlas_image=None, mesh=None, score_values=(0, 0), score_phase=0, timeouts=(3, 3)):
+               atlas_image=None, mesh=None, score_values=(0, 0), score_phase=0, timeouts=(3, 3),
+               previous_scores=(0,0), possession='home'):
         if historical:
             mesh = scene.mesh_v9(self.retail_scene)
             atlas_image = scene.atlas_v9(self.spans)
@@ -195,10 +272,12 @@ class Build:
                     texture_span=texture, fonts=self.fonts, capture=capture, baseline_v9=historical,
                     runtime_textures=self.panels if runtime else None,
                     identity=dict(home="HOU", away="LV", home_code="37", away_code="20"),
-                    score_values=score_values, score_phase=score_phase, timeouts=timeouts)
+                    score_values=score_values, score_phase=score_phase, timeouts=timeouts,
+                    previous_scores=previous_scores, possession=possession,
+                    runtime_fonts=self.font_spans if runtime else ())
         try:
             geometry.update(projection.native_text_draw(capture))
-            geometry.update(projection.render_native(decoded, texture, self.fonts, geometry, path,
+            geometry.update(projection.render_native(decoded, texture, self.fonts + (self.private_fonts if runtime else []), geometry, path,
                                                        texture_spans=capture["texture_spans"]))
             geometry["resource_receipt"] = dict(scene_sha256=scene.digest(span), atlas_sha256=scene.digest(texture),
                                                 atlas=receipt, wrapper_identical=span[:32] == self.spans["score_bug"][:32])
@@ -226,9 +305,9 @@ def compiler_pins(build):
                 STATIC_SCENE_SHA256=scene.digest(scene.decode(static)[1]),
                 RUNTIME_SCENE_SHA256=scene.digest(scene.decode(runtime)[1]),
                 RUNTIME_PINS={**art.RUNTIME_PINS, "hud_after": scene.digest(hud),
-                              "appendix": scene.digest(b"".join(data for _, data in panels))},
+                              "appendix": scene.digest(b"".join(data for _, data in panels) + b"".join(scoped.compile_collection(build.view)))},
                 PROBE_APPEND_PINS={probe: scene.digest(b"".join(data for code, data in panels
-                                                               if code in art.probe_codes(probe)))
+                                                               if code in art.probe_codes(probe)) + (b"".join(scoped.compile_collection(build.view)) if art.probe_codes(probe) else b""))
                                    for probe in ("transport", "hooks", "neutral", "pair")})
 
 
@@ -270,11 +349,36 @@ def supplemental_evidence(build, output):
         fonts[font.name] = dict(slot=font.slot, decoded_sha256=font.decoded_sha256,
                                 measurements=measurements)
     sheet.convert("RGB").save(output / "retail_font_study.png")
-    write_json(output / "font_study.json", dict(fonts=fonts, custom_glyph_atlas_bound=False,
-        selected=dict(scores="font8", small_text="font4"),
-        evidence="Native FONT resource metrics and alpha coverage, not a GPU measurement."
-                 " No retail font offers the reference down-string width at its cap height."
-                 " The requested custom glyph binding remains unimplemented."))
+    private = []
+    private_sheet = Image.new("RGBA", (540, 36 * len(build.private_fonts)), "#252525")
+    for index, font in enumerate(build.private_fonts):
+        atlas = Image.frombytes("RGBA", (font.width, font.height), rgba_from_font(font))
+        glyphs = {chr(g.codepoint): g for g in font.glyphs}
+        ImageDraw.Draw(private_sheet).text((5, index*36+10), font.name, fill="white")
+        x = 105
+        for character in ("V" if index == 4 else "01st13:10&"):
+            glyph = glyphs[character]
+            u, v, a, b = glyph.uv
+            tile = atlas.crop(tuple(round(k) for k in (u*font.width, v*font.height, a*font.width, b*font.height)))
+            width = max(1, round(glyph.positions[4] - glyph.positions[0]))
+            height = max(1, round(glyph.positions[9] - glyph.positions[1]))
+            tile = tile.resize((width, height), Image.Resampling.BILINEAR)
+            private_sheet.alpha_composite(tile, (round(x+glyph.left), index*36+2+round(glyph.top)))
+            x += glyph.advance
+        private.append(dict(name=font.name, decoded_sha256=font.decoded_sha256,
+            donor=scoped.SCALES[index][0]+1, scales=scoped.SCALES[index][1:], weight=scoped.WEIGHT,
+            glyph_quads={character: dict(advance=glyphs[character].advance, positions=glyphs[character].positions,
+                                        uv=glyphs[character].uv) for character in "01st:&"}))
+    private_sheet.convert("RGB").save(output / "private_font_study.png")
+    write_json(output / "font_study.json", dict(fonts=fonts, private_fonts=private,
+        private_font_descriptors_bound=True, authored_chevron_bound=scoped.CHEVRON,
+        custom_glyph_atlas_bound=bool((scoped.WEIGHT if type(scoped.WEIGHT) is int else any(scoped.WEIGHT)) or scoped.CHEVRON),
+        selected=dict(static_scores="font8", static_small_text="font4", runtime=list(scoped.NAMES)),
+        global_fonts_replaced=False, private_append_bytes=scoped.APPEND_SIZE,
+        native_heap_bytes=scoped.HEAP_BYTES, experimental=True, runtime_witnessed=False,
+        evidence="Private FONT descriptors are registered through native 43e30/44b60/492c0 and bound only to scorebug objects."
+                 " Native quad submissions are measured separately in native_audit.json."
+                 " Glyph families remain retail; the private possession mask is authored. GPU filtering/blend is a model."))
     sheet = Image.new("RGB", (1072, 448), "#101010")
     for index, (team, record) in enumerate(sorted(art.TEAM_LOGOS.items())):
         span = build.view[record["pack_offset"]:record["pack_offset"] + record["span_size"]]
@@ -315,6 +419,7 @@ def main(argv=None):
     write_json(args.output / "measurement.json", dict(source=str(REFERENCE.relative_to(ROOT)),
         sha256=exact.REFERENCE_SHA256, source_size=list(source.size), source_rails=exact.SOURCE_RAILS,
         hud_rails=exact.RAILS, regions=exact.SOURCE_REGIONS, text_ink_boxes=text_boxes,
+        text_measurement="8-connected threshold components; discard ROI-edge components and specks under three source pixels. Metric v4 removes the five-pixel quarter capsule-rim fragment.",
         transform="x=x/3; y=16+y*448/1080. Full photo fitted to native active viewport, not clipped at y=464.",
         boundary_uncertainty_source_px=2, evidence="Measured JPEG transition bands; no clean vector alpha or GPU witness."))
     build = Build(args.pack, args.xbe)
@@ -436,11 +541,28 @@ def main(argv=None):
                     with Image.open(path) as image:
                         strip.paste(image.crop((135, 398, 505, 460)), (i * 370, y + 20))
         strip.save(args.output / "iteration_strip.png")
-        write_json(args.output / "scores.json", dict(iterations=trials, complete=True,
+        result = dict(**(previous or {}))
+        result.update(iterations=trials, complete=True, full_audit_current=True,
+                    audit_scope="Installed static/runtime inputs in both aspects and both modes; metric v4.",
                     exact_match=all(row["exact_match"] for row in final_scores.values()),
-                    stopping_rule="Red-channel coordinate descent at steps 4, 2, 1; no neighbour improves combined static/runtime region MAE by 0.005. This is a local palette plateau, not pixel equality.",
+                    stopping_rule=("See converged_stages and region_plateaus for retained coordinate neighbours, domains and thresholds. Local plateaus do not establish pixel equality."
+                        if previous and previous.get("converged_stages") else
+                        "Red-channel coordinate descent at steps 4, 2, 1; no neighbour improves combined static/runtime region MAE by 0.005. This is a local palette plateau, not pixel equality."),
                     selected_iteration=best["iteration"], selected_red_bias=best_bias,
-                    final_scores=final_scores))
+                    final_scores=final_scores)
+        from mod_editor.core import nfl2k5_scorebug_runtime as owner
+        result.setdefault("audit", {})["current_source_sha256"] = {
+            str(Path(module.__file__).relative_to(ROOT)): scene.digest(Path(module.__file__).read_bytes())
+            for module in (exact, scoped, art, scene, owner, projection)}
+        result['audit']['current_source_sha256'][str(Path(__file__).relative_to(ROOT))] = scene.digest(Path(__file__).read_bytes())
+        write_json(args.output / "scores.json", result)
+        write_json(args.output / "font_binding.json", dict(experimental=True, witnessed=False,
+            measurement_version=4, selected_iteration=best["iteration"], scales=scoped.SCALES,
+            text=final_scores["runtime_4x3_mode0"]["text"], native_resources=finals["runtime_4x3_mode0"]["private_fonts"],
+            static_fallback="Retail FONT4/FONT8; private descriptors belong only to the diagnostic runtime collection.",
+            loader_code_guards=scoped.CODE_GUARDS, code_used=len(owner.code_for(0,0)[0].rstrip(b"\xcc")),
+            code_budget=owner.CODE_SIZE, data_budget=owner.DATA_SIZE,
+            append_bytes=scoped.APPEND_SIZE, native_heap_bytes=scoped.HEAP_BYTES))
     finally:
         build.close()
     return 0

@@ -41,6 +41,10 @@ STRIP = scene_box(SOURCE_REGIONS["clock_strip"])
 FRAME_COLOR = (37, 38, 37, 255)
 REGIONS = {"frame": (0, 0, 24, 24), "down": (0, 24, 64, 40),
            "strip": (0, 40, 64, 60), "solid": (1, 62, 2, 63)}
+# Authored broadcast details. The evidence tool retains both neighbours of
+# each selected value; the reference is used only for measurement/comparison.
+STYLE = {'clock_fill': 247, 'clock_radius': 9, 'hou_dx': 0, 'hou_dy': -3, 'hou_height': 39, 'hou_width': 49, 'lv_dx': 0, 'lv_dy': -4, 'lv_height': 41, 'lv_width': 42, 'pill_radius': 0, 'red': 224, 'red_reflection': 1.9, 'rim': 1, 'rim_gain': 7, 'rim_red': -9, 'separator': 200, 'separator_left': 1, 'silver': 222, 'silver_falloff': 0.35, 'silver_reflection': 0.4, 'wordmark_hou': 0, 'wordmark_weight': 0, 'separator_profile': 1, 'separator_right_x': 46.5, 'separator_left_x': 16.0}
+
 # Native ordinary text draws use FONT metrics directly. Their +30/+34 fields
 # are shadow offsets. Scores use native rotating parent/leaf matrices.
 ANCHORS = {
@@ -52,6 +56,9 @@ ANCHORS = {
     "drop_red": (0, -1, -4), "drop_hangtime": (0, -1, -4),
     "drop_ball_on": (0, 3, -4),
 }
+# Private FONTs are available only in the diagnostic runtime collection.
+# Keep the anonymous, fixed-span static scene on its retail FONT anchors.
+RUNTIME_ANCHORS = {'away_city': (-75, 0, -64), 'away_score': [-67.75, -27.651, -59], 'clock_a': [16.833, -20.904, -4], 'clock_b': [16.833, -20.904, -4], 'drop_ball_on': [0, 3, -4], 'drop_clock': [28.833, -18.989, -4], 'drop_down': [-0.5, 2.289, -4], 'drop_hangtime': [0, -1, -4], 'drop_red': [0, -1, -4], 'drop_yellow': [0, -1, -4], 'home_city': (59.5, 0, -64), 'home_score': [66.75, -27.651, -59], 'quarter': [-28.333, -18.855, -4]}
 
 
 def atlas(*, revision=3, red_bias=None):
@@ -67,10 +74,32 @@ def atlas(*, revision=3, red_bias=None):
     d.rounded_rectangle((0, 0, 23, 23), 3, fill=FRAME_COLOR, outline=rim)
     d.line((3, 1, 20, 1), fill=(70, 71, 69, 255))
     d.line((3, 22, 20, 22), fill=(18, 19, 18, 255))
+    if STYLE['rim']:
+        # Horizontal knots describe silver, neutral and red reflection roles.
+        knots = ((0., (239,242,235)), (.24, (86,89,83)), (.40, (48,43,41)),
+                 (.51, (57,51,46)), (.64, (151,72,78)), (1., (226,49,68)))
+        for x in range(24):
+            t = min(1., max(0., (x-3)/17))
+            lo, hi = next((lo, hi) for lo, hi in zip(knots, knots[1:]) if lo[0] <= t <= hi[0])
+            alpha = (t-lo[0])/(hi[0]-lo[0])
+            rgb = [round(a*(1-alpha)+b*alpha) + STYLE['rim_gain'] for a,b in zip(lo[1],hi[1])]
+            rgb[0] += round(STYLE['rim_red'] * max(0., (t-.5)*2))
+            rgb = tuple(min(255,max(0,c)) for c in rgb)
+            for y, gain in ((0,1.), (1,.65), (22,.65), (23,.09)):
+                if im.getpixel((x,y))[3]:
+                    im.putpixel((x,y), tuple(round(c*gain) for c in rgb)+(255,))
+        for y in range(2,22):
+            im.putpixel((0,y),(210,213,207,255))
+            im.putpixel((23,y),(211,34,52,255))
     d.rectangle((0, 24, 63, 39), fill=FRAME_COLOR)
     red = (165, 13, 37, 255) if revision > 0 else (208, 2, 27, 255)
-    d.rounded_rectangle((0, 24, 63, 39), 4, fill=(69, 38, 44, 255))
-    d.rounded_rectangle((1, 25, 62, 38), 3, fill=red, outline=(194, 32, 57, 255))
+    d.rounded_rectangle((0, 24, 63, 39), STYLE["pill_radius"], fill=(69, 38, 44, 255))
+    d.rounded_rectangle((1, 25, 62, 38), max(0, STYLE["pill_radius"]-1), fill=red, outline=(194, 32, 57, 255))
+    if STYLE.get("pill_profile", 0):
+        # The upper shoulders meet the frame; only the lower corners turn in.
+        d.rectangle((0,24,63,31), fill=(69,38,44,255))
+        d.rectangle((1,25,62,31), fill=red)
+        d.line((1,25,62,25), fill=(194,32,57,255))
     d.line((5, 25, 58, 25), fill=(214, 57, 77, 255))
     if revision >= 3:
         for y in range(26, 38):
@@ -85,12 +114,29 @@ def atlas(*, revision=3, red_bias=None):
                 if rr > gg * 2:
                     im.putpixel((x, y), (min(255, max(0, rr + red_bias)), gg, bb, aa))
     d.rectangle((0, 40, 63, 59), fill=FRAME_COLOR)
-    d.rounded_rectangle((0, 40, 63, 59), 8, fill=(11, 13, 12, 255))
-    d.rounded_rectangle((1, 41, 62, 58), 7, fill=(148, 143, 141, 255))
-    d.rounded_rectangle((2, 42, 61, 57), 6, fill=(239, 239, 232, 255))
+    d.rounded_rectangle((0, 40, 63, 59), STYLE["clock_radius"], fill=(11, 13, 12, 255))
+    d.rounded_rectangle((1, 41, 62, 58), max(0, STYLE["clock_radius"]-1), fill=(148, 143, 141, 255))
+    d.rounded_rectangle((2, 42, 61, 57), max(0, STYLE["clock_radius"]-2), fill=(STYLE["clock_fill"], STYLE["clock_fill"], STYLE["clock_fill"]-7, 255))
     # The photograph's play-clock field is light, with a dark separator and
     # dark digits. Preserve that measured fact, despite the brief's prose.
-    d.line((46, 44, 46, 56), fill=(168, 167, 161, 255))
+    separator_xs = [STYLE.get("separator_right_x", 46)]
+    if STYLE["separator_left"]:
+        separator_xs.append(STYLE.get("separator_left_x", 16))
+    for x in separator_xs:
+        from math import floor
+        base_x, fraction = floor(x), x-floor(x)
+        profile = STYLE.get("separator_profile", 0)
+        for y in (range(42,58) if profile else range(44,57)):
+            c = STYLE["separator"]
+            if profile:
+                # Darker at the capsule rim, almost cell-coloured midway.
+                t = (abs(y-49.5)/7.5)**2
+                c = round(STYLE["clock_fill"]*(1-t) + STYLE["separator"]*t)
+            ink = (c,max(0,c-1),max(0,c-7),255)
+            for px, amount in ((base_x,1-fraction),(base_x+1,fraction)):
+                if amount:
+                    before = im.getpixel((px,y))
+                    im.putpixel((px,y),tuple(round(a*(1-amount)+b*amount) for a,b in zip(before,ink)))
     d.rectangle((0, 61, 3, 63), fill=(248, 250, 243, 255))
     return im
 
@@ -157,7 +203,7 @@ def mesh(retail, *, runtime=False, revision=2):
     for side, parent in (("away", 23), ("home", 26)):
         box = PANELS[side]
         m.world[parent][:2] = [(box[0] + box[2]) / 2, (box[1] + box[3]) / 2]
-    for name, xyz in ANCHORS.items():
+    for name, xyz in (RUNTIME_ANCHORS if runtime else ANCHORS).items():
         i, leaf = r.layout.T[name], r.layout.T[name + "_l"]
         delta = [bb - aa for aa, bb in zip(m.world[i], m.world[leaf])]
         m.world[i] = list(xyz)
@@ -240,6 +286,7 @@ def wordmark(text):
 
 def panel(span, team, side, *, timeouts=3):
     from PIL import Image, ImageDraw
+    from math import exp
     from . import nfl2k5_scorebug_ingame as r
     if side not in ("home", "away") or type(timeouts) is not int or not 0 <= timeouts <= 3:
         raise ValueError("invalid scorebug side/timeouts")
@@ -250,29 +297,42 @@ def panel(span, team, side, *, timeouts=3):
     # Literal broadcast colour roles: Raiders silver and Texans red are the
     # secondary colours in teams.json. Do not mistake its primary for the photo.
     if team in ("LV", "HOU"):
-        primary = (224, 227, 224) if team == "LV" else (215, 18, 51)
+        primary = (STYLE["silver"], min(255,STYLE["silver"]+3), STYLE["silver"]) if team == "LV" else (STYLE["red"], 18, 51)
     im = Image.new("RGBA", (128, 32))
     d = ImageDraw.Draw(im)
     for x in range(128):
         distance = x if side == "away" else 127 - x
         t = min(1, distance / (57 if team == "LV" else 66))
         for y in range(32):
-            shade = 1 - .35 * y / 31 if team == "LV" else 1
+            shade = 1 - STYLE["silver_falloff"] * y / 31 if team == "LV" else 1
             rgb = tuple(round(c * (1 - t) * shade + b * t)
                         for c, b in zip(primary, FRAME_COLOR[:3]))
+            if team in ('LV', 'HOU'):
+                amount = STYLE['silver_reflection' if team == 'LV' else 'red_reflection']
+                gloss = min(1., amount * (.42*exp(-y/1.5) + .2*exp(-(31-y))))
+                tint = (248,252,247) if team == 'LV' else (254,58,88)
+                rgb = tuple(round(a*(1-gloss)+b*gloss) for a,b in zip(rgb,tint))
             im.putpixel((x, y), rgb + (255,))
     if logo is not None:
         bounds = logo.getchannel("A").getbbox()
         if bounds is None:
             raise ValueError("retail team logo is empty")
         width = 48 if team == "HOU" else 43
-        logo = logo.crop(bounds).resize((width, 31), Image.Resampling.LANCZOS)
+        height = 31
+        prefix = "lv" if team == "LV" else "hou" if team == "HOU" else None
+        if prefix:
+            width, height = STYLE[prefix+"_width"], STYLE[prefix+"_height"]
+        logo = logo.crop(bounds).resize((width, height), Image.Resampling.LANCZOS)
         x = 14 if side == "away" else 68 if team == "HOU" else 71
-        im.alpha_composite(logo, (x, 0))
+        dx, dy = (STYLE[prefix+"_dx"], STYLE[prefix+"_dy"]) if prefix else (0,0)
+        im.alpha_composite(logo, (x+dx, dy))
         # RAIDERS already exists in the actual shield. Every other team gets
         # authored small caps in its outer panel, above the logo body.
-        if team != "LV":
+        if team != "LV" and (team != "HOU" or STYLE["wordmark_hou"]):
             mark = wordmark(NICKNAMES[team])
+            if STYLE["wordmark_weight"]:
+                from PIL import ImageFilter
+                mark.putalpha(mark.getchannel("A").filter(ImageFilter.MaxFilter(3) if STYLE["wordmark_weight"] > 0 else ImageFilter.MinFilter(3)))
             mark = mark.resize((min(43, mark.width), 4), Image.Resampling.LANCZOS)
             im.alpha_composite(mark, (x + (43 - mark.width) // 2, 0))
     for n, x in enumerate((91, 101, 111)):

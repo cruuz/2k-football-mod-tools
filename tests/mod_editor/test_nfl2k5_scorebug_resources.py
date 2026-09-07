@@ -17,6 +17,7 @@ sys.path.insert(0,str(ROOT));sys.path.insert(0,str(ROOT/'tests'))
 from mod_editor.core import nfl2k5_scorebug_resources as a
 from mod_editor.core import nfl2k5_scorebug_ingame as r
 from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+from mod_editor.core import nfl2k5_scorebug_fonts as fonts
 from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as kickoff
 from mod_editor.core import platform_compat as io
 from mod_editor.core import nfl2k5_depth_chart_storage as storage
@@ -70,9 +71,10 @@ class RetailTests(unittest.TestCase):
     def test_all_264_native_objects_identity_pixels_and_dimming(self):
         start=a.HUD_START+a.HUD_SIZE
         objects=r.tx.parse_chunks(self.after[start:start+a.RUNTIME_APPEND_SIZE])
-        self.assertEqual(len(objects),264)
+        self.assertEqual(len(objects),264 + len(fonts.NAMES))
+        self.assertEqual([c.kind for c in objects], ['TXTR'] * 264 + ['FONT'] * len(fonts.NAMES))
         names=set()
-        for c in objects:
+        for c in objects[:264]:
             d=r.tx.decode_chunk(self.after[start:start+a.RUNTIME_APPEND_SIZE],c)[0]
             tex=r.tx.parse_texture(d,c);names.add(tex.name)
             self.assertEqual((c.system_bytes,c.video_bytes,c.compressed,c.overlap_scratch_bytes),(128,5120,False,0))
@@ -84,8 +86,10 @@ class RetailTests(unittest.TestCase):
                 pixel=rgba[(28*128+dx)*4:(28*128+dx)*4+4]
                 self.assertEqual(pixel[3],255)
                 self.assertGreater(min(pixel[:3]),180) if n<count else self.assertLess(max(pixel[:3]),90)
-        self.assertEqual(names,{rec['name'] for rec in self.receipt['resources']})
+        self.assertEqual(names,{rec['name'] for rec in self.receipt['resources'] if rec.get('kind') != 'FONT'})
         self.assertEqual(len(names),264)
+        self.assertEqual(fonts.source_spans(self.before), fonts.source_spans(self.after))
+        self.assertEqual({rec['name'] for rec in self.receipt['resources'] if rec.get('kind') == 'FONT'}, set(fonts.NAMES))
         # Source logos are still present unchanged in the archive.
         for rec in a.TEAM_LOGOS.values():
             at,size=rec['pack_offset'],rec['span_size']
@@ -163,6 +167,8 @@ class RetailTests(unittest.TestCase):
             f.seek(33*2048);f.write(root);f.seek(34*2048);f.write(sub.ljust(32,b'\0'))
             extents=[(0,outer.HEADER_SIZE+4323*12),(a.HUD_START,a.HUD_SIZE)]
             extents += [(v['pack_offset'],v['span_size']) for v in a.TEAM_LOGOS.values()]
+            font_outer = struct.unpack('<III', self.before[outer.HEADER_SIZE+36:outer.HEADER_SIZE+48])[2] * 2048
+            extents += [(font_outer + off, stored + 32) for off, stored, *_ in fonts.SOURCE_PINS.values()]
             for offset,size in extents:
                 f.seek(pack_sector*2048+offset);f.write(self.before[offset:offset+size])
             f.seek(xs*2048);f.write(xbe)
@@ -237,11 +243,13 @@ class RetailTests(unittest.TestCase):
                 compiled, receipt=a.compile_runtime_collection(self.before,probe=probe)
                 self.assertEqual(len(compiled),r.PACK_SIZE+growth)
                 self.assertEqual(receipt['texture_count'],count)
-                self.assertEqual(len(receipt['resources']),count)
-                self.assertEqual(receipt['native_heap_bytes'],count*5376)
+                font_count = len(fonts.NAMES) if count else 0
+                self.assertEqual(len(receipt['resources']),count + font_count)
+                self.assertEqual(receipt['font_count'], font_count)
+                self.assertEqual(receipt['native_heap_bytes'],count*5376 + (fonts.HEAP_BYTES if count else 0))
                 self.assertEqual(a.runtime_pack_status(compiled,probe=probe),'applied')
                 self.assertIs(a.compile_runtime_collection(compiled,probe=probe)[0],compiled)
-                names={item['name'] for item in receipt['resources']}
+                names={item['name'] for item in receipt['resources'] if item.get('kind') != 'FONT'}
                 self.assertEqual(names,{a.runtime_panel_name(code,side,n) for code in a.probe_codes(probe)
                                         for side in ('home','away') for n in range(4)})
                 for other in a.PROBES:

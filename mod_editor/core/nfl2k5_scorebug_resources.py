@@ -541,7 +541,7 @@ TEAM_LOGOS = {'ARI': {'outer': 24,
          'secondary': '#A71930'}}
 
 TEMPLATE_PATCHED_SHA256 = {'score_bug': '8bf58e95bdc4ddbfe627ee705165f7a639d5ba033dc3d6c9732f622ef3e364f2', 'score_buga': 'a208b56329eec1dc285dfc8f04dcf66883b62d502c549ed70583d2fb7b0b1609'}
-PATCHED_SHA256 = {'score_bug': 'f6c7cdef8533ada1dd7ace770f93fd88807da8c1d8833c8bcd82ada6aab3c472', 'score_buga': 'ea2dd162384acf38ed7e24f5f99513d2534a3b61c837c0f46421789a59b2fd39'}
+PATCHED_SHA256 = {'score_bug': 'f6c7cdef8533ada1dd7ace770f93fd88807da8c1d8833c8bcd82ada6aab3c472', 'score_buga': '031104a3c1d0d6b2fde3bcd988415f0187cc1f44d333df58298f33b76899cef8'}
 
 XBE_GUARDS = [(1032608, 89, '087132e1b01db50d2ab03c33faa583c44217fd8de4e2813c85640985f535719e', 'material binding'), (1037040, 294, '7c7e00839242a825fa4d3c361dec3d4da4bec327735f107599872ddf59e3444e', 'score rotation'), (1031728, 33, 'da040c2ad99c4a69867d6256db6ddf1c2c72be543a13cd430f10d4e743216935', 'play clock formatter'), (1030928, 128, '769ae0697334bb1cb70488d0168b78cc7534a0b18c341038d7366d5f3586703f', 'play clock getter'), (15123512, 12, '4a6e38fe0b26705ade04d6bc08bc6a849124472d666b960aacdb30b3c4e53d8e', 'play clock format suffix')]
 
@@ -559,13 +559,14 @@ LEGACY_DIGITAL_FONT = {'chunk': 46,
 
 # Runtime resource collection. Pixel data is derived from the user's retail disc.
 # These are ordinary native TXTR resources in the same HUD outer as score_bug.
-RUNTIME_VERSION = "scorebug-runtime-v3-broadcast-exact"
+RUNTIME_VERSION = "scorebug-runtime-v4-scoped-fonts"
+from . import nfl2k5_scorebug_fonts as scoped_fonts
 HUD_OUTER_INDEX, HUD_START, HUD_SIZE = 346, 109895680, 2977184
 RUNTIME_TEXTURE_COUNT, RUNTIME_TEXTURE_SPAN = 264, 5280
-RUNTIME_APPEND_SIZE = RUNTIME_TEXTURE_COUNT * RUNTIME_TEXTURE_SPAN
+RUNTIME_APPEND_SIZE = RUNTIME_TEXTURE_COUNT * RUNTIME_TEXTURE_SPAN + scoped_fonts.APPEND_SIZE
 RUNTIME_GROWTH = ((HUD_SIZE + RUNTIME_APPEND_SIZE + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
 # Filled by the reproducible compiler; no game bytes are distributed.
-RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': '12d22d4e31974f61cdd744bccfc67b46ae951e07956437307db3819d748ef5f1', 'appendix': '990ebd7d724fa83a8cd8b6cc16ddbebae858a37206c132c478357b6a615e98f7'}
+RUNTIME_PINS = {'index': '1b4c2af593e2b61d42b5afc3ad9c67433eee2af4fc16920f8a1538640c956b10', 'hud_before': '2c23410c05c1ec266c3176b8b201f9a48b4a45ac148110ca569e5df25984e7c8', 'hud_after': '1b721f473411734811be58db03b1c023c294be7fe50bb971ff3cac344bfbcc2f', 'appendix': '6cb55e4a99f15dc7a1a493ef91e086996fc14c1d32efa36e86b119331ba7b529'}
 
 
 def runtime_panel_name(asset_code, side, count):
@@ -716,7 +717,7 @@ def probe_codes(probe):
 
 def probe_sizes(probe):
     count = len(probe_codes(probe)) * 8
-    appendix = count * RUNTIME_TEXTURE_SPAN
+    appendix = count * RUNTIME_TEXTURE_SPAN + (scoped_fonts.APPEND_SIZE if count else 0)
     growth = ((HUD_SIZE + appendix + 2047) // 2048 - (HUD_SIZE + 2047) // 2048) * 2048
     return count, appendix, growth
 
@@ -750,7 +751,12 @@ def compile_runtime_collection(pack, *, probe="full"):
                 name = runtime_panel_name(record["asset_code"], side, count)
                 receipts.append(dict(name=name, team=team, side=side, timeouts=count, size=len(data), sha256=r.digest(data)))
                 panels.append(data)
-    appendix = b"".join(panels)
+    font_spans = scoped_fonts.compile_collection(pack) if texture_count else ()
+    if tuple(map(len, font_spans)) != (scoped_fonts.SPAN_SIZES if texture_count else ()):
+        raise ValueError("private scorebug FONT resource sizes changed")
+    receipts += [dict(name=name, kind="FONT", size=len(data), sha256=r.digest(data))
+                 for name, data in zip(scoped_fonts.NAMES, font_spans)]
+    appendix = b"".join((*panels, *font_spans))
     if len(appendix) != append_size:
         raise ValueError("runtime texture collection size changed")
     end = HUD_START + HUD_SIZE
@@ -775,7 +781,8 @@ def compile_runtime_collection(pack, *, probe="full"):
     if runtime_pack_status(result, probe=probe) != "applied":
         raise ValueError("runtime collection postcondition failed")
     return result, dict(status="applied", version=RUNTIME_VERSION, experimental=True, runtime_witnessed=False,
-                        probe=probe, texture_count=texture_count, native_heap_bytes=texture_count * 5376,
+                        probe=probe, texture_count=texture_count, font_count=len(font_spans),
+                        native_heap_bytes=texture_count * 5376 + (scoped_fonts.HEAP_BYTES if font_spans else 0),
                         growth=len(result)-len(pack), sha256_before=pack_digest(pack), sha256_after=pack_digest(result),
                         outer_index=HUD_OUTER_INDEX, outer_size_before=HUD_SIZE,
                         outer_size_after=HUD_SIZE+append_size, resources=receipts,
@@ -830,11 +837,11 @@ def runtime_pack_status(pack, *, probe="full"):
 
 # Reproducible subsets of the full collection. Pair includes both orientations
 # of TB and NE plus neutral fallbacks, so changing ends does not change assets.
-PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'da9214f61379c4ba3c0bb7a1adf832c414427c4b2b98b768045853b8a3d21d96', 'pair': '5b9994ea674a6d00f31cce1f63b48fcfccd0a43a7c1df1b0c213427d54c6481c'}
+PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'd7b9cdc5b58d3c7d8dad3d3e92ac74d26d3182abd625b19977b5d402482fe5ae', 'pair': 'f565ec8ba414797f42e0de821d0cfee7c1da3ff73f07b338333d5f19f91671e9'}
 
 # Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
 RUNTIME_ABI_GUARDS = [(1035472, 407, 'fae55450eb58f087e0e31b50636342c39d7b7df70361fae6b2ccda6e2fedfa60'), (1035888, 1466, 'fadbe0384fccb436be4f0fe52514aa9e38c543288a471ffc6b44e9ffde365b2f'), (1034688, 780, 'bdc0d7cda462c37ec5546944605fe12141a83c798965b78ebe5abe8467d379df'), (1031280, 73, '1fea8eb67ed1d7df96e85562ec8d79075736ed4d10e5cfbe18f1b7be05c01e60'), (281056, 104, '710fd5ba9fd2a147042dd4c5f133cc2a8d36dcdc10b47417d17ec65df9b46191'), (279504, 770, '1caaf5b258e1849435c7ed69dbc970f9ce5f265415c4dadecee3bef94dc8d6b3'), (199744, 37, 'dd3d52cc45c43dc86d8db7220d777346237b324dd9a00dce35c9de3362bbfdee'), (277792, 136, '03233a25e1afc3ef91892233872e5b9cf29404be7b250dbf17a62db248949d9f'), (282016, 20, '0ee1f6425e946ec6d8dd4aeae08c6ae211e9de4ba09f9648a75f052d1c6bed6e'), (216560, 108, 'f84f040777759d3417fb8bee34ab8e046cf40255e18c467530417ae504aad29c'), (216080, 267, '69266ee656258cc0c7c3f770b0a650452d18c4c84251088bb204fbecb3afa2fe'), (754112, 58, '13cd2011501c1d9567889a32898a944b6cd7dee7769062e7ad57a0994614c674'), (1032272, 29, '02136e09af5b89365ab949b6cdd50c82e2c705bf3e4a9a585f6561234e33de99'), (1032304, 29, '730201c327a46bc2ee757b942eef6efb387d47a9aa5d9cdde452e5539a296222'), (400464, 6, 'b47138018b9b2ec278b17d759b0d8e54f0c9c5c9181510e9d3716d37aa74d6a4'), (400480, 6, '7d1ab1e0e220598d0dfeec086c9327bcec8699bc836f0ee2d3930a8e3d500e9b'), (1031584, 9, '5e68b2fc2391d42f537a7a352387790a5c46114bbe4f2197a6293a5a9a6f1b63'), (1034192, 446, '61eb66a3851ced7740b600c9b2ec8dc32c1fcfdb6c980ae7995b78407b23390a'), (15124024, 24, '9385e4da55d331aa5b8649841a9206ccd44b267e2a05abb359cb178b7d862f67'), (15124276, 24, 'c9ce8e336a66c1f198ee4f2a11052c232675558077c0f6e328e689d5bd52aee2')]
 
 TEMPLATE_SCENE_SHA256 = '77dcbe4639c8cd35468aee28cd36cfc023b0bcf226572477a367d56d0ff00c24'
 STATIC_SCENE_SHA256 = '0ee05031235220fadd435ea96a0a152c2f8cb39683300c5c75d199c0318ecc08'
-RUNTIME_SCENE_SHA256 = 'fbd2d27e8bd62e3ceddb3717348a498bb60eec18a42570828f31171db941d909'
+RUNTIME_SCENE_SHA256 = 'b5e4623d74d418c8a1dc90352376c6ffcdc7f291fc96e994fc32e3729ea99007'

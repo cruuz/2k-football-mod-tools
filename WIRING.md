@@ -381,11 +381,25 @@ python3 packaging/check_2k5_mod_studio_runtime.py
 
 ## r63-scorebug-exact2 integration, 2026-09-07
 
+The continued visual loop adds private scorebug FONT resources to the existing
+diagnostic runtime collection. Also add
+`mod_editor/core/nfl2k5_scorebug_fonts.py` to `packaging/release-allowlist.txt`
+and `"mod_editor.core.nfl2k5_scorebug_fonts",` to the runtime checker imports.
+Seven private FONT descriptors use the native registry and scorebug object
+pointers. Original FONT4/FONT8 resources and all nine global font slots stay
+retail. The owner also binds one white possession glyph and selects a compact
+score font for current or cached three-digit scores. The complete owner uses
+1,395 of its 1,408 RX bytes and retains its 128-byte RW allocation. No new
+allocator request, dispatcher field, preset, capability or GUI
+control is needed. Keep the 1,408-byte RX / 128-byte RW owner budget. The
+six diagnostic profiles remain EXPERIMENTAL / UNWITNESSED and runtime remains
+off in every preset. This does not resolve the game-entry freeze.
+
 This section supersedes contradictory default-selection statements in the
 older v10 and exact-v1 handoffs below. `scorebug` without a folder installs
 `espn-broadcast-exact-v1`; an explicit `scorebug_folder` installs the preserved
 `espn-reference-v10` scene, atlas and executable fields. The latter has exactly
-the landed v10 byte hashes. Keep `BuildPlan.scorebug_folder: str | None = None`,
+the landed v10 byte hashes. Keep `BuildPlan.scorebug_folder: str = ""`,
 its normalization, preflight and forwarding to the existing static writer.
 All presets leave the folder empty; Basic/Advanced leave `scorebug` off and
 Experimental enables it. Runtime stays off in every preset. There is no new
@@ -415,8 +429,9 @@ SCOREBUG_HELP = (
     "template. Moves the kick meter up and hides the lineup strip. "
     "EXPERIMENTAL / UNWITNESSED; fonts and colours still differ.")
 SCOREBUG_RUNTIME_HELP = (
-    "Retail: Uses the original team panels. Patch: Adds team gradients, logos, "
-    "small wordmarks and live timeout marks to the experimental scorebar. "
+    "Retail: Uses the original team panels and text. Patch: Adds team gradients, "
+    "logos, live timeout marks, resized text, a white possession marker and "
+    "room for three-digit scores to the experimental scorebar. "
     "Diagnostic only and off in every preset. EXPERIMENTAL / UNWITNESSED; "
     "the game-entry freeze remains unresolved. Keep the six probe choices.")
 ```
@@ -425,7 +440,7 @@ Retain `_apply_all`'s tuple
 `(scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects")`,
 the `scorebug_runtime=scorebug_runtime` kwarg, request union and deferred final
 pass. The static writer remains `nfl2k5_scorebug_layout.apply_in_place(...,
-scorebug_folder=plan.scorebug_folder)`. Retain all four dispatcher dictionaries'
+scorebug_folder=plan.scorebug_folder or None)`. Retain all four dispatcher dictionaries'
 `scorebug_xbe` / `scorebug_runtime` entries, plus both image dictionaries'
 `scorebug` / `scorebug_runtime_resources` entries. Read-only `xbe_status` and
 static image inspection recognize both complete shipped scenes. Writers select

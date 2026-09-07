@@ -363,11 +363,11 @@
     "pair": {
       "away": {
         "name": "sb37a3",
-        "span_sha256": "a88384e47b3678b2f4855ae85138ac79d6f3e16ebf458fdc104c6637aea32bc4"
+        "span_sha256": "c4b1f10647ec709a056785e215a490479fbaf51be5067d30b483421a11885f43"
       },
       "home": {
         "name": "sb37h3",
-        "span_sha256": "76244d17594923c516107d322e508c973a79d73bafb75a879384908f76996edb"
+        "span_sha256": "9f7b02735f8f2b5a139684677401a3c5720fe94d2daf30a764c32659ae2f5326"
       }
     },
     "source": {
@@ -543,11 +543,11 @@
     "pair": {
       "away": {
         "name": "sb20a3",
-        "span_sha256": "362b1a9986cf36a1c276f0736e097e4fe20b9ef38c1ee7c7dd3630b472f7d3a0"
+        "span_sha256": "21da378bb7490f9442a4b113b9e626cf07513495801c1765238810e17724a9ef"
       },
       "home": {
         "name": "sb20h3",
-        "span_sha256": "892bb08c828f71e06b7d0967befa5e95716f3a41174749c9dce00aa425da185d"
+        "span_sha256": "ec4a657fd318c29db007ca98bb945a15e843ae6377e5939e6a58d58bb7519ef7"
       }
     },
     "source": {

@@ -71,10 +71,10 @@
       438.6962962962963
     ],
     "0xfc090": [
-      283.3333333333333,
+      287.0,
       434.962962962963,
       296.0,
-      445.7481481481482
+      442.0148148148148
     ],
     "0xfc150": [
       304.6666666666667,
@@ -89,5 +89,6 @@
       421.27407407407406
     ]
   },
+  "text_measurement": "8-connected threshold components; discard ROI-edge components and specks under three source pixels. Metric v4 removes the five-pixel quarter capsule-rim fragment.",
   "transform": "x=x/3; y=16+y*448/1080. Full photo fitted to native active viewport, not clipped at y=464."
 }

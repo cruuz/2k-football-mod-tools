@@ -58,6 +58,23 @@ class ContractTests(unittest.TestCase):
         text = reference_text_boxes(source)
         self.assertGreater(text["0xfc070"][3] - text["0xfc070"][1], 22)
         self.assertLess(text["0xfbe30"][2] - text["0xfbe30"][0], 11)
+        self.assertAlmostEqual(text["0xfc090"][2] - text["0xfc090"][0], 9)
+        self.assertAlmostEqual(text["0xfc090"][3] - text["0xfc090"][1], 17*448/1080)
+
+    @unittest.skipUnless(HAVE_IMAGES, "Pillow and numpy required for ink diagnostics")
+    def test_rendered_ink_does_not_count_possession_or_clock_rim_as_text(self):
+        import numpy as np
+        from nfl2k5_scorebug_exact import rendered_text_ink
+        pixels = np.zeros((480,640,3),dtype=np.uint8)
+        pixels[412:414,385:389] = 255  # Marker fragment touching the score ROI.
+        pixels[416:439,380:393] = 255
+        self.assertEqual(rendered_text_ink(pixels,'0xfc050'),[380,416,393,439])
+        pixels[:] = 255
+        pixels[442:446,283:286] = 0  # Capsule edge touching the quarter ROI.
+        pixels[435:442,288:296] = 0
+        self.assertEqual(rendered_text_ink(pixels,'0xfc090'),[288,435,296,442])
+        pixels[:] = 255
+        self.assertIsNone(rendered_text_ink(pixels,'0xfc090'))
 
 
 @unittest.skipUnless(XBE.is_file() and PACK.is_file() and HAVE_UC and HAVE_IMAGES,
