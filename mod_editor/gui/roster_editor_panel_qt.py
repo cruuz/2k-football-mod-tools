@@ -2114,6 +2114,8 @@ class RosterEditorPanel(QWidget):
             self._show_player(player)
         self._refresh_grid_row(player)
         self._refresh_actions()
+        if name == "photo_id" and self.document is not None:
+            self._set_status(rr.portrait_confirmation(self.document, player))
 
     def _name_changed(self, player: rr.Player) -> bool:
         """True when this player's name or college text differs from the roster we loaded."""

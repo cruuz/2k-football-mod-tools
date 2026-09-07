@@ -99,13 +99,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "64ac47e2f3d28c374d4b0b8d44e5eba16b69ce5d70bbbeb6288ddadeb2be10ed",
     "mod_editor/gui/studio_qt.py":
-        "f5a48f2364cad77bca7452d4e1dd85caa5cf27342e5801f2189a7a03baae54e3",
+        "a27ed7a6b5e112af8fc6dafda3859d25230fcbeafe801a3c469be19dbac88b86",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "9ce1b1c1e0dca8075e43ca8706125f75e1c8dc22300bba8928ab2bd05350459a",
+        "078b62889f8901739e011437d361bf7cc75054d0aac14f14dd30be5daaf07cd1",
     "mod_editor/studio/project_archive.py":
         "2ea69b3d6ff6424a338129b4c7beff65b3bacb89ff5af9aac2f9bf7975332c3a",
     "mod_editor/studio/session.py":
@@ -1804,6 +1804,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_scorebug_ingame",
         "mod_editor.core.nfl2k5_scorebug_template",
         "mod_editor.core.nfl2k5_scorebug_author",
+        "mod_editor.core.build_feedback",
         "mod_editor.core.nfl2k5_scorebug_exact",
         "mod_editor.core.nfl2k5_music_policy",
         "mod_editor.core.nfl2k5_music_catalog",
@@ -1815,6 +1816,7 @@ def main() -> int:
         "mod_editor.studio.music_service",
         "mod_editor.gui.music_panel_qt",
         "mod_editor.gui.scorebug_studio_panel_qt",
+        "mod_editor.gui.gameplay_project_ui",
         "mod_editor.core.nfl2k5_animation_bones",
         "mod_editor.core.nfl2k5_animation_import",
         "mod_editor.core.nfl2k5_animation_xbe",

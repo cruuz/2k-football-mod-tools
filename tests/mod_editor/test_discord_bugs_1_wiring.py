@@ -1,6 +1,6 @@
 """PROVED proposal tests for protected call sites, executed only in memory.
 
-ASTRA_TEST_UNWIRED=1 runs the same checks on untouched product code to retain
+The proposal is integrated; ASTRA_TEST_PROPOSAL=1 re-applies the historical fixture to retain
 failing repro evidence. Default mode tests the exact WIRING patch, not a claim
 that its protected integrations have landed. Plain standalone unittest.
 """
@@ -56,7 +56,11 @@ def proposed_sources():
 
 
 def install_proposal(stack):
-    if os.environ.get("ASTRA_TEST_UNWIRED") == "1":
+    # The proposal was integrated on the stack on 2026-09-07 (the protected patch is
+    # applied), so the product code is the wired code and these checks run against it.
+    # ASTRA_TEST_PROPOSAL=1 re-applies the historical fixture in memory; that only
+    # works against the pre-integration base and is kept for the record.
+    if os.environ.get("ASTRA_TEST_PROPOSAL") != "1":
         return
     for path, source in proposed_sources().items():
         name = path[:-3].replace("/", ".")

@@ -820,8 +820,10 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
                     preflight = step.get("music_shuffle_preflight")
                     if preflight is not None:
                         preflight.update(checked)
+            from .build_feedback import measure
+            receipt["outcome"] = measure(source, directory / target.name)
             if progress:
-                progress("Publishing verified disc", 0, 0)
+                progress(receipt["outcome"]["message"], 0, 0)
             os.replace(directory / target.name, target)
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)

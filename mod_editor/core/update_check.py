@@ -64,6 +64,8 @@ def _is_newer(latest: str, current: str) -> bool:
     unforeseen tag scheme still gets announced rather than silently swallowed.
     """
 
+    from .self_update import canonical_release_tag
+    latest, current = canonical_release_tag(latest), canonical_release_tag(current)
     if latest == current:
         return False
     latest_number = _beta_number(latest)

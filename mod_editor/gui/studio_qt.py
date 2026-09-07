@@ -1947,6 +1947,9 @@ class StudioMainWindow(QMainWindow):
             self._music_playlist_document = document
             if self._build_panel is not None:
                 self._build_panel.restore_project_build_settings(state)
+                link = getattr(self, "_gameplay_build_link", None)
+                if link is not None:
+                    link.refresh_from_build()
             bowl_panel = getattr(self, "_senior_bowl_panel", None)
             if bowl_panel is not None:
                 choices = {**saved.defaults(), **state}
@@ -2805,6 +2808,7 @@ class StudioMainWindow(QMainWindow):
                 # sliders, acceleration ramp, franchise draft AI) with their
                 # explanations, written through mod_build.
                 self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
+                self._connect_gameplay_build()
                 # The Xbox save editor (sliders + franchise year) is a gameplay tool, not a
                 # uniform tool: one instance, moved here from Uniforms & Equipment (GP-02).
                 self._save_panel = SavePanel(self.facade)
@@ -3707,10 +3711,9 @@ class StudioMainWindow(QMainWindow):
         title.setObjectName("heroTitleSmall")
         blurb = QLabel(
             "Search a player to see the face textures and portrait that belong "
-            "to them. Faces are linked by the face_id stored in the player's own "
-            "roster record; a portrait is matched by name, because nothing in "
-            "the bytes ties a portrait number to a player — that is labelled so "
-            "you know which is which."
+            "to them. The Photo ID in the roster selects the numbered portrait. "
+            "Renaming a player does not replace that picture. Replace its PNG and "
+            "include the portrait project and roster edits in the same disc build."
         )
         blurb.setObjectName("mutedLabel")
         blurb.setWordWrap(True)
@@ -3786,6 +3789,8 @@ class StudioMainWindow(QMainWindow):
                 "outer_index": player.outer_index,
                 "name": player.display_name,
                 "face_id": f"{int(player.face_id):04d}",
+                "photo_id": int(player.face_id),  # text catalog reads record +0x06
+
                 "identity_asset_ids": (
                     player.first_name_asset_id, player.last_name_asset_id,
                 ),
@@ -3831,7 +3836,7 @@ class StudioMainWindow(QMainWindow):
         lines = [f"{row.name} — face_id {row.face_id}"]
         for asset in row.assets:
             origin = ("linked by the roster record"
-                      if asset.link == "face_id" else "matched by name")
+                      if asset.link in ("face_id", "photo_id") else "matched by name")
             lines.append(
                 f"  • {asset.label}  ({asset.width}×{asset.height}, {origin})"
             )
@@ -7550,6 +7555,15 @@ class StudioMainWindow(QMainWindow):
         box.exec_()
 
     def _choose_build_output(self) -> None:
+        panel = getattr(self, "_build_panel", None)
+        if panel is not None and panel.has_work():
+            blocker = panel.blocker()
+            if blocker:
+                self._set_status(blocker)
+                return
+            self._capture_music_build_settings()
+            panel._build()
+            return
         if self._refuse_while_audio_busy("build a modded XISO"):
             return
         preferred = Path.home() / "2K5 Mod Studio Builds"
@@ -8324,7 +8338,9 @@ class StudioMainWindow(QMainWindow):
         self.revert_all_button.setEnabled(
             ready and count + metadata_count > 0 and not global_busy
         )
-        self.build_button.setEnabled(ready and count > 0 and not global_busy)
+        build_panel = getattr(self, "_build_panel", None)
+        selected_build = bool(build_panel and build_panel.has_work())
+        self.build_button.setEnabled(ready and (count > 0 or selected_build) and not global_busy)
         # A disabled button that gives no reason reads as a broken one.  A modder
         # reported being unable to rebuild the XISO, and loading a disc then
         # pressing Build before making an edit does exactly nothing: no dialog, no
@@ -8334,7 +8350,7 @@ class StudioMainWindow(QMainWindow):
         # text the same way.
         self.build_button.setToolTip(
             _build_blocker_message(
-                ready=ready, edit_count=count, busy=global_busy
+                ready=ready, edit_count=count or int(selected_build), busy=global_busy
             )
         )
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
@@ -8496,6 +8512,9 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_panel = BuildPanel(self.facade)
+        from .gameplay_project_ui import observe_build_choices
+        observe_build_choices(self._build_panel, self._gameplay_build_changed)
+        self._connect_gameplay_build()
         self._build_panel.team_names_2026_check.toggled.connect(self._refresh_team_names_preview)
         self._build_panel.modern_naming_check.toggled.connect(self._refresh_team_names_preview)
         self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
@@ -8531,6 +8550,27 @@ class StudioMainWindow(QMainWindow):
             models_panel.disc_written.connect(self._register_external_disc)
         tabs.setCurrentIndex(0)
         return tabs
+
+    def _connect_gameplay_build(self):
+        build = getattr(self, "_build_panel", None)
+        gameplay = getattr(self, "_gameplay_patches_panel", None)
+        if build is None or gameplay is None or getattr(self, "_gameplay_build_link", None) is not None:
+            return
+        from .gameplay_project_ui import GameplayBuildLink
+        self._gameplay_build_link = GameplayBuildLink(
+            build, gameplay, self._gameplay_build_changed,
+            suspended=lambda: self._restoring_music_playlist)
+
+    def _gameplay_build_changed(self, *_args):
+        if self._restoring_music_playlist or not getattr(self.facade, "source_ready", False):
+            return
+        try:
+            self._capture_music_build_settings()
+        except (ValueError, OSError) as exc:
+            self.statusBar().showMessage(f"Build choices could not be saved: {exc}", 8000)
+            return
+        self._mark_workspace_changed()
+        self._refresh_edit_state()
 
     def _connect_star_players(self) -> None:
         """★ Star ticks in Rosters & Players are the Build tab's ``player_tags``.

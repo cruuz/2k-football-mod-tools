@@ -757,9 +757,9 @@ class GameplayPatchesPanel(QWidget):
         self._task = None
         assert isinstance(receipt, dict)
         target = Path(str(receipt.get("target")))
-        self.status_label.setText(
-            f"Disc ready: {target.name}. Open it in xemu." if tt.is_disc_image(target)
-            else f"Patched executable saved: {target.name}.")
+        from mod_editor.core.build_feedback import completion
+        title, message = completion(receipt)
+        self.status_label.setText(f"{title}: {target.name}. {message}")
         try:
             self.apply_state(mod_build.inspect(Path(str(receipt.get("target")))))
         except Exception:  # noqa: BLE001

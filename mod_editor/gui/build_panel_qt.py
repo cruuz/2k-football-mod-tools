@@ -1682,36 +1682,12 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def project_build_settings(self):
-        from mod_editor.core import nfl2k5_build_settings as saved
-        plan = self.plan()
-        state = self.music_build_settings()
-        defaults = saved.defaults()
-        for key in saved.FEATURE_KEYS:
-            value = getattr(plan, key)
-            if value != defaults[key]:
-                state[key] = value
-        # Preparation settings survive while the unavailable event is off.
-        for key, value in self._senior_bowl_options.items():
-            if value != defaults[key]:
-                state[key] = value
-        return saved.build_settings(state)
+        from .gameplay_project_ui import capture
+        return capture(self)
 
     def restore_project_build_settings(self, state):
-        from mod_editor.core import nfl2k5_build_settings as saved
-        checked = saved.build_settings(state)
-        choices = {**saved.defaults(), **checked}
-        self.restore_music_build_settings({key: checked[key] for key in saved.MUSIC_KEYS if key in checked})
-        self.set_senior_bowl_options({key: choices[key] for key in
-                                     ("senior_bowl", "senior_bowl_settings", "senior_bowl_seed")})
-        self._guardian_players = choices["guardian_players"]
-        self.guardian_everyone_practice_check.setChecked(choices["guardian_everyone_practice"])
-        self.set_my_career_setup(choices["my_career_setup"])
-        self._collision_last_positive = choices["momentum_collision_level"] or 50
-        for key in r62_ui.KEYS:
-            self._boxes()[key].setChecked(bool(choices[key]))
-        for family, check in self._hires_family_checks.items():
-            check.setChecked(family in choices["hires_families"])
-        self._refresh()
+        from .gameplay_project_ui import restore
+        restore(self, state)
 
     def music_build_settings(self):
         document = tt.music_playlist_patch.copy_options(self._music_shuffle_selection)
@@ -1886,9 +1862,7 @@ class BuildPanel(QWidget):
         self.music_preview_label.setText(plain_failure("preview the music library", message))
 
     def _include_session_project(self):
-        return bool((self.team_names_2026_check.isChecked() or self.modern_naming_check.isChecked()
-                     or (self.music_project_check.isChecked() and not self.music_project_field.text().strip()))
-                    and getattr(self._facade, "_session", None) is not None
+        return bool(getattr(self._facade, "_session", None) is not None
                     and getattr(self._facade, "modified_count", 0))
 
     def _build_operation(self, plan, progress, include_session=False):
@@ -1915,6 +1889,8 @@ class BuildPanel(QWidget):
             result = facade.build_service.build(cache, session, staged,
                 lambda event: progress(event.message, event.completed, event.total))
             receipt = mod_build.build(replace(plan, source=str(staged)), progress)
+        from mod_editor.core.build_feedback import measure
+        receipt["outcome"] = measure(source, plan.target)
         receipt["source"] = str(source)
         receipt["steps"].insert(0, {"step": "shared_project", **asdict(result)})
         return receipt
@@ -1946,11 +1922,11 @@ class BuildPanel(QWidget):
         assert isinstance(receipt, dict)
         target = str(receipt.get("target"))
         steps = ", ".join(str(s.get("step")) for s in receipt.get("steps", []))
-        self.status_label.setText(f"Disc ready: {target}. Play latest disc in xemu, or open Share → Export mod file.")
+        from mod_editor.core.build_feedback import completion
+        title, message = completion(receipt)
+        self.status_label.setText(f"{title}: {target}. {message}")
         self.built.emit(dict(receipt))
-        QMessageBox.information(self, "Disc ready",
-                                f"{target}\n\nPlay latest disc in xemu (bottom right), or open Share → Export mod file.\n\n"
-                                f"Steps written: {steps}.")
+        QMessageBox.information(self, title, f"{target}\n\n{message}\n\nSteps checked: {steps}.")
         try:
             state = receipt["result"] if "pre_remap_inspection" in receipt else mod_build.inspect(Path(str(receipt.get("target"))))
             self.apply_state(state)
