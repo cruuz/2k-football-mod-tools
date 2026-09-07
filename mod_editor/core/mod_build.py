@@ -418,7 +418,8 @@ def availability() -> dict[str, bool]:
         "kick_rules": _core_module("nfl2k5_kick_rules") is not None,
         "kickoff_alignment": _tools_module("nfl2k5_kickoff_alignment") is not None,
         "dynamic_kickoff": (_core_module("nfl2k5_dynamic_kickoff") is not None and _core_module("nfl2k5_kick_rules") is not None
-                            and _tools_module("nfl2k5_kickoff_alignment") is not None),
+                            and _tools_module("nfl2k5_kickoff_alignment") is not None
+                            and _tools_module("nfl2k5_kickoff_returns") is not None),
         "widescreen": _core_module("nfl2k5_widescreen") is not None,
         "overtime": _core_module("nfl2k5_overtime") is not None,
         "team_history": (_core_module("nfl2k5_team_history") is not None
@@ -589,6 +590,12 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                 out["kickoff_alignment"] = align.status(source)["status"]
             except Exception:  # noqa: BLE001
                 out["kickoff_alignment"] = "foreign"
+        returns = _tools_module("nfl2k5_kickoff_returns")
+        if returns is not None:
+            try:
+                out["kickoff_returns"] = returns.status(source)["status"]
+            except Exception:  # noqa: BLE001
+                out["kickoff_returns"] = "foreign"
         pools = _core_module("nfl2k5_position_pools")
         if pools is not None:
             try:
@@ -1202,6 +1209,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         align_receipt = align.apply(target, progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "kickoff_alignment",
                                  **{k: align_receipt[k] for k in ("status", "kicker_depth_yd", "changed_bytes", "books")}})
+    if plan.dynamic_kickoff:
+        # beta 62: the three normal return plays get close blocking assignments (drive blocks for the
+        # setup zone, lead blocks for the deep non-carrier) in every book; planned and validated for
+        # all 36 resources before the first write, idempotent on replay.
+        returns = _tools_module("nfl2k5_kickoff_returns")
+        if returns is None:
+            raise RuntimeError("the kickoff returns tool is not available in this build")
+        progress("Giving the kickoff return blockers close assignments", 0, 0)
+        returns_receipt = returns.apply(target, progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "kickoff_returns", **returns_receipt})
     if plan.seven_on_seven:
         book = _core_module("nfl2k5_seven_on_seven_book")
         if book is None:

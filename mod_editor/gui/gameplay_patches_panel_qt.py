@@ -113,7 +113,10 @@ PATCHES = (
      "downed in the end zone puts the ball on the 20, a kick straight into the end zone is a touchback to the 35 (30 for the 2024 "
      "spot), short of the landing zone or out of bounds is the 40; the CPU kicker aims for the landing zone 90 % of the time and the "
      "CPU returner takes the touchback 90 % of the time. Your own kicks and returns stay in your hands; onside and safety kicks are "
-     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Unwitnessed in game."),
+     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Beta 62: held players keep an idle "
+     "pose facing the kick and release on contact, a ball fielded inside the landing zone is never a touchback, and the "
+     "return blockers take close assignments (drive blocks in the setup zone, a lead block from the deep non-carrier). "
+     "Noah saw the 2024 rule play in beta 60; the beta-62 corrections are unwitnessed. Rebuild from retail."),
     ("overtime", "Modern overtime: both teams get a possession, 10 minutes with ties, playoffs to a winner",
      "Retail overtime is sudden death for the quarter length: any score ends it, even a first-possession "
      "touchdown, and the regular season ties after one period. Patch (the 2025 NFL rule): each team is "
@@ -286,8 +289,8 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "progression": ("Change player growth & decline", "Growth over years 1-5, harder decline after years 9-12; more stars and busts.", ""),
     "team_column": ("Show TEAM in Player Card season stats", "Which team each season was played for.", ""),
     "kick_rules": ("Modern kick spots & kicking power", "Kickoff: 35 · touchback: 35 · PAT snap: 15.", ""),
-    "dynamic_kickoff": ("Dynamic kickoff rule (2024/2025)", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
-                        "Switches on the modern kick spots and the alignment.", NOT_TESTED),
+    "dynamic_kickoff": ("Dynamic kickoff: ready stance and close blocks", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
+                        "Held players keep an idle pose facing the kick; return blockers take close assignments.", NOT_TESTED),
     "overtime": ("Modern overtime rules", "Both teams get a possession; regular-season ties remain.", ""),
     "camera": ("Make Standard camera look like Far", "The Standard preset takes Far's look-at, lens and offset.", ""),
     "position_row": ("Change position in Edit Player", "In-game: use Depth Chart → Auto afterward.", NOT_TESTED),

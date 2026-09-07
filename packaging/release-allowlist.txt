@@ -275,6 +275,7 @@ mod_editor/core/nfl2k5_draft_ai.py
 mod_editor/core/nfl2k5_edge_rename.py
 mod_editor/core/nfl2k5_hud_layout.py
 mod_editor/core/nfl2k5_kick_rules.py
+mod_editor/core/nfl2k5_kickoff_returns.py
 mod_editor/core/nfl2k5_modern_positions.py
 mod_editor/core/nfl2k5_overtime.py
 mod_editor/core/nfl2k5_playoffs14.py
@@ -313,6 +314,7 @@ tools/nfl2k5_commentary_swap.py
 tools/nfl2k5_fieldpack_texture_into_xiso.py
 tools/nfl2k5_franchise_schedule.py
 tools/nfl2k5_kickoff_alignment.py
+tools/nfl2k5_kickoff_returns.py
 tools/nfl2k5_modpack.py
 tools/nfl2k5_playbook_position_recode.py
 tools/nfl2k5_roster_reclassify.py

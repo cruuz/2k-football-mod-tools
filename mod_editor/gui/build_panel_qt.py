@@ -417,9 +417,11 @@ class BuildPanel(QWidget):
         self.kickoff_alignment_check = self._option(g, "kickoff_alignment", "Dynamic kickoff alignment",
                                                     "Coverage on the receiving 40, return setup zone 35-30, two returners deep.",
                                                     badge=NOT_TESTED, needs_image=True)
-        self.dynamic_kickoff_check = self._option(g, "dynamic_kickoff", "Dynamic kickoff rule (2024/2025)",
+        self.dynamic_kickoff_check = self._option(g, "dynamic_kickoff", "Dynamic kickoff: ready stance and close blocks",
                                                   "Nobody moves until the ball comes down; landing zone; the CPU kicks to it and takes touchbacks. "
-                                                  "Switches on the modern kick spots and the alignment.",
+                                                  "Held players keep an idle pose facing the kick, a ball fielded inside the landing zone is never "
+                                                  "a touchback, and the return blockers take close assignments. Switches on the modern kick spots "
+                                                  "and the alignment.",
                                                   badge=NOT_TESTED, needs_image=True,
                                                   details="First contact in the landing zone then downed in the end zone puts the ball on the 20, a kick "
                                                           "straight into the end zone is a touchback to the 35, short or out is the 40; the CPU kicker aims "
