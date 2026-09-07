@@ -33,6 +33,18 @@ def previous_payload(retail):
     return bytes(result)
 
 
+def v2_payload(base):
+    """Keep the played v2 executable reproducible after the v3 compiler change."""
+    receipt = json.loads((ROOT / 'docs/nfl2k5_kickoff_v2_receipts.json').read_text())
+    result = bytearray(base)
+    for edit in receipt['legacy']['edits'] + receipt['legacy_section_digest_edits']:
+        after = bytes.fromhex(edit['after'])
+        result[edit['offset']:edit['offset'] + len(after)] = after
+    if hashlib.sha256(result).hexdigest() != receipt['legacy_output_sha256']:
+        raise AssertionError('historical v2 receipt no longer replays exactly')
+    return bytes(result)
+
+
 class NativeMachine(Machine):
     def __init__(self, *args, **kwargs):
         self.samples = []
@@ -47,7 +59,7 @@ class NativeMachine(Machine):
         for who in (self.KICKER, self.RETURNER, self.COVERAGE, self.BLOCKER):
             self.put(who + 0x510, who + 0x150)  # native empty task-stack sentinel
         self.uc.hook_add(uni.UC_HOOK_MEM_INVALID, self._invalid)
-        self.uc.hook_add(uni.UC_HOOK_MEM_WRITE, self._write)
+        self.write_hook = self.uc.hook_add(uni.UC_HOOK_MEM_WRITE, self._write)
 
     def _write(self, uc, access, address, size, value, data):
         if self.watch_player:
@@ -273,12 +285,14 @@ class V2Tests(unittest.TestCase):
                 self.assertEqual(bytes(mixed), before)
 
     def test_committed_xbe_receipts_replay_owner_digest_and_allocator_edits(self):
-        from tests.nfl2k5_allocator_stack import REQUESTS
         receipt = json.loads((ROOT / 'docs/nfl2k5_kickoff_v2_receipts.json').read_text())
-        allocated = space.apply(self.fixed, REQUESTS, scaleout=True)[0]
+        # This is a historical v2 receipt. The current compiler is v3; its own
+        # exact receipt replay is covered by test_nfl2k5_kickoff_v3.py.
+        legacy_v2 = v2_payload(self.base)
+        allocated = space.apply(legacy_v2, receipt['union_requests'], scaleout=True)[0]
         self.assertEqual(hashlib.sha256(allocated).hexdigest(), receipt['union_allocated_sha256'])
-        for source, expected, name, digest in ((self.base, self.fixed, 'legacy', 'legacy_output_sha256'),
-                                               (allocated, self.grown, 'relocated', 'relocated_output_sha256')):
+        for source, name, digest in ((self.base, 'legacy', 'legacy_output_sha256'),
+                                     (allocated, 'relocated', 'relocated_output_sha256')):
             replay = bytearray(source)
             edits = receipt[name]['edits'] + receipt[name + '_section_digest_edits']
             if name == 'relocated': edits += receipt['relocated_allocator_metadata_edits']
@@ -288,8 +302,9 @@ class V2Tests(unittest.TestCase):
                 if 'before' in edit: self.assertEqual(before.hex(), edit['before'])
                 else: self.assertEqual(hashlib.sha256(before).hexdigest(), edit['before_sha256'])
                 replay[start:start + len(after)] = after
-            self.assertEqual(bytes(replay), expected)
             self.assertEqual(hashlib.sha256(replay).hexdigest(), receipt[digest])
+            self.assertEqual(dk.status(bytes(replay)), 'foreign')
+            with self.assertRaises(ValueError): dk.apply(bytes(replay))
 
     def test_prior_sampler_oscillates_and_restore_hides_world_deltas(self):
         m = NativeMachine(self.previous)

@@ -2,7 +2,7 @@
 
 Pair with kick_rules (35-yard tee) and the playbook kickoff_alignment tool.
 No timer releases the hold: ground/player contact latches the first field class.
-See ASTRA_KICKOFF_V2_REPORT.md for the fixed pose, blocking and card proofs.
+See ASTRA_KICKOFF_V3_REPORT.md for the complete-frame hold investigation.
 
 Runtime storage is ten previously unreferenced bytes on the writable shared
 .rdata/.data page. 0xA69970 and 0xA69974..7F belong to other patches. Settings
@@ -63,6 +63,7 @@ HOOKS = {
     "root_motion": (0x2CC570, bytes.fromhex("83ec1c568b4210")),
     "block_target": (0x2FAFF0, bytes.fromhex("558bec83e4f0")),
     "diagram": (0x1802BB, bytes.fromhex("8b450c85c0")),
+    "separation": (0x1D8940, bytes.fromhex("8b48248b5120")),
 }
 
 
@@ -155,7 +156,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
         b("d81d" + imm(va) + "dfe0f6c441")  # fcomp, fnstsw ax, test ah, C0|C3
     def percent_roll(va):
         a.call(RAND)
-        b("31d2b964000000f7f1")  # unsigned RNG % 100 -> edx
+        b("31d26a6459f7f1")  # unsigned RNG % 100 -> edx
         b("0fb605" + imm(va) + "39c2")  # cmp edx,eax
 
     label("active_live")
@@ -173,7 +174,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("85f6"); j("0f84", "launch_done")
     b("8b462085c0"); j("0f84", "launch_done")
     # Query the retail Ball Action opcode (8) on BOTH normal and squib paths.
-    b("6a0089e2526a008d881c040000ba08000000")
+    b("6a0089e2526a008d881c0400006a085a")
     a.call(0x1B8CA0)
     b("5a85c0"); j("0f84", "launch_done")
     b("83fa02"); j("0f84", "launch_done")  # declared onside
@@ -209,27 +210,27 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     a.call(RAND)
     b("0fb60d" + imm(TARGET_MAX) + "0fb61d" + imm(TARGET_MIN))
     b("29d94131d2f7f101da")  # selected receiving yard = lo + RNG % (hi-lo+1)
-    b("b83200000029d050db0424d80d" + imm(YARD))  # (50-yard)*91.44
+    b("6a325829d050db0424d80d" + imm(YARD))  # (50-yard)*91.44
     b("f605" + imm(FLAGS) + "10"); j("0f84", "aim_positive")
     b("d9e0")
     label("aim_positive")
     b("d825" + imm(KICK_SPOT) + "d9e1")  # abs(target z - exact kick spot)
     b("d95c246083c404")  # original [esp+0x38], accounting for saved regs + temp
     b("c744243800200000")  # original [esp+0x14] elevation = 45 degrees
-    b("31c0f605" + imm(FLAGS) + "10"); j("0f84", "aim_heading")
-    b("b800800000")
+    b("0fb605" + imm(FLAGS) + "2410c1e00b")
     label("aim_heading"); b("8944243c")  # original [esp+0x18] heading, straight
     label("aim_done"); restore(); replay("aim")
 
     # Classifier uses the event position, not predicted landing or elapsed time.
     # Returning EAX does NOT mutate the first-contact history.
     label("classify")
-    signed_z(); compare_pop(GOAL); j("0f84", "class_end")
-    # Include the goal line itself in the end zone (ZF represented by C3).
-    b("f6c440"); j("0f85", "class_end")
-    b("d902d9e1"); compare_pop(HALF_WIDTH); j("0f84", "class_out")
-    b("f6c440"); j("0f85", "class_out")
-    signed_z(); compare_pop(LANDING_EDGE)
+    # SAHF exposes x87 C0/C3 as CF/ZF. Preserve the existing inclusive and
+    # unordered branches while saving bytes for the separation guard.
+    signed_z(); b("d81d" + imm(GOAL) + "dfe09e")
+    j("0f83", "class_end"); j("0f84", "class_end")
+    b("d902d9e1d81d" + imm(HALF_WIDTH) + "dfe09e")
+    j("0f83", "class_out"); j("0f84", "class_out")
+    signed_z(); b("d81d" + imm(LANDING_EDGE) + "dfe0")
     b("f6c401"); j("0f85", "class_short")
     b("6a0158c3")
     label("class_end"); b("6a0258c3")
@@ -275,7 +276,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("lineup")
     save()
     b("8b41383b05" + imm(POSSESSION)); j("0f85", "lineup_go")
-    call("aligned_roles"); b("85c0"); j("0f84", "lineup_go")
+    call("aligned_roles"); j("0f84", "lineup_go")
     restore(); b("c3")
     label("lineup_go"); restore(); replay("lineup")
 
@@ -296,25 +297,26 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("8b15" + imm(POSSESSION) + "85d2"); j("0f84", "held_no")
     b("8b420c85c0"); j("0f84", "held_no")
     b("8b400885c0"); j("0f84", "held_no")
-    b("8b400425003f00003d00080000"); j("0f85", "held_no")
+    b("8a4005243f3c08"); j("0f85", "held_no")
     b("8b413839d0"); j("0f85", "held_receiving")
     b("80792e00"); j("0f84", "held_no")
     j("e9", "held_yes")
     label("held_receiving")
     b("3b02"); j("0f85", "held_no")
     b("80792e02"); j("0f82", "held_no")
-    label("held_yes"); b("6a0158c3")
+    # Return both EAX and ZF so every hook can branch without another TEST.
+    label("held_yes"); b("31c040c3")
     label("held_no"); b("31c0c3")
 
     label("plan")
     save(); call("returner")
     # Restore the input ECX after any retail calls made by returner().
-    b("8b4c2418"); call("held"); b("85c0"); j("0f84", "plan_go")
+    b("8b4c2418"); call("held"); j("0f84", "plan_go")
     restore(); b("c3")
     label("plan_go"); restore(); replay("plan")
 
     label("motion")
-    save(); b("89f1"); call("held"); b("85c0"); j("0f84", "motion_go")
+    save(); b("89f1"); call("held"); j("0f84", "motion_go")
     # Select the native zero-speed clip. Re-entry also handles an old running
     # clip in the same descriptor; 2FCAC0 installs only when the clip differs.
     b("8b460c83601000836018fd")
@@ -322,6 +324,13 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("8b460c89501489f1baecf45000"); a.call(0x1CD550)
     b("8b460c8b501489f1")
     a.call(0x1A89E0)
+    # The later 28E360 pose pass consumes a separate turn/lean spring even
+    # when both clip clocks are zero. Neutralize its residual input/state;
+    # retain the native spring coefficients at transform+7C/+80.
+    b("8b7e1883c76831c06a0559fcf3ab")
+    # Expire old separation impulses before 28C5B0's native clear. The new
+    # separation hook prevents fresh impulses and direct position additions.
+    b("8b7e24894734")  # EAX remains zero after STOSD; collision+34 = 0
     # 31BD40 has already selected the new channels. Finish both blends, sample
     # their fixed frame zero and pass dt=0 to 31BEB0. Root callbacks and the
     # collision setter below are suppressed, so no restore fights an integrator.
@@ -331,14 +340,22 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("motion_native"); replay("motion")
 
     label("position")
-    save(); call("held"); b("85c0"); j("0f84", "position_go")
+    save(); call("held"); j("0f84", "position_go")
     restore(); b("c20800")
     label("position_go"); restore(); replay("position")
 
     label("root_motion")
-    save(); call("held"); b("85c0"); j("0f84", "root_go")
+    save(); call("held"); j("0f84", "root_go")
     restore(); b("c3")
     label("root_go"); restore(); replay("root_motion")
+
+    # 1D898D/1D8997 add a fresh collision impulse directly, bypassing 2CC4F0,
+    # then retain it for the later 28D06D/28D081 integration. Stop the producer
+    # for held players. EAX is the player; one stack argument, no ST0 return.
+    label("separation")
+    save(); b("89c1"); call("held"); j("0f84", "separation_go")
+    restore(); b("c20400")
+    label("separation_go"); restore(); replay("separation")
 
     # Selector ABI: ECX=blocker, EDX=origin; seven stack operands, ST0=threshold.
     # Only released, normal kickoff return blockers use this nearest rule.
@@ -467,15 +484,15 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("0fb615" + imm(FLAGS) + "83e20783fa01"); j("0f84", "spot_20")
     b("83fa02"); j("0f85", "spot_done")
     b("0fb615" + imm(TB_YARD)); j("e9", "spot_calc")
-    label("spot_20"); b("ba14000000"); j("e9", "spot_calc")
-    label("spot_40"); b("ba28000000")
+    label("spot_20"); b("6a145a"); j("e9", "spot_calc")
+    label("spot_40"); b("6a285a")
     label("spot_calc")
-    b("b93200000029d151db0424d80d" + imm(YARD))
+    b("6a325929d151db0424d80d" + imm(YARD))
     b("f605" + imm(FLAGS) + "10"); j("0f84", "spot_positive")
     b("d9e0")
     label("spot_positive")
     b("d95c244083c404")  # original [esp+0x18] after save + temp
-    b("c744243400000000")  # original [esp+0x10] = centered x
+    b("8364243400")  # original [esp+0x10] = centered x
     label("spot_done"); restore(); replay("spot")
     code = a.assemble()
     _require(len(code) <= CAVE_SIZE, f"dynamic kickoff code {len(code)} exceeds cave {CAVE_SIZE}")

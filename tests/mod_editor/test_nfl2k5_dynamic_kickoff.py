@@ -139,7 +139,7 @@ class Machine:
             0xB7330, 0xFC6E0, 0x119760, 0x1195F0, 0x14F9E0, 0xAF4F0, 0xAF260, 0xB6180,
             0x217F90, 0x1E09D0, 0x213310)}
         self.stub_pops.update({0x12D610: 4, 0x31BEB0: 12})
-        self.uc.hook_add(uni.UC_HOOK_CODE, self._hook)
+        self.code_hook = self.uc.hook_add(uni.UC_HOOK_CODE, self._hook)
         for va, value in ((dk.CTX, self.CTX), (dk.BALL, self.BALL), (dk.PHASE, phase),
                           (dk.PLAY_STATE, 14), (dk.POSSESSION, self.KICK_TEAM),
                           (0xE60284, self.RECEIVE_TEAM), (0xE60288, self.KICK_TEAM),

@@ -1,3 +1,75 @@
+# r63 kickoff v3: collision producer and residual pose hold (2026-09-07)
+
+EXPERIMENTAL/UNWITNESSED. See `ASTRA_KICKOFF_V3_REPORT.md`. The existing
+dynamic kickoff option now also suppresses `1D8940` collision impulses for
+held players and clears residual pose spring/impulse state before the native
+late passes. First ground/player contact remains the release. Code is
+1,937/1,939 bytes; RW remains 10 bytes; there are sixteen hooks. No new option,
+owner, request, preset or persistent state is introduced.
+
+Claude must regenerate the protected `data/nfl2k5_cave_reservations.json`
+with the existing `tools/nfl2k5_cave_oracle.py manifest` workflow after merging.
+It must include the complete `1D8940..1D8946` live hook, retail pin
+`8b48248b5120`, transferred to `nfl2k5_dynamic_kickoff_relocated` in grown
+builds, and current source fingerprints. The existing manifest recorder reads
+the new declared edit automatically. Both XBE gates pass with a test-only
+projection that proves the retail pin, exact installed jump and lack of a
+foreign owner before adding this hook. The protected manifest is unchanged.
+
+The gate projection also handles the manifest's camera declaration from its
+smaller camera/calendar preset at `14DA400..14DA440`. It reconstructs that
+exact named allocation with `space.plan(camera.REQUESTS + calendar.REQUESTS)`
+and checks the recorded preset flags, owner, basis, size and alignment before
+projecting it into the full union. It keeps every retail reservation and parent
+page and still rejects unknown owners. This is an ownership projection, not a
+free-cave exemption. The product manifest contains both preset and dormant
+owner observations, so its camera declaration can require this projection even
+after regeneration.
+
+Dispatcher `_apply_all`: retain the existing
+`(dynamic_kickoff, _dynamic_kickoff_adapter(dynamic_kickoff_settings),
+"dynamic_kickoff_patch", "dynamic-kickoff")` tuple and the post-allocator
+`(kickoff_relocated, kickoff_relocated_patch, "kickoff_relocated_patch",
+"experimental relocated kickoff")` tuple. Retain the `dynamic_kickoff`,
+`dynamic_kickoff_settings` and `kickoff_relocated` kwargs and current request
+selection/deferral. In all four status dictionaries (file inspection, image
+inspection, file patch result, image patch result), retain `dynamic_kickoff`,
+`dynamic_kickoff_settings`, `kickoff_relocated` and
+`kickoff_relocated_settings` with the existing status/read-settings calls.
+No dispatcher or status-field edit is needed for v3.
+
+`BuildPlan`: retain `dynamic_kickoff`, its settings, `kickoff_relocated` and
+the existing normalization. Basic and Advanced keep dynamic kickoff disabled;
+Experimental keeps it enabled. Relocation stays disabled by default in all
+three presets and continues to imply the allocator and dynamic kickoff when
+selected. Retain the existing Gameplay Patches PATCHES text containing
+"Retail" and "Patch" and both keys in `NEEDS_IMAGE`. Retain the Build tab
+`_option` caption `Dynamic kickoff: ready stance and close blocks` (46 chars),
+`needs_image=True` and `NOT_TESTED`. No new UI claim of a gameplay fix is needed
+before Noah's witness. Existing help that says "nobody moves" means the ten
+coverage players and nine setup blockers; the kicker and two deep returners
+remain free.
+
+The existing dynamic-kickoff PATCHES text begins: "Retail: on a kickoff
+everyone sprints at the kick, the ball is kicked wherever the CPU meter lands
+and a returner brings most kicks out. Patch: the 2024/2025 rule." Retain its
+following role exceptions, contact/spot/settings explanation and unwitnessed
+status. The relocated PATCHES text remains: "Retail: the extra patch space is
+unused. Patch: moves the dynamic kickoff there with the same settings. Check
+that both teams still line up, hold until contact and return normally.
+Unwitnessed in game." Both `dynamic_kickoff` and `kickoff_relocated` remain in
+`NEEDS_IMAGE`.
+
+Allowlist lines remain `mod_editor/core/nfl2k5_dynamic_kickoff.py` and
+`mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py`. Runtime-closure imports
+remain `mod_editor.core.nfl2k5_dynamic_kickoff` and
+`mod_editor.core.nfl2k5_dynamic_kickoff_relocated`. The tests/evidence helper
+is not a product import. The unified provider's two existing module hashes
+were refreshed in `providers.py`; no execution trust rule was weakened. No
+new capability registry entry is needed because the existing surface is used.
+Historical v1/v2 XBE payloads deliberately refuse; rebuild from the supported
+base rather than layering v3 over an old patched XBE.
+
 # r63 static ESPN scorebug v10 and repaintable template (2026-09-07)
 
 The existing `scorebug` checkbox installs **`espn-reference-v10`** now. The

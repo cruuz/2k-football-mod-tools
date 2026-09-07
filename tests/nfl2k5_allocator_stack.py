@@ -98,6 +98,8 @@ def manifest_for_allocated_union(manifest, retail, allocated):
     its complete wrapper at the recorded preset's allocation; recognize that
     one complete span by re-planning the recorded preset. Unknown or changed
     ownership refuses.
+    The v3 kickoff live hook is pinned against both retail and the composed
+    owner before adding its reservation.
     This is not a regenerated disc manifest and is never written to the product.
     """
     from mod_editor.core.nfl2k5_cave_oracle import ReservationManifest, XbeImage
@@ -140,6 +142,20 @@ def manifest_for_allocated_union(manifest, retail, allocated):
         delta = after["va"] - before["va"]
         spans.append({**span, "start": hex(start + delta), "end": hex(end + delta)})
     spans += space.reservations(allocated)
+    from mod_editor.core import nfl2k5_dynamic_kickoff as legacy_kickoff
+    va, original = legacy_kickoff.HOOKS["separation"]
+    image = XbeImage(retail)
+    if image.read(va, len(original)) != original:
+        raise AssertionError("kickoff separation retail pin differs")
+    if any(r.detail.split(":", 1)[0] not in ("nfl2k5_dynamic_kickoff", kickoff.OWNER)
+           for r in manifest.overlaps(va, va + len(original))):
+        raise AssertionError("kickoff separation overlaps a different owner")
+    code, data = kickoff._sites(allocated)
+    _, labels = kickoff.code_for(legacy_kickoff._settings(), code["va"], data["va"])
+    if XbeImage(allocated).read(va, len(original)) != legacy_kickoff._hook_bytes("separation", labels):
+        raise AssertionError("kickoff separation owner hook differs")
+    spans.append(dict(start=hex(va), end=hex(va + len(original)), size=len(original),
+                      owner=kickoff.OWNER, basis="test-only pinned live edit: separation"))
     document = {**manifest.document, "spans": spans, "allocator_layout": layout,
-                "model": "Test-only named-allocation projection; retail reservations unchanged"}
+                "model": "Test-only allocation projection plus pinned kickoff separation live hook"}
     return ReservationManifest(document, XbeImage(retail))

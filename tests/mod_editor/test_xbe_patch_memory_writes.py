@@ -332,8 +332,9 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
         code, data = relocated._sites(self.patched)
         self.assertEqual((code["size"], data["size"]), (1939, 10))
-        self.assertEqual(len(kickoff.HOOKS), 15)
-        self.assertTrue({"eligibility", "root_motion", "block_target", "diagram"} <= kickoff.HOOKS.keys())
+        self.assertEqual(len(kickoff.HOOKS), 16)
+        self.assertTrue({"eligibility", "root_motion", "block_target", "diagram", "separation"}
+                        <= kickoff.HOOKS.keys())
         self.assertEqual(relocated.status(self.patched), "applied")
 
     def test_defensive_try_grown_storage_and_writes(self) -> None:
