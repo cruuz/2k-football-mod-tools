@@ -494,7 +494,9 @@ class RosterNameLane:
     surface = "players_rosters"
     page = "rosters"
     title = "Player names in roster.rst"
-    classification = "offline-writer-proved"
+    #: Witnessed on pixels by the headless harness on both Blitz discs, 2026-09-06:
+    #: docs/product/measured/nflblitz200{2,3}_ps2/runtime-witness.json.
+    classification = "runtime-proved"
     fixed_allocation = True
     read_only = False
 

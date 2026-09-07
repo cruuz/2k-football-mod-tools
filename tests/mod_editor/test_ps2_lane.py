@@ -80,6 +80,12 @@ class Ps2RegistryTests(unittest.TestCase):
         ]
         self.assertEqual(len(disc_writers), 6)
         heard = {"nfl2k5ps2.audio.audo_exact_slot_replace"}
+        # Witnessed on pixels by the headless harness on 2026-09-06, from the
+        # K-01 pre-game LOADING savestate: the same pixels change under two
+        # different replacement colours and their magnitude tracks the colour
+        # distance, while a second same-length rebuild changes none.
+        # docs/product/measured/nfl2k5_ps2/runtime-witness.json
+        seen = {"nfl2k5ps2.colors.unif_words"}
         for capability in disc_writers:
             self.assertEqual(capability.raw["gui"]["mode"], "edit")
             # Each is a tab of the PS2 Disc Studio; stadium is off by default
@@ -89,9 +95,10 @@ class Ps2RegistryTests(unittest.TestCase):
                           capability.raw["id"] != "nfl2k5ps2.stadiums.position_lanes")
             self.assertIn("PS2 NFL 2K5 Studio", capability.raw["gui"]["reason"])
             self.assertTrue(capability.raw["validation_command"])
-            if capability.raw["id"] in heard:
-                # One AUDO slot was heard on a cold boot (menu-appear_01); the
-                # row is runtime-proved for that recorded selector only.
+            if capability.raw["id"] in heard | seen:
+                # One AUDO slot was heard on a cold boot (menu-appear_01) and the
+                # packed colour words were seen headlessly; each row is
+                # runtime-proved for its own recorded selector and scene only.
                 self.assertEqual(capability.classification.value, "runtime-proved")
                 self.assertEqual(capability.raw["runtime"]["status"], "visible-proved")
                 self.assertTrue(capability.raw["runtime"]["evidence"])

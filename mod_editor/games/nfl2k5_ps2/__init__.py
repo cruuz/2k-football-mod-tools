@@ -112,7 +112,9 @@ class UnifColourLane:
     capability_id = "nfl2k5ps2.colors.unif_words"
     surface = "colors"
     title = "Facemask and turtleneck packed colours"
-    classification = "offline-writer-proved"
+    #: Witnessed on pixels by the headless harness, 2026-09-06:
+    #: docs/product/measured/nfl2k5_ps2/runtime-witness.json.
+    classification = "runtime-proved"
     recipe_schema = colour_patch.RECIPE_SCHEMA
     validators = (
         "tools/validate_nfl2k5_ps2_unif_color.sh",

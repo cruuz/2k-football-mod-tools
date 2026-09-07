@@ -53,8 +53,12 @@ class _Room(unittest.TestCase):
 class ModuleTests(_Room):
     def test_the_module_hosts_every_registered_lane(self) -> None:
         self.assertEqual(len(LANES), 8)
+        # rosters.player_names moved to runtime-proved on 2026-09-06: the headless
+        # harness saw the rewritten names on screen from this disc's own savestate.
+        # docs/product/measured/nflblitz2002_ps2/runtime-witness.json
         self.assertEqual({lane.classification for lane in LANES},
-                         {"offline-writer-proved", "extract-only", "read-only-mapped"})
+                         {"offline-writer-proved", "extract-only", "read-only-mapped",
+                          "runtime-proved"})
         self.assertEqual(GAME.identity.serials, (containers.SERIAL,))
         self.assertEqual(len({lane.lane_id for lane in LANES}), len(LANES))
 
