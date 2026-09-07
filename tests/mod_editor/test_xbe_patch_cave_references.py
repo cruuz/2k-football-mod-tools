@@ -440,7 +440,9 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertEqual(image.read(code["va"], code["size"]), expected)
         for name in ("eligibility", "root_motion", "block_target", "diagram"):
             va, original = kickoff.HOOKS[name]
-            self.assertEqual(manifest.overlaps(va, va + len(original), exclude_owner="nfl2k5_dynamic_kickoff"), [])
+            # the relocated variant is the same feature and declares the same hooks
+            self.assertEqual([e for e in manifest.overlaps(va, va + len(original), exclude_owner="nfl2k5_dynamic_kickoff")
+                              if e.detail.split(":", 1)[0] != "nfl2k5_dynamic_kickoff_relocated"], [])
             self.assertEqual(sum(i.size for i in Cs(CS_ARCH_X86, CS_MODE_32).disasm(original, va)), len(original))
             self.assertEqual(image.read(va, len(original)), kickoff._hook_bytes(name, labels))
 
