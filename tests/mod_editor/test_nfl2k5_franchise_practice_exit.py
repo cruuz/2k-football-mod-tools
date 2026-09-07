@@ -1,6 +1,6 @@
 """Practice launch/quit/completion through retail screen-stack instructions.
 
-Unicorn runs the installed START, push, pop, pop-to, game event dispatcher,
+Unicorn runs the guarded launch arm, push, pop, pop-to, game event dispatcher,
 Quit and ended-game update/teardown. Scene loading, rendering, networking and
 resource destruction are explicit service boundaries, not a played witness.
 """
@@ -41,12 +41,12 @@ class PatchTests(unittest.TestCase):
             raise unittest.SkipTest('extraction differs from the pinned USA retail XBE')
         cls.patched, cls.receipt = fp.apply(cls.retail)
 
-    def test_no_new_sites_allocations_or_runtime_flag(self):
-        self.assertEqual(len(fp.sites()), 4)
+    def test_one_new_target_site_no_allocation_or_runtime_flag(self):
+        self.assertEqual(len(fp.sites()), 5)
         self.assertEqual(len(self.patched), len(self.retail))
-        self.assertEqual(fp.CODE_SIZE, 107)
+        self.assertEqual(fp.CODE_SIZE, 135)
         self.assertFalse(self.receipt['new_runtime_flag'])
-        self.assertEqual((self.receipt['pops_on_start'], self.receipt['pushes_on_start']), (1, 1))
+        self.assertEqual((self.receipt['pops_on_start'], self.receipt['pushes_on_start']), (2, 1))
         image = XbeImage(self.retail)
         self.assertEqual(image.read(0x4E8CA0 + 0x28, 4), struct.pack('<I', fp.QUIT_VA))
         self.assertEqual(image.read(0x4E9010 + 8, 4), struct.pack('<I', 0x4E8D70))
@@ -60,8 +60,9 @@ class PatchTests(unittest.TestCase):
             self.assertEqual(s.stored_digest, section_digest(self.patched, s))
 
     def test_old_restart_and_mixed_bytes_refuse_without_mutating_input(self):
-        old = bytearray(fp.CODE[:fp.START_STUB_VA - fp.CODE_VA])
-        # The shipped beta-61 START, independently encoded, lacked a game push.
+        old = bytearray(fp.CODE[:fp.LAUNCH_TARGET_STUB_VA - fp.CODE_VA])
+        # The beta-61 unreferenced stub, independently encoded, lacked a game push.
+        # The v2 suite proves that actual pregame START never called that stub.
         old += bytes.fromhex('568bf18b860c010000c780840a000001000000')
         at = fp.CODE_VA + len(old)
         old += b'\xe8' + struct.pack('<i', fp.SCREEN_POP_VA - at - 5) + b'\x5e'
@@ -196,6 +197,10 @@ class ExitExecutionTests(unittest.TestCase):
                 self.events.append((self.top(), event))
                 if self.top() != fp.GAME_SCREEN_VA:
                     finish(1, 4)  # only non-game screen rendering/UI services
+            elif va in (0x33BFB0, 0x2C1230):
+                finish(1)  # Team Select launch readiness/team validity
+            elif va == 0x2C0A70:
+                finish()  # launch UI sound
             elif va == fp.GAME_LOAD_VA:
                 self.calls.append(va)
                 self.assertEqual(self.top(), fp.GAME_SCREEN_VA)
@@ -237,6 +242,13 @@ class ExitExecutionTests(unittest.TestCase):
         self.assertEqual(self.uc.reg_read(x.UC_X86_REG_ESP), self.STACK + 4)
         self.assertEqual(self.uc.reg_read(x.UC_X86_REG_ESI), 0xCAFEBABE)
 
+    def launch(self):
+        # Isolated lifecycle fixture. Full native input, Team Select initialization
+        # and menu row dispatch are exercised by the separate v2 suite.
+        self.call(0x148B40)
+        self.put(0xACF614, 3)
+        self.call(0x2C1700)
+
     def assert_preserved(self):
         for va, before in self.snapshots:
             self.assertEqual(bytes(self.uc.mem_read(va, len(before))), before, hex(va))
@@ -247,11 +259,10 @@ class ExitExecutionTests(unittest.TestCase):
                 for mode in (0, 1, 2):
                     with self.subTest(composed=payload is self.composed, flag=flag, mode=mode):
                         self.machine(payload=payload, flag=flag, mode=mode)
-                        self.call(fp.START_STUB_VA)
-                        self.assertEqual(self.get(self.MANAGER + 0x100), 2)  # one pop, one push
+                        self.launch()
+                        self.assertEqual(self.get(self.MANAGER + 0x100), 2)  # Team Select/settings pop, one game push
                         self.assertEqual(self.top(), fp.GAME_SCREEN_VA)
                         self.assertEqual(self.get(self.MANAGER + 8), fp.COACH_DESK_DESCRIPTOR_VA)
-                        self.assertEqual(self.get(self.STATE + fp.GAME_PENDING_OFFSET), 1)
                         self.assertIn(fp.GAME_LOAD_VA, self.calls)
                         self.assertNotIn(fp.GAME_START_VA, self.calls)
                         self.call(fp.SCREEN_PUSH_VA, edx=PAUSE_MENU)
@@ -284,7 +295,7 @@ class ExitExecutionTests(unittest.TestCase):
     def test_completion_states_share_teardown_and_preserve_fixture_season_bytes(self):
         for state in (0, 1, 2):
             self.machine()
-            self.call(fp.START_STUB_VA)
+            self.launch()
             self.put(fp.GAME_STATE_VA, state)
             self.call(0x650A0)
             self.assertEqual(self.top(), fp.COACH_DESK_DESCRIPTOR_VA)
@@ -315,7 +326,7 @@ class ExitExecutionTests(unittest.TestCase):
 
     def test_failed_initial_load_returns_to_desk_without_engine_start(self):
         self.machine(load_success=False)
-        self.call(fp.START_STUB_VA)
+        self.launch()
         self.assertEqual(self.top(), fp.COACH_DESK_DESCRIPTOR_VA)
         self.assertEqual(self.get(self.MANAGER + 0x100), 1)
         self.assertNotIn(0x64710, self.calls)
@@ -325,7 +336,7 @@ class ExitExecutionTests(unittest.TestCase):
 
     def test_cancel_and_resume_leave_game_and_parent_in_place(self):
         self.machine(confirm=3)
-        self.call(fp.START_STUB_VA)
+        self.launch()
         self.call(fp.SCREEN_PUSH_VA, edx=PAUSE_MENU)
         self.call(fp.QUIT_VA)
         self.assertEqual(self.top(), PAUSE_MENU)
@@ -336,10 +347,10 @@ class ExitExecutionTests(unittest.TestCase):
         self.assertNotIn(0x649C0, self.calls)
         self.assert_preserved()
 
-    def test_previous_restart_reproduces_unwind_through_the_desk(self):
+    def test_missing_game_screen_unwinds_through_desk_control(self):
         self.machine()
-        self.call(fp.SCREEN_POP_VA)  # beta-61 START's one settings pop
-        self.call(fp.GAME_START_VA)  # beta-61 tail: restart, no game-screen push
+        self.call(fp.SCREEN_POP_VA)  # deliberately missing game-screen control
+        self.call(fp.GAME_START_VA)  # isolated restart, no game-screen push
         self.assertEqual(self.top(), fp.COACH_DESK_DESCRIPTOR_VA)
         self.call(fp.SCREEN_PUSH_VA, edx=PAUSE_MENU)
         self.call(fp.QUIT_VA)
