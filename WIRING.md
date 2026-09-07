@@ -10201,7 +10201,7 @@ Concrete protected handoff once M2 actually satisfies its exit criteria:
   save your career. Experimental / Unwitnessed.` This text contains literal
   `Retail` and `Patch`; do not use it while the runtime is incomplete.
 - `build_panel_qt.py`: future `_option` caption exactly
-  `MyCareer: create MyPlayer in the game` (35 characters). Remove its
+  `MyCareer: create MyPlayer in the game` (37 characters). Remove its
   mandatory JSON field/readiness error for the new format. Generic disc build
   has no name, college, player ordinal or prepared save parameter. Existing
   projects carrying a legacy seed need an explicit compatibility indication.
@@ -10238,3 +10238,10 @@ must allow that exact hub and approved children. The shared franchise
 auto-save owner must supply its actual public API and proved save-context
 initialization before wiring an after-game call. M1's proposed adapter ABI is
 not an existing function address. No protected file was edited.
+
+M2 investigation update: supplied year-7 Franchise1 has nonzero native words
+at save offsets `0x9967C`, `0x99680`, `0x99684`. Reject unconditional use of
+the proposed 128-byte tail. No inline-state writer, extra hook, product option,
+native-hub recipe or setup-guard removal is ready to wire from this continuation.
+The read-only audit's `--save` option and creation-boundary suite remain
+development-only, with no new runtime-closure or allowlist import.

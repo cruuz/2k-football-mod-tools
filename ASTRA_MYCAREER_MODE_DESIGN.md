@@ -8,6 +8,12 @@ HYPOTHESIS means an unproved connection, ownership assumption, or gameplay
 behavior, with the necessary proof specified. Noah alone supplies played
 witnesses. Design decisions are requirements, not observations.
 
+**M2 investigation update:** the 128-byte save candidate below is occupied
+in the supplied year-7 Franchise1 fixture. Its first three words are
+`0x3FFFFFFF`, `0x9BFFFFFF`, `0x0119307F`. That candidate is rejected for
+unconditional career storage. The proposed field layout is a size contract,
+not permission to overwrite this native data. See the report's M2 continuation.
+
 The product contract is one patched disc for all careers, no Studio or external
 save preparation, Create MyPlayer in the game, a distinct apartment hub, games
 and practice with control of MyPlayer only, advancement and saving. The hub
@@ -93,6 +99,16 @@ provide parts of that path. Starting a fresh rookie at a normal preseason
 without simulating the preceding season requires a certified native initial
 draft path; neither the Studio draft-save replacement nor a stage-word write
 provides it. Draft presentation is outside v1.
+
+**M2 bounded completion proof:** the new creation-boundary suite executes
+`0x346C50`, normalization, native FA lookup/removal/append and POP-TO. Fresh
+completion appends exactly one FA entry, repeated completion retains only one,
+and a player already on a team is not also added to FA. A synthetic full-list
+capacity edge marks the player created even though append refuses. That stress
+fixture does not prove a valid retail league can reach 2,500 free agents; it
+does prove the adapter must not interpret returning from completion as proof
+of membership. Preflight capacity and verify actual ownership before capture
+and placement. Notification and descriptor services remain harness boundaries.
 
 ## Player control, play calling and off-field progress
 

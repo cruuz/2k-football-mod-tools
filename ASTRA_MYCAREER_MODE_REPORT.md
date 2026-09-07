@@ -9,7 +9,7 @@ console save, audio, GUI, network access or push occurred.
 | Milestone | Status |
 | --- | --- |
 | M1: complete mode design and native prerequisite evidence | Complete; bundle commit and DONE receipt accompany delivery |
-| M2: in-game creation, placement, franchise, hub and game loop | Not complete; follow-up work below must not be presented as a mode |
+| M2: in-game creation, placement, franchise, hub and game loop | Started with save occupancy and native completion proofs; not complete |
 | M3: calendar, card, depth, upgrades, requests, art and auto-save | Not complete |
 
 M1 delivers `ASTRA_MYCAREER_MODE_DESIGN.md`, an explicit feature/native map,
@@ -105,6 +105,69 @@ Root free space was 108,010,352,640 bytes at M1 verification. No disc or pack
 copy was made; a 6.3 GB disposable image would consume the floor's headroom.
 Only bounded executable/synthetic save reads were used. Scratch stays below
 200 MB; no acceptance disc is left behind.
+
+## M2 continuation: occupied save region and actual creation completion
+
+**PROVED:** the supplied three 720,044-byte fixtures do not all have an empty
+season tail. The two `f0`/`f1` fixtures have zero tails. The year-7, stage-1,
+substate-2 `256B40374FD6-Franchise1` fixture has 12 nonzero bytes, the words
+`0x3FFFFFFF`, `0x9BFFFFFF`, `0x0119307F` at relative offsets 0, 4, 8.
+Its save SHA-256 is
+`0db746fe2c8ae2102fdd420863a5e5bcddec4b83ac3e234568824c337e4422a7`;
+tail SHA-256 is
+`063baa6954477e544ee04ae3b390055e247ce3e4c56328667aff7f72ffa791dd`.
+This is observed occupancy, not a claim about those words' gameplay meaning.
+The bare-file audit does not check EXTRA authentication or modify any input.
+
+Decision: reject unconditional use of `0x9967C..0x996FB`. Neither disc-specific
+seeds nor an external journal substitutes for the requested inline state.
+Preservation alone passed in M1; availability did not. The design now includes
+this counterexample at its top. `audit_save`/CLI `--save` emit the exact
+occupancy and false allocation permission even for zero samples. New tests
+pin the real counterexample and cover size/marker refusals, both ends of the
+tail, nonmutation and the distinction between empty samples and free storage.
+
+**PROVED native completion:** the separate creation-boundary suite executes
+`0x346C50`, native date/record normalization, team membership traversal, FA
+lookup/removal/append and native POP-TO to the created-player list. Fresh
+completion marks the created player and appends him to FA. Repeated completion
+keeps one membership. Existing team ownership avoids FA insertion. A synthetic
+full-list stress case shows append refusing while the record is already marked
+created. This is a capacity-edge fixture, not a claim that the supplied retail
+saves contain 2,500 distinct free agents. A career adapter needs preflight and
+postcondition checks before adopting the player. Other primary records are
+unchanged. All callers return with balanced stacks and callee-saved registers.
+
+The descriptor delivery/render/destructor service `0x6E4E0` and notification
+subscribers through `0x110E60` are explicit external stubs. They do not choose
+membership or the return target. These new tests do not claim a rendered hub,
+native new-franchise finalization, game launch, cold reload or playable mode.
+
+| Additional / changed command | Result |
+| --- | --- |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_creation_boundary.py -v` | 4 passed, 1.933 s |
+| `python3 tests/mod_editor/test_nfl2k5_my_career_mode_audit.py -v` | 6 passed, 0.057 s (supersedes M1's 2-test version) |
+| Audit command above with `--save <Franchise1/SAVEGAME.DAT>` | Exact read-only occupied-tail receipt |
+
+The resulting unique coverage is **222 passing tests**, with both XBE gates
+from M1 still applicable: this continuation changes no production module,
+allocator requests, native code or protected file. Logs, resource metrics,
+`M2-tail-samples.json` and `M2-save-audit.json` are in scratch. Initial scratch
+creation-completion probing needed the manager's actual list-state pointer;
+that fixture issue was corrected before the four final tests ran.
+
+M2 and M3 remain unfinished. In particular, no generic disc recipe is published
+as playable, no inline save bytes are allocated, and no game entry is rerouted
+to a half-created career. The remaining implementation work is explicit in
+the design: certify fixed-size save storage, implement fresh-entry cancellation
+and placement, execute the complete default franchise sequence, implement the
+owned hub/child lifecycle and play-call/off-field behavior, then integrate the
+shared auto-save owner and M3 screens. The existing Studio/prepared-save mode
+is unchanged and does not satisfy that requested loop.
+
+This partial continuation is committed separately and included with M1 in
+`.scratch/r64-mycareer-mode.bundle`; its status is recorded in
+`.scratch/M2_PROGRESS.json`. There is deliberately no `M2_DONE` or `M3_DONE`.
 
 ## Noah's witness list, all pending
 

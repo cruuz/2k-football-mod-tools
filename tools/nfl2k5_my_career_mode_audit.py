@@ -17,8 +17,11 @@ sys.path.insert(0, str(ROOT))
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage
 from mod_editor.core import nfl2k5_my_career as career
 from mod_editor.core import nfl2k5_my_career_code as assembly
+from mod_editor.core import nfl2k5_franchise_save as franchise
 
 MAX_XBE_BYTES = 16 * 1024**2
+SAVE_TAIL_START = franchise.SEASON_BLOCK + franchise.S_TAIL
+SAVE_TAIL_SIZE = franchise.S_TAIL_SIZE
 PINS = (
     (0x3461F0, 134, "8c016c8fb8b61b493ae6bfa40e5454e6499e9d33186600618f428217dbaac2c7"),
     (0xBFF50, 55, "59da9305f464222f507853c301f9e264621dffd953eadd4ced2d050560c26452"),
@@ -86,14 +89,54 @@ def audit(payload: bytes) -> dict:
     }
 
 
+def audit_save(payload: bytes) -> dict:
+    """Inspect an opaque region, never allocate it or publish a modified save.
+
+    A bare SAVEGAME.DAT does not include its EXTRA signature, so this receipt
+    expressly makes no authenticity claim. Even an all-zero sample is NOT a
+    vacancy proof. One occupied sample defeats unconditional tail reuse.
+    """
+    if not isinstance(payload, bytes) or len(payload) != franchise.FRANCHISE_SAVE_SIZE:
+        raise ValueError("expected a complete 720,044-byte franchise save")
+    if payload[0x2E0:0x2E4] != b"ROST" or payload[franchise.SEASON_BLOCK] != 2:
+        raise ValueError("expected native ROST and Franchise markers")
+    tail = payload[SAVE_TAIL_START:SAVE_TAIL_START + SAVE_TAIL_SIZE]
+    head = payload[franchise.SEASON_BLOCK:franchise.SEASON_BLOCK + 11]
+    return {
+        "schema": "nfl2k5_my_career_save_candidate/v1",
+        "save_sha256": hashlib.sha256(payload).hexdigest(),
+        "size": len(payload), "signature_checked": False, "modified": False,
+        "stage": head[1], "substate": head[2], "week": head[5], "year_field": head[6],
+        "tail_start": hex(SAVE_TAIL_START), "tail_size": SAVE_TAIL_SIZE,
+        "tail_sha256": hashlib.sha256(tail).hexdigest(),
+        "nonzero_bytes": sum(value != 0 for value in tail),
+        "occupied_words": [{"relative_offset": hex(offset), "value": hex(value)}
+                           for offset in range(0, len(tail), 4)
+                           if (value := struct.unpack_from("<I", tail, offset)[0])],
+        "allocation_allowed": False,
+        "verdict": "OCCUPIED: preserve native data" if any(tail)
+                   else "ZERO SAMPLE: ownership remains unproved",
+        "runtime_witnessed": False,
+    }
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("xbe", type=Path)
+    parser.add_argument("--save", action="append", type=Path, default=[],
+                        help="read-only candidate occupancy audit of a bare SAVEGAME.DAT; repeatable")
     args = parser.parse_args(argv)
     # The bounded read also refuses a file that grows after stat().
     with args.xbe.open("rb") as source:
         payload = source.read(MAX_XBE_BYTES + 1)
-    print(json.dumps(audit(payload), indent=2))
+    receipt = audit(payload)
+    if args.save:
+        receipt["save_samples"] = []
+        for path in args.save:
+            with path.open("rb") as source:
+                save = source.read(franchise.FRANCHISE_SAVE_SIZE + 1)
+            receipt["save_samples"].append({"source": str(path), **audit_save(save)})
+    print(json.dumps(receipt, indent=2))
 
 
 if __name__ == "__main__":
