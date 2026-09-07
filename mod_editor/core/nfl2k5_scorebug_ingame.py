@@ -1,9 +1,9 @@
 """Experimental, unwitnessed reference scorebug, with fixed-span resource transactions.
 
-Runtime team selection and new event hooks are specified in the accompanying report.
-This module installs the neutral fallback and retains retail score rotation. It never
-installs a fixed matchup into a generic game image. The default is broadcast exact-v1; an explicit folder selects the preserved
-v10 template contract. Retail bytes supply structure, never reference pixels.
+This module installs neutral panels with live retail identity, event visibility
+and score rotation. It never installs a fixed matchup into a generic game image.
+The default is broadcast exact-v2; an explicit folder selects the preserved v10
+template contract. Retail bytes supply structure, never reference pixels.
 """
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ import nfl_vc_lz_fill as fill
 import nfl2k5_scorebug_layout as layout
 from . import nfl2k5_bump_strength as bs
 
-VERSION = "espn-broadcast-exact-v1"
+VERSION = "espn-broadcast-exact-v2"
 TEMPLATE_VERSION = "espn-reference-v10"
 _AUTO = object()
 PACK_SIZE = 193710080
@@ -541,11 +541,27 @@ def xbe_version(payload: bytes) -> str:
             return "retail"
         for version, specs in versions.items():
             expected = {**union, **{va: new for va, _old, new, _ in specs}}
+            if version == VERSION and runtime_identity_installed(payload):
+                expected.update({va: bytes(4) for va in (0xa95894, 0xa958bc)})
             if have == expected:
                 return version
     except (ValueError, struct.error, SystemExit):
         pass
     return "foreign"
+
+
+def runtime_identity_installed(payload):
+    """Recognize the complete existing owner without recursive status calls."""
+    from . import nfl2k5_scorebug_runtime as runtime
+    try:
+        code, data = runtime.sites(payload)
+        content, labels = runtime.code_for(code["va"], data["va"])
+        return (payload[code["raw"]:code["raw"] + len(content)] == content and
+                all(payload[layout.sbpos.va_to_off(payload, va):
+                            layout.sbpos.va_to_off(payload, va) + 5] == runtime.hook_bytes(name, labels)
+                    for name, (va, _old) in runtime.HOOKS.items()))
+    except (ValueError, KeyError, IndexError, struct.error, SystemExit):
+        return False
 
 
 def xbe_status(payload: bytes, *, scorebug_folder=_AUTO) -> str:
@@ -585,6 +601,8 @@ def apply_xbe(payload: bytes, *, scorebug_folder=None) -> tuple[bytes, dict]:
     edits, touched = [], set()
     sections = bs._sections(payload)
     for va,old,new,label in xbe_specs(scorebug_folder=scorebug_folder):
+        if scorebug_folder is None and va in (0xa95894, 0xa958bc) and runtime_identity_installed(payload):
+            new = bytes(4)
         off = layout.sbpos.va_to_off(payload,va)
         if before == "retail":
             buf[off:off+len(new)] = new

@@ -145,7 +145,10 @@ class NativeTests(unittest.TestCase):
         changed = compare(self.reference, bad, geometry, self.text_boxes)
         self.assertGreater(changed["regions"]["clock_strip"]["rgb_mae"], 70)
         self.assertFalse(changed["exact_match"])
-        self.assertLess(changed["regions"]["clock_strip"]["native_boundary_error_px"], .01)
+        self.assertLess(changed["regions"]["frame_rim"]["native_boundary_error_px"], .01)
+        # Static FONT4 needs a wider row; the comparator must report that
+        # real deviation from the photograph, not substitute its new target.
+        self.assertGreater(changed["regions"]["clock_strip"]["native_boundary_error_px"], 15)
 
     def test_current_compiler_and_every_probe_identity_are_reproducible(self):
         from nfl2k5_scorebug_exact import compiler_pins

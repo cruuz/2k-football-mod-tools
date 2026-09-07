@@ -571,7 +571,19 @@ class ScorebugReferenceWrites(unittest.TestCase):
                 continue  # existing reserved header constants, never runtime writes
             section=image.section(va,len(new))
             if section.name != ".text":
-                self.assertTrue(image.runtime_writable(va,len(new)),label)
+                if va in (0xe6c484,0xe6c4a8,0xe6c4c4):
+                    # Immutable scorebug-only format strings, not runtime
+                    # state. Native formatting writes the caller's buffer.
+                    # Retail marks .string_ executable (0x26), but read-only.
+                    # This is an in-place literal edit with identical section
+                    # permissions, not newly allocated executable data.
+                    self.assertEqual((section.name,section.flags),(".string_",0x26))
+                    self.assertEqual(section,XbeImage(retail).section(va,len(old)))
+                    self.assertFalse(image.runtime_writable(va,len(new)))
+                    self.assertEqual(new,old.replace(b'\x0a\x00',b'\x20\x00'))
+                    self.assertEqual(len(old),len(new))
+                else:
+                    self.assertTrue(image.runtime_writable(va,len(new)),label)
             else:
                 for write in absolute_writes(patched,[(va,va+len(new))]):
                     if write["target"] is not None:

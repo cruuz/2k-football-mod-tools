@@ -38,7 +38,7 @@ def validate_native_code(payload):
     pins.extend((start, end, sha, name) for name, start, end, sha in EXPECTED_RANGES if name in font_names)
     for start, end, sha, label in pins:
         off = r.layout.sbpos.va_to_off(payload, start)
-        if r.digest(payload[off:off+end-start]) != sha:
+        if r.digest(r.guard_bytes(payload, start, end-start)) != sha:
             raise ValueError('foreign native audit code: ' + label)
     for va, original in STATIC_CALLS:
         off = r.layout.sbpos.va_to_off(payload, va)
@@ -335,7 +335,8 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                     capture=None, baseline_v8=False, visible_elements=(0, 1),
                     score_values=(0, 0), previous_scores=(0, 0), baseline_v9=False,
                     runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None, runtime_fonts=(),
-                    possession='home'):
+                    possession='home', game_seconds=790, play_seconds=12, quarter=1,
+                    ball_yards=50, visibility_state=None):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
@@ -379,6 +380,13 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         m.identity(**identity)
     m.put(m.home, score_values[0])
     m.put(m.away, score_values[1])
+    m.float(m.game_clock + 16, game_seconds); m.float(m.clock + 16, play_seconds)
+    m.put(0xe602c4, quarter)
+    m.put(0xe5fc20 + 0x1c, 0xb30864); m.put(0xe5fc60 + 0x1c, 0xb30a58)
+    m.put(0xe60284, 0xe5fc60 if possession == 'home' else 0xe5fc20)
+    # FBA40 uses the native field coordinate, positive from midfield toward
+    # the possessing team's goal (one yard = 91.44 native distance units).
+    m.float(m.play + 0x38, (ball_yards - 50) * 91.44)
     m.put(m.home + 4, timeouts[0]); m.put(m.away + 4, timeouts[1])
     loaded_textures = {}
     if texture_span is not None:
@@ -409,7 +417,10 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         raise ValueError('native scene instance identity changed')
     # The frame driver still executes all native transforms and root operands.
     # Explicit geometry sample; the binding/draw audit below runs separately.
-    m.uc.mem_write(0xfc9c0, bytes.fromhex('c20400'))
+    if visibility_state is None:
+        m.uc.mem_write(0xfc9c0, bytes.fromhex('c20400'))
+    else:
+        configure_visibility(m, visibility_state)
     m.put(0xa95870, mode)
     m.run(0xfc200)
     for i in range(2):
@@ -422,10 +433,19 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         m.uc.mem_write(record + 0x20, cached)
     for i in range(6):
         record = r.layout.ELEMENT_RECORDS + i * 0x70
-        m.put(record + 0x58, int(i in visible_elements))
-        m.put(record + 0x38, 1)
-        m.float(record + 0x3c, 30 * slide if i == 0 else 30)
+        # +58 is binding availability, not requested visibility. Retail
+        # FC360 and the material updater both use the current slide at +3C.
+        # The old fixture disabled text but left every background fully open.
+        m.put(record + 0x38, int(i in visible_elements))
+        m.float(record + 0x3c, (30 * slide if i == 0 else m.floats(record + 0x30, 1)[0])
+                if i in visible_elements else m.floats(record + 0x2c, 1)[0])
     m.run(0xfce70, (0,), limit=500000)
+    visibility_trace = []
+    if visibility_state is not None:
+        for step in range(40):
+            m.run(0xfce70, (struct.unpack('<I', struct.pack('<f', 1/60))[0],), limit=500000)
+            visibility_trace.append(dict(frame=step, requests=[m.get(r.layout.ELEMENT_RECORDS+i*0x70+0x38) for i in range(6)],
+                slides=[m.floats(r.layout.ELEMENT_RECORDS+i*0x70+0x3c, 1)[0] for i in range(6)]))
     frame_instructions = len(m.visits)
     matrices = m.get(instance + 0x14)
     m.run(0x22c00, (body + r.layout.SHAPE, matrices), limit=10000)
@@ -497,6 +517,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 static_version='espn-reference-v8' if baseline_v8 else 'espn-reference-v9' if baseline_v9 else r.scene_version(scorebug_folder=scorebug_folder),
                 score_phase=score_phase, score_values=list(score_values), previous_scores=list(previous_scores),
                 visible_elements=list(visible_elements),
+                native_visibility=visibility_state, visibility_trace=visibility_trace,
                 frame=objects[frame_name], frame_material=frame_name,
                 clock=bounds(range(48, 64)), down=bounds(range(64, 80)),
                 frame_instructions=frame_instructions, widescreen=widescreen, mode=mode,
@@ -504,6 +525,30 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 scene_sha256=r.digest(decoded),
                 limitations=['CPU fixture, not console execution', 'GPU state and rasterization not executed',
                              'per-frame gameplay predicates replaced', 'explicit score phase sample'])
+
+
+def configure_visibility(m, state):
+    """World inputs around the real FC9C0; never replace its visibility logic.
+
+    Requests, slide integration and material gates all run natively. Only
+    unrelated game/world queries and the direction-placement decision are
+    supplied. The latter is tested independently in both placement modes.
+    """
+    allowed = {'pre_snap', 'after_play', 'live', 'kickoff', 'flag', 'fumble'}
+    if state not in allowed:
+        raise ValueError('unknown native visibility state')
+    for va in (0xabe90, 0x72190, 0xa7940, 0xff340):
+        m.uc.mem_write(va, bytes.fromhex('31c0c3'))
+    m.uc.mem_write(0xa6300, bytes.fromhex('d9eec3'))
+    m.uc.mem_write(0xfc700, b'\xc3')
+    m.put(0xe602b8, 14 if state in ('live', 'kickoff', 'fumble') else 12)
+    m.put(0xba2f14, int(state == 'after_play'))
+    m.put(m.clock + 0x18, 6 if state in ('after_play','live','fumble') else 0)
+    m.put(m.play + 0x160, int(state == 'flag'))
+    m.put(m.play + 0x198, int(state == 'fumble'))
+    context, record = m.alloc(32), m.alloc(32)
+    m.put(context + 8, record); m.put(record + 4, (10 if state == 'kickoff' else 0) << 8)
+    for owner in (0xe5fc20, 0xe5fc60): m.put(owner + 0xc, context)
 
 
 def native_text_draw(capture, *, shadow_offset=None):
@@ -643,7 +688,7 @@ def containment_failures(geometry, rails=None, tolerance=2):
 
 
 def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive=False,
-                  texture_spans=None, background=None):
+                  texture_spans=None, background=None, calibration=None):
     """Software diagnostic of captured inputs; GPU blend/cull policy is explicit.
 
     Native FONT quads, UVs and colours replace all fabricated preview strings.
@@ -654,15 +699,22 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
     import math
     from PIL import Image, ImageDraw
     from nfl_main_menu_font import rgba_from_font
+    size = tuple(calibration['size']) if calibration is not None else (640, 480)
+    if len(size) != 2 or any(type(v) is not int or not 1 <= v <= 2048 for v in size):
+        raise ValueError('native raster size exceeds the bounded diagnostic canvas')
+    sx, sy, offset_x, offset_y = calibration['affine'] if calibration is not None else (1, 1, 0, 0)
+    if not all(math.isfinite(v) for v in (sx, sy, offset_x, offset_y)) or not (0 < sx <= 4 and 0 < sy <= 4):
+        raise ValueError('invalid native raster calibration')
     im = (background.convert('RGBA').copy() if background is not None else
-          Image.new('RGBA', (640, 480), (44, 83, 39, 255)))
-    if im.size != (640, 480):
-        raise ValueError('native raster background must be 640x480')
+          Image.new('RGBA', size, (44, 83, 39, 255)))
+    if im.size != size:
+        raise ValueError('native raster background size differs from the diagnostic canvas')
+    width, height = size
     draw = ImageDraw.Draw(im)
     if background is None:
         for x in range(0, 640, 80):
             draw.line((x, 0, x + 95, 480), fill=(224, 235, 215, 255), width=2)
-    depth = [float('inf')] * (640 * 480)
+    depth = [float('inf')] * (width * height)
     pixels = im.load()
     chunk, body, _ = r.decode(texture_span)
     tex = r.tx.parse_texture(body, chunk)
@@ -681,12 +733,13 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
     def color(word):
         return ((word >> 16) & 255, (word >> 8) & 255, word & 255, word >> 24)
     def triangle(texture, points, uvs, colors, zs, *, cull=False):
+        points = [(x * sx + offset_x, y * sy + offset_y) for x, y in points]
         (ax, ay), (bx, by), (cx, cy) = points
         area = (bx - ax) * (cy - ay) - (cx - ax) * (by - ay)
         if abs(area) < 1e-6 or (cull and area > 0):
             return
-        x0, x1 = max(0, math.floor(min(ax, bx, cx))), min(639, math.ceil(max(ax, bx, cx)))
-        y0, y1 = max(16, math.floor(min(ay, by, cy))), min(463, math.ceil(max(ay, by, cy)))
+        x0, x1 = max(0, math.floor(min(ax, bx, cx))), min(width-1, math.ceil(max(ax, bx, cx)))
+        y0, y1 = max(0, math.ceil(16*sy+offset_y), math.floor(min(ay, by, cy))), min(height-1, math.floor(464*sy+offset_y)-1, math.ceil(max(ay, by, cy)))
         texels = texture.load()
         for y in range(y0, y1 + 1):
             for x in range(x0, x1 + 1):
@@ -698,7 +751,7 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                 if min(weights) < -1e-6:
                     continue
                 z = sum(w * v for w, v in zip(weights, zs))
-                at = y * 640 + x
+                at = y * width + x
                 if z > depth[at] + .001:
                     continue
                 uv = [sum(weights[i] * uvs[i][k] for i in range(3)) for k in range(2)]
@@ -759,18 +812,26 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                 vs = [quad[i] for i in ix]
                 triangle(font_atlases[row['font']], [v['screen'] for v in vs], [v['uv'] for v in vs],
                          [color(int(v['color'], 16)) for v in vs], [v['world'][2] for v in vs])
+    if calibration is not None:
+        gain, bias = calibration.get('gain', 1), calibration.get('bias', 0)
+        if not all(math.isfinite(v) for v in (gain, bias)) or not (0 < gain <= 2 and -255 <= bias <= 255):
+            raise ValueError('invalid diagnostic tone calibration')
+        lut = [min(255, max(0, round(v*gain+bias))) for v in range(256)]
+        im = im.convert('RGB').point(lut*3).convert('RGBA')
+        draw = ImageDraw.Draw(im)
     label = geometry['static_version'].upper() + ' / NATIVE INPUTS / SOFTWARE RASTER'
     if cull_positive:
         label += ' / CULL HYPOTHESIS'
     draw.text((8, 4), label, fill='white')
-    draw.text((8, 468), 'EXPERIMENTAL / CPU FIXTURE / NOT A GAME CAPTURE', fill='white')
+    draw.text((8, height-12), 'EXPERIMENTAL / CPU FIXTURE / NOT A GAME CAPTURE', fill='white')
     im.convert('RGB').save(path)
     return dict(uv_transform=list(uv_transform), winding=winding,
                 rendered_materials={name: dict(descriptor=bound[name],
                     **texture_receipts.get(bound[name], dict(name='score_buga',
                        span_sha256=r.digest(texture_span), dimensions=[64, 64]))) for name in sorted(visible)},
                 raster_policy=dict(depth='less-equal model', blend='vertex * texture, source alpha model',
-                                   cull_positive=cull_positive, gpu_state_proved=False))
+                                   cull_positive=cull_positive, gpu_state_proved=False,
+                                   calibration=calibration))
 
 
 def v7_baseline(spans):

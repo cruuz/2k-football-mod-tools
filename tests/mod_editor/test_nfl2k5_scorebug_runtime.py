@@ -250,7 +250,7 @@ class ExecutionTests(unittest.TestCase):
             for flags,visible in ((0,1),(2,1),(4,1),(0,0)):
                 m.float(m.clock+16,seconds);m.put(m.clock+24,flags);m.put(0xa95a70,visible);m.update()
                 urgent=0<=seconds<5 and flags==0 and visible==1
-                self.assertEqual(m.get(0xa95a48),r.RED if urgent else r.DARK)
+                self.assertEqual(m.get(0xa95a48),r.RED if urgent else r.PLAY_CLOCK_NORMAL)
     def test_native_collection_reader_uses_grown_end_and_wrapper_sizes(self):
         m=Machine(self.payload)
         # IO completion and collection-finished notification are host boundaries.

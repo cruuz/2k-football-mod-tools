@@ -659,6 +659,26 @@ class ScorebugReferenceReservations(unittest.TestCase):
         for va,old,new,label in scorebug.xbe_specs():
             section=image.section(va,len(new))
             if section is not None and section.name == ".text":
+                if va == 0xfc0a6:
+                    # This is a replacement of live, guarded quarter cases,
+                    # not allocation in padding or a new code cave.
+                    self.assertEqual(len(new),48)
+                    insns=list(md.disasm(new,va))
+                    self.assertEqual(sum(i.size for i in insns),48)
+                    self.assertTrue(all(i.mnemonic in ("mov","jmp","call","pop","nop") for i in insns))
+                    targets={int(i.op_str,16) for i in insns if i.mnemonic in ("jmp","call")}
+                    self.assertEqual(targets,{0xfc0c2,0x30ab0,0x30f20})
+                    continue
+                if va in (0xfc0f4,0xfc0f8,0xfc0fc):
+                    self.assertEqual(len(new),4)
+                    target=struct.unpack('<I',new)[0]
+                    self.assertIn(target,(0xfc0ad,0xfc0b4,0xfc0bb))
+                    self.assertEqual(patched[scorebug.layout.sbpos.va_to_off(patched,target)],0xba)
+                    continue
+                if va in (0xfc028,0xfc048):
+                    insns=list(md.disasm(new,va))
+                    self.assertEqual([(i.mnemonic,i.op_str,i.size) for i in insns],[("jmp","0x30f20",5)])
+                    continue
                 self.assertLess(len(new),CAVE_MIN,label)
                 if va == 0xfbe43:
                     # In-place MOV operand, not standalone code or a cave.

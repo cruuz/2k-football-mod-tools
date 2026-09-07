@@ -24,6 +24,8 @@ EXAMPLE = ROOT / "reports/assets/nfl2k5_scorebug_mod_project_example.json"
 
 class ScorebugProjectTests(unittest.TestCase):
     def fixture(self) -> dict[str, object]:
+        if not EXAMPLE.is_file():
+            self.skipTest("legacy typed-project evidence absent: reports/assets/nfl2k5_scorebug_mod_project_example.json")
         return json.loads(EXAMPLE.read_bytes())
 
     def write_project(self, root: Path, value: dict[str, object]) -> Path:
@@ -32,6 +34,7 @@ class ScorebugProjectTests(unittest.TestCase):
         return path
 
     def test_example_is_canonical_and_all_three_importers_pass(self) -> None:
+        self.fixture()
         parsed = project.read_project(EXAMPLE)
         self.assertEqual(
             [edit["target"] for edit in parsed.value["edits"]],
@@ -138,8 +141,8 @@ class ScorebugProjectTests(unittest.TestCase):
             output_path = Path(temporary) / "output.bin"
             source_path.write_bytes(source)
             output_path.write_bytes(output)
-            source_fd = os.open(source_path, os.O_RDONLY)
-            output_fd = os.open(output_path, os.O_RDONLY)
+            source_fd = os.open(source_path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+            output_fd = os.open(output_path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             # The size is an argument rather than a pinned module constant, so
             # the comparison follows whatever disc the user actually supplied.
             # This test patched that constant instead, which stopped describing

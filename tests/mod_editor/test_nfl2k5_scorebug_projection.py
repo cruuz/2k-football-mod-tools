@@ -71,7 +71,7 @@ class ProjectionTests(unittest.TestCase):
                         finally:capture['machine'].close()
 
     def test_alternate_native_event_glyphs_fit_in_the_frame(self):
-        for element,expected in ((2,'Hangtime: 0.0'),(3,'FLAG'),(4,'Ball at\nMidfield'),(5,'FUMBLE')):
+        for element,expected in ((2,'Hangtime: 0.0'),(3,'FLAG'),(4,'Ball at Midfield'),(5,'FUMBLE')):
             capture={}
             geometry=native_geometry(self.xbe,self.after,fonts=self.fonts,capture=capture,
                                      visible_elements=(element,))
@@ -125,14 +125,14 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual([b['node_index'] for b in bindings],[3,1,5,7,9])
         self.assertTrue(all(b['enabled'] for b in bindings))
         draws={d['callback']:d for d in self.normal['draws']}
-        self.assertEqual(draws['0xfc090']['text'],'1st')
+        self.assertEqual(draws['0xfc090']['text'],'1ST')
         self.assertEqual(draws['0xfc100']['text'],'')
         self.assertEqual(draws['0xfc150']['text'],'13:10')
         self.assertEqual(draws['0xfbe30']['text'],'12')
         self.assertEqual(draws['0xfc7d0']['text'],'1st & 10')
-        self.assertEqual(draws['0xfc030']['text'],'oak')
-        self.assertEqual(draws['0xfc010']['text'],'gb')
-        self.assertEqual(draws['0xfc010']['color'],'0x0')
+        self.assertEqual(draws['0xfc030']['text'],'OAK')
+        self.assertEqual(draws['0xfc010']['text'],'GB')
+        self.assertEqual(draws['0xfc010']['color'],'0xffffff40')
         self.assertFalse(any('---' in d['text'] for d in draws.values()))
         self.assertGreater(self.normal['draw_instructions'],10000)
         self.assertLess(self.normal['draw_instructions'],20000)
@@ -140,8 +140,8 @@ class ProjectionTests(unittest.TestCase):
     def test_native_clock_callbacks_switch_at_ten_minutes_and_quarter_updates(self):
         m=self.capture['machine']
         try:
-            for seconds,quarter,short,long,label in ((600,2,'','10:00','2nd'),(599,3,'9:59','','3rd'),
-                                                    (0,4,'0:00','','4th'),(600.1,1,'','10:01','1st')):
+            for seconds,quarter,short,long,label in ((600,2,'','10:00','2ND'),(599,3,'9:59','','3RD'),
+                                                    (0,4,'0:00','','4TH'),(600.1,1,'','10:01','1ST')):
                 m.float(m.game_clock+16,seconds);m.put(0xe602c4,quarter)
                 rows={d['callback']:d for d in native_text_draw(self.capture)['draws']}
                 self.assertEqual(rows['0xfc100']['text'],short)
@@ -164,7 +164,7 @@ class ProjectionTests(unittest.TestCase):
                 for callback,value in (('0xfc050','100'),('0xfc070','999'),('0xfc7d0','4th & Inches'),
                                        ('0xfc090','OT1'),('0xfc100','0:59'),('0xfbe30','04')):
                     self.assertEqual(rows[callback]['text'],value)
-                self.assertEqual(rows[yellow]['color'],'0x0')
+                self.assertEqual(rows[yellow]['color'],'0xffffff40')
                 self.assertEqual(containment_failures({**self.normal,**drawn},self.normal['frame'],.02),{})
                 # Three-digit score containment is proved; centre-cell crowding is a documented font residual.
                 for callback,left,right in (('0xfc070',self.normal['frame'][0],self.normal['frame'][2]),('0xfc050',self.normal['frame'][0],self.normal['frame'][2])):
@@ -191,8 +191,8 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(words,{0xffffffff})
         for row in self.normal['draws']:
             callback=row['callback']
-            expected=('0x0' if callback in ('0xfc010','0xfc030') else
-                      '0xff242622' if callback in ('0xfc090','0xfc100','0xfc150','0xfbe30') else '0xffffffff')
+            expected=('0xffffff40' if callback == '0xfc010' else
+                      '0xff242622' if callback in ('0xfc090','0xfc100','0xfc150') else '0xffffffff')
             self.assertEqual(row['color'],expected)
             self.assertTrue(all(v['color']==expected for v in row['vertices']))
             if callback in ('0xfc050','0xfc070'):self.assertEqual(row['font'],'font8')

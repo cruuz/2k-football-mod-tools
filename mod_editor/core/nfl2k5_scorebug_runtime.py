@@ -30,6 +30,7 @@ HOME_CONTEXT, AWAY_CONTEXT = 0xB30864, 0xB30A58
 SCORE_POINTERS = (0xE5FC28, 0xE5FC68)
 SCORE_COLORS = (0xA95958, 0xA95990)
 DARK, RED, WHITE, ACCENT = 0xFF111118, 0xFFD0021B, 0xFFFFFFFF, 0xFFFFD166
+PLAY_CLOCK_NORMAL = WHITE
 
 
 def _u(value):
@@ -180,7 +181,7 @@ def code_for(code_va, data_va):
     # to 1/30 open (visible, 0.2 HUD units); next updates finish the 0.2 s ramp.
     store(0xA95A04, 0x3F800000)
     a.label("clock")
-    store(0xA95A48, DARK)
+    store(0xA95A48, PLAY_CLOCK_NORMAL)
     absop("a1", 0xE60294); b("85c0"); jump("0f84", "populated")
     b("f6401806"); jump("0f85", "populated")
     absop("833d", 0xA95A70); b("00"); jump("0f84", "populated")
@@ -334,6 +335,14 @@ def apply(payload):
         after = hook_bytes(name, labels)
         buf[off:off + 5] = after
         edits.append(dict(label=name, va=hex(va), size=5, before=original.hex(), after=after.hex()))
+    # Build-time descriptor defaults only. The static layer restores white
+    # team names; this owner uses those same records for a one-sided chevron.
+    # Leave setup/binding, missing-name handling and both hook ABIs unchanged.
+    for va in (0xa95894, 0xa958bc):
+        off = scene.layout.sbpos.va_to_off(installed, va)
+        edits.append(dict(label="runtime identity default", va=hex(va), size=4,
+                          before=bytes(buf[off:off+4]).hex(), after="00000000"))
+        buf[off:off+4] = bytes(4)
     for s in _sections(buf):
         buf[s.header_offset + 36:s.header_offset + 56] = section_digest(buf, s)
     result = bytes(buf)

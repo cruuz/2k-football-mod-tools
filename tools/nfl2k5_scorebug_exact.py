@@ -150,7 +150,7 @@ def rendered_text_ink(pixels, callback, widescreen=False):
     a,b,c,d = map(round,box)
     roi = pixels[b:d,a:c]
     if not roi.size: return None
-    hit = roi.min(axis=2)>190 if callback in ('0xfc050','0xfc070','0xfc7d0') else roi.max(axis=2)<100
+    hit = roi.min(axis=2)>190 if callback in ('0xfc050','0xfc070','0xfc7d0','0xfbe30') else roi.max(axis=2)<100
     seen = np.zeros_like(hit);ink = []
     for y,x in np.argwhere(hit):
         if seen[y,x]: continue

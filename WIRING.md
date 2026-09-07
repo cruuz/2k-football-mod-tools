@@ -10431,3 +10431,161 @@ four status dictionaries report retail on base and applied on the installed
 copy, false makes no feature edits, both enabled presets reserve the three
 requests, and the final grown-image pass remains replay-identical. Do not change
 release/version tags as part of this handoff.
+---
+
+# r64 scorebug in-game fix, 2026-09-07
+
+See `ASTRA_SCOREBUG_INGAME_FIX_REPORT.md` and the calibrated witness comparison
+in `docs/scorebug_ingame/fix/comparison.png`. This section supersedes prior
+descriptions of the default static exact bar as anonymous, with no possession
+cue. Default scene version is `espn-broadcast-exact-v2`; an explicit artwork
+folder keeps the byte-identical `espn-reference-v10` contract. The fix remains
+**EXPERIMENTAL / UNWITNESSED**. Runtime stays diagnostic and disabled in every
+preset; the reported game-entry freeze is still open.
+
+No protected file or GUI panel was edited. Claude's concrete changes are the
+shared help text and regeneration of the protected reservation manifest from
+the final integrated sources. The existing dispatch, options, presets and
+application import closure already reach this implementation.
+
+## Shared help and existing UI rows
+
+Replace the two constants in `mod_editor/gui/beta62_options.py` with:
+
+```python
+SCOREBUG_HELP = (
+    "Retail: Uses the original scoreboard. Patch: Uses neutral panels with "
+    "live team abbreviations, yellow possession highlighting, white scores, "
+    "a red down box and separate clock cells with a dark play-clock cell. "
+    "Ball-on and event labels use a separate lower row. The three timeout "
+    "marks on each side are decorative. A scorebar folder selects your "
+    "painted template. Moves the kick meter up and hides the lineup strip. "
+    "EXPERIMENTAL / UNWITNESSED; rebuild from a clean source for these fixes.")
+SCOREBUG_RUNTIME_HELP = (
+    "Retail: Uses the original team panels and text. Patch: Adds team "
+    "gradients, logos, live timeout marks, resized text, a white possession "
+    "marker and room for three-digit scores to the experimental scorebar. "
+    "Diagnostic only and off in every preset. EXPERIMENTAL / UNWITNESSED; "
+    "the game-entry freeze remains unresolved. Keep the six probe choices.")
+```
+
+Keep these existing `Gameplay Patches` `PATCHES` rows, using those shared
+descriptions (both contain the required words `Retail` and `Patch`):
+
+```python
+("scorebug", "Experimental ESPN scorebar", r62_ui.SCOREBUG_HELP),
+("scorebug_runtime", "Scorebug effects (diagnostic only)", r62_ui.SCOREBUG_RUNTIME_HELP),
+```
+
+Both keys remain in `NEEDS_IMAGE`. Keep Build's `_option` captions
+`Experimental ESPN scorebar` (26 characters) and
+`Scorebug effects (diagnostic only)` (34 characters), their shared help,
+`needs_image=True` and `badge=NOT_TESTED`. The artwork folder remains disabled
+when runtime is selected. Add no new checkbox and do not imply static logos.
+
+## Dispatcher, status and presets: preserve the existing wiring
+
+In `mod_editor/core/nfl2k5_throw_tuning.py`, retain the `_apply_all` tuple:
+
+```python
+(scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects"),
+```
+
+Keep kwarg `scorebug_runtime: bool = False`, its propagation through copied-image
+build/apply, the existing request union and `_xbe_space_adapter` runtime flag,
+and the existing final owner pass after allocation/resource installation. The
+static selector continues through `sbl.apply_in_place(target,
+scorebug_folder=plan.scorebug_folder or None)` in Build; that existing layout
+adapter delegates to `nfl2k5_scorebug_ingame.apply_in_place`. No new allocator owner,
+adapter, request, `_grown_status_fields` entry or budget fixture row is needed.
+
+Retain these existing fields in all four status dictionaries: XBE inspection,
+image inspection, XBE apply result, and copied-image result:
+
+```python
+"scorebug_runtime": scorebug_runtime_patch.status(payload),
+"scorebug_xbe": scorebug_reference.xbe_status(payload),
+```
+
+Use each function's actual inspected/final payload (`result` or `after` in the
+two result dictionaries), as currently wired. Keep paired image resource
+status, including `scorebug_runtime_resources`, and existing mixed/foreign
+refusal. A completely recognized runtime installation adjusts the two static
+identity defaults internally; no UI status override should hide a partial
+installation. Old exact-v1 resources/XBE require a clean-source rebuild.
+
+Keep the existing `BuildPlan` fields:
+
+```python
+scorebug: bool = False
+scorebug_runtime: bool = False
+scorebug_folder: str = ""
+```
+
+Basic and Advanced leave both scorebug flags false. Experimental enables
+`scorebug` and leaves `scorebug_runtime` false. Manual runtime still implies
+static scorebug and the allocator, clears the folder, and uses the existing
+deferral/final-pass order. No preset normalization change is requested.
+
+## Release allowlist, runtime closure and capabilities
+
+No new product module was added. Keep these exact existing allowlist lines in
+`packaging/release-allowlist.txt`; do not duplicate them:
+
+```text
+mod_editor/core/nfl2k5_scorebug_exact.py
+mod_editor/core/nfl2k5_scorebug_fonts.py
+mod_editor/core/nfl2k5_scorebug_ingame.py
+mod_editor/core/nfl2k5_scorebug_resources.py
+mod_editor/core/nfl2k5_scorebug_runtime.py
+tools/nfl2k5_scorebug_reference.py
+```
+
+Keep the matching existing core imports in
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_scorebug_exact",
+"mod_editor.core.nfl2k5_scorebug_fonts",
+"mod_editor.core.nfl2k5_scorebug_ingame",
+"mod_editor.core.nfl2k5_scorebug_resources",
+"mod_editor.core.nfl2k5_scorebug_runtime",
+```
+
+The new `tools/nfl2k5_scorebug_witness.py`, authored v1 compiler fixture and
+`docs/scorebug_ingame/fix/` are research/test evidence, not runtime dependencies.
+Do not add their Unicorn/numpy capture harness to product startup or bundle
+retail XBE/SCNE/FONT/pack data. No allowlist or import addition is required for
+the application. If distributing this report as release documentation, add
+the explicit line `ASTRA_SCOREBUG_INGAME_FIX_REPORT.md` through the normal
+documentation packaging decision.
+
+No new capability surface or registry entry is needed. Keep
+`nfl2k5.scorebug_presentation.runtime` diagnostic, default disabled,
+`classification=offline-writer-proved`, `runtime.status=not-tested`, and keep
+its existing schema-valid backend/validation commands. When refreshing its
+existing evidence, add this report and
+`tests/mod_editor/test_nfl2k5_scorebug_ingame_fix.py`; describe the static
+identity/event fix and current `hooks` versus `neutral` witness without
+promoting runtime or claiming a freeze repair.
+
+## Protected native manifest handoff
+
+Regenerate `data/nfl2k5_cave_reservations.json` with the existing
+`tools/nfl2k5_cave_oracle.py manifest` process after integrating the final
+source union. This worktree intentionally leaves it untouched. The reviewed
+differences are existing descriptor colors/font IDs/alignment, two live city
+tail jumps, a 48-byte in-place quarter-case replacement and three dispatch
+entries, and three immutable scorebug-only newline-to-space format strings.
+The runtime emitter changes only a four-byte play-clock color operand; the
+builder also writes two existing descriptor defaults. Native setup/lookup,
+missing-name handling, allocations, branch layout and both hook ABIs are
+unchanged. No new cave or RX/RW/RO allocation is authorized or required.
+
+The memory-write gate now explicitly proves that the three immutable format
+strings retain retail's `.string_` section and `0x26` flags (executable but
+non-writable); they are not runtime state or new allocations. The
+cave gate checks the complete quarter replacement and its specific existing
+targets. Keep both full owner unions and both application orders. Refresh
+source pins from final integrated files rather than weakening ownership or
+calling an unknown/free-padding region an allocation.

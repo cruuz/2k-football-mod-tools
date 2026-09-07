@@ -106,6 +106,9 @@ def compile_font(span, name, slot, sx, sy, weight=0, quarter_caps=False, chevron
             struct.pack_into('<16f', body, target+16, *positions)
             body[target+80:target+96] = body[source_at+80:source_at+96]
             struct.pack_into('<I', body, target, max(1, round(struct.unpack_from('<I',body,source_at)[0]*.7)))
+            # The quarter-only callback now emits capitals. Preserve the same
+            # fitted superscript metrics for both spellings in this FONT only.
+            body[source_at:source_at+96] = body[target:target+96]
     for off, scale in ((12, sx), (16, sy), (20, sy), (24, sy), (28, sy)):
         value = struct.unpack_from('<i', body, obj+off)[0]
         struct.pack_into('<i', body, obj+off, round(value*scale))

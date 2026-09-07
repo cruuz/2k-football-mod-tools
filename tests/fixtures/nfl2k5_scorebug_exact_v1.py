@@ -1,15 +1,15 @@
-"""Broadcast-derived scorebug scene v2. EXPERIMENTAL / UNWITNESSED.
+"""Broadcast-derived scorebug scene v1. EXPERIMENTAL / UNWITNESSED.
 
-The frame comes from the LV/HOU JPEG; static text fit uses Noah's r64 captures.
-This module authors native scene inputs, not a renderer or a gameplay claim.
-Frame coordinates map the broadcast to the game's active 640x448 viewport.
+The reference is the real LV/HOU JPEG, never the older staged targets. This
+module authors native scene inputs; it is not a renderer or a gameplay claim.
+Coordinates map the entire broadcast to the game's active 640x448 viewport.
 The existing fixed-span writer and its retail wrapper/scratch budget own IO.
 """
 from __future__ import annotations
 
 import struct
 
-VERSION = "espn-broadcast-exact-v2"
+VERSION = "espn-broadcast-exact-v1"
 RED_BIAS = -20
 REFERENCE_SHA256 = 'f88b98687827c753882d8c5186eb186095510228b039c6d7a2e9e9d88e725e14'  # Filled from the supplied image by the evidence builder.
 SOURCE_RAILS = (434, 942, 1488, 1054)
@@ -38,14 +38,6 @@ PANELS = {"away": scene_box(SOURCE_REGIONS["left_panel"]),
           "home": scene_box(SOURCE_REGIONS["right_panel"])}
 PILL = scene_box(SOURCE_REGIONS["centre_pill"])
 STRIP = scene_box(SOURCE_REGIONS["clock_strip"])
-# Retail FONT4 needs 31/40/18 advance units for 4TH/15:00/40. The
-# static fallback cannot use the smaller diagnostic FONTs. Keep the frame,
-# expand its lower row, and reserve real padding on both sides of each word.
-STATIC_STRIP = (-56., STRIP[1], 56., STRIP[3])
-STATIC_PILL = (-52., PILL[1], 52., PILL[3])
-STATIC_CELLS = {"quarter": (264., 301.), "game_clock": (301., 347.),
-                "play_clock": (347., 376.)}
-EVENT_ROW = (-64., -28., 64., -3.)
 FRAME_COLOR = (37, 38, 37, 255)
 REGIONS = {"frame": (0, 0, 24, 24), "down": (0, 24, 64, 40),
            "strip": (0, 40, 64, 60), "solid": (1, 62, 2, 63)}
@@ -56,20 +48,17 @@ STYLE = {'clock_fill': 247, 'clock_radius': 9, 'hou_dx': 0, 'hou_dy': -3, 'hou_h
 # Native ordinary text draws use FONT metrics directly. Their +30/+34 fields
 # are shadow offsets. Scores use native rotating parent/leaf matrices.
 ANCHORS = {
-    "away_city": (-168, -10, -64), "home_city": (132, -10, -64),
-    "away_score": (-92, -26.733, -59), "home_score": (92, -26.733, -59),
-    "quarter": (-37, -19, -4), "clock_a": (24, -19, -4),
-    "clock_b": (24, -19, -4), "drop_clock": (41.5, -19, -4),
-    "drop_down": (-.5, 2.289, -4), "drop_yellow": (0, -24, -8),
-    "drop_red": (0, -24, -8), "drop_hangtime": (0, -24, -8),
-    "drop_ball_on": (0, -24, -8),
+    "away_city": (-164, -4, -64), "home_city": (120, -4, -64),
+    "away_score": (-68, -26.733, -59), "home_score": (66.5, -26.733, -59),
+    "quarter": (-31.333, -21.355, -4), "clock_a": (19.833, -19.904, -4),
+    "clock_b": (19.833, -19.904, -4), "drop_clock": (28.333, -19.989, -4),
+    "drop_down": (-.5, 2.289, -4), "drop_yellow": (0, -1, -4),
+    "drop_red": (0, -1, -4), "drop_hangtime": (0, -1, -4),
+    "drop_ball_on": (0, 3, -4),
 }
 # Private FONTs are available only in the diagnostic runtime collection.
-# Keep the fixed-span static scene on its retail FONT anchors.
+# Keep the anonymous, fixed-span static scene on its retail FONT anchors.
 RUNTIME_ANCHORS = {'away_city': (-75, 0, -64), 'away_score': [-67.75, -27.651, -59], 'clock_a': [16.833, -20.904, -4], 'clock_b': [16.833, -20.904, -4], 'drop_ball_on': [0, 3, -4], 'drop_clock': [28.833, -18.989, -4], 'drop_down': [-0.5, 2.289, -4], 'drop_hangtime': [0, -1, -4], 'drop_red': [0, -1, -4], 'drop_yellow': [0, -1, -4], 'home_city': (59.5, 0, -64), 'home_score': [66.75, -27.651, -59], 'quarter': [-28.333, -18.855, -4]}
-RUNTIME_ANCHORS["drop_ball_on"] = (0, -26, -8)
-for _event in ("drop_yellow", "drop_red", "drop_hangtime"):
-    RUNTIME_ANCHORS[_event] = (0, -26, -8)
 
 
 def atlas(*, revision=3, red_bias=None):
@@ -124,14 +113,31 @@ def atlas(*, revision=3, red_bias=None):
                 rr, gg, bb, aa = im.getpixel((x, y))
                 if rr > gg * 2:
                     im.putpixel((x, y), (min(255, max(0, rr + red_bias)), gg, bb, aa))
-    d.rectangle((0, 40, 63, 59), fill=(55, 56, 54, 255))
-    d.rectangle((1, 41, 62, 58), fill=(247, 247, 240, 255))
-    # Separate, squared cells, with the requested dark play-clock field.
-    d.rectangle((47, 41, 62, 58), fill=(35, 38, 34, 255))
-    d.line((21, 41, 21, 58), fill=(91, 92, 87, 255))
-    d.line((47, 41, 47, 58), fill=(65, 66, 61, 255))
+    d.rectangle((0, 40, 63, 59), fill=FRAME_COLOR)
+    d.rounded_rectangle((0, 40, 63, 59), STYLE["clock_radius"], fill=(11, 13, 12, 255))
+    d.rounded_rectangle((1, 41, 62, 58), max(0, STYLE["clock_radius"]-1), fill=(148, 143, 141, 255))
+    d.rounded_rectangle((2, 42, 61, 57), max(0, STYLE["clock_radius"]-2), fill=(STYLE["clock_fill"], STYLE["clock_fill"], STYLE["clock_fill"]-7, 255))
+    # The photograph's play-clock field is light, with a dark separator and
+    # dark digits. Preserve that measured fact, despite the brief's prose.
+    separator_xs = [STYLE.get("separator_right_x", 46)]
+    if STYLE["separator_left"]:
+        separator_xs.append(STYLE.get("separator_left_x", 16))
+    for x in separator_xs:
+        from math import floor
+        base_x, fraction = floor(x), x-floor(x)
+        profile = STYLE.get("separator_profile", 0)
+        for y in (range(42,58) if profile else range(44,57)):
+            c = STYLE["separator"]
+            if profile:
+                # Darker at the capsule rim, almost cell-coloured midway.
+                t = (abs(y-49.5)/7.5)**2
+                c = round(STYLE["clock_fill"]*(1-t) + STYLE["separator"]*t)
+            ink = (c,max(0,c-1),max(0,c-7),255)
+            for px, amount in ((base_x,1-fraction),(base_x+1,fraction)):
+                if amount:
+                    before = im.getpixel((px,y))
+                    im.putpixel((px,y),tuple(round(a*(1-amount)+b*amount) for a,b in zip(before,ink)))
     d.rectangle((0, 61, 3, 63), fill=(248, 250, 243, 255))
-    d.rectangle((4, 61, 7, 63), fill=FRAME_COLOR)
     return im
 
 
@@ -179,27 +185,16 @@ def mesh(retail, *, runtime=False, revision=2):
             for i, source in enumerate(((716, 1032, 735, 1039), (747, 1032, 766, 1039),
                                         (777, 1032, 796, 1039), (1120, 1032, 1139, 1039),
                                         (1150, 1032, 1169, 1039), (1180, 1032, 1199, 1039))):
-                box = list(scene_box(source))
-                shift = -24 if i < 3 else 25.5
-                box[0] += shift; box[2] += shift
-                quad(material_groups[9 + i], box, (1.5, 62.5, 1.5, 62.5), z=-2)
+                quad(material_groups[9 + i], scene_box(source), (1.5, 62.5, 1.5, 62.5), z=-2)
     # cscore's first live triangle starts at index 48 after a duplicate. Its
     # strip parity is opposite the down strip's first triangle.
-    quad(range(48, 64), STRIP if runtime else STATIC_STRIP, REGIONS["strip"], z=-3)
+    quad(range(48, 64), STRIP, REGIONS["strip"], z=-3)
     # The clock stream revisits 48 and 49 in a second fan. Collapse that fan
     # to the 48-49 edge, otherwise it paints a third overlapping triangle.
     for v in range(52, 60):
         m.pos[v] = m.pos[49][:]
         m.uv_edit[v] = m.uv_edit[49]
-    quad(range(64, 80), PILL if runtime else STATIC_PILL, REGIONS["down"], z=-3)
-    # Retail has a distinct ball-on element and can request it AND down text.
-    # Its native material gate follows the same slide as its text. A front
-    # lower-row panel occludes the ordinary clock glyphs while the event is up.
-    quad(range(16, 32), EVENT_ROW, (5.5, 62.5, 5.5, 62.5), z=-7)
-    for vertices in (range(0, 16), range(32, 48)):
-        quad(vertices, EVENT_ROW, (5.5, 62.5, 5.5, 62.5), z=-7)
-    if not runtime:
-        quad(range(80, 96), EVENT_ROW, (5.5, 62.5, 5.5, 62.5), z=-7)
+    quad(range(64, 80), PILL, REGIONS["down"], z=-3)
     if runtime:
         # UV helper units are 1/64; these are the texel centres of 128x32.
         quad(range(230, 246), PANELS["away"], (.25, 1, 63.75, 63), z=-2)
@@ -219,52 +214,25 @@ def mesh(retail, *, runtime=False, revision=2):
 def xbe_specs(specs):
     """Extend the existing static owner with font selectors and colour fields."""
     dark = 0xff242622
-    colors = {0xa95894: 0xffffffff, 0xa958bc: 0xffffffff, 0xa958e4: dark, 0xa958e8: dark,
+    colors = {0xa95894: 0, 0xa958bc: 0, 0xa958e4: dark, 0xa958e8: dark,
               0xa9590c: dark, 0xa95910: dark, 0xa95934: dark, 0xa95938: dark,
-              0xa95a48: 0xffffffff}
+              0xa95a48: dark}
     result = [(va, old, struct.pack("<I", colors[va]) if va in colors else new, label)
               for va, old, new, label in specs]
-    # Preserve the native possession predicate: white off-ball, yellow on-ball.
-    result += [(va, struct.pack("<I", 0xffc0c000), struct.pack("<I", 0xffffff40), "live possession highlight")
+    # Suppress only the native abbreviations. Runtime panels carry wordmarks;
+    # the static panels are the requested anonymous neutral subset.
+    result += [(va, struct.pack("<I", 0xffc0c000), bytes(4), "neutral team label")
                for va in (0xa95898, 0xa958c0)]
     slots = {0xa958d8: 3, 0xa95900: 3, 0xa95928: 3,
              0xa95950: 7, 0xa95988: 7, 0xa959d0: 3,
              0xa95a40: 3, 0xa95ab0: 3, 0xa95b20: 3, 0xa95b90: 3, 0xa95c00: 3}
     result += [(va, bytes(4), struct.pack("<I", slot), "scorebug FONT slot")
                for va, slot in slots.items()]
-    result += [(va, struct.pack("<I", 4), struct.pack("<I", 3), "live team FONT4")
-               for va in (0xa95888, 0xa958b0)]
-    for va in (0xfc028, 0xfc048):
-        result.append((va, b"\xe9" + struct.pack("<i", 0x30f50 - va - 5),
-                       b"\xe9" + struct.pack("<i", 0x30f20 - va - 5), "live team capitals"))
-    result.append((0xa95b94, struct.pack("<I", 1), struct.pack("<I", 3), "center ball label in its own row"))
-    # These literals are used only by FBEB0, the native ball/field-goal label.
-    # Keep formatting and branches; replace the line break within its own row.
-    for va, text in ((0xe6c484, "Ball at\nMidfield"), (0xe6c4a8, "Ball on\n%s %d"),
-                     (0xe6c4c4, "%d Yard\nAttempt")):
-        old = (text + "\0").encode("utf-16le")
-        result.append((va, old, (text.replace("\n", " ") + "\0").encode("utf-16le"), "single-line ball label"))
     # FBE30 is the scorebug-only play-clock formatter. Reuse the existing
     # UTF-16 format suffix "%02d" by skipping its leading colon, no new string
     # allocation and no change to rounding, urgency or the callback's ABI.
     result.append((0xfbe43, struct.pack("<I", 0xe6c438), struct.pack("<I", 0xe6c43a),
                    "play clock without leading colon"))
-    # Compact the four existing quarter cases into a common copy/capitalize
-    # tail, entirely inside their original instruction span. Only this
-    # callback's caller-owned buffer changes; shared 1st/2nd strings and the
-    # native overtime branch remain retail. PUSH ECX at FC090 saves the buffer.
-    old = bytes.fromhex("bae4c3e600e8004af3ff59c3baecc3e600e8f449f3ff59c3"
-                        "baf4c3e600e8e849f3ff59c3bafcc3e600e8dc49f3ff59c3")
-    new = bytearray()
-    for i, literal in enumerate((0xe6c3e4, 0xe6c3ec, 0xe6c3f4, 0xe6c3fc)):
-        new += b"\xba" + struct.pack("<I", literal) + b"\xeb" + bytes((21 - i * 7,))
-    new += b"\xe8" + struct.pack("<i", 0x30ab0 - (0xfc0a6 + len(new) + 5))
-    new += b"\x59"  # restore the caller's buffer as the uppercase argument
-    new += b"\xe9" + struct.pack("<i", 0x30f20 - (0xfc0a6 + len(new) + 5))
-    result.append((0xfc0a6, old, bytes(new).ljust(len(old), b"\x90"), "quarter capitals in existing cases"))
-    for i in range(1, 4):
-        result.append((0xfc0f0 + i * 4, struct.pack("<I", 0xfc0a6 + i * 12),
-                       struct.pack("<I", 0xfc0a6 + i * 7), "quarter case table"))
     return result
 
 
