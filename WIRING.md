@@ -1,3 +1,65 @@
+# r63 static ESPN scorebug v9 (2026-09-06)
+
+The existing `scorebug` option now installs `espn-reference-v9`. No new option,
+allocator owner, request, runtime hook or preset change is requested. See
+`ASTRA_SCOREBUG_V9_REPORT.md` and `docs/scorebug_ingame/v9_native_audit.json`.
+All shared GUI panels and protected files remain untouched in this worktree.
+
+Only the existing shared help text needs a product edit. In
+`mod_editor/gui/beta62_options.py`, replace `SCOREBUG_HELP` with:
+
+```python
+SCOREBUG_HELP = (
+    "Retail: Uses the original scoreboard. Patch: Fits one dark ESPN bar inside the safe area, "
+    "with the ESPN mark on the left and white scores, clocks, quarter and down text. "
+    "Team abbreviations stay live and possession stays yellow. Both team blocks stay dark; "
+    "there are no timeout marks. Moves the kick meter up and hides the lineup strip. "
+    "EXPERIMENTAL / UNWITNESSED v9; needs a game check.")
+```
+
+Concrete wiring audit for Claude:
+
+- Dispatcher `_apply_all` tuple and kwarg: no new entry or kwarg. The static
+  path remains `mod_build.build`, `plan.scorebug and not plan.scorebug_runtime`,
+  calling `nfl2k5_scorebug_layout.apply_in_place`, which delegates to the v9
+  writer. The existing runtime-owner tuple and `scorebug_runtime` kwarg stay
+  unchanged. Do not enable that owner to install the static bar.
+- Four status dicts: no new keys. Existing `scorebug_xbe` paths call
+  `nfl2k5_scorebug_ingame.xbe_status`; image status uses the same writer's
+  resource pins. Existing `scorebug`, `scorebug_runtime` and
+  `scorebug_runtime_resources` fields remain. Old v8 or mixed inputs refuse;
+  rebuild from the supported clean base.
+- `BuildPlan`: retain `scorebug: bool = False`. Preserve current Basic off,
+  Advanced off, Experimental on for the static option, and the current runtime
+  settings. No preset promotion is part of this task.
+- Gameplay Patches `PATCHES`: retain the existing `scorebug` row and its
+  `r62_ui.SCOREBUG_HELP` reference; the replacement above contains both
+  **Retail** and **Patch**. `scorebug` already belongs to `NEEDS_IMAGE`.
+- Build `_option`: retain `Experimental ESPN scorebar` (26 characters),
+  `needs_image=True`, `NOT_TESTED` badge, and the shared help/details reference.
+- Allowlist: no new lines. Existing lines already ship
+  `mod_editor/core/nfl2k5_scorebug_ingame.py`,
+  `mod_editor/core/nfl2k5_scorebug_resources.py`,
+  `mod_editor/core/nfl2k5_scorebug_source_art.py`, and
+  `tools/nfl2k5_scorebug_layout.py`. Research PNGs/JSON and the native projection
+  harness do not need to enter the product runtime closure.
+- Runtime-closure imports: no new module/import is needed. Refresh any existing
+  source digest pins for the changed files during release integration.
+- Capability registry: no new surface or row. Keep the existing static option
+  and the runtime diagnostic capability separate.
+- Cave manifest: regenerate `data/nfl2k5_cave_reservations.json` using the
+  existing `tools/nfl2k5_cave_oracle.py manifest` process under Claude's exclusive
+  ownership. This task adds no allocation. Both existing XBE gates already
+  compose the static owner through `tests/nfl2k5_allocator_stack.py` in the
+  complete forward/reverse unions; neither gate is weakened.
+
+The runtime hook module is unchanged. The shared collection compiler explicitly
+retains its v8 atlas generator and staging scene, preserving its existing
+resource hashes while static v9 replaces the generic static install. No team
+selection, live timeout work or runtime-freeze repair is implied.
+
+---
+
 # r62 community stadium Blender add-ons review, 2026-09-06
 
 **Decision: DO NOT SHIP Importer v0.11.1 / Exporter v0.3.0.** Real Blender

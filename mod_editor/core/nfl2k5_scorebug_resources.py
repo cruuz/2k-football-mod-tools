@@ -540,7 +540,7 @@ TEAM_LOGOS = {'ARI': {'outer': 24,
          'primary': '#03202F',
          'secondary': '#A71930'}}
 
-PATCHED_SHA256 = {'score_bug': 'cdcf2aa898dd85332e3b872ca73eeae525ca85e9e543f4d07250bf820df16427', 'score_buga': '8771f332aa07a63db1c21d9803455cc4ed5dd7f04fb88d36d571b03f1c7b7cd0'}
+PATCHED_SHA256 = {'score_bug': '419be64dfa7207dd05f0b8686886d9cea5b08fb6babad69ea7328084356a84ef', 'score_buga': '3967940dee5d82a6aff3164456d51b7e9809eab72fbe35b507055edd8e2a5204'}
 
 XBE_GUARDS = [(1032608, 89, '087132e1b01db50d2ab03c33faa583c44217fd8de4e2813c85640985f535719e', 'material binding'), (1037040, 294, '7c7e00839242a825fa4d3c361dec3d4da4bec327735f107599872ddf59e3444e', 'score rotation'), (1031728, 33, 'da040c2ad99c4a69867d6256db6ddf1c2c72be543a13cd430f10d4e743216935', 'play clock formatter'), (1030928, 128, '769ae0697334bb1cb70488d0168b78cc7534a0b18c341038d7366d5f3586703f', 'play clock getter')]
 
@@ -740,7 +740,8 @@ def compile_runtime_collection(pack, *, probe="full"):
         raise ValueError("foreign/mixed scorebug collection; rebuild from retail resources")
     inputs = {n: pack[v["pack_offset"]:v["pack_offset"] + v["span_size"]] for n, v in RESOURCES.items()}
     patches = {"score_bug": r.stage_binding_scene(inputs["score_bug"], runtime=True)[0],
-               "score_buga": r.apply(inputs["score_buga"], "score_buga", inputs=inputs)[0]}
+               # Retain the v8 runtime collection's exact pin during static v9.
+               "score_buga": r.encode_atlas(inputs["score_buga"], r.atlas_v8(inputs))[0]}
     panels, receipts = [], []
     for team, record in [(None, {"asset_code": "--"})] + sorted(TEAM_LOGOS.items()):
         if record["asset_code"] not in probe_codes(probe):
@@ -839,5 +840,5 @@ PROBE_APPEND_PINS = {"hooks": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca
 # Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
 RUNTIME_ABI_GUARDS = [(1035472, 407, 'fae55450eb58f087e0e31b50636342c39d7b7df70361fae6b2ccda6e2fedfa60'), (1035888, 1466, 'fadbe0384fccb436be4f0fe52514aa9e38c543288a471ffc6b44e9ffde365b2f'), (1034688, 780, 'bdc0d7cda462c37ec5546944605fe12141a83c798965b78ebe5abe8467d379df'), (1031280, 73, '1fea8eb67ed1d7df96e85562ec8d79075736ed4d10e5cfbe18f1b7be05c01e60'), (281056, 104, '710fd5ba9fd2a147042dd4c5f133cc2a8d36dcdc10b47417d17ec65df9b46191'), (279504, 770, '1caaf5b258e1849435c7ed69dbc970f9ce5f265415c4dadecee3bef94dc8d6b3'), (199744, 37, 'dd3d52cc45c43dc86d8db7220d777346237b324dd9a00dce35c9de3362bbfdee'), (277792, 136, '03233a25e1afc3ef91892233872e5b9cf29404be7b250dbf17a62db248949d9f'), (282016, 20, '0ee1f6425e946ec6d8dd4aeae08c6ae211e9de4ba09f9648a75f052d1c6bed6e'), (216560, 108, 'f84f040777759d3417fb8bee34ab8e046cf40255e18c467530417ae504aad29c'), (216080, 267, '69266ee656258cc0c7c3f770b0a650452d18c4c84251088bb204fbecb3afa2fe'), (754112, 58, '13cd2011501c1d9567889a32898a944b6cd7dee7769062e7ad57a0994614c674'), (1032272, 29, '02136e09af5b89365ab949b6cdd50c82e2c705bf3e4a9a585f6561234e33de99'), (1032304, 29, '730201c327a46bc2ee757b942eef6efb387d47a9aa5d9cdde452e5539a296222'), (400464, 6, 'b47138018b9b2ec278b17d759b0d8e54f0c9c5c9181510e9d3716d37aa74d6a4'), (400480, 6, '7d1ab1e0e220598d0dfeec086c9327bcec8699bc836f0ee2d3930a8e3d500e9b'), (1031584, 9, '5e68b2fc2391d42f537a7a352387790a5c46114bbe4f2197a6293a5a9a6f1b63'), (1034192, 446, '61eb66a3851ced7740b600c9b2ec8dc32c1fcfdb6c980ae7995b78407b23390a'), (15124024, 24, '9385e4da55d331aa5b8649841a9206ccd44b267e2a05abb359cb178b7d862f67'), (15124276, 24, 'c9ce8e336a66c1f198ee4f2a11052c232675558077c0f6e328e689d5bd52aee2')]
 
-STATIC_SCENE_SHA256 = '1b5452ae574029317f8438c059b0662532b41bfb4206af6bdee0b26c6b7a5c14'
+STATIC_SCENE_SHA256 = '2ce244805afc965e4109202330360d8d5546b1741bb8b7ea1d8d5b97954d37c9'
 RUNTIME_SCENE_SHA256 = '0fb13bf99bb66347c78f24cff9260e47bc1f980f89c7eb483ea8aff3005d712a'

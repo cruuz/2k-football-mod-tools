@@ -870,6 +870,7 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
     """
     from PIL import Image, ImageDraw, ImageFont
     from mod_editor.core import nfl2k5_scorebug_ingame as r
+    legacy = runtime or team_panels is not None
     im=Image.new("RGBA",(640*scale,480*scale),(44,83,39,255))
     dr=ImageDraw.Draw(im)
     for x in range(0,640,80):
@@ -882,7 +883,7 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
         if projection:
             return tuple(c*scale for c in projection['positions'][v])
         x,y,_=m.pos[v]
-        if m.tindex[v] == 11:
+        if legacy and m.tindex[v] == 11:
             x+=6*slide
         return ((r.ROOT[0]+x)*scale,(r.ROOT[1]+r.HUD_INSET[1]-y)*scale)
     for k,indices in sorted(strips(bytes(m.buf)),key=lambda item:order.get(SUBMESHES[item[0]][2],99)):
@@ -899,7 +900,7 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
             _textured_triangle(im,selected,[point(v) for v in vs],[m.uv_edit.get(v,m.uv[v]) for v in vs])
     if team_panels and not runtime:
         for side,panel in team_panels.items():
-            a,b,c,d=r.PANELS[side]
+            a,b,c,d=r.V8_PANELS[side]
             im.alpha_composite(panel.resize((round((c-a)*scale),round((d-b)*scale)),Image.Resampling.LANCZOS),
                                (round((r.ROOT[0]+a)*scale),round((r.ROOT[1]+r.HUD_INSET[1]-d)*scale)))
     values={"away_city":"OAK","home_city":"HOU","away_score":"0","home_score":"0",
@@ -910,7 +911,7 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
         values.update(samples)
     dr=ImageDraw.Draw(im)
     from nfl2k5_scorebug_espn_art import font as getfont,FONT_BOLD
-    for name,(x,y,z) in r.ANCHORS.items():
+    for name,(x,y,z) in (r.V8_ANCHORS if legacy else r.ANCHORS).items():
         if name not in values or (team_panels and not runtime and name.endswith("city")):
             continue
         x, y, z = m.world[T[name]]
@@ -919,7 +920,7 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
         font=getfont(FONT_BOLD,size*scale)
         text_scale_x=projection.get('text_scale_x',1) if projection else 1
         width=dr.textlength(text,font=font)*text_scale_x
-        px=(r.ROOT[0]+x+(6*slide if name=="drop_down" else 0))*scale
+        px=(r.ROOT[0]+x+(6*slide if legacy and name=="drop_down" else 0))*scale
         py=(r.ROOT[1]+r.HUD_INSET[1]-y)*scale
         if projection:
             px,py=(c*scale for c in projection['anchors'][name])
@@ -930,6 +931,8 @@ def preview_reference(m: Mesh, texture, path: Path, *, scale: int = 2, widest: b
         else:
             px-=width/2
         color=(255,255,255,255) if name in ("away_city","home_city","away_score","home_score","drop_down") else (17,17,24,255)
+        if not legacy:
+            color = (192,192,0,255) if name == "home_city" else (255,255,255,255)
         color = (text_colors or {}).get(name, color)
         if text_scale_x == 1:
             dr.text((px,py),text,font=font,fill=color,anchor="ls")

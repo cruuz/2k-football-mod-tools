@@ -550,7 +550,7 @@ def _legacy_available() -> bool:
 
 
 def preview_mockup(source: Path | None) -> Path | None:
-    """Studio preview of the installable v7 data, without claiming live team logos."""
+    """Studio preview of the current static bar, without claiming live team logos."""
     if source is None:
         return None
     try:
@@ -564,7 +564,7 @@ def preview_mockup(source: Path | None) -> Path | None:
         temporary = Path(name).resolve()
         try:
             layout.preview_reference(mesh, texture, temporary)
-            output = folder / "preview_reference_v7.png"
+            output = folder / ("preview_" + reference.VERSION + ".png")
             os.replace(temporary, output)
         finally:
             temporary.unlink(missing_ok=True)

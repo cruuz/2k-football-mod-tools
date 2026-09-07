@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit the static v8 witness with bounded native execution and retail fonts.
+"""Prove static v9 and reconstruct v8 with bounded native execution and retail fonts.
 
 This research tool is not imported by the application. It installs no scorebug
 runtime code. Geometry, text bindings and glyph submissions run on the CPU;
@@ -103,9 +103,14 @@ class StaticMachine:
         self.play = self.alloc(512)
         self.put(0xe602ec, self.play)
         self.put(self.play + 4, 1)
-        direction_owner, direction = self.alloc(32), self.alloc(32)
+        # E5FC28 is both the home-score owner and E5FC20+8's direction owner.
+        # Keep one fixture object so home-score updates reach the native reader.
+        direction_owner, direction = self.home, self.alloc(32)
         self.put(0xe5fc20 + 8, direction_owner)
         self.put(direction_owner + 12, direction)
+        # Possession-colour cases exercise the away context too. Both use the
+        # explicitly sampled field direction; FC200's display mode is separate.
+        self.put(self.away + 12, direction)
         self.float(direction + 4, 1)
         self.float(self.play + 0x28, 914)  # Native ceiling formats this fixture as 10 yards.
         self.identity()
@@ -214,7 +219,7 @@ def read_fonts(pack):
 
 
 def static_receipts(payload, spans):
-    """Exact retained-v8 replay and native overlapping decompression receipts."""
+    """Exact v9 replay and native overlapping decompression receipts."""
     patched, xbe_receipt = r.apply_xbe(payload)
     if r.apply_xbe(patched)[0] != patched:
         raise ValueError('static XBE replay changed bytes')
@@ -241,13 +246,15 @@ def static_receipts(payload, spans):
                               'wrapper_plus_14_after': struct.unpack_from('<I', after, 20)[0]})
     finally:
         m.close()
-    return dict(version=r.VERSION, v9=False, xbe=xbe_receipt, xbe_replay_identical=True,
+    return dict(version=r.VERSION, v9=True, xbe=xbe_receipt, xbe_replay_identical=True,
                 runtime_hooks=[dict(va=hex(va), bytes=original.hex()) for va, original in STATIC_CALLS],
                 resources=resources, temporary_disc_created=False)
 
 
 def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, slide=1.0,
-                    score_transforms=True, texture_span=None, fonts=None, capture=None):
+                    score_transforms=True, score_phase=0.0, texture_span=None, fonts=None,
+                    capture=None, baseline_v8=False, visible_elements=(0, 1),
+                    score_values=(0, 0), previous_scores=(0, 0)):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
@@ -258,7 +265,23 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     if widescreen:
         payload = wide.apply(payload)[0]
     payload = r.apply_xbe(payload)[0]
+    if baseline_v8:
+        # Reconstruct the historical data fields in this CPU fixture only.
+        # First undo the v9-only fields, then install the retained v8 specs.
+        buf = bytearray(payload)
+        for va, old, _new, _label in r.xbe_specs():
+            off = r.layout.sbpos.va_to_off(payload, va)
+            buf[off:off + len(old)] = old
+        for va, _old, new, _label in r.xbe_specs(baseline_v8=True):
+            off = r.layout.sbpos.va_to_off(payload, va)
+            buf[off:off + len(new)] = new
+        for section in r.bs._sections(buf):
+            off = section.header_offset + 36
+            buf[off:off + 20] = r.bs.section_digest(buf, section)
+        payload = bytes(buf)
     m = StaticMachine(payload)
+    m.put(m.home, score_values[0])
+    m.put(m.away, score_values[1])
     if texture_span is not None:
         m.load_texture(texture_span)
     m.uc.mem_write(r.layout.sbpos.X_SLOT, struct.pack('<2f', *root))
@@ -284,11 +307,14 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
     for i in range(2):
         record = 0xa9594c + i * 0x38
         m.put(record + 0x30, int(score_transforms))
-        m.float(record + 0x2c, 0)
-        m.uc.mem_write(record + 0x20, b'0\0\0\0')
+        m.float(record + 0x2c, score_phase)
+        cached = (str(previous_scores[i]) + '\0').encode('utf-16le')
+        if len(cached) > 12:
+            raise ValueError('score fixture exceeds native cache capacity')
+        m.uc.mem_write(record + 0x20, cached)
     for i in range(6):
         record = r.layout.ELEMENT_RECORDS + i * 0x70
-        m.put(record + 0x58, int(i < 2))
+        m.put(record + 0x58, int(i in visible_elements))
         m.put(record + 0x38, 1)
         m.float(record + 0x3c, 30 * slide if i == 0 else 30)
     m.run(0xfce70, (0,), limit=500000)
@@ -317,7 +343,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         world_positions.append(world)
         positions.append(project(world))
     anchors = {}
-    for name in r.ANCHORS:
+    for name in (r.V8_ANCHORS if baseline_v8 else r.ANCHORS):
         out = m.alloc(16)
         m.run(0xfb640, ecx=out, edx=0x4f6950, eax=matrices + r.layout.T[name] * 64)
         anchors[name] = project(floats(out, 3))
@@ -348,13 +374,16 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 positions=positions, world_positions=world_positions, anchors=anchors,
                 materials=materials, objects=objects, score_transforms=score_transforms,
                 scorebug_runtime_installed=False,
+                static_version='espn-reference-v8' if baseline_v8 else r.VERSION,
+                score_phase=score_phase, score_values=list(score_values), previous_scores=list(previous_scores),
+                visible_elements=list(visible_elements),
                 frame=objects[frame_name], frame_material=frame_name,
                 clock=bounds(range(48, 64)), down=bounds(range(64, 80)),
                 frame_instructions=frame_instructions, widescreen=widescreen, mode=mode,
                 text_scale_x=27 / 32 if widescreen else 1,
                 scene_sha256=r.digest(decoded),
                 limitations=['CPU fixture, not console execution', 'GPU state and rasterization not executed',
-                             'per-frame gameplay predicates replaced', 'settled score sample'])
+                             'per-frame gameplay predicates replaced', 'explicit score phase sample'])
 
 
 def native_text_draw(capture, *, shadow_offset=None):
@@ -394,6 +423,11 @@ def native_text_draw(capture, *, shadow_offset=None):
         if va == 0x47420:
             text = m.read_string(m.uc.reg_read(m.x.UC_X86_REG_EDX))
             obj = m.uc.reg_read(m.x.UC_X86_REG_ECX)
+            # Cached score frames do not call their formatter. Attribute their
+            # glyphs to the actual score record, not the previous clock callback.
+            record = m.uc.reg_read(m.x.UC_X86_REG_ESI) - 0x14
+            if obj != 0xa957f0 and record in (0xa9594c, 0xa95984):
+                callback[0] = hex(m.get(record))
             if shadow_offset is not None:
                 m.uc.mem_write(obj + 0x30, struct.pack('<3f', *shadow_offset))
             position = m.floats(obj + 16, 3)
@@ -457,8 +491,18 @@ def native_team_binding_audit(capture):
     return cases
 
 
-def containment_failures(geometry, rails=(84, 381, 560, 429), tolerance=2):
+def reference_rails(widescreen=False):
+    rails = [84, 381, 560, 429]
+    if widescreen:
+        for i in (0, 2):
+            rails[i] = 320 + (rails[i] - 320) * 27 / 32
+    return rails
+
+
+def containment_failures(geometry, rails=None, tolerance=2):
     """Acceptance predicate covering every nondegenerate visible object/glyph."""
+    if rails is None:
+        rails = reference_rails(geometry['widescreen'])
     def outside(box):
         return any((box[0] < rails[0] - tolerance, box[1] < rails[1] - tolerance,
                     box[2] > rails[2] + tolerance, box[3] > rails[3] + tolerance))
@@ -574,7 +618,7 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
                 vs = [quad[i] for i in ix]
                 triangle(font_atlases[row['font']], [v['screen'] for v in vs], [v['uv'] for v in vs],
                          [color(int(v['color'], 16)) for v in vs], [v['world'][2] for v in vs])
-    label = 'V8 NATIVE INPUTS / SOFTWARE RASTER'
+    label = geometry['static_version'].upper() + ' / NATIVE INPUTS / SOFTWARE RASTER'
     if cull_positive:
         label += ' / CULL HYPOTHESIS'
     draw.text((8, 4), label, fill='white')
@@ -594,7 +638,7 @@ def v7_baseline(spans):
         q = [round((c - o) / 420 * 32767) for c, o in zip(pos, (-20, 100, -29.5))]
         struct.pack_into('<3h', decoded, r.layout.S0 + v * 6, *q)
     scene, _ = r.layout.refit(spans['score_bug'], bytes(decoded))
-    atlas = r.atlas(spans); draw = ImageDraw.Draw(atlas)
+    atlas = r.atlas_v8(spans); draw = ImageDraw.Draw(atlas)
     draw.rectangle((0, 0, 63, 15), fill=(0, 0, 0, 0))
     draw.rounded_rectangle((0, 0, 63, 15), 2, fill=(19,20,25,255), outline=(122,124,132,255))
     draw.line((3,1,60,1), fill=(190,190,196,255))
@@ -609,6 +653,18 @@ def v7_baseline(spans):
     if r.digest(texture) != '72aee2c09b471c6f07e3658c00ef6f204021f3f6065cd96344c7c72d30df9947':
         raise ValueError('v7 atlas baseline drifted')
     return bytes(decoded), texture
+
+
+def v8_baseline(spans):
+    """Rebuild the witnessed v8 resource identities, never accepted by v9 apply."""
+    decoded = r.serialize(r.mesh_v8(r.pinned(spans['score_bug'], art.RESOURCES['score_bug'])))
+    scene, _ = r.layout.refit(spans['score_bug'], decoded)
+    atlas, _ = r.encode_atlas(spans['score_buga'], r.atlas_v8(spans))
+    if r.digest(scene) != 'cdcf2aa898dd85332e3b872ca73eeae525ca85e9e543f4d07250bf820df16427':
+        raise ValueError('v8 scene baseline drifted')
+    if r.digest(atlas) != '8771f332aa07a63db1c21d9803455cc4ed5dd7f04fb88d36d571b03f1c7b7cd0':
+        raise ValueError('v8 atlas baseline drifted')
+    return decoded, atlas
 
 
 def main(argv=None):
@@ -627,55 +683,80 @@ def main(argv=None):
     new_atlas = r.apply(spans['score_buga'], 'score_buga', inputs=spans)[0]
     fonts = read_fonts(args.pack)
     payload = args.xbe.read_bytes()
-    receipts = dict(schema='nfl2k5_scorebug_espn_audit/v1', status='STOP_RUNTIME_OWNER_REQUIRED',
-                    v9_installed=False, runtime_witnessed=False,
+    before, old_atlas = v8_baseline(spans)
+    receipts = dict(schema='nfl2k5_scorebug_v9_audit/v1', status='PASS_STATIC_V9',
+                    v9_installed=True, runtime_witnessed=False,
                     xbe_sha256=r.digest(payload), scene_sha256=r.digest(after),
-                    atlas_sha256=r.digest(new_atlas),
+                    atlas_sha256=r.digest(new_atlas), reference_rails=reference_rails(),
+                    team_material_hook=r.TEAM_MATERIAL_HOOK,
                     native_code_pins=validate_native_code(payload),
                     static_receipts=static_receipts(payload, spans),
                     fonts={f.name: f.decoded_sha256 for f in fonts}, projections={})
-    for name, widescreen in (('reconstructed_v8_640x480', False), ('reconstructed_v8_wide_640x480', True)):
-        capture = {}
-        geometry = native_geometry(payload, after, widescreen=widescreen, texture_span=new_atlas,
-                                   fonts=fonts, capture=capture)
-        try:
-            geometry.update(native_text_draw(capture))
-            geometry.update(render_native(after, new_atlas, fonts, geometry, args.output / (name + '.png')))
-            geometry['containment_failures'] = containment_failures(geometry)
-            if not widescreen:
-                receipts['team_binding_cases'] = native_team_binding_audit(capture)
-            else:
-                render_native(after, new_atlas, fonts, geometry,
-                              args.output / 'reconstructed_v8_wide_cull_hypothesis.png', cull_positive=True)
-        finally:
-            capture['machine'].close()
-        receipts['projections'][name] = geometry
-        print(name, json.dumps(dict(frame=geometry['frame'], failures=geometry['containment_failures'])), flush=True)
-    witness = args.witness
-    if witness is not None:
-        with Image.open(witness) as source:
-            source_size = source.size
-            normalized = Image.new('RGB', (640, 480), '#101010')
-            normalized.paste(source.convert('RGB').resize((640, 448), Image.Resampling.LANCZOS), (0, 16))
-        normalized.save(args.output / 'witness_v8_hud_normalized.png')
-        receipts['witness'] = dict(path=witness.name, sha256=r.digest(witness.read_bytes()), size=list(source_size),
-                                   normalization='full capture mapped to HUD x=0..640, y=16..464',
-                                   normalization_proved=False,
-                                   reason='inferred viewport crop; capture has no display settings or framebuffer dump')
-        sheet = Image.new('RGB', (1920, 512), '#101010')
-        rows = [(normalized, 'NOAH WITNESS / INFERRED HUD NORMALIZATION'),
-                (args.output / 'reconstructed_v8_wide_640x480.png', 'CORRECTED V8 HARNESS / RUNTIME OFF'),
-                (ROOT / 'docs/scorebug_ingame/target_NO_MIA.png', 'SUPPLIED TARGET / STAGED RUNTIME MOCKUP')]
-        for i, (source, label) in enumerate(rows):
-            if isinstance(source, Path):
-                with Image.open(source) as opened:
-                    panel = opened.convert('RGB').resize((640, 480), Image.Resampling.LANCZOS)
-            else:
-                panel = source
-            sheet.paste(panel, (640*i, 32))
-            ImageDraw.Draw(sheet).text((640*i+8, 10), label, fill='white')
-        sheet.save(args.output / 'witness_harness_target.png')
-    (args.output / 'espn_native_audit.json').write_text(json.dumps(receipts, indent=2)+'\n', encoding='utf-8')
+    for baseline in (True, False):
+        decoded, texture = (before, old_atlas) if baseline else (after, new_atlas)
+        for widescreen in (False, True):
+            for mode in ((0,) if baseline else (0, 1)):
+                prefix = 'before_v9_v8' if baseline else 'after_v9'
+                name = prefix + ('_wide' if widescreen else '') + ('_mode1' if mode else '') + '_640x480'
+                capture = {}
+                geometry = native_geometry(payload, decoded, widescreen=widescreen, mode=mode,
+                                           texture_span=texture, fonts=fonts, capture=capture,
+                                           baseline_v8=baseline)
+                try:
+                    geometry.update(native_text_draw(capture))
+                    geometry.update(render_native(decoded, texture, fonts, geometry, args.output / (name + '.png')))
+                    geometry['containment_failures'] = containment_failures(geometry)
+                    geometry['inside_actual_frame_failures'] = containment_failures(geometry, geometry['frame'], .02)
+                    if not baseline:
+                        if geometry['containment_failures'] or geometry['inside_actual_frame_failures']:
+                            raise ValueError('v9 containment failed: ' + name)
+                        render_native(decoded, texture, fonts, geometry,
+                                      args.output / (name + '_cull.png'), cull_positive=True)
+                        mark = 'zz_ESPN_bug1' if mode else 'zz_ESPN_bug'
+                        if geometry['winding'][mark] != dict(positive=0, negative=2):
+                            raise ValueError('v9 ESPN winding differs from the frame')
+                        if not widescreen and mode == 0:
+                            receipts['team_binding_cases'] = native_team_binding_audit(capture)
+                    elif not geometry['containment_failures']:
+                        raise ValueError('negative control unexpectedly accepts v8')
+                finally:
+                    capture['machine'].close()
+                receipts['projections'][name] = geometry
+                print(name, json.dumps(dict(frame=geometry['frame'], failures=geometry['containment_failures'])), flush=True)
+    from PIL import ImageChops
+    for wide_suffix in ('', '_wide'):
+        first = args.output / ('after_v9' + wide_suffix + '_640x480.png')
+        second = args.output / ('after_v9' + wide_suffix + '_mode1_640x480.png')
+        with Image.open(first) as left, Image.open(second) as right:
+            if ImageChops.difference(left, right).getbbox() is not None:
+                raise ValueError('direction modes render different bars')
+    receipts['direction_modes_pixel_identical'] = True
+    target_path = ROOT / 'docs/scorebug_ingame/target_NO_MIA.png'
+    with Image.open(target_path) as source:
+        target = source.convert('RGB').resize((640, 480), Image.Resampling.LANCZOS)
+    receipts['target'] = dict(path=target_path.name, sha256=r.digest(target_path.read_bytes()),
+                            provenance='supplied staged mockup, not a broadcast capture',
+                            use='rail bounds, neutral frame colour and 96x24 disc-derived mark; brief controls cell layout')
+    sheet = Image.new('RGB', (1920, 512), '#101010')
+    for i, (path, label) in enumerate((
+            (args.output / 'before_v9_v8_640x480.png', 'BEFORE: V8 NATIVE RECONSTRUCTION'),
+            (args.output / 'after_v9_640x480.png', 'AFTER: V9 STATIC / EXPERIMENTAL / UNWITNESSED'),
+            (target_path, 'TARGET: SUPPLIED STAGED MOCKUP'))):
+        with Image.open(path) as source:
+            panel = source.convert('RGB').resize((640, 480), Image.Resampling.LANCZOS)
+        sheet.paste(panel, (640 * i, 32))
+        ImageDraw.Draw(sheet).text((640 * i + 8, 10), label, fill='white')
+    sheet.save(args.output / 'v9_before_after_target.png')
+    with Image.open(args.output / 'after_v9_640x480.png') as source:
+        overlay = Image.blend(target, source.convert('RGB'), .5)
+    pen = ImageDraw.Draw(overlay)
+    pen.rectangle(reference_rails(), outline='#00ffff', width=1)
+    pen.text((8, 24), '50% TARGET + 50% V9 / CYAN: REFERENCE RAILS', fill='white')
+    overlay.save(args.output / 'v9_target_overlay.png')
+    if args.witness is not None:
+        receipts['witness'] = dict(path=args.witness.name, sha256=r.digest(args.witness.read_bytes()),
+                                   role='historical v8 witness only; no v9 gameplay witness')
+    (args.output / 'v9_native_audit.json').write_text(json.dumps(receipts, indent=2)+'\n', encoding='utf-8')
     return 0
 
 

@@ -1,0 +1,265 @@
+{
+  "schema": "nfl2k5_scorebug_v9_validation/v1",
+  "status": "PASS",
+  "experimental": true,
+  "runtime_witnessed": false,
+  "base_commit": "331e04d33fcf8a57788821f9618eb3927383fbeb",
+  "standalone": [
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_ingame.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 137448,
+      "output": "...........\n----------------------------------------------------------------------\nRan 11 tests in 8.631s\n\nOK\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py\"\n\tUser time (seconds): 8.69\n\tSystem time (seconds): 0.16\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:08.86\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 137448\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 48376\n\tVoluntary context switches: 5\n\tInvoluntary context switches: 29\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 46816\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 11,
+      "seconds": 8.631,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_projection.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 355272,
+      "output": "..............\n----------------------------------------------------------------------\nRan 14 tests in 412.811s\n\nOK\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py\"\n\tUser time (seconds): 419.34\n\tSystem time (seconds): 5.26\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 7:04.74\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 355272\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 662107\n\tVoluntary context switches: 23\n\tInvoluntary context switches: 3854\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 136\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 14,
+      "seconds": 412.811,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_source_art.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 48124,
+      "output": ".....ss.....s\n----------------------------------------------------------------------\nRan 13 tests in 0.303s\n\nOK (skipped=3)\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py\"\n\tUser time (seconds): 0.37\n\tSystem time (seconds): 0.05\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.43\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 48124\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 1\n\tMinor (reclaiming a frame) page faults: 9082\n\tVoluntary context switches: 3\n\tInvoluntary context switches: 2\n\tSwaps: 0\n\tFile system inputs: 88\n\tFile system outputs: 2440\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 13,
+      "seconds": 0.303,
+      "skipped": 3
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 29980,
+      "output": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.052s\n\nOK\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py\"\n\tUser time (seconds): 0.14\n\tSystem time (seconds): 0.02\n\tPercent of CPU this job got: 100%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.16\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 29980\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 4660\n\tVoluntary context switches: 1\n\tInvoluntary context switches: 1\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 136\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 5,
+      "seconds": 0.052,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tests/nfl2k5_scorebug_layout_test.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 146288,
+      "output": ".sss.....s.....\n----------------------------------------------------------------------\nRan 15 tests in 1.486s\n\nOK (skipped=4)\n",
+      "time_output": "\tCommand being timed: \"python3 tests/nfl2k5_scorebug_layout_test.py\"\n\tUser time (seconds): 1.26\n\tSystem time (seconds): 0.43\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:01.69\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 146288\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 183328\n\tVoluntary context switches: 9\n\tInvoluntary context switches: 6\n\tSwaps: 0\n\tFile system inputs: 24600\n\tFile system outputs: 152\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 15,
+      "seconds": 1.486,
+      "skipped": 4
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_runtime.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 269908,
+      "output": "............\n----------------------------------------------------------------------\nRan 12 tests in 95.693s\n\nOK\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py\"\n\tUser time (seconds): 112.63\n\tSystem time (seconds): 1.12\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 1:53.79\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 269908\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 100346\n\tVoluntary context switches: 3\n\tInvoluntary context switches: 1344\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 152\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 12,
+      "seconds": 95.693,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_resources.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 166700,
+      "output": "......\n----------------------------------------------------------------------\nRan 6 tests in 97.018s\n\nOK\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py\"\n\tUser time (seconds): 81.05\n\tSystem time (seconds): 13.07\n\tPercent of CPU this job got: 96%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 1:37.26\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 166700\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 427715\n\tVoluntary context switches: 12608\n\tInvoluntary context switches: 434\n\tSwaps: 0\n\tFile system inputs: 356904\n\tFile system outputs: 12883248\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 6,
+      "seconds": 97.018,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_xbe_patch_memory_writes.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 315620,
+      "output": "...............................................................................\n----------------------------------------------------------------------\nRan 79 tests in 290.362s\n\nOK\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_xbe_patch_memory_writes.py\"\n\tUser time (seconds): 289.22\n\tSystem time (seconds): 1.25\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 4:50.49\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 315620\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 496279\n\tVoluntary context switches: 30\n\tInvoluntary context switches: 842\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 80\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 79,
+      "seconds": 290.362,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_xbe_patch_cave_references.py"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 484088,
+      "output": "...........................................................................................\n----------------------------------------------------------------------\nRan 91 tests in 375.356s\n\nOK\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_xbe_patch_cave_references.py\"\n\tUser time (seconds): 374.61\n\tSystem time (seconds): 0.94\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 6:15.59\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 484088\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 342436\n\tVoluntary context switches: 53\n\tInvoluntary context switches: 1254\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 992\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 91,
+      "seconds": 375.356,
+      "skipped": 0
+    }
+  ],
+  "renderer": {
+    "command": [
+      "python3",
+      "-m",
+      "tools.nfl2k5_scorebug_projection",
+      "--pack",
+      "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/vc_53450030/0",
+      "--xbe",
+      "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe",
+      "--witness",
+      "docs/scorebug_ingame/witness_2026-09-06_v8_ingame.png",
+      "--output",
+      "docs/scorebug_ingame"
+    ],
+    "exit_code": 0,
+    "max_rss_kib": 239596,
+    "output": "before_v9_v8_640x480 {\"frame\": [79.9639892578125, 380.9989013671875, 556.30419921875, 429.0], \"failures\": {\"yscore_buga1\": [79.9639892578125, 380.9989013671875, 556.30419921875, 429.0], \"zscore_buga\": [83.99849656577983, 409.1991958469113, 556.0082209689724, 453.19011169429496], \"zz_ESPN_bug\": [507.9940185546875, 32.998077392578125, 603.9991455078125, 57.005767822265625], \"0xfc050:0\": [416.0063729286194, 426.2003154754628, 426.00674962997437, 442.2009181976329], \"0xfc070:0\": [214.00191736221313, 426.2003154754628, 224.00229406356812, 442.2009181976329]}}\nbefore_v9_v8_wide_640x480 {\"frame\": [117.4696159362793, 380.9989013671875, 519.3816680908203, 429.0], \"failures\": {\"yscore_buga1\": [117.4696159362793, 380.9989013671875, 519.3816680908203, 429.0], \"zscore_buga\": [120.87373147737674, 409.1991958469113, 519.1319364425705, 453.19011169429496], \"zz_ESPN_bug\": [478.6199531555176, 32.998077392578125, 559.6242790222168, 57.005767822265625], \"0xfc050:0\": [401.0053771585226, 426.2003154754628, 409.44319500029087, 442.2009181976329], \"0xfc070:0\": [230.56411777436733, 426.2003154754628, 239.0019356161356, 442.2009181976329]}}\nafter_v9_640x480 {\"frame\": [84.00146484375, 380.9989013671875, 559.9957275390625, 429.0], \"failures\": {}}\nafter_v9_mode1_640x480 {\"frame\": [84.00146484375, 380.9989013671875, 559.9957275390625, 429.0], \"failures\": {}}\nafter_v9_wide_640x480 {\"frame\": [120.87623596191406, 380.9989013671875, 522.496395111084, 429.0], \"failures\": {}}\nafter_v9_wide_mode1_640x480 {\"frame\": [120.87623596191406, 380.9989013671875, 522.496395111084, 429.0], \"failures\": {}}\n",
+    "time_output": "\tCommand being timed: \"python3 -m tools.nfl2k5_scorebug_projection --pack /media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/vc_53450030/0 --xbe /media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe --witness docs/scorebug_ingame/witness_2026-09-06_v8_ingame.png --output docs/scorebug_ingame\"\n\tUser time (seconds): 97.89\n\tSystem time (seconds): 1.23\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 1:39.17\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 239596\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 143810\n\tVoluntary context switches: 37\n\tInvoluntary context switches: 1062\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 2064\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n"
+  },
+  "total_run": 246,
+  "passed": 239,
+  "skipped": 7,
+  "failed": 0,
+  "peak_rss_kib": 484088,
+  "peak_limit_kib": 2097152,
+  "disk": {
+    "start_df_h_available": "104G",
+    "final_free_bytes": 109266911232,
+    "final_free_gib": 101.76274108886719,
+    "enforced_free_minimum_bytes": 107374182400,
+    "scratch_bytes_before_bundle": 307399,
+    "scratch_limit_bytes": 209715200,
+    "task_disc_copies": 0,
+    "retained_disc_or_pack_copies": 0,
+    "transaction_fixture": "sparse bounded resource fixture in auto-removed TemporaryDirectory"
+  },
+  "protected_and_witness_files_unchanged": [
+    "mod_editor/core/mod_build.py",
+    "mod_editor/core/nfl2k5_throw_tuning.py",
+    "mod_editor/gui/studio_qt.py",
+    "mod_editor/gui/build_panel_qt.py",
+    "mod_editor/gui/gameplay_patches_panel_qt.py",
+    "mod_editor/gui/gameplay_panel_qt.py",
+    "packaging/release-allowlist.txt",
+    "mod_editor/core/update_check.py",
+    ".github/workflows/ci.yml",
+    "data/nfl2k5_cave_reservations.json",
+    "packaging/check_2k5_mod_studio_runtime.py",
+    "mod_editor/core/nfl2k5_scorebug_runtime.py",
+    "docs/scorebug_ingame/target_NO_MIA.png",
+    "docs/scorebug_ingame/witness_2026-09-06_v8_ingame.png"
+  ],
+  "diff_check": "PASS",
+  "source_sha256": {
+    "mod_editor/core/nfl2k5_scorebug_ingame.py": "3513021d40b31047325c16eae9cacd1d4a22ce7c28b820919958befecda07f89",
+    "mod_editor/core/nfl2k5_scorebug_resources.py": "bd93048c5a4247967f8ce6b26b9b9ef34832208c5e03e51bf8f7cfcbe1738213",
+    "mod_editor/core/nfl2k5_scorebug_source_art.py": "4bc5e18f6aee20ab5ded471aa17b2d065fe05259d1d803159a010c1c309eb65e",
+    "tools/nfl2k5_scorebug_layout.py": "8a9731c2d3b03ac1d902501fa4425bb0fcf21285c319988a65ab72c4e3aff2d7",
+    "tools/nfl2k5_scorebug_projection.py": "2780e30ade32a9d66a153ddabfe185ce76c9138a79557e4c96739c218009c782",
+    "tests/mod_editor/test_nfl2k5_scorebug_ingame.py": "e53466b68be300426edfa52f6f524dab78d2c9c006d637977f5a5e6fe2d183dc",
+    "tests/mod_editor/test_nfl2k5_scorebug_projection.py": "4ae85317b8f0e634f0b1ea1944ac3393b4069d9682a4d9d662c19fcf36d11390",
+    "tests/nfl2k5_scorebug_layout_test.py": "b99780fdea44d1ecb30d408a2e82f29ea04af3fb2658f996ba5ddc634e65c9b2"
+  },
+  "evidence_sha256": {
+    "docs/scorebug_ingame/after_v9_640x480.png": "73d36c956e008dd7bb3103494c4d943ae48ba2ff514334bd4003f5d4fc0af8dc",
+    "docs/scorebug_ingame/after_v9_wide_640x480.png": "fb7f13aa1a6e0239a330f3fa2576c0bf623ebdd6d53ea72f2f5c2a20d5d4c98c",
+    "docs/scorebug_ingame/after_v9_mode1_640x480.png": "73d36c956e008dd7bb3103494c4d943ae48ba2ff514334bd4003f5d4fc0af8dc",
+    "docs/scorebug_ingame/after_v9_wide_mode1_640x480.png": "fb7f13aa1a6e0239a330f3fa2576c0bf623ebdd6d53ea72f2f5c2a20d5d4c98c",
+    "docs/scorebug_ingame/after_v9_640x480_cull.png": "dcdfdb54998d3046f35e5a19c68b2ea6bdfe58bfe1520eca02017cc199d962b9",
+    "docs/scorebug_ingame/after_v9_wide_640x480_cull.png": "8b5e0245576ded539ca0c4668acb357bbe69783d77638740b825c309cf249784",
+    "docs/scorebug_ingame/after_v9_mode1_640x480_cull.png": "dcdfdb54998d3046f35e5a19c68b2ea6bdfe58bfe1520eca02017cc199d962b9",
+    "docs/scorebug_ingame/after_v9_wide_mode1_640x480_cull.png": "8b5e0245576ded539ca0c4668acb357bbe69783d77638740b825c309cf249784",
+    "docs/scorebug_ingame/before_v9_v8_640x480.png": "7daa3a2ab1a55600b0b654602c19f23a52c9375a65c292a121e0a49dc94e931b",
+    "docs/scorebug_ingame/before_v9_v8_wide_640x480.png": "24f66634a97ecf4a151d8387520ba86ab30dba142c72b191cd6dedde4f08efe3",
+    "docs/scorebug_ingame/v9_before_after_target.png": "7e59a0b4bfa26e0a060723f936c1e37d97bb79739116b7611bc2c4ff2ca6be7e",
+    "docs/scorebug_ingame/v9_target_overlay.png": "9237509b9bf0e07b9eb67c16fc69f0cfe3e3c0401e3cf8597f83f13e9ecebcd0",
+    "docs/scorebug_ingame/v9_native_audit.json": "18fa945ba4463293dcacc72727029ba8258f8cb3730b98cfa9569fb173778430"
+  },
+  "delivery": {
+    "mode": "isolated explicit-path commit and bundle",
+    "primary_git_metadata_read_only": true,
+    "branch": "astra/r63-scorebug-v9",
+    "bundle": ".scratch/r63-scorebug-v9.bundle",
+    "paths": [
+      "ASTRA_SCOREBUG_V9_REPORT.md",
+      "WIRING.md",
+      "mod_editor/core/nfl2k5_scorebug_ingame.py",
+      "mod_editor/core/nfl2k5_scorebug_resources.py",
+      "mod_editor/core/nfl2k5_scorebug_source_art.py",
+      "tools/nfl2k5_scorebug_layout.py",
+      "tools/nfl2k5_scorebug_projection.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "tests/nfl2k5_scorebug_layout_test.py",
+      "docs/scorebug_ingame/after_v9_640x480.png",
+      "docs/scorebug_ingame/after_v9_wide_640x480.png",
+      "docs/scorebug_ingame/after_v9_mode1_640x480.png",
+      "docs/scorebug_ingame/after_v9_wide_mode1_640x480.png",
+      "docs/scorebug_ingame/after_v9_640x480_cull.png",
+      "docs/scorebug_ingame/after_v9_wide_640x480_cull.png",
+      "docs/scorebug_ingame/after_v9_mode1_640x480_cull.png",
+      "docs/scorebug_ingame/after_v9_wide_mode1_640x480_cull.png",
+      "docs/scorebug_ingame/before_v9_v8_640x480.png",
+      "docs/scorebug_ingame/before_v9_v8_wide_640x480.png",
+      "docs/scorebug_ingame/v9_before_after_target.png",
+      "docs/scorebug_ingame/v9_target_overlay.png",
+      "docs/scorebug_ingame/v9_native_audit.json",
+      "docs/scorebug_ingame/v9_validation.json"
+    ]
+  },
+  "development_runs": [
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_projection.py"
+      ],
+      "exit_code": 1,
+      "max_rss_kib": 318688,
+      "output": "..........E...\n======================================================================\nERROR: test_three_digit_scores_inches_overtime_and_possession_use_native_data (__main__.ProjectionTests.test_three_digit_scores_inches_overtime_and_possession_use_native_data)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/noah/2k-worktrees/astra-r63-scorebug-v9/tests/mod_editor/test_nfl2k5_scorebug_projection.py\", line 174, in test_three_digit_scores_inches_overtime_and_possession_use_native_data\n    drawn=native_text_draw(self.capture)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/noah/2k-worktrees/astra-r63-scorebug-v9/tools/nfl2k5_scorebug_projection.py\", line 457, in native_text_draw\n    m.run(0xfc360, limit=200000)\n  File \"/home/noah/2k-worktrees/astra-r63-scorebug-v9/tools/nfl2k5_scorebug_projection.py\", line 168, in run\n    self.uc.emu_start(va, self.STOP, count=limit)\n  File \"/home/noah/.local/lib/python3.12/site-packages/unicorn/unicorn_py3/unicorn.py\", line 766, in emu_start\n    raise UcError(status)\nunicorn.unicorn_py3.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)\n\n----------------------------------------------------------------------\nRan 14 tests in 420.731s\n\nFAILED (errors=1)\n",
+      "time_output": "Command exited with non-zero status 1\n\tCommand being timed: \"python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py\"\n\tUser time (seconds): 427.14\n\tSystem time (seconds): 5.28\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 7:12.55\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 318688\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 658238\n\tVoluntary context switches: 44\n\tInvoluntary context switches: 3701\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 368\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 1\n",
+      "tests": 14,
+      "seconds": 420.731,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+        "ProjectionTests.test_three_digit_scores_inches_overtime_and_possession_use_native_data"
+      ],
+      "exit_code": 0,
+      "max_rss_kib": 139720,
+      "output": ".\n----------------------------------------------------------------------\nRan 1 test in 8.308s\n\nOK\n",
+      "time_output": "\tCommand being timed: \"python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py ProjectionTests.test_three_digit_scores_inches_overtime_and_possession_use_native_data\"\n\tUser time (seconds): 14.13\n\tSystem time (seconds): 0.24\n\tPercent of CPU this job got: 99%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:14.39\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 139720\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 0\n\tMinor (reclaiming a frame) page faults: 39990\n\tVoluntary context switches: 92\n\tInvoluntary context switches: 106\n\tSwaps: 0\n\tFile system inputs: 0\n\tFile system outputs: 144\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "tests": 1,
+      "seconds": 8.308,
+      "skipped": 0
+    }
+  ]
+}
