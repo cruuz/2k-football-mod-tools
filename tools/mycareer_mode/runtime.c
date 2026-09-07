@@ -146,6 +146,7 @@ u32 FC mode_human(u8 *t) {
 extern const u8 entry_menu[], apartment[], team_menu[], practice_menu[];
 extern const u16 draft_notice[], refusal_notice[];
 extern void FC native_new_player(u32 manager);
+extern void FC mode_autosave(u32 manager,u32 descriptor);
 static NI u32 owner(u32 manager) { return manager && S(2672)==manager && W((u8 *)manager,0x100)<32; }
 static NI void notice(u32 manager,const u16 *text) { N2(0x14e520)(manager,(u32)text); }
 static NI u8 *team(u32 index) {
@@ -222,6 +223,7 @@ void FC mode_event(u32 manager,u32 event) {
     top=W((u8 *)manager,8*W((u8 *)manager,0x100));
     if(event==3 && top==(u32)entry_menu && (S(2680)==1 || S(2680)==2)) rollback();
     if(event==3 && top==(u32)apartment) { resolve_team(); settle(); }
+    if(event==6 && top==(u32)apartment) mode_autosave(manager,top);
 }
 u32 mode_team_left(void) { S(2684)=(S(2684)+31)%32; return 1; }
 u32 mode_team_right(void) { S(2684)=(S(2684)+1)%32; return 1; }

@@ -171,6 +171,17 @@ mode_loaded_replace:
 mode_stats_commit:
  call 0x134140
  jmp settle
+.global mode_autosave
+mode_autosave:
+ /* The host validates Auto Save's complete template before admitting this
+  * optional bridge. Its installed Desk callback locates the relocated owner.
+  * The retail pointer means Auto Save was not selected for this build. */
+ mov eax,DWORD PTR [0x521dcc]
+ cmp eax,0x142dd0
+ je 1f
+ add eax,OFFSET FLAT:autosave_completion_delta
+ jmp eax
+1: ret
 human_esi:
  push ecx
  mov ecx,esi

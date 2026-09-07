@@ -124,7 +124,9 @@ class CapabilityTests(unittest.TestCase):
         from mod_editor.capabilities.validate_registry import DEFAULT_REGISTRY, validate_data, _command_module
         fragment = json.loads((ROOT / "docs/mod_editor/nfl2k5_my_career_mode_capabilities.json").read_text())
         registry = json.loads(DEFAULT_REGISTRY.read_text())
-        registry["capabilities"] += fragment
+        fragment_ids = {cap["id"] for cap in fragment}
+        registry["capabilities"] = [cap for cap in registry["capabilities"]
+                                    if cap["id"] not in fragment_ids] + fragment
         registry["capabilities"].sort(key=lambda item: item["id"])
         # The baseline registry has unrelated absent research paths. Validate
         # its complete schema, then every path/command introduced here.

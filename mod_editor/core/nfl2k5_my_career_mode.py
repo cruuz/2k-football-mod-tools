@@ -82,6 +82,7 @@ GUARDS = (
 
 
 def code_for(code_va, data_va):
+    from . import nfl2k5_franchise_autosave_code as autosave_code
     out = bytearray(assembly.CODE)
     labels = {name: code_va + offset for name, offset in assembly.LABELS.items()}
 
@@ -169,7 +170,9 @@ def code_for(code_va, data_va):
     at = reserve("menu_template", len(encoded))
     out[at:at + len(encoded)] = encoded
     labels["menu_bytes"] = len(menu)
-    symbols = {"code": code_va, "state": data_va, "": 0, **labels}
+    symbols = {"code": code_va, "state": data_va, "": 0,
+               "autosave_completion_delta": autosave_code.LABELS["career_complete"] - autosave_code.LABELS["desk"],
+               **labels}
     for off, kind, symbol, value in assembly.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<I", out, off)[0]
         if kind == 2:
@@ -204,10 +207,34 @@ def recognized(payload):
         return False
 
 
-def check_context(payload, edits):
+def check_context(payload, edits, *, installed=False):
     image = XbeImage(payload)
     legacy.check_context(image)
     camera_edits = []
+    from . import nfl2k5_franchise_autosave as autosave
+    # Practice and music already validate MyCareer. Avoid a dependency cycle
+    # by checking Auto Save on a private retail view of our fully validated
+    # installation. Only our exact hooks and code are restored in that copy;
+    # every companion hook/body/context still undergoes its complete status.
+    # The original payload and allocator directory are never modified.
+    companion_payload = payload
+    if installed:
+        from .nfl2k5_bump_strength import _sections, section_digest
+        code, _ = legacy.allocations(payload)
+        buf = bytearray(payload)
+        for _, va, before, _ in edits:
+            at = image.offset(va, len(before))
+            buf[at:at + len(before)] = before
+        buf[code["raw"]:code["raw"] + CODE_SIZE] = b"\xcc" * CODE_SIZE
+        space._seal_scaleout(buf, space._validate(payload)[2])
+        for section in _sections(buf):
+            buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+        companion_payload = bytes(buf)
+    autosave._recognize(companion_payload)
+    allocated = any(a["owner"] == autosave.OWNER for a in space.layout(payload)["allocations"])
+    if allocated:
+        owned = autosave.allocations(payload)
+        camera_edits += autosave.sites(owned["code"]["va"], owned["read_only"]["va"])
     from . import nfl2k5_overtime as overtime, nfl2k5_kick_rules as kicks
     # Independently sealed owners change other branches of these functions.
     for module, sentinel, pin, selected in (
@@ -243,25 +270,29 @@ def check_context(payload, edits):
         legacy.require(hashlib.sha256(raw).hexdigest() == digest, f"foreign native career context at {va:#x}")
 
 
+def _recognize(payload):
+    found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
+    code, data = legacy.allocations(payload) if found else ({"va": 0}, {"va": 0})
+    edits = sites(code["va"], data["va"])
+    image = XbeImage(payload)
+    own_sites = {va for _, va, _, _ in edits}
+    legacy.require(all(image.read(va, len(before)) == before for _, va, before, _ in legacy.sites(0, 0)
+                       if va not in own_sites), "legacy MyCareer hooks in generic build")
+    state = "retail"
+    if found:
+        legacy.require(image.read(data["va"], DATA_SIZE) == bytes(DATA_SIZE), "foreign initial MyCareer RW")
+        blob = image.read(code["va"], CODE_SIZE)
+        if blob != b"\xcc" * CODE_SIZE:
+            legacy.require(blob == code_for(code["va"], data["va"])[0], "mixed generic MyCareer install")
+            state = "applied"
+    legacy.require(rdata.status(payload, edits) == state, "mixed generic MyCareer hooks/code")
+    check_context(payload, edits, installed=state == "applied")
+    return state
+
+
 def status(payload):
     try:
-        found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
-        code, data = legacy.allocations(payload) if found else ({"va": 0}, {"va": 0})
-        edits = sites(code["va"], data["va"])
-        check_context(payload, edits)
-        image = XbeImage(payload)
-        own_sites = {va for _, va, _, _ in edits}
-        legacy.require(all(image.read(va, len(before)) == before for _, va, before, _ in legacy.sites(0, 0)
-                           if va not in own_sites), "legacy MyCareer hooks in generic build")
-        if found:
-            legacy.require(image.read(data["va"], DATA_SIZE) == bytes(DATA_SIZE), "foreign initial MyCareer RW")
-            blob = image.read(code["va"], CODE_SIZE)
-            if blob != b"\xcc" * CODE_SIZE:
-                legacy.require(blob == code_for(code["va"], data["va"])[0]
-                               and rdata.status(payload, edits) == "applied", "mixed generic MyCareer install")
-                return "applied"
-        legacy.require(rdata.status(payload, edits) == "retail", "MyCareer hook without owned code")
-        return "retail"
+        return _recognize(payload)
     except (ValueError, KeyError, IndexError, TypeError, struct.error, OverflowError):
         return "foreign"
 

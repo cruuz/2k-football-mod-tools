@@ -12082,3 +12082,67 @@ UI, safe weekly transactions and the shared autosave adapter. The remaining
 305 bytes before the 17-byte format tag cannot hold the current M3 design; refactor
 within 8192/4096 or report the measured shortfall, never consume another owner
 or page. No M2_DONE or M3_DONE marker is justified by this delivery.
+
+## r64 MyCareer mode 3: shared completion and actual protected stack
+
+The M2a owner repair supersedes the proposed Auto Save ABI above. Both owners
+retain their separate live instructions: MyCareer wraps `0xC5D9E`, executes
+native `0x134140`, then settles; Auto Save wraps the following `0xC5DA9`
+dirty-marker tail and only queues pending work. Native `0xC74E0` and
+`0xC5DF0` still finish the week before `mode_postgame` restores Apartment.
+
+The real shared callable is Auto Save's generated `career_complete` label.
+ECX is the native manager, EDX is the owned Apartment descriptor; it preserves
+registers, flags and stack. The Apartment's event-6 handler invokes it, after
+the full return. It requires an existing pending result, topmost matching
+Apartment, no live game scene, idle I/O and two quiet updates. It reuses the
+existing cached-device/full-name/type lookup and native `0x16E3F0` attempt.
+It never marks a result or runs from the player binder. With Auto Save absent,
+the bridge returns without calling anything. The sealed installed Desk
+callback at `0x521DCC`, plus the generated difference between `career_complete`
+and `desk`, locates the callable across allocator layouts. Do not hard-code
+its final VA or invent `request_after_game`.
+
+All 1,027 original Auto Save instruction bytes and their relocations remain
+identical. The Apartment entry is appended within that owner's existing RX
+reservation. Both owner validators accept only the complete exact companion
+installation, including save hooks and whole native context hashes. MyCareer
+validates Auto Save on a private copy with its own already-validated hooks and
+code restored to retail padding, resealed using the allocator helpers. This
+breaks the Practice/music validation cycle without omitting any owner's
+context or accepting partially installed bytes.
+
+**Observed checkout correction:** despite the brief's introductory wiring
+description, HEAD `a790016` still has the legacy-only `_my_career_adapter.apply`
+and `mod_build._r62_kwargs` still requires a prepared setup. Apply the preceding
+M2 protected handoff. In particular, `_apply_all` keeps the tuples
+`(my_career, _my_career_adapter(my_career_setup), "my_career_patch",
+"MyCareer (experimental)")` and
+`(franchise_autosave, franchise_autosave_patch, "franchise_autosave_patch",
+"Franchise Auto Save (experimental)")` after the allocator, with both flags
+included in `_selected_space_requests` and `_xbe_space_adapter`. Dispatch
+generic MyCareer when `my_career_setup is None`. The four status dictionaries
+and `_grown_status_fields` retain both exact status keys. Do not merge their
+receipts or install both MyCareer formats.
+
+Retain `BuildPlan.my_career=False`, optional `my_career_setup`, and
+`BuildPlan.franchise_autosave=False`; normalize/defer/finally apply both
+selections. MyCareer remains off in Basic, Advanced and Experimental presets.
+Auto Save's existing preset installation remains Basic off, Advanced and
+Experimental on. Its native default stays Off at this M2a milestone.
+
+Gameplay Patches keeps `my_career` and `franchise_autosave` in `NEEDS_IMAGE`.
+MyCareer PATCHES text: `Retail controls a franchise team. Patch adds experimental
+MyCareer creation, an Apartment and inline saves. With Auto Save installed and
+on, completed results save to the slot chosen by a manual Save or Load.
+The played loop remains under verification. Experimental / Unwitnessed.`
+Build `_option` caption remains `MyCareer: create MyPlayer in the game`.
+
+Existing release-allowlist entries and runtime-closure imports for
+`mod_editor.core.nfl2k5_franchise_autosave` and
+`mod_editor.core.nfl2k5_franchise_autosave_code` are required even when only
+MyCareer is selected: its host validator and generated-label bridge import
+them. Retain all M2 closure entries above. No new capability surface or ID is
+introduced; merge the existing fragment by ID instead of appending duplicates.
+Regenerate the protected release reservation JSON after integration. The M2a
+scratch manifest is review evidence only and does not replace that file.

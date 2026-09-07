@@ -26,7 +26,11 @@ CODE = bytes.fromhex(
     "ffffff837e080074548b5e1c81fb00010000774931ff39df73436bc71883b8d4c1bd000975258b90"
     "d0c1bd0085d2741b31c9668b044d20000000663b044a750b6685c074094183f91172e747ebc8893d"
     "1c00000089f9e8fcffffffeb0c89e9ba00010000e8fcffffffe8fcffffff8f05a4bdbd00eb0c89e9"
-    "ba80000000e8fcffffffc7050800000000000000619d8d642404c3"
+    "ba80000000e8fcffffffc7050800000000000000619d8d642404c3519c6089cd833d080000000075"
+    "eb833d00000000010f85dafeffff833da076e500020f85cdfeffff85ed0f84b6feffff85d20f84ae"
+    "feffff8b850001000083f8200f839ffeffff3954c5000f8595feffff833d103aa800000f8588feff"
+    "ff833db0bdbd00010f857bfeffffa1a0bdbd0085c00f8449feffff83f8070f8440feffff83f8080f"
+    "8437feffffe957feffff"
 )
 RELOCATIONS = (
     (2, 1, 'state', 0),
@@ -86,6 +90,8 @@ RELOCATIONS = (
     (1001, 1, 'strings', 0),
     (1006, 2, 'notice_native', 0),
     (1012, 1, 'state', 0),
+    (1034, 1, 'state', 0),
+    (1043, 1, 'state', 0),
     (240, 2, 'camera_size_native', 0),
     (283, 2, 'load_continue', 0),
     (332, 2, 'league_native', 0),
@@ -97,6 +103,7 @@ LABELS = {
     'allocate': 124,
     'allocate_done': 160,
     'attempt_done': 1010,
+    'career_complete': 1027,
     'close_device': 985,
     'desk': 562,
     'desk_attempt': 772,

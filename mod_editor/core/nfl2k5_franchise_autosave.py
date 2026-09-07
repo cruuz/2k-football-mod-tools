@@ -189,16 +189,28 @@ def _recognize(payload):
         require(hooks == practice.CAVE_HOOKS_VA and practice.status(payload) == "applied"
                 and image.read(hooks, practice.HOOKS_SIZE) == practice.cave_hooks(),
                 "foreign relocated Coach's Desk event list")
-    # Normalize only our exact recognized edits. Other owners never receive a
-    # blanket exemption; these contexts deliberately exclude their live sites.
+    # MyCareer settles immediately after the native season/stat commit; our
+    # following dirty-marker tail only queues a save. Inline persistence also
+    # wraps separate calls in these same functions. Validate its complete
+    # installation before normalizing any of those exact companion edits.
+    from . import nfl2k5_my_career_mode as career
+    companion_edits = []
+    if any(image.read(va, len(bytes.fromhex(pin))) != bytes.fromhex(pin)
+           for _, va, pin, _ in (*career.SAVE_HOOKS, career.MODE_HOOKS[0])):
+        require(career._recognize(payload) == "applied",
+                "foreign MyCareer completion/save companion")
+        code, data = career.legacy.allocations(payload)
+        companion_edits = career.sites(code["va"], data["va"])
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
         if va == 0x6E4E0 and raw[:5] != bytes.fromhex("5155578bf9"):
             from . import nfl2k5_music_playlist as playlist
             require(playlist.status(payload) == "applied", "foreign playlist event dispatcher")
             raw[:5] = bytes.fromhex("5155578bf9")
-        for _, at, before, _ in edits:
+        for _, at, before, after in [*edits, *companion_edits]:
             if va <= at and at + len(before) <= va + size:
+                require(bytes(raw[at-va:at-va+len(before)]) in (before, after),
+                        "foreign Auto Save completion/save boundary")
                 raw[at-va:at-va+len(before)] = before
         require(hashlib.sha256(raw).hexdigest() == digest, f"foreign Auto Save prerequisite at {va:#x}")
     return next(iter(states))

@@ -352,3 +352,44 @@ desk_done:
  popfd
  lea esp, [esp+4]
  ret
+
+/* Apartment completion update. ECX = native manager, EDX = owned Apartment
+ * descriptor. Called only by the Apartment's event-6 handler after the native
+ * result/stat commit, MyCareer settlement and return. The played tail above
+ * owns pending; this entry cannot request a save. Share the exact cached-slot
+ * attempt and two-quiet-update policy, without a Coach's Desk scene dependency.
+ * Appended deliberately: every existing Franchise instruction stays identical.
+ */
+.global career_complete
+career_complete:
+ push ecx
+ pushfd
+ pushad
+ mov ebp, ecx
+ cmp dword ptr [state+8], 0
+ jne desk_done
+ cmp dword ptr [state], 1
+ jne desk_cancel
+ cmp dword ptr [0xe576a0], 2
+ jne desk_cancel
+ test ebp, ebp
+ jz desk_wait
+ test edx, edx
+ jz desk_wait
+ mov eax, dword ptr [ebp+0x100]
+ cmp eax, 32
+ jae desk_wait
+ cmp dword ptr [ebp+eax*8], edx
+ jne desk_wait
+ cmp dword ptr [0xa83a10], 0
+ jne desk_wait
+ cmp dword ptr [0xbdbdb0], 1
+ jne desk_wait
+ mov eax, dword ptr [0xbdbda0]
+ test eax, eax
+ jz desk_state_ok
+ cmp eax, 7
+ je desk_state_ok
+ cmp eax, 8
+ je desk_state_ok
+ jmp desk_wait

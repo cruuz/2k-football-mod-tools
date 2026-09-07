@@ -134,48 +134,50 @@ CODE = bytes.fromhex(
     "750cc705780a000003000000eb0231c05b5dc3833d780a0000018b15740a0000754c85d274488b0d"
     "148bcb0031c039ca753f8a4a3580f90b76375589e55380f910771cb836000000b90000a0028d58ca"
     "0fa3d97204c60402414083f85275ee31c0a3988bcb00b8010000005b5dc331c0c3c35589c889e556"
-    "5389d3e8f6f3ffff85c0743b8b81000100008b34c183fb03752d81fe000000007510a1780a000048"
-    "83f8017705e868f4ffff81fe00000000750de8fcffffff5b5e5de9fcffffff5b5e5dc3a17c0a0000"
-    "83c01f83e01fa37c0a0000b801000000c3a17c0a00004083e01fa37c0a0000b801000000c3a17c0a"
-    "0000c3b81f000000c355a17c0a000089e5e896f3ffff31d285c074068b900401000089d05dc35589"
-    "e55789cf5653a17c0a00008b35740a0000e86ef3ffff89c389f8e83ff3ffff85c00f842501000083"
-    "3d780a0000020f851801000085db0f841001000085f60f840801000089f0e86af3ffff85c00f84f9"
-    "000000807e35100f87ef0000000fb6831c0100003c35771280bb9b0100000075098b048331d285c0"
-    "74238d65f489f8ba000000005b5e5f5de9eef2ffff8b0d1829b7008b493c3b3491750140428b0d18"
-    "29b7003b513872e54875cff646080474c989f9b8b08a1400ffd085c00f848a000000b8608c1400ff"
-    "d031c0a31c01e600b810ea1000ffd0b810ee1300ffd08b0d1829b70089f2b8c025240083c138ffd0"
-    "89f16a00ba01000000b8a02832006a01ffd089da89f1b860d22b006a01ffd089f289d9b8e03e0c00"
-    "ffd089d9b890372400ffd089d9b8003f0c00ffd089d9b890ec1300ffd089f0e87ef3ffff8d65f489"
-    "f9b8b0f113005b5e5f5dffe08d65f45b5e5f5dc35589c889e55389cbe8aff4ffff85c07419e8fcff"
-    "ffff85c0741089d9ba282852005bb890e306005dffe05b5dc35589c889e55389cbe882f4ffff85c0"
-    "7419e8fcffffff85c0741089d9ba000000005bb890e306005dffe05b5dc355b8d08a140089e5538b"
-    "1d1c0a0000ffd085db742589d9b8e07a0700ffd089d9b8207b0700ffd0b8f0330e00c705d401e600"
-    "010000005b5dffe05b5dc35589c889e55389cbe818f4ffff85c0741ae8fcffffff89c285c0740fff"
-    "351c0a000089d9b8900e3200ffd08b5dfcc9c35589e55089c8894dfce8e7f3ffff85c074108b4dfc"
-    "bac87e5000b890e30600c9ffe0c9c355b8e0740c0089e55389cbffd089d8e8bdf3ffff85c0741f8b"
-    "8300010000813cc328285200751089d9ba000000005bb850e406005dffe05b5dc35589c889e553e8"
-    "daf0ffff85c0745189cbe8fcffffff85c07413b890810c00ffd0a1a076e50083f8027515eb33e84f"
-    "f1ffffba6056510089d9b850e40600ffd031c0a3080a0000a3040a0000a3000a0000a3700a0000a3"
-    "140a0000a3000000005b5dc35589c889e55689d653e874f0ffff85c07461e8fcffffff85c0745889"
-    "cb81fe90215200752dba0000000089c8be00000000e885f1ffff85c0743989d9b850e40600ffd089"
-    "f289d9b8e0e20600ffd031f6eb2181fec07e4e007519ba0000000089c8e855f1ffff85c0740989d9"
-    "b850e40600ffd089f05b5e5dc35589c889e55689d65389cbe8abf2ffff85c0742fa180ffe50083f8"
-    "027725ba0000000089d8e818f1ffff85c074158b8300010000813cc3f8755200b8000000000f44f0"
-    "89f05b5e5dc35589e55389d3e8fcffffff85c07418890d700a0000b890ec13008b0d1c0a0000bb00"
-    "000000ffd089d85b5dc3a1700a000085c0740aba00000000e99eefffffc3e8fcffffff85c0b8b065"
-    "010074050580000000c351e88c072d009c60e8fcffffff85c07414e8fcffffff8b4c242481c1b065"
-    "0100e8fcffffff619d83c404c3c7050000000000000000c705000a000000000000c705040a000000"
-    "000000c705080a000000000000c705640a000000000000c705680a000000000000e96cab16008b8e"
-    "ccc1bd00e8fcffffff83f0015ec35589e5ff7510ff750cff7508e87cc816009c6085c074538b4508"
-    "8b4d0c01c18b450083b8d4c1bd0009751f8b90ccc1bd00e8fcffffff8944241c85c0752cc705100a"
-    "000007000000eb1b833d140a0000007417c744241c00000000c705100a000007000000e8fcffffff"
-    "619d5dc20c00a1680a000085c07505e94cfe0b00c39c60833d640a000001750fc705640a00000000"
-    "0000e8fcffffff619db8b0650100c3565789ce31ffe9186234005152e8fcffffff85c05a59742051"
-    "ba00000000e84ce4060059c705780a000002000000ba00000000e98ce30600e94ce406005152e8fc"
-    "ffffff5a59e98c3e0f00e8fcffffff85c0750c8b15148bcb006866343400c3c351e8fcffffff5989"
-    "c285d274105689ce83be0001000020689ae30600c3c351e8fcffffff5989c2e94ce4060051e8fcff"
-    "ffff5989c2e9dce20600e83c411300e9fcffffff5189f1e8fcffffff59c35152e8fcffffff5a5985"
-    "c0c35089c1e8fcffffff89c15885c9c350e8fcffffff58537505e92e340a00e93f340a00"
+    "5389d3e8f6f3ffff85c074558b81000100008b34c183fb03752d81fe000000007510a1780a000048"
+    "83f8017705e868f4ffff81fe000000007527e8fcffffff5b5e5de9fcffffff83fb06751581fe0000"
+    "0000750d5bba000000005e5de9fcffffff5b5e5dc3a17c0a000083c01f83e01fa37c0a0000b80100"
+    "0000c3a17c0a00004083e01fa37c0a0000b801000000c3a17c0a0000c3b81f000000c355a17c0a00"
+    "0089e5e87cf3ffff31d285c074068b900401000089d05dc35589e55789cf5653a17c0a00008b3574"
+    "0a0000e854f3ffff89c389f8e825f3ffff85c00f8425010000833d780a0000020f851801000085db"
+    "0f841001000085f60f840801000089f0e850f3ffff85c00f84f9000000807e35100f87ef0000000f"
+    "b6831c0100003c35771280bb9b0100000075098b048331d285c074238d65f489f8ba000000005b5e"
+    "5f5de9d4f2ffff8b0d1829b7008b493c3b3491750140428b0d1829b7003b513872e54875cff64608"
+    "0474c989f9b8b08a1400ffd085c00f848a000000b8608c1400ffd031c0a31c01e600b810ea1000ff"
+    "d0b810ee1300ffd08b0d1829b70089f2b8c025240083c138ffd089f16a00ba01000000b8a0283200"
+    "6a01ffd089da89f1b860d22b006a01ffd089f289d9b8e03e0c00ffd089d9b890372400ffd089d9b8"
+    "003f0c00ffd089d9b890ec1300ffd089f0e864f3ffff8d65f489f9b8b0f113005b5e5f5dffe08d65"
+    "f45b5e5f5dc35589c889e55389cbe895f4ffff85c07419e8fcffffff85c0741089d9ba282852005b"
+    "b890e306005dffe05b5dc35589c889e55389cbe868f4ffff85c07419e8fcffffff85c0741089d9ba"
+    "000000005bb890e306005dffe05b5dc355b8d08a140089e5538b1d1c0a0000ffd085db742589d9b8"
+    "e07a0700ffd089d9b8207b0700ffd0b8f0330e00c705d401e600010000005b5dffe05b5dc35589c8"
+    "89e55389cbe8fef3ffff85c0741ae8fcffffff89c285c0740fff351c0a000089d9b8900e3200ffd0"
+    "8b5dfcc9c35589e55089c8894dfce8cdf3ffff85c074108b4dfcbac87e5000b890e30600c9ffe0c9"
+    "c355b8e0740c0089e55389cbffd089d8e8a3f3ffff85c0741f8b8300010000813cc3282852007510"
+    "89d9ba000000005bb850e406005dffe05b5dc35589c889e553e8c0f0ffff85c0745189cbe8fcffff"
+    "ff85c07413b890810c00ffd0a1a076e50083f8027515eb33e835f1ffffba6056510089d9b850e406"
+    "00ffd031c0a3080a0000a3040a0000a3000a0000a3700a0000a3140a0000a3000000005b5dc35589"
+    "c889e55689d653e85af0ffff85c07461e8fcffffff85c0745889cb81fe90215200752dba00000000"
+    "89c8be00000000e86bf1ffff85c0743989d9b850e40600ffd089f289d9b8e0e20600ffd031f6eb21"
+    "81fec07e4e007519ba0000000089c8e83bf1ffff85c0740989d9b850e40600ffd089f05b5e5dc355"
+    "89c889e55689d65389cbe891f2ffff85c0742fa180ffe50083f8027725ba0000000089d8e8fef0ff"
+    "ff85c074158b8300010000813cc3f8755200b8000000000f44f089f05b5e5dc35589e55389d3e8fc"
+    "ffffff85c07418890d700a0000b890ec13008b0d1c0a0000bb00000000ffd089d85b5dc3a1700a00"
+    "0085c0740aba00000000e984efffffc3e8fcffffff85c0b8b065010074050580000000c351e88c07"
+    "2d009c60e8fcffffff85c07414e8fcffffff8b4c242481c1b0650100e8fcffffff619d83c404c3c7"
+    "050000000000000000c705000a000000000000c705040a000000000000c705080a000000000000c7"
+    "05640a000000000000c705680a000000000000e96cab16008b8eccc1bd00e8fcffffff83f0015ec3"
+    "5589e5ff7510ff750cff7508e87cc816009c6085c074538b45088b4d0c01c18b450083b8d4c1bd00"
+    "09751f8b90ccc1bd00e8fcffffff8944241c85c0752cc705100a000007000000eb1b833d140a0000"
+    "007417c744241c00000000c705100a000007000000e8fcffffff619d5dc20c00a1680a000085c075"
+    "05e94cfe0b00c39c60833d640a000001750fc705640a000000000000e8fcffffff619db8b0650100"
+    "c3565789ce31ffe9186234005152e8fcffffff85c05a59742051ba00000000e84ce4060059c70578"
+    "0a000002000000ba00000000e98ce30600e94ce406005152e8fcffffff5a59e98c3e0f00e8fcffff"
+    "ff85c0750c8b15148bcb006866343400c3c351e8fcffffff5989c285d274105689ce83be00010000"
+    "20689ae30600c3c351e8fcffffff5989c2e94ce4060051e8fcffffff5989c2e9dce20600e83c4113"
+    "00e9fcffffffa1cc1d52003dd02d140074070500000000ffe0c35189f1e8fcffffff59c35152e8fc"
+    "ffffff5a5985c0c35089c1e8fcffffff89c15885c9c350e8fcffffff58537505e92e340a00e93f34"
+    "0a00"
 )
 RELOCATIONS = (
     (2, 1, 'state', 0),
@@ -412,7 +414,7 @@ RELOCATIONS = (
     (5058, 1, 'state', 0),
     (5064, 1, 'state', 0),
     (5073, 1, 'state', 0),
-    (5084, 2, 'code', 6775),
+    (5084, 2, 'code', 6801),
     (5092, 1, 'refusal_notice', 0),
     (5133, 1, 'state', 0),
     (5142, 1, 'state', 0),
@@ -424,90 +426,94 @@ RELOCATIONS = (
     (5372, 1, 'apartment', 0),
     (5379, 2, 'code', 277),
     (5387, 2, 'code', 1838),
-    (5396, 1, 'state', 0),
-    (5407, 1, 'state', 0),
-    (5418, 1, 'state', 0),
-    (5427, 1, 'state', 0),
-    (5438, 1, 'state', 0),
-    (5451, 1, 'state', 0),
-    (5487, 1, 'state', 0),
-    (5493, 1, 'state', 0),
-    (5521, 1, 'state', 0),
-    (5608, 1, 'refusal_notice', 0),
-    (5838, 2, 'code', 66),
-    (5883, 2, 'code', 66),
-    (5894, 1, 'practice_menu', 0),
-    (5921, 1, 'state', 0),
-    (5989, 2, 'code', 66),
-    (6001, 1, 'state', 0),
-    (6097, 1, 'apartment', 0),
-    (6131, 2, 'code', 2872),
-    (6180, 1, 'state', 0),
-    (6185, 1, 'state', 0),
-    (6190, 1, 'state', 0),
-    (6195, 1, 'state', 0),
-    (6200, 1, 'state', 0),
-    (6205, 1, 'state', 0),
-    (6231, 2, 'code', 2872),
-    (6250, 1, 'entry_menu', 0),
-    (6257, 1, 'apartment', 0),
-    (6303, 1, 'apartment', 0),
-    (6364, 1, 'practice_menu', 0),
-    (6393, 1, 'apartment', 0),
-    (6413, 2, 'code', 2872),
-    (6423, 1, 'state', 0),
-    (6434, 1, 'state', 0),
-    (6439, 1, 'apartment', 0),
-    (6451, 1, 'state', 0),
-    (6460, 1, 'load_notice', 0),
-    (6471, 2, 'code', 2872),
-    (6492, 2, '', 0),
-    (6499, 2, 'code', 2872),
-    (6508, 2, 'code', 1838),
-    (6523, 2, 'code', 3360),
-    (6535, 1, 'state', 0),
-    (6545, 1, 'state', 0),
-    (6555, 1, 'state', 0),
-    (6565, 1, 'state', 0),
-    (6575, 1, 'state', 0),
-    (6585, 1, 'state', 0),
-    (6594, 2, '', 0),
-    (6605, 2, 'code', 4349),
-    (6627, 2, '', 0),
-    (6664, 2, 'code', 3910),
-    (6678, 1, 'state', 0),
-    (6690, 1, 'state', 0),
-    (6707, 1, 'state', 0),
-    (6716, 2, 'code', 6450),
-    (6727, 1, 'state', 0),
-    (6736, 2, '', 0),
-    (6745, 1, 'state', 0),
-    (6754, 1, 'state', 0),
-    (6763, 2, 'code', 3580),
-    (6782, 2, '', 0),
-    (6789, 2, 'code', 5114),
-    (6801, 1, 'entry_menu', 0),
-    (6806, 2, '', 0),
-    (6813, 1, 'state', 0),
-    (6822, 1, 'team_menu', 0),
-    (6827, 2, '', 0),
+    (5398, 1, 'apartment', 0),
+    (5406, 1, 'apartment', 0),
+    (5413, 2, 'code', 6966),
+    (5422, 1, 'state', 0),
+    (5433, 1, 'state', 0),
+    (5444, 1, 'state', 0),
+    (5453, 1, 'state', 0),
+    (5464, 1, 'state', 0),
+    (5477, 1, 'state', 0),
+    (5513, 1, 'state', 0),
+    (5519, 1, 'state', 0),
+    (5547, 1, 'state', 0),
+    (5634, 1, 'refusal_notice', 0),
+    (5864, 2, 'code', 66),
+    (5909, 2, 'code', 66),
+    (5920, 1, 'practice_menu', 0),
+    (5947, 1, 'state', 0),
+    (6015, 2, 'code', 66),
+    (6027, 1, 'state', 0),
+    (6123, 1, 'apartment', 0),
+    (6157, 2, 'code', 2872),
+    (6206, 1, 'state', 0),
+    (6211, 1, 'state', 0),
+    (6216, 1, 'state', 0),
+    (6221, 1, 'state', 0),
+    (6226, 1, 'state', 0),
+    (6231, 1, 'state', 0),
+    (6257, 2, 'code', 2872),
+    (6276, 1, 'entry_menu', 0),
+    (6283, 1, 'apartment', 0),
+    (6329, 1, 'apartment', 0),
+    (6390, 1, 'practice_menu', 0),
+    (6419, 1, 'apartment', 0),
+    (6439, 2, 'code', 2872),
+    (6449, 1, 'state', 0),
+    (6460, 1, 'state', 0),
+    (6465, 1, 'apartment', 0),
+    (6477, 1, 'state', 0),
+    (6486, 1, 'load_notice', 0),
+    (6497, 2, 'code', 2872),
+    (6518, 2, '', 0),
+    (6525, 2, 'code', 2872),
+    (6534, 2, 'code', 1838),
+    (6549, 2, 'code', 3360),
+    (6561, 1, 'state', 0),
+    (6571, 1, 'state', 0),
+    (6581, 1, 'state', 0),
+    (6591, 1, 'state', 0),
+    (6601, 1, 'state', 0),
+    (6611, 1, 'state', 0),
+    (6620, 2, '', 0),
+    (6631, 2, 'code', 4349),
+    (6653, 2, '', 0),
+    (6690, 2, 'code', 3910),
+    (6704, 1, 'state', 0),
+    (6716, 1, 'state', 0),
+    (6733, 1, 'state', 0),
+    (6742, 2, 'code', 6476),
+    (6753, 1, 'state', 0),
+    (6762, 2, '', 0),
+    (6771, 1, 'state', 0),
+    (6780, 1, 'state', 0),
+    (6789, 2, 'code', 3580),
+    (6808, 2, '', 0),
+    (6815, 2, 'code', 5114),
+    (6827, 1, 'entry_menu', 0),
     (6832, 2, '', 0),
-    (6839, 2, 'code', 5314),
-    (6846, 2, '', 0),
-    (6851, 2, 'code', 5219),
-    (6874, 2, 'code', 6212),
-    (6904, 2, 'code', 6333),
-    (6912, 2, '', 0),
-    (6918, 2, 'code', 6406),
-    (6926, 2, '', 0),
-    (6931, 2, '', 0),
-    (6936, 2, 'code', 1838),
-    (6944, 2, 'code', 6950),
-    (6953, 2, 'code', 4445),
-    (6966, 2, 'code', 6950),
-    (6978, 2, 'code', 6940),
-    (6987, 2, '', 0),
-    (6992, 2, '', 0),
+    (6839, 1, 'state', 0),
+    (6848, 1, 'team_menu', 0),
+    (6853, 2, '', 0),
+    (6858, 2, '', 0),
+    (6865, 2, 'code', 5314),
+    (6872, 2, '', 0),
+    (6877, 2, 'code', 5219),
+    (6900, 2, 'code', 6238),
+    (6930, 2, 'code', 6359),
+    (6938, 2, '', 0),
+    (6944, 2, 'code', 6432),
+    (6952, 2, '', 0),
+    (6957, 2, '', 0),
+    (6962, 2, 'code', 1838),
+    (6979, 1, 'autosave_completion_delta', 0),
+    (6990, 2, 'code', 6996),
+    (6999, 2, 'code', 4445),
+    (7012, 2, 'code', 6996),
+    (7024, 2, 'code', 6986),
+    (7033, 2, '', 0),
+    (7038, 2, '', 0),
 )
 LABELS = {
     'assign': 1334,
@@ -553,61 +559,62 @@ LABELS = {
     'fnv.constprop.0': 2838,
     'focus_done': 1792,
     'hub': 2936,
-    'human_defense': 6976,
-    'human_eax': 6962,
-    'human_ecx': 6950,
-    'human_esi': 6940,
+    'human_defense': 7022,
+    'human_eax': 7008,
+    'human_ecx': 6996,
+    'human_esi': 6986,
     'init_menus': 2093,
     'inline_active': 2872,
-    'inline_admission': 6598,
+    'inline_admission': 6624,
     'inline_admit': 4349,
     'inline_decode': 3580,
     'inline_encode': 3360,
-    'inline_load_begin': 6533,
-    'inline_load_end': 6741,
-    'inline_read': 6614,
-    'inline_roster_size': 6726,
-    'inline_save': 6490,
-    'inline_size': 6470,
+    'inline_load_begin': 6559,
+    'inline_load_end': 6767,
+    'inline_read': 6640,
+    'inline_roster_size': 6752,
+    'inline_save': 6516,
+    'inline_size': 6496,
     'inline_stage': 3910,
     'inline_valid': 2985,
     'manual': 1412,
     'manual_retail': 1425,
+    'mode_autosave': 6966,
     'mode_cap_ratings': 5219,
-    'mode_cap_template': 6850,
-    'mode_card': 5971,
+    'mode_cap_template': 6876,
+    'mode_card': 5997,
     'mode_create': 4671,
     'mode_created': 5114,
-    'mode_creation_done': 6786,
-    'mode_dispatch': 6872,
+    'mode_creation_done': 6812,
+    'mode_dispatch': 6898,
     'mode_draft': 4630,
     'mode_entry': 4547,
     'mode_event': 5314,
-    'mode_handler': 6836,
+    'mode_handler': 6862,
     'mode_human': 4445,
     'mode_load': 4642,
-    'mode_load_error': 6450,
-    'mode_loaded': 6406,
-    'mode_loaded_replace': 6916,
-    'mode_play': 5820,
-    'mode_postgame': 6055,
-    'mode_practice': 5865,
-    'mode_practice_init': 5910,
-    'mode_practice_return': 6902,
-    'mode_quit': 6113,
-    'mode_return': 6333,
-    'mode_route': 6212,
-    'mode_save_menu': 6019,
-    'mode_sign': 5478,
-    'mode_stats_commit': 6930,
-    'mode_team_get': 5437,
-    'mode_team_left': 5395,
-    'mode_team_max': 5443,
-    'mode_team_name': 5449,
-    'mode_team_right': 5417,
+    'mode_load_error': 6476,
+    'mode_loaded': 6432,
+    'mode_loaded_replace': 6942,
+    'mode_play': 5846,
+    'mode_postgame': 6081,
+    'mode_practice': 5891,
+    'mode_practice_init': 5936,
+    'mode_practice_return': 6928,
+    'mode_quit': 6139,
+    'mode_return': 6359,
+    'mode_route': 6238,
+    'mode_save_menu': 6045,
+    'mode_sign': 5504,
+    'mode_stats_commit': 6956,
+    'mode_team_get': 5463,
+    'mode_team_left': 5421,
+    'mode_team_max': 5469,
+    'mode_team_name': 5475,
+    'mode_team_right': 5443,
     'mode_unit_present': 4408,
     'move_bytes': 2173,
-    'native_new_player': 6775,
+    'native_new_player': 6801,
     'navigation': 1531,
     'navigation_retail': 1550,
     'notice': 2275,

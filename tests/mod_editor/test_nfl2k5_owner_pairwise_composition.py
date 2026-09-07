@@ -43,6 +43,8 @@ OWNERS = (
     ("calendar", stack.calendar),
     ("music_playlist", playlist),
     ("practice_squad_screen", screen),
+    ("my_career_generic", stack.my_career),
+    ("franchise_autosave", stack.autosave),
 )
 
 
@@ -104,6 +106,8 @@ def pair_test(left, right):
 
 
 for (left_name, left), (right_name, right) in itertools.combinations(OWNERS, 2):
+    if left.OWNER == right.OWNER:  # mutually exclusive legacy/generic formats
+        continue
     setattr(PairwiseCompositionTests, f"test_{left_name}__{right_name}", pair_test(left, right))
 
 
