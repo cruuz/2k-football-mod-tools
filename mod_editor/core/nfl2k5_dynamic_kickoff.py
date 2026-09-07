@@ -2,7 +2,7 @@
 
 Pair with kick_rules (35-yard tee) and the playbook kickoff_alignment tool.
 No timer releases the hold: ground/player contact latches the first field class.
-See ASTRA_KICKOFF_FIXES_REPORT.md for the goal-line and ready-pose proofs.
+See ASTRA_KICKOFF_V2_REPORT.md for the fixed pose, blocking and card proofs.
 
 Runtime storage is ten previously unreferenced bytes on the writable shared
 .rdata/.data page. 0xA69970 and 0xA69974..7F belong to other patches. Settings
@@ -60,6 +60,9 @@ HOOKS = {
     "reset": (0x1C9399, bytes.fromhex("a1a0d95000")),
     "lineup": (0x183F60, bytes.fromhex("558bec83e4f0")),
     "eligibility": (0xB6760, bytes.fromhex("83ec0c8b4738")),
+    "root_motion": (0x2CC570, bytes.fromhex("83ec1c568b4210")),
+    "block_target": (0x2FAFF0, bytes.fromhex("558bec83e4f0")),
+    "diagram": (0x1802BB, bytes.fromhex("8b450c85c0")),
 }
 
 
@@ -142,10 +145,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
         b(original.hex())
         a.jmp_abs(va + len(original))
     def guard(done, live=False):
-        b("833d" + imm(PHASE) + "02"); j("0f85", done)
-        b("f605" + imm(FLAGS) + "08"); j("0f84", done)
-        if live:
-            b("833d" + imm(PLAY_STATE) + "0e"); j("0f85", done)
+        call("active_live" if live else "active"); j("0f84", done)
     def signed_z():  # ST0 := ball/contact z in kicking direction, balanced by caller
         b("d94208")  # fld [edx+8]
         b("f605" + imm(FLAGS) + "10")
@@ -157,6 +157,13 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
         a.call(RAND)
         b("31d2b964000000f7f1")  # unsigned RNG % 100 -> edx
         b("0fb605" + imm(va) + "39c2")  # cmp edx,eax
+
+    label("active_live")
+    b("833d" + imm(PLAY_STATE) + "0e"); j("0f85", "inactive")
+    label("active")
+    b("833d" + imm(PHASE) + "02"); j("0f85", "inactive")
+    b("f605" + imm(FLAGS) + "08c3")
+    label("inactive"); b("31c0c3")
 
     label("launch")
     save()
@@ -224,10 +231,10 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("f6c440"); j("0f85", "class_out")
     signed_z(); compare_pop(LANDING_EDGE)
     b("f6c401"); j("0f85", "class_short")
-    b("b801000000c3")
-    label("class_end"); b("b802000000c3")
-    label("class_short"); b("b803000000c3")
-    label("class_out"); b("b804000000c3")
+    b("6a0158c3")
+    label("class_end"); b("6a0258c3")
+    label("class_short"); b("6a0358c3")
+    label("class_out"); b("6a0458c3")
 
     label("contact")
     call("classify")
@@ -296,7 +303,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("held_receiving")
     b("3b02"); j("0f85", "held_no")
     b("80792e02"); j("0f82", "held_no")
-    label("held_yes"); b("b801000000c3")
+    label("held_yes"); b("6a0158c3")
     label("held_no"); b("31c0c3")
 
     label("plan")
@@ -308,32 +315,81 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
 
     label("motion")
     save(); b("89f1"); call("held"); b("85c0"); j("0f84", "motion_go")
-    # Enter the same idle/locomotion descriptor used by retail initial placement
-    # (155017), with zero movement and a heading facing the opposing team.
-    # Re-enter deliberately: a previous-play clip can survive in this descriptor.
-    b("8b460cc7401000000000836018fd")
+    # Select the native zero-speed clip. Re-entry also handles an old running
+    # clip in the same descriptor; 2FCAC0 installs only when the clip differs.
+    b("8b460c83601000836018fd")
     b("8b46388b40088b400c8b5004c1ea1fc1e20f")
-    b("8b460c89501489f1")
+    b("8b460c89501489f1baecf45000"); a.call(0x1CD550)
+    b("8b460c8b501489f1")
     a.call(0x1A89E0)
-    # Let the native animation sampler update the pose. Discard its root motion,
-    # using stack storage, so neither animation time nor old facing is frozen.
-    b("83ec308b46188d703089e7b90c000000fcf3a5")
-    b("8b742434")  # saved ESI, after the 48-byte transform snapshot
-    b("89f1baecf45000"); a.call(0x1CD550)
-    call("motion_native")
-    b("8b46188d783089e6b90c000000fcf3a583c430")
-    restore(); b("c3")
+    # 31BD40 has already selected the new channels. Finish both blends, sample
+    # their fixed frame zero and pass dt=0 to 31BEB0. Root callbacks and the
+    # collision setter below are suppressed, so no restore fights an integrator.
+    b("8b461483601cf98b5058836204008b507483620400")
+    restore(); b("31c0"); a.jmp_abs(0x218015)
     label("motion_go"); restore()
     label("motion_native"); replay("motion")
 
     label("position")
     save(); call("held"); b("85c0"); j("0f84", "position_go")
-    # 28DFE0 snapshots the previous transform at +0..2F before each frame.
-    # 28CC30 ends collision correction through this setter. Restore position.
-    # Keep the neutral heading established by motion; only undo displacement.
-    b("8b4c24188b71188d7e30b904000000fcf3a5")
     restore(); b("c20800")
     label("position_go"); restore(); replay("position")
+
+    label("root_motion")
+    save(); call("held"); b("85c0"); j("0f84", "root_go")
+    restore(); b("c3")
+    label("root_go"); restore(); replay("root_motion")
+
+    # Selector ABI: ECX=blocker, EDX=origin; seven stack operands, ST0=threshold.
+    # Only released, normal kickoff return blockers use this nearest rule.
+    label("block_target")
+    save(); guard("block_go", live=True)
+    b("f605" + imm(FLAGS) + "07"); j("0f84", "block_go")
+    b("837c242c02"); j("0f85", "block_go")  # native drive mode
+    b("83791c01"); j("0f85", "block_go")
+    b("83794800"); j("0f85", "block_go")
+    b("80792e0b"); j("0f83", "block_go")
+    b("a1" + imm(BALL) + "3908"); j("0f84", "block_go")
+    b("a1" + imm(CTX) + "8b80c40100008b40388b10395138"); j("0f85", "block_go")
+    j("e9", "block_start")
+    label("block_go"); restore(); replay("block_target")
+    label("block_start")
+    b("8b71188b780431db6a165d680000807f")  # self transform, opponent list, best, bound, +inf
+    label("block_loop")
+    b("85ff"); j("0f84", "block_end")
+    b("837f4800"); j("0f85", "block_next")
+    b("0fb6472e4883f809"); j("0f87", "block_next")  # coverage slots 1..10
+    b("8b5718d94238d86638")  # candidate z - self z
+    b("f605" + imm(FLAGS) + "10"); j("0f85", "block_front")
+    b("d9e0")  # receiving direction is opposite kicking direction
+    label("block_front")
+    b("d9e4dfe0ddd8f6c405"); j("0f85", "block_next")
+    # Approaching includes zero velocity on the first release frame.
+    b("d94230d86630d84a40d94238d86638d84a48dec1")
+    b("d9e4dfe0ddd89e"); j("0f87", "block_next"); j("0f8a", "block_next")
+    # SSE1 only, like the retail selector on the Xbox's Pentium III. Keep the
+    # best squared distance on the stack; reject NaN/infinity and preserve ties.
+    b("0f2842300f5c46300f59c00f12c8f30f58c10f2f0424")
+    j("0f83", "block_next"); j("0f8a", "block_next")
+    b("f30f11042489fb")
+    label("block_next"); b("8b7f344d"); j("0f85", "block_loop")
+    label("block_end"); b("83c404")
+    # The refresh caller otherwise retains a farther target within 4.5 feet.
+    # Its current task exists before both initialization and refresh calls.
+    b("8b41208b8010030000895840")
+    # Strong primary score, no deeper fallback; native drive engagement follows.
+    b("8b44243489188b442438c7000000803f31d28b44243c89108b4424408910")
+    restore(); b("d9056c694e00c21c00")
+
+    # This point is reached only in diagram mode, after retail x compression.
+    # Recognize the dynamic type-8 coverage row; world and other forms replay.
+    label("diagram")
+    b("a120fcbd008b500480e63f80fe08"); j("0f85", "diagram_go")
+    b("66817830ee08"); j("0f85", "diagram_go")
+    b("837d0c00"); j("0f84", "diagram_go")
+    b("681f052044d94108d80d046f4e00d82424d9590858")  # z / 8 - 640.08
+    a.jmp_abs(0x180407)
+    label("diagram_go"); replay("diagram")
 
     label("returner")
     guard("return_done", live=True)
@@ -398,8 +454,8 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     b("b80000803ff605" + imm(FLAGS) + "10"); j("0f84", "finish_positive")
     b("0d00000080")
     label("finish_positive")
-    b("508b0d" + imm(CTX) + "89817c010000")
-    b("83c40431c9")  # param_1=0 for next-spot builder through A0390
+    b("8b0d" + imm(CTX) + "89817c010000")
+    b("31c9")  # param_1=0 for next-spot builder through A0390
     a.call(0xA0390)
     b("c3")
 

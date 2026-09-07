@@ -32,7 +32,10 @@ def _new_chains(chains):
         if slot < 2:
             # Either deep player can field the ball. Keep the complete normal
             # receive/run branch; change only the non-carrier alternate branch.
-            nodes = nodes[:3] + [codec.Node(0x11, 3, [4, 0, 1, 0, 2, 0, 0, 0])]
+            # Drive uses direct target pursuit/engagement, without the lead
+            # callback's landmark and confidence gates. The dynamic owner
+            # supplies the nearest approaching coverage target after release.
+            nodes = nodes[:3] + [codec.Node(0x11, 3, [0, 0, 1, 0, 2, 0, 0, 0])]
         else:
             # Start -> immediate local drive block, facing the approaching kick.
             # No 21-30 yard rush leg or returner follow-path on setup-zone men.

@@ -220,8 +220,51 @@ class ReturnDataTests(unittest.TestCase):
                     old, new = lib.play_chains(oldbody, p)[1], lib.play_chains(body, p)[1]
                     for slot in range(2):
                         self.assertEqual(old[slot][1][:3], new[slot][1][:3])
+                    for slot in range(11):
+                        from mod_editor.core.nfl2k5_play_codec import Node
+                        block = Node.from_bytes(new[slot][1][-1])
+                        self.assertEqual((block.op, block.operands), (0x11, [0, 0, 1, 0, 2, 0, 0, 0]))
                     for slot in range(2, 11):
                         self.assertEqual([n[0] for n in new[slot][1]], [1, 0x11])
+
+    def test_previous_lead_branch_is_refused_before_mutation(self):
+        import json
+        prior = json.loads((Path(__file__).resolve().parents[2] / 'docs/nfl2k5_kickoff_fixes_receipts.json').read_text())
+        receipts = {r['name']: r for r in prior['books']}
+        for name, raw in self.books:
+            old = bytearray(raw)
+            for edit in receipts[name]['edits']:
+                start = edit['offset']; after = bytes.fromhex(edit['after'])
+                old[start:start + len(after)] = after
+            self.assertEqual(hashlib.sha256(old).hexdigest(), receipts[name]['replacement_sha256'])
+            self.assertEqual(returns.status(old), 'foreign')
+            before = bytes(old)
+            with self.assertRaisesRegex(ValueError, 'mixed/foreign'):
+                returns.apply(old)
+            self.assertEqual(old, before)
+
+    def test_v2_receipts_replay_alignment_then_returns_in_all_books(self):
+        import json
+        path = Path(__file__).resolve().parents[2] / 'docs/nfl2k5_kickoff_v2_receipts.json'
+        receipts = {row['name']: row for row in json.loads(path.read_text())['books']}
+        self.assertEqual(set(receipts), {name for name, _ in self.books})
+        for name, raw in self.books:
+            receipt = receipts[name]
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), receipt['retail_sha256'])
+            aligned = bytearray(raw)
+            for edit in receipt['alignment_edits']:
+                start = edit['offset']; after = bytes.fromhex(edit['after'])
+                self.assertEqual(raw[start:start + len(after)].hex(), edit['before'])
+                aligned[start:start + len(after)] = after
+            self.assertEqual(hashlib.sha256(aligned).hexdigest(), receipt['source_sha256'])
+            expected = returns.apply(bytes(aligned))[0]
+            replay = bytearray(aligned)
+            for edit in receipt['edits']:
+                start = edit['offset']; after = bytes.fromhex(edit['after'])
+                self.assertEqual(aligned[start:start + len(after)].hex(), edit['before'])
+                replay[start:start + len(after)] = after
+            self.assertEqual(bytes(replay), expected)
+            self.assertEqual(hashlib.sha256(replay).hexdigest(), receipt['replacement_sha256'])
 
     def test_archive_writer_validates_all_books_before_writing_and_repeats(self):
         from tools import nfl2k5_kickoff_returns as tool

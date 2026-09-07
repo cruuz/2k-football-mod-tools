@@ -1,7 +1,7 @@
 """EXPERIMENTAL/UNWITNESSED dynamic kickoff in owned grown RX/RW pages.
 
 Use after every existing patch, including dynamic_kickoff. The old cave is
-retained byte-identically (or left retail); all twelve hooks enter the new
+retained byte-identically (or left retail); all fifteen hooks enter the new
 page. The same assembler generates both implementations. No retail function
 bytes are distributed and no opcode search-and-replace relocation is used.
 """

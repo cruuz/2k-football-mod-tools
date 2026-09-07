@@ -429,19 +429,20 @@ class CaveReferenceTests(unittest.TestCase):
         for r in space.reservations(self.patched):
             self.assertGreaterEqual(int(r["start"], 0), space.CODE_VA)
 
-    def test_kickoff_touchback_guard_is_a_complete_owned_hook(self) -> None:
+    def test_kickoff_v2_additions_are_complete_owned_hooks(self) -> None:
         from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
         from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
         from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
         image = XbeImage(self.patched)
         manifest = ReservationManifest.load(Path(os.environ.get("NFL2K5_CAVE_MANIFEST", DEFAULT_MANIFEST)), XbeImage(self.retail))
-        va, original = kickoff.HOOKS["eligibility"]
-        self.assertEqual(manifest.overlaps(va, va + len(original), exclude_owner="nfl2k5_dynamic_kickoff"), [])
-        self.assertEqual(sum(i.size for i in Cs(CS_ARCH_X86, CS_MODE_32).disasm(original, va)), len(original))
         code, data = relocated._sites(self.patched)
         expected, labels = relocated.code_for(kickoff._settings(), code["va"], data["va"])
         self.assertEqual(image.read(code["va"], code["size"]), expected)
-        self.assertEqual(image.read(va, len(original)), kickoff._hook_bytes("eligibility", labels))
+        for name in ("eligibility", "root_motion", "block_target", "diagram"):
+            va, original = kickoff.HOOKS[name]
+            self.assertEqual(manifest.overlaps(va, va + len(original), exclude_owner="nfl2k5_dynamic_kickoff"), [])
+            self.assertEqual(sum(i.size for i in Cs(CS_ARCH_X86, CS_MODE_32).disasm(original, va)), len(original))
+            self.assertEqual(image.read(va, len(original)), kickoff._hook_bytes(name, labels))
 
     def test_momentum_owns_named_children_and_pinned_live_spans_without_new_caves(self) -> None:
         from mod_editor.core import nfl2k5_momentum as momentum

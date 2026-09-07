@@ -248,7 +248,10 @@ class Machine:
                 self.put(self.COUNTER, self.get(self.COUNTER) + 1)
             if address == 0x2D6B70:
                 self.clips.append((self.uc.reg_read(x86.UC_X86_REG_ECX), self.uc.reg_read(x86.UC_X86_REG_EDX)))
-            if address == 0x31BEB0 and self.sampler_displacement:
+            # A zero-time sample cannot produce advancing root motion. Native
+            # timing/root behavior is exercised by test_nfl2k5_kickoff_v2.py.
+            sp = self.uc.reg_read(x86.UC_X86_REG_ESP)
+            if address == 0x31BEB0 and self.get(sp + 4) and self.sampler_displacement:
                 who = self.uc.reg_read(x86.UC_X86_REG_ESI)
                 self.f32(self.get(who + 0x18) + 0x30, self.sampler_displacement)
             self.uc.reg_write(x86.UC_X86_REG_EAX, 0)
@@ -313,6 +316,7 @@ class RetailExecutionTests(unittest.TestCase):
         self.assertGreater(result["long_branch_candidates_checked"], 50_000)
 
     def test_each_hook_decodes_and_cave_control_flow_is_bounded(self):
+        from capstone.x86_const import X86_GRP_SSE2
         md = Cs(CS_ARCH_X86, CS_MODE_32)
         md.detail = True
         code = dk.cave_bytes()
@@ -320,6 +324,7 @@ class RetailExecutionTests(unittest.TestCase):
         self.assertEqual(sum(i.size for i in insns), len(code))
         starts = {i.address for i in insns}
         for i in insns:
+            self.assertNotIn(X86_GRP_SSE2, i.groups, f"Xbox requires SSE1: {i.mnemonic} {i.op_str}")
             if i.mnemonic.startswith("j") or i.mnemonic == "call":
                 target = i.operands[0].imm
                 if dk.CAVE_VA <= target < dk.CAVE_VA + dk.CAVE_SIZE:
@@ -483,7 +488,6 @@ class RetailExecutionTests(unittest.TestCase):
                                 old = m.get(m.COUNTER)
                                 m.run(dk.HOOKS["plan"][0], ecx=who)
                                 m.run(dk.HOOKS["motion"][0], esi=who)
-                                m.uc.mem_write(who + 0xB30, bytes(16))
                                 m.run(dk.HOOKS["position"][0], ecx=who, args=(0, 0))
                                 self.assertEqual(m.get(m.COUNTER), old + 1)
                                 self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 16)), previous[:16])
@@ -751,7 +755,7 @@ class RetailExecutionTests(unittest.TestCase):
             m.run(va, stop=va + len(original), ecx=m.BALL)
             self.assertEqual(m.get(dk.PLAY_STATE), 14)
 
-    def test_final_position_setter_restores_frame_snapshot_then_releases(self):
+    def test_final_position_setter_skips_integration_then_releases(self):
         for direction in (-1, 1):
             m = self.machine(direction=direction)
             m.put(0xE60268, m.COVERAGE)
@@ -762,10 +766,12 @@ class RetailExecutionTests(unittest.TestCase):
             m.uc.mem_write(transform + 0x30, previous)
             m.run(0x28DFE0)  # execute the real per-frame snapshot, not a fabricated snapshot
             self.assertEqual(bytes(m.uc.mem_read(transform, 48)), previous)
-            m.uc.mem_write(transform + 0x30, struct.pack("<12f", *([1234] * 12)))
+            # A stale snapshot must not snap the current pose backward. The
+            # integrator's proposed coordinates are suppressed while held.
+            m.uc.mem_write(transform, struct.pack("<12f", *([1234] * 12)))
             m.run(dk.HOOKS["position"][0], ecx=m.COVERAGE, args=(0, 0))
             self.assertEqual(bytes(m.uc.mem_read(transform + 0x30, 16)), previous[:16])
-            self.assertEqual(bytes(m.uc.mem_read(transform + 0x40, 32)), struct.pack("<8f", *([1234] * 8)))
+            self.assertEqual(bytes(m.uc.mem_read(transform + 0x30, 48)), previous)
             self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP), m.STACK + 12)
             m.position(0, direction * 3600)
             m.event("ground")
