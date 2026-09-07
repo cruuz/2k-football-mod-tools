@@ -383,6 +383,21 @@ symlinks remain unfollowed; use their real source checkout for maintainer
 evidence. Claude's `c6f99d4` TMPDIR correction and `2a2ed1e`/`75d7635`
 VCS-directory/`.git`-file exclusions are retained and covered by tests.
 
+### Classified after the 73-file run (beta 62)
+
+The run above is a fixed historical measurement, so its counts stay at 73.
+Three files were classified later, during the beta-62 integration, and are
+recorded here in the same table shape so the classification in
+`packaging/windows/local_windows_ci.py` and this document stay checkable
+against each other. With these the code table holds **76** rows:
+**27 LEAN CHECKOUT, 46 WINE GAP, 1 RUNNER BUG, 2 UNKNOWN**.
+
+| Test file | Classification | Evidence line(s) | Decision / secondary cause |
+| --- | --- | --- | --- |
+| `test_2k5_uniform_equipment_export.py` | UNKNOWN | L174: `UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 110708` | Maintainer-only test on the CI lean-skip list; it read a UTF-8 inventory with the Windows default code page. Fixed with `encoding='utf-8'` at line 174; re-verify on the next Wine run before reclassifying. |
+| `test_disc_memory_budget.py` | WINE GAP | no numbered log line: `AssertionError: 0 == 0`; `AudioSourceFingerprintError: Private source-audio inventory changed during publication` | The Windows Job Object memory ceiling is a no-op under Wine, and the nested music-build child hits the identity gap. Both pass on Linux; real Windows CI decides the Job Object path. |
+| `test_music_panel_qt.py` | WINE GAP | no numbered log line: `AudioSourceFingerprintError: Private source-audio inventory changed during publication` | Every case fails in `_ensure_private_audio_inventories` with the same identity gap as `test_2k5_audio_operation_integration.py`; passes on Linux. |
+
 ### The six remaining logs
 
 Line numbers below refer to `.scratch/matrix5-logs/<test filename>.log`.

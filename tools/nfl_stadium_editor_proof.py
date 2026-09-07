@@ -84,7 +84,7 @@ def prove_scene(studio, scene, resolver, changed):
         bundle = texture_document([(row.texture_id, row.width, row.height, pngs[row.texture_id])
                                    for row in details.textures])
         bundle_path = root/'textures.gltf'
-        bundle_path.write_text(json.dumps(bundle), encoding='utf-8')
+        bundle_path.write_text(json.dumps(bundle), encoding='utf-8', newline='\n')
         receipts = studio.replace_textures_from_gltf(scene, bundle_path)
         require(len(receipts) == len(pngs) and not any(row.changed for row in receipts), 'no-op import staged edits')
         paths = []
@@ -171,7 +171,8 @@ def main(argv=None):
     for scene in scenes:
         row = prove_scene(studio, scene, resolver, args.changed == 'all')
         rows.append(row)
-        args.output.with_suffix('.progress.json').write_text(json.dumps({'scenes': rows}), encoding='utf-8')
+        args.output.with_suffix('.progress.json').write_text(
+            json.dumps({'scenes': rows}), encoding='utf-8', newline='\n')
         studio._details.clear()
         print(json.dumps({'completed': len(rows), 'total': len(scenes), 'scene': scene.scene_id,
                           'elapsed_seconds': round(time.monotonic()-started, 2)}), flush=True)
@@ -183,7 +184,7 @@ def main(argv=None):
               'elapsed_seconds': round(time.monotonic()-started, 2),
               'blender_runtime_witness': False, 'gameplay_witness': False, 'scenes': rows}
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')
+    args.output.write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8', newline='\n')
     args.output.with_suffix('.progress.json').unlink(missing_ok=True)
     print(json.dumps({k:v for k,v in report.items() if k != 'scenes'}), flush=True)
     return 0

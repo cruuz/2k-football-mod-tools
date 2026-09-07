@@ -217,7 +217,17 @@ class PublicTests(unittest.TestCase):
         from mod_editor.capabilities.validate_registry import validate_data
         registry = json.loads((ROOT / "mod_editor/capabilities/registry.v1.json").read_text())
         row = json.loads((ROOT / "docs/mod_editor/nfl2k5_senior_bowl_capability.json").read_text())[0]
-        registry["capabilities"] = sorted(registry["capabilities"] + [row], key=lambda r: r["id"])
+        present = {r["id"]: r for r in registry["capabilities"]}
+        if row["id"] in present:
+            # Upstream's beta-62 integration moved this row into the canonical
+            # registry. Appending it again only proves the duplicate-ID check
+            # works; what still matters is that the published row and the
+            # registry's copy have not drifted apart.
+            self.assertEqual(present[row["id"]], row)
+        else:
+            registry["capabilities"] = sorted(
+                registry["capabilities"] + [row], key=lambda r: r["id"]
+            )
         validate_data(registry, check_files=False)
         for p in (row["backend"]["module"], *row["evidence"]):
             self.assertTrue((ROOT / p).is_file(), p)
