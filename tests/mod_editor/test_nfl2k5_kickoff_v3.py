@@ -197,7 +197,10 @@ class V3Tests(unittest.TestCase):
     def test_exact_executable_receipts_and_foreign_v2_rejection(self):
         receipt = json.loads(RECEIPT.read_text())
         historical = v3_payload(self.base)
-        allocated = space.apply(historical, REQUESTS, scaleout=True)[0]
+        # Historical evidence: allocate under the union recorded with this receipt, not the live union,
+        # so later owners joining tests/nfl2k5_allocator_stack.REQUESTS (Auto Save, r63) leave v3's record intact.
+        recorded_union = tuple(tuple(row) for row in receipt['union_requests'])
+        allocated = space.apply(historical, recorded_union, scaleout=True)[0]
         self.assertEqual(hashlib.sha256(allocated).hexdigest(), receipt['union_allocated_sha256'])
         old_grown = replay_edits(allocated, receipt, 'relocated')
         for old in (historical, old_grown):

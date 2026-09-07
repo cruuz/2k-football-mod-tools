@@ -235,7 +235,7 @@
       16
     ]
   ],
-  "union_allocated_sha256": "abd4365bb800e6d8d2a96b76d90b04c74cb839d4dc0874f5332d34afe7ba7d90",
+  "union_allocated_sha256": "d7d2333aa666164a9f903201baaef19f00f5256dc7215f0b253c1a1b64da5e15",
   "relocated_output_sha256": "3c5dade4ad33648e5fcad97e58f8d90b084265faf6f9d1b6d3e1c7e8b5a96121",
   "code_bytes_used": 1937,
   "code_allocation": 1939,
