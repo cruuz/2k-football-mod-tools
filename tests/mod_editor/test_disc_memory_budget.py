@@ -118,6 +118,7 @@ class DiscMemoryBudgetTests(unittest.TestCase):
                     print(f"MEMORY {name}: {measured['peak_rss_bytes']} bytes", flush=True)
                     self.assertLess(measured['peak_rss_bytes'], LIMIT, name)
 
+    @unittest.skipIf(sys.platform == 'darwin', 'macOS rejects lowering RLIMIT_AS, so no kernel ceiling exists to refuse the allocation')
     def test_ceiling_refuses_an_oversized_allocation(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp).resolve()
