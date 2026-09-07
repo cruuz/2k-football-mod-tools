@@ -359,16 +359,46 @@ Build remains disabled until at least one replacement is staged.
 
 These labels come from the same capability registry used by the build system.
 The current registry has 180 cross-title rows, including 45 Xbox NFL 2K5
-capabilities, 9 NFL 2K5 PS2 rows (the separate PS2 save-import bridge, the
-capabilities, 37 APF 2K8 (Xbox 360) rows, 10 NFL 2K5 PS2 rows (the separate PS2
-save-import bridge, the read-only PS2 disc inventory, the PCSX2
-replacement-pack export for edited uniform art -- the PS2 studio's Windows
-menu, or --ps2-export -- six on-disc writers: display text, playbooks, uniform
-colours, the disc roster, stadium positions and one-shot AUDO sounds, which the
-PS2 NFL 2K5 Studio window drives, and that game's executable-patch lane, which
-is classified unknown and offers no controls) and 14 PS2 Madden 09 Studio rows
-(see below). No current 2K5 capability is labeled Coming Soon, and an asset
-never becomes writable merely because it has a preview.
+capabilities, 37 APF 2K8 (Xbox 360) rows, and 98 rows across the eight
+PlayStation 2 game modules listed in the next section. No current 2K5
+capability is labeled Coming Soon, and an asset never becomes writable merely
+because it has a preview.
+
+## The PlayStation 2 game modules
+
+Eight PlayStation 2 games are on the *Select other games…* list. Each opens on **your own**
+legally obtained USA disc image, checks that the image is the release it supports, and
+refuses by name if it is not. From a terminal, each one opens with
+`python -m mod_editor --game <id>`.
+
+| Game | Disc | `--game` id | What it can change | Full page |
+|---|---|---|---|---|
+| Madden NFL 09 | `SLUS-21770` (retail or the community Deluxe rebuild) | `madden09_ps2` | Team identity and display text, playbooks, the team databases, and five kinds of disc art | `docs/product/MADDEN09_PS2_MODULE.md` |
+| NCAA Football 09 | `SLUS-21752` | `ncaa09_ps2` | League and school identity, display text, playbooks, the player databases, and disc art | `docs/product/NCAA09_PS2_MODULE.md` |
+| ESPN NFL 2K5 | `SLUS-20919` | `nfl2k5_ps2` | Display text, playbooks, uniform colours, the disc roster, stadium positions and one-shot sounds | `docs/product/NFL2K5_PS2_MODULE.md` |
+| MVP Baseball 2005 | `SLUS-21135` | `mvp05_ps2` | Club identity and UI strings, the roster tables, tuning tables, and the art this disc stores uncompressed | `docs/product/MVP05_PS2_MODULE.md` |
+| NFL Blitz 2002 | `SLUS-20051` | `nflblitz2002_ps2` | The disc's text tables and roster names; textures export only | `docs/product/NFLBLITZ2002_PS2_MODULE.md` |
+| NFL Blitz 2003 | `SLUS-20474` | `nflblitz2003_ps2` | The same as NFL Blitz 2002, on its own disc | `docs/product/NFLBLITZ2003_PS2_MODULE.md` |
+| NFL Street | `SLUS-20841` | `nflstreet1_ps2` | Team identity and text, the play and team databases, and the disc's 2D art | `docs/product/NFLSTREET1_PS2_MODULE.md` |
+| NFL Street 3 | `SLUS-21482` | `nflstreet3_ps2` | The same as NFL Street, on its own disc | `docs/product/NFLSTREET3_PS2_MODULE.md` |
+
+Each module's page says, page by page, what it edits and what it refuses, and why anything
+that stays read-only stays read-only.
+
+**One thing is true of all eight, and you should know it before you build.** Every writer in
+these modules is proved *offline* and **none has been seen in a running game**. A build
+produces a new image the same size as yours, declares exactly which bytes it changed, and an
+independent checker re-derives the whole claim from the two images and can fail. What none of
+that proves is that the rebuilt disc still loads, or that your change appears on a screen. The
+one exception in the whole set is ESPN NFL 2K5's exact-slot audio replacement, which has been
+heard in a running game. If you boot anything else built here you are the first, so please say
+what you saw.
+
+A build always writes a **new** image, to a destination that does not already exist. The disc
+image you supply is opened for reading and never modified.
+
+The next two sections cover the two modules with the most controls in detail. The rest work
+the same way and their pages carry the specifics.
 
 ## PS2 Madden 09 Studio (RC88)
 

@@ -45,7 +45,7 @@ def csm1_position(entry: int) -> int:
     """Where index ``entry`` of an 8-bit CSM1 CLUT sits in the stored 1,024 bytes.
 
     The GS stores a 256-entry CLUT with entries 8..15 and 16..23 exchanged in
-    every group of 32; ``docs/product/PS2_M1_PLAN.md`` §4 WP1 step 3 calls it
+    every group of 32; ``docs/product/NFL2K5_PS2_MODULE.md`` calls it
     the "CSM1 bits 3<->4 swap".
     """
 

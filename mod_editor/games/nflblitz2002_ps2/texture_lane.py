@@ -27,7 +27,7 @@ measurement of the disc in hand and never a table to keep in step with it.
 None of the three writes: putting a raster back means re-swizzling into the GS
 memory image and rewriting the member at its own length, which this module can
 do for 8-bit rasters and has **not** proved, so it is not offered
-(``docs/product/RENDERWARE_TXD_FORMAT.md`` §8).
+(``docs/product/NFLBLITZ2002_PS2_MODULE.md``).
 
 **Identities are derived, none confirmed.**  A name is what PCSX2's documented
 rules compute from the raster's own bytes.  No texture dump of either Blitz disc

@@ -49,7 +49,7 @@ mip chain and the image's own palette.  :meth:`identity_note` says which of the
 two a name is, on every texture.  Two frames confirm far less than Madden 09's
 thirty-three: the counts, container by container, are in
 ``docs/product/measured/ncaa09_ps2/pcsx2-texture-identities.json`` and in
-`NCAA09_PS2_ART_PAGES.md` §5.  No pack built from any of these names has been
+`NCAA09_PS2_MODULE.md`.  No pack built from any of these names has been
 loaded in an emulator.
 
 Run it without a window::

@@ -47,7 +47,7 @@ A stored member's CRC-32 lives in the local file header, the central directory
 and -- where the index carries a CRC column -- the ``.ZIH`` index.
 ``blitz_zip.plan_member_replacement`` returns every range or refuses; nothing
 here writes one without the others, and nothing here asks which disc it is
-looking at.  ``docs/product/MIDWAY_ZIP_FORMAT.md`` §6 is the measurement.
+looking at.
 
 **Nothing here has been booted.**  Every claim is offline: the user's own image,
 a new destination image, an independent verifier that re-reads it, and a

@@ -23,8 +23,7 @@ block swizzle, the linear / VRAM / one-shot-PSMCT32 (``c32``) layouts, and the
 CLUT permutations -- and it is what produced the shipped map.  Reusing it, and
 adding only the inverse permutations beside the forward ones, means a decode and
 an identity can never disagree about what the bytes are.  See
-``docs/product/PS2_M1_PLAN.md`` §4 WP1 for the algorithm and
-``docs/product/PS2_UNIFORM_ART.md`` for what this lane claims and refuses.
+``docs/product/NFL2K5_PS2_MODULE.md`` for what this lane claims and refuses.
 
 Which layout a texture uses is not written on the disc, so the hasher tries all
 of them.  This lane resolves it two ways, in this order:

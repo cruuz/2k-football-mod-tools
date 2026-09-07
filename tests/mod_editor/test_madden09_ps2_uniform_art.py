@@ -271,7 +271,7 @@ class UniformArtLaneTests(unittest.TestCase):
         is looked up under a different ``bits`` word *and* a different TEX0
         hash, so offering that reading is a claim about how the game draws.
         The 33-frame retail dump wrote 9,620 names and none of them declares
-        PSM 27 [M, ``pcsx2-texture-identity-derivation.json``], so this lane
+        PSM 27 [M, measured against the paired dump], so this lane
         leaves the switch off; the plumbing is proved here rather than the
         claim.
         """

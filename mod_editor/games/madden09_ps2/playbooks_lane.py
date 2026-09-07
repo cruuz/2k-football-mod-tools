@@ -71,7 +71,7 @@ is allowed to grow, and both directory copies are rewritten with it.
 destination image, an independent verifier that re-reads it, and a conformance
 harness that proves the whole path on a synthetic disc.  No emulator has booted
 a rebuilt Madden 09 disc, and this module does not claim one has.
-``docs/product/MADDEN09_PS2_PLAYBOOKS.md`` says what a boot would have to show.
+``docs/product/MADDEN09_PS2_MODULE.md`` says what a boot would have to show.
 
 Run it without a window::
 

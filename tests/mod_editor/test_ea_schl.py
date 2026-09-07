@@ -4,7 +4,7 @@ Every stream, bank and frame here is built out of the format's own rules -- a
 computed tone, a hand-written ADPCM frame whose samples are worked out below in
 long form -- so the tests prove the layout without a game anywhere near them.
 The evidence that the same code reads *real* audio is in
-``docs/product/EA_SCHL_FORMAT.md``: 47 of 47 ``BGM.DAT`` streams and every
+measured on the retail disc: 47 of 47 ``BGM.DAT`` streams and every
 sound of every ``BNKl`` bank decode byte for byte against ffmpeg.  What these
 tests hold is that the rules are implemented as written and that every refusal
 names its fix.

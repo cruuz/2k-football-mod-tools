@@ -5,8 +5,10 @@
 **IMPORTANT: The [MIT licence](LICENSE) covers the modding tools and their
 original source code only. It grants no rights to any game, game data,
 trademarks, or other intellectual property owned by SEGA, Visual Concepts, 2K,
-Take-Two Interactive, the NFL, NFL Players Inc., or any other rights holder. You
-must supply your own legally obtained copy of any game you mod.**
+Take-Two Interactive, Electronic Arts, Midway Games, Warner Bros. Entertainment,
+the NFL, NFL Players Inc., the NCAA and its member institutions, Major League
+Baseball, the MLB Players Association, or any other rights holder. You must
+supply your own legally obtained copy of any game you mod.**
 
 That paragraph previously lived at the bottom of the `LICENSE` file. It has been
 moved here unchanged so that `LICENSE` contains the MIT text and nothing else,
@@ -16,16 +18,17 @@ above both apply exactly as they did before.
 
 ## What these tools ship, and what they do not
 
-These editors contain **no game data**. No ISO, no extracted game files, no
-textures, audio, screenshots or rollback bytes are included in this repository
-or in any published release archive. Both release archives are built from an
+These editors contain **no game data** for any of the titles they support. No
+ISO, no extracted game files, no textures, audio, screenshots or rollback bytes
+are included in this repository or in any published release archive. Both release archives are built from an
 explicit allowlist and pass an automated **retail-free gate** that fails closed
 if a game byte, decoded pixel, decoded audio sample, private path or undeclared
 file appears in them.
 
 The tools read a copy of a disc image or extracted folder that **you** supply,
 and they only ever write to a **copy**. Your original disc image is never
-modified.
+modified. A build writes a new image to a destination that does not already
+exist; if it refuses, it leaves no destination behind.
 
 ## Third-party components
 
@@ -39,7 +42,9 @@ bytes can be reproduced rather than trusted.
 
 ## Trademarks
 
-*ESPN NFL 2K5*, *All-Pro Football 2K8*, and all related names, logos and marks
-are the property of their respective owners. This project is not affiliated with,
-endorsed by, or sponsored by any of them. Game names are used only to identify
-which game a tool operates on.
+*ESPN NFL 2K5*, *All-Pro Football 2K8*, *Madden NFL 09*, *NCAA Football 09*,
+*MVP Baseball 2005*, *NFL Blitz 2002*, *NFL Blitz 2003*, *NFL Street*,
+*NFL Street 3*, and all related names, logos and marks are the property of their
+respective owners. This project is not affiliated with, endorsed by, or
+sponsored by any of them. Game names are used only to identify which game a tool
+operates on.

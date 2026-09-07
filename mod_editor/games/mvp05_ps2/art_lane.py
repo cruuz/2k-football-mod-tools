@@ -1045,8 +1045,7 @@ BLOCK_CODEC_REFUSAL = (
     "Every image in these archives is SHPS code 0x0e: a 4x4-block codec at 6 bytes per block "
     "whose two 8-bit palette endpoints per block are decoded (the block-average render shows "
     "the picture) and whose per-pixel 2-bit selectors are not -- every reading tried leaves "
-    "noise inside the blocks -- so nothing is drawn and nothing is written; "
-    "docs/product/EA_SHPS_FORMAT.md section 5 carries every hypothesis and its measurement."
+    "noise inside the blocks -- so nothing is drawn and nothing is written."
 )
 
 STADIUM_LANE = ShpsArtLane(

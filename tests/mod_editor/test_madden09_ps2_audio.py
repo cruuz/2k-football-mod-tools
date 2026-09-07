@@ -9,7 +9,7 @@ disc's ``GAME.QKL`` and ``FE.QKL`` have.  Not one byte of game audio is
 involved.
 
 The evidence that the same lanes read a *real* disc is in
-``docs/product/MADDEN09_PS2_AUDIO.md``.  What these tests hold is that the
+``docs/product/MADDEN09_PS2_MODULE.md``.  What these tests hold is that the
 catalogue is retail-free, that the writer keeps the image's length and the
 caches in step, that the verifier fails when it should, and that every refusal
 names its fix.

@@ -18,7 +18,7 @@ It does **not** share Madden's *schema*.  Its ``PLAY`` table has 86 fields where
 Madden 09's has 110, and only 37 names are common; there is no ``PFNA`` and no
 ``PLNA``, because NCAA's players have no names.  Its rosters are 432 separate
 per-team databases inside one container, not one table.  So every reader ports
-and no Madden writer does; ``docs/product/NCAA09_PS2_SCHEMA.md`` is the census
+and no Madden writer does; ``docs/product/NCAA09_PS2_MODULE.md`` is the summary
 that says which, field by field.
 
 What is on the contract today:

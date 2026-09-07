@@ -94,7 +94,7 @@ PROBE_BYTES = 1 << 16
 #: The containers each lane names.  These are file names on the disc, not
 #: payload: which member of which container a lane edits is the lane's own
 #: business, and every count below is the census in
-#: ``docs/product/EA_TERF_FORMAT.md`` §4.1 [M].
+#: Measured on the containers this module reads [M].
 UNIFORM_CONTAINER = "UNIFORMS.DAT"
 PLAYER_FACE_CONTAINER = "PLYRFACE.DAT"
 COACH_FACE_CONTAINER = "COACFACE.DAT"

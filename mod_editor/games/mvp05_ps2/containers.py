@@ -11,7 +11,7 @@ synthetic image carrying every shape a lane touches so the conformance
 harness can prove a lane on a machine that owns no disc.
 
 **Evidence tags.**  **[M]** measured on the retail SLUS-21135 disc this box
-holds; **[S]** sourced from ``docs/product/MVP05_PS2_MODULE_PLAN.md`` and the
+holds; **[S]** sourced from the owner's static research and the
 owner's disc map; **[A]** assumed.
 
 **Retail-free.**  Names, offsets, lengths, counts and digests only.  Nothing

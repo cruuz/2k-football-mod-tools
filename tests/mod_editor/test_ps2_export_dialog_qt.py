@@ -276,7 +276,7 @@ class ViewModelTests(unittest.TestCase):
             dialog_module.target_choice("dolphin")
 
     def test_the_explanation_still_states_every_required_fact(self) -> None:
-        """The contract in docs/product/PS2_M1_PLAN.md, checked against itself.
+        """The contract in docs/product/NFL2K5_PS2_MODULE.md, checked against itself.
 
         The facts live in one constant so the wording -- and the measured
         numbers in it -- can be corrected in one place; this asserts the hover

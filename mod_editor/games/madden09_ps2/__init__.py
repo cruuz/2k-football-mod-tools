@@ -15,8 +15,7 @@ What is on the contract today, and what each rung rests on:
 * **inventory** (:mod:`.inventory_lane`, ``read-only-mapped``) -- every
   ``/DATA`` container, its chunk chain, its members, their codecs, and what
   their decompressed bytes hold.  This is the rung every other lane stands on,
-  and it is finished: the container format is fully decoded
-  (``docs/product/EA_TERF_FORMAT.md``).
+  and it is finished: the container format is fully decoded.
 * **uniform art** (:mod:`.uniform_art`) -- the ``MMAP`` textures of
   ``UNIFORMS.DAT``, ``PLYRFACE.DAT``, ``COACFACE.DAT`` and ``TATTOOS.DAT``.
   Two rows, because they earn two different rungs: an ``extract-only``
@@ -34,7 +33,7 @@ What is on the contract today, and what each rung rests on:
   shipped playbooks, ``LZH1``-packed EA TDB databases inside
   ``GAMEDATA.DAT``.  Renames the formation, set and play names inside a book
   and re-packs the member into a **new** disc image.
-  ``docs/product/MADDEN09_PS2_PLAYBOOKS.md`` carries the evidence.
+  ``docs/product/MADDEN09_PS2_MODULE.md`` says what this row claims.
 * **text** (:mod:`.text_lane`, ``read-only-mapped``) -- the disc's ``TEXT``
   banks, counted and measured; the strings are read from the user's own image
   on demand and never stored.
@@ -70,8 +69,7 @@ been run in an emulator or on hardware.  The art and text lanes still write
 nothing at all, because the container writer cannot shrink an ``LZH1`` member
 back down -- no encoder for that codec exists anywhere public -- and the audio
 containers are the ones that store their members uncompressed.  Both facts are
-in ``docs/product/MADDEN09_PS2_MODULE.md`` and
-``docs/product/MADDEN09_PS2_AUDIO.md``, and neither is worked around here.
+in ``docs/product/MADDEN09_PS2_MODULE.md``, and neither is worked around here.
 **Five art writers, and what none of them claims.**  The uniform-art writer
 and the four art-page writers produce a new disc image and are filed
 ``offline-writer-proved``: the member decodes back to the pixels it was given,
@@ -79,7 +77,7 @@ member is byte-identical, every preload-cache copy still equals what it copies,
 and an independent verifier re-derives every changed byte of the image from the
 two files.  **No rebuilt Madden 09 container has ever been booted**, so nothing
 here says the game loads the result.  ``docs/product/MADDEN09_PS2_MODULE.md``
-and ``docs/product/MADDEN09_PS2_ART_PAGES.md`` carry both halves.
+carries both halves.
 
 Retail-free: this package carries names, offsets, lengths, counts and digests.
 No member payload, no decoded pixel and no string from the game is in it.

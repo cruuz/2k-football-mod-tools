@@ -8,7 +8,7 @@ module, so a caller in this package keeps the call it always had.
 
 The three-place rule and its two-place collapse live in the format package and
 are decided by the index's own record shape, never by which disc this is:
-``docs/product/MIDWAY_ZIP_FORMAT.md`` §6 is the measurement.
+``docs/product/NFLBLITZ2002_PS2_MODULE.md`` says what this lane claims.
 """
 
 from __future__ import annotations

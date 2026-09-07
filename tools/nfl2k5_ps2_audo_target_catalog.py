@@ -20,7 +20,7 @@ same 0x20 chunk wrapper every other resource on the disc uses::
             data_size, data_offset, per_channel_bytes, sample_rate
 
 That layout, and the SPU-ADPCM codec behind ``video_bytes``, are established in
-``docs/product/PS2_PHASE2_AUDIO_RESEARCH.md``.  This tool turns them into the
+the module's own measurements.  This tool turns them into the
 target list a writer binds against: which slot, how many bytes it owns, how many
 frames that is, and whether its name is unique on the disc.
 

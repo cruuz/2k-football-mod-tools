@@ -83,7 +83,7 @@ HOST_EXECUTABLE = "default.xbe"
 NOT_MAPPED = (
     "{patch_id} is not mapped to MIPS yet: no {boot} site has been located for it, so nothing can be "
     "translated. A recipe may carry hand-authored words while a translation is proved; see "
-    "docs/product/PS2_CODE_PATCH_PIPELINE.md for the pipeline that fills this in."
+    "docs/product/NFL2K5_PS2_MODULE.md for what this lane claims and refuses."
 )
 
 #: patch_id -> translator(parameters) -> words.  Empty: nothing is mapped today.

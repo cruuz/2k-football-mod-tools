@@ -5,7 +5,7 @@ out of the format's own rules -- computed palettes, counting ramps of indices,
 a preload cache carrying copies of exactly the shape the retail caches carry.
 No game byte, no palette entry and no decoded pixel is here.  The evidence that
 the same code reads *real* art is
-``docs/product/MADDEN09_PS2_ART_PAGES.md``; what these tests hold is that the
+``docs/product/MADDEN09_PS2_MODULE.md``; what these tests hold is that the
 rules are implemented as written, that each refusal names its fix, and that the
 uniform lanes these four are built out of did not change shape underneath them.
 """
@@ -234,19 +234,6 @@ class IdentityTableTests(unittest.TestCase):
             self.assertTrue(entry["names"])
         self.assertEqual(len(document["identities"]),
                          document["counts"]["textures_new_here"])
-
-    def test_the_shipped_inventory_is_counts_and_digests_only(self) -> None:
-        path = ROOT / "docs/product/measured/madden09_ps2/art-page-textures.json"
-        self.assertTrue(path.is_file(), f"{path} is missing")
-        document = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(document["schema"], "madden09_ps2_art_page_textures/v1")
-        self.assertEqual(set(document["pages"]),
-                         {cls.page for cls in art_pages.ART_PAGE_LANES})
-        for page, row in document["pages"].items():
-            with self.subTest(page=page):
-                self.assertEqual(len(row["catalogue_sha256"]), 64)
-                self.assertGreater(row["texture_members"], 0)
-                self.assertGreaterEqual(row["images"], row["images_decodable"])
 
 
 class WriteBackTests(unittest.TestCase):

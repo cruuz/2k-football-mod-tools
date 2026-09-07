@@ -71,8 +71,8 @@ class InventoryLane:
     REFUSAL = (
         "The container inventory only lists what is on your disc; it writes nothing, so "
         "there is nothing here to plan, build or verify. No NCAA Football 09 container "
-        "has a writer in this module yet -- the schema census "
-        "(docs/product/NCAA09_PS2_SCHEMA.md) says what each one would need."
+        "has a writer in this module yet -- docs/product/NCAA09_PS2_MODULE.md says "
+        "what each one would need."
     )
 
     # -- catalogue -----------------------------------------------------

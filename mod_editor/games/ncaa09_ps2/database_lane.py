@@ -34,7 +34,7 @@ and reading them off the disc settles what that means: every value 0..31
 appears, and 0..31 is what a five-bit field holds, with 16% of players sitting
 on 31 -- the shape of a scale that saturates at its top [M].  So the spinner's
 bound is **31**, the field's own, and no control here pretends the stored
-number is a 0..99 rating.  ``docs/product/NCAA09_PS2_SCHEMA.md`` §2 is the
+number is a 0..99 rating.  ``docs/product/NCAA09_PS2_MODULE.md`` is the
 field-by-field census this comes from.
 
 Everything else on the disc stays read-only, and each has a measured reason:

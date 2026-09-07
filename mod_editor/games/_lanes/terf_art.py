@@ -292,8 +292,8 @@ def derive_texture_names(payload: bytes, texture: mmap_art.MmapTexture,
     word *and* a different TEX0 hash for the same pixels, and no disc byte says
     which mode a draw will use -- only a dump does.  So a game passes what its
     own dump measured and nothing else: the mode census of every dumped name is
-    in that game's ``pcsx2-texture-identity-derivation.json`` under
-    ``dump_check.dumped_names_by_psm``.  Default empty, because a name that no
+    in that game's own texture-identity derivation, where it ships one.
+    Default empty, because a name that no
     draw would ever look up is a file in a pack that never loads.
     """
 
@@ -371,9 +371,9 @@ class TerfArtLane:
     #: How well the derivation reproduces the names a real dump wrote, as one
     #: clause the identity note reads out.  It is a **measurement of one
     #: disc**, and every game that has paired a dump should set its own from
-    #: its ``pcsx2-texture-identity-derivation.json``: the base's default is
-    #: Madden 09's, which is the number this sentence carried when it was a
-    #: literal in the note and the only measurement there was.
+    #: its own derivation: the base's default is Madden 09's, which is the
+    #: number this sentence carried when it was a literal in the note and the
+    #: only measurement there was.
     derivation_evidence: str = (
         "the rule reproduces the dumped hash of 2,994 of 3,024 dump-identified retail "
         "textures")

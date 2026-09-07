@@ -1152,7 +1152,7 @@ def build_tdb(tables: Sequence[Sequence[object]], *,
 # because they declare a table whose name carries a NUL byte.  Since
 # :func:`decode_name` they open too, and the whole disc now measures **8,926
 # checksum sites across 355 databases, 0 mismatches** [M];
-# ``docs/product/MADDEN09_PS2_PLAYBOOKS.md`` carries that pass.
+# ``docs/product/MADDEN09_PS2_MODULE.md`` says what that lane claims.
 
 #: CRC-32/MPEG-2's polynomial and starting value [S].
 CRC_POLYNOMIAL = 0x04C11DB7

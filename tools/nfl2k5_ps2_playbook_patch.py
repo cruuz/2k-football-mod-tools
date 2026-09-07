@@ -8,7 +8,7 @@ tables the play codec was reverse-engineered from (lane table, 29-entry opcode
 table, named-spot tables) are present verbatim in ``SLUS_209.19``.  So this tool
 does **no** PS2-specific format work: it drives the shipped Xbox
 ``mod_editor.core.nfl2k5_formation_play_writer`` unchanged and only retargets
-*where the bytes live*.  See ``docs/product/PS2_PHASE2_PLAYBOOKS_RESEARCH.md``.
+*where the bytes live*.  See ``docs/product/NFL2K5_PS2_MODULE.md``.
 
 Allocation is fixed, twice over:
 

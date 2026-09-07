@@ -18,8 +18,7 @@ lane is that pipeline, and it now carries one **real translation**:
 **Where the numbers come from.**  There is no host tool with a Madden 09 patch
 list to read, the way the sibling module reads the Xbox studio's own panel, and
 PCSX2's bundled ``patches.zip`` carries no file for either of this title's
-CRCs -- measured, not assumed (``docs/product/MADDEN09_PS2_CODE_PATCHES.md``
-records the measurement).  The five sites come from the owner's static research
+CRCs -- measured, not assumed.  The five sites come from the owner's static research
 [S] and every one was re-read and re-decoded against the boot executable before
 being written here [M].
 
@@ -107,7 +106,7 @@ NOT_MAPPED = (
     "{patch_id} is not mapped to MIPS yet: no site in {boot} has been located for it, so "
     "there is nothing to translate. This lane translates {mapped} today; a recipe may carry "
     "hand-authored words while another translation is being proved. See "
-    "docs/product/MADDEN09_PS2_CODE_PATCHES.md."
+    "docs/product/MADDEN09_PS2_MODULE.md."
 )
 
 
@@ -245,8 +244,7 @@ SECOND_LAYER_NOTE = (
     "compares record_count against that capacity and, when they are equal, returns status 19 "
     "instead of adding a row. So raising these caps is expected to let the editor ask for a "
     "21st set and then be refused one row lower down, until a second layer exists. That second "
-    "layer is not shipped here and the measured reason is in "
-    "docs/product/MADDEN09_PS2_CODE_PATCHES.md: table_set_capacity at 0x0082A6A0 is a "
+    "layer is not shipped here and the measured reason is that table_set_capacity is a "
     "subroutine, not an immediate -- five of its six callers hand it the capacity they just read "
     "out of the table object -- so raising it needs new code at a hook site the owner's research "
     "records as located but not pinned, and new code cannot be verified without a boot."

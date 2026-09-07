@@ -234,7 +234,7 @@ def target_explanation_gaps() -> Tuple[str, ...]:
     """Required facts the explanation no longer states.
 
     Empty means the hover text still explains the whole problem. This is the
-    contract ``docs/product/PS2_M1_PLAN.md`` writes down, so an edit that
+    contract ``docs/product/NFL2K5_PS2_MODULE.md`` writes down, so an edit that
     shortens the tooltips into uselessness -- or quietly drops a measured
     number -- fails before it ships rather than after.
     """
@@ -1164,7 +1164,7 @@ def check_target_explanation(argv: Any = None) -> int:
     what a screen reader is told: a constant no widget uses would satisfy a
     check of the constant and help nobody.
 
-    Checked, in the terms ``docs/product/PS2_M1_PLAN.md`` writes down: every
+    Checked, in the terms ``docs/product/NFL2K5_PS2_MODULE.md`` writes down: every
     fact in :data:`TARGET_EXPLANATION_REQUIRED_FACTS` still appears in the
     hover text; every choice carries that text as both tooltip and accessible
     description; the group explains the question itself; the three choices are

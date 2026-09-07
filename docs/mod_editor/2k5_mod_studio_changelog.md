@@ -193,9 +193,9 @@
   The Xbox-project route stays as a second origin. Extract-only by rule: PCSX2 swaps the art while the game runs.
 - **Contract 1.0 grew** (still unreleased): `console` / `game` / `year` and the composed label, `studio_window`,
   `Field` and `Target.fields`, `ReadOnlyLane`, `ArtLane`, `AudioLane`, `Lane.page`, `python -m mod_editor.games lane`.
-  `docs/product/GAME_STUDIO_SHELL_PLAN.md` is the plan; `GAME_MODULE_CONTRACT.md` §14 the reference.
-- **EA TERF containers** (`mod_editor/games/_formats/ea_terf.py`, `tools/ea_terf_inspect.py`,
-  `docs/product/EA_TERF_FORMAT.md`): the PlayStation 2 Madden / NCAA disc container read and written, LZH1 and RLE1
+  `docs/product/GAME_MODULE_CONTRACT.md` §14 is the reference.
+- **EA TERF containers** (`mod_editor/games/_formats/ea_terf.py`, `tools/ea_terf_inspect.py`):
+  the PlayStation 2 Madden / NCAA disc container read and written, LZH1 and RLE1
   members decoded. The substrate for **PS2 Madden 09 Studio** in the next release.
 
 ## v1.0 RC85 — NFL 2K5 (PS2): six on-disc writers, proven offline (unreleased)
@@ -216,7 +216,7 @@
   the first module. Rules for anyone editing this repository with an assistant: `CLAUDE.md` / `AGENTS.md`.
 - **Executable patches (scaffold).** `nfl2k5ps2.gameplay.executable_patches` is registered `unknown`: the
   interface for carrying the Xbox gameplay patches to the PS2 executable exists (pnach emitter and ELF verifier
-  are real), but every translation to MIPS is refused until it is mapped (`docs/product/PS2_CODE_PATCH_PIPELINE.md`).
+  are real), but every translation to MIPS is refused until it is mapped (`docs/product/NFL2K5_PS2_MODULE.md`).
 - New capability `nfl2k5ps2.uniforms.replacement_pack_export` (extract-only by the registry's
   definition: a validated exporter, nothing written back into the game): export the open Xbox
   project's **edited** uniform textures as a PCSX2 texture-replacement pack for the PlayStation 2

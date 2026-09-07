@@ -53,11 +53,13 @@ protocol member and constant) is pinned by name in `test_games_contract.py`.
 
 ## The standing rules for an agent working here
 
-`docs/product/MODULE_AGENT_CHARTER.md` carries the rules that are the same for every task on a
-game module: the gates to run before each commit, the retail-free rule, which upstream files are
-shared and which one command edits them, where the already-measured facts live so they are not
-measured twice, how much output to print, and the shape of the report. A task brief references
-it rather than restating it.
+The rules are the same for every task on a game module. Run the gates above before each commit,
+not only the last one. Keep the repository retail-free: names, offsets, lengths, counts and
+digests, never payload -- a test builds the bytes it looks at. Edit the upstream files that still
+carry per-game facts with the one command that computes them (`tools/registry_add_rows.py`),
+never by hand, and commit those files on their own. Give a lane only the classification its
+evidence earns. `docs/product/GAME_MODULE_CONTRACT.md` is the normative spec and
+`docs/product/ADDING_A_GAME_MODULE.md` the steps.
 
 ## Adding a game
 

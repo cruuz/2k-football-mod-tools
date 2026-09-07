@@ -194,7 +194,7 @@ class FragmentsTests(unittest.TestCase):
 
     def test_patterns_match_case_insensitively(self) -> None:
         self.assertTrue(fragments.matches("tools/nfl2k5_PS2_save.py", ["*ps2*"]))
-        self.assertTrue(fragments.matches("docs/product/PS2_PHASE2_TEXT.md", ["*ps2*"]))
+        self.assertTrue(fragments.matches("docs/product/NFL2K5_PS2_MODULE.md", ["*ps2*"]))
         self.assertFalse(fragments.matches("tools/nfl_outer.py", ["*ps2*", "*xxh3*"]))
 
 

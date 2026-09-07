@@ -17,7 +17,7 @@ Decoding is a 2-tap IIR over the previous two reconstructed samples::
 The five coefficient pairs and the flag bits are transcribed from the SPU2
 implementation this project already depends on -- ``XA_decode_block`` and
 ``tbl_XA_Factor`` in ``pcsx2/SPU2/Mixer.cpp``.  Nothing here is guessed: see
-``docs/product/PS2_PHASE2_AUDIO_RESEARCH.md`` §4 for the confirmation, which
+``docs/product/NFL2K5_PS2_MODULE.md`` for what the audio lane claims, which
 includes re-encoding a decoded retail block sequence back to its own bytes.
 
 **Encoding** picks, per block, the ``(filter, shift)`` pair whose reconstruction

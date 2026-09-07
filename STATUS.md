@@ -82,8 +82,8 @@ has been seen in a game.
   against `registry.v1.json`), a generic conformance harness that proves a game on its own
   synthetic source, and the core-owned "Select other games…" chooser. ESPN NFL 2K5 (PS2) is
   expressed on it as an adapter wrapping its lane tools unchanged; 40 new tests. No registry row,
-  pin, allowlist line or upstream module changed. Plan and the exact one-time hooks:
-  `docs/product/MULTI_GAME_INTERFACES_PLAN.md`.
+  pin, allowlist line or upstream module changed. The contract and the exact one-time hooks:
+  `docs/product/GAME_MODULE_CONTRACT.md`.
 - **PS2 uniform replacement-pack export** (`nfl2k5ps2.uniforms.replacement_pack_export`, extract-only):
   the edited uniform textures of the open Xbox project leave as a PCSX2 texture-replacement pack
   for `SLUS-20919`, each file named by the hashes PCSX2 computes at draw time, computed offline from

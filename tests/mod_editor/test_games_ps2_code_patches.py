@@ -170,7 +170,7 @@ class LaneTests(unittest.TestCase):
                 with self.assertRaisesRegex(contract.Refusal, "not mapped to MIPS yet") as caught:
                     self.lane.translation(patch.patch_id, {})
                 self.assertIn("SLUS_209.19", str(caught.exception))
-                self.assertIn("PS2_CODE_PATCH_PIPELINE.md", str(caught.exception))
+                self.assertIn("NFL2K5_PS2_MODULE.md", str(caught.exception))
         with self.assertRaisesRegex(contract.Refusal, "not one of the host's"):
             self.lane.translation("no_such_patch", {})
 
