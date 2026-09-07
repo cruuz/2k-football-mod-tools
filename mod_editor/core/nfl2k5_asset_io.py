@@ -208,7 +208,10 @@ class Nfl2k5AssetIO:
         if not supplied.is_file() or supplied.is_symlink():
             raise ValidationError("Choose a regular PNG file, not a folder or link")
         if supplied.suffix.lower() != ".png":
-            raise ValidationError("This asset needs a PNG file")
+            raise ValidationError(
+                f"{asset.label} needs a {asset.width}x{asset.height} PNG. "
+                "DDS import is not supported here; export the base image as PNG "
+                "from Photoshop or another image editor, keeping its size and alpha channel.")
         if supplied.stat().st_size > 32 * 1024 * 1024:
             raise ValidationError("That PNG is larger than the 32 MiB input limit")
         payload = supplied.read_bytes()

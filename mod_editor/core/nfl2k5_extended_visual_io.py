@@ -243,7 +243,10 @@ class Nfl2k5ExtendedVisualIO:
         if not stat.S_ISREG(supplied.st_mode) or stat.S_ISLNK(supplied.st_mode):
             raise ValidationError("Choose a regular PNG file, not a folder or link")
         if requested.suffix.lower() != ".png":
-            raise ValidationError("This asset needs a PNG file")
+            raise ValidationError(
+                f"{asset.label} needs a {asset.width}x{asset.height} PNG. "
+                "DDS import is not supported here; export the base image as PNG "
+                "from Photoshop or another image editor, keeping its size and alpha channel.")
         if not 0 < supplied.st_size <= MAX_PNG_BYTES:
             raise ValidationError("That PNG is empty or larger than the 32 MiB input limit")
         resolved = requested.resolve(strict=True)

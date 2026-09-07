@@ -1,3 +1,121 @@
+# r63 Discord bugs 1: protected integration handoff (2026-09-07)
+
+**EXPERIMENTAL / UNWITNESSED. Protected files have NOT been edited.**
+Base `1606ec9`, branch `astra/r63-discord-bugs-1`. See
+[ASTRA_DISCORD_BUGS_1_REPORT.md](ASTRA_DISCORD_BUGS_1_REPORT.md).
+
+The exact source edits are in
+[`tests/fixtures/discord_bugs_1_wiring.patch`](tests/fixtures/discord_bugs_1_wiring.patch).
+It is an unapplied unified diff, not a runtime patcher. Its six protected
+source files remain byte-identical to the base. Claude can review it with
+`git apply --check tests/fixtures/discord_bugs_1_wiring.patch` and integrate it
+with the other sessions. The standalone
+`QT_QPA_PLATFORM=offscreen python3 tests/mod_editor/test_discord_bugs_1_wiring.py`
+applies those exact hunks only to module source held in memory. It exercises the
+resulting real classes/functions, with tiny fixtures and mocked native writers.
+`ASTRA_TEST_UNWIRED=1` tests the original protected files and intentionally
+fails on the still-missing integrations. This is not permission to ship unwired.
+
+## Exact source changes in the proposed diff
+
+1. **B3, `mod_editor/core/update_check.py`, `_is_newer`:** normalize both labels
+   with `self_update.canonical_release_tag` before equality/numeric beta ordering.
+   The known RC mappings come from the release notes, not a global arithmetic
+   offset. Unknown labels keep the existing fallback. The running build constant
+   remains `beta-62`; no release-tag tests or workflow are edited. The unprotected
+   worker already normalizes its input, and `plan_update` now refuses a missing
+   matching `.sha256` before enabling Update now. Keep the published beta identity
+   as the authoritative shared-product version and extend the explicit alias map
+   when a new unambiguous RC/beta pair ships. Do not map RC62 to one beta: it was
+   shared by several APF releases.
+2. **B7/B22, `build_panel_qt.py`:** delegate `project_build_settings` and
+   `restore_project_build_settings` to the supplied `gameplay_project_ui.capture`
+   and `restore`. These cover the existing BuildPlan recipe, typed levels,
+   artwork families, files, star tags, playbook packs, commentary and description.
+   No source/target/overwrite permission is serialized. Restoration blocks widget
+   signals while replacing the choices; music preparation survives while disabled.
+3. **B7/B22, `studio_qt.py`:** `_connect_gameplay_build` connects the actual Build
+   and Game Fixes controls once both panels exist, regardless of construction
+   order. `GameplayBuildLink` updates shared checks in both directions and also
+   forwards levels, screen timing, Guardian practice choice and MyCareer path.
+   The last user change wins. No patch command is emitted by synchronization.
+   `observe_build_choices` captures other Build control edits. During source
+   inspection/project restoration, `_restoring_music_playlist` suppresses capture;
+   `_restore_music_build_settings` then refreshes Gameplay from the saved Build
+   choices. Capture marks the workspace dirty and refreshes the footer.
+4. **B22/B17, `studio_qt.py`:** the footer enables Make disc for a loaded source
+   with project edits OR selected Build work. `_choose_build_output` routes such
+   work to the single Build confirmation and operation; a blocker is displayed
+   rather than ignored. Check my images retains its image-edit gate and existing
+   explanation. A gameplay-only project has no image edits to inspect.
+5. **B22/B12, `build_panel_qt.py`, `_include_session_project`:** include all staged
+   shared-project edits whenever they exist, including portraits and uniforms,
+   without requiring the unrelated music/naming checkboxes. The existing
+   `_build_operation` checks that the source matches the open project, builds one
+   verified temporary project copy, then patches that copy once. It measures the
+   final output against the original source after the whole operation, so a
+   changed portrait plus an otherwise unchanged patch pass is still a change.
+6. **B9, `mod_build.py`, `build`:** after `_build` and playlist revalidation, but
+   before publishing, attach `build_feedback.measure(original_source, candidate)`
+   as `receipt['outcome']`. It hashes in 1 MiB blocks after all file/pack/XBE
+   writers, and is independent of step labels. Identical output may be copied but
+   is explicitly `unchanged`. Never turn a refusal into a successful outcome.
+   `build_panel_qt.py::_done` and `gameplay_patches_panel_qt.py::_done` use
+   `build_feedback.completion`: unchanged becomes "No changes written", and an
+   old/unmeasured receipt becomes "Copy ready; changes not measured". Changed
+   output alone earns "Disc ready". The receipt says steps checked, not that
+   each listed step wrote bytes.
+7. **B12, `studio_qt.py`:** include the text catalog's +0x06 selector as
+   `photo_id` in `_player_asset_summaries`; label `photo_id` links as record links.
+   Remove the obsolete claim that the roster has no portrait pointer.
+   `nfl2k5_player_assets` now joins an explicit Photo ID before considering a
+   legacy name fallback. The page still reads the loaded source catalog, not
+   unsaved native roster edits; the native Rosters confirmation is authoritative
+   for a changed selector. In `roster_editor_panel_qt.py::_after_edit`, show
+   `rr.portrait_confirmation(self.document, player)` for `name == 'photo_id'`,
+   including undo/redo. It names the numbered portrait and distinguishes a
+   present, missing or unavailable catalog entry. This panel is left to Claude
+   under the brief's other-GUI-panels restriction.
+
+## Packaging and owner contract
+
+Add these exact release-allowlist lines:
+
+```text
+mod_editor/core/build_feedback.py
+mod_editor/gui/gameplay_project_ui.py
+docs/mod_editor/discord_bugs_1_faq.md
+```
+
+In the protected runtime closure import list, add
+`mod_editor.core.build_feedback` and `mod_editor.gui.gameplay_project_ui`.
+The latter imports PyQt5.QtCore/QtWidgets and the already-shipped
+`mod_editor.core.nfl2k5_build_settings`. The updater, cache, launcher, PNG,
+roster and player-asset changes use existing shipped modules and Python stdlib.
+Keep the new tests and proposal diff out of the end-user allowlist.
+Re-pin the changed existing provider/runtime input hashes with the normal
+`python3 packaging/repin.py --apply` workflow after integration; do not weaken
+provider checks. `providers.py` and all packaging checkers remain untouched here.
+Run the release/runtime gates on Claude's complete staged tree, where the
+reviewed asset catalogs exist. This lean tree lacks `reports/assets`.
+
+No new executable owner or capability surface is introduced. Consequently the
+requested dispatcher `_apply_all` tuple, its kwarg, and the four status dicts
+need **no changes**. There is **no new BuildPlan field**, no changes to basic,
+advanced or experimental presets, no new PATCHES row or NEEDS_IMAGE entry,
+no new Build `_option` caption, and no capability-registry entry. Existing
+PATCHES text retains its Retail/Patch descriptions. The allocator, cave
+manifest, throw tuning, gameplay panels outside the proposal and both XBE
+safety-gate compositions are untouched. No game feature is enabled by this job.
+
+Newly saved Build settings contain more keys. An older Studio which refuses
+those keys should be updated, not taught to silently drop them. External files
+referenced by choices are retained as paths, not embedded into `.2k5mod`; the
+FAQ states this limit. Old project files without saved choices load with
+explicit defaults, but their lost choices cannot be reconstructed.
+
+---
+
 # r63 Scorebar Studio: an easy scorebug editor page (2026-09-07)
 
 Branch `fable/r63-scorebug-studio`, base `b2948b8`. **EXPERIMENTAL / UNWITNESSED.**

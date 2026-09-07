@@ -10,10 +10,13 @@ import hashlib
 import io
 import json
 import os
+import platform
 from pathlib import Path
 import shutil
 import subprocess
 import stat
+import struct
+import sys
 import threading
 from typing import Callable, Iterable, Mapping, Sequence
 
@@ -664,6 +667,46 @@ def _detect_xemu_command() -> tuple[str, ...]:
     return (flatpak, "run", "app.xemu.xemu") if found.returncode == 0 else ()
 
 
+def _validate_xemu_executable(path: Path, *, windows: bool | None = None,
+                              machine: str | None = None) -> None:
+    """Refuse common Windows wrong-binary selections before CreateProcess."""
+    if windows is None:
+        windows = sys.platform == "win32"
+    if not windows:
+        return
+    advice = ("Choose the extracted xemu.exe for your Windows system in Set up xemu. "
+              "A 64-bit xemu needs 64-bit Windows. Shortcuts and downloaded archives cannot be launched.")
+    if path.suffix.lower() != ".exe":
+        raise ValidationError(advice)
+    try:
+        with path.open("rb") as stream:
+            header = stream.read(64)
+            if len(header) != 64 or header[:2] != b"MZ":
+                raise ValidationError("The selected file is not a Windows executable. " + advice)
+            offset = struct.unpack_from("<I", header, 60)[0]
+            if offset < 64 or offset > os.fstat(stream.fileno()).st_size - 26:
+                raise ValidationError("The selected executable has an invalid PE header. " + advice)
+            stream.seek(offset)
+            pe = stream.read(26)
+            if len(pe) != 26:
+                raise ValidationError("The executable was truncated while reading its PE header. " + advice)
+            kind, sections = struct.unpack_from("<HH", pe, 4)
+            optional_size, flags, magic = struct.unpack_from("<HHH", pe, 20)
+            if (pe[:4] != b"PE\0\0" or not sections or not flags & 2 or flags & 0x2000
+                    or optional_size < 2 or magic not in (0x10b, 0x20b)
+                    or offset + 24 + optional_size + sections * 40 > os.fstat(stream.fileno()).st_size):
+                raise ValidationError("The selected file is not a complete Windows program. " + advice)
+            host = (machine or os.environ.get("PROCESSOR_ARCHITEW6432") or platform.machine()).lower()
+            if kind not in (0x14c, 0x8664, 0xaa64) or ((kind == 0x14c) != (magic == 0x10b)):
+                raise ValidationError("The executable's CPU type or bitness is unsupported. " + advice)
+            if host in ("x86", "i386", "i686") and kind != 0x14c:
+                raise ValidationError("This xemu executable requires 64-bit Windows. " + advice)
+            if host in ("amd64", "x86_64") and kind == 0xaa64:
+                raise ValidationError("This is an ARM64 executable, but this Windows system uses x64. " + advice)
+    except OSError as exc:
+        raise ValidationError(f"The selected xemu program could not be read: {exc}. {advice}") from exc
+
+
 def _stored_xemu_command(path: Path | None = None) -> tuple[str, ...]:
     """The xemu executable the user chose, if it is still runnable."""
 
@@ -959,6 +1002,7 @@ class Nfl2k5StudioFacade:
                 f"{chosen.name} is not executable. Choose the xemu binary, or "
                 "mark it executable first."
             )
+        _validate_xemu_executable(chosen)
         try:
             _store_xemu_command(chosen)
         except OSError as exc:
@@ -3519,6 +3563,8 @@ class Nfl2k5StudioFacade:
             raise ValidationError("Build a modded XISO before launching xemu.")
         progress("Starting xemu", 0, 1)
         argv = _xemu_launch_argv(command, result.output_xiso)
+        if sys.platform == "win32":
+            _validate_xemu_executable(Path(shutil.which(command[0]) or command[0]))
         try:
             self._process_launcher(
                 argv,
@@ -3529,6 +3575,11 @@ class Nfl2k5StudioFacade:
                 shell=False,
             )
         except OSError as exc:
+            if getattr(exc, "winerror", None) in (193, 216):
+                raise ValidationError(
+                    "Windows cannot run the selected xemu.exe. Extract the Windows download and "
+                    "select xemu.exe in Set up xemu. A 64-bit xemu needs 64-bit Windows; "
+                    "use a build for your PC's CPU type. The game disc was not changed.") from exc
             raise ValidationError(f"xemu could not be started: {exc}") from exc
         progress("xemu launched", 1, 1)
         return StudioOperationResult(

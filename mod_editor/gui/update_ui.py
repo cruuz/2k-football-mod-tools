@@ -105,7 +105,7 @@ class _CheckTask(QRunnable):
 
     def run(self) -> None:  # pragma: no cover - exercised through the pool
         try:
-            status = update_check.check(self._current_tag)
+            status = update_check.check(self_update.canonical_release_tag(self._current_tag))
         except Exception:  # noqa: BLE001 - a failed check is never fatal
             status = update_check.UpdateStatus(
                 available=False, current_tag=self._current_tag,

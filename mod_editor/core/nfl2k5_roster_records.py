@@ -3296,6 +3296,21 @@ def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
     return dict(sorted(out.items()))
 
 
+def portrait_confirmation(document: RosterDocument, player: Player,
+                          report_path: Path | str | None = None) -> str:
+    """Confirm the stored selector without claiming art has been written or played."""
+    photo = player.record.values["photo_id"]
+    entries, meta = portrait_index(document, report_path)
+    prefix = f"{player.display}: Photo {photo:04d} is staged in the roster. "
+    if meta["reason"]:
+        return prefix + "The portrait catalog is unavailable, so this ID could not be checked. " + meta["reason"]
+    if photo not in entries:
+        return prefix + "This ID has no cataloged portrait. Choose an existing Photo ID to avoid the no-photo image."
+    return (prefix + f"Replace Portrait {photo:04d} with your 128x128 PNG, then include both the portrait "
+            "project and roster edits in the same disc build. Renaming a player does not replace the picture. "
+            "An existing in-game save keeps its own Photo ID; edit that save too if you use it.")
+
+
 def portrait_index(document: RosterDocument | None = None,
                    report_path: Path | str | None = None) -> tuple[dict[int, str], dict[str, Any]]:
     """portrait id -> owner label for every portrait on the disc, and how the list was built.

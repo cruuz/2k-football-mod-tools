@@ -44,6 +44,20 @@ USER_AGENT = "2k-football-mod-tools-self-update"
 MAX_ASSET_BYTES = 400 * 1024 * 1024
 CHUNK = 1 << 20
 
+# Release identities from BETA_RELEASE_NOTES.md, not an RC-minus-offset guess.
+# Older RC labels can name more than one shared product release (notably RC62).
+_RC_RELEASES = {77: 53, 78: 54, 79: 55, 80: 56, 81: 57,
+                82: 58, 83: 59, 84: 60, 85: 61, 86: 62}
+
+
+def canonical_release_tag(label: str) -> str:
+    """Resolve known installed 2K5 version spellings to the published beta tag."""
+    label = label.strip()
+    match = re.fullmatch(r"(?:v?1\.0(?:\.0)?[- ]?)?rc[- ]?(\d+)", label, re.IGNORECASE)
+    if match and int(match[1]) in _RC_RELEASES:
+        return f"beta-{_RC_RELEASES[int(match[1])]}"
+    return label
+
 #: Asset name patterns per product and install kind.
 PRODUCTS: dict[str, dict[str, object]] = {
     "2k5": {
@@ -159,7 +173,7 @@ def plan_update(document: Mapping[str, object], install: InstallKind, product: s
     sidecar = next((a for a in assets if a.name == asset.name + ".sha256"), None)
     plan = UpdatePlan(product, tag, install, asset, sidecar)
     if sidecar is None:
-        plan.notes.append("no .sha256 sidecar was published for this asset; the download cannot be verified")
+        raise SelfUpdateError("The release has no .sha256 sidecar for this file; use Get the update or try again after it is published.")
     return plan
 
 
@@ -235,6 +249,8 @@ def verify(path: Path, sidecar_text: str) -> str:
 def fetch_update(plan: UpdatePlan, work: Path, *, progress: ProgressSink | None = None,
                  opener: Callable[..., object] | None = None) -> Path:
     """Download the planned asset into ``work`` and verify it against its sidecar."""
+    if plan.sidecar is None:
+        raise SelfUpdateError("The release has no .sha256 sidecar; refusing to download an unverifiable update.")
     progress = progress or (lambda *_a: None)
     work.mkdir(parents=True, exist_ok=True)
     target = work / plan.asset.name

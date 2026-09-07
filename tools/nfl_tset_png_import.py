@@ -109,7 +109,7 @@ def decode_rgba_png(
     payload: bytes,
     expected_dimensions: tuple[int, int] | None = (BASE_WIDTH, BASE_HEIGHT),
 ) -> tuple[int, int, bytes]:
-    """Strict bounded decoder for non-interlaced 8-bit RGBA PNG."""
+    """Bounded standard PNG decoder, normalizing samples to 8-bit RGBA."""
 
     require(len(payload) <= MAX_PNG_BYTES, "PNG exceeds the 32 MiB input bound")
     require(payload.startswith(PNG_SIGNATURE), "PNG signature mismatch")
@@ -235,7 +235,7 @@ def _png_unfilter(raw: bytes, width: int, height: int, bits_per_pixel: int) -> b
 
 def _png_read_samples(row: bytes, width: int, channels: int,
                       bit_depth: int) -> list[tuple[int, ...]]:
-    """One unfiltered row to per-pixel sample tuples, scaled to 0..255."""
+    """One unfiltered row to full precision samples, before transparency lookup."""
     pixels: list[tuple[int, ...]] = []
     if bit_depth == 8:
         for x in range(width):
@@ -244,7 +244,7 @@ def _png_read_samples(row: bytes, width: int, channels: int,
     elif bit_depth == 16:
         for x in range(width):
             base = x * channels * 2
-            pixels.append(tuple(row[base + c * 2] for c in range(channels)))
+            pixels.append(struct.unpack_from(">" + "H" * channels, row, base))
     else:
         mask = (1 << bit_depth) - 1
         per_byte = 8 // bit_depth
@@ -298,7 +298,7 @@ def _png_samples_to_rgba(compressed: bytes, width: int, height: int, bit_depth: 
     scale = {1: 255, 2: 85, 4: 17, 8: 1, 16: 1}[bit_depth]
 
     def widen(sample: int) -> int:
-        return sample * scale if bit_depth < 8 else sample
+        return sample >> 8 if bit_depth == 16 else sample * scale
 
     rgba = bytearray(width * height * 4)
     consumed = 0
