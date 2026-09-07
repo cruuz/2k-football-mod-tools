@@ -54,7 +54,8 @@ def _linux_probe(path: Path, identity: os.stat_result) -> None:
         if not process.name.isdigit() or int(process.name) == os.getpid():
             continue
         try:
-            if process.stat().st_uid != os.getuid():
+            owner = getattr(os, "getuid", None)  # POSIX only; this probe never runs on Windows
+            if owner is not None and process.stat().st_uid != owner():
                 continue
             for fd in (process / "fd").iterdir():
                 try:
