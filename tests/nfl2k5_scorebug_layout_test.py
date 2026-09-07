@@ -379,11 +379,9 @@ class ReferenceLayoutTests(unittest.TestCase):
             L.preview_reference(m, texture, path, widest=True)
             with Image.open(path) as im:
                 self.assertEqual(im.size, (1280, 960))
-                self.assertEqual(im.getpixel((180, 780)), (21, 33, 49))
-        for name in ("away_score", "home_score"):
-            self.assertEqual(m.world[L.T[name]][1], -2)
-        self.assertEqual(m.world[L.T["drop_down"]][1], 22)
-        self.assertEqual(m.world[L.T["quarter"]][1], 0)
+                self.assertEqual(im.getpixel((380, 850)), (21, 33, 49))
+        for name in ("away_score", "home_score", "drop_down", "quarter"):
+            self.assertEqual(tuple(m.world[L.T[name]]), reference.exact.ANCHORS[name])
 
 
 

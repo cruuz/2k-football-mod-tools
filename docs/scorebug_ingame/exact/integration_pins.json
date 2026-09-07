@@ -1,0 +1,242 @@
+{
+  "espn-broadcast-exact-v1": {
+    "xbe": "ac1d247c4a422668845f8ea5daaa5cfac3427e9ba36491eb039c2204fb662b67",
+    "xbe_version": "espn-broadcast-exact-v1",
+    "xbe_status": "applied",
+    "replay": true,
+    "score_bug": {
+      "sha256": "f6c7cdef8533ada1dd7ace770f93fd88807da8c1d8833c8bcd82ada6aab3c472",
+      "decoded": "0ee05031235220fadd435ea96a0a152c2f8cb39683300c5c75d199c0318ecc08",
+      "receipt": {
+        "version": "espn-broadcast-exact-v1",
+        "resource": "score_bug",
+        "state_before": "retail",
+        "span_size": 4832,
+        "sha256_before": "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+        "sha256_after": "f6c7cdef8533ada1dd7ace770f93fd88807da8c1d8833c8bcd82ada6aab3c472",
+        "wrapper_identical": true,
+        "filled_bytes": 4795
+      },
+      "status": "applied"
+    },
+    "score_buga": {
+      "sha256": "ea2dd162384acf38ed7e24f5f99513d2534a3b61c837c0f46421789a59b2fd39",
+      "decoded": "a67ebc234239394d0d19038537b07f9b242d7e3994cf949d89f96b35d522ae83",
+      "receipt": {
+        "version": "espn-broadcast-exact-v1",
+        "resource": "score_buga",
+        "state_before": "retail",
+        "span_size": 2432,
+        "sha256_before": "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+        "sha256_after": "ea2dd162384acf38ed7e24f5f99513d2534a3b61c837c0f46421789a59b2fd39",
+        "wrapper_identical": true,
+        "palette_attempts": [
+          {
+            "colors": 43,
+            "encoder": "greedy",
+            "result": "fit"
+          }
+        ],
+        "filled_bytes": 2385
+      },
+      "status": "applied"
+    }
+  },
+  "espn-reference-v10": {
+    "xbe": "0d0eee5163c1d5edbc41a8a0a522f3c55d74e9c5699f078aab37bd9e01b8d23f",
+    "xbe_version": "espn-reference-v10",
+    "xbe_status": "applied",
+    "replay": true,
+    "score_bug": {
+      "sha256": "8bf58e95bdc4ddbfe627ee705165f7a639d5ba033dc3d6c9732f622ef3e364f2",
+      "decoded": "77dcbe4639c8cd35468aee28cd36cfc023b0bcf226572477a367d56d0ff00c24",
+      "receipt": {
+        "version": "espn-reference-v10",
+        "resource": "score_bug",
+        "state_before": "retail",
+        "span_size": 4832,
+        "sha256_before": "afa1481f7ce356c2cfb95cbeccebc18af183f6aa4ba13cd2981247a3619a8476",
+        "sha256_after": "8bf58e95bdc4ddbfe627ee705165f7a639d5ba033dc3d6c9732f622ef3e364f2",
+        "wrapper_identical": true,
+        "filled_bytes": 4790
+      },
+      "status": "applied"
+    },
+    "score_buga": {
+      "sha256": "a208b56329eec1dc285dfc8f04dcf66883b62d502c549ed70583d2fb7b0b1609",
+      "decoded": "c073fabcaa9eccb00d0614cba5fdda2843cb68b4e5ee7fd5da1a7a303ac9d35c",
+      "receipt": {
+        "version": "espn-reference-v10",
+        "resource": "score_buga",
+        "state_before": "retail",
+        "span_size": 2432,
+        "sha256_before": "b17fe5ddc714bc2f508e38cbff5143d86828e9bca4748011dd54200624583b21",
+        "sha256_after": "a208b56329eec1dc285dfc8f04dcf66883b62d502c549ed70583d2fb7b0b1609",
+        "wrapper_identical": true,
+        "template": {
+          "schema": "nfl2k5_scorebug_template/v1",
+          "layout_sha256": "0fcb97db9a814a5593710a94ec3d65bd4638da17c2b7198a579cc571feb7f3ef",
+          "source_scale": 1,
+          "layers": [
+            {
+              "layer": "frame",
+              "path": "1x/frame.png",
+              "sha256": "e3e208146a8157deece12ccc87258e685cd7bfa51a1ac51d179ae0a5cabfc575",
+              "atlas_rect": [
+                0,
+                0,
+                64,
+                8
+              ],
+              "hud_rect": [
+                84,
+                381,
+                560,
+                429
+              ]
+            },
+            {
+              "layer": "left_mark",
+              "path": "1x/left_mark.png",
+              "sha256": "1d9e9cb200566ff9b09c6d5e1ecefe7bc5bf117424a6b6cef62ae6bff9a41fb6",
+              "atlas_rect": [
+                0,
+                8,
+                64,
+                24
+              ],
+              "hud_rect": [
+                88,
+                393,
+                156,
+                417
+              ]
+            },
+            {
+              "layer": "away_block",
+              "path": "1x/away_block.png",
+              "sha256": "0a64f4c4d9bb3e704ef760a11f9410154ff7c27b0a0b126281f87e32b48c3692",
+              "atlas_rect": [
+                0,
+                24,
+                32,
+                40
+              ],
+              "hud_rect": [
+                160,
+                383,
+                274,
+                427
+              ]
+            },
+            {
+              "layer": "home_block",
+              "path": "1x/home_block.png",
+              "sha256": "1a4fdd88d749d481a6b23876770741339fc8972167ee74a83d65201fd6f45b61",
+              "atlas_rect": [
+                32,
+                24,
+                64,
+                40
+              ],
+              "hud_rect": [
+                438,
+                383,
+                558,
+                427
+              ]
+            },
+            {
+              "layer": "away_score",
+              "path": "1x/away_score.png",
+              "sha256": "2dc0ba576ff6059d27c7b3f203a377ac3830be6c3cdc1e772997b3c044b06483",
+              "atlas_rect": [
+                20,
+                24,
+                32,
+                40
+              ],
+              "hud_rect": [
+                231,
+                383,
+                274,
+                427
+              ]
+            },
+            {
+              "layer": "home_score",
+              "path": "1x/home_score.png",
+              "sha256": "2dc0ba576ff6059d27c7b3f203a377ac3830be6c3cdc1e772997b3c044b06483",
+              "atlas_rect": [
+                32,
+                24,
+                44,
+                40
+              ],
+              "hud_rect": [
+                438,
+                383,
+                483,
+                427
+              ]
+            },
+            {
+              "layer": "clock_quarter",
+              "path": "1x/clock_quarter.png",
+              "sha256": "23b042f907bd604342caabefa9794519f81973fbedbee703e2ffbd3a0a862a16",
+              "atlas_rect": [
+                0,
+                40,
+                64,
+                52
+              ],
+              "hud_rect": [
+                278,
+                405,
+                434,
+                427
+              ]
+            },
+            {
+              "layer": "down",
+              "path": "1x/down.png",
+              "sha256": "f575bc6f0d53a1fea75a067167bba8a210d21e8896ce72bea75138f5abb268d6",
+              "atlas_rect": [
+                0,
+                52,
+                64,
+                64
+              ],
+              "hud_rect": [
+                278,
+                383,
+                434,
+                404
+              ]
+            }
+          ],
+          "rgba_sha256": "b01e06ca3723080cb60b80bb279a954479c1422c4c0e0533cfcd3dc2ef8ba298",
+          "colours": 16,
+          "source_colours": 17,
+          "palette_policy": "exact RGBA; at most 256 colours; no lossy fallback",
+          "retail_art_used": false,
+          "live_fonts": [
+            "font1",
+            "font2",
+            "font5"
+          ],
+          "custom_glyphs_installed": false,
+          "runtime_team_selection": false,
+          "live_timeouts": false,
+          "experimental": true,
+          "witnessed": false
+        },
+        "encoder": "greedy",
+        "palette_colors": 16,
+        "filled_bytes": 2388,
+        "fit_attempts": []
+      },
+      "status": "applied"
+    }
+  }
+}

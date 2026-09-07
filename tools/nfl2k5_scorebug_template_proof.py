@@ -36,14 +36,14 @@ def main(argv=None):
         for name,record in r.RESOURCES.items():
             stream.seek(record['pack_offset']);spans[name]=stream.read(record['span_size'])
     compiled=template.compile_folder(args.folder)
-    scene_span,_=r.apply(spans['score_bug'],'score_bug')
+    scene_span,_=r.apply(spans['score_bug'],'score_bug',scorebug_folder=args.folder)
     scene=r.decode(scene_span)[1]
     atlas_span,_=r.apply(spans['score_buga'],'score_buga',scorebug_folder=args.folder)
     fonts=read_fonts(args.pack)
     args.output.mkdir(parents=True,exist_ok=True)
     audit={'schema':'nfl2k5_scorebug_v10_audit/v1','status':'PASS_STATIC_V10',
            'experimental':True,'witnessed':False,'template':compiled.receipt,
-           'reference_rails':reference_rails(),'xbe_sha256':r.digest(xbe),
+           'reference_rails':reference_rails(scorebug_folder=args.folder),'xbe_sha256':r.digest(xbe),
            'scene_sha256':r.digest(scene),'atlas_sha256':r.digest(atlas_span),
            'static_receipts':static_receipts(xbe,spans,scorebug_folder=args.folder),
            'projections':{},'team_material_hook':r.TEAM_MATERIAL_HOOK,
@@ -53,7 +53,7 @@ def main(argv=None):
         for mode in (0,1):
             capture={}
             geometry=native_geometry(xbe,scene,widescreen=wide,mode=mode,
-                                     texture_span=atlas_span,fonts=fonts,capture=capture)
+                                     texture_span=atlas_span,fonts=fonts,capture=capture,scorebug_folder=args.folder)
             try:
                 geometry.update(native_text_draw(capture))
                 if not wide and mode==0:

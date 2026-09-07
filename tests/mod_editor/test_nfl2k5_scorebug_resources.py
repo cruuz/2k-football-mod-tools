@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 from contextlib import ExitStack
 import os
+import shutil
 from pathlib import Path
 import struct
 import sys
@@ -46,14 +47,26 @@ class RetailTests(unittest.TestCase):
         cls.before=a.PackView.from_fd(cls.before_file.fileno(),0,PACK.stat().st_size)
         cls.xbe=XBE.read_bytes()
         view=a.PackView.from_fd(cls.before_file.fileno(),0,len(cls.before))
-        after,cls.receipt=a.compile_runtime_collection(view)
-        directory=Path(stack.enter_context(tempfile.TemporaryDirectory())).resolve()
-        cls.after_path=directory/'grown-pack'
-        with cls.after_path.open('wb') as output:
-            for block in a.pack_blocks(after):output.write(block)
-        del after
-        cls.after_file=stack.enter_context(cls.after_path.open('rb'))
-        cls.after=a.PackView.from_fd(cls.after_file.fileno(),0,cls.after_path.stat().st_size)
+        cls.after,cls.receipt=a.compile_runtime_collection(view)
+        # Keep the actual compiler's lazy view for the complete real-pack
+        # index/suffix checks. Disk transactions use a sparse fixture carrying
+        # every pinned input plus XDVDFS neighbours, not a retained pack copy.
+        # These IO substitutions only preserve holes; every read/hash/assertion
+        # still sees the exact logical file, including all zero bytes.
+        real_write=io.pwrite
+        def sparse_write(fd,data,offset):
+            if offset >= os.fstat(fd).st_size and not any(data):
+                os.ftruncate(fd,offset+len(data));return len(data)
+            return real_write(fd,data,offset)
+        def sparse_copy(source,target):
+            with Path(source).open('rb') as src,Path(target).open('wb') as dst:
+                while block:=src.read(a.READ_BLOCK):
+                    if any(block):dst.write(block)
+                    else:dst.seek(len(block),1)
+                dst.truncate()
+            return str(target)
+        stack.enter_context(patch.object(io,'pwrite',new=sparse_write))
+        stack.enter_context(patch.object(shutil,'copyfile',new=sparse_copy))
     def test_all_264_native_objects_identity_pixels_and_dimming(self):
         start=a.HUD_START+a.HUD_SIZE
         objects=r.tx.parse_chunks(self.after[start:start+a.RUNTIME_APPEND_SIZE])
@@ -66,9 +79,9 @@ class RetailTests(unittest.TestCase):
             self.assertEqual((tex.width,tex.height,tex.format_name,tex.mip_levels),(128,32,'P8',1))
             rgba=r.tx.texture_to_rgba(d,c,tex)
             side=tex.name[4];count=int(tex.name[5])
-            for n,x in enumerate((103,112,121)):
-                dx=x if side=='a' else 127-x
-                pixel=rgba[(30*128+dx)*4:(30*128+dx)*4+4]
+            for n,x in enumerate((91,101,111)):
+                dx=(x if side=='a' else 127-x-6)+3
+                pixel=rgba[(28*128+dx)*4:(28*128+dx)*4+4]
                 self.assertEqual(pixel[3],255)
                 self.assertGreater(min(pixel[:3]),180) if n<count else self.assertLess(max(pixel[:3]),90)
         self.assertEqual(names,{rec['name'] for rec in self.receipt['resources']})
@@ -148,21 +161,23 @@ class RetailTests(unittest.TestCase):
             f.seek(0x10000);f.write(r.layout.xc.XDVDFS_MAGIC)
             f.write(struct.pack('<II',33,len(root)));f.seek(0x107ec);f.write(r.layout.xc.XDVDFS_MAGIC)
             f.seek(33*2048);f.write(root);f.seek(34*2048);f.write(sub.ljust(32,b'\0'))
-            f.seek(pack_sector*2048)
-            for block in a.pack_blocks(self.before):f.write(block)
+            extents=[(0,outer.HEADER_SIZE+4323*12),(a.HUD_START,a.HUD_SIZE)]
+            extents += [(v['pack_offset'],v['span_size']) for v in a.TEAM_LOGOS.values()]
+            for offset,size in extents:
+                f.seek(pack_sector*2048+offset);f.write(self.before[offset:offset+size])
             f.seek(xs*2048);f.write(xbe)
             f.seek(neighbor*2048);f.write(b'KEEPTHIS')
         return neighbor*2048
     def test_disc_growth_replay_and_rollback_at_pack_node_and_xbe_writes(self):
         # Compiler itself ran above. Reuse its exact immutable output so failure
         # injection exercises IO rather than repeating artwork quantization.
+        real_compile=a.compile_runtime_collection
         def compile(pack, *, probe='full'):
             state=a.runtime_pack_status(pack)
             if state=='applied':return pack,{'status':'already_applied','changed_bytes':0}
-            self.assertEqual(state,'retail');return replacement,self.receipt
+            self.assertEqual(state,'retail');return real_compile(pack,probe=probe)
         # A Mock retains every argument in call_args_list, including each
         # complete 194 MB pack. These replacements need no call history.
-        replacement=self.after
         with tempfile.TemporaryDirectory() as tmp,patch.object(a,'compile_runtime_collection',new=compile):
             path=(Path(tmp)/'copy.iso').resolve()
             neighbor=self.image(path)

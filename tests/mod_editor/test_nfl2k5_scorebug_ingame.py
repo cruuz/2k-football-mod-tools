@@ -1,4 +1,4 @@
-"""Standalone v10 resource, native-driver data and transaction checks. No emulator."""
+"""Standalone broadcast resource, native-driver data and transaction checks. No emulator."""
 from __future__ import annotations
 
 import os
@@ -80,8 +80,8 @@ class RetailTests(unittest.TestCase):
             if a==b:continue
             allowed=(L.S0<=i<L.S0+L.VCOUNT*6 or L.SHAPE+0x10<=i<L.SHAPE+0x2c
                      or (L.S1<=i<L.S1+L.VCOUNT*10 and
-                         (4<=(i-L.S1)%10<8 or ((i-L.S1)%10<4 and
-                          ((48<=(i-L.S1)//10<80) or (96<=(i-L.S1)//10<262)))))
+                         (4<=(i-L.S1)%10<10 or ((i-L.S1)%10<4 and
+                          (0<=(i-L.S1)//10<L.VCOUNT))))
                      or any(L.TBASE+t*0x70+0x40<=i<L.TBASE+t*0x70+0x5c for t in range(L.TCOUNT)))
             self.assertTrue(allowed,hex(i))
         self.assertEqual(L.strips(before),L.strips(after))
@@ -89,17 +89,18 @@ class RetailTests(unittest.TestCase):
 
     def test_scene_proportions_both_mark_modes_and_field_anchors(self):
         m=r.mesh(r.decode(self.inputs["score_bug"])[1])
-        self.assertEqual(r.FRAME[2]-r.FRAME[0],476)
-        self.assertEqual(r.FRAME[3]-r.FRAME[1],48)
-        self.assertLess(424-r.FRAME[1],440)
+        self.assertAlmostEqual(r.FRAME[2]-r.FRAME[0],1054/3)
+        self.assertAlmostEqual(r.FRAME[3]-r.FRAME[1],112*448/1080)
+        self.assertLess(424-r.FRAME[1],464)
         for v in range(274,286):
             self.assertEqual(m.pos[v],m.pos[v-12])
             self.assertEqual(m.uv_edit[v],m.uv_edit[v-12])
-        self.assertEqual(r.WATERMARK,(-232,7,-164,31))
+        self.assertEqual(r.WATERMARK,(0,0,0,0))
         for name,xyz in r.ANCHORS.items():
             self.assertEqual(m.world[r.layout.T[name]],list(xyz))
-        self.assertLess(r.PILL[0],r.PILL[2])
-        for parent in (23,26):self.assertEqual(m.world[parent][1],19)
+        self.assertGreater(r.PILL[2]-r.PILL[0],80)
+        for side,parent in (("away",23),("home",26)):
+            self.assertAlmostEqual(m.world[parent][1],(r.PANELS[side][1]+r.PANELS[side][3])/2)
 
     def test_xbe_idempotence_guards_shared_shield_and_native_animation(self):
         self.assertEqual(r.xbe_status(self.xbe),"retail")
@@ -118,7 +119,7 @@ class RetailTests(unittest.TestCase):
         # The animation code is pinned unchanged, not simulated by a replacement.
         for va,size,sha,label in r.XBE_GUARDS:
             off=r.layout.sbpos.va_to_off(self.patched_xbe,va)
-            self.assertEqual(r.digest(self.patched_xbe[off:off+size]),sha,label)
+            self.assertEqual(r.digest(r.guard_bytes(self.patched_xbe,va,size)),sha,label)
 
     def test_mixed_xbe_and_foreign_driver_refuse(self):
         for va,old,new,label in r.xbe_specs():
@@ -177,7 +178,7 @@ class RetailTests(unittest.TestCase):
                 with path.open("r+b") as stream:stream.seek(bad_off);stream.write(self.inputs["score_buga"])
                 self.assertEqual(r.image_status(path),"retail")
                 receipt=r.apply_in_place(path)
-                self.assertEqual(receipt['layout'],'espn-reference-v10')
+                self.assertEqual(receipt['layout'],r.VERSION)
                 self.assertFalse(receipt['team_material_hook']['runtime_bound'])
                 self.assertEqual(receipt["state_before"],"retail")
                 self.assertEqual(r.image_status(path),"applied")

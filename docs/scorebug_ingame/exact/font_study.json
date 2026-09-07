@@ -1,0 +1,550 @@
+{
+  "custom_glyph_atlas_bound": false,
+  "evidence": "Native FONT resource metrics and alpha coverage, not a GPU measurement. No retail font offers the reference down-string width at its cap height. The requested custom glyph binding remains unimplemented.",
+  "fonts": {
+    "font1": {
+      "decoded_sha256": "8f18a631519257cf48cee4341551c97a239bea73623404dc710d28df8ff12229",
+      "measurements": {
+        "0": {
+          "advance": 12,
+          "ink_box": [
+            1.0,
+            4.0,
+            11.0,
+            20.0
+          ]
+        },
+        "12": {
+          "advance": 24,
+          "ink_box": [
+            2.0,
+            4.0,
+            23.0,
+            19.0
+          ]
+        },
+        "13:10": {
+          "advance": 53,
+          "ink_box": [
+            2.0,
+            4.0,
+            52.0,
+            20.0
+          ]
+        },
+        "1st": {
+          "advance": 31,
+          "ink_box": [
+            2.0,
+            4.0,
+            30.0,
+            20.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 81,
+          "ink_box": [
+            2.0,
+            4.0,
+            80.0,
+            20.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 117,
+          "ink_box": [
+            0.0,
+            4.0,
+            116.0,
+            20.0
+          ]
+        }
+      },
+      "slot": 0
+    },
+    "font2": {
+      "decoded_sha256": "7fe4e55587951f4a59d65291b5cd406309f5d290a860b55cfbcacbdba92a7fa4",
+      "measurements": {
+        "0": {
+          "advance": 15,
+          "ink_box": [
+            1.0,
+            9.0,
+            13.0,
+            34.0
+          ]
+        },
+        "12": {
+          "advance": 30,
+          "ink_box": [
+            3.0,
+            9.0,
+            29.0,
+            34.0
+          ]
+        },
+        "13:10": {
+          "advance": 68,
+          "ink_box": [
+            3.0,
+            9.0,
+            66.0,
+            34.0
+          ]
+        },
+        "1st": {
+          "advance": 39,
+          "ink_box": [
+            3.0,
+            8.0,
+            39.0,
+            34.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 106,
+          "ink_box": [
+            3.0,
+            8.0,
+            104.0,
+            34.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 159,
+          "ink_box": [
+            1.0,
+            8.0,
+            158.0,
+            34.0
+          ]
+        }
+      },
+      "slot": 1
+    },
+    "font3": {
+      "decoded_sha256": "330765bb8482457120520cdb9d354a91d6e615f2ae75c9fa93b4542a3882282c",
+      "measurements": {
+        "0": {
+          "advance": 11,
+          "ink_box": [
+            1.0,
+            6.0,
+            10.0,
+            23.0
+          ]
+        },
+        "12": {
+          "advance": 22,
+          "ink_box": [
+            2.0,
+            6.0,
+            21.0,
+            23.0
+          ]
+        },
+        "13:10": {
+          "advance": 50,
+          "ink_box": [
+            2.0,
+            6.0,
+            49.0,
+            23.0
+          ]
+        },
+        "1st": {
+          "advance": 28,
+          "ink_box": [
+            2.0,
+            5.0,
+            27.0,
+            23.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 76,
+          "ink_box": [
+            2.0,
+            4.0,
+            75.0,
+            23.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 109,
+          "ink_box": [
+            1.0,
+            4.0,
+            108.0,
+            23.0
+          ]
+        }
+      },
+      "slot": 2
+    },
+    "font4": {
+      "decoded_sha256": "60cc66a63ca3ae443b2c38e6ff7abaecfbfb484866433394be151106474afa7e",
+      "measurements": {
+        "0": {
+          "advance": 9,
+          "ink_box": [
+            0.0,
+            4.0,
+            8.0,
+            16.0
+          ]
+        },
+        "12": {
+          "advance": 18,
+          "ink_box": [
+            2.0,
+            4.0,
+            17.0,
+            15.0
+          ]
+        },
+        "13:10": {
+          "advance": 40,
+          "ink_box": [
+            2.0,
+            4.0,
+            39.0,
+            16.0
+          ]
+        },
+        "1st": {
+          "advance": 25,
+          "ink_box": [
+            2.0,
+            4.0,
+            24.0,
+            16.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 62,
+          "ink_box": [
+            2.0,
+            4.0,
+            61.0,
+            16.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 95,
+          "ink_box": [
+            1.0,
+            4.0,
+            94.0,
+            16.0
+          ]
+        }
+      },
+      "slot": 3
+    },
+    "font5": {
+      "decoded_sha256": "19710938c6095a92d363880e9b3d5ae89f32abbc0e369c4d5f6fda81596e8a99",
+      "measurements": {
+        "0": {
+          "advance": 19,
+          "ink_box": [
+            1.0,
+            6.0,
+            18.0,
+            24.0
+          ]
+        },
+        "12": {
+          "advance": 34,
+          "ink_box": [
+            4.0,
+            6.0,
+            33.0,
+            24.0
+          ]
+        },
+        "13:10": {
+          "advance": 75,
+          "ink_box": [
+            4.0,
+            6.0,
+            74.0,
+            24.0
+          ]
+        },
+        "1st": {
+          "advance": 49,
+          "ink_box": [
+            4.0,
+            6.0,
+            48.0,
+            24.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 122,
+          "ink_box": [
+            4.0,
+            6.0,
+            121.0,
+            24.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 175,
+          "ink_box": [
+            1.0,
+            6.0,
+            174.0,
+            24.0
+          ]
+        }
+      },
+      "slot": 4
+    },
+    "font6": {
+      "decoded_sha256": "c2593f3aae285dbe4b15ae35d987640ba0ef10b146dacbdd5d6464d3797ced3e",
+      "measurements": {
+        "0": {
+          "advance": 16,
+          "ink_box": [
+            1.0,
+            6.0,
+            15.0,
+            24.0
+          ]
+        },
+        "12": {
+          "advance": 32,
+          "ink_box": [
+            2.0,
+            6.0,
+            31.0,
+            24.0
+          ]
+        },
+        "13:10": {
+          "advance": 71,
+          "ink_box": [
+            2.0,
+            6.0,
+            70.0,
+            24.0
+          ]
+        },
+        "1st": {
+          "advance": 46,
+          "ink_box": [
+            2.0,
+            6.0,
+            45.0,
+            24.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 115,
+          "ink_box": [
+            2.0,
+            6.0,
+            114.0,
+            24.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 172,
+          "ink_box": [
+            0.0,
+            6.0,
+            172.0,
+            24.0
+          ]
+        }
+      },
+      "slot": 5
+    },
+    "font7": {
+      "decoded_sha256": "17ee70f82c080f6d392b2063a226edc513e2399c3b535a6d6e80d317bcaa313b",
+      "measurements": {
+        "0": {
+          "advance": 21,
+          "ink_box": [
+            0.0,
+            6.0,
+            20.0,
+            24.0
+          ]
+        },
+        "12": {
+          "advance": 30,
+          "ink_box": [
+            0.0,
+            6.0,
+            29.0,
+            24.0
+          ]
+        },
+        "13:10": {
+          "advance": 74,
+          "ink_box": [
+            0.0,
+            6.0,
+            73.0,
+            24.0
+          ]
+        },
+        "1st": {
+          "advance": 46,
+          "ink_box": [
+            0.0,
+            6.0,
+            45.0,
+            24.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 119,
+          "ink_box": [
+            0.0,
+            6.0,
+            118.0,
+            24.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 190,
+          "ink_box": [
+            0.0,
+            6.0,
+            189.0,
+            24.0
+          ]
+        }
+      },
+      "slot": 6
+    },
+    "font8": {
+      "decoded_sha256": "b775bc02454ab2e39fd4b39f0ff400c4af14848b4fccc429861abc2faec4f15f",
+      "measurements": {
+        "0": {
+          "advance": 24,
+          "ink_box": [
+            1.0,
+            7.0,
+            23.0,
+            27.0
+          ]
+        },
+        "12": {
+          "advance": 35,
+          "ink_box": [
+            1.0,
+            7.0,
+            34.0,
+            27.0
+          ]
+        },
+        "13:10": {
+          "advance": 85,
+          "ink_box": [
+            1.0,
+            7.0,
+            84.0,
+            27.0
+          ]
+        },
+        "1st": {
+          "advance": 47,
+          "ink_box": [
+            1.0,
+            7.0,
+            46.0,
+            27.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 126,
+          "ink_box": [
+            1.0,
+            7.0,
+            125.0,
+            27.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 227,
+          "ink_box": [
+            1.0,
+            7.0,
+            226.0,
+            27.0
+          ]
+        }
+      },
+      "slot": 7
+    },
+    "font9": {
+      "decoded_sha256": "2c0b1c47402feb9021cf57f037d633fab9f74e03d096fb741f26744f8602e828",
+      "measurements": {
+        "0": {
+          "advance": 10,
+          "ink_box": [
+            1.0,
+            2.0,
+            10.0,
+            16.0
+          ]
+        },
+        "12": {
+          "advance": 20,
+          "ink_box": [
+            2.0,
+            2.0,
+            19.0,
+            15.0
+          ]
+        },
+        "13:10": {
+          "advance": 45,
+          "ink_box": [
+            2.0,
+            2.0,
+            45.0,
+            16.0
+          ]
+        },
+        "1st": {
+          "advance": 26,
+          "ink_box": [
+            2.0,
+            2.0,
+            25.0,
+            16.0
+          ]
+        },
+        "1st & 10": {
+          "advance": 68,
+          "ink_box": [
+            2.0,
+            2.0,
+            68.0,
+            16.0
+          ]
+        },
+        "4th & Inches": {
+          "advance": 99,
+          "ink_box": [
+            1.0,
+            2.0,
+            99.0,
+            16.0
+          ]
+        }
+      },
+      "slot": 8
+    }
+  },
+  "selected": {
+    "scores": "font8",
+    "small_text": "font4"
+  }
+}

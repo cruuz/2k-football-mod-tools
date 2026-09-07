@@ -637,6 +637,18 @@ class ScorebugReferenceReservations(unittest.TestCase):
             section=image.section(va,len(new))
             if section is not None and section.name == ".text":
                 self.assertLess(len(new),CAVE_MIN,label)
+                if va == 0xfbe43:
+                    # In-place MOV operand, not standalone code or a cave.
+                    self.assertEqual(old,struct.pack("<I",0xe6c438))
+                    self.assertEqual(new,struct.pack("<I",0xe6c43a))
+                    offset=scorebug.layout.sbpos.va_to_off(patched,va-1)
+                    insns=list(md.disasm(patched[offset:offset+5],va-1))
+                    self.assertEqual([(i.mnemonic,i.op_str,i.size) for i in insns],
+                                     [("mov","edx, 0xe6c43a",5)])
+                    literal=scorebug.layout.sbpos.va_to_off(retail,0xe6c438)
+                    self.assertEqual(retail[literal:literal+12],":%02d\0".encode("utf-16le"))
+                    self.assertEqual(patched[literal:literal+12],retail[literal:literal+12])
+                    continue
                 insns=list(md.disasm(new,va))
                 self.assertEqual(sum(i.size for i in insns),len(new),label)
                 self.assertTrue(all(i.mnemonic in ("nop","fadd") for i in insns),label)

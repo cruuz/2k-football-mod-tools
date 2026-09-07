@@ -1,3 +1,61 @@
+## r63-scorebug-exact2 integration, 2026-09-07
+
+This section supersedes contradictory default-selection statements in the
+older v10 and exact-v1 handoffs below. `scorebug` without a folder installs
+`espn-broadcast-exact-v1`; an explicit `scorebug_folder` installs the preserved
+`espn-reference-v10` scene, atlas and executable fields. The latter has exactly
+the landed v10 byte hashes. Keep `BuildPlan.scorebug_folder: str | None = None`,
+its normalization, preflight and forwarding to the existing static writer.
+All presets leave the folder empty; Basic/Advanced leave `scorebug` off and
+Experimental enables it. Runtime stays off in every preset. There is no new
+surface, owner, allocation or capability row in this integration.
+
+Protected changes still needed:
+
+- `packaging/release-allowlist.txt`: add exactly
+  `mod_editor/core/nfl2k5_scorebug_exact.py`.
+- `packaging/check_2k5_mod_studio_runtime.py`: add exactly
+  `"mod_editor.core.nfl2k5_scorebug_exact",` to its product imports.
+- `mod_editor/gui/beta62_options.py`: use the two help strings below. This
+  shared GUI file was left untouched in accordance with the brief.
+- `mod_editor/gui/build_panel_qt.py`: retain the `Experimental ESPN scorebar`
+  caption (26 characters), the folder field, and its existing `scorebug_folder`
+  forwarding. Its Build help must explicitly mention the folder override.
+- Claude regenerates `data/nfl2k5_cave_reservations.json` and source identities.
+  The existing static owner adds the exact-v1 FONT selectors, neutral label
+  colours and `0x000FBE43` operand; no new cave is introduced. Its complete
+  `MOV EDX` instruction and unchanged UTF-16 suffix are guarded.
+
+```python
+SCOREBUG_HELP = (
+    "Retail: Uses the original scoreboard. Patch: Uses the Raiders at Texans "
+    "broadcast layout with neutral panels, white scores, a red down box and a "
+    "light clock strip. A scorebar folder overrides this with your painted "
+    "template. Moves the kick meter up and hides the lineup strip. "
+    "EXPERIMENTAL / UNWITNESSED; fonts and colours still differ.")
+SCOREBUG_RUNTIME_HELP = (
+    "Retail: Uses the original team panels. Patch: Adds team gradients, logos, "
+    "small wordmarks and live timeout marks to the experimental scorebar. "
+    "Diagnostic only and off in every preset. EXPERIMENTAL / UNWITNESSED; "
+    "the game-entry freeze remains unresolved. Keep the six probe choices.")
+```
+
+Retain `_apply_all`'s tuple
+`(scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects")`,
+the `scorebug_runtime=scorebug_runtime` kwarg, request union and deferred final
+pass. The static writer remains `nfl2k5_scorebug_layout.apply_in_place(...,
+scorebug_folder=plan.scorebug_folder)`. Retain all four dispatcher dictionaries'
+`scorebug_xbe` / `scorebug_runtime` entries, plus both image dictionaries'
+`scorebug` / `scorebug_runtime_resources` entries. Read-only `xbe_status` and
+static image inspection recognize both complete shipped scenes. Writers select
+one explicit scene and refuse mixed, foreign or cross-version inputs before
+mutation; custom folder inspection requires that folder. V8/v9 remain refused.
+
+Gameplay Patches keeps both current `PATCHES` rows and `NEEDS_IMAGE` membership;
+the shared help contains both "Retail" and "Patch". No new dispatcher flag,
+Build option or capability registry entry is needed. The repaintable template
+compiler, source PNG catalog and its release checks remain intact.
+
 # r63 kickoff v3: collision producer and residual pose hold (2026-09-07)
 
 EXPERIMENTAL/UNWITNESSED. See `ASTRA_KICKOFF_V3_REPORT.md`. The existing
@@ -9441,3 +9499,101 @@ reservation at the untouched base as well (verified with this branch's paths
 stashed). Neither refusal was weakened; regenerating the release manifest
 clears both, and the memory-writes gate (79, both orders) and the pairwise
 suite (77) pass with this change.
+
+---
+
+# r63 broadcast scorebug exact comparison, 2026-09-07
+
+This section supersedes the r63 v9 scorebug handoff above. The new scene is
+`espn-broadcast-exact-v1`, and runtime resources are
+`scorebug-runtime-v3-broadcast-exact`. **EXPERIMENTAL / UNWITNESSED.** The
+measured geometry agrees with the real LV/HOU JPEG, but the pixel comparison
+does not pass. Do not label the result 1:1 or advertise a runtime freeze fix.
+See `ASTRA_SCOREBUG_EXACT_REPORT.md` and `docs/scorebug_ingame/exact/scores.json`.
+
+## Required protected integration
+
+Add this exact line to `packaging/release-allowlist.txt`:
+
+```text
+mod_editor/core/nfl2k5_scorebug_exact.py
+```
+
+Add this exact dotted import alongside the existing scorebug imports in
+`packaging/check_2k5_mod_studio_runtime.py`:
+
+```python
+"mod_editor.core.nfl2k5_scorebug_exact",
+```
+
+The existing ingame/resources modules import it in the product path. Without
+these two additions a release stage will be incomplete. The comparator tools
+and research PNG/JSON files do not need to enter the application closure.
+If research tools are packaged separately, include both
+`tools/nfl2k5_scorebug_projection.py` and `tools/nfl2k5_scorebug_exact.py` and
+provide their existing Pillow, numpy, Capstone and Unicorn research dependencies.
+Do not add numpy or Unicorn to an ordinary scorebug build requirement.
+
+Regenerate the protected cave manifest with the existing
+`tools/nfl2k5_cave_oracle.py manifest` process. The static owner's existing
+`xbe_specs()` now includes native font selectors, neutral team-label colours,
+and the four-byte operand at `0x000FBE43`. The operand changes
+`MOV EDX,0x00E6C438` to `MOV EDX,0x00E6C43A`, selecting the existing UTF-16
+`%02d` suffix. Its complete instruction and unchanged literal are tested.
+There is no new cave, owner or allocator request. Keep the existing complete
+forward/reverse gate unions. Refresh the generated source identity records.
+
+## Existing dispatcher, status, presets and interface
+
+- `_apply_all` already has
+  `(scorebug_runtime, scorebug_runtime_patch, "scorebug_runtime_patch", "experimental scorebug effects")`
+  at `nfl2k5_throw_tuning.py:1593`. Retain `scorebug_runtime: bool = False`,
+  `_selected_space_requests(... runtime=...)`, `_xbe_space_adapter` and the
+  existing final owner pass. The static path remains
+  `plan.scorebug and not plan.scorebug_runtime` in `mod_build.py:1146`, through
+  `nfl2k5_scorebug_layout.apply_in_place` and the additive ingame writer.
+- All four executable status dictionaries already call
+  `"scorebug_runtime": scorebug_runtime_patch.status(payload)` and
+  `"scorebug_xbe": scorebug_reference.xbe_status(payload)` (use `after` in
+  the final dictionary). Their current locations are 655/656, 782/783,
+  1758/1759 and 2091/2092. Keep these keys. The two image dictionaries also
+  retain `scorebug_runtime_resources`; static image status retains `scorebug`.
+  The updated modules supply the new identities; do not loosen foreign/mixed
+  refusal or accept old v8/v9 bytes as the new version.
+- `BuildPlan`: keep `scorebug: bool = False` and
+  `scorebug_runtime: bool = False`. Basic and Advanced leave static off;
+  Experimental enables static. Every preset leaves runtime off. Retain
+  runtime normalization, the deferred archive/XBE final pass, and the
+  existing conflict with hires scorebug edits. No new field or preset.
+- Gameplay Patches `PATCHES` remains the existing two rows with shared help;
+  `NEEDS_IMAGE` already includes both `scorebug` and `scorebug_runtime`.
+  Replace the shared `SCOREBUG_HELP` and `SCOREBUG_RUNTIME_HELP` in
+  `mod_editor/gui/beta62_options.py` with the concrete strings below.
+- Build `_option` captions: retain `Experimental ESPN scorebar` (26 chars)
+  and `Scorebug effects (diagnostic only)` (34 chars), `needs_image=True`,
+  the `NOT_TESTED` badge and the shared help/details references.
+- Capability registry: no new surface or row. Keep the runtime diagnostic
+  capability experimental with runtime `not-tested`. Update its resource
+  version/evidence if pinned there; do not promote it to runtime-proved.
+
+```python
+SCOREBUG_HELP = (
+    "Retail: Uses the original scoreboard. Patch: Uses a bar measured from the "
+    "Raiders at Texans broadcast, with a red down box, a light clock strip, "
+    "white scores and three decorative timeout marks on each side. Team panels "
+    "stay neutral. Moves the kick meter up and hides the lineup strip. "
+    "EXPERIMENTAL / UNWITNESSED; fonts and colours still differ from the reference.")
+SCOREBUG_RUNTIME_HELP = (
+    "Retail: Uses the original team panels. Patch: Adds team gradients, logos, "
+    "small wordmarks and live timeout marks to the experimental scorebar. "
+    "Diagnostic only and off in every preset. EXPERIMENTAL / UNWITNESSED; "
+    "the reported game-entry freeze is unresolved. Keep the six probe choices.")
+```
+
+No protected file was edited in this worktree. The existing runtime hook code,
+1408-byte RX and 128-byte RW requests, load/update ABI, timeout sources and
+six probe names are unchanged. This update changes panel/scene data, fonts
+selected from retail FONT objects, and the static play-clock format operand.
+A separate local glyph atlas has **not** been installed. The requested pixel
+match and glyph-binding fallback remain gaps; the report gives the measured
+font limits and the evidence required before claiming they are solved.

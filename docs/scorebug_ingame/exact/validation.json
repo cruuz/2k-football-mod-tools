@@ -1,0 +1,225 @@
+{
+  "dependencies": {
+    "Pillow": "10.2.0",
+    "capstone": "5.0.9",
+    "numpy": "1.26.4",
+    "unicorn": "2.1.4"
+  },
+  "development_failures": [
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/nfl2k5_scorebug_layout_test.py",
+      "disk_free_after": 107315294208,
+      "disk_free_before": 107315347456,
+      "peak_rss_kib": 146076,
+      "resolution": "Launched before scene repinning; then refreshed obsolete legacy preview sample/anchor expectations to the new scene.",
+      "returncode": 1,
+      "seconds": 1.01,
+      "skipped": 4,
+      "tests": 15
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "disk_free_after": 101034627072,
+      "disk_free_before": 101090992128,
+      "peak_rss_kib": 188216,
+      "resolution": "Fixed missing BuildPlan constructor arguments and the real per-state quantization shimmer; shared palettes now keep non-dash pixels identical.",
+      "returncode": 1,
+      "seconds": 164.879,
+      "skipped": 0,
+      "tests": 7
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "disk_free_after": 107314970624,
+      "disk_free_before": 107315425280,
+      "peak_rss_kib": 107760,
+      "resolution": "Launched before authoring regenerated the resource pins; retained refusal, then passed against the accepted pins.",
+      "returncode": 5,
+      "seconds": 33.395,
+      "skipped": 0,
+      "tests": 0
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "disk_free_after": 107345068032,
+      "disk_free_before": 101090992128,
+      "peak_rss_kib": 367584,
+      "resolution": "Historical v8 negative control must compare against historical rails [84,381,560,429], not the new larger vertical interval.",
+      "returncode": 1,
+      "seconds": 420.866,
+      "skipped": 0,
+      "tests": 14
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "disk_free_after": 107341250560,
+      "disk_free_before": 101047222272,
+      "peak_rss_kib": 516528,
+      "resolution": "The new format-string operand is tested within its full MOV EDX instruction, not decoded as four standalone instructions.",
+      "returncode": 1,
+      "seconds": 380.268,
+      "skipped": 0,
+      "tests": 95
+    }
+  ],
+  "diff_check": "passed",
+  "free_now": 113577021440,
+  "passed": 254,
+  "platform": "Linux-6.8.0-134-generic-x86_64-with-glibc2.39",
+  "py_compile": "passed",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "runtime_witnessed": false,
+  "skip_details": [
+    "test_every_texture_span_is_identical_either_way (__main__.ByteIdentityTests.test_every_texture_span_is_identical_either_way) ... skipped 'legacy typed-importer audit evidence absent; v7 has independent pins'",
+    "test_the_scene_span_is_identical_either_way (__main__.ByteIdentityTests.test_the_scene_span_is_identical_either_way) ... skipped 'the developer copy of the retail scene is not in this tree'",
+    "test_the_step_writes_the_expected_resource_bytes (__main__.FullDiscWriteTests.test_the_step_writes_the_expected_resource_bytes) ... skipped 'the developer copies this is compared against are not in this tree'",
+    "test_ball_live_hide_gate_retail_vs_persistent (__main__.ScorebugEmulationTests.test_ball_live_hide_gate_retail_vs_persistent) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+    "test_placement_mode_shows_one_mark_copy_and_one_frame (__main__.ScorebugEmulationTests.test_placement_mode_shows_one_mark_copy_and_one_frame) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+    "test_possession_change_timed_show_retail_vs_persistent (__main__.ScorebugEmulationTests.test_possession_change_timed_show_retail_vs_persistent) ... skipped 'bounded CPU tests require unicorn and NFL2K5_SCOREBUG_EMULATION_TEST=1'",
+    "The mockup used to read an intermediate glTF that is not in a release (and gated the ... skipped 'the intermediate glTF research export is not in this tree'"
+  ],
+  "skipped": 7,
+  "smallest_recorded_free_bytes": 101034627072,
+  "suites": [
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/nfl2k5_scorebug_layout_test.py",
+      "disk_free_after": 107302277120,
+      "disk_free_before": 107302412288,
+      "log_result": "OK (skipped=4)",
+      "log_sha256": "9356aeb86115a6475e2d33718ca95d2539bc32884c11df86279c0eaee8eeb3a4",
+      "peak_rss_kib": 146504,
+      "returncode": 0,
+      "seconds": 2.323,
+      "skipped": 4,
+      "tests": 15
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_exact.py",
+      "disk_free_after": 107279056896,
+      "disk_free_before": 107287527424,
+      "log_result": "OK",
+      "log_sha256": "3013cc4113dcb3dacf7a6ae6976bd9cef3da3d1e542287e9b7153c9b79be2563",
+      "peak_rss_kib": 208584,
+      "returncode": 0,
+      "seconds": 138.386,
+      "skipped": 0,
+      "tests": 7
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_ingame.py",
+      "disk_free_after": 107302277120,
+      "disk_free_before": 107302416384,
+      "log_result": "OK",
+      "log_sha256": "ee505483d8a8675bc8294243d7793c933691d7a4058d29e3a307e97aeabeb7ce",
+      "peak_rss_kib": 137756,
+      "returncode": 0,
+      "seconds": 8.697,
+      "skipped": 0,
+      "tests": 11
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_native.py",
+      "disk_free_after": 107307409408,
+      "disk_free_before": 107302408192,
+      "log_result": "OK",
+      "log_sha256": "39aba0a2d3cacde56175d8e66b381f80306d7cf58cd5c99fb1424a3b72309de0",
+      "peak_rss_kib": 203212,
+      "returncode": 0,
+      "seconds": 134.963,
+      "skipped": 0,
+      "tests": 4
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py",
+      "disk_free_after": 107288674304,
+      "disk_free_before": 107302404096,
+      "log_result": "OK",
+      "log_sha256": "4f0abd447c265478bdbdc1a3e218f30c60e4ac3192c2036ba830d688cd7fefe4",
+      "peak_rss_kib": 335744,
+      "returncode": 0,
+      "seconds": 442.934,
+      "skipped": 0,
+      "tests": 14
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_resources.py",
+      "disk_free_after": 107307495424,
+      "disk_free_before": 107302400000,
+      "log_result": "OK",
+      "log_sha256": "0edd12c9e79e0542dfa6d8cab853cc33834821bda4186b99146c8e17f588e7c0",
+      "peak_rss_kib": 168716,
+      "returncode": 0,
+      "seconds": 102.408,
+      "skipped": 0,
+      "tests": 6
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_runtime.py",
+      "disk_free_after": 107295215616,
+      "disk_free_before": 107307061248,
+      "log_result": "OK",
+      "log_sha256": "dd2fffd7eedd5fa7657002f50c197f67a3293893c4ea38f23a0cbf8c02581e18",
+      "peak_rss_kib": 243960,
+      "returncode": 0,
+      "seconds": 117.332,
+      "skipped": 0,
+      "tests": 12
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_source_art.py",
+      "disk_free_after": 107302367232,
+      "disk_free_before": 107302412288,
+      "log_result": "OK (skipped=3)",
+      "log_sha256": "3d27dbf58896462799a9239b2e7c0363419db674c7dd0fe01147b54b8fdaa3f1",
+      "peak_rss_kib": 48100,
+      "returncode": 0,
+      "seconds": 0.494,
+      "skipped": 3,
+      "tests": 13
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_unified_adapter.py",
+      "disk_free_after": 107315351552,
+      "disk_free_before": 107315404800,
+      "log_result": "OK",
+      "log_sha256": "09b13a290978356a0669f819c95ec0ae11e236ad3be55cf1601dff9071c5bb76",
+      "peak_rss_kib": 30608,
+      "returncode": 0,
+      "seconds": 0.186,
+      "skipped": 0,
+      "tests": 5
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_xbe_patch_cave_references.py",
+      "disk_free_after": 107306377216,
+      "disk_free_before": 107319033856,
+      "log_result": "OK",
+      "log_sha256": "36ea0b21cb7c4c56ee4b1f8bf06c4cb3487a31a05abfc96e7eb1aba373aaa52e",
+      "peak_rss_kib": 502756,
+      "returncode": 0,
+      "seconds": 385.686,
+      "skipped": 0,
+      "tests": 95
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_xbe_patch_memory_writes.py",
+      "disk_free_after": 107344388096,
+      "disk_free_before": 101047222272,
+      "log_result": "OK",
+      "log_sha256": "cf8479003303933644ec3e8b7ab42b124780267321db451521b562b70f8fcd18",
+      "peak_rss_kib": 314268,
+      "returncode": 0,
+      "seconds": 295.651,
+      "skipped": 0,
+      "tests": 79
+    }
+  ],
+  "supplement": {
+    "command": "QT_QPA_PLATFORM=offscreen /usr/bin/time -v python3 tests/mod_editor/test_nfl2k5_scorebug_projection.py ProjectionTests.test_static_replay_and_native_overlap_keep_retail_wrapper_plus_14",
+    "log_sha256": "88e049824d3c3bbf716b49d07e7cafafca8bbc88e137a4118366bf6ed20750be",
+    "reason": "After naming the proof flag native_refit_verified and explicitly setting pixel_match_claimed=false.",
+    "returncode": 0,
+    "tests": 1
+  },
+  "total_discovered": 261
+}

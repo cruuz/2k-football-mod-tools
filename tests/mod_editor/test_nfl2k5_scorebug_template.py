@@ -42,7 +42,7 @@ class AuthoringTests(unittest.TestCase):
         with (mock.patch.object(r,'atlas_v8',side_effect=AssertionError('disc art forbidden')),
               mock.patch.object(r,'texture_image',side_effect=AssertionError('disc art forbidden'))):
             compiled=t.compile_folder(self.folder)
-            self.assertEqual(r.atlas({'espn1':b'foreign','nflShield1':b'foreign'}).tobytes(),compiled.image.tobytes())
+            self.assertEqual(r.atlas({'espn1':b'foreign','nflShield1':b'foreign'},scorebug_folder=self.folder).tobytes(),compiled.image.tobytes())
         with Image.open(t.DEFAULT_FOLDER/'atlas_1x.png') as image:
             self.assertEqual(image.convert('RGBA').tobytes(),compiled.image.tobytes())
         self.assertFalse(compiled.receipt['retail_art_used'])
@@ -244,7 +244,7 @@ class RetailTemplateTests(unittest.TestCase):
         self.assertEqual(before,self.read_owned(path,base,xoff))
 
     def test_larger_score_font_uses_two_existing_fields_and_keeps_font_resources_retail(self):
-        patched,_=r.apply_xbe(self.xbe)
+        patched,_=r.apply_xbe(self.xbe,scorebug_folder=self.folder)
         for va in (0xa95950,0xa95988):
             off=r.layout.sbpos.va_to_off(patched,va)
             self.assertEqual(struct.unpack_from('<I',self.xbe,off)[0],0)

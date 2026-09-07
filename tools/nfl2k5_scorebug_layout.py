@@ -229,14 +229,14 @@ def sha(b: bytes) -> str:
 
 class Mesh:
     def __init__(self, data: bytes, *, runtime: bool = False, static: bool = False):
-        expected = SCNE_SHA
+        expected = (SCNE_SHA,)
         if runtime:
             from mod_editor.core.nfl2k5_scorebug_resources import RUNTIME_SCENE_SHA256
-            expected = RUNTIME_SCENE_SHA256
+            expected = (RUNTIME_SCENE_SHA256,)
         elif static:
-            from mod_editor.core.nfl2k5_scorebug_resources import STATIC_SCENE_SHA256
-            expected = STATIC_SCENE_SHA256
-        if len(data) != SCNE_SIZE or sha(data) != expected:
+            from mod_editor.core.nfl2k5_scorebug_resources import STATIC_SCENE_SHA256, TEMPLATE_SCENE_SHA256
+            expected = (STATIC_SCENE_SHA256, TEMPLATE_SCENE_SHA256)
+        if len(data) != SCNE_SIZE or sha(data) not in expected:
             raise SystemExit(f"not the pinned decoded score_bug SCNE ({len(data)} bytes, {sha(data)[:12]})")
         self.buf = bytearray(data)
         self.scale = struct.unpack_from("<f", data, SHAPE + 0x10)[0]

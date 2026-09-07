@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prove the current static bar and reconstruct v8 with bounded native execution.
+"""Project broadcast scenes and reconstruct historical inputs with native FONT submissions.
 
 This research tool is not imported by the application. It installs no scorebug
 runtime code. Geometry, text bindings and glyph submissions run on the CPU;
@@ -220,8 +220,8 @@ def read_fonts(pack):
 
 def static_receipts(payload, spans, *, scorebug_folder=None):
     """Exact current-template replay and native overlapping decompression receipts."""
-    patched, xbe_receipt = r.apply_xbe(payload)
-    if r.apply_xbe(patched)[0] != patched:
+    patched, xbe_receipt = r.apply_xbe(payload, scorebug_folder=scorebug_folder)
+    if r.apply_xbe(patched, scorebug_folder=scorebug_folder)[0] != patched:
         raise ValueError('static XBE replay changed bytes')
     m = StaticMachine(patched)
     resources = []
@@ -246,7 +246,9 @@ def static_receipts(payload, spans, *, scorebug_folder=None):
                               'wrapper_plus_14_after': struct.unpack_from('<I', after, 20)[0]})
     finally:
         m.close()
-    return dict(version=r.VERSION, static=True, v10=True, xbe=xbe_receipt, xbe_replay_identical=True,
+    return dict(version=r.scene_version(scorebug_folder=scorebug_folder), static=True,
+                v10=scorebug_folder is not None, native_refit_verified=True, pixel_match_claimed=False,
+                xbe=xbe_receipt, xbe_replay_identical=True,
                 runtime_hooks=[dict(va=hex(va), bytes=original.hex()) for va, original in STATIC_CALLS],
                 resources=resources, temporary_disc_created=False)
 
@@ -254,36 +256,53 @@ def static_receipts(payload, spans, *, scorebug_folder=None):
 def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, slide=1.0,
                     score_transforms=True, score_phase=0.0, texture_span=None, fonts=None,
                     capture=None, baseline_v8=False, visible_elements=(0, 1),
-                    score_values=(0, 0), previous_scores=(0, 0)):
+                    score_values=(0, 0), previous_scores=(0, 0), baseline_v9=False,
+                    runtime_textures=None, identity=None, timeouts=(3, 3), scorebug_folder=None):
     """Run the actual scene relocator, setup, frame driver and camera activation.
 
     Startup animation selection, optional font IDs, per-frame game predicates
     and the GPU render-list boundary are replaced. Settled score transforms run
     by default. score_transforms=False reproduces the old harness omission.
     """
+    if r.digest(decoded) == art.TEMPLATE_SCENE_SHA256 and scorebug_folder is None:
+        from mod_editor.core.nfl2k5_scorebug_template import DEFAULT_FOLDER
+        scorebug_folder = DEFAULT_FOLDER
+    if scorebug_folder is not None and (baseline_v8 or baseline_v9 or runtime_textures is not None):
+        raise ValueError('v10 folder scene cannot use historical or exact runtime bindings')
     validate_native_code(payload)
     if widescreen:
         payload = wide.apply(payload)[0]
-    payload = r.apply_xbe(payload)[0]
-    if baseline_v8:
+    payload = r.apply_xbe(payload, scorebug_folder=scorebug_folder)[0]
+    if baseline_v8 or baseline_v9:
         # Reconstruct the historical data fields in this CPU fixture only.
         # First undo the v9-only fields, then install the retained v8 specs.
         buf = bytearray(payload)
         for va, old, _new, _label in r.xbe_specs():
             off = r.layout.sbpos.va_to_off(payload, va)
             buf[off:off + len(old)] = old
-        for va, _old, new, _label in r.xbe_specs(baseline_v8=True):
+        for va, _old, new, _label in r.xbe_specs(baseline_v8=baseline_v8, baseline_v9=baseline_v9):
             off = r.layout.sbpos.va_to_off(payload, va)
             buf[off:off + len(new)] = new
         for section in r.bs._sections(buf):
             off = section.header_offset + 36
             buf[off:off + 20] = r.bs.section_digest(buf, section)
         payload = bytes(buf)
+    if runtime_textures is not None:
+        if baseline_v8 or baseline_v9:
+            raise ValueError('historical scene cannot use the current runtime')
+        from mod_editor.core import nfl2k5_scorebug_runtime as runtime
+        payload = runtime.apply(payload)[0]
     m = StaticMachine(payload)
+    if identity is not None:
+        m.identity(**identity)
     m.put(m.home, score_values[0])
     m.put(m.away, score_values[1])
+    m.put(m.home + 4, timeouts[0]); m.put(m.away + 4, timeouts[1])
+    loaded_textures = {}
     if texture_span is not None:
-        m.load_texture(texture_span)
+        loaded_textures[hex(m.load_texture(texture_span))] = texture_span
+    for span in runtime_textures or ():
+        loaded_textures[hex(m.load_texture(span))] = span
     m.uc.mem_write(r.layout.sbpos.X_SLOT, struct.pack('<2f', *root))
     body = m.alloc(len(decoded)); m.uc.mem_write(body, decoded)
     # No startup animation controller or font renderer in this geometry fixture.
@@ -343,7 +362,7 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         world_positions.append(world)
         positions.append(project(world))
     anchors = {}
-    for name in (r.V8_ANCHORS if baseline_v8 else r.ANCHORS):
+    for name in (r.V8_ANCHORS if baseline_v8 else r.V9['ANCHORS'] if baseline_v9 else r.V10['ANCHORS'] if scorebug_folder is not None else r.ANCHORS):
         out = m.alloc(16)
         m.run(0xfb640, ecx=out, edx=0x4f6950, eax=matrices + r.layout.T[name] * 64)
         anchors[name] = project(floats(out, 3))
@@ -358,13 +377,24 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
         materials.append(dict(name=m.read_string(m.get(at)), flags=hex(m.get(at + 8)),
                               visible=not bool(m.get(at + 8) & 1), texture=hex(m.get(at + 0x30))))
     visible = {row['name'] for row in materials if row['visible']}
-    objects = {name: bounds(range(lo, hi + 1)) for lo, hi, name in r.layout.SUBMESHES
-               if name in visible}
+    objects = {}
+    for k, indices in r.layout.strips(decoded):
+        lo, hi, name = r.layout.SUBMESHES[k]
+        if name not in visible:
+            continue
+        live = set()
+        for j in range(len(indices) - 2):
+            triangle = indices[j:j + 3]
+            a, b, c = [positions[v] for v in triangle]
+            if abs((b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1])) > 1e-6:
+                live.update(triangle)
+        objects[name] = bounds(sorted(live) if live else range(lo, hi + 1))
     frame_name = next(name for name in ('yscore_buga', 'yscore_buga1') if name in visible)
     root_matrix = list(floats(matrices, 16))
     viewport = list(floats(wide.ACTIVE_CAMERA_VA + 0x250, 8))
     if capture is not None:
-        capture.update(machine=m, matrices=matrices, body=body, project=project)
+        capture.update(machine=m, matrices=matrices, body=body, project=project,
+                       texture_spans=loaded_textures)
     else:
         m.close()
     return dict(schema='nfl2k5_scorebug_native_projection/v2', experimental=True, runtime_witnessed=False,
@@ -373,8 +403,8 @@ def native_geometry(payload, decoded, *, root=r.ROOT, widescreen=False, mode=0, 
                 native_camera=list(camera), hud_viewport=viewport,
                 positions=positions, world_positions=world_positions, anchors=anchors,
                 materials=materials, objects=objects, score_transforms=score_transforms,
-                scorebug_runtime_installed=False,
-                static_version='espn-reference-v8' if baseline_v8 else r.VERSION,
+                scorebug_runtime_installed=runtime_textures is not None,
+                static_version='espn-reference-v8' if baseline_v8 else 'espn-reference-v9' if baseline_v9 else r.scene_version(scorebug_folder=scorebug_folder),
                 score_phase=score_phase, score_values=list(score_values), previous_scores=list(previous_scores),
                 visible_elements=list(visible_elements),
                 frame=objects[frame_name], frame_material=frame_name,
@@ -491,8 +521,8 @@ def native_team_binding_audit(capture):
     return cases
 
 
-def reference_rails(widescreen=False):
-    rails = [84, 381, 560, 429]
+def reference_rails(widescreen=False, *, scorebug_folder=None):
+    rails = [84, 381, 560, 429] if scorebug_folder is not None else list(r.exact.RAILS)
     if widescreen:
         for i in (0, 2):
             rails[i] = 320 + (rails[i] - 320) * 27 / 32
@@ -502,7 +532,9 @@ def reference_rails(widescreen=False):
 def containment_failures(geometry, rails=None, tolerance=2):
     """Acceptance predicate covering every nondegenerate visible object/glyph."""
     if rails is None:
-        rails = reference_rails(geometry['widescreen'])
+        rails = reference_rails(geometry['widescreen'], scorebug_folder=(
+            True if geometry.get('static_version') in
+            (r.TEMPLATE_VERSION, 'espn-reference-v8', 'espn-reference-v9') else None))
     def outside(box):
         return any((box[0] < rails[0] - tolerance, box[1] < rails[1] - tolerance,
                     box[2] > rails[2] + tolerance, box[3] > rails[3] + tolerance))
@@ -511,7 +543,7 @@ def containment_failures(geometry, rails=None, tolerance=2):
         if box[2] - box[0] > .01 and box[3] - box[1] > .01 and outside(box):
             failures[name] = box
     for draw in geometry.get('draws', []):
-        if draw['vertices']:
+        if draw['vertices'] and any(int(v['color'], 16) >> 24 for v in draw['vertices']):
             points = [v['screen'] for v in draw['vertices']]
             box = [min(p[0] for p in points), min(p[1] for p in points),
                    max(p[0] for p in points), max(p[1] for p in points)]
@@ -520,7 +552,8 @@ def containment_failures(geometry, rails=None, tolerance=2):
     return failures
 
 
-def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive=False):
+def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive=False,
+                  texture_spans=None, background=None):
     """Software diagnostic of captured inputs; GPU blend/cull policy is explicit.
 
     Native FONT quads, UVs and colours replace all fabricated preview strings.
@@ -531,15 +564,28 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
     import math
     from PIL import Image, ImageDraw
     from nfl_main_menu_font import rgba_from_font
-    im = Image.new('RGBA', (640, 480), (44, 83, 39, 255))
+    im = (background.convert('RGBA').copy() if background is not None else
+          Image.new('RGBA', (640, 480), (44, 83, 39, 255)))
+    if im.size != (640, 480):
+        raise ValueError('native raster background must be 640x480')
     draw = ImageDraw.Draw(im)
-    for x in range(0, 640, 80):
-        draw.line((x, 0, x + 95, 480), fill=(224, 235, 215, 255), width=2)
+    if background is None:
+        for x in range(0, 640, 80):
+            draw.line((x, 0, x + 95, 480), fill=(224, 235, 215, 255), width=2)
     depth = [float('inf')] * (640 * 480)
     pixels = im.load()
     chunk, body, _ = r.decode(texture_span)
     tex = r.tx.parse_texture(body, chunk)
     atlas = Image.frombytes('RGBA', (tex.width, tex.height), r.tx.texture_to_rgba(body, chunk, tex))
+    material_atlases = {}
+    texture_receipts = {}
+    for descriptor, span in (texture_spans or {}).items():
+        chunk, body, _ = r.decode(span)
+        tex = r.tx.parse_texture(body, chunk)
+        material_atlases[descriptor] = Image.frombytes('RGBA', (tex.width, tex.height),
+                                                      r.tx.texture_to_rgba(body, chunk, tex))
+        texture_receipts[descriptor] = dict(name=tex.name, span_sha256=r.digest(span),
+                                            dimensions=[tex.width, tex.height])
     font_atlases = {font.name: Image.frombytes('RGBA', (font.width, font.height), rgba_from_font(font))
                     for font in fonts}
     def color(word):
@@ -593,6 +639,11 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
         uv.append([v / (32768 if v < 0 else 32767) * uv_transform[k] + uv_transform[k+2]
                    for k, v in enumerate(q)])
     visible = {m['name'] for m in geometry['materials'] if m['visible']}
+    bound = {m['name']: m['texture'] for m in geometry['materials']}
+    if geometry.get('scorebug_runtime_installed'):
+        missing = {bound[name] for name in visible if bound[name] not in material_atlases}
+        if missing:
+            raise ValueError('runtime raster is missing native texture descriptors: ' + ', '.join(sorted(missing)))
     winding = {}
     for k, indices in r.layout.strips(decoded):
         name = r.layout.SUBMESHES[k][2]
@@ -608,7 +659,7 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
             area = (b[0]-a[0])*(c[1]-a[1]) - (c[0]-a[0])*(b[1]-a[1])
             if abs(area) > 1e-6:
                 winding[name]['positive' if area > 0 else 'negative'] += 1
-            triangle(atlas, pts, [uv[v] for v in vs], [colors[v] for v in vs],
+            triangle(material_atlases.get(bound[name], atlas), pts, [uv[v] for v in vs], [colors[v] for v in vs],
                      [geometry['world_positions'][v][2] for v in vs], cull=cull_positive)
     for row in geometry['draws']:
         vertices = row['vertices']
@@ -625,6 +676,9 @@ def render_native(decoded, texture_span, fonts, geometry, path, *, cull_positive
     draw.text((8, 468), 'EXPERIMENTAL / CPU FIXTURE / NOT A GAME CAPTURE', fill='white')
     im.convert('RGB').save(path)
     return dict(uv_transform=list(uv_transform), winding=winding,
+                rendered_materials={name: dict(descriptor=bound[name],
+                    **texture_receipts.get(bound[name], dict(name='score_buga',
+                       span_sha256=r.digest(texture_span), dimensions=[64, 64]))) for name in sorted(visible)},
                 raster_policy=dict(depth='less-equal model', blend='vertex * texture, source alpha model',
                                    cull_positive=cull_positive, gpu_state_proved=False))
 
@@ -668,10 +722,13 @@ def v8_baseline(spans):
 
 
 def main(argv=None):
-    # The public CLI follows the current writer. Never overwrite the preserved
-    # v9 evidence with v10 resources under historical filenames.
-    from nfl2k5_scorebug_template_proof import main as prove_template
-    return prove_template(argv)
+    """An explicit --folder retains the v10 proof CLI; default compares exact."""
+    args = list(sys.argv[1:] if argv is None else argv)
+    if any(arg == '--folder' or arg.startswith('--folder=') for arg in args):
+        from nfl2k5_scorebug_template_proof import main as prove_template
+        return prove_template(args)
+    from nfl2k5_scorebug_exact import main as exact_main
+    return exact_main(args)
 
 
 if __name__ == '__main__':
