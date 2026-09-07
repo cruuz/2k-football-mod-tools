@@ -218,11 +218,15 @@ def rebuild(source, output, *, expected_plan=None, overwrite=False, progress=Non
     source, output = Path(source).resolve(), Path(output).absolute()
     planned = plan(source)
     require(expected_plan is None or planned == expected_plan, "stale Crib reclaim plan")
-    # Respect the workstation floor for large acceptance builds; small fixtures
-    # do not consume a full disc. The transaction also checks its exact budget.
+    # The staged shrink needs its scratch bytes plus a small margin on the output
+    # drive; the transaction also checks its exact budget. (The 100 GiB workstation
+    # floor from the development brief is not a product rule.)
     if planned["source_bytes"] > 1024**3:
-        require(shutil.disk_usage(output.parent).free >= planned["scratch_bytes"] + 100 * 1024**3,
-                "Crib rebuild would leave less than 100 GiB free")
+        needed = planned["scratch_bytes"] + 1024**3
+        free = shutil.disk_usage(output.parent).free
+        require(free >= needed,
+                f"Not enough free space for the Crib rebuild: needs {needed / 1024**3:.1f} GiB, "
+                f"{free / 1024**3:.1f} GiB free")
 
     def build(_directory, staged):
         if planned["already_applied"]:

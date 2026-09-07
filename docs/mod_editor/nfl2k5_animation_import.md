@@ -97,8 +97,8 @@ python3 -m mod_editor.core.nfl2k5_animation_import --index /path/vc_53450030/0 -
 
 Every writer stages a copy, preflights all members before writing, verifies the
 result, closes handles, and publishes a new output plus a receipt. It streams
-through bounded buffers. It refuses a large copy that would leave less than
-100 GiB free on the output drive. No growth writer or allocator is used here.
+through bounded buffers. The output drive needs room for the copy plus a small margin. No growth writer or
+allocator is used here.
 
 Before promising import, use the exact witness list in
 `ASTRA_BONE_IMPORT_REPORT.md`. Passing offline comparisons does not establish

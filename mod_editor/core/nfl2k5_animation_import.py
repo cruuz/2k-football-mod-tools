@@ -270,11 +270,10 @@ def write_copy(source, destination, edits, *, receipt=None, progress=None):
     preflight_file(source, edits)
     size = source.stat().st_size
     destination.parent.mkdir(parents=True, exist_ok=True)
-    require(shutil.disk_usage(destination.parent).free >= size + 1024*1024, 'Not enough space for the output copy')
-    # Real acceptance builds have a stricter, documented disk floor.
-    if size > 1024**3:
-        require(shutil.disk_usage(destination.parent).free >= 100*1024**3 + size,
-                'The output copy would leave less than 100 GiB free')
+    free = shutil.disk_usage(destination.parent).free
+    require(free >= size + 64 * 1024 * 1024,
+            f'Not enough space for the output copy: needs {(size + 64 * 1024 * 1024) / 1024**3:.1f} GiB, '
+            f'{free / 1024**3:.1f} GiB free')
     actual = []
     with tempfile.TemporaryDirectory(prefix='.animation-copy-', dir=destination.parent) as folder:
         stage = (Path(folder)/'output').resolve()
