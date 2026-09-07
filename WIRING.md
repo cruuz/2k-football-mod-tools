@@ -10160,3 +10160,81 @@ Compare a matching allocator-only control, keep required XBE/archive pairings,
 and use existing scorebug diagnostic probes. Capture stopped PC/I/O/heap/GPU
 state and frame counters; looping audio is not proof of a music failure.
 No per-owner gameplay fix or runtime performance claim is ready to publish.
+
+## r64 MyCareer in-game mode, M1 design and native prerequisites
+
+See `ASTRA_MYCAREER_MODE_DESIGN.md` and `ASTRA_MYCAREER_MODE_REPORT.md`.
+M1 changes no production writer, native hook, REQUESTS, BuildPlan or preset.
+The new audit and route suites are development evidence, not a playable mode
+or release capability. Do not remove the current setup guard based on M1.
+
+Concrete protected handoff once M2 actually satisfies its exit criteria:
+
+- `nfl2k5_throw_tuning.py`: keep the existing `_apply_all` allocator union
+  and MyCareer entry, `my_career` kwarg, adapter and `my_career_patch` owner.
+  Its generic new-mode branch must call `my_career_patch.apply(payload)`
+  with no player setup. Retain explicit legacy setup handling only for legacy
+  saves/builds. `_selected_space_requests` and `_xbe_space_adapter` continue
+  selecting `my_career_patch.REQUESTS`; never reserve an additional mode owner
+  for the same code. If implementation enlarges REQUESTS, first update the
+  unprotected budget fixture, stack compose tuple and all three manifest-owner
+  lists, and prove the union. M1's request sizes have not changed.
+- All four status dictionaries (executable inspection, image inspection,
+  apply result, copied-image result) must retain `my_career` from the same
+  exact `status(payload)`, including `_grown_status_fields`. Add a readiness
+  detail only from a real owner receipt; `applied` alone must not mean the
+  new mode is implemented, witnessed or that a save was created. Never treat
+  missing seed bytes as foreign once the new owner format supports seedless
+  mode; mixed versions still refuse before mutation.
+- `mod_build.py`: retain `BuildPlan.my_career: bool = False`. After the new
+  runtime lands, allow `my_career=True, my_career_setup=None` through current
+  normalization/freezing/deferral/final pass. Replace the mandatory setup
+  rejection at the current lines 894..899 with the owner's actual version
+  contract. Keep `my_career_setup` as an optional legacy project field, not
+  a new-career requirement. Basic, Advanced and Experimental remain OFF until
+  a separate acceptance decision; no preset is changed by this milestone.
+- `gameplay_patches_panel_qt.py`: only after M2, remove setup-file dependency
+  from new-mode readiness, `_refresh`, plan capture and the setup chooser.
+  Retain `my_career` in `NEEDS_IMAGE`. Replacement PATCHES description:
+  `Retail controls a franchise team. Patch adds MyCareer: create MyPlayer
+  in the game, choose a team, play and practice from your apartment, and
+  save your career. Experimental / Unwitnessed.` This text contains literal
+  `Retail` and `Patch`; do not use it while the runtime is incomplete.
+- `build_panel_qt.py`: future `_option` caption exactly
+  `MyCareer: create MyPlayer in the game` (35 characters). Remove its
+  mandatory JSON field/readiness error for the new format. Generic disc build
+  has no name, college, player ordinal or prepared save parameter. Existing
+  projects carrying a legacy seed need an explicit compatibility indication.
+- `studio_qt.py`: stop directing new-mode users to preparation on the old
+  MyCareer page after the new runtime is ready. Do not remove or repurpose
+  unrelated GUI panels in this branch. The feature's own panel may retain a
+  clearly labelled legacy save tool; it is not part of the player flow.
+- `packaging/release-allowlist.txt`: no new runtime line for M1. Existing
+  `mod_editor/core/nfl2k5_my_career.py` and
+  `mod_editor/core/nfl2k5_my_career_code.py` remain. The audit tool and unittest
+  fixtures are development-only and must not be imported by shipped runtime.
+  Any later new runtime module, authored image or capability file requires an
+  explicit allowlist line and closure check after its actual path exists.
+- `packaging/check_2k5_mod_studio_runtime.py`: no M1 import addition. Keep the
+  two existing MyCareer core imports; add actual new runtime imports only at
+  their implementation milestone. No dependency on test fixtures or private
+  corpus/retail paths is permitted.
+- Capability registry: no new installed surface in M1. Future in-game mode
+  updates the existing MyCareer object in
+  `docs/mod_editor/nfl2k5_my_career_capabilities.json`, not a duplicate owner.
+  Backend command stays `python3 -m mod_editor.core.nfl2k5_my_career info`;
+  validation command must resolve a real dotted module. Replace Studio/draft
+  setup instructions only when the new loop is implemented. Keep runtime
+  `not-tested` and the witness list; resource checks are not Noah's witness.
+- `data/nfl2k5_cave_reservations.json`: never edit its source hashes manually.
+  No production source drift is introduced in M1. Regenerate with
+  `tools/nfl2k5_cave_oracle.py manifest` after actual hook/source integration.
+  No broad unknown/free exemption is authorized for the proposed save tail.
+
+Cross-owner contracts, also pending real implementation: the Practice launch
+helper must recognize the sealed MyCareer hub as its retained parent while
+keeping exact settings/Team Select checks; MyCareer's dispatch restrictions
+must allow that exact hub and approved children. The shared franchise
+auto-save owner must supply its actual public API and proved save-context
+initialization before wiring an after-game call. M1's proposed adapter ABI is
+not an existing function address. No protected file was edited.
