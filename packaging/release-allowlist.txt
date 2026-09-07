@@ -682,6 +682,10 @@ mod_editor/core/nfl2k5_hires_layouts.py
 mod_editor/core/nfl2k5_modern_naming.py
 mod_editor/core/nfl2k5_my_career.py
 mod_editor/core/nfl2k5_my_career_code.py
+mod_editor/core/nfl2k5_franchise_autosave.py
+mod_editor/core/nfl2k5_franchise_autosave_code.py
+docs/mod_editor/nfl2k5_franchise_autosave_capability.json
+ASTRA_FRANCHISE_AUTOSAVE_REPORT.md
 mod_editor/core/nfl2k5_patch_cli.py
 mod_editor/core/nfl2k5_play_rules.py
 mod_editor/core/nfl2k5_read_option_runtime.py

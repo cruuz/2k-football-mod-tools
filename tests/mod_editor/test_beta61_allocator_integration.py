@@ -82,8 +82,8 @@ class CompleteOwnerTests(unittest.TestCase):
         layout = space.layout(self.full)
         regions = layout["regions"]
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 48407)  # complete union, including model-2 Momentum, boot logo and the 64-byte camera owner (r63)
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 78762)  # complete beta-62 union RW state
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 49943)  # complete union, including model-2 Momentum, boot logo, the 64-byte camera owner (r63) and the 1,536-byte Franchise Auto Save owner (r63)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 78890)  # complete beta-62 union RW state, including the 128-byte Franchise Auto Save slot record (r63)
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])

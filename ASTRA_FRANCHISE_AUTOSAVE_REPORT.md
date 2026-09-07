@@ -44,7 +44,7 @@ applies that protected handoff.
 
 Evidence: the user-owned USA Xbox `default.xbe`, 11,948,032 bytes, SHA-256
 `73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9`,
-at `/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe`.
+at the extracted retail `default.xbe` (the coordinating checkout's retail source).
 Native instructions/data were inspected with Capstone and the read-only Ghidra
 corpus. Existing ASTRA reports, RC85 facts and the hub Franchise save memo were
 read; executable bytes take precedence over older address/mode annotations.

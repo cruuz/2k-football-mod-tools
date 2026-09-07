@@ -315,7 +315,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     season_cap=False, calendar_engine=False, momentum=0, momentum_contact=False,
                                     defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False,
                                     scramble_tuning=False, music_shuffle=False, music_shuffle_selection=None,
-                                    practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False),
+                                    practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False,
+                                    franchise_autosave=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.

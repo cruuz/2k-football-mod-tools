@@ -32,6 +32,7 @@ OPTIONS = (
     ("senior_bowl", "Senior Bowl native event (not available)", tt.senior_bowl_patch.HELP_TEXT),
     ("guardian_overlay", "Guardian caps (experimental)", tt.guardian_overlay_patch.HELP_TEXT),
     ("my_career", "MyCareer (experimental)", tt.my_career_patch.HELP_TEXT),
+    ("franchise_autosave", "Franchise Auto Save (experimental)", tt.franchise_autosave_patch.HELP_TEXT),
     ("crib_reclaim", "Crib movie cut (experimental)",
      "EXPERIMENTAL / UNWITNESSED. Retail: The Crib includes 23 movies. Patch: Remove those movies from a smaller image. "
      "The Trophy Room, awards, profiles, shared room, games and furniture stay."),

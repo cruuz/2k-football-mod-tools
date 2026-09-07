@@ -77,6 +77,7 @@ from . import nfl2k5_senior_bowl as senior_bowl_patch
 from . import nfl2k5_guardian_overlay as guardian_overlay_patch
 from . import nfl2k5_guardian_resources as guardian_resources
 from . import nfl2k5_my_career as my_career_patch
+from . import nfl2k5_franchise_autosave as franchise_autosave_patch
 from . import nfl2k5_crib_reclaim as crib_reclaim_patch
 from . import nfl2k5_screen_hooks as screen_hooks_patch
 from . import nfl2k5_modern_naming as modern_naming_patch
@@ -1014,8 +1015,8 @@ class _dynamic_kickoff_adapter:
 
 
 # Shared keys keep byte writers and paired image allocation on the same union.
-R62_SPACE_KEYS = ('momentum_collisions', 'momentum_collision_level', 'read_option_runtime', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'screen_hooks', 'reserves_16', 'created_teams_extra')
-R62_RUNTIME_KEYS = ('momentum_collisions', 'momentum_collision_level', 'read_option_runtime', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'screen_hooks', 'reserves_16', 'created_teams_extra', 'read_option_intent_table', 'guardian_everyone_practice', 'my_career_setup', 'crib_reclaim', 'modern_naming')
+R62_SPACE_KEYS = ('momentum_collisions', 'momentum_collision_level', 'read_option_runtime', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'screen_hooks', 'reserves_16', 'created_teams_extra', 'franchise_autosave')
+R62_RUNTIME_KEYS = ('momentum_collisions', 'momentum_collision_level', 'read_option_runtime', 'franchise_2026_rules', 'senior_bowl', 'guardian_overlay', 'my_career', 'screen_hooks', 'reserves_16', 'created_teams_extra', 'read_option_intent_table', 'guardian_everyone_practice', 'my_career_setup', 'crib_reclaim', 'modern_naming', 'franchise_autosave')
 
 
 def _r62_options(values):
@@ -1086,10 +1087,10 @@ def _deferred_r62_options(values, defer):
             "read_option_intent_table": None, "my_career_setup": None}
 
 
-def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, read_option_intent_table=None, guardian_everyone_practice=True, my_career_setup=None, crib_reclaim=False, modern_naming=False):
+def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, read_option_intent_table=None, guardian_everyone_practice=True, my_career_setup=None, crib_reclaim=False, modern_naming=False, franchise_autosave=False):
     _validate_lever_flags(momentum_collisions, read_option_runtime, franchise_2026_rules,
                           senior_bowl, guardian_overlay, guardian_everyone_practice,
-                          my_career, crib_reclaim, screen_hooks, modern_naming, reserves_16)
+                          my_career, crib_reclaim, screen_hooks, modern_naming, reserves_16, franchise_autosave)
     momentum_patch._settings(0, False, momentum_collisions, momentum_collision_level)
     _require(type(created_teams_extra) is int and created_teams_extra in (0, 2),
              "created_teams_extra must be the integer 0 or 2")
@@ -1110,8 +1111,8 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level
         my_career_patch.read_setup(my_career_setup)
 
 
-def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False):
-    _validate_r62_options(momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, reserves_16=reserves_16, created_teams_extra=created_teams_extra)
+def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False):
+    _validate_r62_options(momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, reserves_16=reserves_16, created_teams_extra=created_teams_extra, franchise_autosave=franchise_autosave)
     return (
         (kickoff_relocated_patch.REQUESTS if with_kickoff else ())
         + (scorebug_runtime_patch.REQUESTS if runtime else ())
@@ -1134,15 +1135,16 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (screen_hooks_patch.REQUESTS if screen_hooks else ())
         + (roster_arena_patch.REQUESTS if reserves_16 or created_teams_extra else ())
         + (camera_patch.REQUESTS if camera else ())
+        + (franchise_autosave_patch.REQUESTS if franchise_autosave else ())
     )
 
 
 class _xbe_space_adapter:
-    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False):
-        self.scaleout = bool(camera or (momentum_collisions and momentum_collision_level > 0))
+    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False):
+        self.scaleout = bool(camera or franchise_autosave or (momentum_collisions and momentum_collision_level > 0))
         self.requests = _selected_space_requests(
             with_kickoff, runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning, music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine,
-            momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, reserves_16=reserves_16, created_teams_extra=created_teams_extra, camera=camera)
+            momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, reserves_16=reserves_16, created_teams_extra=created_teams_extra, camera=camera, franchise_autosave=franchise_autosave)
 
     def status(self, payload):
         state = xbe_space_patch.status(payload)
@@ -1319,6 +1321,7 @@ def _grown_status_fields(payload):
             "senior_bowl": senior_bowl_patch.status(payload),
             "senior_bowl_native_available": senior_bowl_patch.NATIVE_EVENT_AVAILABLE,
             "my_career": my_career_patch.status(payload), "crib_reclaim": crib_reclaim_patch.status(payload),
+            "franchise_autosave": franchise_autosave_patch.status(payload),
             "modern_naming": modern_naming_patch.status(payload),
             "roster_arena_growth": arena["status"], "roster_arena_settings": arena,
             **{key: "foreign" if arena["status"] == "foreign" else "applied" if arena[key] else "retail"
@@ -1401,6 +1404,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     screen_hooks=False,
     reserves_16=False,
     created_teams_extra=0,
+    franchise_autosave=False,
     read_option_intent_table=None,
     guardian_everyone_practice=True,
     my_career_setup=None,
@@ -1577,10 +1581,11 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
          "defensive_try_patch", "experimental defensive try"),
         (xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning
          or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
-         or momentum_on or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or camera,
+         or momentum_on or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or camera or franchise_autosave,
          _xbe_space_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning,
                             music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, **_r62_space_options(r62), camera=camera),
          "xbe_space_patch", "experimental executable space"),
+        (franchise_autosave, franchise_autosave_patch, "franchise_autosave_patch", "Franchise Auto Save (experimental)"),
         (camera, camera_patch, "camera_patch", "camera"),
         (coverage_slider, coverage_slider_patch, "coverage_slider_patch", "experimental Coverage slider response"),
         (scramble_tuning, scramble_tuning_patch, "scramble_tuning_patch", "experimental slow-QB acceleration"),
@@ -1679,6 +1684,7 @@ def write_xbe_copy(
     screen_hooks=False,
     reserves_16=False,
     created_teams_extra=0,
+    franchise_autosave=False,
     read_option_intent_table=None,
     guardian_everyone_practice=True,
     my_career_setup=None,
@@ -1703,7 +1709,7 @@ def write_xbe_copy(
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
     _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
              or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
-         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or crib_reclaim or modern_naming,
+         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
@@ -1881,6 +1887,7 @@ def write_image_copy(
     screen_hooks=False,
     reserves_16=False,
     created_teams_extra=0,
+    franchise_autosave=False,
     read_option_intent_table=None,
     guardian_everyone_practice=True,
     my_career_setup=None,
@@ -1906,7 +1913,7 @@ def write_image_copy(
         practice_squad_screen = practice_squad_screen or reserves_16
     momentum_on = momentum > 0 or (momentum_collisions and momentum_collision_level > 0)
     _require(guardian_overlay or guardian_players is None, "Guardian player selections need guardian_overlay")
-    defer_grown = scorebug_runtime or guardian_overlay
+    defer_grown = scorebug_runtime or guardian_overlay or franchise_autosave
     momentum_patch._settings(momentum, momentum_contact, momentum_collisions, momentum_collision_level)
     legacy_disabled = momentum_on and accel_ramp
     if momentum_on:
@@ -1918,7 +1925,7 @@ def write_image_copy(
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
     _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff or depth_chart_rows or practice_squad or depth_locks or season_cap or xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or momentum_contact or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning or flatter_deep_ball or chop_block_toggle or music_policy != "retail" or music_unlock or music_userlist or music_metadata is not None
              or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
-         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or crib_reclaim or modern_naming,
+         or momentum_collisions or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or crib_reclaim or modern_naming or franchise_autosave,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()

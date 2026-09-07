@@ -129,6 +129,7 @@ class BuildPlan:
     guardian_players: list[dict] | None = None
     my_career: bool = False
     my_career_setup: str | None = None
+    franchise_autosave: bool = False
     crib_reclaim: bool = False
     screen_hooks: bool = False
     reserves_16: bool = False
@@ -274,7 +275,7 @@ class BuildPlan:
                 or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice)
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.reserves_16 or bool(self.created_teams_extra)
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave
                 or self.momentum_collisions or self.scorebug_runtime or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
 
@@ -296,7 +297,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "scorebug_runtime": False,
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
-        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False,
+        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": False,
         "screen_hooks": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
@@ -312,7 +313,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "scorebug_runtime": False,
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
-        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False,
+        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
         "screen_hooks": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": False, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
@@ -328,7 +329,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "scorebug_runtime": False,
         "momentum": 0, "momentum_contact": False, "momentum_collisions": False, "momentum_collision_level": 0,
         "read_option_runtime": False, "franchise_2026_rules": False, "senior_bowl": False,
-        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False,
+        "guardian_overlay": False, "my_career": False, "my_career_setup": None, "crib_reclaim": False, "franchise_autosave": True,
         "screen_hooks": False, "reserves_16": False, "created_teams_extra": 0, "modern_naming": False, "defensive_try": False, "zone_drop_cap": False, "all_stadiums": False,
         "music_shuffle": False, "music_shuffle_selection": None, "practice_squad_screen": False,
         "abilities": False, "abilities_off_week": None, "qb_spy": False, "calendar_engine": True, "coverage_slider": False, "scramble_tuning": False, "flatter_deep_ball": False, "chop_block_toggle": False, "team_names_2026": False, "hires_pack": False,
@@ -380,6 +381,7 @@ def availability() -> dict[str, bool]:
                                ("read_option_runtime", "nfl2k5_read_option_runtime"),
                                ("guardian_overlay", "nfl2k5_guardian_resources"),
                                ("my_career", "nfl2k5_my_career"),
+                               ("franchise_autosave", "nfl2k5_franchise_autosave"),
                                ("screen_hooks", "nfl2k5_screen_hooks"),
                                ("reserves_16", "nfl2k5_roster_arena_image"),
                                ("created_teams_extra", "nfl2k5_roster_arena_image"),
@@ -515,7 +517,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings",
             "guardian_overlay", "guardian_overlay_settings", "guardian_overlay_resources",
             "franchise_2026_rules", "franchise_2026_kernel", "franchise_2026_runtime_enforced",
-            "senior_bowl", "senior_bowl_native_available", "my_career", "crib_reclaim",
+            "senior_bowl", "senior_bowl_native_available", "my_career", "crib_reclaim", "franchise_autosave",
             "reserves_16", "created_teams_extra", "roster_arena_growth", "roster_arena_settings", "roster_arena_resource", "defensive_try", "zone_drop_cap", "zone_drop_settings", "all_stadiums", "coverage_slider", "scramble_tuning",
             "flatter_deep_ball", "chop_block_toggle", "chop_block_evidence",
             "music_shuffle", "music_shuffle_state", "practice_squad_screen", "abilities", "abilities_settings", "qb_spy", "calendar_engine")},
@@ -968,7 +970,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if momentum_on:
         plan = replace(plan, accel_ramp=False)
     if (momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
-            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine):
+            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.franchise_autosave):
         plan = replace(plan, xbe_space=True)
     if plan.scorebug_runtime:
         plan = replace(plan, scorebug=True, xbe_space=True)
@@ -1137,7 +1139,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False).wants_xbe_patch() or plan.edge_rename:
+               my_career_setup=None, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -1486,7 +1488,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if ((plan.xbe_space or plan.kickoff_relocated) and not plan.scorebug_runtime
             or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
-            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera):
+            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave):
         progress("Adding experimental extra patch space", 0, 0)
         spy_table, spy_table_receipt = (tt.qb_spy_patch.compile_intent_table(spy_pairs) if plan.qb_spy else (None, None))
         playlist_selection, playlist_preflight = None, None
