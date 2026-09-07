@@ -1,0 +1,232 @@
+{
+  "schema": "ps2_headless_runtime_witness_measured/v1",
+  "game_id": "nfl2k5_ps2",
+  "captured": "2026-09-06",
+  "witnesses": [
+    {
+      "capability_id": "nfl2k5ps2.colors.unif_words",
+      "verdict": "LOCKSTEP_WITNESS",
+      "promoted_to": "runtime-proved",
+      "patched_image": {
+        "sha256": "bb54b8586ef8990b11b20dbb1755d8aa31974cdf33c356f631c6ed5d8b62826d",
+        "bytes": 4665081856
+      },
+      "writer_invocation": {
+        "lane": "mod_editor.games.nfl2k5_ps2.UnifColourLane",
+        "recipe": "all 634 Unif records, facemask and turtleneck both set to the packed word #FF00FF",
+        "targets_written": 634,
+        "targets_refused": 0
+      },
+      "offline_verdict": "634 edit(s) verified; 634 Unif records decoded; 2,147,478,576 unchanged bytes compared.",
+      "captures": [
+        {
+          "name": "sweep",
+          "SaveFrameStart": 0,
+          "SaveFrameCount": 7200,
+          "SaveFrameBy": 60,
+          "frames_written": 120,
+          "baseline_run": "k1-base-sweep",
+          "patched_run": "k1-colors-sweep"
+        },
+        {
+          "name": "dense burst",
+          "SaveFrameStart": 1860,
+          "SaveFrameCount": 180,
+          "SaveFrameBy": 1,
+          "frames_written": 180,
+          "baseline_run": "k1-base-burst",
+          "patched_run": "k1-colors-burst"
+        }
+      ],
+      "comparison": {
+        "sweep": {
+          "frames_compared": 120,
+          "frames_bit_identical": 106,
+          "frames_differing": 14,
+          "frames_differing_diffuse": 0,
+          "frames_localised_and_strong": 11,
+          "bounded_witness_frames": 9,
+          "bounded_windows": [
+            [
+              1860,
+              2160
+            ],
+            [
+              2280,
+              2400
+            ]
+          ],
+          "changed_pixels_range": [
+            1,
+            8
+          ],
+          "magnitude_range_of_765": [
+            77.0,
+            242.7
+          ],
+          "verdict": "LOCKSTEP_WITNESS"
+        },
+        "dense_burst": {
+          "frames_compared": 180,
+          "frames_bit_identical": 1,
+          "frames_differing": 179,
+          "frames_differing_diffuse": 0,
+          "frames_localised_and_strong": 152,
+          "changed_pixels_range": [
+            2,
+            13
+          ],
+          "changed_pixels_median": 5.0,
+          "max_magnitude_of_765": 229.3,
+          "region": "every differing frame's bounding box sits in the lower half of the 640x448 frame, roughly y 323-439, scattered across x",
+          "verdict": "LOCALISED_UNBOUNDED"
+        }
+      },
+      "controls": {
+        "negative_rebuild": [
+          {
+            "image": "2k5-rosterW.iso",
+            "sha256": "5cb398cdb39bf436dfe9e335d6bca20c501b67002453c2ebc54c3cc71550e741",
+            "lane": "players.disc_roster",
+            "result": "120 of 120 sampled frames BIT-IDENTICAL to the baseline run",
+            "reading": "a second same-length rebuild of this image, through a different writer, adds no pixel at all; so the emulator is deterministic on this disc across separate runs and the rebuild contributes nothing"
+          }
+        ],
+        "predictive_colour": {
+          "image": "2k5-colorsG.iso",
+          "sha256": "b90bae094fc3dd39aa05ca996a140d00f8d4530efdb6d5b18fe0e361ebbdbe17",
+          "recipe": "the same 634 records with #00FF00 instead of #FF00FF",
+          "vs_baseline": {
+            "frames_differing": 179,
+            "changed_pixels_range": [
+              2,
+              13
+            ],
+            "max_magnitude_of_765": 236.8
+          },
+          "magenta_vs_green": {
+            "frames_differing": 179,
+            "changed_pixels_range": [
+              1,
+              13
+            ],
+            "max_magnitude_of_765": 459.2
+          },
+          "reading": "This is what carries the row, not the area. The magenta image and the green image change THE SAME PIXELS as each other and as the baseline -- frame by frame the counts and bounding boxes agree (8, 8, 7-8, 11 on the first four frames of the burst) -- and the MAGNITUDE tracks the colour distance: 77-229 of 765 for magenta against retail, 54-237 for green against retail, and up to 459 for magenta against green, which are the two furthest apart. A pixel set that moves with the value of a packed colour word is that colour word being painted. Nothing else has that signature."
+        }
+      },
+      "scope": "Runtime-proved for the screens savestate K-01 reaches with no input, and no further, and small: the facemask and turtleneck words are drawn on 2 to 13 pixels per frame (median 5) at the camera distance this scene uses. The claim rests on the two-colour control, not on area: the same pixels change under both replacement colours and their magnitude tracks the colour distance, while a second same-length rebuild of the same image changes no pixel at all. Which record is drawn on which player is not claimed, and a closer camera would be needed to see the kit at any size.",
+      "not_claimed": [
+        "that the colour is drawn at any size larger than the pixels counted here",
+        "that any particular Unif record is the one drawn on any particular player",
+        "anything about screens this state does not reach"
+      ]
+    }
+  ],
+  "not_witnessed": [
+    {
+      "capability_id": "nfl2k5ps2.players.disc_roster",
+      "verdict": "FAIL",
+      "stays": "offline-writer-proved",
+      "attempt": "every writable name field of the boot roster rewritten to its own budget (2,099 of 2,547 targets carried a writable field; 4,197 edits), offline verifier PASS, image the same 4,665,081,856 bytes; sweep of 120 frames over the 7,200 after K-01",
+      "result": "120 of 120 sampled frames bit-identical to the baseline run; the same is true of a second build with a different letter, so the two rebuilt images are identical on screen as well",
+      "reason": "no state reaches it. The spec's coverage map classes this A on the reasoning that player names are drawn after the load; measured from K-01 they are not, inside two emulated minutes and with no input. The baseline run is live, not stuck: 118 of its 120 frames are distinct.",
+      "assumption_that_would_make_this_wrong": "that the names drawn in-game come from the boot roster this lane writes rather than from a memory-card roster or another resource, and that a 60-frame sampling interval cannot miss a name drawn for under a second"
+    }
+  ],
+  "coverage": {
+    "writer_rows": 7,
+    "fixed_allocation_rows": 6,
+    "why_fixed_allocation_decides": "A fixed-allocation lane rewrites bytes in place and changes no member's stored size, so the disc read schedule is untouched and the two runs stay in lockstep; the comparison is then exact equality outside the edit. A re-packing lane moves stored sizes, which moves the read schedule, which the spec measured turning into a different scene 59 seconds downstream. This column is measured off each lane object's own fixed_allocation attribute [M], and it is the column that decides the order of work.",
+    "rows": [
+      {
+        "capability_id": "nfl2k5ps2.audio.audo_exact_slot_replace",
+        "classification": "runtime-proved",
+        "fixed_allocation": true,
+        "reachability": "?",
+        "reachability_source": "this session's assessment; the row landed after the spec's map was written [A]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "nfl2k5ps2.colors.unif_words",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "LOCKSTEP_WITNESS",
+        "outcome": "promoted to runtime-proved",
+        "state": "K-01"
+      },
+      {
+        "capability_id": "nfl2k5ps2.menus.text_banks",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "the spec classes it B: the banks are resident before the pre-game load"
+      },
+      {
+        "capability_id": "nfl2k5ps2.players.disc_roster",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "FAIL",
+        "outcome": "stays offline-writer-proved",
+        "state": "K-01",
+        "reason": "every writable name in the boot roster rewritten, offline verifier PASS, and 120 of 120 sampled frames bit-identical: no boot-roster name is drawn in the 7,200 frames after K-01. The spec classed this A; this measures otherwise for this state."
+      },
+      {
+        "capability_id": "nfl2k5ps2.saves.roster_name_writer",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": null,
+        "reachability": "C",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "the spec classes it C: it edits a memory-card save, not the image, and this harness swaps images"
+      },
+      {
+        "capability_id": "nfl2k5ps2.scripts.director_playbook",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "the spec classes it B: play names are behind input on the play-call screen"
+      },
+      {
+        "capability_id": "nfl2k5ps2.stadiums.position_lanes",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not reached this session; it is fixed-allocation and A, and is the cheapest remaining true positive on this disc"
+      }
+    ]
+  },
+  "harness": {
+    "capture": "tools/owner/witness_run.sh (owner-tooling branch, sha256 19dd4d79e91c20c31bcb081efd80309581835446089e50b233d7693b5adddfb6, run unmodified)",
+    "emulator_source_head": "8226182aa",
+    "renderer": "13 (software rasteriser)",
+    "frame_size": [
+      640,
+      448
+    ],
+    "design": "docs/owner/specs/HEADLESS_WITNESS.md",
+    "comparison": "the lockstep rule recorded in docs/product/measured/nflblitz2002_ps2/runtime-witness.json"
+  },
+  "state": {
+    "file": "SLUS-20919 (42F9D5AF).01.p2s",
+    "sha256": "160c5b183bcdfc30780a2322f9fa3155abab1e703f7f7ab1b5ad44401e15f35f",
+    "scene": "K-01, the pre-game LOADING screen (two helmets on a studio shelf and a seated presenter)"
+  },
+  "source_image": {
+    "sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+    "bytes": 4665081856
+  }
+}

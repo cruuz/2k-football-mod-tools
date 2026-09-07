@@ -1,0 +1,311 @@
+{
+  "schema": "ps2_headless_runtime_witness_measured/v1",
+  "game_id": "nflblitz2003_ps2",
+  "captured": "2026-09-06",
+  "harness": {
+    "capture": "tools/owner/witness_run.sh (owner-tooling branch, sha256 19dd4d79e91c20c31bcb081efd80309581835446089e50b233d7693b5adddfb6, run unmodified)",
+    "emulator_source_head": "8226182aa",
+    "renderer": "13 (software rasteriser)",
+    "frame_size": [
+      640,
+      448
+    ],
+    "design": "docs/owner/specs/HEADLESS_WITNESS.md",
+    "comparison": "the lockstep rule recorded in docs/product/measured/nflblitz2002_ps2/runtime-witness.json, which this file uses unchanged"
+  },
+  "state": {
+    "file": "SLUS-20474 (49A00204).01.p2s",
+    "sha256": "3cf8342ecfb32b206e930290f1b9523dc076e9a6a0ef3d14fa47ff3b1cde2545",
+    "scene": "B3-01, the pre-game TONIGHT'S MATCHUP versus card"
+  },
+  "source_image": {
+    "sha256": "7927f812724eb7c30d672903c5c277b5358d25d20b61b1590d376a796270d513",
+    "bytes": 1029144576
+  },
+  "witnesses": [
+    {
+      "capability_id": "nflblitz2003ps2.rosters.player_names",
+      "verdict": "LOCKSTEP_WITNESS",
+      "promoted_to": "runtime-proved",
+      "patched_image": {
+        "sha256": "6d83ed031278bf4dd61514c36175c89df4cc6876c75e4c3168c3fb1e2aef8330",
+        "bytes": 1029144576
+      },
+      "writer_invocation": {
+        "lane": "mod_editor.games.nflblitz2003_ps2.roster_lane.LANE",
+        "recipe": "every one of the 756 records of roster.rst, both name fields set to 31 'W' characters",
+        "targets_written": 756,
+        "targets_refused": 0,
+        "member": "roster.rst, 75,768 bytes, 42 blocks of 18 records"
+      },
+      "offline_verdict": "roster.rst replaced, 2695 member(s) checked, 2694 byte-identical; the roster still parses and every record keeps its block ordinal",
+      "captures": [
+        {
+          "name": "sweep",
+          "SaveFrameStart": 0,
+          "SaveFrameCount": 7200,
+          "SaveFrameBy": 60,
+          "frames_written": 120,
+          "baseline_run": "b3-base-sweep",
+          "patched_run": "b3-names-sweep"
+        },
+        {
+          "name": "dense burst",
+          "SaveFrameStart": 2500,
+          "SaveFrameCount": 160,
+          "SaveFrameBy": 1,
+          "frames_written": 160,
+          "baseline_run": "b3-base-burst",
+          "patched_run": "b3-names-burst"
+        }
+      ],
+      "comparison": {
+        "sweep": {
+          "frames_compared": 120,
+          "frames_bit_identical": 46,
+          "frames_differing": 74,
+          "frames_differing_diffuse": 24,
+          "frames_localised_and_strong": 50,
+          "bounded_witness_frames": 6,
+          "bounded_window": {
+            "frames": [
+              2580,
+              2640,
+              2700,
+              2760,
+              2820,
+              2880
+            ],
+            "left_neighbour": {
+              "frame": 2520,
+              "bit_identical": true
+            },
+            "right_neighbour": {
+              "frame": 2940,
+              "bit_identical": true
+            },
+            "changed_pixels": [
+              1283,
+              580,
+              625,
+              957,
+              818,
+              1053
+            ],
+            "coverage_percent": [
+              0.4475,
+              0.2023,
+              0.218,
+              0.3338,
+              0.2853,
+              0.3673
+            ],
+            "magnitude_of_765": [
+              314.5,
+              313.0,
+              276.1,
+              323.9,
+              328.2,
+              311.4
+            ],
+            "bounding_boxes": [
+              [
+                146,
+                75,
+                482,
+                349
+              ],
+              [
+                65,
+                15,
+                586,
+                317
+              ],
+              [
+                5,
+                45,
+                622,
+                291
+              ],
+              [
+                272,
+                198,
+                392,
+                228
+              ],
+              [
+                231,
+                190,
+                371,
+                214
+              ],
+              [
+                216,
+                182,
+                360,
+                219
+              ]
+            ]
+          }
+        },
+        "dense_burst": {
+          "frames_compared": 160,
+          "frames_bit_identical": 33,
+          "frames_differing": 127,
+          "frames_differing_diffuse": 0,
+          "frames_localised_and_strong": 127,
+          "max_coverage_percent": 0.4865,
+          "max_magnitude_of_765": 367.8,
+          "changed_pixels_min": 5,
+          "changed_pixels_max": 1395,
+          "boundary": "frames 2500 through 2532 are BIT-IDENTICAL; the first differing frame is 2533, with 8 changed pixels at magnitude 300.5 of 765, and the count grows frame by frame from there. Not one of the 127 differing frames is diffuse.",
+          "reading": "a frame-exact boundary at 2533 with a residual that starts at 8 pixels and grows: a string being drawn a glyph at a time, with the rest of the picture bit-identical on both sides of the boundary"
+        }
+      },
+      "controls": {
+        "negative_rebuild": [
+          {
+            "image": "blitz2003-crowd.iso",
+            "sha256": "0a1be3fb16df13893252a957e32900e1bffbc0cc08eaa9d50330359b637646b6",
+            "lane": "identity.crowd_tables",
+            "result": "120 of 120 sampled frames BIT-IDENTICAL to the baseline run"
+          },
+          {
+            "image": "blitz2003-trivia.iso",
+            "sha256": "105578b045d7720e32d33d3008ce52b2308a96d92f06c9a68825bae592b64e1a",
+            "lane": "playbooks.trivia_banks",
+            "result": "120 of 120 sampled frames BIT-IDENTICAL to the baseline run"
+          }
+        ],
+        "predictive_glyph": {
+          "image": "blitz2003-namesI.iso",
+          "sha256": "dd096a0d5af3d0dbbef1f4924311e311daca95c7a2ba0d4552d0c7542f9fbaa5",
+          "recipe": "the same 756 records, both name fields set to 31 'I' characters instead of 31 'W'",
+          "vs_baseline_sweep": {
+            "frames_bit_identical": 46,
+            "bounded_witness_frames": 6,
+            "verdict": "LOCKSTEP_WITNESS"
+          },
+          "W_vs_I_sweep": {
+            "frames_compared": 120,
+            "frames_bit_identical": 57,
+            "frames_differing": 63,
+            "frames_differing_diffuse": 0,
+            "frames_localised_and_strong": 63,
+            "bounded_witness_frames": 51,
+            "bounded_windows": [
+              [
+                2580,
+                2880
+              ],
+              [
+                3120,
+                5760
+              ]
+            ],
+            "max_coverage_percent": 0.5228,
+            "max_magnitude_of_765": 395.3,
+            "changed_pixels_range": [
+              36,
+              1499
+            ]
+          },
+          "W_vs_I_burst": {
+            "frames_compared": 160,
+            "frames_bit_identical": 33,
+            "frames_differing": 127,
+            "frames_differing_diffuse": 0,
+            "changed_pixels_range": [
+              6,
+              1665
+            ],
+            "max_magnitude_of_765": 404.9
+          },
+          "reading": "The W image and the I image are the same length, the same layout, and carry the same 31-character field width; nothing but the letter differs. Across 120 sampled frames they are bit-identical on 57 and differ on 63, every one of them localised, in two windows each bounded by bit-identical frames on both sides. Not one frame anywhere is diffuse -- which also explains the diffuse windows in the baseline comparisons: the retail names vary in length, the two synthetic ones do not, and it is that length difference that moves the game's own timing. Nothing but glyph rendering of the written bytes produces a residual that tracks which letter was written."
+        }
+      },
+      "scope": "Runtime-proved for the screens this state reaches with no input, and no further: from B3-01 the rewritten names are first drawn at emulator frame 2533 and are on screen through sample 5760, on frames captured at 640x448 by the software rasteriser. Which record maps to which player or team is not claimed.",
+      "not_claimed": [
+        "that any particular record is the one drawn at any particular place",
+        "that the names are drawn on any screen this state does not reach"
+      ]
+    }
+  ],
+  "not_witnessed": [
+    {
+      "capability_id": "nflblitz2003ps2.identity.crowd_tables",
+      "verdict": "FAIL",
+      "stays": "offline-writer-proved",
+      "attempt": "all 32 *_crowd.ini members rewritten line-for-line, offline verifier PASS, image the same 1,029,144,576 bytes; sweep of 120 frames over the 7,200 frames after B3-01",
+      "result": "120 of 120 sampled frames bit-identical to the baseline run",
+      "reason": "no state reaches it, exactly as on the 2002 disc",
+      "assumption_that_would_make_this_wrong": "that a 60-frame sampling interval cannot miss a line drawn for fewer than 60 consecutive frames"
+    },
+    {
+      "capability_id": "nflblitz2003ps2.playbooks.trivia_banks",
+      "verdict": "FAIL",
+      "stays": "offline-writer-proved",
+      "attempt": "3,000 of the 18,227 lines rewritten across 7 of the 41 members (the lane's own MAX_TARGETS cap), offline verifier PASS; same sweep",
+      "result": "120 of 120 sampled frames bit-identical to the baseline run",
+      "reason": "no state reaches it, and the cap reached only 7 members",
+      "assumption_that_would_make_this_wrong": "that a trivia line drawn in this window, if any, lives in one of the 7 members the cap reached"
+    },
+    {
+      "capability_id": "nflblitz2003ps2.gameplay.field_table",
+      "verdict": "NOT ATTEMPTED",
+      "stays": "offline-writer-proved",
+      "reason": "a tuning table whose effect is behaviour over time rather than the next frame; both sibling text lanes on this disc came back bit-identical over the same window"
+    }
+  ],
+  "coverage": {
+    "writer_rows": 4,
+    "fixed_allocation_rows": 4,
+    "why_fixed_allocation_decides": "A fixed-allocation lane rewrites bytes in place and changes no member's stored size, so the disc read schedule is untouched and the two runs stay in lockstep; the comparison is then exact equality outside the edit. A re-packing lane moves stored sizes, which moves the read schedule, which the spec measured turning into a different scene 59 seconds downstream. This column is measured off each lane object's own fixed_allocation attribute [M], and it is the column that decides the order of work.",
+    "rows": [
+      {
+        "capability_id": "nflblitz2003ps2.gameplay.field_table",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "as the 2002 disc"
+      },
+      {
+        "capability_id": "nflblitz2003ps2.identity.crowd_tables",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "FAIL",
+        "outcome": "stays offline-writer-proved",
+        "state": "B3-01",
+        "reason": "120 of 120 sampled frames bit-identical"
+      },
+      {
+        "capability_id": "nflblitz2003ps2.playbooks.trivia_banks",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "FAIL",
+        "outcome": "stays offline-writer-proved",
+        "state": "B3-01",
+        "reason": "120 of 120 sampled frames bit-identical; the cap reached 7 of 41 members"
+      },
+      {
+        "capability_id": "nflblitz2003ps2.rosters.player_names",
+        "classification": "runtime-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "LOCKSTEP_WITNESS",
+        "outcome": "promoted to runtime-proved",
+        "state": "B3-01"
+      }
+    ]
+  }
+}

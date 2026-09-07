@@ -1,0 +1,319 @@
+{
+  "schema": "ps2_headless_runtime_witness_measured/v1",
+  "game_id": "nflblitz2002_ps2",
+  "captured": "2026-09-06",
+  "harness": {
+    "capture": "tools/owner/witness_run.sh (owner-tooling branch, sha256 19dd4d79e91c20c31bcb081efd80309581835446089e50b233d7693b5adddfb6, run unmodified)",
+    "emulator_source_head": "8226182aa",
+    "renderer": "13 (software rasteriser; pinned so two runs are host-GPU independent)",
+    "frame_size": [
+      640,
+      448
+    ],
+    "design": "docs/owner/specs/HEADLESS_WITNESS.md",
+    "comparison": "the lockstep rule below; docs/owner/tools witness_compare.py was also run and its verdict is recorded verbatim"
+  },
+  "comparison_rule": {
+    "name": "lockstep, bounded window",
+    "why": "Every lane below is fixed-allocation: no member's stored size changes, so the disc read schedule is untouched and the two runs stay in phase. That makes exact equality available, which is stronger than the twin test a repacking lane needs.",
+    "a_frame_witnesses_when": [
+      "the residual covers at most 5% of the frame (a phase shift or a diverged path spreads over most of it: measured 78-98% on the two repacking trials in the spec)",
+      "the residual's mean magnitude is at least 60 of 765 summed over RGB (above dither and codec noise)",
+      "the sampled frames immediately before and after the differing run are BIT-IDENTICAL between the two runs"
+    ],
+    "what_refuses_a_false_pass": {
+      "timing_shift": "cannot leave a frame bit-identical, and does not concentrate; the bounded window requires bit-identical frames on both sides",
+      "diverged_path": "diffuse by construction; such frames are excluded and reported, never counted as witnesses",
+      "nothing_drawn": "no frame differs at all, which is FAIL, not PASS",
+      "rebuild_artefact": "the negative controls below rebuilt the same image through the same writer path with an edit that is not drawn, and produced 120 of 120 BIT-IDENTICAL frames",
+      "something_other_than_the_written_bytes": "the predictive control below rewrote the same fields with a different glyph; the residual changes with the glyph and stays in the same region, which nothing but glyph rendering of the written bytes explains"
+    }
+  },
+  "state": {
+    "file": "SLUS-20051 (3A32FD60).01.p2s",
+    "sha256": "63f129b6f3754cfdb074c3e880e3c3759027bd49880272210579189c4d717bdc",
+    "scene": "B2-01, the pre-game TODAY'S MATCHUP versus card (the scene named in docs/owner/scoping/SAVESTATE_DIFFS.md section 1)"
+  },
+  "source_image": {
+    "sha256": "57f54a316693cb87cadfd95f20c54e11401af417d2285f92056a8cd324537cda",
+    "bytes": 1464205312,
+    "note": "the second hash pin already carried by the registry row's source_container"
+  },
+  "witnesses": [
+    {
+      "capability_id": "nflblitz2002ps2.rosters.player_names",
+      "verdict": "LOCKSTEP_WITNESS",
+      "promoted_to": "runtime-proved",
+      "patched_image": {
+        "sha256": "4526f683e72cd30324ea7a16bdb014c53bed4c7a871c0310a5331f182ed01d63",
+        "bytes": 1464205312
+      },
+      "writer_invocation": {
+        "lane": "mod_editor.games.nflblitz2002_ps2.roster_lane.LANE",
+        "recipe": "every one of the 738 records of roster.rst, both name fields set to 31 'W' characters",
+        "targets_written": 738,
+        "targets_refused": 0,
+        "member": "roster.rst, 73,964 bytes, 41 blocks of 18 records"
+      },
+      "offline_verdict": "roster.rst replaced, 2426 member(s) checked, 2425 byte-identical; the roster still parses and every record keeps its block ordinal",
+      "captures": [
+        {
+          "name": "sweep",
+          "SaveFrameStart": 0,
+          "SaveFrameCount": 7200,
+          "SaveFrameBy": 60,
+          "frames_written": 120,
+          "baseline_run": "b2-base-sweep",
+          "patched_run": "b2-names-sweep"
+        },
+        {
+          "name": "dense burst",
+          "SaveFrameStart": 6300,
+          "SaveFrameCount": 140,
+          "SaveFrameBy": 1,
+          "frames_written": 140,
+          "baseline_run": "b2-base-burst",
+          "patched_run": "b2-names-burst"
+        }
+      ],
+      "comparison": {
+        "sweep": {
+          "frames_compared": 120,
+          "frames_bit_identical": 31,
+          "frames_differing": 89,
+          "frames_differing_diffuse": 41,
+          "frames_localised_and_strong": 48,
+          "bounded_witness_frames": 3,
+          "bounded_window": {
+            "frames": [
+              1620,
+              1680,
+              1740
+            ],
+            "left_neighbour": {
+              "frame": 1560,
+              "bit_identical": true
+            },
+            "right_neighbour": {
+              "frame": 1800,
+              "bit_identical": true
+            },
+            "changed_pixels": [
+              17,
+              17,
+              16
+            ],
+            "coverage_percent": [
+              0.0059,
+              0.0059,
+              0.0056
+            ],
+            "magnitude_of_765": [
+              275.2,
+              275.1,
+              270.1
+            ],
+            "bounding_boxes": [
+              [
+                330,
+                368,
+                418,
+                383
+              ],
+              [
+                301,
+                368,
+                447,
+                383
+              ],
+              [
+                318,
+                368,
+                481,
+                383
+              ]
+            ],
+            "reading": "a 16-pixel-tall strip that grows in x across three consecutive samples while every other pixel of the frame is identical: one line of text being drawn"
+          },
+          "prefix": "frames 0 through 1560, 27 consecutive samples, BIT-IDENTICAL",
+          "diffuse_windows": "frames 2040-3120 and 4980-6240 differ over 78-98% of the frame; those are excluded and nothing is attributed to the edit on them"
+        },
+        "dense_burst": {
+          "frames_compared": 140,
+          "frames_bit_identical": 0,
+          "frames_differing": 140,
+          "frames_differing_diffuse": 0,
+          "frames_localised_and_strong": 140,
+          "max_coverage_percent": 0.6187,
+          "max_magnitude_of_765": 420.3,
+          "changed_pixels_min": 460,
+          "changed_pixels_max": 1774,
+          "verdict": "LOCALISED_UNBOUNDED",
+          "reading": "the screen this window reaches draws names on every frame, so no frame in it can be bit-identical; lockstep for this run pair is anchored by the sweep's 31 bit-identical frames"
+        },
+        "witness_compare_verbatim": {
+          "tool": "tools/owner/witness_compare.py",
+          "input": "the same dense burst, symlinked with fr1 in place of fr-1 so the tool's filename pattern matches; the tool itself was not modified",
+          "window_4": "WITNESS_COMPARE INCONCLUSIVE frames=140 differing=140 witnessing=0 dense=True -- the best alignment sits at the edge of the +/-4 search for 123 of 140 frames",
+          "window_20": "WITNESS_COMPARE INCONCLUSIVE frames=140 differing=140 witnessing=0 dense=True -- edge-bound for 84 of 140 frames",
+          "window_40": "WITNESS_COMPARE INCONCLUSIVE frames=140 differing=140 witnessing=0 dense=True -- every differing frame has a near-equal twin elsewhere in the baseline burst",
+          "why": "best_twin_mean_abs is 0.1107 for all 140 frames and TWIN_MEAN is 2.0, so every baseline frame is a twin of every patched frame; only 1 of 140 best twins is at offset 0. The twin test measures a whole-frame mean, and a residual of 460-1774 pixels out of 286,720 cannot reach that mean however loud it is. On a near-static screen the argmin is a numerical tie and lands anywhere in the window, which is what produces the edge-bound reading at window 4 and 20."
+        }
+      },
+      "controls": {
+        "negative_rebuild": [
+          {
+            "image": "blitz2002-crowd.iso",
+            "sha256": "d3057c658915f452de6b323032cd08ab9d0a77c1c0cc4be67faeda51b8617f91",
+            "lane": "identity.crowd_tables",
+            "result": "120 of 120 sampled frames BIT-IDENTICAL to the baseline run"
+          },
+          {
+            "image": "blitz2002-trivia.iso",
+            "sha256": "3cb737d6e767d23a95ff74eb509515b50a4971f10111d6f0652eaa7a81159902",
+            "lane": "playbooks.trivia_banks",
+            "result": "120 of 120 sampled frames BIT-IDENTICAL to the baseline run"
+          }
+        ],
+        "negative_rebuild_reading": "Two images rebuilt through the same writer path, with 31 and 3,000 same-length edits in them, produce frames that are bit-for-bit the baseline's. So neither the rebuild nor the emulator contributes any pixel difference, and the emulator is deterministic on this disc across separate runs (the spec's section 3 re-measured here, on this title).",
+        "predictive_glyph": {
+          "image": "blitz2002-namesI.iso",
+          "sha256": "4b5dba265749a02011608a800349f37a21fd7554fb8a4d24fd5e7a2eb3f32b45",
+          "recipe": "the same 738 records, both name fields set to 31 'I' characters instead of 31 'W'",
+          "vs_baseline": {
+            "frames_differing": 140,
+            "changed_pixels_min": 406,
+            "changed_pixels_max": 1720,
+            "max_magnitude_of_765": 427.2
+          },
+          "vs_W_image": {
+            "frames_compared": 140,
+            "frames_differing": 140,
+            "changed_pixels": "503 on every one of the 140 frames",
+            "max_coverage_percent": 0.1754,
+            "max_magnitude_of_765": 205.5
+          },
+          "reading": "The W image and the I image differ from each other only in which letter was written into the 738 name fields; they are the same length and the same layout, so no read-schedule difference exists between them at all. Over a 120-frame sweep they are BIT-IDENTICAL on 37 frames and differ on 83, every one of them localised and NOT ONE diffuse, in three windows each bounded by bit-identical frames on both sides. In the dense burst they differ by a constant 503 pixels on every one of 140 frames. The residual is a function of the bytes written into the name fields. That the W/I pair has no diffuse frame at all, while the baseline comparison does, also names the cause of those diffuse windows: the retail names vary in length and the two synthetic sets do not, so it is string length that moves the game's own timing, not the rebuild.",
+          "W_vs_I_sweep": {
+            "capture": {
+              "SaveFrameStart": 0,
+              "SaveFrameCount": 7200,
+              "SaveFrameBy": 60,
+              "frames_written": 120
+            },
+            "frames_compared": 120,
+            "frames_bit_identical": 37,
+            "frames_differing": 83,
+            "frames_differing_diffuse": 0,
+            "frames_localised_and_strong": 83,
+            "bounded_witness_frames": 59,
+            "bounded_windows": [
+              [
+                2040,
+                2280
+              ],
+              [
+                2400,
+                2700
+              ],
+              [
+                2820,
+                5640
+              ]
+            ],
+            "max_coverage_percent": 0.3069,
+            "max_magnitude_of_765": 362.1,
+            "changed_pixels_range": [
+              2,
+              880
+            ],
+            "verdict": "LOCKSTEP_WITNESS"
+          }
+        }
+      },
+      "scope": "Runtime-proved for the screens this state reaches with no input, and no further: from B2-01 the attract sequence draws the rewritten names in a bounded window at samples 1620-1740 and again continuously from sample 6300 to 7140, on frames captured at 640x448 by the software rasteriser. Which record maps to which player or team on screen is not claimed; the row's own portme note that the block-to-team mapping is unmeasured still stands.",
+      "not_claimed": [
+        "that any particular record is the one drawn at any particular place",
+        "that the names are drawn on any screen this state does not reach",
+        "anything about a re-cut of the disc other than the pinned image"
+      ]
+    }
+  ],
+  "not_witnessed": [
+    {
+      "capability_id": "nflblitz2002ps2.identity.crowd_tables",
+      "verdict": "FAIL",
+      "stays": "offline-writer-proved",
+      "attempt": "all 31 *_crowd.ini members rewritten line-for-line, offline verifier PASS, image the same 1,464,205,312 bytes; sweep of 120 frames over the 7,200 frames after B2-01",
+      "result": "120 of 120 sampled frames bit-identical to the baseline run: nothing the crowd tables carry is drawn in this window",
+      "reason": "no state reaches it. The spec already classed this B on the grounds that what draws these lines is unestablished; this measures that from B2-01 nothing does, within two emulated minutes and with no input.",
+      "assumption_that_would_make_this_wrong": "that a 60-frame sampling interval cannot miss a line drawn for fewer than 60 consecutive frames. A one-second caption drawn once would be caught (60 frames at 60 fps); a flash shorter than that could be missed."
+    },
+    {
+      "capability_id": "nflblitz2002ps2.playbooks.trivia_banks",
+      "verdict": "FAIL",
+      "stays": "offline-writer-proved",
+      "attempt": "3,000 of the 17,703 lines rewritten across 7 of the 40 .trv members (the lane's own MAX_TARGETS cap), offline verifier PASS, image the same length; same sweep",
+      "result": "120 of 120 sampled frames bit-identical to the baseline run",
+      "reason": "no state reaches it, and only 7 members were in the catalogue's first 3,000 targets, so a trivia line from one of the other 33 members would not have been touched.",
+      "assumption_that_would_make_this_wrong": "that the trivia line drawn during this attract sequence, if any, lives in one of the 7 members the cap reached."
+    },
+    {
+      "capability_id": "nflblitz2002ps2.gameplay.field_table",
+      "verdict": "NOT ATTEMPTED",
+      "stays": "offline-writer-proved",
+      "reason": "field.tab is a tuning table whose effect is behaviour over time rather than the next frame, and the two sibling text lanes on the same disc came back bit-identical over the same window; a pixel harness is the wrong instrument for it."
+    }
+  ],
+  "coverage": {
+    "writer_rows": 4,
+    "fixed_allocation_rows": 4,
+    "why_fixed_allocation_decides": "A fixed-allocation lane rewrites bytes in place and changes no member's stored size, so the disc read schedule is untouched and the two runs stay in lockstep; the comparison is then exact equality outside the edit. A re-packing lane moves stored sizes, which moves the read schedule, which the spec measured turning into a different scene 59 seconds downstream. This column is measured off each lane object's own fixed_allocation attribute [M], and it is the column that decides the order of work.",
+    "rows": [
+      {
+        "capability_id": "nflblitz2002ps2.gameplay.field_table",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "a tuning table whose effect is behaviour over time, not the next frame; both sibling text lanes came back bit-identical over the same window"
+      },
+      {
+        "capability_id": "nflblitz2002ps2.identity.crowd_tables",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "FAIL",
+        "outcome": "stays offline-writer-proved",
+        "state": "B2-01",
+        "reason": "120 of 120 sampled frames bit-identical: nothing these lines carry is drawn in the 7,200 frames after B2-01"
+      },
+      {
+        "capability_id": "nflblitz2002ps2.playbooks.trivia_banks",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "FAIL",
+        "outcome": "stays offline-writer-proved",
+        "state": "B2-01",
+        "reason": "120 of 120 sampled frames bit-identical; the lane's 3,000-target cap reached 7 of 40 members"
+      },
+      {
+        "capability_id": "nflblitz2002ps2.rosters.player_names",
+        "classification": "runtime-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "LOCKSTEP_WITNESS",
+        "outcome": "promoted to runtime-proved",
+        "state": "B2-01"
+      }
+    ]
+  }
+}

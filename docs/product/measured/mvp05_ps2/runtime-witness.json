@@ -1,0 +1,161 @@
+{
+  "schema": "ps2_headless_runtime_witness_measured/v1",
+  "game_id": "mvp05_ps2",
+  "captured": "2026-09-06",
+  "note": "Two writers were put through the harness from V-01 and neither was witnessed. Both results are clean negatives rather than harness failures: the baseline run is live (115 of its 120 sampled frames are distinct), the rebuilt images are the source's length and both lane verifiers passed, and the two runs are bit-identical frame for frame. What is missing is a screen that draws what was written.",
+  "witnesses": [],
+  "not_witnessed": [
+    {
+      "capability_id": "mvp05ps2.stadiums.park_textures",
+      "verdict": "FAIL",
+      "stays": "offline-writer-proved",
+      "patched_image": {
+        "sha256": "03a396a3a4f10927c861019678d25078a946d0ddab5dfd14b2e21ef6ca59384a",
+        "bytes": 4300275712
+      },
+      "attempt": "3,166 of the lane's 4,000 catalogued targets replaced with a hard magenta/green checker (834 skipped for want of declared dimensions); offline verifier PASS: '28 archive(s) re-read from both images: 2716 entr(ies) compared, 61,398,272 pixel index(es) match the PNG, and the image-level ranges hold.'",
+      "capture": {
+        "SaveFrameStart": 0,
+        "SaveFrameCount": 7200,
+        "SaveFrameBy": 60,
+        "frames_written": 120
+      },
+      "result": "120 of 120 sampled frames BIT-IDENTICAL to the baseline run",
+      "reason": "target selection, not the harness. The window is live, so the game is drawing; the 3,166 textures written are simply not the ones this park draws in it. This is the same failure the design's first trial hit on NCAA 09 field art.",
+      "assumption_that_would_make_this_wrong": "that the park this savestate's game uses has at least one texture inside the 3,166 written -- if its art is all 0x0e block-coded, the lane refused every one of them and no edit could have been drawn"
+    },
+    {
+      "capability_id": "mvp05ps2.identity.ui_strings",
+      "verdict": "FAIL",
+      "stays": "offline-writer-proved",
+      "patched_image": {
+        "sha256": "14ec9a6d570d569606496e582b47a646a532bc45df57776e91199336f2fbd2ce",
+        "bytes": 4300275712
+      },
+      "attempt": "4,000 LOCH strings (the lane's target cap) rewritten to fill their own spans; offline verifier PASS: '1 file(s) re-parsed from both images, 6352 string(s) compared, the edited ones read as the recipe says and the image-level ranges hold.'",
+      "capture": {
+        "SaveFrameStart": 0,
+        "SaveFrameCount": 7200,
+        "SaveFrameBy": 60,
+        "frames_written": 120
+      },
+      "result": "120 of 120 sampled frames BIT-IDENTICAL to the baseline run",
+      "reason": "no state reaches it: no LOCH string is drawn in the 7,200 frames after V-01",
+      "assumption_that_would_make_this_wrong": "that the HUD strings drawn in this window are among the first 4,000 the catalogue lists, rather than beyond the lane's target cap"
+    }
+  ],
+  "coverage": {
+    "writer_rows": 9,
+    "fixed_allocation_rows": 9,
+    "why_fixed_allocation_decides": "A fixed-allocation lane rewrites bytes in place and changes no member's stored size, so the disc read schedule is untouched and the two runs stay in lockstep; the comparison is then exact equality outside the edit. A re-packing lane moves stored sizes, which moves the read schedule, which the spec measured turning into a different scene 59 seconds downstream. This column is measured off each lane object's own fixed_allocation attribute [M], and it is the column that decides the order of work.",
+    "rows": [
+      {
+        "capability_id": "mvp05ps2.audio.streams",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "C",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "the spec classes it C: not pixels"
+      },
+      {
+        "capability_id": "mvp05ps2.identity.team_tables",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not reached this session"
+      },
+      {
+        "capability_id": "mvp05ps2.identity.ui_strings",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "FAIL",
+        "outcome": "stays offline-writer-proved",
+        "state": "V-01",
+        "reason": "4,000 LOCH strings rewritten to their full span, offline verifier PASS, and 120 of 120 sampled frames bit-identical: no LOCH string is drawn in the 7,200 frames after V-01"
+      },
+      {
+        "capability_id": "mvp05ps2.menus.widget_textures",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "the spec classes it B"
+      },
+      {
+        "capability_id": "mvp05ps2.playbooks.tuning_tables",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "the spec classes it B: it changes simulated numbers, not the next frame"
+      },
+      {
+        "capability_id": "mvp05ps2.presentation.overlay_textures",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not reached this session"
+      },
+      {
+        "capability_id": "mvp05ps2.rosters.database_tables",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not reached this session; it is the batter lower third, which the state's own scene should reach"
+      },
+      {
+        "capability_id": "mvp05ps2.stadiums.park_textures",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": true,
+        "verdict": "FAIL",
+        "outcome": "stays offline-writer-proved",
+        "state": "V-01",
+        "reason": "3,166 park and park-menu textures replaced with a hard checker (834 targets skipped for want of declared dimensions), offline verifier PASS, and 120 of 120 sampled frames bit-identical. The baseline run is not stuck -- 115 of its 120 frames are distinct -- so the window is live; the written textures are simply not the ones this park draws, which is the same target-selection failure the spec's first trial hit."
+      },
+      {
+        "capability_id": "mvp05ps2.uniforms.kit_textures",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "the spec classes it B: the default camera draws the low LOD and never requests the 0x0E kit parts"
+      }
+    ]
+  },
+  "harness": {
+    "capture": "tools/owner/witness_run.sh (owner-tooling branch, sha256 19dd4d79e91c20c31bcb081efd80309581835446089e50b233d7693b5adddfb6, run unmodified)",
+    "emulator_source_head": "8226182aa",
+    "renderer": "13 (software rasteriser)",
+    "frame_size": [
+      640,
+      448
+    ],
+    "design": "docs/owner/specs/HEADLESS_WITNESS.md",
+    "comparison": "the lockstep rule recorded in docs/product/measured/nflblitz2002_ps2/runtime-witness.json"
+  },
+  "state": {
+    "file": "SLUS-21135 (0544E001).01.p2s",
+    "sha256": "ac7d5087913392d04ce84fa77e9a28639832ad0b18aa67dd9f55a733c64e1e5d",
+    "scene": "V-01, the Baserunning controller-tutorial card with a Loading... bar"
+  },
+  "source_image": {
+    "sha256": "90ed5e7974fc6f4374b43f6de19a984609c75dde94bc632a2f0940f8267b6484",
+    "bytes": 4300275712
+  }
+}

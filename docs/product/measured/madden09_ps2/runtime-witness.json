@@ -1,0 +1,114 @@
+{
+  "schema": "ps2_headless_runtime_witness_measured/v1",
+  "game_id": "madden09_ps2",
+  "captured": "2026-09-06",
+  "note": "No writer on this disc was witnessed on pixels in this session. This file carries the coverage assessment and what was attempted, so the next session starts from the measurement rather than from the census.",
+  "witnesses": [],
+  "not_witnessed": [],
+  "coverage": {
+    "writer_rows": 11,
+    "fixed_allocation_rows": 4,
+    "why_fixed_allocation_decides": "A fixed-allocation lane rewrites bytes in place and changes no member's stored size, so the disc read schedule is untouched and the two runs stay in lockstep; the comparison is then exact equality outside the edit. A re-packing lane moves stored sizes, which moves the read schedule, which the spec measured turning into a different scene 59 seconds downstream. This column is measured off each lane object's own fixed_allocation attribute [M], and it is the column that decides the order of work.",
+    "rows": [
+      {
+        "capability_id": "madden09ps2.audio.streams",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "C",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.field_art.textures",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": false,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.gameplay.executable_patches",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": false,
+        "reachability": "C",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.identity.team_records",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.menus.text_members",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.playbooks.databases",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": false,
+        "reachability": "B",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.players.team_databases",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": true,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.presentation.ui_textures",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": false,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.rosters.face_textures",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": false,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.stadiums.textures",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": false,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      },
+      {
+        "capability_id": "madden09ps2.uniforms.disc_art_writer",
+        "classification": "offline-writer-proved",
+        "fixed_allocation": false,
+        "reachability": "A",
+        "reachability_source": "HEADLESS_WITNESS.md section 7 [S]",
+        "attempted": false,
+        "reason": "not attempted this session"
+      }
+    ]
+  }
+}
