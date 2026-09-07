@@ -23,7 +23,7 @@ from tests.mod_editor.test_nfl2k5_calendar_engine import XBE, RETAIL_SHA256
 
 class HandoffTests(unittest.TestCase):
     def test_candidate_registry_schema_and_product_catalog(self):
-        data = json.loads(registry.DEFAULT_REGISTRY.read_text())
+        data = json.loads(registry.DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         rows = json.loads((ROOT / "docs/mod_editor/nfl2k5_calendar_engine_capability.json").read_text())
         self.assertEqual(len(rows), 1)
         row = rows[0]
@@ -61,7 +61,7 @@ class HandoffTests(unittest.TestCase):
         # validate_data requires complete game/surface coverage, not an isolated
         # capability. Use clearly synthetic coverage rows to exercise the exact
         # unmodified calendar object without requiring unrelated private docs.
-        data = json.loads(registry.DEFAULT_REGISTRY.read_text())
+        data = json.loads(registry.DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         row, = json.loads((ROOT / "docs/mod_editor/nfl2k5_calendar_engine_capability.json").read_text())
         data["capabilities"] = [row] + [
             {**row, "id": f"fixture.{game}.{surface}", "game": game, "surface": surface,
@@ -72,7 +72,7 @@ class HandoffTests(unittest.TestCase):
         registry.validate_data(data, check_files=True)
         with tempfile.TemporaryDirectory() as directory:
             envelope = Path(directory).resolve() / "calendar-file-check.json"
-            envelope.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+            envelope.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
             result = subprocess.run(
                 [sys.executable, "mod_editor/capabilities/validate_registry.py", "--registry", str(envelope)],
                 cwd=ROOT, capture_output=True, text=True)

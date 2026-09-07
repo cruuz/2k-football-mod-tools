@@ -297,9 +297,12 @@ def write_copy(source, destination, edits, *, receipt=None, progress=None):
                     (original_stat.st_size, original_stat.st_mtime_ns, original_stat.st_ctime_ns),
                     'Source changed while copying')
         path_stat = source.stat()
-        require((path_stat.st_dev,path_stat.st_ino,path_stat.st_size,path_stat.st_mtime_ns,path_stat.st_ctime_ns) ==
-                (original_stat.st_dev,original_stat.st_ino,original_stat.st_size,original_stat.st_mtime_ns,original_stat.st_ctime_ns),
-                'Source path changed while copying')
+        # Windows reports st_dev/st_ino/st_ctime differently between a handle and a path;
+        # size and mtime carry the identity there, and the streamed hash decides content.
+        def _identity(stat):
+            posix = () if os.name == 'nt' else (stat.st_dev, stat.st_ino, stat.st_ctime_ns)
+            return (stat.st_size, stat.st_mtime_ns) + posix
+        require(_identity(path_stat) == _identity(original_stat), 'Source path changed while copying')
         # Some filesystems coalesce timestamps. Content, not timestamps alone,
         # must catch an input modification during the copy.
         recheck = hashlib.sha256()

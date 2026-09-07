@@ -51,13 +51,9 @@ class PureTests(unittest.TestCase):
         self.assertTrue(plan)
 
     def test_assembly_reproduces_committed_code(self):
-        assembler = shutil.which("as")
-        if not assembler:
-            self.skipTest("GNU x86 as absent; generated runtime template needs no assembler")
-        version = subprocess.run([assembler, "--version"], capture_output=True, text=True)
-        if version.returncode or "GNU assembler" not in version.stdout or not any(
-                arch in version.stdout for arch in ("x86_64", "i386", "i486", "i586", "i686")):
-            self.skipTest("as is not GNU x86 as; ELF32 byte reproduction requires that development tool")
+        from _gnu_elf32_as import gnu_elf32_as
+        if not gnu_elf32_as():
+            self.skipTest("GNU x86 as producing ELF32 is absent; the generated runtime template needs no assembler")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_calendar_engine_assemble.py"), "--check"], check=True)
 
     def test_foreign_input_and_unsupported_base_refuse(self):

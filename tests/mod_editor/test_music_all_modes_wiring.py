@@ -32,7 +32,7 @@ def proposed_sources():
     # later integration changes move their line numbers or surrounding context.
     paths = ("mod_editor/core/mod_build.py", "mod_editor/gui/build_panel_qt.py",
              "mod_editor/gui/studio_qt.py")
-    result = {path: (ROOT / path).read_text() for path in paths}
+    result = {path: (ROOT / path).read_text(encoding="utf-8") for path in paths}
     for path, source in result.items():
         compile(source, path, "exec")
     return result

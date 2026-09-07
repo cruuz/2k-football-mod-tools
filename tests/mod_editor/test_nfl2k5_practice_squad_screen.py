@@ -55,10 +55,10 @@ class PublicTests(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("as"), "GNU as is not available for development-template reproduction")
     def test_assembly_template_is_reproducible(self):
-        # Apple's assembler does not implement GNU --32; runtime never needs as.
-        version = subprocess.run(["as", "--version"], capture_output=True, text=True)
-        if "GNU assembler" not in version.stdout:
-            self.skipTest("template reproduction requires GNU i386 as")
+        # Apple's assembler does not implement GNU --32 and MinGW's emits COFF; runtime never needs as.
+        from _gnu_elf32_as import gnu_elf32_as
+        if not gnu_elf32_as():
+            self.skipTest("template reproduction requires GNU i386 as producing ELF32")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_practice_squad_screen_assemble.py"), "--check"], check=True)
 
 

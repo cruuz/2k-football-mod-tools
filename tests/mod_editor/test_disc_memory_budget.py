@@ -36,7 +36,13 @@ def memory_meter():
         import resource
         _, hard = resource.getrlimit(resource.RLIMIT_AS)
         ceiling = min(LIMIT, hard) if hard != resource.RLIM_INFINITY else LIMIT
-        resource.setrlimit(resource.RLIMIT_AS, (ceiling, ceiling))
+        try:
+            resource.setrlimit(resource.RLIMIT_AS, (ceiling, ceiling))
+        except ValueError:
+            # macOS rejects lowering RLIMIT_AS (EINVAL); the peak-RSS meter below still
+            # decides the budget there, without a kernel ceiling.
+            if sys.platform != 'darwin':
+                raise
         return lambda: resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * (1 if sys.platform == 'darwin' else 1024)
 
     import ctypes as c

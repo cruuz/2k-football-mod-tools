@@ -56,11 +56,9 @@ class ContractTests(unittest.TestCase):
         self.assertLessEqual(len(patch.BUILD_CAPTION), 60)
 
     def test_reproducible_assembler(self):
-        if not shutil.which("as"):
+        from _gnu_elf32_as import gnu_elf32_as
+        if not gnu_elf32_as():
             self.skipTest("GNU ELF32 assembler absent; no assembler required at runtime")
-        probe = subprocess.run(["as", "--version"], capture_output=True, text=True)
-        if probe.returncode or "GNU assembler" not in probe.stdout:
-            self.skipTest("platform assembler is not GNU as")
         from nfl2k5_screen_hooks_assemble import generate, TARGET
         self.assertEqual(generate(), TARGET.read_text())
 

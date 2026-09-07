@@ -65,11 +65,9 @@ class TableTests(unittest.TestCase):
             with self.assertRaises(spy.QbSpyError): spy.validate_intent_table(bad.ljust(512, b'\0'))
 
     def test_assembler_reproduces_shipped_bytes(self):
-        if shutil.which('as') is None:
-            self.skipTest('GNU as is absent; runtime application does not require it')
-        version = subprocess.run(['as', '--version'], capture_output=True, text=True)
-        if version.returncode or 'GNU assembler' not in version.stdout:
-            self.skipTest('GNU assembler absent; the platform as has a different CLI')
+        from _gnu_elf32_as import gnu_elf32_as
+        if not gnu_elf32_as():
+            self.skipTest('GNU ELF32 as is absent; runtime application does not require it')
         from nfl2k5_qb_spy_runtime_assemble import generate, TARGET
         self.assertEqual(generate(), TARGET.read_text())
 

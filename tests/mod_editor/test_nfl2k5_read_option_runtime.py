@@ -81,11 +81,9 @@ class TableTests(unittest.TestCase):
         with self.assertRaises(ValueError): patch.compile_intent_table([(compiled.replacement, wrong)])
 
     def test_reproducible_assembler(self):
-        if not shutil.which('as'):
+        from _gnu_elf32_as import gnu_elf32_as
+        if not gnu_elf32_as():
             self.skipTest('GNU ELF32 assembler absent; runtime has no assembler dependency')
-        probe = subprocess.run(['as', '--version'], capture_output=True, text=True)
-        if probe.returncode or 'GNU assembler' not in probe.stdout:
-            self.skipTest('platform assembler is not GNU as')
         from nfl2k5_read_option_runtime_assemble import generate, TARGET
         self.assertEqual(generate(), TARGET.read_text())
 
