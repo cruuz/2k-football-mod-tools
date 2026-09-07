@@ -56,7 +56,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     receipt = status(args.path) if args.command == "status" else apply(args.path)
     if args.receipt:
-        args.receipt.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+        args.receipt.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({k: v for k, v in receipt.items() if k not in ("rows", "receipts")}, indent=2))
     return 0
 

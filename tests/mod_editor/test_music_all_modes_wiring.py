@@ -153,7 +153,10 @@ class WidgetHandoffTests(unittest.TestCase):
         host.statusBar = lambda:types.SimpleNamespace(showMessage=Mock())
         state = {}
         def save(value):
-            state.clear(); state.update(playlist.build_settings(value))
+            # The project file carries every Build choice since the Discord bug batch (B22),
+            # so the fake facade validates the complete map like the real one does.
+            from mod_editor.core import nfl2k5_build_settings as saved
+            state.clear(); state.update(saved.build_settings(value))
         host.facade = types.SimpleNamespace(source_ready=True, modified_count=0,
             project_build_settings=lambda:copy.deepcopy(state), set_project_build_settings=save)
         value = options({('femusic',199),('cribmusic',198)})

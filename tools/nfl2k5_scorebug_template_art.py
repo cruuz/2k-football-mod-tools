@@ -95,10 +95,10 @@ def save_layer(folder, name, image):
         target.mkdir(parents=True, exist_ok=True)
         scaled = image.resize((image.width * scale, image.height * scale), Image.Resampling.NEAREST)
         scaled.save(target / (name + '.png'))
-    (folder / '1x' / (name + '.svg')).write_text(svg_pixels(image, name), encoding='utf-8')
+    (folder / '1x' / (name + '.svg')).write_text(svg_pixels(image, name), encoding='utf-8', newline="\n")
     svg = svg_pixels(image, name).replace(f'width="{image.width}" height="{image.height}"',
                                          f'width="{image.width*2}" height="{image.height*2}"', 1)
-    (folder / '2x' / (name + '.svg')).write_text(svg, encoding='utf-8')
+    (folder / '2x' / (name + '.svg')).write_text(svg, encoding='utf-8', newline="\n")
 
 
 def mark():
@@ -229,7 +229,7 @@ def author(folder):
                             'photo':'scorebug_reference_2026-09-05.jpeg, research hub',
                             'lineage':['lineage/scorebug_master.svg','lineage/espn_nfl_watermark.svg'],
                             'adaptation':'left mark required by brief; broadcast photo has its watermark in upper right'}}
-    (folder/'layout.json').write_text(json.dumps(layout,indent=2)+'\n',encoding='utf-8')
+    (folder/'layout.json').write_text(json.dumps(layout,indent=2)+'\n',encoding='utf-8', newline="\n")
     teams = json.loads((folder/'teams.json').read_text(encoding='utf-8'))
     for team in teams:
         primary = tuple(bytes.fromhex(team['primary_hex'][1:]))
@@ -247,7 +247,7 @@ def author(folder):
     save_layer(folder/'glyphs','broadcast_glyphs',sheet)
     (folder/'glyphs'/'glyphs.json').write_text(json.dumps({'schema':'nfl2k5_scorebug_glyph_source/v1',
         'atlas_size':[256,128],'metrics':metrics,'installed':False,
-        'reason':'The static bar binds shared FONT objects, not digital_font. An isolated FONT resource and selector are required to install this sheet.'},indent=2)+'\n',encoding='utf-8')
+        'reason':'The static bar binds shared FONT objects, not digital_font. An isolated FONT resource and selector are required to install this sheet.'},indent=2)+'\n',encoding='utf-8', newline="\n")
     compiled=t.compile_folder(folder)
     compiled.image.save(folder/'atlas_1x.png')
     compiled.image.resize((128,128),Image.Resampling.NEAREST).save(folder/'atlas_2x.png')
@@ -257,8 +257,8 @@ def author(folder):
         x,y,r,b=h
         parts.append(f'<g id="{name}"><image x="{x}" y="{y}" width="{r-x}" height="{b-y}" preserveAspectRatio="none" xlink:href="1x/{name}.png"/></g>')
     parts.append('</svg>')
-    (folder/'master_2x.svg').write_text('\n'.join(parts)+'\n',encoding='utf-8')
-    (folder/'master_1x.svg').write_text('\n'.join(parts).replace('width="1280" height="960"','width="640" height="480"')+'\n',encoding='utf-8')
+    (folder/'master_2x.svg').write_text('\n'.join(parts)+'\n',encoding='utf-8', newline="\n")
+    (folder/'master_1x.svg').write_text('\n'.join(parts).replace('width="1280" height="960"','width="640" height="480"')+'\n',encoding='utf-8', newline="\n")
     print(json.dumps(compiled.receipt,indent=2))
 
 

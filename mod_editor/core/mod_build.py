@@ -994,15 +994,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if not is_image:
             raise ValueError("Crib movie cut needs a disc image")
         tt.crib_reclaim_patch.plan(source)
-    if plan.scorebug and not plan.scorebug_runtime and tt.is_disc_image(source):
-        # beta 62: check every template PNG, its palette, the fixed-span fit and the source identity
-        # before a multi-gigabyte copy; the output-side transaction preflights again on the composed bytes
-        scorebar = _core_module("nfl2k5_scorebug_ingame")
-        if scorebar is not None and hasattr(scorebar, "image_plan"):
-            with open(source, "rb") as stream:
-                scorebar.image_plan(stream.fileno(), os.fstat(stream.fileno()).st_size,
-                                    scorebug_folder=plan.scorebug_folder or None)
-
     if plan.hires_pack:
         if plan.hires_target != "xemu-64":
             raise ValueError("128 MiB support has not been proved")
@@ -1018,6 +1009,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if any(row["family"] == "scorebug" for row in preview["assets"]) and (plan.scorebug or plan.scorebug_runtime):
             raise ValueError("The Hi-res scorebug conflicts with the ESPN scorebar or scorebug effects; select one")
         receipt["hires_preflight"] = preview
+    if plan.scorebug and not plan.scorebug_runtime and tt.is_disc_image(source):
+        # beta 62: check every template PNG, its palette, the fixed-span fit and the source identity
+        # before a multi-gigabyte copy; the output-side transaction preflights again on the composed bytes.
+        # Plan-level refusals such as the Hi-res scorebug conflict come first; this one parses the image.
+        scorebar = _core_module("nfl2k5_scorebug_ingame")
+        if scorebar is not None and hasattr(scorebar, "image_plan"):
+            with open(source, "rb") as stream:
+                scorebar.image_plan(stream.fileno(), os.fstat(stream.fileno()).st_size,
+                                    scorebug_folder=plan.scorebug_folder or None)
+
     if plan.team_names_2026:
         names = _core_module("nfl2k5_team_names_2026")
         if names is None:

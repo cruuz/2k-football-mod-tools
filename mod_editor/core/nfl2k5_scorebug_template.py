@@ -227,7 +227,7 @@ def main(argv=None):
             receipt = apply_in_place(args.image, scorebug_folder=args.folder)
         encoded = json.dumps(receipt, indent=2) + "\n"
         if args.receipt:
-            args.receipt.write_text(encoded, encoding="utf-8")
+            args.receipt.write_text(encoded, encoding="utf-8", newline="\n")
         print(encoded, end="")
     except (ValueError, OSError) as exc:
         parser.exit(2, f"Scorebar: {exc}\n")
