@@ -233,10 +233,28 @@
       "code",
       8192,
       16
+    ],
+    [
+      "nfl2k5_franchise_autosave",
+      "code",
+      1536,
+      16
+    ],
+    [
+      "nfl2k5_franchise_autosave",
+      "data",
+      128,
+      16
+    ],
+    [
+      "nfl2k5_franchise_autosave",
+      "read_only",
+      512,
+      16
     ]
   ],
-  "union_allocated_sha256": "41eabb82240e47c5fde1145d663f4917a41367c82615b48e85ae61fceff3c70f",
-  "relocated_output_sha256": "59005d5751c93729022c60d0adf493b3ccada3c0d1f06fc04cb4bd8c5587cacc",
+  "union_allocated_sha256": "bccc1042bfa5922a1d78b19fac3c8c51c3c58f524ddfec6b498dba0a550b3988",
+  "relocated_output_sha256": "fdc713b1dcf2fa601387725d91e0ca3a13f416b7ed319ed09485a10a3a108b10",
   "code_bytes_used": 1935,
   "code_allocation": 1939,
   "state_allocation": 10,
@@ -421,7 +439,7 @@
     "status": "applied",
     "experimental": true,
     "runtime_witnessed": false,
-    "changed_bytes": 2128,
+    "changed_bytes": 2127,
     "allocation": {},
     "edits": [
       {
@@ -1096,143 +1114,167 @@
       },
       {
         "start": "0x14dc480",
-        "end": "0x14dc670",
+        "end": "0x14dca80",
+        "size": 1536,
+        "owner": "nfl2k5_franchise_autosave",
+        "basis": "named code allocation",
+        "parent_owner": "nfl2k5_xbe_space"
+      },
+      {
+        "start": "0x14f3000",
+        "end": "0x14f3080",
+        "size": 128,
+        "owner": "nfl2k5_franchise_autosave",
+        "basis": "named data allocation",
+        "parent_owner": "nfl2k5_xbe_space"
+      },
+      {
+        "start": "0x1508800",
+        "end": "0x1508a00",
+        "size": 512,
+        "owner": "nfl2k5_franchise_autosave",
+        "basis": "named read_only allocation",
+        "parent_owner": "nfl2k5_xbe_space"
+      },
+      {
+        "start": "0x14dca80",
+        "end": "0x14dcc70",
         "size": 496,
         "owner": "nfl2k5_guardian_overlay",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14dc670",
-        "end": "0x14dce70",
+        "start": "0x14dcc70",
+        "end": "0x14dd470",
         "size": 2048,
         "owner": "nfl2k5_music_playlist",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14f3000",
-        "end": "0x14f3200",
+        "start": "0x14f3080",
+        "end": "0x14f3280",
         "size": 512,
         "owner": "nfl2k5_music_playlist",
         "basis": "named data allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x1508800",
-        "end": "0x1508c00",
+        "start": "0x1508a00",
+        "end": "0x1508e00",
         "size": 1024,
         "owner": "nfl2k5_music_playlist",
         "basis": "named read_only allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14dce70",
-        "end": "0x14dee70",
+        "start": "0x14dd470",
+        "end": "0x14df470",
         "size": 8192,
         "owner": "nfl2k5_my_career",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14f3200",
-        "end": "0x14f4200",
+        "start": "0x14f3280",
+        "end": "0x14f4280",
         "size": 4096,
         "owner": "nfl2k5_my_career",
         "basis": "named data allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14dee70",
-        "end": "0x14dfe70",
+        "start": "0x14df470",
+        "end": "0x14e0470",
         "size": 4096,
         "owner": "nfl2k5_practice_squad_screen",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14f4200",
-        "end": "0x14f4300",
+        "start": "0x14f4280",
+        "end": "0x14f4380",
         "size": 256,
         "owner": "nfl2k5_practice_squad_screen",
         "basis": "named data allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14dfe70",
-        "end": "0x14e0670",
+        "start": "0x14e0470",
+        "end": "0x14e0c70",
         "size": 2048,
         "owner": "nfl2k5_qb_spy",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14f4300",
-        "end": "0x14f4600",
+        "start": "0x14f4380",
+        "end": "0x14f4680",
         "size": 768,
         "owner": "nfl2k5_qb_spy",
         "basis": "named data allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x1508c00",
-        "end": "0x1508e00",
+        "start": "0x1508e00",
+        "end": "0x1509000",
         "size": 512,
         "owner": "nfl2k5_qb_spy",
         "basis": "named read_only allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14e0670",
-        "end": "0x14e0e70",
+        "start": "0x14e0c70",
+        "end": "0x14e1470",
         "size": 2048,
         "owner": "nfl2k5_read_option_runtime",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14f4600",
-        "end": "0x14f4700",
+        "start": "0x14f4680",
+        "end": "0x14f4780",
         "size": 256,
         "owner": "nfl2k5_read_option_runtime",
         "basis": "named data allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x1508e00",
-        "end": "0x1508e58",
+        "start": "0x1509000",
+        "end": "0x1509058",
         "size": 88,
         "owner": "nfl2k5_read_option_runtime",
         "basis": "named read_only allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14e0e70",
-        "end": "0x14e0ec2",
+        "start": "0x14e1470",
+        "end": "0x14e14c2",
         "size": 82,
         "owner": "nfl2k5_roster_storage",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14e0ed0",
-        "end": "0x14e0f70",
+        "start": "0x14e14d0",
+        "end": "0x14e1570",
         "size": 160,
         "owner": "nfl2k5_scramble_tuning",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14e0f70",
-        "end": "0x14e11f0",
+        "start": "0x14e1570",
+        "end": "0x14e17f0",
         "size": 640,
         "owner": "nfl2k5_screen_hooks",
         "basis": "named code allocation",
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14e11f0",
-        "end": "0x14e21f0",
+        "start": "0x14e17f0",
+        "end": "0x14e27f0",
         "size": 4096,
         "owner": "nfl2k5_senior_bowl",
         "basis": "named code allocation",
@@ -1247,8 +1289,8 @@
         "parent_owner": "nfl2k5_xbe_space"
       },
       {
-        "start": "0x14e21f0",
-        "end": "0x14e41f0",
+        "start": "0x14e27f0",
+        "end": "0x14e47f0",
         "size": 8192,
         "owner": "nfl2k5_roster_arena_growth",
         "basis": "named code allocation",
@@ -1286,15 +1328,15 @@
     },
     {
       "offset": 2428,
-      "before": "74a8c69cf7a51d25f176f2b371e8050ff51778af",
-      "after": "a01a7cdb2fed17e44d973f7697f44f9878c6ffc3"
+      "before": "bb875531f24e388c217e11363cc7dc31e2e76fb5",
+      "after": "889e225b0ac1edd1ca381daa377bd9eba4256d48"
     }
   ],
   "relocated_allocator_metadata_edits": [
     {
       "offset": 3508,
-      "before": "ab9e5fa42feb11239e159a3781a3099b8b35e978bd7f935af42e597ce43e6e82",
-      "after": "70d502b6c3688db481e91cd7e4d72eaf7af042f5649865e9337773477154a408"
+      "before": "6ea54becde4721988efc4f7eb7d20e323a979366259ebf30b7de25a6683820d7",
+      "after": "02630faad580278b825a2400e8e4d532885402d57dc8effae61de12dd633b87f"
     },
     {
       "offset": 12279820,

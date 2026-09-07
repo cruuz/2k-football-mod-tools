@@ -2,15 +2,17 @@
 from mod_editor.core import nfl2k5_throw_tuning as tt
 
 SCOREBUG_HELP = (
-    "Retail: Uses the original scoreboard. Patch: Uses the Raiders at Texans "
-    "broadcast layout with neutral panels, white scores, a red down box and a "
-    "light clock strip. A scorebar folder overrides this with your painted "
-    "template. Moves the kick meter up and hides the lineup strip. "
-    "EXPERIMENTAL / UNWITNESSED; fonts and colours still differ.")
+    "Retail: Uses the original scoreboard. Patch: Uses neutral panels with "
+    "live team abbreviations, yellow possession highlighting, white scores, "
+    "a red down box and separate clock cells with a dark play-clock cell. "
+    "Ball-on and event labels use a separate lower row. The three timeout "
+    "marks on each side are decorative. A scorebar folder selects your "
+    "painted template. Moves the kick meter up and hides the lineup strip. "
+    "EXPERIMENTAL / UNWITNESSED; rebuild from a clean source for these fixes.")
 SCOREBUG_RUNTIME_HELP = (
-    "Retail: Uses the original team panels and text. Patch: Adds team gradients, "
-    "logos, live timeout marks, resized text, a white possession marker and "
-    "room for three-digit scores to the experimental scorebar. "
+    "Retail: Uses the original team panels and text. Patch: Adds team "
+    "gradients, logos, live timeout marks, resized text, a white possession "
+    "marker and room for three-digit scores to the experimental scorebar. "
     "Diagnostic only and off in every preset. EXPERIMENTAL / UNWITNESSED; "
     "the game-entry freeze remains unresolved. Keep the six probe choices.")
 PRACTICE_HELP = (

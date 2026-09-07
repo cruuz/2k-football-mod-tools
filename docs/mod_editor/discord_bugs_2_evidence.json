@@ -1149,7 +1149,7 @@
       "path": "ASTRA_DEPTH_LOCKS_REPORT.md",
       "sha256": "88e111c46e4a43945824ca71236ca0d81c108e015587f757b93d305eb78560f0",
       "headings": [
-        "# Depth locks delivery \u2014 2026-09-05",
+        "# Depth locks delivery — 2026-09-05",
         "## PROVED: when and why assignments change",
         "## PROVED: left/right and screen actions",
         "## Storage, allocation and lifecycle",
@@ -1693,12 +1693,12 @@
       "path": "ASTRA_ROWS_SPECIAL_REPORT.md",
       "sha256": "7071fcd362bdb7ff223cf067dbfc0e4b2aac67a561e2d610e993ec342e85dc8f",
       "headings": [
-        "# SPECIAL rows and formation roles \u2014 2026-09-05",
+        "# SPECIAL rows and formation roles — 2026-09-05",
         "## Implemented and proved within the stated bounds",
         "## Storage decision and proof boundary",
         "## Formation policy, retail corrections and counts",
         "## Verification",
-        "## Noah's in-game checklist \u2014 HYPOTHESES until witnessed",
+        "## Noah's in-game checklist — HYPOTHESES until witnessed",
         "## Explicit change paths"
       ]
     },
@@ -1730,17 +1730,14 @@
     },
     {
       "path": "ASTRA_SCOREBUG_EXACT_REPORT.md",
-      "sha256": "06ba7547af3d455105eded6a957a950771a8c89788295b47569c1732c600eb66",
+      "sha256": "ad4ccf6943efb6f24abc62767c2d7619d257a7811e7ca88cdec92b31ab917b84",
       "headings": [
-        "# r63 scorebug broadcast comparison",
-        "## Reference and final output",
-        "## Measurement decision",
-        "## What changed",
-        "## Comparator, iteration and stopping point",
-        "## PROVED and HYPOTHESIS",
-        "## Outstanding requirements",
-        "## Six-profile freeze witness matrix",
-        "## Validation, resource limits and delivery"
+        "# r63-scorebug-exact2 delivery",
+        "## Reference and review artifacts",
+        "## Measurement and stopping decision",
+        "## What changed and what is proved",
+        "## Remaining hypotheses and gameplay witness",
+        "## Validation and protected-file handoff"
       ]
     },
     {

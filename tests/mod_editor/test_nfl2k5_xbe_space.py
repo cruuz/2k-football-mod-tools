@@ -355,6 +355,9 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(machine.mem_read(space.DATA_VA,10),bytes(10))
 
     @unittest.skipUnless(HAVE_UC and HAVE_CS, "unicorn and capstone are required for retail lineup execution")
+    @unittest.skip("v2-era mechanism check: since kickoff v3 the plan/motion hooks call through for held players and silence "
+                   "the writers instead of suppressing the callback counter; the hold, readiness and release contract is "
+                   "proved by tests/mod_editor/test_nfl2k5_kickoff_v3.py and test_nfl2k5_kickoff_v4.py on full-frame fixtures")
     def test_relocated_lineup_hold_and_contact_release_in_both_directions(self):
         spec = importlib.util.spec_from_file_location("kickoff_fixture", ROOT / "tests/mod_editor/test_nfl2k5_dynamic_kickoff.py")
         fixture = importlib.util.module_from_spec(spec); spec.loader.exec_module(fixture)
