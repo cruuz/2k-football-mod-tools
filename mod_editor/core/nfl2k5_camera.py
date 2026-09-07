@@ -2,9 +2,10 @@
 
 Far is row 1 of 4F03F8. Standard retains retail Far's settled eye positions
 with the raised Far pitch. Both rows retain native type, lag and callbacks,
-with bounded live growth and modest optional pass zoom. The settings default, settings
-saved-load calls and common game-camera initialization select Far; Options remains a
-session choice. The automatic spectator branch uses that same choice.
+with bounded live growth and modest optional pass zoom. The settings saved-load calls
+and common game-camera initialization select the new Standard (Noah's choice, 2026-09-07);
+the fresh-profile default already is Standard, so that retail site stays untouched.
+Options remains a session choice. The automatic spectator branch uses that same choice.
 
 64 owned RX bytes, no RW allocation, no retail cave. Reserve REQUESTS with
 all other selected owners before apply. Rebuild historical descriptor-only
@@ -24,7 +25,7 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 OWNER = "nfl2k5_camera"
-VERSION = 3
+VERSION = 4
 CODE_SIZE = 64
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 IMAGE_BASE = 0x10000
@@ -232,11 +233,10 @@ STANDARD_SPECIAL_BYTES = {
 # Complete instructions, not just their changed operands. ESI=1 is pinned
 # at E3B92; EDI remains zero for the adjacent pivot/zoom defaults.
 HOOKS = {
-    "fresh_settings_far": (OPTION_DEFAULT_SITE_VA, RETAIL_OPTION_DEFAULT),
-    "settings_load_far": (0x16D1D4, bytes.fromhex("e8475cf7ff")),
-    "franchise_load_far": (0x16E7B1, bytes.fromhex("e86a46f7ff")),
-    "settings_reload_far": (0x16E864, bytes.fromhex("e8b745f7ff")),
-    "game_entry_far": (0xA55EB, bytes.fromhex("e9a0feffff")),
+    "settings_load_select": (0x16D1D4, bytes.fromhex("e8475cf7ff")),
+    "franchise_load_select": (0x16E7B1, bytes.fromhex("e86a46f7ff")),
+    "settings_reload_select": (0x16E864, bytes.fromhex("e8b745f7ff")),
+    "game_entry_select": (0xA55EB, bytes.fromhex("e9a0feffff")),
     "spectator_session_choice": (0xA54C3, bytes.fromhex("7e06")),
     "standard_pass_zoom": (0xA4A2D, bytes.fromhex(
         "c7812404000000007a44c7812804000000401cc5c781080400000000fa43")),
@@ -286,7 +286,7 @@ def code_for(va: int) -> bytes:
     a = _Asm(va)
     # Tail of the common game initializer. Use the native setter so leaving
     # First Person also restores its temporary audio/pivot settings.
-    a.b("b901000000 8bd1 890df0ffe500")
+    a.b("b900000000 8bd1 890df0ffe500")  # ecx = STANDARD_ROW
     a.call(0xA5B20)
     a.jmp_abs(0xA5490)
     body = a.assemble()
@@ -295,7 +295,7 @@ def code_for(va: int) -> bytes:
     # Saved-settings callers, not the generic snapshot/restore helper. Its
     # ECX input, EAX destination result and balanced stack remain native.
     a.call(0xE2E20)
-    a.b("c705f0ffe50001000000 c3")
+    a.b("c705f0ffe50000000000 c3")  # [OPTION_GLOBAL_VA] = STANDARD_ROW
     load = a.assemble()
     _require(len(load) <= 32, "camera import wrapper exceeds its slot")
     return body.ljust(32, b"\xcc") + load.ljust(32, b"\xcc")
@@ -322,8 +322,7 @@ def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
     a = allocation(payload)
     va = a["va"] if a else 0  # used only to recognize retail with no allocation
     replacements = {
-        "fresh_settings_far": bytes.fromhex("33ff8935f0ffe500"),
-        "game_entry_far": b"\xe9" + struct.pack("<i", va - 0xA55F0),
+        "game_entry_select": b"\xe9" + struct.pack("<i", va - 0xA55F0),
         "spectator_session_choice": b"\x90\x90",
         # Keep native 1.02 growth, direction, reset and lag decisions. The
         # old limit was twice the live offset height and could overshoot by
@@ -337,7 +336,7 @@ def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
             values = (1000.0, -2500.0, 500.0)  # retained backend-only variant
         replacements[label] = b''.join(b'\xc7\x81' + struct.pack('<If', field, value)
             for field, value in zip((0x424, 0x428, 0x408), values))
-    for name in ("settings_load_far", "franchise_load_far", "settings_reload_far"):
+    for name in ("settings_load_select", "franchise_load_select", "settings_reload_select"):
         replacements[name] = b"\xe8" + struct.pack("<i", va + 32 - HOOKS[name][0] - 5)
     sites = [(label, _offset(payload, addr), before, replacements[label])
              for label, (addr, before) in HOOKS.items()]
@@ -458,7 +457,7 @@ def apply(payload: bytes, preset: str = DEFAULT_PRESET) -> tuple[bytes, Mapping[
     state = status(payload, preset)
     _require(state in ("retail", "applied"), "foreign/mixed camera bytes; rebuild from retail")
     common = dict(owner=OWNER, version=VERSION, preset=preset, experimental=True,
-                  runtime_witnessed=False, selected_row=FAR_ROW, option_default="far",
+                  runtime_witnessed=False, selected_row=STANDARD_ROW, option_default="standard",
                   owned_code_bytes=CODE_SIZE, persistent_data_bytes=0)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])

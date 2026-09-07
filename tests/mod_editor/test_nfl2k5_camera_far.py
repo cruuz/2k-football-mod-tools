@@ -55,6 +55,8 @@ def fixture():
             flags, va, raw, size = 3, 0xC00000 + index*0x1000, 0x400000+index*0x1000, 4
         struct.pack_into('<5I', buf, off, flags, va, size, raw, size)
     spans = [(va, before) for va, before in c.HOOKS.values()] + list(c.CONTEXT_PINS)
+    # The fresh-profile default site is retail Standard and no longer a hook; keep it in the fixture.
+    spans.append((c.OPTION_DEFAULT_SITE_VA, c.RETAIL_OPTION_DEFAULT))
     spans += [(va, c.RETAIL_DESCRIPTORS[s]) for s, va in c.STANDARD_DESCRIPTORS.items()]
     spans += [(va, c.FAR_RETAIL_DESCRIPTORS[s]) for s, va in c.FAR_DESCRIPTORS.items()]
     document = json.loads((ROOT / 'tests/fixtures/nfl2k5_camera_context.v2.json').read_text())
@@ -91,10 +93,10 @@ class CameraPatchTests(unittest.TestCase):
         self.assertEqual(receipt['changed_bytes'], 0)
         self.assertTrue(receipt['experimental'])
         self.assertFalse(receipt['runtime_witnessed'])
-        self.assertEqual(c.option_default_status(again), 'far')
+        self.assertEqual(c.option_default_status(again), 'standard')
         self.assertNotEqual(c.read_standard(again), c.read_standard(self.retail))
         self.assertEqual(c.read_preset_table(again), c.read_preset_table(self.retail))
-        self.assertEqual(len(self.receipt['edits']), 28)
+        self.assertEqual(len(self.receipt['edits']), 27)
         for edit in self.receipt['edits']:
             off, size = int(edit['file_offset'], 0), edit['size']
             self.assertEqual(again[off:off+size], bytes.fromhex(edit['after']))
@@ -220,7 +222,7 @@ class SelectionProofTests(unittest.TestCase):
         return uc.hook_add(u.UC_HOOK_CODE,intercept)
 
     def test_fresh_default_preserves_other_settings(self):
-        for payload, expected in ((self.retail,0),(self.patched,1)):
+        for payload, expected in ((self.retail,0),(self.patched,0)):
             h,uc = self.machine(payload)
             # Execute the full initializer; stub unrelated settings/audio helpers.
             targets = {}
@@ -238,7 +240,7 @@ class SelectionProofTests(unittest.TestCase):
             original = bytearray((i*13+7)%256 for i in range(0x2e0))
             struct.pack_into('<I',original,0x70,selected)
             uc.mem_write(h.SRC,bytes(original))
-            expected = bytearray(original); struct.pack_into('<I',expected,0x70,1)
+            expected = bytearray(original); struct.pack_into('<I',expected,0x70,c.STANDARD_ROW)
             for call in (0x16D1D4,0x16E7B1,0x16E864):
                 h.execute(uc,call,ecx=h.SRC,at_call=True,stop=call+5)
                 self.assertEqual(bytes(uc.mem_read(0xE5FF80,0x2e0)),bytes(expected))
@@ -263,7 +265,7 @@ class SelectionProofTests(unittest.TestCase):
                 # Actual common game-entry call, through the full camera init.
                 # Only its peripheral reset/random-camera helpers are stubbed.
                 h.execute(uc,0x64991,at_call=True,stop=0x64996)
-                self.assertEqual((self.get(uc,c.OPTION_GLOBAL_VA),self.get(uc,0xB665F0)),(1,1))
+                self.assertEqual((self.get(uc,c.OPTION_GLOBAL_VA),self.get(uc,0xB665F0)),(0,0))
             for choice in range(6):
                 self.put(uc,0xB616C0,0)
                 h.execute(uc,0x2C6960,ecx=choice,edx=1)
@@ -271,7 +273,7 @@ class SelectionProofTests(unittest.TestCase):
                 self.assertEqual((self.get(uc,c.OPTION_GLOBAL_VA),self.get(uc,0xB665F0)),(choice,choice))
             # Next new game discards the previous session choice.
             h.execute(uc,0xA55EB)
-            self.assertEqual(self.get(uc,0xB665F0),1)
+            self.assertEqual(self.get(uc,0xB665F0),0)
         stubs[0x771F0] = (0,0)
         self.put(uc,0xB665F0,7);self.put(uc,c.OPTION_GLOBAL_VA,1)
         h.execute(uc,0xA5490)
@@ -439,9 +441,9 @@ class SelectionProofTests(unittest.TestCase):
         machine.stub(0x771F0,lambda:machine.ret(1))
         machine.stub(0xA5620,lambda:machine.ret(pop=4))
         machine.stub(0x2C6800,lambda:machine.ret())
-        machine.put(0xB665F0,0)
+        machine.put(0xB665F0,7)
         machine.call(0xA55EB)
-        self.assertEqual(machine.get(0xB665F0),1)
+        self.assertEqual(machine.get(0xB665F0),0)
         for choice in range(6):
             machine.put(0xB616C0,0)
             machine.call(0x2C6960,ecx=choice,edx=1)

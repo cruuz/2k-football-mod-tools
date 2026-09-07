@@ -11,6 +11,13 @@ everything else, including all on-field behaviour. No emulator, GUI display,
 network or push was used; no disc image was built (the main drive sat at the
 100 GB floor).
 
+> Addendum (Claude, 2026-09-07 02:45): Noah chose the new Standard camera as the default for games and practice.
+> The camera owner is version 4: its wrappers select row 0 and the fresh-profile default site stays retail, so the
+> ModRM byte at E3C6B no longer identifies the camera patch. MyCareer's `camera` routine now identifies the camera
+> owner by its constant spectator hook at A54C3 (retail `7e06`, owned `9090`); the byte template was regenerated
+> with the assembler and verified with `--check`. Behaviour is unchanged: with the camera owner installed, Options
+> governs the session; without it, MyCareer applies its configured camera.
+
 ## What Noah asked for and what this delivers
 
 "Get MyCareer working in the next beta, replacing First-Person Football as an

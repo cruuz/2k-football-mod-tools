@@ -125,11 +125,11 @@ PATCHES = (
      "length) and can tie; the postseason keeps playing, including through an unfinished second possession. "
      "The franchise sim engine gets the 10-minute clock and the one-period tie; its own sudden-death rule is "
      "left as is."),
-    ("camera", "Start games with Far (experimental)",
+    ("camera", "Start games with the new Standard camera (experimental)",
      "Retail: Standard and Far use the original camera framing and pass zoom. "
-     "Patch: start games and practice with Far. Standard gives a closer view at "
-     "the same raised angle, and both cameras pull back less during passes. "
-     "Options changes last for the current session. Experimental; not yet witnessed in play."),
+     "Patch: games and practice start with the new Standard, a closer view at the raised "
+     "angle above the scorebar; Far keeps the raised, far view. Both cameras pull back less "
+     "during passes. Options changes last for the current session. Experimental; not yet witnessed in play."),
     ("position_row", "Position on the first page of Edit Player (roster and Franchise)",
      "Retail: Create Player lets you pick a position, but Edit Player never lists it, in roster mode or in "
      "Franchise, so a position change means a new player. Patch: the Position row (the game's own picker, "
@@ -291,7 +291,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "dynamic_kickoff": ("Dynamic kickoff: ready stance and close blocks", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
                         "Held players keep an idle pose facing the kick; return blockers take close assignments.", NOT_TESTED),
     "overtime": ("Modern overtime rules", "Both teams get a possession; regular-season ties remain.", ""),
-    "camera": ("Start games with Far", "Far starts each game; Standard is closer at the same raised angle; Options still works for the session.", NOT_TESTED),
+    "camera": ("Start games with the new Standard", "The new Standard (closer, raised angle) starts each game; Far keeps the far view; Options still works for the session.", NOT_TESTED),
     "position_row": ("Change position in Edit Player", "In-game: use Depth Chart → Auto afterward.", NOT_TESTED),
     "probowl_order": ("Pro Bowl Votes: offense, defense, kickers", "The tabs run offence, defence, then K and P.", NOT_TESTED),
     "penalties": ("Adjusted penalty rates (experimental)", "Estimated rates; includes the Chop Block toggle fix.", NOT_TESTED),

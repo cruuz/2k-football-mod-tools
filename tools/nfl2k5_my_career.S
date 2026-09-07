@@ -688,10 +688,12 @@ screen_retail:
  ret
 
 camera:
- /* The camera owner changes this pinned ModRM from EDI to ESI at boot.
-    When selected, its session option also governs MyCareer; the native
-    per-frame route keeps Options changes and its normal focus hook. */
- cmp BYTE PTR [0xe3c6b], 0x35
+ /* The camera owner (version 4, Standard default) no longer touches the
+    fresh-profile default site; its constant spectator hook at A54C3 (retail
+    jle 7e06, owned nop nop) identifies it. When selected, its session option
+    also governs MyCareer; the native per-frame route keeps Options changes
+    and its normal focus hook. */
+ cmp WORD PTR [0xa54c3], 0x9090
  je camera_retail
  call enabled
  jz camera_retail
