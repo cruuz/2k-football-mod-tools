@@ -4929,15 +4929,17 @@
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.core.nfl2k5_my_career prepare source.zip output --first My --last Player",
+        "command": "python3 -m mod_editor.core.nfl2k5_my_career prepare source.zip output --first My --last Player --position WR --template 1",
         "module": "mod_editor/core/nfl2k5_my_career.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
       "evidence": [
+        "FABLE_MYCAREER_REPORT.md",
         "ASTRA_MY_CAREER_REPORT.md",
         "tests/mod_editor/test_nfl2k5_my_career.py",
-        "tests/mod_editor/test_nfl2k5_my_career_unicorn.py"
+        "tests/mod_editor/test_nfl2k5_my_career_unicorn.py",
+        "tests/mod_editor/test_nfl2k5_my_career_panel.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -4949,12 +4951,14 @@
       "id": "nfl2k5.mode.my_career",
       "input_constraints": [
         "Pinned USA executable; reserve the full selected owner union before installation.",
-        "Create setup from a signed, real NFL Draft stage Franchise save with an eligible unassigned primary-pool QB prospect.",
-        "Configure MyCareer.json in Build, import its paired MyCareer.zip and enter through MyCareer. All presets off.",
-        "Native journal I/O, complete menu routes, camera and gameplay require the witness list. Missing or mismatched checkpoints disable MyPlayer control."
+        "Create setup from a signed, real NFL Draft stage Franchise save with an eligible unassigned primary-pool prospect at the chosen position (any of the 17 retail codes).",
+        "Positions with retail create-a-player templates take one of their three templates or the generated ratings; C, G, T, DT and DE keep the generated prospect ratings.",
+        "Configure MyCareer.json (schema v2) in Build, import its paired MyCareer.zip and choose MyCareer where First Person Football was in Game Modes. All presets off.",
+        "First Person Football stays a Franchise Settings toggle; its exhibition entry row is replaced.",
+        "Native journal I/O, on-field control per position, camera and gameplay require the witness list. Missing or mismatched checkpoints disable MyPlayer control."
       ],
       "portme": [
-        "Complete Noah's precise witness list in ASTRA_MY_CAREER_REPORT.md before claiming played runtime acceptance."
+        "Complete Noah's witness list in FABLE_MYCAREER_REPORT.md before claiming played runtime acceptance."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -4964,9 +4968,10 @@
       },
       "runtime": {
         "evidence": [
+          "FABLE_MYCAREER_REPORT.md",
           "ASTRA_MY_CAREER_REPORT.md"
         ],
-        "scope": "Bounded native function execution and offline writers are tested. No Xbox boot, graphics, controller play or console filesystem witness.",
+        "scope": "Bounded native function execution (menu row dispatch through the retail list dispatcher, identity, binding, checkpoint) and offline writers are tested. No Xbox boot, graphics, controller play or console filesystem witness.",
         "status": "not-tested"
       },
       "selectors": {
@@ -4984,10 +4989,10 @@
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "FPP menu action and pinned hooks; allocator-owned 8192 RX and 4096 RW bytes; fixed signed Franchise save and bounded checkpoint journal.",
+        "resource": "Game Modes First Person Football row rewritten to the MyCareer action, pinned hooks; allocator-owned 8192 RX and 4096 RW bytes; fixed signed Franchise save and bounded checkpoint journal.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "A created quarterback, MyPlayer, follows native Franchise drafting with fixed player control, CPU management, whole-game fixtures and bounded weekly XP.",
+      "summary": "A created player, MyPlayer, at any of the 17 positions follows native Franchise drafting with fixed player control, CPU management, whole-game fixtures and bounded weekly XP; MyCareer replaces First Person Football in Game Modes.",
       "surface": "mode_state_routing",
       "title": "MyCareer (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_my_career"

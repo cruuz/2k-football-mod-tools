@@ -720,8 +720,9 @@ class BuildPanel(QWidget):
         self.music_preview_label.setWordWrap(True)
         pl.addWidget(self.music_preview_label)
         self.camera_check = self._option(pl, "camera", "Start games with Far (experimental)",
-                                         "Far leaves room above the scorebar. Each game and practice starts with Far; "
-                                         "Options changes last for the session. Not yet witnessed in play.", badge=NOT_TESTED, needs_image=True)
+                                         "Far starts each game and practice. Standard offers a closer view at the raised angle; "
+                                         "passes use a smaller pullback. Options changes last for the session. "
+                                         "Not yet witnessed in play.", badge=NOT_TESTED, needs_image=True)
         self.widescreen_check = self._option(pl, "widescreen", 'Widescreen 16:9 (experimental)',
                                              tt.widescreen_patch.HELP_TEXT, badge=NOT_TESTED,
                                              details=tt.widescreen_patch.HELP_TEXT)

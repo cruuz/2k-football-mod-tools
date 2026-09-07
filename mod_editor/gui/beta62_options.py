@@ -29,10 +29,7 @@ OPTIONS = (
     ("franchise_2026_rules", "2026 franchise rules (unavailable)", FRANCHISE_HELP),
     ("senior_bowl", "Senior Bowl native event (not available)", tt.senior_bowl_patch.HELP_TEXT),
     ("guardian_overlay", "Guardian caps (experimental)", tt.guardian_overlay_patch.HELP_TEXT),
-    ("my_career", "MyCareer (experimental)",
-     "EXPERIMENTAL / UNWITNESSED. Retail: Franchise controls a team. Patch: MyCareer follows MyPlayer, a created QB, "
-     "through the normal draft. The CPU manages the club and teammates. Create the paired draft save and setup "
-     "on the MyCareer page, then include the setup in Build."),
+    ("my_career", "MyCareer (experimental)", tt.my_career_patch.HELP_TEXT),
     ("crib_reclaim", "Crib movie cut (experimental)",
      "EXPERIMENTAL / UNWITNESSED. Retail: The Crib includes 23 movies. Patch: Remove those movies from a smaller image. "
      "The Trophy Room, awards, profiles, shared room, games and furniture stay."),
