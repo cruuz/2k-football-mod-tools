@@ -15,8 +15,7 @@ survives except one.  ``PLAY`` goes from 65 fields / 671 bits to **84 /
 831**, with 64 names in common and **none at the same bit offset**;
 ``TEAM`` goes from 41 / 575 to **22 / 447**; ``DCHT`` -- 4 fields, 63
 bits, same names, same widths, same offsets -- is the only table that
-ports byte for byte [M].  ``docs/product/NFLSTREET3_PS2_MODULE.md`` §2 is
-the census.
+ports byte for byte [M].
 
 What is on the contract today:
 

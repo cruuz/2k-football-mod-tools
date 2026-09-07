@@ -37,8 +37,7 @@ texture(s)** from 81 of the 807 dumped files; 693 dumped files pair with
 nothing this module indexes, which is what a disc whose art is mostly
 direct-colour looks like from the dump side.  None of the 807 declares PSM 27, so ``extra_psms`` stays empty here [M].  Every other texture's
 name is **derived** from its own bytes and :meth:`identity_note` says which of
-the two it is, on every one.  ``docs/product/NFLSTREET3_PS2_MODULE.md`` §5 lists the
-screens a further capture should cover.
+the two it is, on every one.
 
 Run it without a window::
 

@@ -19,7 +19,7 @@ from 65 fields / 671 bits to **84 fields / 831 bits** with 64 names in common,
 49 of those at the same width and **none at the same bit offset**; ``TEAM``
 goes from 41 fields / 575 bits to **22 / 447**; and ``DCHT`` -- 4 fields, 63
 bits, same names, same widths, same offsets -- is the only table that ports
-byte for byte.  ``docs/product/NFLSTREET3_PS2_MODULE.md`` §2 is the census.
+byte for byte [M].
 
 What the disc holds, measured [M]: **80 ``TERF`` containers, 27,178 members**,
 all of which the shared reader opens; **47 EA TDB databases plus one bare

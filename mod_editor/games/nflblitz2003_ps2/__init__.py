@@ -27,7 +27,7 @@ What is on the contract:
   RenderWare clumps (:mod:`.camera_lane`).
 
 Every writer is ``offline-writer-proved`` and no more: no rebuilt image has been
-booted.  ``docs/product/NFLBLITZ2002_PS2_MODULE.md`` carries both halves.
+booted.  ``docs/product/NFLBLITZ2003_PS2_MODULE.md`` carries both halves.
 Retail-free: names, offsets, lengths, counts and digests only.
 """
 

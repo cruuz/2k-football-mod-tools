@@ -98,5 +98,5 @@ studio list by enumerating the games hosted that day, so the second game had to 
 file and the third hit the same wall. `test_games_chooser.py` now asserts the *rule* it always
 meant — one row per discovered game, the two known PS2 rows present, and the rows in the order
 `ChooserRow.sort_key` defines — so a fourth game is not a frozen-file edit. Nothing about the
-chooser's behaviour changed; only what the test says about it. `MADDEN09_PS2_MODULE.md` §8.1
-named this fix and left it undone; this is it.
+chooser's behaviour changed; only what the test says about it. The Madden 09 module's own
+notes named this fix and left it undone; this is it.

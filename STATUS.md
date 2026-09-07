@@ -33,8 +33,8 @@ and no Madden 09 row is `runtime-proved`.
   (an entry quoting another module's constant is read as its own source text) and the evidence-directory name (the
   release checker forbids a path component named `evidence`; the measured records live under
   `docs/product/measured/`).
-- Full account: `docs/product/MADDEN09_PS2_MODULE.md`, whose §10 answers the seven-point shipping standard — including
-  the point it fails, which is that no writer has an in-game witness.
+- What the module offers, page by page: `docs/product/MADDEN09_PS2_MODULE.md`, which is also
+  where the point it fails is written down — no writer has an in-game witness.
 
 ## Beta 63 (unreleased) — PS2 Madden 09 Studio: a second game on the shell
 
