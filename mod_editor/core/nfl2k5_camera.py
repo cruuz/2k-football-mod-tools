@@ -1,50 +1,31 @@
-"""Rewrite NFL 2K5's default ("Standard") gameplay camera in ``default.xbe`` (data patch, xemu-only).
+"""EXPERIMENTAL / UNWITNESSED Far selection and scorebar-safe framing, USA XBE.
 
-How the retail camera is built (all addresses are retail ``default.xbe`` VAs, image base 0x10000):
+Far is row 1 of 4F03F8, not a rename of Standard. Seven Far descriptors
+retain their native type, lag and callbacks. The settings default, settings
+saved-load calls and common game-camera initialization select Far; Options remains a
+session choice. The automatic spectator branch uses that same choice.
 
-* The Options "Camera" choice (``DAT_00e5fff0``: 0 Standard, 1 Far, 2 Side, 3 Iso, 4 Blimp, 5 Custom;
-  the menu shows ``names[value]`` with ``names`` = 0x4F25BC (``cb_002c66c0``); 6 = 1st Person and
-  7 = "Broadcast" exist in the table but are not menu choices) selects a ROW of the .rdata table at
-  0x4F03F8: 8 rows x 29 game states x 8 bytes ``(flags, descriptor*)``.  The row is the option value
-  itself: ``FUN_000a5490`` copies ``DAT_00e5fff0`` into the live row ``DAT_00b665f0`` every frame while
-  a controller is plugged in (row 7 "Broadcast" only when none is), and the option setter
-  ``FUN_002c6960`` -> ``FUN_000a5b20(option)`` stores the same value.  The fresh-profile default is
-  0 = Standard (``FUN_000e3b90``); a profile save carries the five camera words (``cb_002c69d0`` ->
-  0xC8E1A0, restored by ``cb_002c6a90``), so an existing profile keeps whatever it last chose.
-* The game state ``DAT_00b616c0`` is set by ``FUN_00089260``; 9 = pre-snap scrimmage, 16 = the live
-  play (also state 1 = play call and the pause-menu preview: ``FUN_000a5610``), 17/18/19 = live
-  variants, 15 = pass in the air, 13 = post-catch, 8/10/11 = kick alignments.
-* A descriptor is an 0x50-byte record in .data: +0x00 type (2 = follow the focus, z flipped with
-  the offense direction), +0x08 lag block (0x4F0380/0x4F03A8), +0x10 look-at offset xyz (cm),
-  +0x20 lens word (passed as value/18 to the projection; lower = wider, Far uses 28, 1st person
-  18), +0x30 camera offset xyz (cm, y up, z toward the offense's own end zone), +0x40/+0x44 setup
-  and per-frame callbacks.  ``FUN_00060090`` copies it into the camera object at +0x3F0;
-  ``FUN_0005f760`` adds +0x420 (offset) to the focus for the eye and +0x400 for the look-at.
-  World units are centimetres (1 yd = 91.44 cm).
-* Each row owns its descriptors: the seven Standard records (0xA88870..0xA88A50) are referenced only
-  by row 0 of the table and by Standard's own per-frame callback ``FUN_000a4a50`` (re-copy of
-  0xA88A00, pull-back cap 2 x [0xA88A34]); the Far records (0xA88B90..0xA88D70) only by row 1 and
-  ``FUN_000a4c30`` (0xA88D20 / [0xA88D54]).  Nothing is shared, so a Standard rewrite cannot leak
-  into Far or any other preset.
-
-Retail Far is the Standard geometry with a wider lens (28 instead of 35; 24 instead of 30 with the
-ball in the air) and a slightly different state-19 look-at.  Noah's 9/3 playtest preferred that
-look and asked for it to be the default, so the default preset here (``far_look``) copies Far's
-seven live records into Standard's seven (look-at, lens and offset words only; Standard keeps its
-own type, lag pointer and callbacks, which are the same code paths with Standard's own pull-back
-and pass-zoom-out logic).  The earlier ``broadcast_wide`` proposal (23 yd back, 9-10 yd up, lens
-32) stays available as a named preset.  The option default (0 = Standard) is retail already and is
-left alone; the kick alignments (8, 10, 11, 12) and the other rows are never touched.  Retail
-bytes are verified before writing and the .data section digest is repinned.  Not verified in game.
+64 owned RX bytes, no RW allocation, no retail cave. Reserve REQUESTS with
+all other selected owners before apply. Rebuild historical descriptor-only
+installations from retail; mixed/foreign inputs refuse before mutation.
+See ASTRA_CAMERA_FAR_REPORT.md for native evidence and visual-proof limits.
 """
 
 from __future__ import annotations
 
+import hashlib
 import struct
+import zlib
 from typing import Mapping
 
+from . import nfl2k5_xbe_space as space
+from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
+OWNER = "nfl2k5_camera"
+VERSION = 2
+CODE_SIZE = 64
+REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 IMAGE_BASE = 0x10000
 DESCRIPTOR_SIZE = 0x50
 FIELD_TARGET = 0x10
@@ -59,7 +40,7 @@ OPTION_GLOBAL_VA = 0x00E5FFF0            # DAT_00e5fff0: the Options "Camera" va
 OPTION_DEFAULT_SITE_VA = 0x000E3C68      # FUN_000e3b90: `xor edi,edi ; mov dword ptr [0xE5FFF0], edi` (fresh-profile default 0)
 RETAIL_OPTION_DEFAULT = bytes.fromhex("33ff893df0ffe500")   # xor edi,edi ; mov dword [0xE5FFF0], edi
 
-# Standard-row descriptors this patch rewrites, keyed by game state.
+# Standard-row reference guards, keyed by game state. These remain unchanged.
 STANDARD_DESCRIPTORS: dict[int, int] = {
     9: 0x00A88870,    # pre-snap scrimmage
     13: 0x00A888C0,   # after the catch
@@ -69,7 +50,7 @@ STANDARD_DESCRIPTORS: dict[int, int] = {
     18: 0x00A88960,   # live variant
     19: 0x00A889B0,   # live variant (look-at behind the ball)
 }
-# The Far row's records for the same states (read for reference; never written).
+# The seven Far recipients; Standard and all unrelated states remain retail.
 FAR_DESCRIPTORS: dict[int, int] = {
     9: 0x00A88B90, 13: 0x00A88BE0, 15: 0x00A88D70, 16: 0x00A88D20, 17: 0x00A88C30, 18: 0x00A88C80, 19: 0x00A88CD0,
 }
@@ -121,8 +102,16 @@ FAR_RETAIL_VALUES: dict[int, Values] = {
 }
 
 PRESETS: dict[str, dict[int, Values]] = {
-    # Standard becomes the retail Far look (Noah 9/3: "make [Far] the new default").
-    "far_look": dict(FAR_RETAIL_VALUES),
+    # Keep the existing public preset key while making Far the actual selection.
+    "far_look": {
+        9: ((0.0, 0.0, -250.0), 28.0, (0.0, 700.0, -1800.0)),
+        13: ((0.0, 0.0, -250.0), 28.0, (0.0, 650.0, -1600.0)),
+        15: ((0.0, 50.0, -150.0), 24.0, (0.0, 800.0, -2000.0)),
+        16: ((0.0, 0.0, -350.0), 28.0, (0.0, 650.0, -1600.0)),
+        17: ((0.0, 0.0, -250.0), 28.0, (0.0, 650.0, -1600.0)),
+        18: ((0.0, 0.0, -250.0), 28.0, (0.0, 650.0, -1600.0)),
+        19: ((0.0, 0.0, -250.0), 28.0, (0.0, 650.0, -1600.0)),
+    },
     # The earlier proposal: an elevated, set-back view (about 23 yd back, 9-10 yd up, 20 degrees down)
     # with a lens between Standard 35 and Far 28.  Kept as an option; not the default.
     "broadcast_wide": {
@@ -136,7 +125,7 @@ PRESETS: dict[str, dict[int, Values]] = {
     },
 }
 DEFAULT_PRESET = "far_look"
-PRESET_TITLES = {"far_look": "Standard = the Far look (retail Far geometry and lens)",
+PRESET_TITLES = {"far_look": "Far with room above the scorebar (experimental)",
                  "broadcast_wide": "Broadcast Wide (23 yd back, 9-10 yd up, lens 32)"}
 
 
@@ -188,39 +177,127 @@ def decode_descriptor(record: bytes) -> dict[str, object]:
     }
 
 
-def _sites(payload: bytes, preset: str) -> list[tuple[int, int, bytes, bytes]]:
+# Complete instructions, not just their changed operands. ESI=1 is pinned
+# at E3B92; EDI remains zero for the adjacent pivot/zoom defaults.
+HOOKS = {
+    "fresh_settings_far": (OPTION_DEFAULT_SITE_VA, RETAIL_OPTION_DEFAULT),
+    "settings_load_far": (0x16D1D4, bytes.fromhex("e8475cf7ff")),
+    "franchise_load_far": (0x16E7B1, bytes.fromhex("e86a46f7ff")),
+    "settings_reload_far": (0x16E864, bytes.fromhex("e8b745f7ff")),
+    "game_entry_far": (0xA55EB, bytes.fromhex("e9a0feffff")),
+    "spectator_session_choice": (0xA54C3, bytes.fromhex("7e06")),
+}
+# Narrow immutable prerequisites. Whole table pins include kick/preview states,
+# and reject redirected recipients. MyCareer's separate A5490 hook is outside
+# these contexts and remains owned by that module.
+CONTEXT_PINS = (
+    (0xE3B90, bytes.fromhex("5356be0100000057")),
+    (0xE2E20, bytes.fromhex("8bd168e0020000b980ffe500")),
+    (0xE2E2C, bytes.fromhex("e8cfe1f4ffc3")),
+    (0x16D1D2, bytes.fromhex("8bce")),
+    (0x16D1D9, bytes.fromhex("e8225cf7ff8d0c30e89a82f3ffe87582f3ff")),
+    (0x16E7AE, bytes.fromhex("8d0c33")),
+    (0x16E7B6, bytes.fromhex("e84546f7ff03d88d0c33e8bb6cf3ff")),
+    (0x16E862, bytes.fromhex("8bce")),
+    (0x16E869, bytes.fromhex("e89245f7ff8d0c30e80a6cf3ffe8e56bf3ff")),
+    (0xA54B7, bytes.fromhex("a1f065b60083f806741e85ff")),
+    (0xA54C5, bytes.fromhex("8b1df0ffe5003bd87410891df065b600c705f465b600010000005f5e5bc3")),
+    (0xA55E1, bytes.fromhex("c705e065b60001000000")),
+)
+# Hash-only guards are generated from the pinned USA executable, below.
+CONTEXT_HASHES = (
+    (0x4F03F8, 1856, "2b63b0b1c1d993ebf4b6eb6a502f8aa21417f14aa167262777ecbbab27badb93"),
+    (0xA5B20, 480, "ba3262ce0f88dbf9fbf46cf6e4b783076b9ec7e05fa32dbade9bcf9fccf736d8"),
+    (0x31000, 33, "6108e11605dbbba3cec8f5dbccc0c99915850f57b2b6267fa3444adf91191974"),
+    (0xE3B98, 208, "3f0b05b388c4afa96464e14cb5022db712d6afc2cf98b4c0e0a5a7d9d2f2c145"),
+    (0xA55A0, 65, "bd07d17cb82a9f14cadc87f9241aebcd51f8939b89342d9427d0966aa8fb0b11"),
+    (0xA4B90, 500, "21a951b17f3257486ad6d426241dfae25dc55effa53b369fa9c6eaf2cc6572ac"),
+)
+
+
+def code_for(va: int) -> bytes:
+    a = _Asm(va)
+    # Tail of the common game initializer. Use the native setter so leaving
+    # First Person also restores its temporary audio/pivot settings.
+    a.b("b901000000 8bd1 890df0ffe500")
+    a.call(0xA5B20)
+    a.jmp_abs(0xA5490)
+    body = a.assemble()
+    _require(len(body) <= 32, "camera entry wrapper exceeds its slot")
+    a = _Asm(va + 32)
+    # Saved-settings callers, not the generic snapshot/restore helper. Its
+    # ECX input, EAX destination result and balanced stack remain native.
+    a.call(0xE2E20)
+    a.b("c705f0ffe50001000000 c3")
+    load = a.assemble()
+    _require(len(load) <= 32, "camera import wrapper exceeds its slot")
+    return body.ljust(32, b"\xcc") + load.ljust(32, b"\xcc")
+
+
+def allocation(payload: bytes) -> dict | None:
+    rows = [a for a in space.layout(payload)["allocations"] if a["owner"] == OWNER]
+    if not rows:
+        return None
+    _require(len(rows) == 1 and (rows[0]["kind"], rows[0]["size"], rows[0]["align"])
+             == ("code", CODE_SIZE, 16), "foreign camera allocation")
+    return rows[0]
+
+
+def _read(payload: bytes, va: int, size: int) -> bytes:
+    off = _offset(payload, va)
+    value = payload[off:off + size]
+    _require(len(value) == size, "truncated camera span")
+    return value
+
+
+def _sites(payload: bytes, preset: str) -> list[tuple[str, int, bytes, bytes]]:
     _require(preset in PRESETS, f"unknown camera preset {preset!r}")
-    values = PRESETS[preset]
-    sites = []
-    for state, va in STANDARD_DESCRIPTORS.items():
-        retail = RETAIL_DESCRIPTORS[state]
-        _require(descriptor_bytes(retail, RETAIL_VALUES[state]) == retail, f"retail transcript of state {state} is inconsistent")
-        _require(descriptor_bytes(FAR_RETAIL_DESCRIPTORS[state], FAR_RETAIL_VALUES[state]) == FAR_RETAIL_DESCRIPTORS[state],
-                 f"retail Far transcript of state {state} is inconsistent")
-        sites.append((state, _offset(payload, va), retail, descriptor_bytes(retail, values[state])))
+    a = allocation(payload)
+    va = a["va"] if a else 0  # used only to recognize retail with no allocation
+    replacements = {
+        "fresh_settings_far": bytes.fromhex("33ff8935f0ffe500"),
+        "game_entry_far": b"\xe9" + struct.pack("<i", va - 0xA55F0),
+        "spectator_session_choice": b"\x90\x90",
+    }
+    for name in ("settings_load_far", "franchise_load_far", "settings_reload_far"):
+        replacements[name] = b"\xe8" + struct.pack("<i", va + 32 - HOOKS[name][0] - 5)
+    sites = [(label, _offset(payload, addr), before, replacements[label])
+             for label, (addr, before) in HOOKS.items()]
+    for state, addr in FAR_DESCRIPTORS.items():
+        before = FAR_RETAIL_DESCRIPTORS[state]
+        sites.append((f"far_state_{state}", _offset(payload, addr), before,
+                      descriptor_bytes(before, PRESETS[preset][state])))
+    if a:
+        sites.append(("owned_camera_wrappers", a["raw"], b"\xcc" * CODE_SIZE, code_for(va)))
     return sites
 
 
 def status(payload: bytes, preset: str = DEFAULT_PRESET) -> str:
-    """'retail', 'applied' (this preset), or 'foreign'."""
-
+    """Retail, exactly applied, or foreign (including partial/old installs)."""
     try:
-        sites = _sites(payload, preset)
-    except (CameraPatchError, ValueError, struct.error):
-        return "foreign"
-    states = set()
-    for _state, off, before, after in sites:
-        got = payload[off: off + DESCRIPTOR_SIZE]
-        states.add("retail" if got == before else "applied" if got == after else "foreign")
-    if states == {"retail"}:
-        return "retail"
-    if states == {"applied"}:
-        return "applied"
+        sites = _sites(payload, preset)  # allocator validates section digests
+        for va, pin in CONTEXT_PINS:
+            _require(_read(payload, va, len(pin)) == pin, f"foreign context at {va:#x}")
+        for va, size, digest in CONTEXT_HASHES:
+            _require(hashlib.sha256(_read(payload, va, size)).hexdigest() == digest,
+                     f"foreign camera prerequisite at {va:#x}")
+        for state, va in STANDARD_DESCRIPTORS.items():
+            _require(_read(payload, va, DESCRIPTOR_SIZE) == RETAIL_DESCRIPTORS[state],
+                     "historical/foreign Standard rewrite; rebuild from retail")
+        states = {"retail" if payload[off:off+len(old)] == old else
+                  "applied" if payload[off:off+len(new)] == new else "foreign"
+                  for _label, off, old, new in sites}
+        if states == {"retail"}:
+            return "retail"
+        if states == {"applied"} and allocation(payload) is not None:
+            return "applied"
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, UnicodeError, OverflowError, zlib.error):
+        pass
     return "foreign"
 
 
 def detect_preset(payload: bytes) -> str | None:
-    """'retail', the name of the preset the Standard records currently hold, or None (foreign)."""
+    """'retail', the name of the installed Far variant, or None (foreign)."""
 
     if status(payload, DEFAULT_PRESET) == "retail":
         return "retail"
@@ -231,7 +308,7 @@ def detect_preset(payload: bytes) -> str | None:
 
 
 def read_standard(payload: bytes) -> dict[int, dict[str, object]]:
-    """Decode the Standard-row descriptors this patch touches, as they are in ``payload``."""
+    """Decode the unchanged Standard-row reference descriptors in ``payload``."""
 
     out = {}
     for state, va in STANDARD_DESCRIPTORS.items():
@@ -241,7 +318,7 @@ def read_standard(payload: bytes) -> dict[int, dict[str, object]]:
 
 
 def read_far(payload: bytes) -> dict[int, dict[str, object]]:
-    """Decode the Far-row descriptors for the same states (never written by this module)."""
+    """Decode the Far-row descriptors for the same states."""
 
     out = {}
     for state, va in FAR_DESCRIPTORS.items():
@@ -265,41 +342,66 @@ def read_preset_table(payload: bytes) -> list[list[tuple[int, int]]]:
 
 
 def option_default_status(payload: bytes) -> str:
-    """'standard' when the fresh-profile Camera default is still retail (0 = Standard), else 'foreign'."""
-
     try:
-        off = _offset(payload, OPTION_DEFAULT_SITE_VA)
-    except CameraPatchError:
+        got = _read(payload, OPTION_DEFAULT_SITE_VA, len(RETAIL_OPTION_DEFAULT))
+        return {RETAIL_OPTION_DEFAULT: "standard",
+                bytes.fromhex("33ff8935f0ffe500"): "far"}.get(got, "foreign")
+    except (ValueError, struct.error):
         return "foreign"
-    return "standard" if payload[off: off + len(RETAIL_OPTION_DEFAULT)] == RETAIL_OPTION_DEFAULT else "foreign"
+
+
+def reservations(payload: bytes) -> list[dict]:
+    rows = []
+    for label, off, before, _after in _sites(payload, DEFAULT_PRESET):
+        a = allocation(payload)
+        if a and off == a["raw"]:
+            rows.append(dict(owner=OWNER, start=hex(a["va"]), end=hex(a["va"]+CODE_SIZE),
+                             size=CODE_SIZE, basis="named code allocation", parent_owner=space.OWNER))
+        else:
+            section = _section_for_offset(_sections(payload), off)
+            va = section.virtual_address + off - section.raw_offset
+            rows.append(dict(owner=OWNER, start=hex(va), end=hex(va+len(before)),
+                             size=len(before), basis="declared edit: " + label))
+    return rows
 
 
 def apply(payload: bytes, preset: str = DEFAULT_PRESET) -> tuple[bytes, Mapping[str, object]]:
     state = status(payload, preset)
-    _require(state == "retail", f"Standard camera descriptors are {state}, not retail")
-    buf = bytearray(payload)
-    sections = _sections(payload)
+    _require(state in ("retail", "applied"), "foreign/mixed camera bytes; rebuild from retail")
+    common = dict(owner=OWNER, version=VERSION, preset=preset, experimental=True,
+                  runtime_witnessed=False, selected_row=FAR_ROW, option_default="far",
+                  owned_code_bytes=CODE_SIZE, persistent_data_bytes=0)
+    if state == "applied":
+        return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+    if space.status(payload) == "retail":
+        allocated, allocation_receipt = space.apply(payload, REQUESTS, scaleout=True)
+    else:
+        _require(allocation(payload) is not None, "camera missing from sealed owner union; rebuild from base")
+        allocated, allocation_receipt = payload, {}
+    sites = _sites(allocated, preset)
+    a = allocation(allocated)
+    installed, _ = space.install_code(allocated, OWNER, code_for(a["va"]))
+    buf = bytearray(installed)
+    sections = _sections(installed)
     touched = set()
     edits = []
-    for game_state, off, _before, after in _sites(payload, preset):
-        buf[off: off + DESCRIPTOR_SIZE] = after
-        touched.add(_section_for_offset(sections, off).index)
-        target, fov, offset = PRESETS[preset][game_state]
-        edits.append({"state": game_state, "label": STATE_LABELS[game_state],
-                      "va": f"0x{STANDARD_DESCRIPTORS[game_state]:x}", "file_offset": f"0x{off:x}",
-                      "target_cm": list(target), "fov": fov, "offset_cm": list(offset)})
+    for label, off, before, after in sites:
+        buf[off:off + len(after)] = after
+        section = _section_for_offset(sections, off)
+        touched.add(section.index)
+        va = section.virtual_address + off - section.raw_offset
+        edits.append(dict(label=label, va=hex(va), file_offset=hex(off), size=len(after),
+                          before=before.hex(), after=after.hex(),
+                          after_sha256=hashlib.sha256(after).hexdigest()))
     for section in sections:
         if section.index in touched:
             d = section.header_offset + 36
-            buf[d: d + 20] = section_digest(bytes(buf), section)
+            buf[d:d + 20] = section_digest(buf, section)
     patched = bytes(buf)
-    _require(status(patched, preset) == "applied", "post-apply verification failed")
-    changed = sum(1 for a, b in zip(payload, patched) if a != b)
-    return patched, {"preset": preset, "edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
-                     "option_default": option_default_status(patched)}
-
-
-__all__ = ["CameraPatchError", "DEFAULT_PRESET", "FAR_DESCRIPTORS", "FAR_RETAIL_DESCRIPTORS", "FAR_RETAIL_VALUES",
-           "OPTION_DEFAULT_SITE_VA", "OPTION_GLOBAL_VA", "PRESETS", "PRESET_NAMES", "PRESET_TITLES", "RETAIL_DESCRIPTORS",
-           "RETAIL_VALUES", "STANDARD_DESCRIPTORS", "STATE_LABELS", "apply", "decode_descriptor", "descriptor_bytes",
-           "detect_preset", "option_default_status", "read_far", "read_preset_table", "read_standard", "status"]
+    _require(status(patched, preset) == "applied", "camera post-apply verification failed")
+    changed = sum(a != b for a, b in zip(payload, patched)) + len(patched) - len(payload)
+    return patched, dict(common, status="applied", edits=edits, changed_bytes=changed,
+                         file_growth=len(patched)-len(payload), allocation=allocation_receipt,
+                         before_sha256=hashlib.sha256(payload).hexdigest(),
+                         after_sha256=hashlib.sha256(patched).hexdigest(),
+                         sections_repinned=sorted(touched), reservations=reservations(patched))

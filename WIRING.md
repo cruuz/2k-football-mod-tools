@@ -8778,3 +8778,124 @@ writer is new and needs the following protected-file wiring. See
 All protected files above were left untouched. Existing beta-62/beta-63
 patched kickoff caves are deliberately foreign to this revision; rebuild
 from the supported retail base. Do not apply this revision over an old disc.
+
+## r63-camera-far: existing camera flag, 64 RX bytes (2026-09-07)
+
+This supersedes the descriptor-only Standard-to-Far description. The existing
+`nfl2k5_camera` owner now selects **Far**, resets that choice at boot, Settings
+and Franchise load, and common game/practice camera entry, and changes the
+seven Far descriptors for scorebar clearance. Standard stays retail. Camera
+Options remain a session choice, including with MyCareer. The backend and
+standalone XBE BuildPlan test work; combined production builds require this
+protected dispatcher handoff before release. Rebuild from a retail source;
+old descriptor-only camera installations deliberately report foreign.
+
+There is no new checkbox or option key. `REQUESTS` is exactly
+`(("nfl2k5_camera", "code", 64, 16),)`: 39 code bytes plus 25 bytes of
+owned padding, zero RW/RO requests. The brief assigns no camera budget row;
+this bounded addition uses 64 bytes of the existing RX capacity, without
+changing page counts or using the tight RW budget. The budget fixture,
+`tests/nfl2k5_allocator_stack.py`, both gates and manifest builder include it.
+`tools/nfl2k5_my_career.S` and its regenerated template now use the session
+camera when the pinned Far default instruction is installed. No MyCareer
+capacity, save layout, opt-in flag or setup field changed.
+
+### Protected dispatcher: mod_editor/core/nfl2k5_throw_tuning.py
+
+1. Add keyword-only `camera=False` to `_selected_space_requests` and
+   `_xbe_space_adapter.__init__`. Add
+   `+ (camera_patch.REQUESTS if camera else ())` to the request union and pass
+   `camera=camera` from the adapter to the request helper. Include camera in
+   the adapter's scaleout decision (`self.scaleout = bool(camera or ... )`).
+   `_defensive_try_adapter` inherits this request contract: pass camera to it
+   too, since it can allocate before the explicit allocator row.
+2. Remove `(camera, camera_patch, "camera_patch", "camera")` from the early
+   `_apply_all` owner tuple. Add that same tuple immediately **after** the
+   allocator entry in the final owner tuple. Add `or camera` to the allocator
+   predicate, and pass `camera=camera` into both adapter constructors. Keep the
+   existing `_apply_all(..., camera=False, ...)` public argument.
+3. Keep `"camera": camera_patch.status(payload/result/after)` in all four
+   existing status dictionaries: plain inspection, image inspection,
+   `write_copy` result, and image-write result. Add the same field to
+   `_grown_status_fields(payload)` so deferred receipts refresh it too. Keep
+   `camera_patch` as the exact detailed receipt key. Do not report this
+   revision applied based on the old Standard descriptor words.
+4. In `write_image_copy`, pass `camera and not defer_grown` in the first
+   `_apply_all` call's existing positional camera slot. Include `camera=camera`
+   in BOTH `_selected_space_requests` calls used by scorebug runtime and
+   Guardian resource passes. In the final `if defer_grown` `_apply_all`, pass
+   `camera=camera`. This prevents a camera-only directory being sealed before
+   the resource owner union. `write_copy` needs no extra settings adapter;
+   `camera.apply/status` already have the ordinary owner signature.
+5. Any other `_selected_space_requests` call forwarding selected build flags
+   must forward the existing camera flag too. Do not add camera to the r62
+   keyword validator; this is already a top-level option.
+
+### Protected BuildPlan: mod_editor/core/mod_build.py
+
+Keep `BuildPlan.camera: bool = False` and update its stale comment to
+`Far at startup/game entry, with room above the scorebar; experimental`.
+Keep the current preset choices: **Basic off, Advanced on, Experimental on**.
+Keep existing boolean normalization, capabilities presence check, inspection
+field and step-receipt camera key. No new model field is needed.
+
+For an XBE input, continue passing `camera=plan.camera` to `tt.write_copy`.
+For the image path's initial deferred XBE pass, set camera false along with
+the other grown owners. Add `camera=plan.camera` to the final
+`tt._selected_space_requests` union around the resource passes. Add
+`or plan.camera` to the final grown-owner pass predicate and pass
+`camera=plan.camera` into that final `_apply_all`. The ordinary XBE-only
+BuildPlan path is independently tested; the complete union is tested in both
+orders by the two gates. Run an image acceptance build after this handoff is
+wired, with disposable output, the disk threshold and streamed transport.
+
+### Protected Gameplay Patches and Build text
+
+In `mod_editor/gui/gameplay_patches_panel_qt.py`, replace the existing
+`PATCHES` row for camera with:
+
+```python
+("camera", "Start games with Far (experimental)",
+ "Retail: new settings select Standard and saved settings restore their camera choice. "
+ "Patch: start with Far when settings load and when a game or practice starts. "
+ "Far sits higher and farther back to leave room above the bottom scorebar. "
+ "You can change cameras in Options for the current session. Experimental; not yet witnessed in play."),
+```
+
+Keep `camera` in `NEEDS_IMAGE`. Replace its concise display row with
+`("Start games with Far", "Far leaves room above the scorebar; Options still works for the session.", NOT_TESTED)`.
+Do not label it witnessed just because the older Far look was preferred.
+
+In `mod_editor/gui/build_panel_qt.py`, retain `_option(pl, "camera", ...)` and
+use caption **`Start games with Far (experimental)`** (34 characters), help
+text `Far leaves room above the scorebar. Each game and practice starts with
+Far; Options changes last for the session. Not yet witnessed in play.` and
+`badge=NOT_TESTED`. No other GUI panel needs changes.
+
+### Packaging, capability and manifest
+
+No new runtime file is introduced. Retain these existing allowlist lines:
+
+```text
+mod_editor/core/nfl2k5_camera.py
+mod_editor/core/nfl2k5_xbe_space.py
+mod_editor/core/nfl2k5_draft_ai.py
+mod_editor/core/nfl2k5_my_career_code.py
+```
+
+Retain those same modules in the protected runtime-closure import list and
+run its closure check. The proof tool, tests, PNG and JSON are repository
+verification artifacts and are not runtime-closure imports. The existing
+camera flag is the only product surface, so no new capability registry object
+is needed. `--inspect-camera-options nfl2k5` remains a read-only **retail** map;
+do not replace its retail values with the patch's startup policy.
+
+Claude must regenerate `data/nfl2k5_cave_reservations.json` after applying the
+protected wiring above. The manifest builder includes camera in its request
+union and both pure-owner install paths, and disables camera when creating
+the separate ungrown probe. The gate uses the existing test-only
+`manifest_for_allocated_union` to move only matching, named grown spans; all
+retail reservations remain intact. This is not a replacement release
+manifest. The gate also recognizes the current manifest's explicit transfer
+of the eligibility hook from kickoff to relocated kickoff, then verifies the
+actual installed bytes. No free/unknown cave exemption was added.

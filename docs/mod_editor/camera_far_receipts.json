@@ -1,0 +1,3108 @@
+{
+  "schema": "nfl2k5_camera_far_proof/v2",
+  "experimental": true,
+  "runtime_witnessed": false,
+  "proof": "Native CPU projection of synthetic settled focus; no GPU or gameplay witness",
+  "safe_bar_640x480": [
+    84,
+    381,
+    560,
+    429
+  ],
+  "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "patch_receipt": {
+    "owner": "nfl2k5_camera",
+    "version": 2,
+    "preset": "far_look",
+    "experimental": true,
+    "runtime_witnessed": false,
+    "selected_row": 1,
+    "option_default": "far",
+    "owned_code_bytes": 64,
+    "persistent_data_bytes": 0,
+    "status": "applied",
+    "edits": [
+      {
+        "label": "fresh_settings_far",
+        "va": "0xe3c68",
+        "file_offset": "0xd3c68",
+        "size": 8,
+        "before": "33ff893df0ffe500",
+        "after": "33ff8935f0ffe500",
+        "after_sha256": "e20608acd95124ed6b6985325fd4b80a343515937796d3a25187c96e0c14e56c"
+      },
+      {
+        "label": "settings_load_far",
+        "va": "0x16d1d4",
+        "file_offset": "0x15d1d4",
+        "size": 5,
+        "before": "e8475cf7ff",
+        "after": "e847ce3601",
+        "after_sha256": "db68c4628597422319cf86bf16d223e538dd853987084a4f28d8253369601bda"
+      },
+      {
+        "label": "franchise_load_far",
+        "va": "0x16e7b1",
+        "file_offset": "0x15e7b1",
+        "size": 5,
+        "before": "e86a46f7ff",
+        "after": "e86ab83601",
+        "after_sha256": "3307fbfa972b982fa41b1d64a86f062f57234eeb3c17fbde40eef964fbb38806"
+      },
+      {
+        "label": "settings_reload_far",
+        "va": "0x16e864",
+        "file_offset": "0x15e864",
+        "size": 5,
+        "before": "e8b745f7ff",
+        "after": "e8b7b73601",
+        "after_sha256": "48fa4626bc1c34e55928bfdc4f94ff0fce31df7e88f8e31760b69193f9b81d1f"
+      },
+      {
+        "label": "game_entry_far",
+        "va": "0xa55eb",
+        "file_offset": "0x955eb",
+        "size": 5,
+        "before": "e9a0feffff",
+        "after": "e9104a4301",
+        "after_sha256": "c642716714942a0a1139169a4395e30a458d619110cb0fd329d7cae0e27d2131"
+      },
+      {
+        "label": "spectator_session_choice",
+        "va": "0xa54c3",
+        "file_offset": "0x954c3",
+        "size": 2,
+        "before": "7e06",
+        "after": "9090",
+        "after_sha256": "182003d5c37dc5253d84cc5156ca9f93aab75e72e395d157748de67cc20f4f76"
+      },
+      {
+        "label": "far_state_9",
+        "va": "0xa88b90",
+        "file_offset": "0xa7e210",
+        "size": 80,
+        "before": "020000000000000080034f00000000000000000000002f4300004843000000000000e041000000000000000000000000000000000000c8430080a2c40000000000000000000000000000000000000000",
+        "after": "020000000000000080034f0000000000000000000000000000007ac3000000000000e0410000000000000000000000000000000000002f440000e1c40000000000000000000000000000000000000000",
+        "after_sha256": "120f7ebf0ee0df6489b4e2349278ca446970062bcb77c014554c99f7e4cc9b4d"
+      },
+      {
+        "label": "far_state_13",
+        "va": "0xa88be0",
+        "file_offset": "0xa7e260",
+        "size": 80,
+        "before": "020000000000000080034f0000000000000000000000000000000000000000000000e0410000000000000000000000000000000000004843000048c40000000000000000000000000000000000000000",
+        "after": "020000000000000080034f0000000000000000000000000000007ac3000000000000e04100000000000000000000000000000000008022440000c8c40000000000000000000000000000000000000000",
+        "after_sha256": "7f46b0242f578d2d4d70f45cbee1bf63934c3bd6d444f41be0651cbc42829902"
+      },
+      {
+        "label": "far_state_15",
+        "va": "0xa88d70",
+        "file_offset": "0xa7e3f0",
+        "size": 80,
+        "before": "020000000000000080034f0000000000000000000000c84200000000000000000000c041000000000000000000000000000000000000fa43004083c400000000f04b0a00000000000000000000000000",
+        "after": "020000000000000080034f00000000000000000000004842000016c3000000000000c04100000000000000000000000000000000000048440000fac400000000f04b0a00000000000000000000000000",
+        "after_sha256": "12be01bd1bb32a23e3edb09c8337e91f3d7099ddef354e3055538b45d29801d7"
+      },
+      {
+        "label": "far_state_16",
+        "va": "0xa88d20",
+        "file_offset": "0xa7e3a0",
+        "size": 80,
+        "before": "020000000000000080034f0000000000000000000000c842000016c3000000000000e041000000000000000000000000000000000000874300803bc400000000c04b0a00304c0a000000000000000000",
+        "after": "020000000000000080034f000000000000000000000000000000afc3000000000000e04100000000000000000000000000000000008022440000c8c400000000c04b0a00304c0a000000000000000000",
+        "after_sha256": "eb5086fe9758442d44dde967aeb2e13119bb26074f7e69da7c12315355b95121"
+      },
+      {
+        "label": "far_state_17",
+        "va": "0xa88c30",
+        "file_offset": "0xa7e2b0",
+        "size": 80,
+        "before": "020000000000000080034f0000000000000000000000a04200008cc2000000000000e041000000000000000000000000000000000000c843004083c400000000904b0a00000000000000000000000000",
+        "after": "020000000000000080034f0000000000000000000000000000007ac3000000000000e04100000000000000000000000000000000008022440000c8c400000000904b0a00000000000000000000000000",
+        "after_sha256": "a8a49f217bc3cd5cd815774a9e8f57b60addec7277e9ee71656bd3642259af58"
+      },
+      {
+        "label": "far_state_18",
+        "va": "0xa88c80",
+        "file_offset": "0xa7e300",
+        "size": 80,
+        "before": "020000000000000080034f0000000000000000000000000000000000000000000000e0410000000000000000000000000000000000004843000048c400000000904b0a00000000000000000000000000",
+        "after": "020000000000000080034f0000000000000000000000000000007ac3000000000000e04100000000000000000000000000000000008022440000c8c400000000904b0a00000000000000000000000000",
+        "after_sha256": "a8a49f217bc3cd5cd815774a9e8f57b60addec7277e9ee71656bd3642259af58"
+      },
+      {
+        "label": "far_state_19",
+        "va": "0xa88cd0",
+        "file_offset": "0xa7e350",
+        "size": 80,
+        "before": "020000000000000080034f0000000000000000000000a04200008cc2000000000000e041000000000000000000000000000000000000c843004083c400000000904b0a00000000000000000000000000",
+        "after": "020000000000000080034f0000000000000000000000000000007ac3000000000000e04100000000000000000000000000000000008022440000c8c400000000904b0a00000000000000000000000000",
+        "after_sha256": "a8a49f217bc3cd5cd815774a9e8f57b60addec7277e9ee71656bd3642259af58"
+      },
+      {
+        "label": "owned_camera_wrappers",
+        "va": "0x14da000",
+        "file_offset": "0xb8a000",
+        "size": 64,
+        "before": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "after": "b9010000008bd1890df0ffe500e80ebbbcfee979b4bcfecccccccccccccccccce8fb8dc0fec705f0ffe50001000000c3cccccccccccccccccccccccccccccccc",
+        "after_sha256": "01589f8f9646968a686c3c5d396b5934ee86d8c8a4c9061db4bc5600c2fa4bc6"
+      }
+    ],
+    "changed_bytes": 353366,
+    "file_growth": 352256,
+    "allocation": {
+      "status": "applied",
+      "experimental": true,
+      "runtime_witnessed": false,
+      "changed_bytes": 353257,
+      "file_growth": 352256,
+      "allocations": [
+        {
+          "owner": "nfl2k5_boot_logo",
+          "kind": "code",
+          "size": 690,
+          "align": 16,
+          "va": 21733376,
+          "raw": 12021760
+        },
+        {
+          "owner": "nfl2k5_camera",
+          "kind": "code",
+          "size": 64,
+          "align": 16,
+          "va": 21864448,
+          "raw": 12099584,
+          "owner_offset": 0
+        },
+        {
+          "owner": "nfl2k5_xbe_space_directory",
+          "kind": "read_only",
+          "size": 4096,
+          "align": 4096,
+          "va": 22044672,
+          "raw": 12279808
+        }
+      ],
+      "reservations": [
+        {
+          "start": "0x14ba000",
+          "end": "0x14bb000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14bb000",
+          "end": "0x14bc000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14d9000",
+          "end": "0x14da000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14da000",
+          "end": "0x14db000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14db000",
+          "end": "0x14dc000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14dc000",
+          "end": "0x14dd000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14dd000",
+          "end": "0x14de000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14de000",
+          "end": "0x14df000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14df000",
+          "end": "0x14e0000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e0000",
+          "end": "0x14e1000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e1000",
+          "end": "0x14e2000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e2000",
+          "end": "0x14e3000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e3000",
+          "end": "0x14e4000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e4000",
+          "end": "0x14e5000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e5000",
+          "end": "0x14e6000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e6000",
+          "end": "0x14e7000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e7000",
+          "end": "0x14e8000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e8000",
+          "end": "0x14e9000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14e9000",
+          "end": "0x14ea000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14ea000",
+          "end": "0x14eb000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14eb000",
+          "end": "0x14ec000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14ec000",
+          "end": "0x14ed000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14ed000",
+          "end": "0x14ee000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14ee000",
+          "end": "0x14ef000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14ef000",
+          "end": "0x14f0000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f0000",
+          "end": "0x14f1000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f1000",
+          "end": "0x14f2000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown code page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f2000",
+          "end": "0x14f3000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f3000",
+          "end": "0x14f4000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f4000",
+          "end": "0x14f5000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f5000",
+          "end": "0x14f6000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f6000",
+          "end": "0x14f7000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f7000",
+          "end": "0x14f8000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f8000",
+          "end": "0x14f9000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14f9000",
+          "end": "0x14fa000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14fa000",
+          "end": "0x14fb000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14fb000",
+          "end": "0x14fc000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14fc000",
+          "end": "0x14fd000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14fd000",
+          "end": "0x14fe000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14fe000",
+          "end": "0x14ff000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14ff000",
+          "end": "0x1500000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1500000",
+          "end": "0x1501000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1501000",
+          "end": "0x1502000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1502000",
+          "end": "0x1503000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1503000",
+          "end": "0x1504000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1504000",
+          "end": "0x1505000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1505000",
+          "end": "0x1506000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown data page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1506000",
+          "end": "0x1507000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown read_only page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1507000",
+          "end": "0x1508000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown read_only page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1508000",
+          "end": "0x1509000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown read_only page; all unused bytes reserved"
+        },
+        {
+          "start": "0x1509000",
+          "end": "0x150a000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown read_only page; all unused bytes reserved"
+        },
+        {
+          "start": "0x150a000",
+          "end": "0x150b000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space",
+          "basis": "owned grown read_only page; all unused bytes reserved"
+        },
+        {
+          "start": "0x14ba000",
+          "end": "0x14ba2b2",
+          "size": 690,
+          "owner": "nfl2k5_boot_logo",
+          "basis": "named code allocation",
+          "parent_owner": "nfl2k5_xbe_space"
+        },
+        {
+          "start": "0x14da000",
+          "end": "0x14da040",
+          "size": 64,
+          "owner": "nfl2k5_camera",
+          "basis": "named code allocation",
+          "parent_owner": "nfl2k5_xbe_space"
+        },
+        {
+          "start": "0x1506000",
+          "end": "0x1507000",
+          "size": 4096,
+          "owner": "nfl2k5_xbe_space_directory",
+          "basis": "named read_only allocation",
+          "parent_owner": "nfl2k5_xbe_space"
+        }
+      ]
+    },
+    "before_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "after_sha256": "1163093926d54e8c42f990eaa8756658d02984bff7692948ed4f2cc76ca96711",
+    "sections_repinned": [
+      0,
+      13,
+      25
+    ],
+    "reservations": [
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xe3c68",
+        "end": "0xe3c70",
+        "size": 8,
+        "basis": "declared edit: fresh_settings_far"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0x16d1d4",
+        "end": "0x16d1d9",
+        "size": 5,
+        "basis": "declared edit: settings_load_far"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0x16e7b1",
+        "end": "0x16e7b6",
+        "size": 5,
+        "basis": "declared edit: franchise_load_far"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0x16e864",
+        "end": "0x16e869",
+        "size": 5,
+        "basis": "declared edit: settings_reload_far"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa55eb",
+        "end": "0xa55f0",
+        "size": 5,
+        "basis": "declared edit: game_entry_far"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa54c3",
+        "end": "0xa54c5",
+        "size": 2,
+        "basis": "declared edit: spectator_session_choice"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa88b90",
+        "end": "0xa88be0",
+        "size": 80,
+        "basis": "declared edit: far_state_9"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa88be0",
+        "end": "0xa88c30",
+        "size": 80,
+        "basis": "declared edit: far_state_13"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa88d70",
+        "end": "0xa88dc0",
+        "size": 80,
+        "basis": "declared edit: far_state_15"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa88d20",
+        "end": "0xa88d70",
+        "size": 80,
+        "basis": "declared edit: far_state_16"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa88c30",
+        "end": "0xa88c80",
+        "size": 80,
+        "basis": "declared edit: far_state_17"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa88c80",
+        "end": "0xa88cd0",
+        "size": 80,
+        "basis": "declared edit: far_state_18"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0xa88cd0",
+        "end": "0xa88d20",
+        "size": 80,
+        "basis": "declared edit: far_state_19"
+      },
+      {
+        "owner": "nfl2k5_camera",
+        "start": "0x14da000",
+        "end": "0x14da040",
+        "size": 64,
+        "basis": "named code allocation",
+        "parent_owner": "nfl2k5_xbe_space"
+      }
+    ]
+  },
+  "selection_evidence": {
+    "spans": [
+      {
+        "va": "0x64991",
+        "size": 5,
+        "meaning": "unconditional common-game call to camera initializer",
+        "sha256": "03827f98e083faf9d246bbd4b1035124316cbd0cc1c69f740bd8f92c39b4db94",
+        "bytes": "e80a0c0400"
+      },
+      {
+        "va": "0xa55a0",
+        "size": 80,
+        "meaning": "common camera initializer and final selection jump",
+        "sha256": "b452af4bb4cbfd6b809bd06abc41792fb9d87503aa6875784fe8d278af784fb1",
+        "bytes": "e86ba1fbff33c0a3e465b600a3e865b600a3f465b600c705f865b6000000803fe8fbd1fbff85c0741333c9e8c0bdfeffe8db8bfbff8bc8e8849efbffe80fffffffc705e065b60001000000e9a0feffff"
+      },
+      {
+        "va": "0xa5490",
+        "size": 83,
+        "meaning": "controller/session option to active row",
+        "sha256": "735a60a8be1142ae5909c9a10bcb2b150a8356a8fd8931f83281a6e0c4d38221",
+        "bytes": "53565733ffbb0700000033f68d6424008bcee8491dfdff85c074064783ff017f064683fe087ce9a1f065b60083f806741e85ff7e068b1df0ffe5003bd87410891df065b600c705f465b600010000005f5e5bc3"
+      },
+      {
+        "va": "0xa572d",
+        "size": 39,
+        "meaning": "active row times 29 plus state indexes descriptor table",
+        "sha256": "fd8f4710baf584eccbe9d9b51c92fd19f7333f261fa29e6159ee17a1d9a9f04c",
+        "bytes": "6bc01d03c68b14c5fc034f005333c9e84fa9fbffbf010000008935e465b600c705f465b6000000"
+      },
+      {
+        "va": "0xe2e00",
+        "size": 50,
+        "meaning": "736-byte settings export/import helpers",
+        "sha256": "14a7ffd66aab7e6ccfa700a972001205308479248077503865dfe903a3bef314",
+        "bytes": "b8e0020000c39090909090909090909068e0020000ba80ffe500e8e1e1f4ffc38bd168e0020000b980ffe500e8cfe1f4ffc3"
+      },
+      {
+        "va": "0x2c6960",
+        "size": 48,
+        "meaning": "Options writes session index and uses native setter",
+        "sha256": "75398a050afa72791ecd94a3cc3a43c2bec6d73ad250f36f44f5fb5f3a7d91bd",
+        "bytes": "85c0538bd9891df0ffe500750ac705e0dec80001000000ba010000008bcbe89df1ddff6a00e896ecddffa1c016b60083"
+      },
+      {
+        "va": "0x2c6a35",
+        "size": 79,
+        "meaning": "temporary menu snapshot of seven camera words",
+        "sha256": "f8ececb2a233b1a14e863cd343c32364905c6bcdaf24fd22c6203ad5a7464bb2",
+        "bytes": "a1f0ffe5008b0df4ffe5008b15f8ffe500a3a0e1c800a1fcffe500890da4e1c8008b0d0000e6008915a8e1c8008b150400e600a3ace1c800a10800e600890db0e1c8008915b4e1c800a3b8e1c800c3"
+      },
+      {
+        "va": "0x2c6a90",
+        "size": 97,
+        "meaning": "Cancel restores snapshot and tail-calls Options setter",
+        "sha256": "340e36567123a37d53bce760ffff0ef4cf909909ae05b54e3dba2257aed6b33f",
+        "bytes": "8b0de4dec800e8059fdaff85c07551a1a4e1c8008b0da8e1c8008b15ace1c800a3f4ffe500a1b0e1c800890df8ffe5008b0db4e1c8008915fcffe5008b15b8e1c800a30000e600890d0400e6008b0da0e1c80089150800e60033c0e970feffffc3"
+      }
+    ],
+    "encoded_direct_call_jump_census": {
+      "0xe2e20": [
+        "0x63b95",
+        "0x844ba",
+        "0x84d7b",
+        "0x16d1d4",
+        "0x16e7b1",
+        "0x16e864",
+        "0x28fa6e",
+        "0x28febc"
+      ],
+      "0xa55a0": [
+        "0x64991"
+      ],
+      "0xa5b20": [
+        "0x79de4",
+        "0x7bb72",
+        "0x7da2e",
+        "0x7da47",
+        "0x27aee5",
+        "0x27af34",
+        "0x2c697e"
+      ]
+    },
+    "census_limit": "Byte scan of retail text E8/E9 rel32, reviewed at these sites; not an indirect-call census",
+    "settings_blob": {
+      "base": "0xe5ff80",
+      "size": 736,
+      "camera_offset": "0x70",
+      "qb_pivot_offset": "0x74",
+      "runner_pivot_offset": "0x78",
+      "pass_zoom_offset": "0x7c",
+      "custom_distance_offset": "0x80",
+      "custom_angle_offset": "0x84",
+      "custom_height_offset": "0x88"
+    },
+    "descriptor_deltas": {
+      "9": {
+        "va": "0xa88b90",
+        "target_delta": [
+          0.0,
+          -175.0,
+          -450.0
+        ],
+        "lens_delta": 0.0,
+        "eye_delta": [
+          0.0,
+          300.0,
+          -500.0
+        ]
+      },
+      "13": {
+        "va": "0xa88be0",
+        "target_delta": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "lens_delta": 0.0,
+        "eye_delta": [
+          0.0,
+          450.0,
+          -800.0
+        ]
+      },
+      "15": {
+        "va": "0xa88d70",
+        "target_delta": [
+          0.0,
+          -50.0,
+          -150.0
+        ],
+        "lens_delta": 0.0,
+        "eye_delta": [
+          0.0,
+          300.0,
+          -950.0
+        ]
+      },
+      "16": {
+        "va": "0xa88d20",
+        "target_delta": [
+          0.0,
+          -100.0,
+          -200.0
+        ],
+        "lens_delta": 0.0,
+        "eye_delta": [
+          0.0,
+          380.0,
+          -850.0
+        ]
+      },
+      "17": {
+        "va": "0xa88c30",
+        "target_delta": [
+          0.0,
+          -80.0,
+          -180.0
+        ],
+        "lens_delta": 0.0,
+        "eye_delta": [
+          0.0,
+          250.0,
+          -550.0
+        ]
+      },
+      "18": {
+        "va": "0xa88c80",
+        "target_delta": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "lens_delta": 0.0,
+        "eye_delta": [
+          0.0,
+          450.0,
+          -800.0
+        ]
+      },
+      "19": {
+        "va": "0xa88cd0",
+        "target_delta": [
+          0.0,
+          -80.0,
+          -180.0
+        ],
+        "lens_delta": 0.0,
+        "eye_delta": [
+          0.0,
+          250.0,
+          -550.0
+        ]
+      }
+    }
+  },
+  "native_functions": [
+    "0x60090",
+    "0x66b20",
+    "0x66720",
+    "0x2ba10",
+    "0x66a90",
+    "0x2ac80",
+    "0x2ab40"
+  ],
+  "rows": [
+    {
+      "aspect": "4:3",
+      "state": 9,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          700.0,
+          -1800.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          216.82186889648438
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          270.3489990234375
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.34332275390625
+        ]
+      },
+      "focus_clearance_px": 164.17813110351562,
+      "backfield_clearance_px": 78.65667724609375
+    },
+    {
+      "aspect": "4:3",
+      "state": 13,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "4:3",
+      "state": 15,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          -150.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          800.0,
+          -2000.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          238.26806640625
+        ],
+        "backfield_500cm": [
+          320.0,
+          279.1671142578125
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.576904296875
+        ]
+      },
+      "focus_clearance_px": 142.73193359375,
+      "backfield_clearance_px": 78.423095703125
+    },
+    {
+      "aspect": "4:3",
+      "state": 15,
+      "direction": 1,
+      "pass_zoom": 1,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          500.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          1000.0,
+          -2500.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          267.54168701171875
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          298.9352722167969
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          315.6455383300781
+        ]
+      },
+      "focus_clearance_px": 113.45831298828125,
+      "backfield_clearance_px": 65.35446166992188
+    },
+    {
+      "aspect": "4:3",
+      "state": 16,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          199.2026824951172
+        ],
+        "backfield_500cm": [
+          320.0,
+          263.5640563964844
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          303.86529541015625
+        ]
+      },
+      "focus_clearance_px": 181.7973175048828,
+      "backfield_clearance_px": 77.13470458984375
+    },
+    {
+      "aspect": "4:3",
+      "state": 16,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 2.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          221.7147979736328
+        ],
+        "backfield_500cm": [
+          320.0,
+          249.02639770507812
+        ],
+        "backfield_700cm": [
+          320.0,
+          262.4234619140625
+        ]
+      },
+      "focus_clearance_px": 159.2852020263672,
+      "backfield_clearance_px": 118.5765380859375
+    },
+    {
+      "aspect": "4:3",
+      "state": 17,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "4:3",
+      "state": 18,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "4:3",
+      "state": 19,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "4:3",
+      "state": 9,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          700.0,
+          -1800.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          216.82186889648438
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          270.3489990234375
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.34332275390625
+        ]
+      },
+      "focus_clearance_px": 164.17813110351562,
+      "backfield_clearance_px": 78.65667724609375
+    },
+    {
+      "aspect": "4:3",
+      "state": 13,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "4:3",
+      "state": 15,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          -150.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          800.0,
+          -2000.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          238.26806640625
+        ],
+        "backfield_500cm": [
+          320.0,
+          279.1671142578125
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.576904296875
+        ]
+      },
+      "focus_clearance_px": 142.73193359375,
+      "backfield_clearance_px": 78.423095703125
+    },
+    {
+      "aspect": "4:3",
+      "state": 15,
+      "direction": -1,
+      "pass_zoom": 1,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          500.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          1000.0,
+          -2500.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          267.54168701171875
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          298.9352722167969
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          315.6455383300781
+        ]
+      },
+      "focus_clearance_px": 113.45831298828125,
+      "backfield_clearance_px": 65.35446166992188
+    },
+    {
+      "aspect": "4:3",
+      "state": 16,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          199.2026824951172
+        ],
+        "backfield_500cm": [
+          320.0,
+          263.5640563964844
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          303.86529541015625
+        ]
+      },
+      "focus_clearance_px": 181.7973175048828,
+      "backfield_clearance_px": 77.13470458984375
+    },
+    {
+      "aspect": "4:3",
+      "state": 16,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 2.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          221.7147979736328
+        ],
+        "backfield_500cm": [
+          320.0,
+          249.02639770507812
+        ],
+        "backfield_700cm": [
+          320.0,
+          262.4234619140625
+        ]
+      },
+      "focus_clearance_px": 159.2852020263672,
+      "backfield_clearance_px": 118.5765380859375
+    },
+    {
+      "aspect": "4:3",
+      "state": 17,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "4:3",
+      "state": 18,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "4:3",
+      "state": 19,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:9",
+      "state": 9,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          700.0,
+          -1800.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          216.82186889648438
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          270.3489990234375
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.34332275390625
+        ]
+      },
+      "focus_clearance_px": 164.17813110351562,
+      "backfield_clearance_px": 78.65667724609375
+    },
+    {
+      "aspect": "16:9",
+      "state": 13,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:9",
+      "state": 15,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          -150.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          800.0,
+          -2000.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          238.26806640625
+        ],
+        "backfield_500cm": [
+          320.0,
+          279.1671142578125
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.576904296875
+        ]
+      },
+      "focus_clearance_px": 142.73193359375,
+      "backfield_clearance_px": 78.423095703125
+    },
+    {
+      "aspect": "16:9",
+      "state": 15,
+      "direction": 1,
+      "pass_zoom": 1,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          500.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          1000.0,
+          -2500.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          267.54168701171875
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          298.9352722167969
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          315.6455383300781
+        ]
+      },
+      "focus_clearance_px": 113.45831298828125,
+      "backfield_clearance_px": 65.35446166992188
+    },
+    {
+      "aspect": "16:9",
+      "state": 16,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          199.2026824951172
+        ],
+        "backfield_500cm": [
+          320.0,
+          263.5640563964844
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          303.86529541015625
+        ]
+      },
+      "focus_clearance_px": 181.7973175048828,
+      "backfield_clearance_px": 77.13470458984375
+    },
+    {
+      "aspect": "16:9",
+      "state": 16,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 2.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          221.7147979736328
+        ],
+        "backfield_500cm": [
+          320.0,
+          249.02639770507812
+        ],
+        "backfield_700cm": [
+          320.0,
+          262.4234619140625
+        ]
+      },
+      "focus_clearance_px": 159.2852020263672,
+      "backfield_clearance_px": 118.5765380859375
+    },
+    {
+      "aspect": "16:9",
+      "state": 17,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:9",
+      "state": 18,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:9",
+      "state": 19,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:9",
+      "state": 9,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          700.0,
+          -1800.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          216.82186889648438
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          270.3489990234375
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.34332275390625
+        ]
+      },
+      "focus_clearance_px": 164.17813110351562,
+      "backfield_clearance_px": 78.65667724609375
+    },
+    {
+      "aspect": "16:9",
+      "state": 13,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:9",
+      "state": 15,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          -150.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          800.0,
+          -2000.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          238.26806640625
+        ],
+        "backfield_500cm": [
+          320.0,
+          279.1671142578125
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.576904296875
+        ]
+      },
+      "focus_clearance_px": 142.73193359375,
+      "backfield_clearance_px": 78.423095703125
+    },
+    {
+      "aspect": "16:9",
+      "state": 15,
+      "direction": -1,
+      "pass_zoom": 1,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          500.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          1000.0,
+          -2500.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          267.54168701171875
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          298.9352722167969
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          315.6455383300781
+        ]
+      },
+      "focus_clearance_px": 113.45831298828125,
+      "backfield_clearance_px": 65.35446166992188
+    },
+    {
+      "aspect": "16:9",
+      "state": 16,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          199.2026824951172
+        ],
+        "backfield_500cm": [
+          320.0,
+          263.5640563964844
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          303.86529541015625
+        ]
+      },
+      "focus_clearance_px": 181.7973175048828,
+      "backfield_clearance_px": 77.13470458984375
+    },
+    {
+      "aspect": "16:9",
+      "state": 16,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 2.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          221.7147979736328
+        ],
+        "backfield_500cm": [
+          320.0,
+          249.02639770507812
+        ],
+        "backfield_700cm": [
+          320.0,
+          262.4234619140625
+        ]
+      },
+      "focus_clearance_px": 159.2852020263672,
+      "backfield_clearance_px": 118.5765380859375
+    },
+    {
+      "aspect": "16:9",
+      "state": 17,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:9",
+      "state": 18,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:9",
+      "state": 19,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:10",
+      "state": 9,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          700.0,
+          -1800.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          216.82186889648438
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          270.3489990234375
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.34332275390625
+        ]
+      },
+      "focus_clearance_px": 164.17813110351562,
+      "backfield_clearance_px": 78.65667724609375
+    },
+    {
+      "aspect": "16:10",
+      "state": 13,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:10",
+      "state": 15,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          -150.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          800.0,
+          -2000.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          238.26806640625
+        ],
+        "backfield_500cm": [
+          320.0,
+          279.1671142578125
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.576904296875
+        ]
+      },
+      "focus_clearance_px": 142.73193359375,
+      "backfield_clearance_px": 78.423095703125
+    },
+    {
+      "aspect": "16:10",
+      "state": 15,
+      "direction": 1,
+      "pass_zoom": 1,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          500.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          1000.0,
+          -2500.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          267.54168701171875
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          298.9352722167969
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          315.6455383300781
+        ]
+      },
+      "focus_clearance_px": 113.45831298828125,
+      "backfield_clearance_px": 65.35446166992188
+    },
+    {
+      "aspect": "16:10",
+      "state": 16,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          199.2026824951172
+        ],
+        "backfield_500cm": [
+          320.0,
+          263.5640563964844
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          303.86529541015625
+        ]
+      },
+      "focus_clearance_px": 181.7973175048828,
+      "backfield_clearance_px": 77.13470458984375
+    },
+    {
+      "aspect": "16:10",
+      "state": 16,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 2.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          221.7147979736328
+        ],
+        "backfield_500cm": [
+          320.0,
+          249.02639770507812
+        ],
+        "backfield_700cm": [
+          320.0,
+          262.4234619140625
+        ]
+      },
+      "focus_clearance_px": 159.2852020263672,
+      "backfield_clearance_px": 118.5765380859375
+    },
+    {
+      "aspect": "16:10",
+      "state": 17,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:10",
+      "state": 18,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:10",
+      "state": 19,
+      "direction": 1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:10",
+      "state": 9,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          700.0,
+          -1800.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          216.82186889648438
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          270.3489990234375
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.34332275390625
+        ]
+      },
+      "focus_clearance_px": 164.17813110351562,
+      "backfield_clearance_px": 78.65667724609375
+    },
+    {
+      "aspect": "16:10",
+      "state": 13,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 0,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:10",
+      "state": 15,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          -150.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          800.0,
+          -2000.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          238.26806640625
+        ],
+        "backfield_500cm": [
+          320.0,
+          279.1671142578125
+        ],
+        "backfield_700cm": [
+          320.0,
+          302.576904296875
+        ]
+      },
+      "focus_clearance_px": 142.73193359375,
+      "backfield_clearance_px": 78.423095703125
+    },
+    {
+      "aspect": "16:10",
+      "state": 15,
+      "direction": -1,
+      "pass_zoom": 1,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          50.0,
+          500.0
+        ],
+        "fov": 24.0,
+        "offset": [
+          0.0,
+          1000.0,
+          -2500.0
+        ],
+        "setup_callback": 674800,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          267.54168701171875
+        ],
+        "backfield_500cm": [
+          320.0000271267361,
+          298.9352722167969
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          315.6455383300781
+        ]
+      },
+      "focus_clearance_px": 113.45831298828125,
+      "backfield_clearance_px": 65.35446166992188
+    },
+    {
+      "aspect": "16:10",
+      "state": 16,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          199.2026824951172
+        ],
+        "backfield_500cm": [
+          320.0,
+          263.5640563964844
+        ],
+        "backfield_700cm": [
+          320.0000271267361,
+          303.86529541015625
+        ]
+      },
+      "focus_clearance_px": 181.7973175048828,
+      "backfield_clearance_px": 77.13470458984375
+    },
+    {
+      "aspect": "16:10",
+      "state": 16,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 2.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -350.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674752,
+        "frame_callback": 674864
+      },
+      "points_640x480": {
+        "focus_ground": [
+          320.0,
+          221.7147979736328
+        ],
+        "backfield_500cm": [
+          320.0,
+          249.02639770507812
+        ],
+        "backfield_700cm": [
+          320.0,
+          262.4234619140625
+        ]
+      },
+      "focus_clearance_px": 159.2852020263672,
+      "backfield_clearance_px": 118.5765380859375
+    },
+    {
+      "aspect": "16:10",
+      "state": 17,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:10",
+      "state": 18,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    },
+    {
+      "aspect": "16:10",
+      "state": 19,
+      "direction": -1,
+      "pass_zoom": 0,
+      "pullback": 1.0,
+      "descriptor_after_setup": {
+        "type": 2,
+        "flag": 0,
+        "lag_block": 5178240,
+        "target": [
+          0.0,
+          0.0,
+          -250.0
+        ],
+        "fov": 28.0,
+        "offset": [
+          0.0,
+          650.0,
+          -1600.0
+        ],
+        "setup_callback": 674704,
+        "frame_callback": 0
+      },
+      "points_640x480": {
+        "focus_ground": [
+          319.9999728732639,
+          212.6645050048828
+        ],
+        "backfield_500cm": [
+          319.9999728732639,
+          277.0086364746094
+        ],
+        "backfield_700cm": [
+          320.0,
+          317.5994567871094
+        ]
+      },
+      "focus_clearance_px": 168.3354949951172,
+      "backfield_clearance_px": 63.400543212890625
+    }
+  ]
+}

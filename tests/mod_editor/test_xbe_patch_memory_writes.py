@@ -100,7 +100,7 @@ class PatchWriteTests(unittest.TestCase):
         seed, _ = flight.apply(seed)
         cls.table = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
-                                          "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
+                                          "scheme_labels", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
         cls.patched, cls.receipt = tt._apply_all(seed, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True, practice_squad=True)
         # Pools and Tier 2 run after the shared XBE pass in mod_build.
         from mod_editor.core import nfl2k5_position_pools as pools
@@ -119,7 +119,12 @@ class PatchWriteTests(unittest.TestCase):
             raise AssertionError("season-cap owner missing from the composed XBE")
         from tests.nfl2k5_allocator_stack import compose
         cls.before_allocator = cls.patched
+        # Camera now needs 64 owned code bytes; the full union installs it. No
+        # allocation may be sealed by the earlier protected dispatcher pass.
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        from mod_editor.core import nfl2k5_camera as camera
+        if camera.status(cls.patched) != "applied" or camera.apply(cls.patched)[0] != cls.patched:
+            raise AssertionError("Far selection/framing missing from complete owner union")
         from mod_editor.core import nfl2k5_animation_xbe as animation_xbe
         if animation_xbe.status(cls.patched) != "applied":
             raise AssertionError("Embedded animation owner missing from the composed XBE")

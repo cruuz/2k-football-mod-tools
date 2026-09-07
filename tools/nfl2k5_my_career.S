@@ -669,6 +669,11 @@ screen_retail:
  ret
 
 camera:
+ /* The camera owner changes this pinned ModRM from EDI to ESI at boot.
+    When selected, its session option also governs MyCareer; the native
+    per-frame route keeps Options changes and its normal focus hook. */
+ cmp BYTE PTR [0xe3c6b], 0x35
+ je camera_retail
  call enabled
  jz camera_retail
  push eax

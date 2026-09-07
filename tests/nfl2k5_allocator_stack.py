@@ -1,4 +1,5 @@
 """Complete allocator owner union shared by both XBE safety gates."""
+from mod_editor.core import nfl2k5_camera as camera
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as kickoff
 from mod_editor.core import nfl2k5_scorebug_runtime as runtime
@@ -30,7 +31,7 @@ LEGACY_REQUESTS = (kickoff.REQUESTS + runtime.REQUESTS + momentum.REQUESTS
                    + defensive_try.REQUESTS[:2] + zone_drop.REQUESTS)
 # Read option v2 grows the existing owner; its live REQUESTS include RW/RO.
 # Both installation orders use this same union and require rebuild from base.
-REQUESTS = (LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
+REQUESTS = (camera.REQUESTS + LEGACY_REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS
             + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS
             + defensive_try.REQUESTS[2:] + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS)
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
@@ -67,7 +68,7 @@ def compose(payload, *, reverse=False, scaleout=False, extra_requests=()):
     payload, policy_receipt = policy.apply(payload, music_unlock=True, music_userlist=True)
     payload, _ = space.apply(payload, REQUESTS + tuple(extra_requests), scaleout=scaleout)
     # One apply/status transaction owns both try rules and the stat extension.
-    owners = ((defensive_try, {}), (kickoff, {}), (runtime, {}),
+    owners = ((camera, {}), (defensive_try, {}), (kickoff, {}), (runtime, {}),
               (momentum, dict(momentum=100, momentum_contact=True, momentum_collisions=True, momentum_collision_level=100)), (zone_drop, {}),
               (music, dict(song_records=SONGS)), (roster_storage, {}), (coverage, {}), (scramble, {}), (playlist, {}),
               (practice_screen, {}), (abilities, dict(abilities_off_week=7)), (qb_spy, {}), (calendar, {}), (read_option, {}), (franchise_2026, {}), (senior_bowl, {}), (animation_xbe, {}), (guardian, {}),
