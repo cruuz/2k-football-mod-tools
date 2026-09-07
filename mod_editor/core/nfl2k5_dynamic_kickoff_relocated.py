@@ -1,7 +1,7 @@
 """EXPERIMENTAL/UNWITNESSED dynamic kickoff in owned grown RX/RW pages.
 
 Use after every existing patch, including dynamic_kickoff. The old cave is
-retained byte-identically (or left retail); all eleven hooks enter the new
+retained byte-identically (or left retail); all twelve hooks enter the new
 page. The same assembler generates both implementations. No retail function
 bytes are distributed and no opcode search-and-replace relocation is used.
 """
@@ -91,11 +91,15 @@ def apply(payload: bytes, **kwargs) -> tuple[bytes, dict]:
     content, labels = code_for(settings, code["va"], data["va"])
     installed, _ = space.install_code(allocated, OWNER, content)
     buf = bytearray(installed)
-    edits = [{"label": "relocated_cave", "va": hex(code["va"]), "size": code["size"]}]
+    edits = [{"label": "relocated_cave", "va": hex(code["va"]), "size": code["size"], "offset": code["raw"],
+              "before_sha256": hashlib.sha256(allocated[code["raw"]:code["raw"] + code["size"]]).hexdigest(),
+              "after": content.hex()}]
     for name, (va, original) in kickoff.HOOKS.items():
         off = kickoff._offset(installed, va, len(original))
         buf[off:off + len(original)] = kickoff._hook_bytes(name, labels)
-        edits.append({"label": name, "va": hex(va), "size": len(original)})
+        edits.append({"label": name, "va": hex(va), "size": len(original), "offset": off,
+                      "before": installed[off:off + len(original)].hex(),
+                      "after": kickoff._hook_bytes(name, labels).hex()})
     for s in _sections(buf):
         buf[s.header_offset + 36:s.header_offset + 56] = section_digest(buf, s)
     result = bytes(buf)

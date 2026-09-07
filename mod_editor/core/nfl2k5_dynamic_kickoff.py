@@ -2,7 +2,7 @@
 
 Pair with kick_rules (35-yard tee) and the playbook kickoff_alignment tool.
 No timer releases the hold: ground/player contact latches the first field class.
-See ASTRA_KICKOFF_FIX_REPORT.md for the lineup clamp and pre-launch hold fix.
+See ASTRA_KICKOFF_FIXES_REPORT.md for the goal-line and ready-pose proofs.
 
 Runtime storage is ten previously unreferenced bytes on the writable shared
 .rdata/.data page. 0xA69970 and 0xA69974..7F belong to other patches. Settings
@@ -59,7 +59,37 @@ HOOKS = {
     "spot": (0xB65CC, bytes.fromhex("a18002e600")),
     "reset": (0x1C9399, bytes.fromhex("a1a0d95000")),
     "lineup": (0x183F60, bytes.fromhex("558bec83e4f0")),
+    "eligibility": (0xB6760, bytes.fromhex("83ec0c8b4738")),
 }
+
+
+class _CompactAsm(_Asm):
+    """Relax local branches before emission, keeping the existing allocation.
+
+    Only assembler items are shortened; absolute calls and pinned instructions
+    are never searched or rewritten. Recompute labels after every relaxation.
+    """
+
+    def assemble(self):
+        while True:
+            super().assemble()
+            pos, changed = 0, False
+            for n, item in enumerate(self.items):
+                size = self._size(item)
+                if isinstance(item, tuple) and item[0] == "j32":
+                    op, target = item[1:]
+                    short = (b"\xeb" if op == b"\xe9" else
+                             bytes([op[1] - 0x10]) if len(op) == 2 and op[0] == 0x0F else None)
+                    delta = self.labels[target] - (pos + size)
+                    # Backward jumps grow by the saved instruction bytes.
+                    if delta < 0:
+                        delta += size - 2
+                    if short is not None and -128 <= delta <= 127:
+                        self.items[n] = ("j8", short, target)
+                        changed = True
+                pos += size
+            if not changed:
+                return super().assemble()
 
 
 class DynamicKickoffError(ValueError):
@@ -99,7 +129,7 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     AIM_PROB, TB_PROB, KICK_SPOT = FLAGS + 1, FLAGS + 2, FLAGS + 3
     TB_YARD = storage_ranges[1][0]
     TARGET_MIN, TARGET_MAX = TB_YARD + 1, TB_YARD + 2
-    a = _Asm(cave_va)
+    a = _CompactAsm(cave_va)
     imm = _imm
     def b(code): a.b(code)
     def label(name): a.label(name)
@@ -278,17 +308,30 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
 
     label("motion")
     save(); b("89f1"); call("held"); b("85c0"); j("0f84", "motion_go")
-    # Skip both root motion and animation time; mark the animation as updated.
-    b("8b4614c7405401000000")
+    # Enter the same idle/locomotion descriptor used by retail initial placement
+    # (155017), with zero movement and a heading facing the opposing team.
+    # Re-enter deliberately: a previous-play clip can survive in this descriptor.
+    b("8b460cc7401000000000836018fd")
+    b("8b46388b40088b400c8b5004c1ea1fc1e20f")
+    b("8b460c89501489f1")
+    a.call(0x1A89E0)
+    # Let the native animation sampler update the pose. Discard its root motion,
+    # using stack storage, so neither animation time nor old facing is frozen.
+    b("83ec308b46188d703089e7b90c000000fcf3a5")
+    b("8b742434")  # saved ESI, after the 48-byte transform snapshot
+    b("89f1baecf45000"); a.call(0x1CD550)
+    call("motion_native")
+    b("8b46188d783089e6b90c000000fcf3a583c430")
     restore(); b("c3")
-    label("motion_go"); restore(); replay("motion")
+    label("motion_go"); restore()
+    label("motion_native"); replay("motion")
 
     label("position")
     save(); call("held"); b("85c0"); j("0f84", "position_go")
     # 28DFE0 snapshots the previous transform at +0..2F before each frame.
-    # 28CC30 ends collision correction through this setter. Restore position,
-    # orientation and velocity together, including human-selected coverage men.
-    b("8b4c24188b71188d7e30b90c000000fcf3a5")
+    # 28CC30 ends collision correction through this setter. Restore position.
+    # Keep the neutral heading established by motion; only undo displacement.
+    b("8b4c24188b71188d7e30b904000000fcf3a5")
     restore(); b("c20800")
     label("position_go"); restore(); replay("position")
 
@@ -333,6 +376,20 @@ def _code(settings, *, cave_va=CAVE_VA, storage_ranges=STORAGE_RANGES):
     label("dead_finish"); call("finish")
     restore(); b("c3")
     label("dead_go"); restore(); replay("dead")
+
+    # Retail B6760 accepts the 5103A0 animation descriptor independently of
+    # position. A receiving carrier with the ball inside the landing zone must
+    # not become an end-zone touchback merely by entering that state.
+    label("eligibility")
+    save(); guard("eligibility_go", live=True)
+    b("a1" + imm(BALL) + "85c0"); j("0f84", "eligibility_go")
+    b("3938"); j("0f85", "eligibility_go")
+    b("8b15" + imm(CTX) + "8b92c401000085d2"); j("0f84", "eligibility_go")
+    b("8b52388b123b5738"); j("0f85", "eligibility_go")
+    b("8b5014"); call("classify")
+    b("83f801"); j("0f85", "eligibility_go")
+    restore(); b("31c0c3")
+    label("eligibility_go"); restore(); replay("eligibility")
 
     # Use the retail touchback/dead-play transition, retaining kick ownership
     # bookkeeping. force-40 overrides the spot afterward. The short/OOB
@@ -490,4 +547,7 @@ def apply(payload: bytes, *, touchback_yard=35, cpu_landing_probability=90,
     return result, {"status": "applied", "experimental": True, **settings,
                     "changed_bytes": sum(x != y for x, y in zip(payload, result)),
                     "sections_repinned": sorted(touched),
-                    "edits": [{"label": n, "va": hex(va), "bytes": len(data)} for n, va, data in edits]}
+                    "edits": [{"label": n, "va": hex(va), "bytes": len(data),
+                               "offset": _offset(payload, va, len(data)),
+                               "before_sha256": hashlib.sha256(payload[_offset(payload, va, len(data)):_offset(payload, va, len(data)) + len(data)]).hexdigest(),
+                               "after": data.hex()} for n, va, data in edits]}

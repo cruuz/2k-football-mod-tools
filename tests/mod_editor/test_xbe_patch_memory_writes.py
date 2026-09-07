@@ -316,6 +316,15 @@ class PatchWriteTests(unittest.TestCase):
             self.assertFalse(image.runtime_writable(code["va"], code["size"]))
             self.assertTrue(image.runtime_writable(data["va"], data["size"]))
 
+    def test_kickoff_fixes_retain_the_existing_code_and_state_budget(self) -> None:
+        from mod_editor.core import nfl2k5_dynamic_kickoff as kickoff
+        from mod_editor.core import nfl2k5_dynamic_kickoff_relocated as relocated
+        code, data = relocated._sites(self.patched)
+        self.assertEqual((code["size"], data["size"]), (1939, 10))
+        self.assertEqual(len(kickoff.HOOKS), 12)
+        self.assertIn("eligibility", kickoff.HOOKS)
+        self.assertEqual(relocated.status(self.patched), "applied")
+
     def test_defensive_try_grown_storage_and_writes(self) -> None:
         from mod_editor.core import nfl2k5_defensive_try as defensive_try
         from mod_editor.core import nfl2k5_xbe_space as space

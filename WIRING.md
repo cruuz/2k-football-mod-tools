@@ -8654,3 +8654,65 @@ fifteen exact five-byte ABI bridges. It validates the complete sealed owner,
 exact manifest spans/labels and installed bridge bytes while retaining every
 retail-reference check. No arena, practice-squad, allocator or oracle guard was
 relaxed. The post-manifest full gate results are in the report.
+
+## r63 kickoff fixes (A-D), EXPERIMENTAL/UNWITNESSED
+
+Owner changes are in `nfl2k5_dynamic_kickoff.py` and its relocated compiler;
+no new XBE owner, setting, allocation, or preset flag. The normal-return PLAY
+writer is new and needs the following protected-file wiring. See
+`ASTRA_KICKOFF_FIXES_REPORT.md` and `docs/nfl2k5_kickoff_fixes_receipts.json`.
+
+* Dispatcher `_apply_all`: keep the existing `dynamic_kickoff` and
+  `dynamic_kickoff_settings` kwargs and tuple
+  `(dynamic_kickoff, _dynamic_kickoff_adapter(dynamic_kickoff_settings),
+  "dynamic_kickoff_patch", "dynamic-kickoff")`; keep the final
+  `(kickoff_relocated, kickoff_relocated_patch, "kickoff_relocated_patch",
+  "experimental relocated kickoff")` tuple. They pick up the new compiler.
+  The four status dictionaries in `nfl2k5_throw_tuning.py` (current lines
+  643/767/1746/2076 for dynamic kickoff and 654/781/1757/2090 for relocation)
+  already call these owners. Keep those calls and settings keys. PLAY status
+  belongs in disc inspection, not the executable dispatcher.
+* `BuildPlan.dynamic_kickoff` remains the enabling field. Basic: false;
+  Advanced: false; Experimental: true. Keep normalization implying
+  `kick_rules=True`, `kickoff_alignment=True`, `kick_power=False`, and the
+  existing relocation deferral/final pass. No new `BuildPlan` field is needed.
+* In `mod_build.py`, after the alignment step and only when
+  `plan.dynamic_kickoff` is true, load `_tools_module("nfl2k5_kickoff_returns")`,
+  fail if missing, call `returns.apply(target, progress=lambda msg:
+  progress(msg, 0, 0))`, and append `{"step": "kickoff_returns", **receipt}`
+  to the build receipt. Run after any imported PLAY replacements, before
+  depth-role recoding, alongside alignment. The tool plans and validates all
+  36 resources before writing fixed spans, verifies writes, and is idempotent.
+  Add this core and tool dependency to dynamic-kickoff/relocation availability.
+  Disc inspection should expose `kickoff_returns` from the tool's `status`;
+  use `n/a` for a standalone XBE. Do not infer assignment status from XBE status.
+* Gameplay Patches `PATCHES` / help text for existing `dynamic_kickoff`:
+  "Retail: moving kickoff lines and deep return blocking. Patch: players hold
+  an idle pose facing the kick, release on contact, and block nearby coverage.
+  Experimental and unwitnessed. Rebuild from retail."
+  Keep `dynamic_kickoff` and `kickoff_relocated` in `NEEDS_IMAGE`.
+* Build tab `_option` caption: `Dynamic kickoff: ready stance and close blocks`
+  (45 characters, under 60). Explain that the in-field touchback guard and
+  return assignments are included. Do not claim the widescreen witness fixed.
+* Add these exact allowlist lines:
+  `mod_editor/core/nfl2k5_kickoff_returns.py`
+  and `tools/nfl2k5_kickoff_returns.py`.
+  Both existing kickoff owners and the formation/play writer, codec, library,
+  inspector, and alignment dependencies are already packaged; retain them.
+* Add runtime-closure imports `mod_editor.core.nfl2k5_kickoff_returns` and
+  `tools.nfl2k5_kickoff_returns` to `check_2k5_mod_studio_runtime.py`. Check
+  callable resource `status`/`apply` and archive `status`/`apply`. There is no
+  new user-selectable capability; retain the existing dynamic-kickoff registry
+  entry and update its experimental description. A separate capability key
+  or XBE allocator request would misrepresent this coupled fix.
+* Regenerate the protected cave manifest with the existing oracle manifest
+  command. The existing owner's hook list now includes `B6760..B6766`; both
+  caves contain the new compiled stream. Reservations stay 1939 RX / 10 RW.
+  The allocator stack fixture and owner union already contain this owner.
+* Leave widescreen v3 code and its five HUD wrappers unchanged. The traced
+  on-field route geometry uses world vertices; applying HUD x-undo there
+  would shift it. Noah's exact landing-marker/camera witness remains required.
+
+All protected files above were left untouched. Existing beta-62/beta-63
+patched kickoff caves are deliberately foreign to this revision; rebuild
+from the supported retail base. Do not apply this revision over an old disc.

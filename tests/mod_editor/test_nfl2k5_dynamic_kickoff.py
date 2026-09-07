@@ -131,11 +131,13 @@ class Machine:
         self.direction = direction
         self.rolls = iter(rolls)
         self.calls = []
+        self.clips = []
+        self.sampler_displacement = 0
         self.fpu_stubs = {}
         self.stub_pops = {va: 0 for va in (
             0x874E0, 0xFEF50, 0x9FC30, 0x189080, 0x1CEEE0, 0x1E8480, 0xFEA90,
             0xB7330, 0xFC6E0, 0x119760, 0x1195F0, 0x14F9E0, 0xAF4F0, 0xAF260, 0xB6180,
-            0x217F90)}
+            0x217F90, 0x1E09D0, 0x213310)}
         self.stub_pops.update({0x12D610: 4, 0x31BEB0: 12})
         self.uc.hook_add(uni.UC_HOOK_CODE, self._hook)
         for va, value in ((dk.CTX, self.CTX), (dk.BALL, self.BALL), (dk.PHASE, phase),
@@ -185,6 +187,22 @@ class Machine:
             self.put(player + 0x14, player + 0xC00)
             self.put(player + 0x24, player + 0xE00)
             self.put(player + 0x904, self.DESC)
+            # Bounded animation objects: real descriptor transition, heading,
+            # zero-speed table selection and clip dispatch; rendering is a stub.
+            self.put(player + 0xC58, player + 0xD00)
+            self.put(player + 0xC74, player + 0xD20)
+            self.put(player + 0xD00, player + 0xD40)
+            self.put(player + 0xD20, player + 0xD40)
+            self.put(player + 0x940, self.CALLBACK + 0x40)
+            self.put(player + 0x938, player + 0xD80)
+            self.put(player + 0xD80, player + 0xDA0)
+            self.f32(player + 0xDA4, 0)
+            self.f32(player + 0xDA8, 1)
+            self.put(player + 0xDAC, player + 0xDC0)
+            self.put(player + 0xDC4, player + 0xDF0)
+            self.put(player + 0xDC8, -32768)
+            self.put(player + 0xDCC, 32767)
+            self.put(player + 0xDE0, self.CALLBACK + 0x50)
         # Execute the actual 1B8CA0 -> 1B8C40 -> 1B81A0 opcode reader.
         state = self.KICKER + 0x200 + 0x41C
         self.put(state, self.NODE)
@@ -193,6 +211,9 @@ class Machine:
         self.f32(state + 0x14, 2 if onside else 0)
         self.put(self.DESC + 8, self.CALLBACK)
         self.uc.mem_write(self.CALLBACK, bytes.fromhex("ff05") + struct.pack("<I", self.COUNTER) + b"\xc3")
+        self.uc.mem_write(self.CALLBACK + 0x40, b"\xc3")
+        self.uc.mem_write(self.CALLBACK + 0x50, b"\xd9\xe8\xc2\x08\x00")
+        self.stub_pops[0x2D6B70] = 28  # clip installation/rendering, after real selection
         self.position(0, self.direction * -1371.6)
 
     def put(self, va, value): self.uc.mem_write(va, struct.pack("<I", value & 0xFFFFFFFF))
@@ -223,8 +244,13 @@ class Machine:
             self._ret()
         elif address in self.stub_pops:
             self.calls.append(address)
-            if address == 0x31BEB0:
+            if address in (0x31BEB0, 0x213310):
                 self.put(self.COUNTER, self.get(self.COUNTER) + 1)
+            if address == 0x2D6B70:
+                self.clips.append((self.uc.reg_read(x86.UC_X86_REG_ECX), self.uc.reg_read(x86.UC_X86_REG_EDX)))
+            if address == 0x31BEB0 and self.sampler_displacement:
+                who = self.uc.reg_read(x86.UC_X86_REG_ESI)
+                self.f32(self.get(who + 0x18) + 0x30, self.sampler_displacement)
             self.uc.reg_write(x86.UC_X86_REG_EAX, 0)
             self._ret(self.stub_pops[address])
 
@@ -311,11 +337,9 @@ class RetailExecutionTests(unittest.TestCase):
                         before = bytes(m.uc.mem_read(who, 0x1000))
                         m.run(dk.HOOKS["plan"][0], ecx=who)
                         m.run(dk.HOOKS["motion"][0], esi=who)
-                        self.assertEqual(m.get(m.COUNTER), 0)
-                        # The only mutation is the retail animation-updated flag.
-                        expected = bytearray(before)
-                        struct.pack_into("<I", expected, 0xC54, 1)
-                        self.assertEqual(bytes(m.uc.mem_read(who, 0x1000)), expected)
+                        self.assertEqual(m.get(who + 0x904), 0x50F4EC)
+                        self.assertEqual(m.get(who + 0xC54), 1)
+                        self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 16)), before[0xB30:0xB40])
                     for who in (m.KICKER, m.RETURNER):
                         old = m.get(m.COUNTER)
                         m.run(dk.HOOKS["plan"][0], ecx=who)
@@ -459,10 +483,10 @@ class RetailExecutionTests(unittest.TestCase):
                                 old = m.get(m.COUNTER)
                                 m.run(dk.HOOKS["plan"][0], ecx=who)
                                 m.run(dk.HOOKS["motion"][0], esi=who)
-                                m.uc.mem_write(who + 0xB30, bytes(48))
+                                m.uc.mem_write(who + 0xB30, bytes(16))
                                 m.run(dk.HOOKS["position"][0], ecx=who, args=(0, 0))
-                                self.assertEqual(m.get(m.COUNTER), old)
-                                self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 48)), previous)
+                                self.assertEqual(m.get(m.COUNTER), old + 1)
+                                self.assertEqual(bytes(m.uc.mem_read(who + 0xB30, 16)), previous[:16])
                                 self.assertEqual(m.flags(), 0)
                 for who, slot in ((m.KICKER, 0), (m.RETURNER, 0), (m.RETURNER, 1)):
                     m.uc.mem_write(who + 0x2E, bytes([slot]))
@@ -740,7 +764,8 @@ class RetailExecutionTests(unittest.TestCase):
             self.assertEqual(bytes(m.uc.mem_read(transform, 48)), previous)
             m.uc.mem_write(transform + 0x30, struct.pack("<12f", *([1234] * 12)))
             m.run(dk.HOOKS["position"][0], ecx=m.COVERAGE, args=(0, 0))
-            self.assertEqual(bytes(m.uc.mem_read(transform + 0x30, 48)), previous)
+            self.assertEqual(bytes(m.uc.mem_read(transform + 0x30, 16)), previous[:16])
+            self.assertEqual(bytes(m.uc.mem_read(transform + 0x40, 32)), struct.pack("<8f", *([1234] * 8)))
             self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP), m.STACK + 12)
             m.position(0, direction * 3600)
             m.event("ground")
