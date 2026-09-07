@@ -189,6 +189,12 @@ PATCHES = (
      "coach-camera visibility as the ordinary circle, which is untouched. The tag is one bit of the roster record; existing "
      "franchise saves need tags in their own roster. A disc patched with the beta-58 version of this (which never drew) "
      "is upgraded when rebuilt. Unwitnessed in game."),
+    ("position_pools", "Merged positions with one Linebackers group (experimental)",
+     "Retail: separate outside and inside linebacker groups. Patch: merges the "
+     "defensive position pools and removes the Outside Linebackers group when "
+     "all disc rosters contain no outside linebackers. Fullbacks remains. "
+     "Custom players keep their group. For existing saves, enable Keep Outside "
+     "Linebackers in Build. EXPERIMENTAL / UNWITNESSED."),
     ("depth_roles", "X / Z / SLWR receivers and nickel / dime corners (disc images only)",
      "Retail playbooks have no slot receiver: the inside man of a three-wide set is the #1 receiver in 196 formations, "
      "the #2 in 115, the #3 in 100. Patch: every personnel group is rewritten so the innermost receiver is the third "
@@ -315,6 +321,7 @@ NEEDS_IMAGE = {"camera", "music_shuffle", "practice_squad_screen", "abilities", 
 
 PATCHES = (*PATCHES, *r62_ui.OPTIONS)
 NEEDS_IMAGE.update(r62_ui.KEYS)
+NEEDS_IMAGE.add("position_pools")
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",

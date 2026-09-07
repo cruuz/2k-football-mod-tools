@@ -154,6 +154,8 @@ class BuildPlan:
     # one EDGE / one LB / one interior pool across 4-3 and 3-4 (XBE pools + playbook recode + ROST
     # reclassification; needs a disc image; implies scheme_labels)
     position_pools: bool = False
+    # compatibility: keep the empty Outside Linebackers filter row for existing or custom saves
+    position_pools_keep_olb: bool = False
     # Thirteen SPECIAL rows, with eleven on offense/defense and unit * 11 + slot indexing.
     # Experimental/unwitnessed; needs one-pool positions and X / Z / SLWR playbook roles.
     depth_chart_rows: bool = False
@@ -306,7 +308,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "guardian_cap": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
+        "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
@@ -322,7 +324,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": False, "guardian_cap": False, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
@@ -339,7 +341,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
     },
 }
 PRESETS["softdrink_experimental"]["modern_naming"] = tt.modern_naming_patch.preset_enabled("experimental")
@@ -450,7 +452,10 @@ def availability() -> dict[str, bool]:
                         and (ROOT / "data" / "nfl_2026_schedule.json").exists()),
         "position_pools": (_core_module("nfl2k5_position_pools") is not None
                            and _tools_module("nfl2k5_playbook_position_recode") is not None
-                           and _tools_module("nfl2k5_roster_reclassify") is not None),
+                           and _tools_module("nfl2k5_roster_reclassify") is not None
+                           and callable(getattr(_tools_module("nfl2k5_roster_reclassify"), "olb_filter_policy", None))),
+        "position_pools_keep_olb": (_core_module("nfl2k5_position_pools") is not None
+                                    and callable(getattr(_tools_module("nfl2k5_roster_reclassify"), "olb_filter_policy", None))),
         # The scorebug used to be gated on two developer-only files (our repaint of the ESPN
         # mark, and an intermediate glTF that only the CLI mockup ever reads), so every install
         # but this workstation reported "Not available in this build" and the ADVANCED preset
@@ -529,7 +534,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "prospect_names": ("partial" if report.get("prospect_names") == "applied" else report.get("prospect_names", "unknown")),
         "player_star": report.get("player_star", "unknown"), "player_tags": "n/a", "roster_edits": "n/a",
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
-        "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
+        "position_pools": "n/a", "position_pool_filters": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "guardian_cap": report.get("guardian_cap", "n/a"),
         "screen_timing": "n/a", "modern_naming": "requires image", "team_names_2026": "n/a", "hires_pack": "requires image",
         **{key: report.get(key, "foreign") for key in (
@@ -603,9 +608,12 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         pools = _core_module("nfl2k5_position_pools")
         if pools is not None:
             try:
-                out["position_pools"] = pools.status(_xbe_bytes(source))
+                pools_xbe = _xbe_bytes(source)
+                out["position_pools"] = pools.status(pools_xbe)
+                out["position_pool_filters"] = pools.filter_list_status(pools_xbe)
             except Exception:  # noqa: BLE001
                 out["position_pools"] = "foreign"
+                out["position_pool_filters"] = "foreign"
         season = _core_module("nfl2k5_season_length")
         if season is not None:
             try:
@@ -932,6 +940,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.season_cap or plan.calendar_engine:
         # the public 128-season option is the complete repair: cap gate + calendar + 2026 templates on the allocator
         plan = replace(plan, season_cap=True, calendar_engine=True, season_2026=True, xbe_space=True)
+    if type(plan.position_pools_keep_olb) is not bool:
+        raise ValueError("position_pools_keep_olb must be boolean")
+    if plan.position_pools_keep_olb and not plan.position_pools:
+        raise ValueError("Keep Outside Linebackers needs the merged position pools")
     if type(plan.team_names_2026) is not bool:
         raise ValueError("team_names_2026 must be boolean")
     tt._validate_lever_flags(plan.coverage_slider, plan.scramble_tuning, plan.flatter_deep_ball, plan.chop_block_toggle)
@@ -1202,15 +1214,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if pools is None or recode is None or roster is None:
             raise RuntimeError("one-pool position modules are not available in this build")
         progress("Merging the EDGE / LB / interior pools in the executable", 0, 0)
-        xbe = _xbe_bytes(target)
-        state = pools.status(xbe)
-        if state == "retail":
-            xbe, pools_receipt = pools.apply(xbe)
-            _write_xbe_bytes(target, xbe)
-        elif state == "applied":
-            pools_receipt = {"already_applied": True}
-        else:
-            raise ValueError(f"position-pool sites are {state}; refusing")
+        # The early pass always keeps the Outside Linebackers rows (retained profile); the final pass below
+        # decides the removal after the last roster writer has run. apply() replays and refuses foreign bytes.
+        xbe, pools_receipt = pools.apply(_xbe_bytes(target), roster_has_olb=True)
+        _write_xbe_bytes(target, xbe)
         progress("Recoding the 37 playbooks' defensive categories", 0, 0)
         book_receipt = recode.apply(target, progress=lambda msg: progress(msg, 0, 0))
         progress("Reclassifying rosters into the merged pools", 0, 0)
@@ -1556,7 +1563,26 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.crib_reclaim:
         rec = tt._finish_crib_image(target, progress)
         receipt["steps"].append({"step": "crib_reclaim", **rec})
-    if plan.modern_naming or plan.reserves_16 or plan.created_teams_extra or plan.crib_reclaim:
+    # Outside Linebackers filter rows: decided after the LAST roster mutation (team names, imports, historic edits,
+    # prospect names, user roster edits, arena growth) from a complete scan of every disc roster.
+    olb_filtered = False
+    pools_final = _core_module("nfl2k5_position_pools")
+    if (pools_final is not None and tt.is_disc_image(source)
+            and (plan.position_pools or pools_final.status(_xbe_bytes(target)) == "applied")):
+        roster_scan = _tools_module("nfl2k5_roster_reclassify")
+        if roster_scan is None or not callable(getattr(roster_scan, "olb_filter_policy", None)):
+            raise RuntimeError("the roster scan for the Outside Linebackers rows is not available in this build")
+        progress("Scanning every disc roster for outside linebackers", 0, 0)
+        scan = roster_scan.olb_filter_policy(target)
+        # Only the literal False from a complete scan certifies absence; incomplete evidence keeps the rows.
+        keep_olb = plan.position_pools_keep_olb or scan["roster_has_olb"] is not False
+        xbe, filter_receipt = pools_final.apply(_xbe_bytes(target), roster_has_olb=keep_olb)
+        _write_xbe_bytes(target, xbe)
+        receipt["steps"].append({"step": "position_pool_filters", "scan": scan,
+                                 "compatibility_override": plan.position_pools_keep_olb,
+                                 "xbe": filter_receipt, "experimental": True, "witnessed": False})
+        olb_filtered = True
+    if plan.modern_naming or plan.reserves_16 or plan.created_teams_extra or plan.crib_reclaim or olb_filtered:
         if plan.hires_pack:
             # Preserve the archive verifier's final scope; do not rerun fixed-offset inspectors.
             receipt["result"].update(tt._grown_status_fields(_xbe_bytes(target)))

@@ -78,6 +78,7 @@ from . import nfl2k5_guardian_overlay as guardian_overlay_patch
 from . import nfl2k5_guardian_resources as guardian_resources
 from . import nfl2k5_my_career as my_career_patch
 from . import nfl2k5_franchise_autosave as franchise_autosave_patch
+from . import nfl2k5_position_pools as position_pools_patch
 from . import nfl2k5_crib_reclaim as crib_reclaim_patch
 from . import nfl2k5_screen_hooks as screen_hooks_patch
 from . import nfl2k5_modern_naming as modern_naming_patch
@@ -1322,6 +1323,8 @@ def _grown_status_fields(payload):
             "senior_bowl_native_available": senior_bowl_patch.NATIVE_EVENT_AVAILABLE,
             "my_career": my_career_patch.status(payload), "crib_reclaim": crib_reclaim_patch.status(payload),
             "franchise_autosave": franchise_autosave_patch.status(payload),
+            "position_pools": position_pools_patch.status(payload),
+            "position_pool_filters": position_pools_patch.filter_list_status(payload),
             "modern_naming": modern_naming_patch.status(payload),
             "roster_arena_growth": arena["status"], "roster_arena_settings": arena,
             **{key: "foreign" if arena["status"] == "foreign" else "applied" if arena[key] else "retail"

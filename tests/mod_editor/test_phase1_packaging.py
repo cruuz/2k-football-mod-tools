@@ -66,7 +66,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
-        self.assertIn("registry has 111 cross-title rows", getting_started)
+        self.assertIn("registry has 112 cross-title rows", getting_started)
         self.assertIn("complete 19-page sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
@@ -454,7 +454,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=111 sections=12 nfl2k5_capabilities=73", runtime_probe)
+        self.assertIn("registry=112 sections=12 nfl2k5_capabilities=74", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)

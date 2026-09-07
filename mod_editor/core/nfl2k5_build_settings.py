@@ -16,7 +16,7 @@ FEATURE_KEYS += (
     "momentum_contact", "defensive_try", "zone_drop_cap", "all_stadiums", "practice_squad_screen",
     "abilities", "abilities_off_week", "qb_spy", "calendar_engine", "coverage_slider",
     "scramble_tuning", "flatter_deep_ball", "chop_block_toggle", "dynamic_kickoff",
-    "dynamic_kickoff_settings", "position_pools", "depth_chart_rows", "season_cap", "season_2026",
+    "dynamic_kickoff_settings", "position_pools", "position_pools_keep_olb", "depth_chart_rows", "season_cap", "season_2026",
     "team_names_2026", "widescreen", "overtime", "team_column", "seven_on_seven", "team_history",
     "career_stats", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces",
     "franchise_practice", "practice_squad", "depth_locks", "prospect_names", "player_star",

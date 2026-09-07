@@ -576,9 +576,15 @@ class BuildPanel(QWidget):
                                        "Rosters, depth charts, the draft, the formation editor and the scorebug legend say EDGE.")
         self.scheme_labels_check = self._option(r, "scheme_labels", "Use scheme-specific depth-chart names",
                                                 "4-3: SAM, MIKE, WILL; 3-4: EDGE, MIKE, WILL, NT.")
-        self.position_pools_check = self._option(r, "position_pools", "Merge EDGE, LB & interior position groups",
-                                                 "Changes roster positions and playbook assignments; includes scheme-specific names.",
+        self.position_pools_check = self._option(r, "position_pools", "Merge positions and remove the empty OLB group",
+                                                 "Creates EDGE, interior-line and linebacker pools. Removes the Outside Linebackers group only after "
+                                                 "all disc rosters pass the scan. Keeps Fullbacks and every other group. EXPERIMENTAL / UNWITNESSED.",
                                                  needs_image=True)
+        self.position_pools_keep_olb_check = self._option(r, "position_pools_keep_olb", "Keep Outside Linebackers for existing saves",
+                                                          "Use this if you will load an existing or custom roster or franchise save. Keeps the Outside "
+                                                          "Linebackers group so its players remain selectable. New pooled saves can leave this off.",
+                                                          needs_image=True)
+        self.position_pools_check.toggled.connect(self._sync_keep_olb)
         self.depth_roles_check = self._option(r, "depth_roles", "X / Z / SLWR receivers and nickel / dime corners",
                                               "Changes who lines up in every playbook, not how they play.",
                                               badge=NOT_TESTED, needs_image=True,
@@ -1051,6 +1057,8 @@ class BuildPanel(QWidget):
         gate(self.edge_check, "edge_rename")
         gate(self.scheme_labels_check, "scheme_labels")
         gate(self.position_pools_check, "position_pools", needs_image=True)
+        gate(self.position_pools_keep_olb_check, "position_pools_keep_olb", needs_image=True)
+        self._sync_keep_olb(self.position_pools_check.isChecked())
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
         if any(state.get(k) == "foreign" for k in ("position_pools", "scheme_labels", "depth_roles")):
@@ -1182,7 +1190,7 @@ class BuildPanel(QWidget):
                 "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *r62_ui.KEYS)},
             "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "guardian_cap": self.guardian_cap_check, "screen_timing": self.screen_timing_check, "scheme_labels": self.scheme_labels_check,
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
-            "position_pools": self.position_pools_check, "depth_roles": self.depth_roles_check,
+            "position_pools": self.position_pools_check, "position_pools_keep_olb": self.position_pools_keep_olb_check, "depth_roles": self.depth_roles_check,
             "depth_chart_rows": self.depth_chart_rows_check, "kickoff_alignment": self.kickoff_alignment_check,
             "dynamic_kickoff": self.dynamic_kickoff_check, "season_2026": self.season_check, "season_cap": self.season_cap_check,
             "xbe_space": self.xbe_space_check, "kickoff_relocated": self.kickoff_relocated_check,
@@ -1220,6 +1228,14 @@ class BuildPanel(QWidget):
                 text += " Player tags are selected, but the star display is off."
         self.star_players_label.setText(text)
 
+    def _sync_keep_olb(self, pools_on: bool) -> None:
+        keep = getattr(self, "position_pools_keep_olb_check", None)
+        if keep is None:
+            return
+        keep.setEnabled(bool(pools_on) and self.position_pools_check.isEnabled())
+        if not pools_on:
+            keep.setChecked(False)
+
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
@@ -1251,6 +1267,7 @@ class BuildPanel(QWidget):
             scheme_labels=self.scheme_labels_check.isChecked(), camera=self.camera_check.isChecked(),
             kick_rules=self.kick_rules_check.isChecked(), kick_power=self.kick_power_check.isChecked(),
             position_pools=self.position_pools_check.isChecked(),
+            position_pools_keep_olb=self.position_pools_keep_olb_check.isChecked() and self.position_pools_check.isChecked(),
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
