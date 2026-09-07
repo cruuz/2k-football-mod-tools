@@ -1,0 +1,3103 @@
+{
+  "audit": {
+    "callback_table": [
+      "0x102190",
+      "0x1071e0",
+      "0x107480",
+      "0x1048d0",
+      "0x107940",
+      "0x108240",
+      "0x109a00",
+      "0x1047e0",
+      "0x1072c0",
+      "0x10a100",
+      "0x104a80",
+      "0x104af0",
+      "0x104c60",
+      "0x10a4b0",
+      "0x10a4b0",
+      "0x10a4b0",
+      "0x10a4b0",
+      "0x10ae10",
+      "0x10aea0"
+    ],
+    "pause_row": {
+      "action": "0x6efe0",
+      "kind": 9,
+      "text": "0xe626c4"
+    },
+    "pause_text": "Simulate To End",
+    "retail_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "spans": {
+      "advance_stage": {
+        "sha256": "44e7ab5553cf0d5ca7c3dc24434a396bcc5685087ae577fb5230667b3cba1613",
+        "size": 1536,
+        "va": "0x2480b0"
+      },
+      "draft_class_generator": {
+        "sha256": "806eae312dfdd7ad6c22c18f740282ce4f20d047370572f13d85d8698c3557ca",
+        "size": 75,
+        "va": "0x2be900"
+      },
+      "draft_cpu_pick_and_sign": {
+        "sha256": "e5c5699cecd4899a0761a654ddfccfc874a032ca718cdf1e4f0a4fdebdae1210",
+        "size": 430,
+        "va": "0x325b50"
+      },
+      "draft_on_clock": {
+        "sha256": "77a2842feb19a62d33dbd0cc986949386b11989aec4bc855b9a9b555c62dd8ac",
+        "size": 32,
+        "va": "0x3254d0"
+      },
+      "franchise_start": {
+        "sha256": "df12338c88b5ae82773ee9162b32e6537c0599d23c350d83fd62ed7d2794ef61",
+        "size": 576,
+        "va": "0x13ee10"
+      },
+      "generic_uniform_names": {
+        "sha256": "09e614d5e4e157c66d8dc4b55766ddf271cff6cd74616e42e6782833a1e7f051",
+        "size": 356,
+        "va": "0x615a0"
+      },
+      "inner_game_update": {
+        "sha256": "07afac56fb84a9ec9e8b19b619a5d6bfe5960d08cb0ee5d015428dd40922bb07",
+        "size": 304,
+        "va": "0x11a7c0"
+      },
+      "match_roster_clone": {
+        "sha256": "019b3b03a0b9d58f4ccc6cd8f980cdce29a433d2b93b2bac37d3ce0219765778",
+        "size": 171,
+        "va": "0x61730"
+      },
+      "outer_game_update": {
+        "sha256": "42a067fc98503af32527b66430b97a2b8d67b7fa9102aac48b1c27b83a967954",
+        "size": 1360,
+        "va": "0x64cd0"
+      },
+      "pause_finish_sequence": {
+        "sha256": "3b985d256c739b41361ba83b58243bc41a9a77ef41638d054baabaa1351ff18c",
+        "size": 96,
+        "va": "0x6ee50"
+      },
+      "pause_simulate_handler": {
+        "sha256": "16efa74c7587fc67423f65ff9fb3ce646b090262c0d50eceb299f374269c3042",
+        "size": 112,
+        "va": "0x6efe0"
+      },
+      "pause_simulate_row": {
+        "sha256": "a00c8e2482ac952bc7d6090e06fe423f16ef2cae537e3e05007cd60700085624",
+        "size": 52,
+        "va": "0x4e8d08"
+      },
+      "play_callback_table": {
+        "sha256": "8da356581e9fb5733c7598ddcc342151e16964a809d0e7669ce3aa4860754426",
+        "size": 76,
+        "va": "0xa96930"
+      },
+      "play_step": {
+        "sha256": "bda5c1eebd8514955870e7368859bbb896a80d8377ed5b036c5a145168a99f88",
+        "size": 48,
+        "va": "0x10b250"
+      },
+      "played_fixture_commit": {
+        "sha256": "c5419e1a079da777588f9197e82673fbfc0fd81bb156cd871cdb77377a56eeba",
+        "size": 79,
+        "va": "0xc5d60"
+      },
+      "scenario_restore": {
+        "sha256": "bbd0f4eeeb81ff53211751b566d33e02fe8db4a01127cc6be7cfb6f9d2e96352",
+        "size": 644,
+        "va": "0x10bd80"
+      },
+      "sim_initializer": {
+        "sha256": "9649bbd9cc764470d623b3f8d116510aa2c6c8171c7bf9ac066ec94313eebee7",
+        "size": 1728,
+        "va": "0x10b280"
+      },
+      "sim_wrappers": {
+        "sha256": "6804a5bf2a2e3c46fdcb5db7f1c393b4e34b30782d4bebf2acd0f91033d44cfe",
+        "size": 176,
+        "va": "0x10b940"
+      },
+      "stage_table": {
+        "sha256": "268afd7c2828b6bbbb7adb3964b82eb59a0e3252847bc985dfbcf63e663ea707",
+        "size": 160,
+        "va": "0x515140"
+      },
+      "terminal_finalizer": {
+        "sha256": "fa0764ceef5996aaa20f7d3e628f9e6abb29b2d32c46e7f4f3880b7a1e78d234",
+        "size": 57,
+        "va": "0x1053b0"
+      },
+      "visual_simulator_controls": {
+        "sha256": "2bd2245b7339d85d6c3f39d81c9735e186ed5798d89b73e6c7b11b0dc9dd9026",
+        "size": 736,
+        "va": "0xec390"
+      },
+      "visual_simulator_speed": {
+        "sha256": "beb70f6265e1ff1f8e0deb0bdef91f1a6734f9aa88b179aa46b0bdb879925d60",
+        "size": 192,
+        "va": "0x27b820"
+      },
+      "year_rollover": {
+        "sha256": "f2d6aa8c8509d02a1905ed7be7ede2e92210a6f76ebb430ec08dc1169393cea7",
+        "size": 450,
+        "va": "0x247b40"
+      }
+    }
+  },
+  "draft": {
+    "distinct_candidates": 32,
+    "draft_ai_sha256": "41293e4e24dec3a749bcaea3950110c76ae753dd16051054efdca14b11b4c1f1",
+    "fixed_club_candidate_by_seed": {
+      "1": 2146,
+      "10": 2258,
+      "11": 2312,
+      "12": 2262,
+      "13": 1982,
+      "14": 2261,
+      "15": 2142,
+      "16": 2201,
+      "17": 2062,
+      "18": 2165,
+      "19": 2297,
+      "2": 1961,
+      "20": 2250,
+      "21": 2121,
+      "22": 1986,
+      "23": 2114,
+      "24": 2252,
+      "25": 2259,
+      "26": 1946,
+      "27": 2267,
+      "28": 2069,
+      "29": 2254,
+      "3": 2216,
+      "30": 2089,
+      "31": 2030,
+      "32": 2264,
+      "4": 2296,
+      "5": 1958,
+      "6": 1997,
+      "7": 2080,
+      "8": 2268,
+      "9": 1945
+    },
+    "leaves": [
+      [
+        1538448,
+        "progress text/render only; native draft and contract code executes"
+      ]
+    ],
+    "native_sign": {
+      "club": 0,
+      "contract_word": "0x6000146",
+      "count_after": 54,
+      "count_before": 53,
+      "flags": 6,
+      "ordinal": 2299
+    }
+  },
+  "experimental": true,
+  "fresh_start": {
+    "class_count": 380,
+    "first_fixture": {
+      "fixture_hex": "03150a0909040900",
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "native_commits": 1,
+      "native_ticks": 171,
+      "return": 1
+    },
+    "leaves": [],
+    "roster_sha256": "b1164eeed262988dc97d840ba59f6274c1f5d4505249474e4cafd4e322d9f7ae",
+    "stage": 8,
+    "stage_weeks": 17,
+    "week": 0,
+    "year": 0
+  },
+  "full_drafts": [
+    {
+      "free_agent_count": 397,
+      "free_agent_occurrences": 1,
+      "landing": null,
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "ordinal": 2008,
+      "rounds_completed": 7,
+      "seed": 1
+    },
+    {
+      "free_agent_count": 397,
+      "free_agent_occurrences": 0,
+      "landing": {
+        "club": 18,
+        "club_name": "Detroit Lions",
+        "overall_pick": 83
+      },
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "ordinal": 2008,
+      "rounds_completed": 7,
+      "seed": 2
+    },
+    {
+      "free_agent_count": 397,
+      "free_agent_occurrences": 1,
+      "landing": null,
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "ordinal": 2008,
+      "rounds_completed": 7,
+      "seed": 3
+    },
+    {
+      "free_agent_count": 397,
+      "free_agent_occurrences": 1,
+      "landing": null,
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "ordinal": 2008,
+      "rounds_completed": 7,
+      "seed": 4
+    },
+    {
+      "free_agent_count": 397,
+      "free_agent_occurrences": 1,
+      "landing": null,
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "ordinal": 2008,
+      "rounds_completed": 7,
+      "seed": 5
+    },
+    {
+      "free_agent_count": 397,
+      "free_agent_occurrences": 0,
+      "landing": {
+        "club": 11,
+        "club_name": "Dallas Cowboys",
+        "overall_pick": 108
+      },
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "ordinal": 2008,
+      "rounds_completed": 7,
+      "seed": 6
+    },
+    {
+      "free_agent_count": 397,
+      "free_agent_occurrences": 1,
+      "landing": null,
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "ordinal": 2008,
+      "rounds_completed": 7,
+      "seed": 7
+    },
+    {
+      "free_agent_count": 397,
+      "free_agent_occurrences": 0,
+      "landing": {
+        "club": 21,
+        "club_name": "New England Patriots",
+        "overall_pick": 214
+      },
+      "leaves": [
+        [
+          1538448,
+          "progress text/render only"
+        ]
+      ],
+      "ordinal": 2008,
+      "rounds_completed": 7,
+      "seed": 8
+    }
+  ],
+  "prospect_projection": {
+    "all_33_personnel_from_each_squad": [
+      true,
+      true
+    ],
+    "cloned_records": 106,
+    "creation": {
+      "before_sha256": "56926604e438bd47f1f94edf844a0ecd00d5a382a647526baec396ead5f1b1b8",
+      "changed": true,
+      "changed_bytes": 12,
+      "generic_kits": [
+        "31A0.IFF",
+        "31H0.IFF"
+      ],
+      "index": 2008,
+      "runtime_ready": false,
+      "sha256": "80abcdd21ddfe5568e17352ab6d03b799cb6b862d157621fa423f151b7731b71",
+      "stock_delta": 0
+    },
+    "finish": {
+      "final": {
+        "clock": 1.0,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 161,
+        "offense": 0,
+        "quarter": 4,
+        "score": [
+          10,
+          20
+        ],
+        "spot": 77.2906723022461
+      },
+      "initial": {
+        "clock": 1.0,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 161,
+        "offense": 0,
+        "quarter": 4,
+        "score": [
+          10,
+          20
+        ],
+        "spot": 77.2906723022461
+      },
+      "reason": "game_end",
+      "resume_proved": false,
+      "steps": 1,
+      "ticker": [
+        {
+          "native_result": 5,
+          "number": 1,
+          "state": {
+            "clock": 1.0,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 161,
+            "offense": 0,
+            "quarter": 4,
+            "score": [
+              10,
+              20
+            ],
+            "spot": 77.2906723022461
+          }
+        }
+      ]
+    },
+    "initial_history_aliases": 106,
+    "kits": [
+      "31h0.iff",
+      "31a0.iff"
+    ],
+    "leaves": [],
+    "native_to_event_sides": [
+      1,
+      0
+    ],
+    "second_half": {
+      "final": {
+        "clock": 1.0,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 161,
+        "offense": 0,
+        "quarter": 4,
+        "score": [
+          10,
+          20
+        ],
+        "spot": 77.2906723022461
+      },
+      "initial": {
+        "clock": 1.0,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 84,
+        "offense": 1,
+        "quarter": 2,
+        "score": [
+          7,
+          6
+        ],
+        "spot": 27.213531494140625
+      },
+      "reason": "target",
+      "resume_proved": false,
+      "steps": 81,
+      "ticker": [
+        {
+          "native_result": 1,
+          "number": 50,
+          "state": {
+            "clock": 0.8563210964202881,
+            "distance": 6.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 132,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 42.11170959472656
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 51,
+          "state": {
+            "clock": 0.8252524733543396,
+            "distance": 2.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 133,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 38.11170959472656
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 52,
+          "state": {
+            "clock": 0.8027524948120117,
+            "distance": 2.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 134,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 38.11170959472656
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 53,
+          "state": {
+            "clock": 0.8027524948120117,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 134,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 63.88829040527344
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 54,
+          "state": {
+            "clock": 0.7781751751899719,
+            "distance": 3.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 135,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 56.88829040527344
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 55,
+          "state": {
+            "clock": 0.7472163438796997,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 136,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 53.88829040527344
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 56,
+          "state": {
+            "clock": 0.7247163653373718,
+            "distance": 10.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 137,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 53.88829040527344
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 57,
+          "state": {
+            "clock": 0.6937015652656555,
+            "distance": 7.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 138,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 50.88829040527344
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 58,
+          "state": {
+            "clock": 0.6631433963775635,
+            "distance": 5.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 139,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 48.88829040527344
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 59,
+          "state": {
+            "clock": 0.633143424987793,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 140,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 94.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 60,
+          "state": {
+            "clock": 0.6018491983413696,
+            "distance": 6.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 141,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 90.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 61,
+          "state": {
+            "clock": 0.5704506039619446,
+            "distance": 1.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 142,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 85.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 62,
+          "state": {
+            "clock": 0.5451067686080933,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 143,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 76.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 63,
+          "state": {
+            "clock": 0.5137306451797485,
+            "distance": 5.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 144,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 71.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 64,
+          "state": {
+            "clock": 0.48244553804397583,
+            "distance": 1.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 145,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 67.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 65,
+          "state": {
+            "clock": 0.4591144025325775,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 146,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 64.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 66,
+          "state": {
+            "clock": 0.43661439418792725,
+            "distance": 10.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 147,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 64.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 67,
+          "state": {
+            "clock": 0.4052999019622803,
+            "distance": 6.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 148,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 60.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 68,
+          "state": {
+            "clock": 0.38231632113456726,
+            "distance": 4.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 149,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 58.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 69,
+          "state": {
+            "clock": 0.359816312789917,
+            "distance": 4.0,
+            "down": 4,
+            "kind": 0,
+            "log_count": 150,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 58.18907928466797
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 70,
+          "state": {
+            "clock": 0.2584328055381775,
+            "distance": 12.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 151,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 43.81092071533203
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 71,
+          "state": {
+            "clock": 0.17296399176120758,
+            "distance": 8.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 152,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 39.81092071533203
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 72,
+          "state": {
+            "clock": 0.1504639983177185,
+            "distance": 11.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 153,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 42.81092071533203
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 73,
+          "state": {
+            "clock": 0.12046399712562561,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 154,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 98.00659942626953
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 74,
+          "state": {
+            "clock": 0.09369330108165741,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 155,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 84.00659942626953
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 75,
+          "state": {
+            "clock": 0.06157570332288742,
+            "distance": 3.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 156,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 77.00659942626953
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 76,
+          "state": {
+            "clock": 0.03907570242881775,
+            "distance": 3.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 157,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 77.00659942626953
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 77,
+          "state": {
+            "clock": 0.016575703397393227,
+            "distance": 3.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 158,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 77.00659942626953
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 78,
+          "state": {
+            "clock": -0.005924296099692583,
+            "distance": 3.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 159,
+            "offense": 0,
+            "quarter": 3,
+            "score": [
+              10,
+              13
+            ],
+            "spot": 77.00659942626953
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 79,
+          "state": {
+            "clock": -0.013122315518558025,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 4,
+            "log_count": 159,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              19
+            ],
+            "spot": -1.0065994262695312
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 80,
+          "state": {
+            "clock": -0.013122315518558025,
+            "distance": 0.0,
+            "down": 0,
+            "kind": 1,
+            "log_count": 160,
+            "offense": 1,
+            "quarter": 3,
+            "score": [
+              10,
+              20
+            ],
+            "spot": 70.0
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 81,
+          "state": {
+            "clock": 1.0,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 161,
+            "offense": 0,
+            "quarter": 4,
+            "score": [
+              10,
+              20
+            ],
+            "spot": 77.2906723022461
+          }
+        }
+      ]
+    },
+    "source_arena_read_only": true,
+    "source_arena_sha256_after": "b4b33bde42c939a7243a72271aabd55572e3e5dbe6590f684d231d61c5a24c40",
+    "source_arena_sha256_before": "b4b33bde42c939a7243a72271aabd55572e3e5dbe6590f684d231d61c5a24c40",
+    "squads": [
+      [
+        2008,
+        2059,
+        2072,
+        2221,
+        2017,
+        2138,
+        2153,
+        2162,
+        2171,
+        2182,
+        2232,
+        1959,
+        1963,
+        1972,
+        1979,
+        1992,
+        2212,
+        2247,
+        2210,
+        2246,
+        1941,
+        1996,
+        2038,
+        1985,
+        2028,
+        2125,
+        2185,
+        2202,
+        2249,
+        2293,
+        1970,
+        2024,
+        2052,
+        2124,
+        2152,
+        2044,
+        2068,
+        2145,
+        2167,
+        2176,
+        2205,
+        1950,
+        1988,
+        2015,
+        2086,
+        2161,
+        2179,
+        2263,
+        2305,
+        2314,
+        1989,
+        2036,
+        2048
+      ],
+      [
+        1991,
+        2046,
+        2065,
+        2239,
+        1997,
+        2139,
+        2157,
+        2164,
+        2181,
+        2204,
+        2235,
+        1954,
+        1960,
+        1964,
+        1974,
+        1983,
+        2233,
+        2260,
+        2189,
+        2230,
+        1943,
+        2023,
+        2090,
+        1975,
+        2019,
+        2173,
+        2199,
+        2214,
+        2223,
+        2253,
+        2302,
+        2004,
+        2063,
+        2147,
+        2178,
+        2020,
+        2053,
+        2156,
+        2170,
+        2188,
+        2216,
+        2299,
+        1955,
+        1999,
+        2054,
+        2163,
+        2217,
+        2277,
+        2313,
+        2307,
+        1981,
+        2014,
+        2045
+      ]
+    ],
+    "stat_pointer_rebindings": 106,
+    "stop": {
+      "final": {
+        "clock": 1.0,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 84,
+        "offense": 1,
+        "quarter": 2,
+        "score": [
+          7,
+          6
+        ],
+        "spot": 27.213531494140625
+      },
+      "initial": {
+        "clock": 0.997500479221344,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 1,
+        "offense": 1,
+        "quarter": 0,
+        "score": [
+          0,
+          0
+        ],
+        "spot": 78.17878723144531
+      },
+      "reason": "target",
+      "resume_proved": false,
+      "steps": 85,
+      "ticker": [
+        {
+          "native_result": 1,
+          "number": 54,
+          "state": {
+            "clock": 0.6793603897094727,
+            "distance": 6.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 55,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 24.376113891601562
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 55,
+          "state": {
+            "clock": 0.6568604111671448,
+            "distance": 11.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 56,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 29.376113891601562
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 56,
+          "state": {
+            "clock": 0.6326759457588196,
+            "distance": 5.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 57,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 23.376113891601562
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 57,
+          "state": {
+            "clock": 0.6026759743690491,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 58,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 69.62388610839844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 58,
+          "state": {
+            "clock": 0.5801759958267212,
+            "distance": 10.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 59,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 69.62388610839844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 59,
+          "state": {
+            "clock": 0.5576760172843933,
+            "distance": 10.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 60,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 69.62388610839844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 60,
+          "state": {
+            "clock": 0.5351760387420654,
+            "distance": 10.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 61,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 69.62388610839844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 61,
+          "state": {
+            "clock": 0.5051760673522949,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 62,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 77.45639038085938
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 62,
+          "state": {
+            "clock": 0.4747909605503082,
+            "distance": 9.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 63,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 76.45639038085938
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 63,
+          "state": {
+            "clock": 0.4447064697742462,
+            "distance": 9.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 64,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 76.45639038085938
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 64,
+          "state": {
+            "clock": 0.42220646142959595,
+            "distance": 9.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 65,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 76.45639038085938
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 65,
+          "state": {
+            "clock": 0.3919188976287842,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 66,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 70.02289581298828
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 66,
+          "state": {
+            "clock": 0.36087843775749207,
+            "distance": 7.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 67,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 67.02289581298828
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 67,
+          "state": {
+            "clock": 0.33816200494766235,
+            "distance": 6.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 68,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 66.02289581298828
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 68,
+          "state": {
+            "clock": 0.30816200375556946,
+            "distance": 6.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 69,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 66.02289581298828
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 69,
+          "state": {
+            "clock": 0.27816200256347656,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 70,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 81.12911987304688
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 70,
+          "state": {
+            "clock": 0.2532350420951843,
+            "distance": 2.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 71,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 73.12911987304688
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 71,
+          "state": {
+            "clock": 0.23073504865169525,
+            "distance": 2.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 72,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 73.12911987304688
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 72,
+          "state": {
+            "clock": 0.1989908069372177,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 73,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 67.12911987304688
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 73,
+          "state": {
+            "clock": 0.1745406985282898,
+            "distance": 3.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 74,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 60.129119873046875
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 74,
+          "state": {
+            "clock": 0.15204070508480072,
+            "distance": 3.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 75,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 60.129119873046875
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 75,
+          "state": {
+            "clock": 0.15204070508480072,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 75,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 42.870880126953125
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 76,
+          "state": {
+            "clock": 0.12954071164131165,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 76,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 42.870880126953125
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 77,
+          "state": {
+            "clock": 0.12644103169441223,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 76,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 47.129119873046875
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 78,
+          "state": {
+            "clock": 0.10394103080034256,
+            "distance": 10.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 77,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 47.129119873046875
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 79,
+          "state": {
+            "clock": 0.08124786615371704,
+            "distance": 9.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 78,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 46.129119873046875
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 80,
+          "state": {
+            "clock": 0.05412611365318298,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 79,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": 31.129119873046875
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 81,
+          "state": {
+            "clock": 0.021987376734614372,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 4,
+            "log_count": 80,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              6,
+              6
+            ],
+            "spot": -0.870880126953125
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 82,
+          "state": {
+            "clock": 0.021987376734614372,
+            "distance": 0.0,
+            "down": 0,
+            "kind": 1,
+            "log_count": 81,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              7,
+              6
+            ],
+            "spot": 70.0
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 83,
+          "state": {
+            "clock": 0.016943389549851418,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 82,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              7,
+              6
+            ],
+            "spot": 75.21353149414062
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 84,
+          "state": {
+            "clock": 0.0033333334140479565,
+            "distance": 10.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 83,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              7,
+              6
+            ],
+            "spot": 75.21353149414062
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 85,
+          "state": {
+            "clock": 1.0,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 84,
+            "offense": 1,
+            "quarter": 2,
+            "score": [
+              7,
+              6
+            ],
+            "spot": 27.213531494140625
+          }
+        }
+      ]
+    }
+  },
+  "runtime_witnessed": false,
+  "schema": 1,
+  "stops": {
+    "end_of_half": {
+      "final": {
+        "clock": 1.0,
+        "distance": 11.0,
+        "down": 1,
+        "kind": 0,
+        "log_count": 79,
+        "offense": 0,
+        "quarter": 2,
+        "score": [
+          3,
+          7
+        ],
+        "spot": 94.5635986328125
+      },
+      "initial": {
+        "clock": 0.996772825717926,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 1,
+        "offense": 1,
+        "quarter": 0,
+        "score": [
+          0,
+          0
+        ],
+        "spot": 77.81941986083984
+      },
+      "reason": "target",
+      "resume_proved": false,
+      "steps": 78,
+      "ticker": [
+        {
+          "native_result": 1,
+          "number": 47,
+          "state": {
+            "clock": 0.7579792737960815,
+            "distance": 8.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 48,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 49.84291076660156
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 48,
+          "state": {
+            "clock": 0.7329723238945007,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 49,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 41.84291076660156
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 49,
+          "state": {
+            "clock": 0.7010914087295532,
+            "distance": 4.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 50,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 35.84291076660156
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 50,
+          "state": {
+            "clock": 0.667538583278656,
+            "distance": 4.0,
+            "down": 1,
+            "kind": 4,
+            "log_count": 51,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              6
+            ],
+            "spot": -1.1570892333984375
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 51,
+          "state": {
+            "clock": 0.667538583278656,
+            "distance": 0.0,
+            "down": 0,
+            "kind": 1,
+            "log_count": 52,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 70.0
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 52,
+          "state": {
+            "clock": 0.6638199090957642,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 53,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 81.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 53,
+          "state": {
+            "clock": 0.6325981616973877,
+            "distance": 6.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 54,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 77.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 54,
+          "state": {
+            "clock": 0.6020954847335815,
+            "distance": 4.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 55,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 75.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 55,
+          "state": {
+            "clock": 0.5708750486373901,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 56,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 71.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 56,
+          "state": {
+            "clock": 0.5403740406036377,
+            "distance": 8.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 57,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 69.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 57,
+          "state": {
+            "clock": 0.513389527797699,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 58,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 54.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 58,
+          "state": {
+            "clock": 0.49000176787376404,
+            "distance": 7.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 59,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 51.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 59,
+          "state": {
+            "clock": 0.4593213200569153,
+            "distance": 5.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 60,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 49.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 60,
+          "state": {
+            "clock": 0.42749667167663574,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 61,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 43.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 61,
+          "state": {
+            "clock": 0.3963990807533264,
+            "distance": 6.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 62,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 39.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 62,
+          "state": {
+            "clock": 0.3699571490287781,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 63,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 26.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 63,
+          "state": {
+            "clock": 0.34518513083457947,
+            "distance": 2.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 64,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 18.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 64,
+          "state": {
+            "clock": 0.3226851224899292,
+            "distance": 2.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 65,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 18.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 65,
+          "state": {
+            "clock": 0.30018511414527893,
+            "distance": 2.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 66,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              7
+            ],
+            "spot": 18.133056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 66,
+          "state": {
+            "clock": 0.27018511295318604,
+            "distance": 0.0,
+            "down": 0,
+            "kind": 1,
+            "log_count": 67,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 70.0
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 67,
+          "state": {
+            "clock": 0.2629304826259613,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 68,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 73.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 68,
+          "state": {
+            "clock": 0.23968173563480377,
+            "distance": 8.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 69,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 71.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 69,
+          "state": {
+            "clock": 0.20791403949260712,
+            "distance": 2.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 70,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 65.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 70,
+          "state": {
+            "clock": 0.18188545107841492,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 71,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 53.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 71,
+          "state": {
+            "clock": 0.15938545763492584,
+            "distance": 10.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 72,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 53.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 72,
+          "state": {
+            "clock": 0.13526737689971924,
+            "distance": 5.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 73,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 48.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 73,
+          "state": {
+            "clock": 0.1098078191280365,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 74,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 38.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 74,
+          "state": {
+            "clock": 0.08730781823396683,
+            "distance": 10.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 75,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 38.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 75,
+          "state": {
+            "clock": 0.06480781733989716,
+            "distance": 10.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 76,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 38.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 76,
+          "state": {
+            "clock": 0.041311442852020264,
+            "distance": 7.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 77,
+            "offense": 1,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 35.33936309814453
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 77,
+          "state": {
+            "clock": 0.011311443522572517,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 78,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 93.5635986328125
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 78,
+          "state": {
+            "clock": 1.0,
+            "distance": 11.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 79,
+            "offense": 0,
+            "quarter": 2,
+            "score": [
+              3,
+              7
+            ],
+            "spot": 94.5635986328125
+          }
+        }
+      ]
+    },
+    "next_possession": {
+      "final": {
+        "clock": 0.8911138772964478,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 5,
+        "offense": 0,
+        "quarter": 0,
+        "score": [
+          0,
+          0
+        ],
+        "spot": 68.67633056640625
+      },
+      "initial": {
+        "clock": 0.996772825717926,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 1,
+        "offense": 1,
+        "quarter": 0,
+        "score": [
+          0,
+          0
+        ],
+        "spot": 77.81941986083984
+      },
+      "reason": "target",
+      "resume_proved": false,
+      "steps": 4,
+      "ticker": [
+        {
+          "native_result": 1,
+          "number": 1,
+          "state": {
+            "clock": 0.966113805770874,
+            "distance": 8.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 2,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 75.81941986083984
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 2,
+          "state": {
+            "clock": 0.9436138272285461,
+            "distance": 8.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 3,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 75.81941986083984
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 3,
+          "state": {
+            "clock": 0.9211138486862183,
+            "distance": 8.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 4,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 75.81941986083984
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 4,
+          "state": {
+            "clock": 0.8911138772964478,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 5,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 68.67633056640625
+          }
+        }
+      ]
+    },
+    "next_quarter": {
+      "final": {
+        "clock": 1.0,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 38,
+        "offense": 0,
+        "quarter": 1,
+        "score": [
+          0,
+          0
+        ],
+        "spot": 28.157089233398438
+      },
+      "initial": {
+        "clock": 0.996772825717926,
+        "distance": 10.0,
+        "down": 0,
+        "kind": 0,
+        "log_count": 1,
+        "offense": 1,
+        "quarter": 0,
+        "score": [
+          0,
+          0
+        ],
+        "spot": 77.81941986083984
+      },
+      "reason": "target",
+      "resume_proved": false,
+      "steps": 37,
+      "ticker": [
+        {
+          "native_result": 1,
+          "number": 6,
+          "state": {
+            "clock": 0.8299932479858398,
+            "distance": 6.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 7,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 64.67633056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 7,
+          "state": {
+            "clock": 0.7988356947898865,
+            "distance": 2.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 8,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 60.67633056640625
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 8,
+          "state": {
+            "clock": 0.768835723400116,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 9,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 78.89242553710938
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 9,
+          "state": {
+            "clock": 0.7463357448577881,
+            "distance": 13.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 10,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 81.89242553710938
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 10,
+          "state": {
+            "clock": 0.7207337021827698,
+            "distance": 3.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 11,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 71.89242553710938
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 11,
+          "state": {
+            "clock": 0.6982337236404419,
+            "distance": 3.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 12,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 71.89242553710938
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 12,
+          "state": {
+            "clock": 0.6682337522506714,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 13,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 74.02584838867188
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 13,
+          "state": {
+            "clock": 0.6457337737083435,
+            "distance": 10.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 14,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 74.02584838867188
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 14,
+          "state": {
+            "clock": 0.6146590113639832,
+            "distance": 6.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 15,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 70.02584838867188
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 15,
+          "state": {
+            "clock": 0.590639591217041,
+            "distance": 1.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 16,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 65.02584838867188
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 16,
+          "state": {
+            "clock": 0.5606396198272705,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 17,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 81.40299224853516
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 17,
+          "state": {
+            "clock": 0.5298181772232056,
+            "distance": 7.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 18,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 78.40299224853516
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 18,
+          "state": {
+            "clock": 0.5061582922935486,
+            "distance": 3.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 19,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 74.40299224853516
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 19,
+          "state": {
+            "clock": 0.474258154630661,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 20,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 68.40299224853516
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 20,
+          "state": {
+            "clock": 0.44357720017433167,
+            "distance": 8.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 21,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 66.40299224853516
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 21,
+          "state": {
+            "clock": 0.4117862582206726,
+            "distance": 2.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 22,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 60.402992248535156
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 22,
+          "state": {
+            "clock": 0.38152697682380676,
+            "distance": 1.0,
+            "down": 3,
+            "kind": 0,
+            "log_count": 23,
+            "offense": 1,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 59.402992248535156
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 23,
+          "state": {
+            "clock": 0.35152697563171387,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 24,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 87.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 24,
+          "state": {
+            "clock": 0.32016026973724365,
+            "distance": 5.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 25,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 82.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 25,
+          "state": {
+            "clock": 0.2976602613925934,
+            "distance": 6.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 26,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 83.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 26,
+          "state": {
+            "clock": 0.2718719244003296,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 27,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 72.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 27,
+          "state": {
+            "clock": 0.24937193095684052,
+            "distance": 12.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 28,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 74.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 28,
+          "state": {
+            "clock": 0.2263004332780838,
+            "distance": 10.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 29,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 72.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 29,
+          "state": {
+            "clock": 0.2007416933774948,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 30,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 62.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 30,
+          "state": {
+            "clock": 0.17722584307193756,
+            "distance": 7.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 31,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 59.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 31,
+          "state": {
+            "clock": 0.15307383239269257,
+            "distance": 1.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 32,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 53.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 32,
+          "state": {
+            "clock": 0.12248504161834717,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 33,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 51.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 33,
+          "state": {
+            "clock": 0.09090235084295273,
+            "distance": 5.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 34,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 46.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 34,
+          "state": {
+            "clock": 0.06721420586109161,
+            "distance": 1.0,
+            "down": 2,
+            "kind": 0,
+            "log_count": 35,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 42.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 35,
+          "state": {
+            "clock": 0.035937514156103134,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 36,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 38.15708923339844
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 36,
+          "state": {
+            "clock": 0.010697725228965282,
+            "distance": 1.0,
+            "down": 1,
+            "kind": 0,
+            "log_count": 37,
+            "offense": 0,
+            "quarter": 0,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 29.157089233398438
+          }
+        },
+        {
+          "native_result": 1,
+          "number": 37,
+          "state": {
+            "clock": 1.0,
+            "distance": 10.0,
+            "down": 0,
+            "kind": 0,
+            "log_count": 38,
+            "offense": 0,
+            "quarter": 1,
+            "score": [
+              0,
+              0
+            ],
+            "spot": 28.157089233398438
+          }
+        }
+      ]
+    }
+  }
+}

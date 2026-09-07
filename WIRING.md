@@ -10648,3 +10648,92 @@ cave gate checks the complete quarter replacement and its specific existing
 targets. Keep both full owner unions and both application orders. Refresh
 source pins from final integrated files rather than weakening ownership or
 calling an unknown/free-padding region an allocation.
+# r64 MyCareer Supersim / draft-start research handoff
+
+Read `ASTRA_MYCAREER_SUPERSIM_DRAFT_REPORT.md` and the derived receipts in
+`docs/nfl2k5_supersim_draft_receipts.json` and
+`docs/nfl2k5_draft_start_prior_year.json`. The latter proves 268 native fixture
+sim/commit pairs and the next-year draft entry with the class intact. This section supersedes the earlier
+claims that retail has no live Simulate To End action and that EC65A is the
+general played-game commit. **EXPERIMENTAL / UNWITNESSED; live Supersim resume
+and a played Senior Bowl career launch are unavailable.** The new modules are
+reference/proof components, not installable XBE patches. Neither has `apply()`
+or a fake successful patch status. Both have `REQUESTS=()` and
+`RUNTIME_READY=False`. Do not enable a Build option from these instruction
+proofs. No protected implementation file or parallel `nfl2k5_my_career*` file
+was edited in this work.
+
+## Protected integration matrix for this revision
+
+| Integration point | Exact action |
+| --- | --- |
+| `BuildPlan` fields and presets | No new field is installed. Supersim and draft-start availability remain false in Basic, Advanced **and Experimental**. Preserve the existing `my_career` and `senior_bowl` preflight refusals until their complete native adapters are ready. The two start choices belong in M2's in-game creation flow, not a required host setup file. |
+| Dispatcher `_apply_all` tuple / keyword | No tuple entry or keyword for these modules: there is no patch to apply. Do not pass either module to the current patch adapter. Do not extend `R62_SPACE_KEYS`, `R62_RUNTIME_KEYS`, `_selected_space_requests` or `_xbe_space_adapter` for empty research owners. |
+| Four status dictionaries | No `applied` status is valid. If availability is exposed later, return `unavailable` and `runtime_ready=False` from the shared `_grown_status_fields`, which expands into all four dictionaries (the current callsites around lines 652, 779, 1757, 2091 of `nfl2k5_throw_tuning.py`). Do not infer runtime availability from `nfl2k5_senior_bowl.status()` reporting its dormant kernel installed. |
+| Gameplay Patches `PATCHES` / `NEEDS_IMAGE` | No row now. Reserved future copy: `Retail: off-field plays run normally. Patch: skip until your next return.` and `Retail: rookies enter after a season. Patch: create a prospect and enter the draft.` Use only after those statements are true in the completed integration; append `EXPERIMENTAL / UNWITNESSED`. Both eventual installed features require `NEEDS_IMAGE=True`. |
+| Build tab `_option` captions | No option now. Future captions, each under 60 characters: `MyCareer off-field skip (experimental)` and `MyCareer draft start (experimental)`. Keep disabled/unavailable until native readiness; do not label a research kernel as a working Patch. |
+| Release allowlist | No research CLI, private fixture or test module should be added to the product. If M2 imports the host contracts, add exactly `mod_editor/core/nfl2k5_supersim.py` and `mod_editor/core/nfl2k5_draft_start.py` to `packaging/release-allowlist.txt`. Importing a reference helper alone does not enable gameplay. |
+| Runtime closure | If those imports are adopted, include `mod_editor.core.nfl2k5_supersim` and `mod_editor.core.nfl2k5_draft_start` in `packaging/check_2k5_mod_studio_runtime.py`. Existing dependencies are roster records and Senior Bowl. Never import `tests.nfl2k5_supersim_draft_fixture` or the instruction probe into product runtime. |
+| Capability registry | No new product surface or capability entry is required for development-only proof code. Do not publish a live-game capability. The review command is `python3 -m tools.nfl2k5_supersim_draft_probe`; optional long validation adds `--prior-year`. It requires private evidence and Unicorn and is not a portable product backend. |
+| Allocator union / manifest | No new owner rows, owner tuples or manifest-builder lists; empty `REQUESTS` consumes no budget. Existing 41-request plan and both gates pass. Do not regenerate protected `data/nfl2k5_cave_reservations.json` for this handoff. A later installed adapter needs real requests, mixed/foreign-byte refusal, idempotent apply/replay, both-order union integration and regenerated manifest through the existing owner workflow. |
+
+## Required Senior Bowl / mode-owner changes before activation
+
+1. **Generic NFL kit v1.** Noah's late instruction overrides the authored 50/51
+   defaults. Extend the Senior Bowl settings/event codec to explicitly support
+   bank 31, era 0, away A and home H. Default new career events to 31A0/31H0;
+   keep existing authored events identifiable when loading old records. Do not
+   store 50A0/51H0 and call that generic. Update its preview defaults and Build
+   settings serialization together. If a schema change is needed, migrate or
+   explicitly refuse old data; do not reinterpret old bytes. Native bank/name
+   generation is proved, visual appearance still needs Noah.
+2. **Side conversion.** Senior Bowl `Event`/preview order is away=0, home=1;
+   native match/sim order is home=0, away=1. Use
+   `nfl2k5_draft_start.NATIVE_TO_EVENT_SIDES == (1, 0)` for donor construction,
+   scores/stats, controller binding and returned event lines. Do not rename a
+   squad or swap only its kit to compensate for incorrect side ownership.
+3. **Reservation and persistence.** Reserve a prospect already selected by the
+   saved seed at MyPlayer's position; do not replace a selected row afterward.
+   Apply creation after the final `2BE940/2BE900/2BE6F0` generator and before
+   untouched stage 4. Keep recipe, ordinal/generation, franchise identity and
+   once-only phase state in M2's owned career persistence. Integrate its
+   existing `inject` / `overwrite_guard`, not a second competing hook at the
+   same site. Reject stale class/owned ordinal/later stage. No required external
+   setup file or companion is supplied by this revision.
+4. **Prior-year bootstrap.** The native route uses `13EE10`, scheduled fixture
+   simulation and `247D40/2480B0`, followed by native year/offseason work. Keep
+   a temporary native franchise club owner at postseason exit: all-CPU with
+   zero user clubs hits the native franchise-exit branch. `C4D30` registers
+   that owner; this must not assign MyPlayer to the club. Supply the actual
+   menu context in ECX to `2480B0`. Drive progress in bounded batches and save
+   an explicit recovery checkpoint. Use current calendar/season getters and
+   matched 2026 templates; retail week constants are proof coordinates only.
+5. **Launch and return.** Native `61730` clones the two donor teams; full sim
+   initialization rebinds their stats and selects personnel. That proves a
+   simulated prospect game, not the ordinary live exhibition loader. Prove
+   live player/history/coach isolation, lock binding after cloning and every
+   return/quit/retry/save path. Intercept the actual played result boundary
+   `C5D60` / `C5D99 -> 1356C0` / `134140` as well as visual sim's
+   `EC65A -> 1356D0`. Gate both manual `2480B0` and automatic `2486F0`
+   Combine advance while the event is pending. Senior Bowl stats belong to
+   its event, never the NFL season/career totals.
+6. **Draft and UDFA.** Let `325B90`, `325A50`, `325D00` and `325B50` own picks,
+   round progression, completion and native contracts. Native auto rookie
+   signing is `E60134=1`; negotiation is a separate native path. Native
+   `31E430` cleanup puts undrafted players into the FA list. Resolve the actual
+   signed club, remove temporary user-club ownership and bind career control
+   there exactly once. Preserve an undrafted outcome and offer M2's supported
+   UDFA signing flow. The scouting projection has no draft-stock effect yet.
+7. **Supersim return.** The native pause action `6EFE0 -> 6EE50 -> 10B980`
+   finishes a live game. Never route an off-field skip into it. `10BD80` is a
+   scalar scenario restore, not a complete state inverse; `1053B0` zeroes a
+   live clock. Close the report's stat/timeout/injury/fatigue/penalty/momentum,
+   boundary and play-call re-entry proofs before a runtime `apply()` exists.
+   Existing visual sim log/controls can supply the ticker when that adapter is
+   ready. Engine acceleration must cover the outer update and timing/audio
+   boundary, not multiply the inner dispatcher's delta.
+
+Budget: use the existing Senior Bowl 65,536 RW / MyCareer 4,096 RW allocations
+first. A source/coach/stat snapshot and recovery ledger must be counted. The
+Unicorn fixture's 2 MiB arena is not a request for Xbox memory. This revision
+claims zero additional RX/RW/RO and leaves the 4,096-byte spare RW untouched.
