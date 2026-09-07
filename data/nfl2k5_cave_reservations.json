@@ -85273,13 +85273,6 @@
       "end": "0x14baa53",
       "size": 1939,
       "owner": "nfl2k5_dynamic_kickoff_relocated",
-      "basis": "declared edit: relocated_cave"
-    },
-    {
-      "start": "0x14ba2c0",
-      "end": "0x14baa53",
-      "size": 1939,
-      "owner": "nfl2k5_dynamic_kickoff_relocated",
       "basis": "named code allocation"
     },
     {
@@ -117900,13 +117893,6 @@
       "end": "0x14d9b70",
       "size": 80,
       "owner": "nfl2k5_zone_drop",
-      "basis": "declared edit: zone_drop_wrapper"
-    },
-    {
-      "start": "0x14d9b20",
-      "end": "0x14d9b70",
-      "size": 80,
-      "owner": "nfl2k5_zone_drop",
       "basis": "named code allocation"
     },
     {
@@ -117950,13 +117936,6 @@
       "size": 23,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
-    },
-    {
-      "start": "0x14da400",
-      "end": "0x14da440",
-      "size": 64,
-      "owner": "nfl2k5_camera",
-      "basis": "declared edit: owned_camera_wrappers"
     },
     {
       "start": "0x14da420",
@@ -118012,13 +117991,6 @@
       "end": "0x14da870",
       "size": 64,
       "owner": "nfl2k5_camera",
-      "basis": "declared edit: owned_camera_wrappers"
-    },
-    {
-      "start": "0x14da830",
-      "end": "0x14da870",
-      "size": 64,
-      "owner": "nfl2k5_camera",
       "basis": "named code allocation"
     },
     {
@@ -118034,13 +118006,6 @@
       "size": 8,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
-    },
-    {
-      "start": "0x14da870",
-      "end": "0x14da880",
-      "size": 16,
-      "owner": "nfl2k5_coverage_slider",
-      "basis": "declared edit: immutable_allocation"
     },
     {
       "start": "0x14da870",
@@ -118481,13 +118446,6 @@
       "end": "0x14e0ec2",
       "size": 82,
       "owner": "nfl2k5_roster_storage",
-      "basis": "declared edit: stadium_ids"
-    },
-    {
-      "start": "0x14e0e70",
-      "end": "0x14e0ec2",
-      "size": 82,
-      "owner": "nfl2k5_roster_storage",
       "basis": "named code allocation"
     },
     {
@@ -118503,13 +118461,6 @@
       "size": 69,
       "owner": "nfl2k5_xbe_space",
       "basis": "observed byte diff"
-    },
-    {
-      "start": "0x14e0ed0",
-      "end": "0x14e0f70",
-      "size": 160,
-      "owner": "nfl2k5_scramble_tuning",
-      "basis": "declared edit: immutable_allocation"
     },
     {
       "start": "0x14e0ed0",
