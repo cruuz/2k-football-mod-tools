@@ -249,6 +249,12 @@ class ExecutionTests(PatchTests):
         self.assertEqual(pools.status(combined),'applied')
         self.assertEqual(rows.status(combined),'applied')
         for section in ps._sections(combined):
+            # The allocator's grown pages sit above the fixture's fixed 16 MiB map; map them first.
+            start, end = section.virtual_address, section.virtual_address + section.raw_size
+            if end > 0x1000000 and section.raw_size:
+                lo = max(start, 0x1000000) & ~0xFFF; hi = (end + 0xFFF) & ~0xFFF
+                if not any(lo < r_end and hi > r_start for r_start, r_end, _ in self.uc.mem_regions()):
+                    self.uc.mem_map(lo, hi - lo)
             self.uc.mem_write(section.virtual_address,combined[section.raw_offset:section.raw_offset+section.raw_size])
         # Loading executable data reset the fixture's runtime globals.
         self.put(0xB72918,self.root)
