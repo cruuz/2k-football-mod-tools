@@ -41,7 +41,14 @@ def _combo(widget, value):
 
 
 def restore(panel, state):
-    choices = {**saved.from_plan(saved.to_plan({}, "", "")), **saved.build_settings(state)}
+    present = saved.build_settings(state)
+    if not present:
+        # A source with no saved project choices (a fresh disc, an old project file) keeps the
+        # current selections, such as a preset applied right after inspection; only the music
+        # part resets, as before the project file carried every Build choice.
+        panel.restore_music_build_settings({})
+        return
+    choices = {**saved.from_plan(saved.to_plan({}, "", "")), **present}
     with quiet(panel):
         for key, box in panel._boxes().items():
             value = choices[key]

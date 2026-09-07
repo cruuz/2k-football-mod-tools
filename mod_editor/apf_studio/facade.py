@@ -659,7 +659,7 @@ class ApfStudioFacade:
             output = save_texture_master_bundle(
                 source_image=source_image,
                 destination=destination,
-                asset_id=modification.asset_id,
+                asset_id=getattr(modification, "asset_id", HELMET_CREST_DESIGN_EDIT_ID),
                 editor_target="apf2k8_xbox360-helmet-crest",
                 native_width=self._TEAM_LOGO_PNG_SIZE[0],
                 native_height=self._TEAM_LOGO_PNG_SIZE[1],
