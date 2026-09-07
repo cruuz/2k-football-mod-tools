@@ -125,12 +125,11 @@ PATCHES = (
      "length) and can tie; the postseason keeps playing, including through an unfinished second possession. "
      "The franchise sim engine gets the 10-minute clock and the one-period tie; its own sudden-death rule is "
      "left as is."),
-    ("camera", "Default camera: Standard becomes the Far look",
-     "Retail's Standard camera uses a 35 lens 8 yards behind the quarterback; the Far preset is the same "
-     "geometry through a wider 28 lens (24 with the ball in the air). Patch: the seven live-play records of "
-     "the Standard preset take Far's look-at, lens and offset words, so a profile left on Standard gets the "
-     "Far view. Far itself, the kick, replay and other presets are untouched; the fresh-profile default stays "
-     "Standard."),
+    ("camera", "Start games with Far (experimental)",
+     "Retail: new settings select Standard and saved settings restore their camera choice. "
+     "Patch: start with Far when settings load and when a game or practice starts. "
+     "Far sits higher and farther back to leave room above the bottom scorebar. "
+     "You can change cameras in Options for the current session. Experimental; not yet witnessed in play."),
     ("position_row", "Position on the first page of Edit Player (roster and Franchise)",
      "Retail: Create Player lets you pick a position, but Edit Player never lists it, in roster mode or in "
      "Franchise, so a position change means a new player. Patch: the Position row (the game's own picker, "
@@ -292,7 +291,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "dynamic_kickoff": ("Dynamic kickoff: ready stance and close blocks", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
                         "Held players keep an idle pose facing the kick; return blockers take close assignments.", NOT_TESTED),
     "overtime": ("Modern overtime rules", "Both teams get a possession; regular-season ties remain.", ""),
-    "camera": ("Make Standard camera look like Far", "The Standard preset takes Far's look-at, lens and offset.", ""),
+    "camera": ("Start games with Far", "Far leaves room above the scorebar; Options still works for the session.", NOT_TESTED),
     "position_row": ("Change position in Edit Player", "In-game: use Depth Chart → Auto afterward.", NOT_TESTED),
     "probowl_order": ("Pro Bowl Votes: offense, defense, kickers", "The tabs run offence, defence, then K and P.", NOT_TESTED),
     "penalties": ("Adjusted penalty rates (experimental)", "Estimated rates; includes the Chop Block toggle fix.", NOT_TESTED),
@@ -312,7 +311,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"music_policy": "jukebox_menus", "penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "season_cap", "calendar_engine", "coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
+NEEDS_IMAGE = {"camera", "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", "season_cap", "calendar_engine", "coverage_slider", "scramble_tuning", "team_names_2026", "all_stadiums", "momentum", "momentum_contact", "defensive_try", "zone_drop_cap", "scorebug", "scorebug_runtime", "screen_timing", "guardian_cap", "xbe_space", "kickoff_relocated", "prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 PATCHES = (*PATCHES, *r62_ui.OPTIONS)
 NEEDS_IMAGE.update(r62_ui.KEYS)

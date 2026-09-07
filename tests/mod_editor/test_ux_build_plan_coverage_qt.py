@@ -147,7 +147,7 @@ class BuildPlanCoverageTests(unittest.TestCase):
         panel.camera_check.setEnabled(True)
         panel.camera_check.setChecked(True)
         self.assertTrue(panel.build_button.isEnabled(), panel.blocker())
-        self.assertIn("Make Standard camera look like Far", panel.selected_labels())
+        self.assertIn("Start games with Far (experimental)", panel.selected_labels())
 
     def test_every_check_box_keeps_a_short_caption(self) -> None:
         for box in self.panel.findChildren(QCheckBox):

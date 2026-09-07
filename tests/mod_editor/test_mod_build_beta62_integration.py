@@ -209,10 +209,11 @@ class ExecutableTests(unittest.TestCase):
                     result=tt.write_image_copy(source,target,scorebug_runtime=True,kickoff_relocated=True,**GROWN)
                 else:
                     with patch.object(build,'inspect',return_value={'container':'xiso'}), patch.object(
-                            build._tools_module('nfl2k5_kickoff_alignment'), 'apply', return_value={'status':'applied','kicker_depth_yd':5,'changed_bytes':0,'books':[]}):
+                            build._tools_module('nfl2k5_kickoff_alignment'), 'apply', return_value={'status':'applied','kicker_depth_yd':5,'changed_bytes':0,'books':[]}), patch.object(
+                            build._tools_module('nfl2k5_kickoff_returns'), 'apply', return_value={'status':'applied','changed_bytes':0,'books':[]}):
                         result=build.build(build.BuildPlan(str(source),str(target),scorebug_runtime=True,
                                                            kickoff_relocated=True,**GROWN))
-                    self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','scorebug_runtime','xbe_space'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
+                    self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','kickoff_returns','scorebug_runtime','xbe_space'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
                 final=build._xbe_bytes(target)
                 for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):
                     self.assertEqual(tt._grown_status_fields(final)[key], 'applied')

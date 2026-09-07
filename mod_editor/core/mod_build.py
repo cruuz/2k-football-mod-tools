@@ -100,7 +100,7 @@ class BuildPlan:
     returner_fix: bool = False
     progression: bool = False
     scheme_labels: bool = False   # depth-chart slot labels by scheme: 4-3 SAM/MIKE/WILL, 3-4 EDGE/MIKE/WILL/NT
-    camera: bool = False          # Standard camera preset -> the Far look (retail Far geometry + lens 28/24); Far untouched
+    camera: bool = False          # Far at startup/game entry, with room above the scorebar; experimental
     kick_rules: bool = False      # kickoff 35 / touchback 35 (2026) / PAT 15, FG ceiling ~70 yd for elite legs
     kick_power: bool = False      # FG ceiling ~70 yd for elite legs ONLY (retail kick spots) - the BASIC preset's kicking fix
     # dynamic-kickoff alignment (2024+ rule, PHASE 1 = data only): coverage on the receiving 40, return
@@ -1112,7 +1112,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, reserves_16=False, created_teams_extra=0).wants_xbe_patch() or plan.edge_rename:
+               my_career_setup=None, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -1120,7 +1120,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                   "draft_ai": plan.draft_ai, "edge_rename": plan.edge_rename,
                                   "returner_fix": plan.returner_fix, "progression": plan.progression,
                                   "scheme_labels": plan.scheme_labels or plan.position_pools,
-                                  "camera": plan.camera, "kick_rules": plan.kick_rules, "kick_power": plan.kick_power, "widescreen": plan.widescreen,
+                                  "camera": plan.camera if not tt.is_disc_image(source) else False, "kick_rules": plan.kick_rules, "kick_power": plan.kick_power, "widescreen": plan.widescreen,
                                   "overtime": plan.overtime, "team_column": plan.team_column, "seven_on_seven": plan.seven_on_seven,
                                   "position_row": plan.position_row, "probowl_order": plan.probowl_order,
                                   "flatter_deep_ball": plan.flatter_deep_ball, "chop_block_toggle": plan.chop_block_toggle,
@@ -1440,7 +1440,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         coverage_slider=plan.coverage_slider, scramble_tuning=plan.scramble_tuning,
         music_shuffle=plan.music_shuffle, practice_squad_screen=plan.practice_squad_screen,
         abilities=plan.abilities, qb_spy=plan.qb_spy, calendar_engine=plan.calendar_engine,
-        **tt._r62_space_options(r62))
+        **tt._r62_space_options(r62), camera=plan.camera)
     if plan.read_option_runtime or plan.qb_spy:
         _verify_play_intents(target, spy_pairs)
     read_table, read_receipt = (tt.read_option_patch.compile_intent_table(spy_pairs)
@@ -1461,7 +1461,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if ((plan.xbe_space or plan.kickoff_relocated) and not plan.scorebug_runtime
             or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
-            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine):
+            or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera):
         progress("Adding experimental extra patch space", 0, 0)
         spy_table, spy_table_receipt = (tt.qb_spy_patch.compile_intent_table(spy_pairs) if plan.qb_spy else (None, None))
         playlist_selection, playlist_preflight = None, None
@@ -1479,7 +1479,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             defensive_try=plan.defensive_try, zone_drop_cap=plan.zone_drop_cap, all_stadiums=plan.all_stadiums, coverage_slider=plan.coverage_slider, scramble_tuning=plan.scramble_tuning,
             music_shuffle=plan.music_shuffle, music_shuffle_selection=playlist_selection, practice_squad_screen=plan.practice_squad_screen,
             abilities=plan.abilities, abilities_off_week=plan.abilities_off_week, qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table,
-            calendar_engine=plan.calendar_engine, season_cap=plan.season_cap, practice_squad=plan.practice_squad, franchise_practice=plan.franchise_practice,
+            calendar_engine=plan.calendar_engine, camera=plan.camera, season_cap=plan.season_cap, practice_squad=plan.practice_squad, franchise_practice=plan.franchise_practice,
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)

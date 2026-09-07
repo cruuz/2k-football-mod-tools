@@ -308,7 +308,8 @@ class SelectionProofTests(unittest.TestCase):
                 name='Far selection',notes='EXPERIMENTAL / UNWITNESSED'))
             self.assertEqual(target.read_bytes(),self.patched)
             self.assertEqual(source.read_bytes(),self.retail)
-            self.assertEqual(receipt['steps'][0]['camera'],'applied')
+            # camera rides the final grown pass with the allocator, so its receipt is on that step
+            self.assertEqual(next(step['camera'] for step in receipt['steps'] if 'camera' in step),'applied')
             self.assertEqual(mod_build.inspect(target)['camera'],'applied')
 
 

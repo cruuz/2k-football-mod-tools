@@ -1110,7 +1110,7 @@ def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level
         my_career_patch.read_setup(my_career_setup)
 
 
-def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0):
+def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False):
     _validate_r62_options(momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, reserves_16=reserves_16, created_teams_extra=created_teams_extra)
     return (
         (kickoff_relocated_patch.REQUESTS if with_kickoff else ())
@@ -1133,15 +1133,16 @@ def _selected_space_requests(with_kickoff=False, runtime=False, momentum=0, defe
         + (my_career_patch.REQUESTS if my_career else ())
         + (screen_hooks_patch.REQUESTS if screen_hooks else ())
         + (roster_arena_patch.REQUESTS if reserves_16 or created_teams_extra else ())
+        + (camera_patch.REQUESTS if camera else ())
     )
 
 
 class _xbe_space_adapter:
-    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0):
-        self.scaleout = bool(momentum_collisions and momentum_collision_level > 0)
+    def __init__(self, with_kickoff=False, runtime=False, momentum=0, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_shuffle=False, practice_squad_screen=False, abilities=False, qb_spy=False, calendar_engine=False, *, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, reserves_16=False, created_teams_extra=0, camera=False):
+        self.scaleout = bool(camera or (momentum_collisions and momentum_collision_level > 0))
         self.requests = _selected_space_requests(
             with_kickoff, runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning, music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine,
-            momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, reserves_16=reserves_16, created_teams_extra=created_teams_extra)
+            momentum_collisions=momentum_collisions, momentum_collision_level=momentum_collision_level, read_option_runtime=read_option_runtime, franchise_2026_rules=franchise_2026_rules, senior_bowl=senior_bowl, guardian_overlay=guardian_overlay, my_career=my_career, screen_hooks=screen_hooks, reserves_16=reserves_16, created_teams_extra=created_teams_extra, camera=camera)
 
     def status(self, payload):
         state = xbe_space_patch.status(payload)
@@ -1306,6 +1307,7 @@ def _grown_status_fields(payload):
     arena = roster_arena_patch.read_settings(payload)
     return {"momentum": component(settings.get("momentum", 0) > 0), "momentum_settings": settings, "momentum_contact": contact,
             "momentum_collisions": component(settings.get("momentum_collisions", False) and settings.get("momentum_collision_level", 0) > 0),
+            "camera": camera_patch.status(payload),
             "read_option_runtime": read_option_patch.status(payload),
             "read_option_runtime_settings": read_option_patch.read_settings(payload),
             "screen_hooks": screen_hooks_patch.status(payload),
@@ -1504,7 +1506,6 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     for flag, module, key, label in ((returner_fix, returner_fix_patch, "returner_fix_patch", "returner"),
                                      (progression, progression_patch, "progression_patch", "progression"),
                                      (scheme_labels, scheme_labels_patch, "scheme_labels_patch", "scheme-label"),
-                                     (camera, camera_patch, "camera_patch", "camera"),
                                      (widescreen, widescreen_patch, "widescreen_patch", "widescreen"),
                                      (modern_naming, modern_naming_patch, "modern_naming_patch", "modern 2K mode names"),
                                      (overtime, overtime_patch, "overtime_patch", "overtime"),
@@ -1572,14 +1573,15 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     # Final owners: choose the complete allocation set before the first growth.
     for flag, module, key, label in (
         (defensive_try, _defensive_try_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning,
-                                               music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, **_r62_space_options(r62)),
+                                               music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, camera=camera, **_r62_space_options(r62)),
          "defensive_try_patch", "experimental defensive try"),
         (xbe_space or kickoff_relocated or scorebug_runtime or momentum > 0 or defensive_try or zone_drop_cap or all_stadiums or coverage_slider or scramble_tuning
          or music_shuffle or practice_squad_screen or abilities or qb_spy or calendar_engine
-         or momentum_on or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra,
+         or momentum_on or read_option_runtime or franchise_2026_rules or senior_bowl or guardian_overlay or my_career or screen_hooks or reserves_16 or created_teams_extra or camera,
          _xbe_space_adapter(kickoff_relocated, scorebug_runtime, momentum, defensive_try, zone_drop_cap, all_stadiums, coverage_slider, scramble_tuning,
-                            music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, **_r62_space_options(r62)),
+                            music_shuffle, practice_squad_screen, abilities, qb_spy, calendar_engine, **_r62_space_options(r62), camera=camera),
          "xbe_space_patch", "experimental executable space"),
+        (camera, camera_patch, "camera_patch", "camera"),
         (coverage_slider, coverage_slider_patch, "coverage_slider_patch", "experimental Coverage slider response"),
         (scramble_tuning, scramble_tuning_patch, "scramble_tuning_patch", "experimental slow-QB acceleration"),
         (all_stadiums, roster_storage_patch, "all_stadiums_patch", "all 82 Create a Team stadiums (experimental)"),
@@ -1931,7 +1933,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, **_deferred_r62_options(r62, defer_grown))
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera and not defer_grown, kick_rules, widescreen, overtime, arc_table=arc_table, flatter_deep_ball=flatter_deep_ball, chop_block_toggle=chop_block_toggle, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings, depth_chart_rows=depth_chart_rows, practice_squad=practice_squad, depth_locks=depth_locks, season_cap=season_cap, xbe_space=xbe_space and not defer_grown, kickoff_relocated=kickoff_relocated and not defer_grown, scorebug_runtime=False, momentum=0 if defer_grown else momentum, momentum_contact=False if defer_grown else momentum_contact, defensive_try=defensive_try and not defer_grown, zone_drop_cap=zone_drop_cap and not defer_grown, all_stadiums=all_stadiums and not defer_grown, coverage_slider=coverage_slider and not defer_grown, scramble_tuning=scramble_tuning and not defer_grown, music_policy=music_policy, music_unlock=music_unlock, music_userlist=music_userlist, music_metadata=None if defer_grown else music_metadata, music_shuffle=music_shuffle and not defer_grown, music_shuffle_selection=None if defer_grown else music_shuffle_selection, practice_squad_screen=practice_squad_screen and not defer_grown, abilities=abilities and not defer_grown, abilities_off_week=None if defer_grown else abilities_off_week, qb_spy=qb_spy and not defer_grown, qb_spy_intent_table=None if defer_grown else qb_spy_intent_table, calendar_engine=calendar_engine and not defer_grown, **_deferred_r62_options(r62, defer_grown))
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
@@ -2005,7 +2007,7 @@ def write_image_copy(
     if scorebug_runtime:
         runtime_receipt = scorebug_reference.runtime_apply_in_place(target, with_kickoff=kickoff_relocated,
             extra_requests=_selected_space_requests(momentum=momentum, defensive_try=defensive_try, zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning,
-                                                    music_shuffle=music_shuffle, practice_squad_screen=practice_squad_screen, abilities=abilities, qb_spy=qb_spy, calendar_engine=calendar_engine, **_r62_space_options(r62)))
+                                                    music_shuffle=music_shuffle, practice_squad_screen=practice_squad_screen, abilities=abilities, qb_spy=qb_spy, calendar_engine=calendar_engine, **_r62_space_options(r62), camera=camera))
         receipt["scorebug_runtime_patch"] = runtime_receipt
     if guardian_overlay:
         requests = _selected_space_requests(
@@ -2014,7 +2016,7 @@ def write_image_copy(
             coverage_slider=coverage_slider, scramble_tuning=scramble_tuning,
             music_shuffle=music_shuffle, practice_squad_screen=practice_squad_screen,
             abilities=abilities, qb_spy=qb_spy, calendar_engine=calendar_engine,
-            **_r62_space_options(r62))
+            **_r62_space_options(r62), camera=camera)
         receipt["guardian_overlay_resources_patch"] = guardian_resources.apply_to_image(
             target, guardian_everyone_practice=guardian_everyone_practice, guardian_players=guardian_players,
             extra_requests=tuple(row for row in requests if row[0] != guardian_overlay_patch.OWNER))
@@ -2028,7 +2030,7 @@ def write_image_copy(
                 momentum=momentum, momentum_contact=momentum_contact, defensive_try=defensive_try,
                 zone_drop_cap=zone_drop_cap, all_stadiums=all_stadiums, coverage_slider=coverage_slider, scramble_tuning=scramble_tuning, music_metadata=music_metadata,
                 music_shuffle=music_shuffle, music_shuffle_selection=music_shuffle_selection, practice_squad_screen=practice_squad_screen,
-                abilities=abilities, abilities_off_week=abilities_off_week, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, **r62)
+                abilities=abilities, abilities_off_week=abilities_off_week, qb_spy=qb_spy, qb_spy_intent_table=qb_spy_intent_table, calendar_engine=calendar_engine, camera=camera, **r62)
             storage.write_image_xbe(fd, final)
         receipt.update({key: value for key, value in extra.items() if key != "scorebug_runtime_patch"})
         check = _open_binary(target, os.O_RDONLY)
