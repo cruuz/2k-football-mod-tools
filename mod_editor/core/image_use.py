@@ -74,11 +74,11 @@ def _linux_probe(path: Path, identity: os.stat_result) -> None:
                         raise _busy(path, f" (PID {process.name}, mapped)")
         except (FileNotFoundError, ProcessLookupError):
             continue
-        except PermissionError as exc:
-            raise ValidationError(
-                f"Cannot inspect open disc handles for PID {process.name}. "
-                "Close the inaccessible process or use a new output path."
-            ) from exc
+        except PermissionError:
+            # Sandboxed same-user processes (browser renderers, flatpaks) hide their
+            # descriptors; they are skipped rather than blocking every build. Linux
+            # visibility is a documented limitation, not a mandatory-lock claim.
+            continue
 
 
 def assert_image_available(image: Path) -> None:

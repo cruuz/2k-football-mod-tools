@@ -9983,6 +9983,16 @@ font limits and the evidence required before claiming they are solved.
 
 # r63 Discord bugs, batch 2, 2026-09-07
 
+> Integration note (Claude, 2026-09-07 05:45): items 1 to 3 of the proposal (studio_qt sheet layouts,
+> mod_build destination check and publish, nfl2k5_throw_tuning transactional publish) are applied on the
+> stack. Item 4, the `mod_editor/apf_studio/gui.py` hunk (ApfFieldArtPanel/ApfTeamLogoPanel reading the
+> session's staged art, the multi-edit notice), is NOT applied: it makes `set_context` clear `_staged_png`
+> whenever the facade's session has no crest modification, and the fake facades in
+> tests/mod_editor/test_apf_field_art_gui.py (17 errors) and test_apf_team_logo_gui.py (a modal
+> "Cannot build team logo copy yet" box blocks the offscreen run) do not model a session. Apply it together
+> with session-aware fixtures for both suites. The rest of the APF work in the branch (facade, session,
+> build, project, field_art, helmet crest) is landed.
+
 See `ASTRA_DISCORD_BUGS_2_REPORT.md`. Editor core changes are implemented in
 unprotected files. Gameplay conclusions are **EXPERIMENTAL / UNWITNESSED**;
 this job adds no executable owner or resource patch. Do not infer a runtime

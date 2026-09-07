@@ -800,8 +800,10 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         source, target = Path(plan.source).resolve(), Path(plan.target).absolute()
         if source == target.resolve():
             raise ValueError("target must not be the source")
-        if target.exists() and not plan.overwrite:
-            raise FileExistsError(f"{target} exists")
+        from .image_use import check_image_destination, publish_image
+        if target.exists() and os.path.samefile(source, target):
+            raise ValueError("target must not be the source")
+        previous_target = check_image_destination(target, overwrite=plan.overwrite)
         with tempfile.TemporaryDirectory(prefix=".studio-build-", dir=target.parent) as folder:
             directory = Path(folder)
             edits = None
@@ -824,7 +826,7 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
             receipt["outcome"] = measure(source, directory / target.name)
             if progress:
                 progress(receipt["outcome"]["message"], 0, 0)
-            os.replace(directory / target.name, target)
+            publish_image(directory / target.name, target, previous_target)
             receipt["target"] = str(target)
             receipt["result"]["path"] = str(target)
             return receipt

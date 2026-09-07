@@ -271,7 +271,7 @@ class Nfl2k5ExtendedVisualIOTests(unittest.TestCase):
 
         not_png = self.root / "portrait.dat"
         not_png.write_bytes(payload)
-        with self.assertRaisesRegex(ValidationError, "needs a PNG"):
+        with self.assertRaisesRegex(ValidationError, "needs a 128x128 PNG"):
             Nfl2k5ExtendedVisualIO.validate_replacement(portrait, not_png)
 
         linked = self.root / "linked.png"

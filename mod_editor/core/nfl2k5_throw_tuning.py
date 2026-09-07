@@ -1806,11 +1806,12 @@ def _transactional_image_writer(writer):
         _require(not target.is_symlink(), "target is not a regular file")
         _require(source != target.resolve() and not (target.exists() and os.path.samefile(source, target)),
                  "source and target are the same file")
-        _require(not target.exists() or kwargs.get("overwrite", False), "target already exists")
+        from .image_use import check_image_destination, publish_image
+        previous_target = check_image_destination(target, overwrite=kwargs.get("overwrite", False))
         with tempfile.TemporaryDirectory(prefix=".xbe-disc-", dir=target.parent) as folder:
             stage = Path(folder) / target.name
             receipt = writer(source, stage, **{**kwargs, "overwrite": False})
-            os.replace(stage, target)
+            publish_image(stage, target, previous_target)
             receipt["target"]["path"] = str(target)
             return receipt
     return write

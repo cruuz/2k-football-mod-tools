@@ -86,7 +86,7 @@ from mod_editor.core.nfl2k5_uniform_catalog import (
     UniformSet,
     load_nfl2k5_uniform_catalog,
 )
-from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet
+from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet, SHEET_HELP, SHEET_LAYOUTS
 from mod_editor.core.nfl2k5_extended_visual_catalog import (
     ExtendedVisualAsset,
     Nfl2k5ExtendedVisualCatalog,
@@ -3251,11 +3251,7 @@ class StudioMainWindow(QMainWindow):
         self.import_digit_sheet_button.setAccessibleName(
             "Import a complete zero through nine digit sheet"
         )
-        self.import_digit_sheet_button.setToolTip(
-            "Choose a horizontal or vertical 0–9 sheet at any resolution. "
-            "Each cell is resized to that exact set's proved jersey, helmet, "
-            "or arm-number dimensions before all ten digits are imported."
-        )
+        self.import_digit_sheet_button.setToolTip(SHEET_HELP)
         self.export_team_kit_button.clicked.connect(self._choose_team_kit_export)
         self.import_team_kit_button.clicked.connect(self._choose_team_kit_import)
         self.import_digit_sheet_button.clicked.connect(
@@ -7012,9 +7008,16 @@ class StudioMainWindow(QMainWindow):
         family = dict(choices).get(str(label))
         if family is None:
             return
+        layout_label, accepted = QInputDialog.getItem(
+            self, "Number sheet layout", SHEET_HELP,
+            [row[0] for row in SHEET_LAYOUTS], 0, False,
+        )
+        if not accepted:
+            return
+        orientation = dict(SHEET_LAYOUTS).get(str(layout_label), SHEET_LAYOUTS[0][1])
         filename, _ = QFileDialog.getOpenFileName(
             self,
-            f"Choose the {label.lower()} 0–9 sheet",
+            f"Choose the {label.lower()} 0-9 sheet (ten equal cells)",
             str(Path.home()),
             IMAGE_IMPORT_FILTER,
         )
@@ -7031,7 +7034,7 @@ class StudioMainWindow(QMainWindow):
 
         def operation(progress: ProgressSink) -> object:
             progress("Splitting the 0–9 sheet", 0, 12)
-            outputs = split_digit_sheet(source, targets)
+            outputs = split_digit_sheet(source, targets, orientation=orientation)
             with tempfile.TemporaryDirectory(prefix="2k5-digit-sheet-") as temporary:
                 root = Path(temporary)
                 kit = root / "team-kit"

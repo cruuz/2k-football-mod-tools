@@ -297,7 +297,9 @@ class Nfl2k5SourceCache:
             before = os.fstat(descriptor)
             entries, _ = xiso.parse_xdvdfs(descriptor, before.st_size)
             for index, name in enumerate("0123456789ABCDEF"):
-                entry = entries.get(f"vc_53450030/{name}")
+                # XDVDFS names are case-insensitive: the retail directory lists a to f
+                # in lowercase while the cache folder keeps the uppercase names.
+                entry = entries.get(f"vc_53450030/{name}") or entries.get(f"vc_53450030/{name.lower()}")
                 reference = cached.root / PACK_FOLDER / name
                 message = (
                     f"Archive pack {name} differs from the supported retail source. "

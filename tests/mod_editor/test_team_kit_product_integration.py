@@ -361,7 +361,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         with (
             mock.patch(
                 "mod_editor.gui.studio_qt.QInputDialog.getItem",
-                return_value=("Arm / shoulder numbers", True),
+                side_effect=[("Arm / shoulder numbers", True), ("One row: 0 1 2 3 4 5 6 7 8 9", True)],
             ),
             mock.patch(
                 "mod_editor.gui.studio_qt.QFileDialog.getOpenFileName",
