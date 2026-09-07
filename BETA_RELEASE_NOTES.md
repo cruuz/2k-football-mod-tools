@@ -21,14 +21,14 @@ for the complete list.
 
 ## Fixed
 
-- Franchise Practice exit: a correction was attempted; Noah still saw the main-menu exit, so it stays open.
+- Franchise Practice quits to the Coach's Desk instead of the main menu (second attempt; witnessed).
 - The Franchise schedule lists every playoff game and lets you edit dates and kickoff times before the teams are known.
 - The experimental patch pack exports again (chained growth of two files).
 - Rosters: exact undo on play-style buckets; the scramble parity toggle says what it does.
 
 ## First witnesses
 
-- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
+- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
@@ -112,7 +112,7 @@ Nothing was removed, only folded away.
 
 ## First witnesses
 
-- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
+- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
@@ -160,7 +160,7 @@ and the three audible slots.
 
 ## First witnesses
 
-- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
+- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
@@ -209,7 +209,7 @@ roster-editor phase 2. Everything new is unwitnessed in game unless a tester say
 
 ## First witnesses
 
-- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
+- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
@@ -259,7 +259,7 @@ and EXPERIMENTAL presets. Unwitnessed in game so far; please report what you see
 
 ## First witnesses
 
-- MyNFL shows in game. Free Practice in Franchise still quits to the main menu. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
+- MyNFL shows in game. Free Practice in Franchise quits to the Coach's Desk after the second correction. Dynamic kickoff: a touchback near the 1, a returner frozen from the previous play, weak return blocking. Kickoff play art misplaced under widescreen. Every opt-in at once hangs at the SEGA screen (preset alone boots; bisect in progress).
 
 ## Not in this release
 
