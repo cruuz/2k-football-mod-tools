@@ -156,6 +156,15 @@ def _owned_state(payload):
     image = XbeImage(payload)
     for va, size, digest in GUARDS:
         content = image.read(va, size)
+        if va == 0x554C70:
+            # r64 pools compacts only the source sheet's position-page table.
+            # The clone overwrites that complete table with Active/Reserves,
+            # so normalize this exact, fully validated owner shape for the pin.
+            from . import nfl2k5_position_pools as pools
+            if pools.filter_list_status(payload) == "applied":
+                _require(pools.status(payload) == "applied", "foreign position-pool filter owner")
+                site = next(s for s in pools.filter_list_sites() if s.va == va + 0xF4)
+                content = content[:0xF4] + site.befores[0] + content[0xF4 + site.size:]
         if va == 0x6E4E0 and content[:5] != bytes.fromhex("5155578bf9"):
             # Playlist tier 4b adapts the shared event-dispatch prologue. Accept
             # only its complete sealed installation, then pin every remaining

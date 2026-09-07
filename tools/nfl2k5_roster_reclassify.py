@@ -215,6 +215,49 @@ def load_resources(archive: OuterImage, *, historic: bool = True) -> list[Resour
     return out
 
 
+def olb_filter_evidence(resources: Iterable[Resource]) -> dict[str, object]:
+    """Scan selectable players, including FA/draft and historic primary pools.
+
+    Unowned secondary records are generation templates, not selectable players.
+    A secondary record referenced by a team is counted. Missing resources keep
+    the compatibility row; an empty/partial scan is never evidence of absence.
+    This policy covers the supplied disc rosters, not saves loaded later.
+    """
+    rows = []
+    seen = set()
+    for resource in resources:
+        _require(resource.entry not in seen, "duplicate resource in OLB filter scan")
+        seen.add(resource.entry)
+        table = resource.tables["primary_players"]
+        primary = {int(table["offset"]) + i * nr.NFL_PLAYER_STRIDE for i in range(int(table["count"]))}
+        selected = primary | {p for team in resource.teams for p in team.roster}
+        _require(selected <= resource.players.keys(), "OLB scan contains an invalid player reference")
+        positions = [resource.body[off + PLAYER_POSITION] for off in sorted(selected)]
+        _require(all(p in range(len(POSITIONS)) for p in positions), "invalid position in OLB filter scan")
+        rows.append({"resource": resource.entry, "players": len(positions), "olb_players": positions.count(ENUM_OLB),
+                     "body_sha256": hashlib.sha256(resource.body).hexdigest(),
+                     "positions_sha256": hashlib.sha256(bytes(positions)).hexdigest()})
+    required = {MAIN_ROST_ENTRY, *HISTORIC_ROST_ENTRIES}
+    complete = required <= seen and all(row["players"] > 0 for row in rows)
+    count = sum(row["olb_players"] for row in rows)
+    return {"schema": "nfl2k5_olb_filter_scan/v1", "complete": complete,
+            "olb_players": count, "roster_has_olb": bool(count) if complete else None,
+            "filter_rows": "removed" if complete and count == 0 else "retained",
+            "missing_resources": sorted(required - seen), "resources": sorted(rows, key=lambda r: r["resource"]),
+            "scope": "disc primary players and team members; external saves require a retained-row build"}
+
+
+def olb_filter_policy(path: Path | str) -> dict[str, object]:
+    """Read one bounded ROST resource at a time; never read an entire pack/disc."""
+    with _open(path, False) as archive:
+        def resources():
+            for index in (MAIN_ROST_ENTRY, *HISTORIC_ROST_ENTRIES):
+                _require(index < len(archive.entries), f"archive has no outer entry {index}")
+                entry = archive.entries[index]
+                yield parse_resource(index, entry.virtual_offset, archive.read_entry(index))
+        return olb_filter_evidence(resources())
+
+
 def record_digest(resources: Iterable[Resource]) -> str:
     h = hashlib.sha256()
     for r in resources:
@@ -455,6 +498,7 @@ def apply(path: Path | str, *, three_four: Sequence[str] = (), four_three: Seque
             "four_three": list(four_three), "historic": historic, "before_sha256": before, "after_sha256": after,
             "status": "applied" if after == APPLIED_RECORD_SHA256 else "applied-custom" if nfl_olb == 0 else "foreign",
             "totals": dict(totals), "resources": written, "teams": per_team,
+            "olb_filter_scan": olb_filter_evidence(after_resources),
             "changed_bytes": sum(3 for w in written for _ in range(int(w["players_changed"])))}
 
 
@@ -473,10 +517,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     sub.choices["apply"].add_argument("--receipt")
     p_status = sub.add_parser("status")
     p_status.add_argument("path")
+    sub.add_parser("filter-policy", help="scan all disc rosters before removing the empty OLB filter").add_argument("path")
     args = parser.parse_args(argv)
     split = lambda s: tuple(x for x in s.split(",") if x)  # noqa: E731
     if args.command == "status":
         print(json.dumps(status(args.path), indent=1))
+        return 0
+    if args.command == "filter-policy":
+        print(json.dumps(olb_filter_policy(args.path), indent=1))
         return 0
     if args.command == "inspect":
         reports = inspect(args.path, three_four=split(args.three_four), four_three=split(args.four_three),

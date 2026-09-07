@@ -106,6 +106,8 @@ def build_synthetic_xbe() -> bytes:
     for _label, va, slot, expected in pools.RETAINED_OLB_IDENTITY:
         if isinstance(expected, str):
             buf[off(va): off(va) + slot] = _u16(expected, slot)
+    for site in pools.filter_list_sites():
+        buf[off(site.va):off(site.va) + site.size] = site.befores[0]
     _repin(buf)
     return bytes(buf)
 
@@ -299,7 +301,7 @@ class SyntheticXbeTests(unittest.TestCase):
         allowed: set[int] = set()
         touched_sections: set[int] = set()
         sections = strength._sections(self.prepared)
-        for site in pools._sites(True, True):
+        for site in pools._sites(True, True, include_filter_lists=False):
             off = pools._offset(self.prepared, site.va)
             allowed.update(range(off, off + site.size))
             touched_sections.add(strength._section_for_offset(sections, off).index)
@@ -389,10 +391,12 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(pools.read_tables(patched)["roster_targets"]["OLB"], 0)
         self.assertEqual(pools.rating_table_rows(patched, "defense_b")[3]["position"], "ILB")
 
-    def test_apply_refuses_applied_and_foreign(self) -> None:
+    def test_apply_replays_applied_and_refuses_foreign(self) -> None:
         patched, _ = pools.apply(self.prepared)
-        with self.assertRaises(pools.PositionPoolsError):
-            pools.apply(patched)
+        replay, receipt = pools.apply(patched)
+        self.assertEqual(replay, patched)
+        self.assertEqual(receipt["changed_bytes"], 0)
+        self.assertEqual(receipt["edits"], [])
         foreign = bytearray(self.prepared)
         off = pools._offset(self.prepared, pools.ROSTER_TARGETS_VA) + 4 * pools.ENUM_DE
         struct.pack_into("<I", foreign, off, 9)

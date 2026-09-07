@@ -184,6 +184,26 @@ def manifest_for_allocated_union(manifest, retail, allocated):
                 raise AssertionError(f"Auto Save overlaps a different owner: {name}")
             spans.append(dict(start=hex(va), end=hex(va+len(before)), size=len(before),
                               owner=autosave.OWNER, basis=f"test-only pinned live edit: {name}"))
+    # r64 extends the existing pools owner's data edits; this allocates no bytes.
+    # The Pro Bowl owner shares exactly its one complete pointer table.
+    from mod_editor.core import nfl2k5_position_pools as pools, nfl2k5_probowl_order as probowl
+    if pools.filter_list_status(allocated) == "applied":
+        retail_sites = pools.filter_list_sites()
+        active_sites = pools.filter_list_sites(probowl_ordered=probowl.status(allocated) == "applied")
+        for original, installed in zip(retail_sites, active_sites):
+            if image.read(original.va, original.size) != original.befores[0]:
+                raise AssertionError(f"OLB list retail pin differs: {original.label}")
+            if installed_image.read(installed.va, installed.size) != installed.after:
+                raise AssertionError(f"OLB list applied pin differs: {installed.label}")
+            for overlap in manifest.overlaps(installed.va, installed.va + installed.size):
+                allowed = {"nfl2k5_position_pools"}
+                if installed.va == probowl.TAB_LIST_VA:
+                    allowed.add("nfl2k5_probowl_order")
+                if overlap.detail.split(":", 1)[0] not in allowed:
+                    raise AssertionError(f"OLB table overlaps another owner: {installed.label}")
+            spans.append(dict(start=hex(installed.va), end=hex(installed.va + installed.size),
+                              size=installed.size, owner="nfl2k5_position_pools",
+                              basis=f"test-only pinned data edit: {installed.label}"))
     document = {**manifest.document, "spans": spans, "allocator_layout": layout,
-                "model": "Test-only allocation projection plus pinned kickoff and Auto Save live hooks"}
+                "model": "Test-only allocation projection plus pinned kickoff, Auto Save and pools data edits"}
     return ReservationManifest(document, XbeImage(retail))

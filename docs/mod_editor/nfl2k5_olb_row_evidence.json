@@ -1,0 +1,5956 @@
+{
+  "schema": "nfl2k5_olb_row_proof/v1",
+  "retail_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+  "scan": "every four-byte file window, all alignments, including all interior target bytes",
+  "raw_candidates": 3664,
+  "tables": [
+    {
+      "name": "combine",
+      "table": "0x53b514",
+      "sheet": "0x53b420",
+      "olb_name_field": "0x539520",
+      "descriptor_stride": 200,
+      "list_stride": 4,
+      "rows_before": 19,
+      "rows_after": 18,
+      "span_size": 80,
+      "before": "208a5300b88b5300808c5300488d5300108e5300d88e5300a08f53006890530030915300f8915300c0925300889353005094530018955300e0955300a89653003898530070975300e88a530000000000",
+      "after": "208a5300b88b5300808c5300488d5300108e5300d88e5300a08f53006890530030915300f8915300c09253008893530050945300e0955300a89653003898530070975300e88a53000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x53c428",
+          "section": ".rdata",
+          "file_offset": "0x531948"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x53c428",
+          "descriptor": "0x53c450",
+          "descriptor_refs": [
+            {
+              "source": "0x24cfe8",
+              "section": ".text",
+              "file_offset": "0x23cfe8"
+            },
+            {
+              "source": "0x53c488",
+              "section": ".rdata",
+              "file_offset": "0x5319a8"
+            },
+            {
+              "source": "0xaecc60",
+              "section": ".data",
+              "file_offset": "0xae22e0"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x538a20",
+          "name": "All Positions",
+          "enum": 17,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "bf3e61e763d072669b58770d1b81797fd1092ac35146d634b37fcd6202655099",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b514",
+              "section": ".rdata",
+              "file_offset": "0x530a34"
+            }
+          ]
+        },
+        {
+          "page": "0x538bb8",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "5af74d6f8fbfcb624907a44157a0d79307c3eb2b551a0c1652a79e71e7272424",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b518",
+              "section": ".rdata",
+              "file_offset": "0x530a38"
+            }
+          ]
+        },
+        {
+          "page": "0x538c80",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "cd478e9a9474a6671df786dda76e80ca6e4bc8fe85c09f465aa74f465b12ad16",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b51c",
+              "section": ".rdata",
+              "file_offset": "0x530a3c"
+            }
+          ]
+        },
+        {
+          "page": "0x538d48",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "8022ff541eb6695dd4894e5f18aaa02eafe8cc5cce2e38d8ae2d9144c57816dc",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b520",
+              "section": ".rdata",
+              "file_offset": "0x530a40"
+            }
+          ]
+        },
+        {
+          "page": "0x538e10",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "bc369c80aa6f92d0f9b8b0bf42bcff8a11c187551589fc279c746d46b0e2cc9a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b524",
+              "section": ".rdata",
+              "file_offset": "0x530a44"
+            }
+          ]
+        },
+        {
+          "page": "0x538ed8",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "deba89027d55fc1ccd3d74385e78055d2705a0e3951c99ed0f313c28ba22eb59",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b528",
+              "section": ".rdata",
+              "file_offset": "0x530a48"
+            }
+          ]
+        },
+        {
+          "page": "0x538fa0",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "238e8bf1f3358805c11bcdf0979bcffdc635f70651d44a20cc4587d50ae2485f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b52c",
+              "section": ".rdata",
+              "file_offset": "0x530a4c"
+            }
+          ]
+        },
+        {
+          "page": "0x539068",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "4962e892b86299db17041b4cd9abcc7ed5df03ab894addf0f946265847d6d863",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b530",
+              "section": ".rdata",
+              "file_offset": "0x530a50"
+            }
+          ]
+        },
+        {
+          "page": "0x539130",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "643d6b941aab40f89d3d768292141e473c950b188c221fb15a54442ab4e8bf5a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b534",
+              "section": ".rdata",
+              "file_offset": "0x530a54"
+            }
+          ]
+        },
+        {
+          "page": "0x5391f8",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "e2c59bd01ed53f6f3a31a5a042c974b1c32e98e1c6b9b58be45ec0e61b154d72",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b538",
+              "section": ".rdata",
+              "file_offset": "0x530a58"
+            }
+          ]
+        },
+        {
+          "page": "0x5392c0",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "a9c763ac7b3ea96baab60440ea219440cea4674be4383c0ccfea8b78f0830439",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b53c",
+              "section": ".rdata",
+              "file_offset": "0x530a5c"
+            }
+          ]
+        },
+        {
+          "page": "0x539388",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "e3114324465d1179c78552b993acf3645efc88d8b75ea56dc517e8bab1979f50",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b540",
+              "section": ".rdata",
+              "file_offset": "0x530a60"
+            }
+          ]
+        },
+        {
+          "page": "0x539450",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "cfe45806854419ba0fc170c5132ccf3bd8ee62e0652ecde88cc41d258307ee5c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b544",
+              "section": ".rdata",
+              "file_offset": "0x530a64"
+            }
+          ]
+        },
+        {
+          "page": "0x539518",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "e54740b3f522ee29aef8c057da1e383d4ff12407c00ae2a2387fda9970583de6",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b548",
+              "section": ".rdata",
+              "file_offset": "0x530a68"
+            }
+          ]
+        },
+        {
+          "page": "0x5395e0",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "32c0bd17eb769b770cad53c25cf1b491df6913f9e0f6e42be95292867ce7b807",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b54c",
+              "section": ".rdata",
+              "file_offset": "0x530a6c"
+            }
+          ]
+        },
+        {
+          "page": "0x5396a8",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "2ca761e926a347da2ccd5921e7337fe2621ba12b3f7af2a6aaf9930fff8897f3",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b550",
+              "section": ".rdata",
+              "file_offset": "0x530a70"
+            }
+          ]
+        },
+        {
+          "page": "0x539838",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "4d2d939ba26c6c108142e7c15dfc2e3cbac0e9f214d08fbc6d582d646a657b7c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b554",
+              "section": ".rdata",
+              "file_offset": "0x530a74"
+            }
+          ]
+        },
+        {
+          "page": "0x539770",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "951c792ee18a490cc4dfc8409838861609f0fb1e9cede6b70bfe1aa6e4f6d69b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b558",
+              "section": ".rdata",
+              "file_offset": "0x530a78"
+            }
+          ]
+        },
+        {
+          "page": "0x538ae8",
+          "name": "Scouting Targets",
+          "enum": 18,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "08267efcd2a4620d285f112044a6292a6b9d5a110336c67db6545b3e93ec4758",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b55c",
+              "section": ".rdata",
+              "file_offset": "0x530a7c"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 25,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "rookie_report",
+      "table": "0x53b65c",
+      "sheet": "0x53b568",
+      "olb_name_field": "0x53a1f8",
+      "descriptor_stride": 176,
+      "list_stride": 4,
+      "rows_before": 18,
+      "rows_after": 17,
+      "span_size": 76,
+      "before": "00995300b0995300609a5300109b5300c09b5300709c5300209d5300d09d5300809e5300309f5300e09f530090a0530040a15300f0a15300a0a2530050a35300b0a4530000a4530000000000",
+      "after": "00995300b0995300609a5300109b5300c09b5300709c5300209d5300d09d5300809e5300309f5300e09f530090a0530040a15300a0a2530050a35300b0a4530000a453000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x53c7b8",
+          "section": ".rdata",
+          "file_offset": "0x531cd8"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x53c7b8",
+          "descriptor": "0x53c7f4",
+          "descriptor_refs": [
+            {
+              "source": "0x35f21c",
+              "section": ".text",
+              "file_offset": "0x34f21c"
+            },
+            {
+              "source": "0x525568",
+              "section": ".rdata",
+              "file_offset": "0x51aa88"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x539900",
+          "name": "All Positions",
+          "enum": 17,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "960361358fdfb2c360e12f4821ecc65cf3714103a4f9a29de1bdb1878c3f2ab2",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b65c",
+              "section": ".rdata",
+              "file_offset": "0x530b7c"
+            }
+          ]
+        },
+        {
+          "page": "0x5399b0",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "47fe9578cfc2d5474a45e167f58d4beeabefbb33f3ff928a4b46d01af239c757",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b660",
+              "section": ".rdata",
+              "file_offset": "0x530b80"
+            }
+          ]
+        },
+        {
+          "page": "0x539a60",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "0e9f2e80ba408e4cf9963071305c32202661fab4bc17f0b7c370ec028d326ca3",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b664",
+              "section": ".rdata",
+              "file_offset": "0x530b84"
+            }
+          ]
+        },
+        {
+          "page": "0x539b10",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "49d7afd6a466ba4589511c7e8ca6e9fc9db202a95731068ff3451c50e2a6e751",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b668",
+              "section": ".rdata",
+              "file_offset": "0x530b88"
+            }
+          ]
+        },
+        {
+          "page": "0x539bc0",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "4a3ebe1cd07ac211e1d372889c1299716d4d968af8f7dac1b6355be37d4d08e2",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b66c",
+              "section": ".rdata",
+              "file_offset": "0x530b8c"
+            }
+          ]
+        },
+        {
+          "page": "0x539c70",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "63e501cf47ede92fb1de4306700f39bb4d8bff720d765f47026b8e6857e52fd7",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b670",
+              "section": ".rdata",
+              "file_offset": "0x530b90"
+            }
+          ]
+        },
+        {
+          "page": "0x539d20",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "02d1ef5f895295e7996c438f11b78b93b5fbdd3b0ab6b4affcc8b26c1cffc159",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b674",
+              "section": ".rdata",
+              "file_offset": "0x530b94"
+            }
+          ]
+        },
+        {
+          "page": "0x539dd0",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "347a3eca98049cc4bae21e04c2698b21a7e1a35f949aefd6cf694b9f645e4326",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b678",
+              "section": ".rdata",
+              "file_offset": "0x530b98"
+            }
+          ]
+        },
+        {
+          "page": "0x539e80",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "948de5ee94def3f674118aaaa77f0a3ba2923e3ef82bd42d68cc0e0362ce3671",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b67c",
+              "section": ".rdata",
+              "file_offset": "0x530b9c"
+            }
+          ]
+        },
+        {
+          "page": "0x539f30",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "978a9de8ee3cef3ee76f57939ada3deef36e5b18ef0ed2bad79bf9d6b8767e53",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b680",
+              "section": ".rdata",
+              "file_offset": "0x530ba0"
+            }
+          ]
+        },
+        {
+          "page": "0x539fe0",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "6ec9ebcd2e7d67120dbef9250764d96b9c4ac11ee99f7a833ef5a332872c44ad",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b684",
+              "section": ".rdata",
+              "file_offset": "0x530ba4"
+            }
+          ]
+        },
+        {
+          "page": "0x53a090",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "3425da9e554603e4f0beed25bf0948519a3978b0ec5d2b31491b21b5e3d3bca9",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b688",
+              "section": ".rdata",
+              "file_offset": "0x530ba8"
+            }
+          ]
+        },
+        {
+          "page": "0x53a140",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "f19b1bbdc09afc94945b222b69473ac92112f1c979c885e2810f93ca77c1143b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b68c",
+              "section": ".rdata",
+              "file_offset": "0x530bac"
+            }
+          ]
+        },
+        {
+          "page": "0x53a1f0",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "3a386ab2cef848ba5dcc8ee064608de4b8ba8b65b30d130889dd31244ceecf39",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b690",
+              "section": ".rdata",
+              "file_offset": "0x530bb0"
+            }
+          ]
+        },
+        {
+          "page": "0x53a2a0",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "33dc822bfd34fb03f1e4b02d5ea62996f147080fbc0ef0b01f21f4084dd55fd4",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b694",
+              "section": ".rdata",
+              "file_offset": "0x530bb4"
+            }
+          ]
+        },
+        {
+          "page": "0x53a350",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "37eda7f6339c0a77b55137f82544d1f30f3a8b8599a5c153e75c8541023587e1",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b698",
+              "section": ".rdata",
+              "file_offset": "0x530bb8"
+            }
+          ]
+        },
+        {
+          "page": "0x53a4b0",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "7f5a975a75e75912ecfb040fb3e38e006cf79cbb2272854b85e426a1edc6827b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b69c",
+              "section": ".rdata",
+              "file_offset": "0x530bbc"
+            }
+          ]
+        },
+        {
+          "page": "0x53a400",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "a1b4c4ef726c6dca6d424d06d36eccaa56bc4304d27d3ce21b507b42680d6854",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b6a0",
+              "section": ".rdata",
+              "file_offset": "0x530bc0"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 26,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "rookie_report_scouted",
+      "table": "0x53b79c",
+      "sheet": "0x53b6a8",
+      "olb_name_field": "0x53af90",
+      "descriptor_stride": 200,
+      "list_stride": 4,
+      "rows_before": 18,
+      "rows_after": 17,
+      "span_size": 76,
+      "before": "60a5530028a65300f0a65300b8a7530080a8530048a9530010aa5300d8aa5300a0ab530068ac530030ad5300f8ad5300c0ae530088af530050b0530018b15300a8b25300e0b1530000000000",
+      "after": "60a5530028a65300f0a65300b8a7530080a8530048a9530010aa5300d8aa5300a0ab530068ac530030ad5300f8ad5300c0ae530050b0530018b15300a8b25300e0b153000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x53c9b8",
+          "section": ".rdata",
+          "file_offset": "0x531ed8"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x53c9b8",
+          "descriptor": "0x53c9f4",
+          "descriptor_refs": [
+            {
+              "source": "0x35f229",
+              "section": ".text",
+              "file_offset": "0x34f229"
+            },
+            {
+              "source": "0x52559c",
+              "section": ".rdata",
+              "file_offset": "0x51aabc"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x53a560",
+          "name": "All Positions",
+          "enum": 17,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "97eb01534fa2a7ff13b6e2e1df795090e49c24f002c417c1c141ffaf458a0825",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b79c",
+              "section": ".rdata",
+              "file_offset": "0x530cbc"
+            }
+          ]
+        },
+        {
+          "page": "0x53a628",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "b6369feb66ae923fc6245bd4bbf5742d5fa1a943f3a2f811cf4369136f5f5f35",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7a0",
+              "section": ".rdata",
+              "file_offset": "0x530cc0"
+            }
+          ]
+        },
+        {
+          "page": "0x53a6f0",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "c1db73034d18c4de3dd23f624890ed0a05b7bf139c940b1bbc2360a90d15f0b7",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7a4",
+              "section": ".rdata",
+              "file_offset": "0x530cc4"
+            }
+          ]
+        },
+        {
+          "page": "0x53a7b8",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "8ea2e1c36a10b0266853c15a2d0fe1bb6bb2d7d5e3c71e8f7c1df6c58b5188c0",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7a8",
+              "section": ".rdata",
+              "file_offset": "0x530cc8"
+            }
+          ]
+        },
+        {
+          "page": "0x53a880",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "eba895c20215af6b36f55c7f6390658ed5d5a8f9ddee939b07ed662531c87c62",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7ac",
+              "section": ".rdata",
+              "file_offset": "0x530ccc"
+            }
+          ]
+        },
+        {
+          "page": "0x53a948",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "cbea7cbdf090066e43b0d72fbd46efb93a0082f894f3affee99eff26f934b9f7",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7b0",
+              "section": ".rdata",
+              "file_offset": "0x530cd0"
+            }
+          ]
+        },
+        {
+          "page": "0x53aa10",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "cc2c5cd24f5ab11e1862a0feb3b38e3d69787d5144c86b5a6fe708ba52c47838",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7b4",
+              "section": ".rdata",
+              "file_offset": "0x530cd4"
+            }
+          ]
+        },
+        {
+          "page": "0x53aad8",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "08293507b4dd96c748fb8734a97e3fc77bc92bda05d4e93dd18e77065a6e2f48",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7b8",
+              "section": ".rdata",
+              "file_offset": "0x530cd8"
+            }
+          ]
+        },
+        {
+          "page": "0x53aba0",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "d023d6aa2fd874c42dc73ac22fd0a2f40edb523a6d5b43bc2ee6b1312745808b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7bc",
+              "section": ".rdata",
+              "file_offset": "0x530cdc"
+            }
+          ]
+        },
+        {
+          "page": "0x53ac68",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "f1bf37f866eb4163c0af6c863e069cd7d5d40000b0af491d12fbe3797d6123db",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7c0",
+              "section": ".rdata",
+              "file_offset": "0x530ce0"
+            }
+          ]
+        },
+        {
+          "page": "0x53ad30",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "2aad84b13ea340dd07e76e057ec1ea4a9a66a91789a726804493377eab4b2d00",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7c4",
+              "section": ".rdata",
+              "file_offset": "0x530ce4"
+            }
+          ]
+        },
+        {
+          "page": "0x53adf8",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "7b82edb4942e8764c9b886cdc75d049963353f16b5bbb651f1277474a570a91c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7c8",
+              "section": ".rdata",
+              "file_offset": "0x530ce8"
+            }
+          ]
+        },
+        {
+          "page": "0x53aec0",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "2cd34e64a060977e0ad05366bfcba279cecc1911b5d43846fbf1705f1965431b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7cc",
+              "section": ".rdata",
+              "file_offset": "0x530cec"
+            }
+          ]
+        },
+        {
+          "page": "0x53af88",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "a096945dacbee53350c2dfe5ffc445692b452ce35660f2a5bf46c4d182def644",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7d0",
+              "section": ".rdata",
+              "file_offset": "0x530cf0"
+            }
+          ]
+        },
+        {
+          "page": "0x53b050",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "35e67121779a8b586693f7cad96ce00e7b00de2b944aa443a08da04cd1996720",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7d4",
+              "section": ".rdata",
+              "file_offset": "0x530cf4"
+            }
+          ]
+        },
+        {
+          "page": "0x53b118",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "c133c33bedf612fe525cd4015e259b71a3d667f9ef16715bcf4d9575efbf4d98",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7d8",
+              "section": ".rdata",
+              "file_offset": "0x530cf8"
+            }
+          ]
+        },
+        {
+          "page": "0x53b2a8",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "ff19772df0c72e892e9497017296ed0a8aa99fdb2be2063f15e8db28261fdce9",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7dc",
+              "section": ".rdata",
+              "file_offset": "0x530cfc"
+            }
+          ]
+        },
+        {
+          "page": "0x53b1e0",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "fc781507766cdcf83637e51f2f87691955f2945895c6da16e20cdf2ccb849785",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53b7e0",
+              "section": ".rdata",
+              "file_offset": "0x530d00"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 24,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "free_agents",
+      "table": "0x53e7e4",
+      "sheet": "0x53e6f0",
+      "olb_name_field": "0x53def0",
+      "descriptor_stride": 280,
+      "list_stride": 4,
+      "rows_before": 19,
+      "rows_after": 18,
+      "span_size": 80,
+      "before": "60e45300c8d15300e0d25300f8d3530010d5530028d6530040d7530058d8530070d9530088da5300a0db5300b8dc5300d0dd5300e8de530000e0530018e1530048e3530030e2530078e5530000000000",
+      "after": "60e45300c8d15300e0d25300f8d3530010d5530028d6530040d7530058d8530070d9530088da5300a0db5300b8dc5300d0dd530000e0530018e1530048e3530030e2530078e553000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x53ec10",
+          "section": ".rdata",
+          "file_offset": "0x534130"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x53ec10",
+          "descriptor": "0x53ec38",
+          "descriptor_refs": [
+            {
+              "source": "0x24cf40",
+              "section": ".text",
+              "file_offset": "0x23cf40"
+            },
+            {
+              "source": "0x361711",
+              "section": ".text",
+              "file_offset": "0x351711"
+            },
+            {
+              "source": "0xaed644",
+              "section": ".data",
+              "file_offset": "0xae2cc4"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x53e460",
+          "name": "All Positions",
+          "enum": 17,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "04cae049e2d7f12694adf3fed0cc7aed6fcaa3e1b5f4a3c4583196cbbe3f30c2",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e7e4",
+              "section": ".rdata",
+              "file_offset": "0x533d04"
+            }
+          ]
+        },
+        {
+          "page": "0x53d1c8",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "6cfb656f8ddb52a4dd0d6118d37170961c8a8760fcd4e591cfb29c91b6797ebe",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e7e8",
+              "section": ".rdata",
+              "file_offset": "0x533d08"
+            }
+          ]
+        },
+        {
+          "page": "0x53d2e0",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "5f77cb0c952278c965c7791696db92ea6d415d05875c347ddf141f52c1575b0f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e7ec",
+              "section": ".rdata",
+              "file_offset": "0x533d0c"
+            }
+          ]
+        },
+        {
+          "page": "0x53d3f8",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "68c9a5af318a74fba098e31b14a47734b86b3fbe0a16bc1cedbaad03df373bd3",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e7f0",
+              "section": ".rdata",
+              "file_offset": "0x533d10"
+            }
+          ]
+        },
+        {
+          "page": "0x53d510",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "7efa5a6443a25e64b051470fc4276b00189ff439d22b4e515db64f0db8789d68",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e7f4",
+              "section": ".rdata",
+              "file_offset": "0x533d14"
+            }
+          ]
+        },
+        {
+          "page": "0x53d628",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "7ee061d3f70afc5b214d76644c22263cc8aaf4e76ac974ee096df4598f43d085",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e7f8",
+              "section": ".rdata",
+              "file_offset": "0x533d18"
+            }
+          ]
+        },
+        {
+          "page": "0x53d740",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "93454ed74b4c616529cfb8dcdc273efcad89d3f0d4eaa2bbede97402bf26cf23",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e7fc",
+              "section": ".rdata",
+              "file_offset": "0x533d1c"
+            }
+          ]
+        },
+        {
+          "page": "0x53d858",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "72cbe0ace30cef5f597607109beebbc606ee703dd23290ea9c374b0ab46936dd",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e800",
+              "section": ".rdata",
+              "file_offset": "0x533d20"
+            }
+          ]
+        },
+        {
+          "page": "0x53d970",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "e9288ad541610c8288e1133a7c50b89e5c52981052c4cacf7487a7b637f5bec9",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e804",
+              "section": ".rdata",
+              "file_offset": "0x533d24"
+            }
+          ]
+        },
+        {
+          "page": "0x53da88",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "8970fb6388d45116ae5c2a33ec9beb1966767620bc6bbe6aabad5c38f8ace94b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e808",
+              "section": ".rdata",
+              "file_offset": "0x533d28"
+            }
+          ]
+        },
+        {
+          "page": "0x53dba0",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "1cb4858a888ec5dcac56df75aa36d6dae7c32c1e0f98cd1c757491e4d43c9687",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e80c",
+              "section": ".rdata",
+              "file_offset": "0x533d2c"
+            }
+          ]
+        },
+        {
+          "page": "0x53dcb8",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f9d456666db0d83f51adfd8173ee09dfd96efe01af2c5a91163a30c1eead1b78",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e810",
+              "section": ".rdata",
+              "file_offset": "0x533d30"
+            }
+          ]
+        },
+        {
+          "page": "0x53ddd0",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "2ba2bbfa9688f7556442a0ee5087fe16c888f259c80e679166f1ca3c26a76b62",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e814",
+              "section": ".rdata",
+              "file_offset": "0x533d34"
+            }
+          ]
+        },
+        {
+          "page": "0x53dee8",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "81bbe1b99c9c9ebf697887d6c31d65db28af4aee4ffbfdb77e2ef6431a6a8e1a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e818",
+              "section": ".rdata",
+              "file_offset": "0x533d38"
+            }
+          ]
+        },
+        {
+          "page": "0x53e000",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f3793ef09d0bb2c9e5c2eee7973ddfd89b7488616398df781138693167eb02ff",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e81c",
+              "section": ".rdata",
+              "file_offset": "0x533d3c"
+            }
+          ]
+        },
+        {
+          "page": "0x53e118",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "3416637b2635aeb9c8c5bf645522baa025230f913c70fbb8d9486a0cad947032",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e820",
+              "section": ".rdata",
+              "file_offset": "0x533d40"
+            }
+          ]
+        },
+        {
+          "page": "0x53e348",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "44d111e501b67ac5725b2c68db398d700fd6fe0b63a651a8d9c961cf5cf6ecf7",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e824",
+              "section": ".rdata",
+              "file_offset": "0x533d44"
+            }
+          ]
+        },
+        {
+          "page": "0x53e230",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "458daec82d133ee8c21cec55ab66be68092766688043dc5951ab22dc65b05704",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e828",
+              "section": ".rdata",
+              "file_offset": "0x533d48"
+            }
+          ]
+        },
+        {
+          "page": "0x53e578",
+          "name": "Targets",
+          "enum": 17,
+          "count": "0x3630c0",
+          "getter": "0x3630d0",
+          "page_sha256": "fad4ed1a569abe34153cb14ee04659f740b6cbfa949e83019824433ba3cf23f6",
+          "absolute_base_candidates": [
+            {
+              "source": "0x53e82c",
+              "section": ".rdata",
+              "file_offset": "0x533d4c"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 33,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "contracts",
+      "table": "0x5403cc",
+      "sheet": "0x5402d8",
+      "olb_name_field": "0x53fbf0",
+      "descriptor_stride": 296,
+      "list_stride": 4,
+      "rows_before": 18,
+      "rows_after": 17,
+      "span_size": 76,
+      "before": "b001540008ee530030ef530058f0530080f15300a8f25300d0f35300f8f4530020f6530098f95300c0fa5300e8fb530010fd530038fe53008800540060ff530048f7530070f8530000000000",
+      "after": "b001540008ee530030ef530058f0530080f15300a8f25300d0f35300f8f4530020f6530098f95300c0fa530010fd530038fe53008800540060ff530048f7530070f853000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x540628",
+          "section": ".rdata",
+          "file_offset": "0x535b48"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x540628",
+          "descriptor": "0x540650",
+          "descriptor_refs": [
+            {
+              "source": "0x24ceb4",
+              "section": ".text",
+              "file_offset": "0x23ceb4"
+            },
+            {
+              "source": "0x34d854",
+              "section": ".text",
+              "file_offset": "0x33d854"
+            },
+            {
+              "source": "0x3616f1",
+              "section": ".text",
+              "file_offset": "0x3516f1"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x5401b0",
+          "name": "All Positions",
+          "enum": 17,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "6a6fbb5fa020195d2e014e9cf7f902352c3cbc3694996a45264398332192e719",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403cc",
+              "section": ".rdata",
+              "file_offset": "0x5358ec"
+            }
+          ]
+        },
+        {
+          "page": "0x53ee08",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "a801deb147547e8850c12305462328ab861682e5d219730123f0ebdb1bd3e84f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403d0",
+              "section": ".rdata",
+              "file_offset": "0x5358f0"
+            }
+          ]
+        },
+        {
+          "page": "0x53ef30",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "e63b6f33214d981401ded604f12fc85c3bc81da946d6b5710cf8182ec169ee0d",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403d4",
+              "section": ".rdata",
+              "file_offset": "0x5358f4"
+            }
+          ]
+        },
+        {
+          "page": "0x53f058",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "a81c0de9c3afda65b37bb9845327d455ec8763c478252c88d95ec8a118aa988b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403d8",
+              "section": ".rdata",
+              "file_offset": "0x5358f8"
+            }
+          ]
+        },
+        {
+          "page": "0x53f180",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "22bea3e94ea8cb99ab5471ee373e223520821cb822c4bf1b61e0ae09bca85663",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403dc",
+              "section": ".rdata",
+              "file_offset": "0x5358fc"
+            }
+          ]
+        },
+        {
+          "page": "0x53f2a8",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "427bff935dd7baf1203e6f37adc7169a500a662de4cb01d694bfb0757cd5e1bc",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403e0",
+              "section": ".rdata",
+              "file_offset": "0x535900"
+            }
+          ]
+        },
+        {
+          "page": "0x53f3d0",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "3b7140da6746f002fa56cd01215b00297540078fe7ebe38a8c1958c71b1bb491",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403e4",
+              "section": ".rdata",
+              "file_offset": "0x535904"
+            }
+          ]
+        },
+        {
+          "page": "0x53f4f8",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "334933584d89632cced963190d7438f79f62dae0b204d742c8b42885857abd73",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403e8",
+              "section": ".rdata",
+              "file_offset": "0x535908"
+            }
+          ]
+        },
+        {
+          "page": "0x53f620",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "77157b397459ceda3376f8dffee61f603e2b4a144a43b4a6998874f6bbdce040",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403ec",
+              "section": ".rdata",
+              "file_offset": "0x53590c"
+            }
+          ]
+        },
+        {
+          "page": "0x53f998",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "2bcd360ec185544f51ed8b7c0d535b59360a4ba1e9a6401683590addac62a163",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403f0",
+              "section": ".rdata",
+              "file_offset": "0x535910"
+            }
+          ]
+        },
+        {
+          "page": "0x53fac0",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "e722f80b7d2bf58570f65496f2d24dad738d6499628348711f3bd2b7a4a0f8b0",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403f4",
+              "section": ".rdata",
+              "file_offset": "0x535914"
+            },
+            {
+              "source": "0x9750df",
+              "section": ".rdata",
+              "file_offset": "0x96a5ff"
+            }
+          ]
+        },
+        {
+          "page": "0x53fbe8",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "3ae0284f80921fdce6ed86c88584a92e7b58871f58663c948598fbef8360e859",
+          "absolute_base_candidates": [
+            {
+              "source": "0x3d4150",
+              "section": ".text",
+              "file_offset": "0x3c4150"
+            },
+            {
+              "source": "0x5403f8",
+              "section": ".rdata",
+              "file_offset": "0x535918"
+            }
+          ]
+        },
+        {
+          "page": "0x53fd10",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "520df80637dec8e1f6685e99f0bf9500353560bd477addd42e518535c1d331ac",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5403fc",
+              "section": ".rdata",
+              "file_offset": "0x53591c"
+            }
+          ]
+        },
+        {
+          "page": "0x53fe38",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f1dfb6651a47cc734ca50a6ff579627568783827effabd636bfd98fcb178876e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x540400",
+              "section": ".rdata",
+              "file_offset": "0x535920"
+            }
+          ]
+        },
+        {
+          "page": "0x540088",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "325dfba4b175e9d17c8133605ba74a99afdc85928022c1c97f14e9280259fa7e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x540404",
+              "section": ".rdata",
+              "file_offset": "0x535924"
+            }
+          ]
+        },
+        {
+          "page": "0x53ff60",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "c4817edc1b646ea8f10fb0a1a8b8942addff49284b4f20f727e686532736694c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x540408",
+              "section": ".rdata",
+              "file_offset": "0x535928"
+            }
+          ]
+        },
+        {
+          "page": "0x53f748",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "0b468c5192dd05919d900841467f82d331b3ca473f213c198ba526abf67da180",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54040c",
+              "section": ".rdata",
+              "file_offset": "0x53592c"
+            }
+          ]
+        },
+        {
+          "page": "0x53f870",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "4bfebd1f76e7c5bd6f3c4b1d761a3fadf861d880932687a3286507ffc15c5d79",
+          "absolute_base_candidates": [
+            {
+              "source": "0x540410",
+              "section": ".rdata",
+              "file_offset": "0x535930"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 2184,
+      "list_interior_candidates": [
+        {
+          "source": "0x4a748",
+          "target": "0x5403e8",
+          "section": ".text",
+          "file_offset": "0x3a748",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "instruction_encoding_overlap",
+          "function": "0x4a720",
+          "instruction": "0x4a748: call 0x4fb50"
+        },
+        {
+          "source": "0x43f49d",
+          "target": "0x540404",
+          "section": "D3D",
+          "file_offset": "0x43037d",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fbac0",
+          "target": "0x5403f5",
+          "section": ".rdata",
+          "file_offset": "0x4f0fe0",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fbc88",
+          "target": "0x5403ed",
+          "section": ".rdata",
+          "file_offset": "0x4f11a8",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fbd18",
+          "target": "0x5403e0",
+          "section": ".rdata",
+          "file_offset": "0x4f1238",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fbeec",
+          "target": "0x5403d9",
+          "section": ".rdata",
+          "file_offset": "0x4f140c",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fbf94",
+          "target": "0x5403f1",
+          "section": ".rdata",
+          "file_offset": "0x4f14b4",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fbfe8",
+          "target": "0x5403fd",
+          "section": ".rdata",
+          "file_offset": "0x4f1508",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fc060",
+          "target": "0x5403f9",
+          "section": ".rdata",
+          "file_offset": "0x4f1580",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fc06c",
+          "target": "0x5403e5",
+          "section": ".rdata",
+          "file_offset": "0x4f158c",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fc09c",
+          "target": "0x5403d5",
+          "section": ".rdata",
+          "file_offset": "0x4f15bc",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fc0fc",
+          "target": "0x5403cd",
+          "section": ".rdata",
+          "file_offset": "0x4f161c",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fc15c",
+          "target": "0x540404",
+          "section": ".rdata",
+          "file_offset": "0x4f167c",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fc234",
+          "target": "0x5403d1",
+          "section": ".rdata",
+          "file_offset": "0x4f1754",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x4fc2e8",
+          "target": "0x540401",
+          "section": ".rdata",
+          "file_offset": "0x4f1808",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x653c1a",
+          "target": "0x5403cc",
+          "section": ".rdata",
+          "file_offset": "0x64913a",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0x81cf4a",
+          "target": "0x5403d1",
+          "section": ".rdata",
+          "file_offset": "0x81246a",
+          "spans": [
+            "contracts:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        }
+      ]
+    },
+    {
+      "name": "probowl_votes",
+      "table": "0x54a254",
+      "sheet": "0x54a160",
+      "olb_name_field": "0x5498e8",
+      "descriptor_stride": 176,
+      "list_stride": 4,
+      "rows_before": 17,
+      "rows_after": 16,
+      "span_size": 72,
+      "before": "5091540000925400b092540060935400509c540010945400c09454007095540020965400d09654008097540030985400e098540090995400409a5400a09b5400f09a540000000000",
+      "after": "5091540000925400b092540060935400509c540010945400c09454007095540020965400d0965400809754003098540090995400409a5400a09b5400f09a54000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x54ac50",
+          "section": ".rdata",
+          "file_offset": "0x540170"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x54ac50",
+          "descriptor": "0x54ac78",
+          "descriptor_refs": [
+            {
+              "source": "0x34da14",
+              "section": ".text",
+              "file_offset": "0x33da14"
+            },
+            {
+              "source": "0x361791",
+              "section": ".text",
+              "file_offset": "0x351791"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x549150",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "f6df2f0db6f06a66d47e9a63e211a234085b081892e67cce46b5d3345a3ab4d1",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a254",
+              "section": ".rdata",
+              "file_offset": "0x53f774"
+            }
+          ]
+        },
+        {
+          "page": "0x549200",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "ec4343a796975d92dbe267503e124d47efbb96a47f1b4b3dd292f47b5b239ffe",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a258",
+              "section": ".rdata",
+              "file_offset": "0x53f778"
+            },
+            {
+              "source": "0xaf53d3",
+              "section": ".data",
+              "file_offset": "0xaeaa53"
+            }
+          ]
+        },
+        {
+          "page": "0x5492b0",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "b79f84ac505835311becac0a52279a7926aa7857028e9cd54142494443cd1f46",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a25c",
+              "section": ".rdata",
+              "file_offset": "0x53f77c"
+            }
+          ]
+        },
+        {
+          "page": "0x549360",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "d5f66a79c5ef15833917851ec348d915744f84b494dd90d7ffa76d59caa4d65e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a260",
+              "section": ".rdata",
+              "file_offset": "0x53f780"
+            }
+          ]
+        },
+        {
+          "page": "0x549c50",
+          "name": "Tight End",
+          "enum": 9,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "535b55af98460212104a43ff6c5602b70165a54307d75aa2e4bc021d67982bf6",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a264",
+              "section": ".rdata",
+              "file_offset": "0x53f784"
+            }
+          ]
+        },
+        {
+          "page": "0x549410",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "3f8b622e7ad47794bb97dca21c99703597741591d24fc0570d43b69b7d242f98",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a268",
+              "section": ".rdata",
+              "file_offset": "0x53f788"
+            }
+          ]
+        },
+        {
+          "page": "0x5494c0",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "714ff7e0d4aed4726bd477b837be479c08fc1c4465daa01d877f9f48ed76c7bd",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a26c",
+              "section": ".rdata",
+              "file_offset": "0x53f78c"
+            }
+          ]
+        },
+        {
+          "page": "0x549570",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "6091895b591ac7c838047864bf5a8db3de79d34b11377bb85cc27ddbbd4c5dc5",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a270",
+              "section": ".rdata",
+              "file_offset": "0x53f790"
+            }
+          ]
+        },
+        {
+          "page": "0x549620",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "a5c3e9137e23fb9b497e7b44e6efb37ff888f3dfa1154cc09a7290e54eef313d",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a274",
+              "section": ".rdata",
+              "file_offset": "0x53f794"
+            }
+          ]
+        },
+        {
+          "page": "0x5496d0",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "2fc22b281128f1e10aaf15120bc4e4062cbefbfb20ec4597920ef298ab6d9ae6",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a278",
+              "section": ".rdata",
+              "file_offset": "0x53f798"
+            }
+          ]
+        },
+        {
+          "page": "0x549780",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "e66f097bb3e47e827956aa6b1f48754d88e29141c65628f4cc8dee5a679a4882",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a27c",
+              "section": ".rdata",
+              "file_offset": "0x53f79c"
+            }
+          ]
+        },
+        {
+          "page": "0x549830",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "7282257c3c2bcede650ed8fae4ce9a3e9b04c42b798485161bb46237f2b6176d",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a280",
+              "section": ".rdata",
+              "file_offset": "0x53f7a0"
+            }
+          ]
+        },
+        {
+          "page": "0x5498e0",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "daa825312e00f17c6fc538f6e940352389bd84bebb206190b507f3669623cd49",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a284",
+              "section": ".rdata",
+              "file_offset": "0x53f7a4"
+            }
+          ]
+        },
+        {
+          "page": "0x549990",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "cc8e10ee2787f1df9c56cf5f24ef1e4bb9a452be0d3f52f26e7d684ca6b62808",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a288",
+              "section": ".rdata",
+              "file_offset": "0x53f7a8"
+            }
+          ]
+        },
+        {
+          "page": "0x549a40",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "6d596b349236fbc4bb1f870feeb916bf449c44e9315a730fc5c4bda9d6733161",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a28c",
+              "section": ".rdata",
+              "file_offset": "0x53f7ac"
+            }
+          ]
+        },
+        {
+          "page": "0x549ba0",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "6972ab715686fb9c35ae566867c66dfe8d3ab40e7c2e18135f197575e40ec4bb",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a290",
+              "section": ".rdata",
+              "file_offset": "0x53f7b0"
+            }
+          ]
+        },
+        {
+          "page": "0x549af0",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x3213e0",
+          "getter": "0x321520",
+          "page_sha256": "d4e251184dd273232d2eb3ad3e06c42a627c42fa606d4c31a4ff5a7f9c5ca94c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x54a294",
+              "section": ".rdata",
+              "file_offset": "0x53f7b4"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 28,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "player_progress",
+      "table": "0x5515a4",
+      "sheet": "0x5514b0",
+      "olb_name_field": "0x550f68",
+      "descriptor_stride": 272,
+      "list_stride": 4,
+      "rows_before": 17,
+      "rows_after": 16,
+      "span_size": 72,
+      "before": "a0025500b0035500c0045500d0055500e0065500f007550000095500100a5500400d5500500e5500600f55007010550080115500a013550090125500200b5500300c550000000000",
+      "after": "a0025500b0035500c0045500d0055500e0065500f007550000095500100a5500400d5500500e55007010550080115500a013550090125500200b5500300c55000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x5517d8",
+          "section": ".rdata",
+          "file_offset": "0x546cf8"
+        },
+        {
+          "source": "0x551a18",
+          "section": ".rdata",
+          "file_offset": "0x546f38"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x5517d8",
+          "descriptor": "0x551800",
+          "descriptor_refs": [
+            {
+              "source": "0x34d9d4",
+              "section": ".text",
+              "file_offset": "0x33d9d4"
+            },
+            {
+              "source": "0x3617c1",
+              "section": ".text",
+              "file_offset": "0x3517c1"
+            }
+          ]
+        },
+        {
+          "frame": "0x551a18",
+          "descriptor": "0x551a40",
+          "descriptor_refs": [
+            {
+              "source": "0x520330",
+              "section": ".rdata",
+              "file_offset": "0x515850"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x5502a0",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "2d7047e4df46569411c0abf405d31fe58fcc58977274c5baa4aba439d3fc44af",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515a4",
+              "section": ".rdata",
+              "file_offset": "0x546ac4"
+            }
+          ]
+        },
+        {
+          "page": "0x5503b0",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "55171671aee968aa9bfac3ff32d73610f0f900fa919294051106804e0b1b158a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515a8",
+              "section": ".rdata",
+              "file_offset": "0x546ac8"
+            }
+          ]
+        },
+        {
+          "page": "0x5504c0",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "500dcf6fcb993baac30e99bebff3ebc903a8ba7e0eb179368983da37bed746ed",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515ac",
+              "section": ".rdata",
+              "file_offset": "0x546acc"
+            }
+          ]
+        },
+        {
+          "page": "0x5505d0",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "361892bad66fad49f827dcb296cc16953261372857d380127f2eb47868bc35b7",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515b0",
+              "section": ".rdata",
+              "file_offset": "0x546ad0"
+            }
+          ]
+        },
+        {
+          "page": "0x5506e0",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "9066583810e5a408b7f5346a24d964bd6d8d4483e7abf5cff0f9e68e0303705f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515b4",
+              "section": ".rdata",
+              "file_offset": "0x546ad4"
+            }
+          ]
+        },
+        {
+          "page": "0x5507f0",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "dcf117c7a1c92ed9c79217a477fdf3436f835701d1cab9068a8230dabd231aec",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515b8",
+              "section": ".rdata",
+              "file_offset": "0x546ad8"
+            }
+          ]
+        },
+        {
+          "page": "0x550900",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "8550154af604be9d4c38ec649f7a07eb897b91cc17a20338e8a3864b6dffeadc",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515bc",
+              "section": ".rdata",
+              "file_offset": "0x546adc"
+            }
+          ]
+        },
+        {
+          "page": "0x550a10",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "da6b3a5f1d017c000f5e1f4811376fec1a90cb9e92b1421b1da555a4118a2054",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515c0",
+              "section": ".rdata",
+              "file_offset": "0x546ae0"
+            }
+          ]
+        },
+        {
+          "page": "0x550d40",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "0a509b262a15409147337b031dee4d4761a8145a00018f72fcca93a012c1b4bb",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515c4",
+              "section": ".rdata",
+              "file_offset": "0x546ae4"
+            }
+          ]
+        },
+        {
+          "page": "0x550e50",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "a78475ea6a2a25cf9650796bcd2d84d32ac0241f9ba46a90ec2a81854df3d5ed",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515c8",
+              "section": ".rdata",
+              "file_offset": "0x546ae8"
+            }
+          ]
+        },
+        {
+          "page": "0x550f60",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "0ec5dac6e04877430938ce7b772a799f155e800130cda6c40ac7a230b5d152ae",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515cc",
+              "section": ".rdata",
+              "file_offset": "0x546aec"
+            }
+          ]
+        },
+        {
+          "page": "0x551070",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "02bbf1f9e35c0e05048ac1bf9239d26a7c23c02e83eea5ba5a6979881cfd8e25",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515d0",
+              "section": ".rdata",
+              "file_offset": "0x546af0"
+            }
+          ]
+        },
+        {
+          "page": "0x551180",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f0d050cc4ab8f55f12951235927f45fbb0b7b405cb221a7ddcfba1f1d5d37a5c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515d4",
+              "section": ".rdata",
+              "file_offset": "0x546af4"
+            }
+          ]
+        },
+        {
+          "page": "0x5513a0",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "79bb2b6896fa389bef0ea2664e44416d5142a90dc71097b446bc3ec0c2a6332e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515d8",
+              "section": ".rdata",
+              "file_offset": "0x546af8"
+            }
+          ]
+        },
+        {
+          "page": "0x551290",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "69a46c0dffa12ac1ff27f563af27c98406f58b3ebc9796615a6334b05080cd55",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515dc",
+              "section": ".rdata",
+              "file_offset": "0x546afc"
+            }
+          ]
+        },
+        {
+          "page": "0x550b20",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "adc52296cdb444b6ee6f18d10f992580997bfa464880133361144599d606fcb5",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515e0",
+              "section": ".rdata",
+              "file_offset": "0x546b00"
+            }
+          ]
+        },
+        {
+          "page": "0x550c30",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "b7e8e6fc60461108fcc21a700184e0573ca0525b7a702fc89b3c671b1bde4422",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5515e4",
+              "section": ".rdata",
+              "file_offset": "0x546b04"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 62,
+      "list_interior_candidates": [
+        {
+          "source": "0x439d6",
+          "target": "0x5515e8",
+          "section": ".text",
+          "file_offset": "0x339d6",
+          "spans": [
+            "player_progress:sheet_and_list"
+          ],
+          "kind": "instruction_encoding_overlap",
+          "function": "0x43980",
+          "instruction": "0x439d6: call 0x48ef0"
+        }
+      ]
+    },
+    {
+      "name": "opposition_study",
+      "table": "0x552f14",
+      "sheet": "0x552e20",
+      "olb_name_field": "0x552798",
+      "descriptor_stride": 280,
+      "list_stride": 4,
+      "rows_before": 18,
+      "rows_after": 17,
+      "span_size": 76,
+      "before": "082d5500701a5500881b5500a01c5500b81d5500d01e5500e81f55000021550018225500602555007826550090275500a8285500c0295500f02b5500d82a5500302355004824550000000000",
+      "after": "082d5500701a5500881b5500a01c5500b81d5500d01e5500e81f550000215500182255006025550078265500a8285500c0295500f02b5500d82a550030235500482455000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x553148",
+          "section": ".rdata",
+          "file_offset": "0x548668"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x553148",
+          "descriptor": "0x553170",
+          "descriptor_refs": [
+            {
+              "source": "0x2ae901",
+              "section": ".text",
+              "file_offset": "0x29e901"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x552d08",
+          "name": "All Positions",
+          "enum": 17,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "2c0fa8d9fff4f3b11f7998dbc196e66b998973b146ee3a1616b2cda67aaf4e9d",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f14",
+              "section": ".rdata",
+              "file_offset": "0x548434"
+            }
+          ]
+        },
+        {
+          "page": "0x551a70",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "42ff2871bd565541aeb1b3b1c6bdbeb127df7ed3486a9b0bdc5e00802f5573bd",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f18",
+              "section": ".rdata",
+              "file_offset": "0x548438"
+            }
+          ]
+        },
+        {
+          "page": "0x551b88",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "869bd03a1a54bfd42c382d907c909f25c5b39f591d8d6b1943c3d06c34421e87",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f1c",
+              "section": ".rdata",
+              "file_offset": "0x54843c"
+            }
+          ]
+        },
+        {
+          "page": "0x551ca0",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "02eb5fb3dd955bc64b2e3b1c913ebb15f2ff909d96b852562d63612bc5a0e5fa",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f20",
+              "section": ".rdata",
+              "file_offset": "0x548440"
+            }
+          ]
+        },
+        {
+          "page": "0x551db8",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d6df26343bd8150559e005934c987febd588e0be0507c90baeca7c616723ac64",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f24",
+              "section": ".rdata",
+              "file_offset": "0x548444"
+            }
+          ]
+        },
+        {
+          "page": "0x551ed0",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "67febfb06f0364ec0307b531e11453bb81565aeb22e58687ad2a0594ac5a0e33",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f28",
+              "section": ".rdata",
+              "file_offset": "0x548448"
+            }
+          ]
+        },
+        {
+          "page": "0x551fe8",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "89e1ced4bbca228af1c4c14052e7c96e2f3b0fd7b5b3f1bf360890e64027fba6",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f2c",
+              "section": ".rdata",
+              "file_offset": "0x54844c"
+            }
+          ]
+        },
+        {
+          "page": "0x552100",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "5c6711c0a79111d73f0de722dd35e535f3a6c43a7ccd668470430df948b37dea",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f30",
+              "section": ".rdata",
+              "file_offset": "0x548450"
+            }
+          ]
+        },
+        {
+          "page": "0x552218",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "46685b9741034fd94b7b3cb8820c12bc0edd4e26df5e6c6bc8be93e7f70c381b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f34",
+              "section": ".rdata",
+              "file_offset": "0x548454"
+            }
+          ]
+        },
+        {
+          "page": "0x552560",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "3da3b4dce544eac9cf58fec4225c4f6594c151bde0beaa4c0518683090f9e837",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f38",
+              "section": ".rdata",
+              "file_offset": "0x548458"
+            }
+          ]
+        },
+        {
+          "page": "0x552678",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "763005abaf3924d964ca6ac41dc06722724f472e16c0db54741046b17cc2b808",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f3c",
+              "section": ".rdata",
+              "file_offset": "0x54845c"
+            }
+          ]
+        },
+        {
+          "page": "0x552790",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "dfde6bf80f840466cae10afc1398742426d38ea30cad91a3dae47151edfe9bdf",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f40",
+              "section": ".rdata",
+              "file_offset": "0x548460"
+            }
+          ]
+        },
+        {
+          "page": "0x5528a8",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "6d26ed57c323ee953f243246453d93ca0bd6ae9bc81f48078ac4c8d367ca4971",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f44",
+              "section": ".rdata",
+              "file_offset": "0x548464"
+            }
+          ]
+        },
+        {
+          "page": "0x5529c0",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f573b9db5248c3d100a1c50d8dc17707986868fdc4f27506d603bc3c0d8bf556",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f48",
+              "section": ".rdata",
+              "file_offset": "0x548468"
+            }
+          ]
+        },
+        {
+          "page": "0x552bf0",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "7d72b826015b87bc42fa274e14e9ddb7bb97ebe38b7f07208a6f6f2b0ed9c3de",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f4c",
+              "section": ".rdata",
+              "file_offset": "0x54846c"
+            }
+          ]
+        },
+        {
+          "page": "0x552ad8",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "e441d7784a85f2a77533a0d9acdfe422c52b4d9afceb014ff973ca448d9e0447",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f50",
+              "section": ".rdata",
+              "file_offset": "0x548470"
+            }
+          ]
+        },
+        {
+          "page": "0x552330",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "1a9b008449eb2098e28d1bb911acf0221e31a7b0127dbcaf4be93fe0fdd82001",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f54",
+              "section": ".rdata",
+              "file_offset": "0x548474"
+            }
+          ]
+        },
+        {
+          "page": "0x552448",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "1d7f03dd0e0988dea6d01176d248b9ad8b0f12d7a5cfb8b173f63cae17161602",
+          "absolute_base_candidates": [
+            {
+              "source": "0x552f58",
+              "section": ".rdata",
+              "file_offset": "0x548478"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 44,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "team_rosters",
+      "table": "0x554d64",
+      "sheet": "0x554c70",
+      "olb_name_field": "0x5545e8",
+      "descriptor_stride": 280,
+      "list_stride": 4,
+      "rows_before": 18,
+      "rows_after": 17,
+      "span_size": 76,
+      "before": "c0385500d8395500f03a5500083c5500203d5500383e5500503f550068405500b0435500c8445500e0455500f846550010485500404a5500284955008041550098425500584b550000000000",
+      "after": "c0385500d8395500f03a5500083c5500203d5500383e5500503f550068405500b0435500c8445500f846550010485500404a5500284955008041550098425500584b55000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x555070",
+          "section": ".rdata",
+          "file_offset": "0x54a590"
+        },
+        {
+          "source": "0x555408",
+          "section": ".rdata",
+          "file_offset": "0x54a928"
+        },
+        {
+          "source": "0x5555d0",
+          "section": ".rdata",
+          "file_offset": "0x54aaf0"
+        },
+        {
+          "source": "0x555798",
+          "section": ".rdata",
+          "file_offset": "0x54acb8"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x555070",
+          "descriptor": "0x555098",
+          "descriptor_refs": [
+            {
+              "source": "0x5550d0",
+              "section": ".rdata",
+              "file_offset": "0x54a5f0"
+            }
+          ]
+        },
+        {
+          "frame": "0x555408",
+          "descriptor": "0x555430",
+          "descriptor_refs": [
+            {
+              "source": "0x2d1794",
+              "section": ".text",
+              "file_offset": "0x2c1794"
+            },
+            {
+              "source": "0x2d19bc",
+              "section": ".text",
+              "file_offset": "0x2c19bc"
+            }
+          ]
+        },
+        {
+          "frame": "0x5555d0",
+          "descriptor": "0x5555f8",
+          "descriptor_refs": [
+            {
+              "source": "0x571d48",
+              "section": ".rdata",
+              "file_offset": "0x567268"
+            }
+          ]
+        },
+        {
+          "frame": "0x555798",
+          "descriptor": "0x5557c0",
+          "descriptor_refs": []
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x5538c0",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "aeef14270bdbb73092fe48ad8e06ae801841abe10f14518931e6d387d7330e09",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d64",
+              "section": ".rdata",
+              "file_offset": "0x54a284"
+            }
+          ]
+        },
+        {
+          "page": "0x5539d8",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f9edf26515287f37f00189bec8044a69c05ac4909f0427b158b6b11382a427a3",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d68",
+              "section": ".rdata",
+              "file_offset": "0x54a288"
+            }
+          ]
+        },
+        {
+          "page": "0x553af0",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "89f2692aa5b44913b35ae45a2b3d3ebff5f2f177e019bdf8450ac7de510c3723",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d6c",
+              "section": ".rdata",
+              "file_offset": "0x54a28c"
+            }
+          ]
+        },
+        {
+          "page": "0x553c08",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "885755000af10aca602a04d908a0d63c4bba30d10948cfa1577e8d0fb8245dec",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d70",
+              "section": ".rdata",
+              "file_offset": "0x54a290"
+            }
+          ]
+        },
+        {
+          "page": "0x553d20",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "360ea113bbbae8b79f8961bf257a1e0a7caab8f491bd9a441fe59fc757ea62e6",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d74",
+              "section": ".rdata",
+              "file_offset": "0x54a294"
+            }
+          ]
+        },
+        {
+          "page": "0x553e38",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "21318c0b9d74f0c065920acb9693e970f2ba6f4cb4b3d6cf8aec4cedc420fd58",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d78",
+              "section": ".rdata",
+              "file_offset": "0x54a298"
+            }
+          ]
+        },
+        {
+          "page": "0x553f50",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "9dcbae37615a1763d75d792d47fbdeecc07277906315cc42f01accb10ee87d94",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d7c",
+              "section": ".rdata",
+              "file_offset": "0x54a29c"
+            }
+          ]
+        },
+        {
+          "page": "0x554068",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "9b119ca5928c6d92d59fb0c77990695a86c9f2cfa8f02bb9a8be1a4605a41845",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d80",
+              "section": ".rdata",
+              "file_offset": "0x54a2a0"
+            }
+          ]
+        },
+        {
+          "page": "0x5543b0",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "b81ee3c798c629a80b529ce88246220c45d29572f48a34aed1f1e38b57226b4b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d84",
+              "section": ".rdata",
+              "file_offset": "0x54a2a4"
+            }
+          ]
+        },
+        {
+          "page": "0x5544c8",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f40bd3e80b468f8625c39370a077e4b0e63ce5b50fe0f2bb8ddb3219d2365b49",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d88",
+              "section": ".rdata",
+              "file_offset": "0x54a2a8"
+            }
+          ]
+        },
+        {
+          "page": "0x5545e0",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "0ae014c47495f599094a25cae9e33fdf03109f7ec7ccec02b4c5b071fd7d4cbb",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d8c",
+              "section": ".rdata",
+              "file_offset": "0x54a2ac"
+            }
+          ]
+        },
+        {
+          "page": "0x5546f8",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "35f94439c67f955f675b950100eb92418090afe1d25c2fdd170af98a1c8fc36b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d90",
+              "section": ".rdata",
+              "file_offset": "0x54a2b0"
+            }
+          ]
+        },
+        {
+          "page": "0x554810",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f26286c02fb64edd470269dd45a1af9fa0e2fa8f519784198212f6b3a675db30",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d94",
+              "section": ".rdata",
+              "file_offset": "0x54a2b4"
+            }
+          ]
+        },
+        {
+          "page": "0x554a40",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "ecff05a9def536842fc3b94ceece2c13037384be6085fbbea04c91e3fa551012",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d98",
+              "section": ".rdata",
+              "file_offset": "0x54a2b8"
+            }
+          ]
+        },
+        {
+          "page": "0x554928",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "398c7ad8f3c31ac9737decf7cb2c5ce6f5faf760739e5237918d5f9ad281032f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554d9c",
+              "section": ".rdata",
+              "file_offset": "0x54a2bc"
+            }
+          ]
+        },
+        {
+          "page": "0x554180",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "a86b77041bbe83091061531684c6f3af06b566d8fb1428c7a0c3cfa302ce5df1",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554da0",
+              "section": ".rdata",
+              "file_offset": "0x54a2c0"
+            }
+          ]
+        },
+        {
+          "page": "0x554298",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f8e19eed3dface558c53350b3f27b6f7471ad937c585397e737de3efa7cc538c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554da4",
+              "section": ".rdata",
+              "file_offset": "0x54a2c4"
+            }
+          ]
+        },
+        {
+          "page": "0x554b58",
+          "name": "All Positions",
+          "enum": 17,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d157a52a3db3f3c9ef754165ae358b84706d40fe4f6013aa34fbde3b3da024b3",
+          "absolute_base_candidates": [
+            {
+              "source": "0x554da8",
+              "section": ".rdata",
+              "file_offset": "0x54a2c8"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 36,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "player_trade",
+      "table": "0x559b04",
+      "sheet": "0x559a10",
+      "olb_name_field": "0x559450",
+      "descriptor_stride": 296,
+      "list_stride": 4,
+      "rows_before": 18,
+      "rows_after": 17,
+      "span_size": 76,
+      "before": "6886550090875500b8885500e0895500088b5500308c5500588d5500808e5500f891550020935500489455007095550098965500e8985500c0975500a88f5500d09055006884550000000000",
+      "after": "6886550090875500b8885500e0895500088b5500308c5500588d5500808e5500f8915500209355007095550098965500e8985500c0975500a88f5500d0905500688455000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x55a0c8",
+          "section": ".rdata",
+          "file_offset": "0x54f5e8"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x55a0c8",
+          "descriptor": "0x55a0f0",
+          "descriptor_refs": [
+            {
+              "source": "0x2b873c",
+              "section": ".text",
+              "file_offset": "0x2a873c"
+            },
+            {
+              "source": "0x349622",
+              "section": ".text",
+              "file_offset": "0x339622"
+            },
+            {
+              "source": "0x349963",
+              "section": ".text",
+              "file_offset": "0x339963"
+            },
+            {
+              "source": "0x34d899",
+              "section": ".text",
+              "file_offset": "0x33d899"
+            },
+            {
+              "source": "0x36174b",
+              "section": ".text",
+              "file_offset": "0x35174b"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x558668",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "259d9c1fa622437611f3aaf93e95d72673159edae941ea09ced40d32c275628c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b04",
+              "section": ".rdata",
+              "file_offset": "0x54f024"
+            },
+            {
+              "source": "0x559c44",
+              "section": ".rdata",
+              "file_offset": "0x54f164"
+            }
+          ]
+        },
+        {
+          "page": "0x558790",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d318fb237f9aec580ad520506245a1f5de21da2b3a72bae3046a74205acb2a86",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b08",
+              "section": ".rdata",
+              "file_offset": "0x54f028"
+            },
+            {
+              "source": "0x559c48",
+              "section": ".rdata",
+              "file_offset": "0x54f168"
+            }
+          ]
+        },
+        {
+          "page": "0x5588b8",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "034663186eb835be3c7e51d1ddd86359c74fdd2f01d642b0dc0c8f47a2d3c08e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b0c",
+              "section": ".rdata",
+              "file_offset": "0x54f02c"
+            },
+            {
+              "source": "0x559c4c",
+              "section": ".rdata",
+              "file_offset": "0x54f16c"
+            }
+          ]
+        },
+        {
+          "page": "0x5589e0",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "0f8fba1c38f490adf63d3cad26cf27717347bd0367bb9639fc3df31c0b5ee818",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b10",
+              "section": ".rdata",
+              "file_offset": "0x54f030"
+            },
+            {
+              "source": "0x559c50",
+              "section": ".rdata",
+              "file_offset": "0x54f170"
+            }
+          ]
+        },
+        {
+          "page": "0x558b08",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "e9ddedc7cc751c06f2170c428f81de375c4ddd0e5106234df39e9a27dc646f79",
+          "absolute_base_candidates": [
+            {
+              "source": "0x579dc",
+              "section": ".text",
+              "file_offset": "0x479dc"
+            },
+            {
+              "source": "0x559b14",
+              "section": ".rdata",
+              "file_offset": "0x54f034"
+            },
+            {
+              "source": "0x559c54",
+              "section": ".rdata",
+              "file_offset": "0x54f174"
+            }
+          ]
+        },
+        {
+          "page": "0x558c30",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "5724e9e267e20207d04e54de13200d1db0eba826975ffd53b8dd8f1b7365d654",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b18",
+              "section": ".rdata",
+              "file_offset": "0x54f038"
+            },
+            {
+              "source": "0x559c58",
+              "section": ".rdata",
+              "file_offset": "0x54f178"
+            }
+          ]
+        },
+        {
+          "page": "0x558d58",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "562cb47b21ff056dd3100648652ccfec6b9af1904f6f7c07d5bf1950188235b1",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b1c",
+              "section": ".rdata",
+              "file_offset": "0x54f03c"
+            },
+            {
+              "source": "0x559c5c",
+              "section": ".rdata",
+              "file_offset": "0x54f17c"
+            }
+          ]
+        },
+        {
+          "page": "0x558e80",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "616b6a4640bc122ebe52fb179a093721aa3b611b2c1e0eb399ee1d711cb05835",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b20",
+              "section": ".rdata",
+              "file_offset": "0x54f040"
+            },
+            {
+              "source": "0x559c60",
+              "section": ".rdata",
+              "file_offset": "0x54f180"
+            }
+          ]
+        },
+        {
+          "page": "0x5591f8",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "dd93b6751b32e08bcf24a0acfef4c32625f1f006825a55541605a27d6f69cb91",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b24",
+              "section": ".rdata",
+              "file_offset": "0x54f044"
+            },
+            {
+              "source": "0x559c64",
+              "section": ".rdata",
+              "file_offset": "0x54f184"
+            }
+          ]
+        },
+        {
+          "page": "0x559320",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "591108d6becaec0d2e03d3d293d523dd113be59d72970aa42627323fc46a532a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b28",
+              "section": ".rdata",
+              "file_offset": "0x54f048"
+            },
+            {
+              "source": "0x559c68",
+              "section": ".rdata",
+              "file_offset": "0x54f188"
+            }
+          ]
+        },
+        {
+          "page": "0x559448",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f8c3d9bb624888766a909076a37261a3949c3f089ac9e317cc52600907a32954",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b2c",
+              "section": ".rdata",
+              "file_offset": "0x54f04c"
+            },
+            {
+              "source": "0x559c6c",
+              "section": ".rdata",
+              "file_offset": "0x54f18c"
+            }
+          ]
+        },
+        {
+          "page": "0x559570",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "799b0547a3f402d79880e24f4d8799be39513427bfc16ecf21b668fdc7f1a42d",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b30",
+              "section": ".rdata",
+              "file_offset": "0x54f050"
+            },
+            {
+              "source": "0x559c70",
+              "section": ".rdata",
+              "file_offset": "0x54f190"
+            }
+          ]
+        },
+        {
+          "page": "0x559698",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d7b02552969266453dd2cd5f6a5562d16842c474717dea95a686d4be4fb0ae54",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b34",
+              "section": ".rdata",
+              "file_offset": "0x54f054"
+            },
+            {
+              "source": "0x559c74",
+              "section": ".rdata",
+              "file_offset": "0x54f194"
+            }
+          ]
+        },
+        {
+          "page": "0x5598e8",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "01161ab4faff9b2923d463f3207d7503578edb916960ee00609df1a20f812d8f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b38",
+              "section": ".rdata",
+              "file_offset": "0x54f058"
+            },
+            {
+              "source": "0x559c78",
+              "section": ".rdata",
+              "file_offset": "0x54f198"
+            }
+          ]
+        },
+        {
+          "page": "0x5597c0",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "185fb13e7ca9e594d7e431f2a9cd16e9ea2868cf7e467044adea1c71a731191f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b3c",
+              "section": ".rdata",
+              "file_offset": "0x54f05c"
+            },
+            {
+              "source": "0x559c7c",
+              "section": ".rdata",
+              "file_offset": "0x54f19c"
+            }
+          ]
+        },
+        {
+          "page": "0x558fa8",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "da1e7fba1a4cdbe007ce01fbdca0ed21a4e74daa55d93a924454c32f4089a1b9",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b40",
+              "section": ".rdata",
+              "file_offset": "0x54f060"
+            },
+            {
+              "source": "0x559c80",
+              "section": ".rdata",
+              "file_offset": "0x54f1a0"
+            }
+          ]
+        },
+        {
+          "page": "0x5590d0",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "2041f6d73b0df9b4769a171ba00b3c4a9334c4a9f71f13cd862e2cbd3d85d105",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b44",
+              "section": ".rdata",
+              "file_offset": "0x54f064"
+            },
+            {
+              "source": "0x559c84",
+              "section": ".rdata",
+              "file_offset": "0x54f1a4"
+            }
+          ]
+        },
+        {
+          "page": "0x558468",
+          "name": "Picks",
+          "enum": 4294967295,
+          "count": "0x3482e0",
+          "getter": "0x348360",
+          "page_sha256": "cc4a0f7174de70d4ed9d13f53a17d355cda83e07ce1d02b13a75c729847f3e94",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b48",
+              "section": ".rdata",
+              "file_offset": "0x54f068"
+            },
+            {
+              "source": "0x559c88",
+              "section": ".rdata",
+              "file_offset": "0x54f1a8"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 151,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "trading_block",
+      "table": "0x559c44",
+      "sheet": "0x559b50",
+      "olb_name_field": "0x559450",
+      "descriptor_stride": 296,
+      "list_stride": 4,
+      "rows_before": 18,
+      "rows_after": 17,
+      "span_size": 76,
+      "before": "6886550090875500b8885500e0895500088b5500308c5500588d5500808e5500f891550020935500489455007095550098965500e8985500c0975500a88f5500d09055006884550000000000",
+      "after": "6886550090875500b8885500e0895500088b5500308c5500588d5500808e5500f8915500209355007095550098965500e8985500c0975500a88f5500d0905500688455000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x55a2e0",
+          "section": ".rdata",
+          "file_offset": "0x54f800"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x55a2e0",
+          "descriptor": "0x55a31c",
+          "descriptor_refs": [
+            {
+              "source": "0x349542",
+              "section": ".text",
+              "file_offset": "0x339542"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x558668",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "259d9c1fa622437611f3aaf93e95d72673159edae941ea09ced40d32c275628c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b04",
+              "section": ".rdata",
+              "file_offset": "0x54f024"
+            },
+            {
+              "source": "0x559c44",
+              "section": ".rdata",
+              "file_offset": "0x54f164"
+            }
+          ]
+        },
+        {
+          "page": "0x558790",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d318fb237f9aec580ad520506245a1f5de21da2b3a72bae3046a74205acb2a86",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b08",
+              "section": ".rdata",
+              "file_offset": "0x54f028"
+            },
+            {
+              "source": "0x559c48",
+              "section": ".rdata",
+              "file_offset": "0x54f168"
+            }
+          ]
+        },
+        {
+          "page": "0x5588b8",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "034663186eb835be3c7e51d1ddd86359c74fdd2f01d642b0dc0c8f47a2d3c08e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b0c",
+              "section": ".rdata",
+              "file_offset": "0x54f02c"
+            },
+            {
+              "source": "0x559c4c",
+              "section": ".rdata",
+              "file_offset": "0x54f16c"
+            }
+          ]
+        },
+        {
+          "page": "0x5589e0",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "0f8fba1c38f490adf63d3cad26cf27717347bd0367bb9639fc3df31c0b5ee818",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b10",
+              "section": ".rdata",
+              "file_offset": "0x54f030"
+            },
+            {
+              "source": "0x559c50",
+              "section": ".rdata",
+              "file_offset": "0x54f170"
+            }
+          ]
+        },
+        {
+          "page": "0x558b08",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "e9ddedc7cc751c06f2170c428f81de375c4ddd0e5106234df39e9a27dc646f79",
+          "absolute_base_candidates": [
+            {
+              "source": "0x579dc",
+              "section": ".text",
+              "file_offset": "0x479dc"
+            },
+            {
+              "source": "0x559b14",
+              "section": ".rdata",
+              "file_offset": "0x54f034"
+            },
+            {
+              "source": "0x559c54",
+              "section": ".rdata",
+              "file_offset": "0x54f174"
+            }
+          ]
+        },
+        {
+          "page": "0x558c30",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "5724e9e267e20207d04e54de13200d1db0eba826975ffd53b8dd8f1b7365d654",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b18",
+              "section": ".rdata",
+              "file_offset": "0x54f038"
+            },
+            {
+              "source": "0x559c58",
+              "section": ".rdata",
+              "file_offset": "0x54f178"
+            }
+          ]
+        },
+        {
+          "page": "0x558d58",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "562cb47b21ff056dd3100648652ccfec6b9af1904f6f7c07d5bf1950188235b1",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b1c",
+              "section": ".rdata",
+              "file_offset": "0x54f03c"
+            },
+            {
+              "source": "0x559c5c",
+              "section": ".rdata",
+              "file_offset": "0x54f17c"
+            }
+          ]
+        },
+        {
+          "page": "0x558e80",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "616b6a4640bc122ebe52fb179a093721aa3b611b2c1e0eb399ee1d711cb05835",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b20",
+              "section": ".rdata",
+              "file_offset": "0x54f040"
+            },
+            {
+              "source": "0x559c60",
+              "section": ".rdata",
+              "file_offset": "0x54f180"
+            }
+          ]
+        },
+        {
+          "page": "0x5591f8",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "dd93b6751b32e08bcf24a0acfef4c32625f1f006825a55541605a27d6f69cb91",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b24",
+              "section": ".rdata",
+              "file_offset": "0x54f044"
+            },
+            {
+              "source": "0x559c64",
+              "section": ".rdata",
+              "file_offset": "0x54f184"
+            }
+          ]
+        },
+        {
+          "page": "0x559320",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "591108d6becaec0d2e03d3d293d523dd113be59d72970aa42627323fc46a532a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b28",
+              "section": ".rdata",
+              "file_offset": "0x54f048"
+            },
+            {
+              "source": "0x559c68",
+              "section": ".rdata",
+              "file_offset": "0x54f188"
+            }
+          ]
+        },
+        {
+          "page": "0x559448",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f8c3d9bb624888766a909076a37261a3949c3f089ac9e317cc52600907a32954",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b2c",
+              "section": ".rdata",
+              "file_offset": "0x54f04c"
+            },
+            {
+              "source": "0x559c6c",
+              "section": ".rdata",
+              "file_offset": "0x54f18c"
+            }
+          ]
+        },
+        {
+          "page": "0x559570",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "799b0547a3f402d79880e24f4d8799be39513427bfc16ecf21b668fdc7f1a42d",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b30",
+              "section": ".rdata",
+              "file_offset": "0x54f050"
+            },
+            {
+              "source": "0x559c70",
+              "section": ".rdata",
+              "file_offset": "0x54f190"
+            }
+          ]
+        },
+        {
+          "page": "0x559698",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d7b02552969266453dd2cd5f6a5562d16842c474717dea95a686d4be4fb0ae54",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b34",
+              "section": ".rdata",
+              "file_offset": "0x54f054"
+            },
+            {
+              "source": "0x559c74",
+              "section": ".rdata",
+              "file_offset": "0x54f194"
+            }
+          ]
+        },
+        {
+          "page": "0x5598e8",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "01161ab4faff9b2923d463f3207d7503578edb916960ee00609df1a20f812d8f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b38",
+              "section": ".rdata",
+              "file_offset": "0x54f058"
+            },
+            {
+              "source": "0x559c78",
+              "section": ".rdata",
+              "file_offset": "0x54f198"
+            }
+          ]
+        },
+        {
+          "page": "0x5597c0",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "185fb13e7ca9e594d7e431f2a9cd16e9ea2868cf7e467044adea1c71a731191f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b3c",
+              "section": ".rdata",
+              "file_offset": "0x54f05c"
+            },
+            {
+              "source": "0x559c7c",
+              "section": ".rdata",
+              "file_offset": "0x54f19c"
+            }
+          ]
+        },
+        {
+          "page": "0x558fa8",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "da1e7fba1a4cdbe007ce01fbdca0ed21a4e74daa55d93a924454c32f4089a1b9",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b40",
+              "section": ".rdata",
+              "file_offset": "0x54f060"
+            },
+            {
+              "source": "0x559c80",
+              "section": ".rdata",
+              "file_offset": "0x54f1a0"
+            }
+          ]
+        },
+        {
+          "page": "0x5590d0",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "2041f6d73b0df9b4769a171ba00b3c4a9334c4a9f71f13cd862e2cbd3d85d105",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b44",
+              "section": ".rdata",
+              "file_offset": "0x54f064"
+            },
+            {
+              "source": "0x559c84",
+              "section": ".rdata",
+              "file_offset": "0x54f1a4"
+            }
+          ]
+        },
+        {
+          "page": "0x558468",
+          "name": "Picks",
+          "enum": 4294967295,
+          "count": "0x3482e0",
+          "getter": "0x348360",
+          "page_sha256": "cc4a0f7174de70d4ed9d13f53a17d355cda83e07ce1d02b13a75c729847f3e94",
+          "absolute_base_candidates": [
+            {
+              "source": "0x559b48",
+              "section": ".rdata",
+              "file_offset": "0x54f068"
+            },
+            {
+              "source": "0x559c88",
+              "section": ".rdata",
+              "file_offset": "0x54f1a8"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 152,
+      "list_interior_candidates": [
+        {
+          "source": "0x86fc58",
+          "target": "0x559c53",
+          "section": ".rdata",
+          "file_offset": "0x865178",
+          "spans": [
+            "trading_block:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        }
+      ]
+    },
+    {
+      "name": "draft",
+      "table": "0x55fd94",
+      "sheet": "0x55fca0",
+      "olb_name_field": "0x55efb0",
+      "descriptor_stride": 200,
+      "list_stride": 4,
+      "rows_before": 18,
+      "rows_after": 17,
+      "span_size": 76,
+      "before": "48e6550010e75500d8e75500a0e8550068e9550030ea5500f8ea5500c0eb550088ec550050ed550018ee5500e0ee5500a8ef550070f0550038f15500c8f2550000f2550090f3550000000000",
+      "after": "48e6550010e75500d8e75500a0e8550068e9550030ea5500f8ea5500c0eb550088ec550050ed550018ee5500e0ee550070f0550038f15500c8f2550000f2550090f355000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x5603a8",
+          "section": ".rdata",
+          "file_offset": "0x5558c8"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x5603a8",
+          "descriptor": "0x5603e4",
+          "descriptor_refs": [
+            {
+              "source": "0xae36c8",
+              "section": ".data",
+              "file_offset": "0xad8d48"
+            },
+            {
+              "source": "0xae36e8",
+              "section": ".data",
+              "file_offset": "0xad8d68"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x55e648",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "170b398fb4c5c17e18ee606c81a242c385a92f635436ac1cd62d4b763dd31a88",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fd94",
+              "section": ".rdata",
+              "file_offset": "0x5552b4"
+            }
+          ]
+        },
+        {
+          "page": "0x55e710",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "f0696a786e6c7b78a4d1ba6982c98b8d0b73dda961d66f02c0dbce53b83c7d29",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fd98",
+              "section": ".rdata",
+              "file_offset": "0x5552b8"
+            }
+          ]
+        },
+        {
+          "page": "0x55e7d8",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "b6d82b57c1ad2336d3451d103af81dc66087facea04cbf771880b70d5d2ba196",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fd9c",
+              "section": ".rdata",
+              "file_offset": "0x5552bc"
+            }
+          ]
+        },
+        {
+          "page": "0x55e8a0",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "e9750ecb47cd5502eba997f5751be9ab23ae7f2527e15400dfc5af1146bbdb72",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fda0",
+              "section": ".rdata",
+              "file_offset": "0x5552c0"
+            }
+          ]
+        },
+        {
+          "page": "0x55e968",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "3c275b5e251bd2e91ea2b836436ef71d5c45d8eeb1797abe2f39addcbd5aebfe",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fda4",
+              "section": ".rdata",
+              "file_offset": "0x5552c4"
+            }
+          ]
+        },
+        {
+          "page": "0x55ea30",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "edd0e8c76365574c477f43b8605e3e60271a18a5ad5111dd0d3d07c5bfbd76ca",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fda8",
+              "section": ".rdata",
+              "file_offset": "0x5552c8"
+            }
+          ]
+        },
+        {
+          "page": "0x55eaf8",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "f6a4eb52578b7fac63b0da4b6e82e9c8b5f0035b4c2de2ac80bf3c1acbf1770e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdac",
+              "section": ".rdata",
+              "file_offset": "0x5552cc"
+            }
+          ]
+        },
+        {
+          "page": "0x55ebc0",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "904cf1c43deb2682057a8dbe215b2af71add58634bd0f6d134ac177e30bd8be0",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdb0",
+              "section": ".rdata",
+              "file_offset": "0x5552d0"
+            }
+          ]
+        },
+        {
+          "page": "0x55ec88",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "58942f3e9133005750c0797d41234e46e0edcb4b1057ddf77c4dd67d00e7b35e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdb4",
+              "section": ".rdata",
+              "file_offset": "0x5552d4"
+            }
+          ]
+        },
+        {
+          "page": "0x55ed50",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "73307b814e47849de9fecb471b7b8818e11d894e72396b4d39d6066f963bbbb1",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdb8",
+              "section": ".rdata",
+              "file_offset": "0x5552d8"
+            }
+          ]
+        },
+        {
+          "page": "0x55ee18",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "6ca20422655b6786f7c911b1f0c2e4c6e9c1249c98e4d65203bdd1d7c9e1b131",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdbc",
+              "section": ".rdata",
+              "file_offset": "0x5552dc"
+            }
+          ]
+        },
+        {
+          "page": "0x55eee0",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "85c0ee0936b18846598960f918fed03bd51ec9780a2458580897b7789c77f5d0",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdc0",
+              "section": ".rdata",
+              "file_offset": "0x5552e0"
+            }
+          ]
+        },
+        {
+          "page": "0x55efa8",
+          "name": "outside Linebackers",
+          "enum": 10,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "15c1fd746b65ae95bd2bffd9865473ee555a8a2cb3b86f9c089b347c22a08187",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdc4",
+              "section": ".rdata",
+              "file_offset": "0x5552e4"
+            }
+          ]
+        },
+        {
+          "page": "0x55f070",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "e8847b6a3d4f0c891b8b8a7c82054c85fed4d82f01aedfcb4b62e031525c8683",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdc8",
+              "section": ".rdata",
+              "file_offset": "0x5552e8"
+            }
+          ]
+        },
+        {
+          "page": "0x55f138",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "bc99cc8237108f9a9eb76f714d1ce04c51da5ad1f8b2507db460e04dfde0fe8e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdcc",
+              "section": ".rdata",
+              "file_offset": "0x5552ec"
+            }
+          ]
+        },
+        {
+          "page": "0x55f2c8",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "1b6d58aed2dee6e85b688c238630a833dc9c9bcb8bc6b63de8ab1797c93dd4a8",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdd0",
+              "section": ".rdata",
+              "file_offset": "0x5552f0"
+            }
+          ]
+        },
+        {
+          "page": "0x55f200",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "b1c3286532ade8f2a5ddcc7d64998a07a456fd27cefc77abc20cea6b35bf90c9",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdd4",
+              "section": ".rdata",
+              "file_offset": "0x5552f4"
+            }
+          ]
+        },
+        {
+          "page": "0x55f390",
+          "name": "All Positions",
+          "enum": 17,
+          "count": "0x35fd40",
+          "getter": "0x35fd80",
+          "page_sha256": "fd80479a990f909b8acc9bb5352a80f6e0c3522b5eec439733338be34c731788",
+          "absolute_base_candidates": [
+            {
+              "source": "0x55fdd8",
+              "section": ".rdata",
+              "file_offset": "0x5552f8"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 33,
+      "list_interior_candidates": [
+        {
+          "source": "0x8fa754",
+          "target": "0x55fdb6",
+          "section": ".rdata",
+          "file_offset": "0x8efc74",
+          "spans": [
+            "draft:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        }
+      ]
+    },
+    {
+      "name": "choose_players",
+      "table": "0x5714bc",
+      "sheet": "0x5713c8",
+      "olb_name_field": "0x570d30",
+      "descriptor_stride": 288,
+      "list_stride": 4,
+      "rows_before": 17,
+      "rows_after": 16,
+      "span_size": 72,
+      "before": "a8ff5600c8005700e80157000803570028045700480557006806570088075700e80a5700080c5700280d5700480e5700680f5700a811570088105700a8085700c809570000000000",
+      "after": "a8ff5600c8005700e80157000803570028045700480557006806570088075700e80a5700080c5700480e5700680f5700a811570088105700a8085700c80957000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x571e30",
+          "section": ".rdata",
+          "file_offset": "0x567350"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x571e30",
+          "descriptor": "0x571e58",
+          "descriptor_refs": [
+            {
+              "source": "0x571ea8",
+              "section": ".rdata",
+              "file_offset": "0x5673c8"
+            },
+            {
+              "source": "0x571ef0",
+              "section": ".rdata",
+              "file_offset": "0x567410"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x56ffa8",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "fc4a4bba7735905a11ccd9c1d429800be4065048b923fd8d4277f1f9f6e61395",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714bc",
+              "section": ".rdata",
+              "file_offset": "0x5669dc"
+            }
+          ]
+        },
+        {
+          "page": "0x5700c8",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "1a5d4dfbd4aee1afb60a6124c718a9bce74d6409264387087b4bb03e9d02a11e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714c0",
+              "section": ".rdata",
+              "file_offset": "0x5669e0"
+            }
+          ]
+        },
+        {
+          "page": "0x5701e8",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "20d572c72fbb6c1bae7550dcb4c70a574bf2856160d63742e11b741200db8e96",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714c4",
+              "section": ".rdata",
+              "file_offset": "0x5669e4"
+            }
+          ]
+        },
+        {
+          "page": "0x570308",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "21b619ca452cc67cf6231b576390c856677d3bac57dc26d600a31745cbb9a247",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714c8",
+              "section": ".rdata",
+              "file_offset": "0x5669e8"
+            }
+          ]
+        },
+        {
+          "page": "0x570428",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "44f27f048abca0ad1f059c34e0e03e1b8fc2cda67187944e4941faa6fd5b79ff",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714cc",
+              "section": ".rdata",
+              "file_offset": "0x5669ec"
+            }
+          ]
+        },
+        {
+          "page": "0x570548",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "a519dadbeffa7c58a8510f1f4bbfc6385c37270e1c066ca40aeaa7d80c81b809",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714d0",
+              "section": ".rdata",
+              "file_offset": "0x5669f0"
+            }
+          ]
+        },
+        {
+          "page": "0x570668",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "bb3569eee1cd46018924507d201867cdf7bda2b0322a1e70ad9a21f956c18a4a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714d4",
+              "section": ".rdata",
+              "file_offset": "0x5669f4"
+            }
+          ]
+        },
+        {
+          "page": "0x570788",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "9d6293f202769459f00c0b447fdf173e8e6ae41a55063448eef3df366ed78fd3",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714d8",
+              "section": ".rdata",
+              "file_offset": "0x5669f8"
+            }
+          ]
+        },
+        {
+          "page": "0x570ae8",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "fb312e59f5a2cf47fc78ad3c66775e94c68d480ec6e835503105a1f2b9e642a7",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714dc",
+              "section": ".rdata",
+              "file_offset": "0x5669fc"
+            }
+          ]
+        },
+        {
+          "page": "0x570c08",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "85d2eba3f744e88b8455a3b5e2b362396a37eb415a8d6b000b6b97a86149e6b5",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714e0",
+              "section": ".rdata",
+              "file_offset": "0x566a00"
+            }
+          ]
+        },
+        {
+          "page": "0x570d28",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "ee265ffa4f9ac1b4f9634d0d417a44605d82e0f6b4ad8bd123979ecdcfdfde8c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714e4",
+              "section": ".rdata",
+              "file_offset": "0x566a04"
+            }
+          ]
+        },
+        {
+          "page": "0x570e48",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "dc7142a7ec164a341c1f79317d53d3bc071401a35bc7c694a735e52a45c3869e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714e8",
+              "section": ".rdata",
+              "file_offset": "0x566a08"
+            }
+          ]
+        },
+        {
+          "page": "0x570f68",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "70478398cbf41a14739da1d38c87a86cf04a0ffe3a898b22efc213166903c28b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714ec",
+              "section": ".rdata",
+              "file_offset": "0x566a0c"
+            }
+          ]
+        },
+        {
+          "page": "0x5711a8",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "3c5c186b24a933c438377648a81e0a4ff79c97c86e2b55a3fedb9cd4af08cdc7",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714f0",
+              "section": ".rdata",
+              "file_offset": "0x566a10"
+            }
+          ]
+        },
+        {
+          "page": "0x571088",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "0531d7bbeeddbdcbce5659f68729b1f27be6b82226340681d95963dfc22429bd",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714f4",
+              "section": ".rdata",
+              "file_offset": "0x566a14"
+            }
+          ]
+        },
+        {
+          "page": "0x5708a8",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "986fda2b8c55f18d32d3bfda28c88f13e2b7231e48ad112fc7254e57bdcc1ea8",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714f8",
+              "section": ".rdata",
+              "file_offset": "0x566a18"
+            }
+          ]
+        },
+        {
+          "page": "0x5709c8",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x31ab20",
+          "getter": "0x31ab80",
+          "page_sha256": "79539767746bb66e0faefca63438c1aa710274e27cc8d9a458f72583a3eee149",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5714fc",
+              "section": ".rdata",
+              "file_offset": "0x566a1c"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 603,
+      "list_interior_candidates": [
+        {
+          "source": "0x3e7a57",
+          "target": "0x5714e8",
+          "section": ".text",
+          "file_offset": "0x3d7a57",
+          "spans": [
+            "choose_players:sheet_and_list"
+          ],
+          "kind": "instruction_encoding_overlap",
+          "function": "0x3e7a52",
+          "instruction": "0x3e7a57: call 0x3ed170"
+        }
+      ]
+    },
+    {
+      "name": "team_comparison",
+      "table": "0x5803fc",
+      "sheet": "0x580308",
+      "olb_name_field": "0x57fd70",
+      "descriptor_stride": 288,
+      "list_stride": 4,
+      "rows_before": 17,
+      "rows_after": 16,
+      "span_size": 72,
+      "before": "e8ef570008f1570028f2570048f3570068f4570088f55700a8f65700c8f75700e8f8570008fa570028fb570048fc570068fd570088fe5700a8ff5700e8015800c800580000000000",
+      "after": "e8ef570008f1570028f2570048f3570068f4570088f55700a8f65700c8f75700e8f8570008fa570028fb570048fc570088fe5700a8ff5700e8015800c80058000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x580680",
+          "section": ".rdata",
+          "file_offset": "0x575ba0"
+        },
+        {
+          "source": "0x580934",
+          "section": ".rdata",
+          "file_offset": "0x575e54"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x580680",
+          "descriptor": "0x5806a8",
+          "descriptor_refs": [
+            {
+              "source": "0x52a3b8",
+              "section": ".rdata",
+              "file_offset": "0x51f8d8"
+            }
+          ]
+        },
+        {
+          "frame": "0x580934",
+          "descriptor": "0x58095c",
+          "descriptor_refs": [
+            {
+              "source": "0x372b72",
+              "section": ".text",
+              "file_offset": "0x362b72"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x57efe8",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "b1cfa55ae22bea08427f72e53504156640af664fa2958bfa1a261b596924f879",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5803fc",
+              "section": ".rdata",
+              "file_offset": "0x57591c"
+            }
+          ]
+        },
+        {
+          "page": "0x57f108",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "336a5ab28b041a6eb3c41e6fb1232d29204a5eafef07c5a59e06743225bb7092",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580400",
+              "section": ".rdata",
+              "file_offset": "0x575920"
+            }
+          ]
+        },
+        {
+          "page": "0x57f228",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "0064c812c7269aca2b35138838b5bc1d4b292ec241036338b4bced83a4bd8655",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580404",
+              "section": ".rdata",
+              "file_offset": "0x575924"
+            }
+          ]
+        },
+        {
+          "page": "0x57f348",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "6f0df815b096b88efed72664451e40490a8d05302f4528ab63aa9233e2cd42ca",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580408",
+              "section": ".rdata",
+              "file_offset": "0x575928"
+            }
+          ]
+        },
+        {
+          "page": "0x57f468",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "9acc31c6376feef2ed968e691337576f5ddb37a7a53b64bbfb8b8f717cd1c642",
+          "absolute_base_candidates": [
+            {
+              "source": "0x58040c",
+              "section": ".rdata",
+              "file_offset": "0x57592c"
+            }
+          ]
+        },
+        {
+          "page": "0x57f588",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "aa6ec880069879d2a2d3587e3d74f029769a0b0d94509ad6b417e3daa344939b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580410",
+              "section": ".rdata",
+              "file_offset": "0x575930"
+            }
+          ]
+        },
+        {
+          "page": "0x57f6a8",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "eebcc070d0b23a34eb6c794826d8b6eec04770e709e5bdd217dda32ee4013502",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580414",
+              "section": ".rdata",
+              "file_offset": "0x575934"
+            }
+          ]
+        },
+        {
+          "page": "0x57f7c8",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "62da27bfc66ce7732bea56a52c544449543834cc48535fcc8b05b567e370917f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580418",
+              "section": ".rdata",
+              "file_offset": "0x575938"
+            }
+          ]
+        },
+        {
+          "page": "0x57f8e8",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "8585e09996fc75d9239202017195241d4b88a7763aef5b0de86ade7888af32ff",
+          "absolute_base_candidates": [
+            {
+              "source": "0x58041c",
+              "section": ".rdata",
+              "file_offset": "0x57593c"
+            }
+          ]
+        },
+        {
+          "page": "0x57fa08",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "c8f33ae466eb7bcc3013b65d8d463e00c979a2c685035517f30f907fb8129ab4",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580420",
+              "section": ".rdata",
+              "file_offset": "0x575940"
+            }
+          ]
+        },
+        {
+          "page": "0x57fb28",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "401a0d7920e50d118906db61d5b9fc031237b1151a361cfb011304d5d43fdfdf",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580424",
+              "section": ".rdata",
+              "file_offset": "0x575944"
+            }
+          ]
+        },
+        {
+          "page": "0x57fc48",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "bb67c290c15a274b76511567330645ad0465b334e46a080360b91ddcb7c49503",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580428",
+              "section": ".rdata",
+              "file_offset": "0x575948"
+            }
+          ]
+        },
+        {
+          "page": "0x57fd68",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "1cb8c91ab51e4e9bc6d27691d1f6a7fdb7c8320b8ff3625c134eb18704cee56a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x58042c",
+              "section": ".rdata",
+              "file_offset": "0x57594c"
+            }
+          ]
+        },
+        {
+          "page": "0x57fe88",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "a8974d1e893db3b73dedd359fc08c41462f3f390bc038b32a29ea709cc75e45a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580430",
+              "section": ".rdata",
+              "file_offset": "0x575950"
+            }
+          ]
+        },
+        {
+          "page": "0x57ffa8",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "91bba442184bbfdd0c3bb1c92f138f78721484ad9c9f7c66513d3fb4c2af81b9",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580434",
+              "section": ".rdata",
+              "file_offset": "0x575954"
+            }
+          ]
+        },
+        {
+          "page": "0x5801e8",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "bf4449ad1114d05ae5568c6f060cb92bb12a367d10b3ab555cb93a1ca673fee0",
+          "absolute_base_candidates": [
+            {
+              "source": "0x580438",
+              "section": ".rdata",
+              "file_offset": "0x575958"
+            }
+          ]
+        },
+        {
+          "page": "0x5800c8",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x36f720",
+          "getter": "0x36f750",
+          "page_sha256": "fe0bdd598bcb4bfe7584b21534514fce48bc24f8775f1aacbeb55ecc536df7a4",
+          "absolute_base_candidates": [
+            {
+              "source": "0x58043c",
+              "section": ".rdata",
+              "file_offset": "0x57595c"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 318,
+      "list_interior_candidates": [
+        {
+          "source": "0x65310a",
+          "target": "0x58040d",
+          "section": ".rdata",
+          "file_offset": "0x64862a",
+          "spans": [
+            "team_comparison:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        },
+        {
+          "source": "0xa343b4",
+          "target": "0x5803fc",
+          "section": ".rdata",
+          "file_offset": "0xa298d4",
+          "spans": [
+            "team_comparison:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        }
+      ]
+    },
+    {
+      "name": "team_needs",
+      "table": "0x582ce4",
+      "sheet": "0x582bf0",
+      "olb_name_field": "0x582658",
+      "descriptor_stride": 288,
+      "list_stride": 4,
+      "rows_before": 17,
+      "rows_after": 16,
+      "span_size": 72,
+      "before": "d0185800f0195800101b5800301c5800501d5800701e5800901f5800b0205800d0215800f02258001024580030255800502658007027580090285800d02a5800b029580000000000",
+      "after": "d0185800f0195800101b5800301c5800501d5800701e5800901f5800b0205800d0215800f022580010245800302558007027580090285800d02a5800b02958000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x582e78",
+          "section": ".rdata",
+          "file_offset": "0x578398"
+        },
+        {
+          "source": "0x583018",
+          "section": ".rdata",
+          "file_offset": "0x578538"
+        },
+        {
+          "source": "0x583208",
+          "section": ".rdata",
+          "file_offset": "0x578728"
+        },
+        {
+          "source": "0x583448",
+          "section": ".rdata",
+          "file_offset": "0x578968"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x582e78",
+          "descriptor": "0x582ea0",
+          "descriptor_refs": [
+            {
+              "source": "0x34d914",
+              "section": ".text",
+              "file_offset": "0x33d914"
+            },
+            {
+              "source": "0x361701",
+              "section": ".text",
+              "file_offset": "0x351701"
+            }
+          ]
+        },
+        {
+          "frame": "0x583018",
+          "descriptor": "0x583040",
+          "descriptor_refs": [
+            {
+              "source": "0xae3710",
+              "section": ".data",
+              "file_offset": "0xad8d90"
+            }
+          ]
+        },
+        {
+          "frame": "0x583208",
+          "descriptor": "0x583230",
+          "descriptor_refs": [
+            {
+              "source": "0xaecc68",
+              "section": ".data",
+              "file_offset": "0xae22e8"
+            }
+          ]
+        },
+        {
+          "frame": "0x583448",
+          "descriptor": "0x583470",
+          "descriptor_refs": [
+            {
+              "source": "0xaed654",
+              "section": ".data",
+              "file_offset": "0xae2cd4"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x5818d0",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "4a442246638318fdd7b440bbed6a2cc15b8837751e22674f654cafbfe5588041",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582ce4",
+              "section": ".rdata",
+              "file_offset": "0x578204"
+            }
+          ]
+        },
+        {
+          "page": "0x5819f0",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "7a4f05cfbfb6c66c1e8df474fcd04514060cb2695e49693f243cd5e068cbe1f3",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582ce8",
+              "section": ".rdata",
+              "file_offset": "0x578208"
+            }
+          ]
+        },
+        {
+          "page": "0x581b10",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "b559c78bd0dbf4f24973ea664c45630eed011ae63b850c8e602254ca2cbe06dc",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582cec",
+              "section": ".rdata",
+              "file_offset": "0x57820c"
+            }
+          ]
+        },
+        {
+          "page": "0x581c30",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "5468745698db40a7a614140a8a57c548ce257196cc7713f1304438e614a84263",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582cf0",
+              "section": ".rdata",
+              "file_offset": "0x578210"
+            }
+          ]
+        },
+        {
+          "page": "0x581d50",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "291d49e227c268cbce8fa1d8f878015eeba3918130afd98111d9411e25a06fe6",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582cf4",
+              "section": ".rdata",
+              "file_offset": "0x578214"
+            }
+          ]
+        },
+        {
+          "page": "0x581e70",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d7fd6ebb38a1ca09ffd107d59dbc0a49e2a60a6520779b45a26e303db0b8d8c9",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582cf8",
+              "section": ".rdata",
+              "file_offset": "0x578218"
+            }
+          ]
+        },
+        {
+          "page": "0x581f90",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "6b03bc0919b99c85ad53c04aab5f4f1a0ba313297f2a042e53b3b2a51ab4a217",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582cfc",
+              "section": ".rdata",
+              "file_offset": "0x57821c"
+            }
+          ]
+        },
+        {
+          "page": "0x5820b0",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "7d314974f978d71a871016bc33edfd75c4d064ce1547cc4b609707a1d237a498",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d00",
+              "section": ".rdata",
+              "file_offset": "0x578220"
+            }
+          ]
+        },
+        {
+          "page": "0x5821d0",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "03ecd8dbc9b6bb65f0e7097a16ccd5800c13fa6c7c2fa3b7a18f52935fab031b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d04",
+              "section": ".rdata",
+              "file_offset": "0x578224"
+            }
+          ]
+        },
+        {
+          "page": "0x5822f0",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "08760746d9c02bd1a0a72be5eb77be31ca2039bd23ea91de065f2323596bcdb6",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d08",
+              "section": ".rdata",
+              "file_offset": "0x578228"
+            }
+          ]
+        },
+        {
+          "page": "0x582410",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "5f365d301263031ed0635e36fabe2734c9f341caf5373f2b53f77610f48d012b",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d0c",
+              "section": ".rdata",
+              "file_offset": "0x57822c"
+            }
+          ]
+        },
+        {
+          "page": "0x582530",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "97eeedeea5c7a4a6dad04efb9e76f83e4ded0763642df75d63769359e3028211",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d10",
+              "section": ".rdata",
+              "file_offset": "0x578230"
+            }
+          ]
+        },
+        {
+          "page": "0x582650",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "e141e251cf7aef681f6ad6d3b78a5e18e671948b0a058e13cf7a41bea1da57fa",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d14",
+              "section": ".rdata",
+              "file_offset": "0x578234"
+            }
+          ]
+        },
+        {
+          "page": "0x582770",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "8d65b555832c82f35f91c37943cc8c394502c0d71d85080eb309b02272a6cd11",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d18",
+              "section": ".rdata",
+              "file_offset": "0x578238"
+            }
+          ]
+        },
+        {
+          "page": "0x582890",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "925afc82a2862d1009bd3f101a3d01cac003e6e4ae117163ff66828e8bd3666f",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d1c",
+              "section": ".rdata",
+              "file_offset": "0x57823c"
+            }
+          ]
+        },
+        {
+          "page": "0x582ad0",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d09b14639f85e14b39fb0ec01a60cb65304a0b2cea1262390c097131a44319ad",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d20",
+              "section": ".rdata",
+              "file_offset": "0x578240"
+            }
+          ]
+        },
+        {
+          "page": "0x5829b0",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "fce656fc0ee0f4230629763e94de7795ed301fbf62aee3d5ad686bb8f844dac7",
+          "absolute_base_candidates": [
+            {
+              "source": "0x582d24",
+              "section": ".rdata",
+              "file_offset": "0x578244"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 54,
+      "list_interior_candidates": []
+    },
+    {
+      "name": "trade_compare",
+      "table": "0x5887dc",
+      "sheet": "0x5886e8",
+      "olb_name_field": "0x588060",
+      "descriptor_stride": 280,
+      "list_stride": 4,
+      "rows_before": 17,
+      "rows_after": 16,
+      "span_size": 72,
+      "before": "3873580050745800687558008076580098775800b0785800c8795800e07a5800f87b5800107d5800287e5800407f5800588058007081580088825800b8845800a083580000000000",
+      "after": "3873580050745800687558008076580098775800b0785800c8795800e07a5800f87b5800107d5800287e5800407f58007081580088825800b8845800a08358000000000000000000",
+      "sheet_refs": [
+        {
+          "source": "0x588b60",
+          "section": ".rdata",
+          "file_offset": "0x57e080"
+        }
+      ],
+      "frames": [
+        {
+          "frame": "0x588b60",
+          "descriptor": "0x588b88",
+          "descriptor_refs": [
+            {
+              "source": "0x353796",
+              "section": ".text",
+              "file_offset": "0x343796"
+            }
+          ]
+        }
+      ],
+      "pages": [
+        {
+          "page": "0x587338",
+          "name": "Quarterbacks",
+          "enum": 0,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "633444263e3afaef9e559000037a9d10dc9f9725065a9e215f96c87bfc890378",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887dc",
+              "section": ".rdata",
+              "file_offset": "0x57dcfc"
+            }
+          ]
+        },
+        {
+          "page": "0x587450",
+          "name": "Halfbacks",
+          "enum": 7,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "1acbfeaf162e6e290a43e4c75ce196b3900f90d30d6ee151d28b1eb8ad088dd4",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887e0",
+              "section": ".rdata",
+              "file_offset": "0x57dd00"
+            }
+          ]
+        },
+        {
+          "page": "0x587568",
+          "name": "Fullbacks",
+          "enum": 8,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "27263091e7a3c433d984304682d7bb54d741fb859d76affa26f03c853920c85e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887e4",
+              "section": ".rdata",
+              "file_offset": "0x57dd04"
+            }
+          ]
+        },
+        {
+          "page": "0x587680",
+          "name": "Wide Receivers",
+          "enum": 3,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "dc00ec4dae9a8a85208e7d05dee13542a40d7b9d2467326d3d313f1b11d2f270",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887e8",
+              "section": ".rdata",
+              "file_offset": "0x57dd08"
+            }
+          ]
+        },
+        {
+          "page": "0x587798",
+          "name": "Tight Ends",
+          "enum": 9,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "ce01a0064033f920fb044818d5349bb3b69dd449c8f58222f3e50bea157c78fd",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887ec",
+              "section": ".rdata",
+              "file_offset": "0x57dd0c"
+            }
+          ]
+        },
+        {
+          "page": "0x5878b0",
+          "name": "Centers",
+          "enum": 12,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "82f36447daf82b3867a53e16e83beee739f47c1ebcb0dc6589ac07f8d4fc80de",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887f0",
+              "section": ".rdata",
+              "file_offset": "0x57dd10"
+            }
+          ]
+        },
+        {
+          "page": "0x5879c8",
+          "name": "Guards",
+          "enum": 13,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "d1803b8f30e77477474f288a3b21b68e0361a22bf468553fa7bd7a9074d05ddc",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887f4",
+              "section": ".rdata",
+              "file_offset": "0x57dd14"
+            }
+          ]
+        },
+        {
+          "page": "0x587ae0",
+          "name": "Tackles",
+          "enum": 14,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "8a745b5967d550d0f350a96eee5f3e99d9fa488499c29c2fed9b28344e4c78e8",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887f8",
+              "section": ".rdata",
+              "file_offset": "0x57dd18"
+            }
+          ]
+        },
+        {
+          "page": "0x587bf8",
+          "name": "Kickers",
+          "enum": 1,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "b8db9e9dcf694a8515572f239e905e45f0217d3959541bfd7d720a4310ffe39a",
+          "absolute_base_candidates": [
+            {
+              "source": "0x5887fc",
+              "section": ".rdata",
+              "file_offset": "0x57dd1c"
+            }
+          ]
+        },
+        {
+          "page": "0x587d10",
+          "name": "Punters",
+          "enum": 2,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "7a79df93588463680b128064362e064f32aa68f0cbc2cf264fd342ebf46e1b42",
+          "absolute_base_candidates": [
+            {
+              "source": "0x588800",
+              "section": ".rdata",
+              "file_offset": "0x57dd20"
+            }
+          ]
+        },
+        {
+          "page": "0x587e28",
+          "name": "Defensive Tackles",
+          "enum": 15,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "1e7c43aaf459a30fb2604da1bf701e2f3d3b7f93289ee63805fcc17a0d244095",
+          "absolute_base_candidates": [
+            {
+              "source": "0x588804",
+              "section": ".rdata",
+              "file_offset": "0x57dd24"
+            }
+          ]
+        },
+        {
+          "page": "0x587f40",
+          "name": "Defensive Ends",
+          "enum": 16,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "b0437ca74c5a7666ccc3a92e07ec6c1f580f3f46f97ae6ddb921a4ec2778a641",
+          "absolute_base_candidates": [
+            {
+              "source": "0x588808",
+              "section": ".rdata",
+              "file_offset": "0x57dd28"
+            }
+          ]
+        },
+        {
+          "page": "0x588058",
+          "name": "Outside Linebackers",
+          "enum": 10,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "ac92a6a80c1c05553a58ff628cb0bf1db2c13ebc29f692ced7285e6c69e70d64",
+          "absolute_base_candidates": [
+            {
+              "source": "0x58880c",
+              "section": ".rdata",
+              "file_offset": "0x57dd2c"
+            }
+          ]
+        },
+        {
+          "page": "0x588170",
+          "name": "Inside Linebackers",
+          "enum": 11,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "b1cf7640464f3ca59cb8c15e7d22eca68144e7ac75e0f2ad0b1245fc13ce321e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x588810",
+              "section": ".rdata",
+              "file_offset": "0x57dd30"
+            }
+          ]
+        },
+        {
+          "page": "0x588288",
+          "name": "Cornerbacks",
+          "enum": 4,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "249f3f69fcdc6f1ffe80955ac6c843263ff7c6d620f207f41572d18cdce7342c",
+          "absolute_base_candidates": [
+            {
+              "source": "0x588814",
+              "section": ".rdata",
+              "file_offset": "0x57dd34"
+            }
+          ]
+        },
+        {
+          "page": "0x5884b8",
+          "name": "Strong Safeties",
+          "enum": 6,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "3cb5de3e0de0a6a74d928db625f5dbe53743041601c7c201caaa94179d9a147e",
+          "absolute_base_candidates": [
+            {
+              "source": "0x588818",
+              "section": ".rdata",
+              "file_offset": "0x57dd38"
+            }
+          ]
+        },
+        {
+          "page": "0x5883a0",
+          "name": "Free Safeties",
+          "enum": 5,
+          "count": "0x2b8d90",
+          "getter": "0x2b8e20",
+          "page_sha256": "f0acee97bab31ebf41cd4be7ab00f24e38da79627d641e122f2f28b7e4cb48be",
+          "absolute_base_candidates": [
+            {
+              "source": "0x58881c",
+              "section": ".rdata",
+              "file_offset": "0x57dd3c"
+            }
+          ]
+        }
+      ],
+      "raw_candidate_count": 41,
+      "list_interior_candidates": [
+        {
+          "source": "0x116655",
+          "target": "0x588805",
+          "section": ".text",
+          "file_offset": "0x106655",
+          "spans": [
+            "trade_compare:sheet_and_list"
+          ],
+          "kind": "instruction_encoding_overlap",
+          "function": "0x116650",
+          "instruction": "0x116655: add eax, 0x5888"
+        },
+        {
+          "source": "0xaefa7d",
+          "target": "0x5887e8",
+          "section": ".data",
+          "file_offset": "0xae50fd",
+          "spans": [
+            "trade_compare:sheet_and_list"
+          ],
+          "kind": "raw_integer_candidate"
+        }
+      ]
+    }
+  ],
+  "reader_pins": [
+    {
+      "address": "0x27cdf0",
+      "name": "FUN_0027cdf0",
+      "chunks": [
+        {
+          "start": "0x27cdf0",
+          "end": "0x27cea5",
+          "sha256": "5cc040048c2ecfb80b843e2bd5ba3c8463079b2f755377fa99dd5f030a0497ed"
+        }
+      ]
+    },
+    {
+      "address": "0x1749d0",
+      "name": "FUN_001749d0",
+      "chunks": [
+        {
+          "start": "0x1749d0",
+          "end": "0x174bcc",
+          "sha256": "448ccf679b1dc62bf5c2be2e5246b3376ba9f92190efc1056ae203e939e3f6b8"
+        }
+      ]
+    },
+    {
+      "address": "0x1746c0",
+      "name": "FUN_001746c0",
+      "chunks": [
+        {
+          "start": "0x1746c0",
+          "end": "0x174741",
+          "sha256": "7295426523495e29edab46311869533855c4149606fab2efec12d37d39e84552"
+        }
+      ]
+    },
+    {
+      "address": "0x174140",
+      "name": "FUN_00174140",
+      "chunks": [
+        {
+          "start": "0x174140",
+          "end": "0x17433a",
+          "sha256": "fc2291265c174af9b1c285e35b5321685706e9fc5bd5a7688ad4b0d323aefa97"
+        },
+        {
+          "start": "0x174340",
+          "end": "0x17458a",
+          "sha256": "6928a6a5a0af8edfa0d147b8a4e4d4f68eb73ace786a73a66017e6e827d3b290"
+        },
+        {
+          "start": "0x174590",
+          "end": "0x174619",
+          "sha256": "dfe85c9629303c01e8209f539b5dc1b6e8818a8c85d27776711edc93b424ddb3"
+        },
+        {
+          "start": "0x174620",
+          "end": "0x1746ba",
+          "sha256": "1433e51a874c0b617531d0f4d7c005af2cb3458d59a729f2c7f6622003041085"
+        }
+      ]
+    },
+    {
+      "address": "0x170910",
+      "name": "FUN_00170910",
+      "chunks": [
+        {
+          "start": "0x170910",
+          "end": "0x17092c",
+          "sha256": "d016608b0f21853ffe8cae4cfc11a2bc95568823bec616c785ff7fbe279e1a61"
+        }
+      ]
+    },
+    {
+      "address": "0x1706c0",
+      "name": "FUN_001706c0",
+      "chunks": [
+        {
+          "start": "0x1706c0",
+          "end": "0x1706e7",
+          "sha256": "efccab955de70de26dd4169c4cae7e5ff5a6af093131f2592568722f65820995"
+        }
+      ]
+    },
+    {
+      "address": "0x174cb0",
+      "name": "FUN_00174cb0",
+      "chunks": [
+        {
+          "start": "0x174cb0",
+          "end": "0x174cd7",
+          "sha256": "61922060d457bca47a44dec77c04b2afb8f002323554b053bbb0a81e51844ec1"
+        }
+      ]
+    },
+    {
+      "address": "0x174ce0",
+      "name": "native_00174ce0",
+      "chunks": [
+        {
+          "start": "0x174ce0",
+          "end": "0x174d2d",
+          "sha256": "8451853fedb454643d1d635f40ba22f4f3c9f99083b8db74f230c238d8b45f2e"
+        }
+      ]
+    },
+    {
+      "address": "0x174d30",
+      "name": "FUN_00174d30",
+      "chunks": [
+        {
+          "start": "0x174d30",
+          "end": "0x174d4e",
+          "sha256": "c1a3bcadfb35e168dcda30b7296c4a5607589a74058bb4bb32897fc6ddae9c76"
+        }
+      ]
+    },
+    {
+      "address": "0x172930",
+      "name": "FUN_00172930",
+      "chunks": [
+        {
+          "start": "0x172930",
+          "end": "0x1729a6",
+          "sha256": "8d6ed3770a248aef0bb7175d9024f38ae62297e9d87c31bd74af960c928c44e4"
+        }
+      ]
+    },
+    {
+      "address": "0x1728a0",
+      "name": "FUN_001728a0",
+      "chunks": [
+        {
+          "start": "0x1728a0",
+          "end": "0x172916",
+          "sha256": "622b8711e5a7a577f28ea5a6b56513839b2864ed16ca492a172cff86278c7516"
+        }
+      ]
+    },
+    {
+      "address": "0x172680",
+      "name": "FUN_00172680",
+      "chunks": [
+        {
+          "start": "0x172680",
+          "end": "0x1727ac",
+          "sha256": "d0acf62180e6e1f5961b58e699f00d058c9ff7c77007f6080939b965f12b90f2"
+        }
+      ]
+    },
+    {
+      "address": "0x16f620",
+      "name": "FUN_0016f620",
+      "chunks": [
+        {
+          "start": "0x16f620",
+          "end": "0x16f625",
+          "sha256": "6a76ff51a552d93c26f53951ddaaa59cd1fd45dfaeac07f35ba4b27a06395ee6"
+        }
+      ]
+    },
+    {
+      "address": "0x16f630",
+      "name": "FUN_0016f630",
+      "chunks": [
+        {
+          "start": "0x16f630",
+          "end": "0x16f661",
+          "sha256": "4d47920ff31ff1b5aa39f820e8735de8c043b7c4d3b7c74540ddb2614f1ce486"
+        }
+      ]
+    },
+    {
+      "address": "0x171330",
+      "name": "FUN_00171330",
+      "chunks": [
+        {
+          "start": "0x171330",
+          "end": "0x171905",
+          "sha256": "41a413ca15ae622602ca14b80ba369952fc02ebc56d5cabf373caa95f429ca1b"
+        }
+      ]
+    },
+    {
+      "address": "0x362e10",
+      "name": "FUN_00362e10",
+      "chunks": [
+        {
+          "start": "0x362e10",
+          "end": "0x362e77",
+          "sha256": "ef46eb4c01590ed47d11637ea223cc67dbb615f605bdbc830a38d9ef6e96ab41"
+        }
+      ]
+    },
+    {
+      "address": "0x362fc0",
+      "name": "FUN_00362fc0",
+      "chunks": [
+        {
+          "start": "0x362fc0",
+          "end": "0x3630b3",
+          "sha256": "373bf4ea905a3c38811d231580806b27ec33d02c1d65cf9bc05d74e2f861456a"
+        }
+      ]
+    },
+    {
+      "address": "0x35fd40",
+      "name": "FUN_0035fd40",
+      "chunks": [
+        {
+          "start": "0x35fd40",
+          "end": "0x35fd7a",
+          "sha256": "66191ca4569615294bae08ad4e62543d51fcfbb51f08a415b16df298ea0c693d"
+        }
+      ]
+    },
+    {
+      "address": "0x35fd80",
+      "name": "FUN_0035fd80",
+      "chunks": [
+        {
+          "start": "0x35fd80",
+          "end": "0x35fdc0",
+          "sha256": "280b25a296be489fd917ebb5738432e2edd8bc6185decd084eb1fa528f0bb90f"
+        }
+      ]
+    },
+    {
+      "address": "0x35f140",
+      "name": "FUN_0035f140",
+      "chunks": [
+        {
+          "start": "0x35f140",
+          "end": "0x35f1ff",
+          "sha256": "d456152381a65b4bab78e6dc2943af6ff6a29f1948dd33fa4c6918e9decb5dfb"
+        }
+      ]
+    },
+    {
+      "address": "0x31dd90",
+      "name": "FUN_0031dd90",
+      "chunks": [
+        {
+          "start": "0x31dd90",
+          "end": "0x31ddde",
+          "sha256": "10ba04f12f4d80da3bcd22707a87767a9cb3342ede5a0e50edb2e314a6da1c62"
+        }
+      ]
+    },
+    {
+      "address": "0x31de30",
+      "name": "FUN_0031de30",
+      "chunks": [
+        {
+          "start": "0x31de30",
+          "end": "0x31de92",
+          "sha256": "bc20669db73e5442bd158a0394d9a12a61b0db6ceb33083b417d2e1f8446ec2d"
+        }
+      ]
+    },
+    {
+      "address": "0x2b8d90",
+      "name": "native_002b8d90",
+      "chunks": [
+        {
+          "start": "0x2b8d90",
+          "end": "0x2b8e02",
+          "sha256": "c7a570a88f5e28b903cf20d094ebe42572d5b1748269e7cbf7d6413292a075c8"
+        }
+      ]
+    },
+    {
+      "address": "0x2b8e20",
+      "name": "native_002b8e20",
+      "chunks": [
+        {
+          "start": "0x2b8e20",
+          "end": "0x2b8f00",
+          "sha256": "e6b7b70631216ac9df25b2e8e485971643973c994ccfae35d4a6046690e0d578"
+        }
+      ]
+    },
+    {
+      "address": "0x31ab20",
+      "name": "FUN_0031ab20",
+      "chunks": [
+        {
+          "start": "0x31ab20",
+          "end": "0x31ab73",
+          "sha256": "a076251e36e6185cb9a0db3477e2690c3a5cd158631a11404e0f5ec0c2812fc5"
+        }
+      ]
+    },
+    {
+      "address": "0x31ab80",
+      "name": "FUN_0031ab80",
+      "chunks": [
+        {
+          "start": "0x31ab80",
+          "end": "0x31abf1",
+          "sha256": "30219a9b959c989dd90496b79edd2c7e9591c9529b5b24ba762e00addaec8a74"
+        }
+      ]
+    },
+    {
+      "address": "0x3213e0",
+      "name": "native_003213e0",
+      "chunks": [
+        {
+          "start": "0x3213e0",
+          "end": "0x321516",
+          "sha256": "f4628890d781a051ad5316e953c7eff8fa2b89a23811e8d55fe55972e4c3de8a"
+        }
+      ]
+    },
+    {
+      "address": "0x321520",
+      "name": "native_00321520",
+      "chunks": [
+        {
+          "start": "0x321520",
+          "end": "0x32152e",
+          "sha256": "43d9da00077bfa00441434799a4264eb43be4f784368f657b656007928debda1"
+        }
+      ]
+    },
+    {
+      "address": "0x36f720",
+      "name": "FUN_0036f720",
+      "chunks": [
+        {
+          "start": "0x36f720",
+          "end": "0x36f750",
+          "sha256": "cf02c7539c02f180b68a1ee18ae3427786e0fe2107f6d90971a4e5ea158abfbe"
+        }
+      ]
+    },
+    {
+      "address": "0x36f750",
+      "name": "native_0036f750",
+      "chunks": [
+        {
+          "start": "0x36f750",
+          "end": "0x36f788",
+          "sha256": "817733e309899d62045f9559c008e26b01f551baffd6c68b7293422a07b9ebbb"
+        }
+      ]
+    },
+    {
+      "address": "0xc3cb0",
+      "name": "FUN_000c3cb0",
+      "chunks": [
+        {
+          "start": "0xc3cb0",
+          "end": "0xc3cdc",
+          "sha256": "3a1c322767ec4c6fe48fd9995d16366ceb51b52747595220d379fdb2719abace"
+        }
+      ]
+    },
+    {
+      "address": "0xc3d30",
+      "name": "FUN_000c3d30",
+      "chunks": [
+        {
+          "start": "0xc3d30",
+          "end": "0xc3d6f",
+          "sha256": "b30076a3925c917c645172af4b6bbfd2b5e794337d6c42b6377a0d20b4f30882"
+        }
+      ]
+    },
+    {
+      "address": "0x242670",
+      "name": "FUN_00242670",
+      "chunks": [
+        {
+          "start": "0x242670",
+          "end": "0x2426a3",
+          "sha256": "552ff2d685b4b8822c1a8e8e6b7e0c049e277e2b37bc76a559b3d79e3de7b811"
+        }
+      ]
+    },
+    {
+      "address": "0x242520",
+      "name": "FUN_00242520",
+      "chunks": [
+        {
+          "start": "0x242520",
+          "end": "0x24255d",
+          "sha256": "79c2db05b61e3c3b2f796623c8ebe0cf6e8ed2b98797b7dd7ca637c4fac5ff3f"
+        }
+      ]
+    },
+    {
+      "address": "0x12f160",
+      "name": "FUN_0012f160",
+      "chunks": [
+        {
+          "start": "0x12f160",
+          "end": "0x12f4f3",
+          "sha256": "33144d179e2e9d8e18ee56d0969b048c476571e7388161b3f0b793c6f4a57283"
+        }
+      ]
+    },
+    {
+      "address": "0x364c00",
+      "name": "native_00364c00",
+      "chunks": [
+        {
+          "start": "0x364c00",
+          "end": "0x364d58",
+          "sha256": "a653c03035bbc807ad10102170eebae4bc24b7cd027a6be32386fa479d462ad2"
+        }
+      ]
+    }
+  ],
+  "scope": "Metadata only. Full candidates and disassembly are reproducible with tools/nfl2k5_olb_row_proof.py. No runtime witness."
+}

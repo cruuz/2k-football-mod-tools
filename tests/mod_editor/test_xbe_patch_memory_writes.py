@@ -119,7 +119,8 @@ class PatchWriteTests(unittest.TestCase):
         # Pools and Tier 2 run after the shared XBE pass in mod_build.
         from mod_editor.core import nfl2k5_position_pools as pools
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
-        cls.patched, _ = pools.apply(cls.patched)
+        cls.patched, cls.pools_receipt = pools.apply(
+            cls.patched, roster_has_olb=bool(getattr(cls, "reverse_owners", False)))
         cls.patched, cls.rows_receipt = rows.apply(cls.patched)
         if rows.status(cls.patched) != "applied":
             raise AssertionError("SPECIAL rows and summary spacing did not compose")
@@ -136,6 +137,10 @@ class PatchWriteTests(unittest.TestCase):
         # Camera now needs 64 owned code bytes; the full union installs it. No
         # allocation may be sealed by the earlier protected dispatcher pass.
         cls.patched, cls.music_receipt = compose(cls.patched, reverse=getattr(cls, "reverse_owners", False), scaleout=getattr(cls, "scaleout", False))
+        if getattr(cls, "reverse_owners", False):
+            cls.patched, cls.pools_receipt = pools.apply(cls.patched, roster_has_olb=False)
+        if pools.filter_list_status(cls.patched) != "applied":
+            raise AssertionError("empty OLB selectors survived complete composition")
         from mod_editor.core import nfl2k5_franchise_autosave as autosave
         if autosave.status(cls.patched) != "applied" or autosave.apply(cls.patched)[0] != cls.patched:
             raise AssertionError("Franchise Auto Save missing from the complete owner union")
@@ -222,6 +227,21 @@ class PatchWriteTests(unittest.TestCase):
         cls.table = sections(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
+
+    def test_olb_filter_tables_are_pinned_data_edits_in_existing_owner(self):
+        from mod_editor.core import nfl2k5_position_pools as pools, nfl2k5_probowl_order as probowl
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        sites = pools.filter_list_sites(probowl_ordered=probowl.status(self.patched) == "applied")
+        edits = [e for e in self.pools_receipt["edits"] if e["group"] == "filter_lists"]
+        self.assertEqual(len(edits), 16)
+        for site, edit in zip(sites, edits):
+            self.assertEqual(image.section(site.va).name, ".rdata")
+            self.assertEqual(image.section(site.va).flags, XbeImage(self.retail).section(site.va).flags)
+            self.assertEqual(image.read(site.va, site.size), site.after)
+            self.assertEqual(edit["after"], site.after.hex())
+            self.assertEqual(site.after[-8:], bytes(8))
+        self.assertEqual(pools.apply(self.patched, roster_has_olb=False)[0], self.patched)
 
     def _changed_ranges(self) -> list[tuple[int, int]]:
         text = next(s for s in self.table if s[0] == ".text")
@@ -613,7 +633,9 @@ class ReverseOwnerOrderTests(PatchWriteTests):
     def test_both_installation_orders_are_byte_identical(self):
         from tests.nfl2k5_allocator_stack import compose
         from mod_editor.core import nfl2k5_modern_naming as modern_naming
-        self.assertEqual(modern_naming.apply(compose(self.before_allocator, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
+        from mod_editor.core import nfl2k5_position_pools as pools
+        forward = pools.apply(self.before_allocator, roster_has_olb=False)[0]
+        self.assertEqual(modern_naming.apply(compose(forward, scaleout=getattr(self, "scaleout", False))[0])[0], self.patched)
 
 
 class ScaleoutOwnerTests(PatchWriteTests):

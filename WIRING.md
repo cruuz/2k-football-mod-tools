@@ -11035,3 +11035,186 @@ pins were regenerated from retail slices and checked. This is compatibility
 with the shared static layer, not a runtime freeze fix or authorization to
 enable the runtime option. The explicit-folder v10 scene, atlas and XBE
 remain byte-identical.
+
+# r64 one LB row: remove the Outside Linebackers filter row, 2026-09-07
+
+EXPERIMENTAL / UNWITNESSED. The implementation and both complete XBE gates are
+ready. These protected integrations are deliberately handed off, not applied.
+See `ASTRA_OLB_ROW_REPORT.md` and `docs/mod_editor/nfl2k5_olb_row_evidence.json`.
+No new allocator owner, request, code cave, section, or runtime variable is needed.
+
+## Build ordering and roster compatibility
+
+Keep `BuildPlan.position_pools: bool = False`: BASIC false, ADVANCED true,
+EXPERIMENTAL true, as currently shipped. Add the policy field
+`position_pools_keep_olb: bool = False` immediately after it, false in all three
+presets. This is a compatibility setting for the existing pools feature.
+Serialize it with the other Build fields. Require `type(value) is bool` and
+permit it only when pools are selected or the source already has complete pools.
+It must never enable pools on a retail build by itself.
+
+At `mod_build.build`'s current `if plan.position_pools:` block, keep the early
+executable pass before depth rows, but ALWAYS call the idempotent API:
+
+```python
+xbe, pools_receipt = pools.apply(_xbe_bytes(target), roster_has_olb=True)
+_write_xbe_bytes(target, xbe)
+```
+
+Remove the old `state == "applied"` shortcut returning only
+`{"already_applied": True}`. `apply` now handles replay and rejects foreign
+bytes. The early retained profile safely covers all subsequent roster writers.
+Keep the playbook recode and ROST reclassification order/dependencies already
+there, including `historic=True`. `roster.apply` now includes `olb_filter_scan`
+in its receipt, but this is not sufficient if another ROST writer follows it.
+
+After the LAST ROST mutation (including team names, imports, historic edits,
+prospect names and user-authored roster changes), before final read-back,
+verification and publication, add the following final pass. Run it when either
+`plan.position_pools` is true or pools were already applied on the source.
+Resolve `pools` and `roster` locally again so the latter case is covered.
+
+```python
+scan = roster.olb_filter_policy(target)  # read-only, one ROST at a time
+# Only the literal False from a complete scan certifies absence. Incomplete
+# evidence must RESTORE rows even on a previously compacted source.
+keep_olb = plan.position_pools_keep_olb or scan["roster_has_olb"] is not False
+xbe, filter_receipt = pools.apply(_xbe_bytes(target), roster_has_olb=keep_olb)
+_write_xbe_bytes(target, xbe)
+receipt["steps"].append({
+    "step": "position_pool_filters", "scan": scan,
+    "compatibility_override": plan.position_pools_keep_olb,
+    "xbe": filter_receipt, "experimental": True, "witnessed": False,
+})
+```
+
+Retain the exact edit receipts and verify `filter_list_status` against the
+chosen policy. A known custom enum-10 player automatically keeps all rows.
+A truncated/invalid resource must fail the build; an incomplete valid scan
+keeps the rows. Never convert an absent resource or caught scan exception into
+`roster_has_olb=False`. The core API's `None` means "unspecified, preserve on
+replay"; do NOT pass `None` from an incomplete scan into this final build pass.
+
+External saves are outside a disc scan. A user intending to load an existing
+or unscanned custom roster/franchise save must select `position_pools_keep_olb`.
+The executable cannot dynamically reintroduce a removed row on save load.
+Fresh pooled builds use the scanned, removed profile. Do not advertise automatic
+compatibility with later-loaded saves or a query merge of enums 10 and 11.
+
+Keep the existing source-dependent image writers and atomic publication path;
+this change adds no disc growth. Both filter policies work before/after SPECIAL
+and the full grown owner union. No change to `_selected_space_requests`,
+`_xbe_space_adapter`, the allocator budget fixture or the union is needed.
+
+## Dispatcher and all status views
+
+`nfl2k5_throw_tuning._apply_all` remains the XBE-only dispatcher. Its owner tuple
+and public kwargs receive NO new pools entry/kwarg: ROST-dependent policy stays
+in the two explicit `mod_build` passes above. Keep the existing
+`(probowl_order, probowl_order_patch, "probowl_order_patch", "Pro Bowl order")`
+entry; the revised Pro Bowl module accepts all four precise table profiles.
+Do not apply a removal based on a bare XBE or infer a scan from pools.status.
+
+Import `nfl2k5_position_pools as position_pools_patch` in throw_tuning. Add these
+entries to ALL FOUR dictionaries in `read_xbe(payload)`, `read_image(payload)`,
+`write_xbe_copy(result)` and `write_image_copy(after)`, using the indicated local
+byte variable in each function:
+
+```python
+"position_pools": position_pools_patch.status(payload),
+"position_pool_filters": position_pools_patch.filter_list_status(payload),
+```
+
+For `mod_build.inspect`, add `position_pool_filters: "n/a"` to the default
+state dictionary; fill it beside the existing pools status using the same XBE
+read, setting both to `foreign` on a parse failure. `retail` for this filter
+status means retained rows, `applied` means removed rows, `foreign` means a
+partial/unknown table. Pools status still recognizes both complete profiles.
+Show these meanings in preview; do not treat retained rows as a broken pool
+merge. Add the compatibility flag to the plan's UI persistence/binding maps.
+Capability availability uses the existing pools/recode/roster modules plus a
+callable `roster.olb_filter_policy` check. No standalone XBE apply button for
+this disc-dependent feature.
+
+## Build and Gameplay Patches wording
+
+Change the existing Build `_option` caption to
+`Merge positions and remove the empty OLB group` (46 characters), with help:
+
+> Creates EDGE, interior-line and linebacker pools. Removes the Outside
+> Linebackers group only after all disc rosters pass the scan. Keeps Fullbacks
+> and every other group. EXPERIMENTAL / UNWITNESSED.
+
+Immediately below it, add a dependent `_option` for `position_pools_keep_olb`,
+caption `Keep Outside Linebackers for existing saves` (43 characters),
+`needs_image=True`, with help:
+
+> Use this if you will load an existing or custom roster or franchise save.
+> Keeps the Outside Linebackers group so its players remain selectable.
+> New pooled saves can leave this off.
+
+Enable that option when pools are checked or already applied on the source;
+include it in plan creation and persistence. A bare XBE remains unavailable.
+A preset change resets it to that preset's false default; a user's subsequent
+choice must persist into the final pass and its receipt.
+
+Expose the existing pools feature in Gameplay Patches, with this exact PATCHES
+row and `NEEDS_IMAGE.add("position_pools")`:
+
+```python
+("position_pools", "Merged positions with one Linebackers group (experimental)",
+ "Retail: separate outside and inside linebacker groups. Patch: merges the "
+ "defensive position pools and removes the Outside Linebackers group when "
+ "all disc rosters contain no outside linebackers. Fullbacks remains. "
+ "Custom players keep their group. For existing saves, enable Keep Outside "
+ "Linebackers in Build. EXPERIMENTAL / UNWITNESSED."),
+```
+
+Gameplay Patches must preserve the plan's compatibility flag when it forwards
+an existing plan; its fresh plan uses the default false value. Keep the
+existing automatic scheme-label and disc dependency handling for pools.
+
+## Packaging, registry and manifest handoff
+
+Existing allowlist lines stay:
+
+```text
+mod_editor/core/nfl2k5_position_pools.py
+mod_editor/core/nfl2k5_probowl_order.py
+mod_editor/core/nfl2k5_practice_squad_screen.py
+mod_editor/core/nfl2k5_practice_squad_screen_code.py
+tools/nfl2k5_roster_reclassify.py
+```
+
+No new runtime file is required. The proof tool, native test fixture, report and
+metadata evidence are research/test assets; do not add them to the product
+runtime allowlist. In `packaging/check_2k5_mod_studio_runtime.py`'s explicit
+import closure, ensure these four imports appear once (Pro Bowl and PS already
+do): `mod_editor.core.nfl2k5_position_pools`,
+`mod_editor.core.nfl2k5_probowl_order`,
+`mod_editor.core.nfl2k5_practice_squad_screen`,
+`tools.nfl2k5_roster_reclassify`. No Capstone or Unicorn runtime dependency.
+The existing runtime staged synthetic roster fixture can assert an incomplete
+scan retains rows; no private fixture is required for packaging.
+
+For the newly exposed Gameplay Patches entry, insert the exact candidate object
+from `docs/mod_editor/nfl2k5_olb_row_capability.json` into the protected registry,
+sorted by ID. It labels runtime `not-tested`, and its native test command is a
+module command. The backend command names the existing ROST writer; XBE policy
+application remains part of Build as described above.
+
+Claude regenerates `data/nfl2k5_cave_reservations.json` after the protected build
+integration. The recorder already captures this owner and every receipt's full
+`after` span: no manifest-builder request list or owner list change is needed.
+Its final result must include SIXTEEN declared `position_filter_*` edits under
+`nfl2k5_position_pools`, totaling 1,200 bytes, from `filter_list_sites()`.
+Only 214 of those data bytes differ. Preserve the existing Pro Bowl ownership
+on its exact overlapping 72-byte table at `0x54A254`; this is two composable data
+edits, not two allocations. Preserve all existing spans and source freshness
+checks. Never classify raw address coincidences or `unknown` as free.
+
+Both gates use a test-only projection in `tests/nfl2k5_allocator_stack.py` until
+that regeneration: it pins all retail/installed table bytes and rejects any
+other overlapping owner. It does not replace, write or weaken the release
+manifest. Run both gates again after protected wiring/regeneration, then Noah's
+witness list in the report. No release-tag, CI or update file change is requested.

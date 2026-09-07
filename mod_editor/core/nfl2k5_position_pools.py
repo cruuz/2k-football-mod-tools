@@ -101,45 +101,35 @@ playtest: "defense is 19, overall 60, offense 80 for the Falcons, and most teams
   count code at 0x243D50..0x243E0E is rewritten in place (same KR/PR sum, minus ``chain >> 1`` for the
   shifted records) when ``depth_chart_third_starter`` is on.
 * Roster / draft / free-agency position filters: the thirteen ``Inside Linebackers`` ``.string_``
-  copies read ``Linebackers``.  The ``Outside Linebackers`` rows are left exactly as retail, see
+  copies read ``Linebackers``.  The ``Outside Linebackers`` pages retain their retail identity; row membership is conditional, see
   "One LB row" below.
 
-One LB row (2026-09-04, a user's report: "the roster view lists linebackers twice in a row")
---------------------------------------------------------------------------------------------
-The home screen's Rosters -> Team Rosters, the draft, free agency, the trade block and scouting each
-own a **position-filter record array** in ``.rdata``: 17-19 records of 0xB0 / 0xC8 / 0x110 / 0x118 /
-0x120 / 0x128 bytes, one per roster position in football order (Quarterbacks, Halfbacks, Fullbacks,
-Wide Receivers, Tight Ends, Centers, Guards, Tackles, Kickers, Punters, Defensive Tackles, Defensive
-Ends, **Outside Linebackers, Inside Linebackers**, Cornerbacks, Free Safeties, Strong Safeties, and on
-eight of the fifteen screens All Positions).  A record is ``{class ptr, flags, UTF-16 name ptr, ...,
-roster enum at +0x18, ...}``; the count handler is ``FUN_0031AB20`` -> ``FUN_000C3CB0(team, position)``,
-which counts players whose ``player+0x35`` equals the record's enum (17 = every player).  The
-``Outside Linebackers`` record is always the one immediately before ``Inside Linebackers``: fifteen
-arrays at 0x539520/0x5395E8, 0x53A1F8/0x53A2A8, 0x53AF90/0x53B058, 0x53DEF0/0x53E008,
-0x53FBF0/0x53FD18, 0x5498E8/0x549998, 0x550F68/0x551078, 0x552798/0x5528B0, 0x5545E8/0x554700,
-0x559450/0x559578, 0x55EFB0/0x55F078, 0x570D30/0x570E50, 0x57FD70/0x57FE90, 0x582658/0x582778,
-0x588060/0x588178.
+One LB row (r64, 2026-09-07; EXPERIMENTAL / UNWITNESSED)
+-------------------------------------------------------
+Fifteen page-descriptor families serve SIXTEEN position selectors: Player Trade and Trading Block
+share their pages. The old investigation mistook each page's name field (+8) for an array record.
+Those descriptors are not moved. Each sheet instead owns a NULL-terminated table of four-byte page
+pointers at sheet+0xF4. ``FILTER_TABLES`` pins every complete table, including its terminator.
+``FUN_00170910`` counts to NULL; ``FUN_00174cb0/00174ce0`` move by four and wrap at NULL;
+``FUN_00174d30`` selects by ordinal. ``FUN_00174140`` binds the selected page's enum at +0x20
+and calls its original count/getter pair. No visibility flag is consulted by these readers.
 
-Beta 58 renamed **both** rows to ``Linebackers`` and pointed the OLB row's enum at 11, so every one of
-those screens listed "Linebackers" twice in a row.  Removing a row is not a rename: the arrays have no
-count word (they end at a record whose class pointer is NULL) and they abut each other in ``.rdata``,
-so dropping an entry means moving every following record up one stride, re-terminating, and proving
-that no screen indexes its array - fifteen arrays, four strides, and nothing in the image references a
-record by address, so the shape can only be confirmed by running the game.  With one filter row per
-roster enum being an invariant we cannot change safely, the duplicate is removed the other way: the
-**retired enum 10 keeps its retail identity everywhere the game prints a roster position** - the
-abbreviation table entry (``OLB``), the long name and plural (``Outside Linebacker(s)``), and the
-fourteen filter records with their twelve ``Outside Linebackers`` string copies.  Enum 11 is the only
-row named ``Linebackers``.  On a disc built with ``tools/nfl2k5_roster_reclassify.py`` (every preset
-that turns pools on) no player carries enum 10, so the ``Outside Linebackers`` row lists nobody -
-exactly what "Fullbacks" does for a team with no fullback - and on a custom roster that still carries
-OLB players it lists them under their own name instead of hiding them inside a second "Linebackers".
-The behaviour half of the merge (kind mapping, on-field lists, roster targets, the package swap, the
-depth-chart pools, the rating tables) is unchanged: enum 10 still behaves exactly like an LB.
-(Beta 58's OLB lists were also one short: the fifteenth record, 0x55EFB0 in the draft-board array, has
-the retail typo ``outside Linebackers`` at 0xEAE8CC and never matched the exact-text search, so that
-one screen kept a stray ``outside Linebackers`` next to ``Linebackers``.  Leaving every OLB row retail
-makes the whole set consistent again.)
+Given ``roster_has_olb=False`` from a complete scan, remove exactly the OLB page pointer, shift the
+remaining pointers left four bytes, and leave two NULL words in the original span. Keep all other
+rows, including empty Fullbacks, All Positions, Scouting Targets, Targets and Picks. Absolute page
+references and callback arguments keep their addresses. Pro Bowl ordering composes in either order.
+
+The native count AND getter callbacks match enum 10 separately from enum 11. Therefore a custom
+roster with enum-10 players uses ``roster_has_olb=True``: retain or restore the OLB row on all screens,
+where those players remain selectable. A new unscanned build also retains it. Removal requires
+``tools.nfl2k5_roster_reclassify.olb_filter_policy`` after all ROST writers: all 76 resources, every
+primary player (including free agents/prospects), plus team-owned secondary players. Unowned
+secondary generation templates are excluded. This certifies disc rosters, not external saves loaded
+later; builds intended for those saves must retain the row. The gameplay/depth/rating merge remains
+unchanged. ``None`` preserves the installed policy on replay; identical requests make zero edits.
+
+See ``ASTRA_OLB_ROW_REPORT.md`` and the bounded native fixture for the reader/reference census,
+custom-roster proof, exact write receipts and remaining in-game witness work.
 
 Not written here: the draft-value table of the draft-AI cave (``VALUE[OLB]``).  After the ROST pass no
 stock player carries enum 10 and the class generator conserves positions, so the draft scorer never
@@ -152,12 +142,13 @@ this rewires) and accepts the two 3-4 end records in their retail, EDGE-renamed 
 "applied" on the finished executable. Record planning/assertions and ``tab_init_bytes(stride)``
 use retail stride 11 and the active table base, including SPECIAL's thirteen rows.
 ``.text``, ``.rdata`` and ``.string_`` digests
-are recomputed. Direct repeated apply still refuses, as before; orchestrators skip applied sites.
+are recomputed. Direct repeated apply is byte-identical; mixed or foreign site patterns refuse before mutation.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import struct
 from typing import Mapping, Sequence
 
@@ -311,10 +302,9 @@ RECORD_POSITION_VA = 0x00514118    # 0x5140D8 + 0x40, indexed by (unit * 11 + sl
 RECORD_CHAIN_VA = 0x0051411C
 
 # ---------------------------------------------------------------------------------------------
-# position-filter lists (home-screen Team Rosters, draft, free agency, trade...): the 0xB0 / 0xC8 /
-# 0x110 / 0x118 / 0x120 / 0x128-byte records hold a string pointer at +0 and the roster enum at +0x18.
-# The ILB records are renamed to "Linebackers"; the OLB records and their strings are listed only so
-# ``filter_rows`` can read them back and prove they stay retail (see "One LB row" in the docstring).
+# Legacy inspection addresses point eight bytes inside each page descriptor, at its name field.
+# FILTER_ENUM_OFFSET is relative to that name field. The actual selector tables follow below.
+# Page descriptors stay fixed; strings are renamed and OLB pointer membership is conditional.
 FILTER_ILB_RECORDS = (0x5395E8, 0x53A2A8, 0x53B058, 0x53E008, 0x53FD18, 0x549998, 0x551078, 0x5528B0, 0x554700,
                       0x559578, 0x55F078, 0x570E50, 0x57FE90, 0x582778, 0x588178)
 #: One per ILB record and always one stride ahead of it.  0x55EFB0 carries the retail typo
@@ -329,6 +319,109 @@ FILTER_OLB_STRINGS = (0xEA410C, 0xEA4500, 0xEA4740, 0xEA9B80, 0xEAB438, 0xEAB64C
 FILTER_STRING_SLOT = 40
 FILTER_ENUM_OFFSET = 0x18
 FILTER_OLB_RETAIL_TEXTS = ("Outside Linebackers", "outside Linebackers")
+
+
+# A page is a descriptor, not an inline list entry. Its name is at +8,
+# position binding at +0x18, enum at +0x20. The actual list has stride 4.
+# (name, table VA, OLB name-field VA from the original investigation, page stride, retail pointers)
+FILTER_TABLES = (
+    ("combine", 0x53B514, 0x539520, 0xC8, (
+        0x538A20, 0x538BB8, 0x538C80, 0x538D48, 0x538E10, 0x538ED8, 0x538FA0, 0x539068,
+        0x539130, 0x5391F8, 0x5392C0, 0x539388, 0x539450, 0x539518, 0x5395E0, 0x5396A8,
+        0x539838, 0x539770, 0x538AE8,
+    )),
+    ("rookie_report", 0x53B65C, 0x53A1F8, 0xB0, (
+        0x539900, 0x5399B0, 0x539A60, 0x539B10, 0x539BC0, 0x539C70, 0x539D20, 0x539DD0,
+        0x539E80, 0x539F30, 0x539FE0, 0x53A090, 0x53A140, 0x53A1F0, 0x53A2A0, 0x53A350,
+        0x53A4B0, 0x53A400,
+    )),
+    ("rookie_report_scouted", 0x53B79C, 0x53AF90, 0xC8, (
+        0x53A560, 0x53A628, 0x53A6F0, 0x53A7B8, 0x53A880, 0x53A948, 0x53AA10, 0x53AAD8,
+        0x53ABA0, 0x53AC68, 0x53AD30, 0x53ADF8, 0x53AEC0, 0x53AF88, 0x53B050, 0x53B118,
+        0x53B2A8, 0x53B1E0,
+    )),
+    ("free_agents", 0x53E7E4, 0x53DEF0, 0x118, (
+        0x53E460, 0x53D1C8, 0x53D2E0, 0x53D3F8, 0x53D510, 0x53D628, 0x53D740, 0x53D858,
+        0x53D970, 0x53DA88, 0x53DBA0, 0x53DCB8, 0x53DDD0, 0x53DEE8, 0x53E000, 0x53E118,
+        0x53E348, 0x53E230, 0x53E578,
+    )),
+    ("contracts", 0x5403CC, 0x53FBF0, 0x128, (
+        0x5401B0, 0x53EE08, 0x53EF30, 0x53F058, 0x53F180, 0x53F2A8, 0x53F3D0, 0x53F4F8,
+        0x53F620, 0x53F998, 0x53FAC0, 0x53FBE8, 0x53FD10, 0x53FE38, 0x540088, 0x53FF60,
+        0x53F748, 0x53F870,
+    )),
+    ("probowl_votes", 0x54A254, 0x5498E8, 0xB0, (
+        0x549150, 0x549200, 0x5492B0, 0x549360, 0x549C50, 0x549410, 0x5494C0, 0x549570,
+        0x549620, 0x5496D0, 0x549780, 0x549830, 0x5498E0, 0x549990, 0x549A40, 0x549BA0,
+        0x549AF0,
+    )),
+    ("player_progress", 0x5515A4, 0x550F68, 0x110, (
+        0x5502A0, 0x5503B0, 0x5504C0, 0x5505D0, 0x5506E0, 0x5507F0, 0x550900, 0x550A10,
+        0x550D40, 0x550E50, 0x550F60, 0x551070, 0x551180, 0x5513A0, 0x551290, 0x550B20,
+        0x550C30,
+    )),
+    ("opposition_study", 0x552F14, 0x552798, 0x118, (
+        0x552D08, 0x551A70, 0x551B88, 0x551CA0, 0x551DB8, 0x551ED0, 0x551FE8, 0x552100,
+        0x552218, 0x552560, 0x552678, 0x552790, 0x5528A8, 0x5529C0, 0x552BF0, 0x552AD8,
+        0x552330, 0x552448,
+    )),
+    ("team_rosters", 0x554D64, 0x5545E8, 0x118, (
+        0x5538C0, 0x5539D8, 0x553AF0, 0x553C08, 0x553D20, 0x553E38, 0x553F50, 0x554068,
+        0x5543B0, 0x5544C8, 0x5545E0, 0x5546F8, 0x554810, 0x554A40, 0x554928, 0x554180,
+        0x554298, 0x554B58,
+    )),
+    ("player_trade", 0x559B04, 0x559450, 0x128, (
+        0x558668, 0x558790, 0x5588B8, 0x5589E0, 0x558B08, 0x558C30, 0x558D58, 0x558E80,
+        0x5591F8, 0x559320, 0x559448, 0x559570, 0x559698, 0x5598E8, 0x5597C0, 0x558FA8,
+        0x5590D0, 0x558468,
+    )),
+    ("trading_block", 0x559C44, 0x559450, 0x128, (
+        0x558668, 0x558790, 0x5588B8, 0x5589E0, 0x558B08, 0x558C30, 0x558D58, 0x558E80,
+        0x5591F8, 0x559320, 0x559448, 0x559570, 0x559698, 0x5598E8, 0x5597C0, 0x558FA8,
+        0x5590D0, 0x558468,
+    )),
+    ("draft", 0x55FD94, 0x55EFB0, 0xC8, (
+        0x55E648, 0x55E710, 0x55E7D8, 0x55E8A0, 0x55E968, 0x55EA30, 0x55EAF8, 0x55EBC0,
+        0x55EC88, 0x55ED50, 0x55EE18, 0x55EEE0, 0x55EFA8, 0x55F070, 0x55F138, 0x55F2C8,
+        0x55F200, 0x55F390,
+    )),
+    ("choose_players", 0x5714BC, 0x570D30, 0x120, (
+        0x56FFA8, 0x5700C8, 0x5701E8, 0x570308, 0x570428, 0x570548, 0x570668, 0x570788,
+        0x570AE8, 0x570C08, 0x570D28, 0x570E48, 0x570F68, 0x5711A8, 0x571088, 0x5708A8,
+        0x5709C8,
+    )),
+    ("team_comparison", 0x5803FC, 0x57FD70, 0x120, (
+        0x57EFE8, 0x57F108, 0x57F228, 0x57F348, 0x57F468, 0x57F588, 0x57F6A8, 0x57F7C8,
+        0x57F8E8, 0x57FA08, 0x57FB28, 0x57FC48, 0x57FD68, 0x57FE88, 0x57FFA8, 0x5801E8,
+        0x5800C8,
+    )),
+    ("team_needs", 0x582CE4, 0x582658, 0x120, (
+        0x5818D0, 0x5819F0, 0x581B10, 0x581C30, 0x581D50, 0x581E70, 0x581F90, 0x5820B0,
+        0x5821D0, 0x5822F0, 0x582410, 0x582530, 0x582650, 0x582770, 0x582890, 0x582AD0,
+        0x5829B0,
+    )),
+    ("trade_compare", 0x5887DC, 0x588060, 0x118, (
+        0x587338, 0x587450, 0x587568, 0x587680, 0x587798, 0x5878B0, 0x5879C8, 0x587AE0,
+        0x587BF8, 0x587D10, 0x587E28, 0x587F40, 0x588058, 0x588170, 0x588288, 0x5884B8,
+        0x5883A0,
+    )),
+)
+
+# These readers are unchanged. Validate them before changing list lengths.
+FILTER_READER_GUARDS = (
+    (0x170910, 28, "d016608b0f21853ffe8cae4cfc11a2bc95568823bec616c785ff7fbe279e1a61"),
+    (0x1706C0, 39, "efccab955de70de26dd4169c4cae7e5ff5a6af093131f2592568722f65820995"),
+    (0x174CB0, 39, "61922060d457bca47a44dec77c04b2afb8f002323554b053bbb0a81e51844ec1"),
+    (0x174CE0, 77, "8451853fedb454643d1d635f40ba22f4f3c9f99083b8db74f230c238d8b45f2e"),
+    (0x174D30, 30, "c1a3bcadfb35e168dcda30b7296c4a5607589a74058bb4bb32897fc6ddae9c76"),
+    (0x1749D0, 508, "448ccf679b1dc62bf5c2be2e5246b3376ba9f92190efc1056ae203e939e3f6b8"),
+    (0x174140, 1402, "7893646a1e5c3ff0ecff2107a30bb7d2674a27084047faa9abd8152b02c901f8"),
+    (0x1746C0, 129, "7295426523495e29edab46311869533855c4149606fab2efec12d37d39e84552"),
+    (0x172930, 164, "b8d991896aabb70143b396ac73aa586f311fabd3c1fcd36eb665f3821878cebf"),
+    (0x172680, 300, "d0acf62180e6e1f5961b58e699f00d058c9ff7c77007f6080939b965f12b90f2"),
+    (0x16F620, 5, "6a76ff51a552d93c26f53951ddaaa59cd1fd45dfaeac07f35ba4b27a06395ee6"),
+    (0x16F630, 68, "d22dade479c6ab0dfb4a9496bdd5812706ebefcc38a32149cc5018242a0d2e4d"),
+)
 
 
 class PositionPoolsError(ValueError):
@@ -494,9 +587,56 @@ class Site:
         return len(self.after)
 
 
+def filter_list_sites(*, probowl_ordered: bool = False) -> list[Site]:
+    """Complete pointer tables, including both the new and original terminator.
+
+    The Pro Bowl ordering owner can run before or after pools. Both owners
+    preserve the other's decision, with only four exact table shapes accepted.
+    """
+    from . import nfl2k5_probowl_order as probowl
+    sites = []
+    for name, va, olb, _stride, pages in FILTER_TABLES:
+        if name == "probowl_votes" and probowl_ordered:
+            pages = probowl.PATCHED_TABS
+        before = struct.pack("<" + "I" * (len(pages) + 1), *pages, 0)
+        kept = tuple(p for p in pages if p != olb - 8)
+        _require(len(kept) == len(pages) - 1, f"{name}: expected exactly one OLB page")
+        after = struct.pack("<" + "I" * (len(pages) + 1), *kept, 0, 0)
+        sites.append(Site(f"position_filter_{name}", va, (before,), after, "filter_lists"))
+    return sites
+
+
+def _probowl_ordered(payload: bytes) -> bool:
+    from . import nfl2k5_probowl_order as probowl
+    return probowl.status(payload) == "applied"
+
+
+def filter_list_states(payload: bytes) -> dict[str, str]:
+    try:
+        return {s.label: _site_state(payload, s)
+                for s in filter_list_sites(probowl_ordered=_probowl_ordered(payload))}
+    except (ValueError, struct.error):
+        return {s.label: "foreign" for s in filter_list_sites()}
+
+
+def filter_list_status(payload: bytes) -> str:
+    """Retail = retained, applied = removed; a partial compaction is foreign."""
+    states = set(filter_list_states(payload).values())
+    return next(iter(states)) if len(states) == 1 else "foreign"
+
+
+def _filter_readers_ok(payload: bytes) -> bool:
+    for va, size, digest in FILTER_READER_GUARDS:
+        off = _offset(payload, va)
+        if hashlib.sha256(payload[off:off + size]).hexdigest() != digest:
+            return False
+    return True
+
+
 def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool,
            slots_per_unit: int = modern.SLOTS_PER_UNIT,
-           table_va: int = modern.SLOT_TABLE_VA) -> list[Site]:
+           table_va: int = modern.SLOT_TABLE_VA, *, include_filter_lists: bool = True,
+           probowl_ordered: bool = False) -> list[Site]:
     sites: list[Site] = []
 
     def add(label: str, va: int, before: bytes | Sequence[bytes], after: bytes, group: str = "data") -> None:
@@ -530,9 +670,10 @@ def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool,
     add("consistency_defense", CONSISTENCY_DEF_VA, RETAIL_CONSISTENCY_DEF, NEW_CONSISTENCY_DEF, "ratings")
     for i, va in enumerate(FILTER_ILB_STRINGS):
         add(f"filter_ilb_string_{i}", va, _utf16("Inside Linebackers", FILTER_STRING_SLOT), _utf16("Linebackers", FILTER_STRING_SLOT), "filters")
-    # The Outside Linebackers rows (FILTER_OLB_RECORDS / FILTER_OLB_STRINGS) are NOT written: one
-    # row per roster enum is the arrays' invariant, so renaming them too is what put two
-    # "Linebackers" rows next to each other on every roster screen.
+    # Keep every page descriptor at its original address. Remove only its entry
+    # in each sheet's real, NULL-terminated table of page pointers.
+    if include_filter_lists:
+        sites.extend(filter_list_sites(probowl_ordered=probowl_ordered))
     if linebacker_penalty_fix:
         add("linebacker_penalty_jne", PENALTY_JNE_VA, RETAIL_PENALTY_BYTES, FIXED_PENALTY_BYTES, "penalty")
     if depth_chart_third_starter:
@@ -562,24 +703,40 @@ def _asserted_records_ok(payload: bytes) -> bool:
 
 
 def site_states(payload: bytes, *, linebacker_penalty_fix: bool = True,
-                depth_chart_third_starter: bool = True) -> dict[str, str]:
+                depth_chart_third_starter: bool = True,
+                include_filter_lists: bool = True) -> dict[str, str]:
     try:
-        sites = _sites(linebacker_penalty_fix, depth_chart_third_starter, modern.layout_stride(payload), modern.layout_table(payload))
+        sites = _sites(linebacker_penalty_fix, depth_chart_third_starter, modern.layout_stride(payload),
+                       modern.layout_table(payload), include_filter_lists=False)
         states = {site.label: _site_state(payload, site) for site in sites}
+        if include_filter_lists:
+            states.update(filter_list_states(payload))
         if not _asserted_records_ok(payload):
             return {label: "foreign" for label in states}
         return states
     except (PositionPoolsError, ValueError, struct.error):
-        return {site.label: "foreign" for site in _sites(linebacker_penalty_fix, depth_chart_third_starter)}
+        return {site.label: "foreign" for site in _sites(linebacker_penalty_fix, depth_chart_third_starter,
+                                                       include_filter_lists=include_filter_lists)}
 
 
 def status(payload: bytes, *, linebacker_penalty_fix: bool = True, depth_chart_third_starter: bool = True) -> str:
     """'retail', 'applied', or 'foreign' (bytes match neither; refuse to touch)."""
 
     states = set(site_states(payload, linebacker_penalty_fix=linebacker_penalty_fix,
-                             depth_chart_third_starter=depth_chart_third_starter).values())
-    if states == {"retail"}:
+                             depth_chart_third_starter=depth_chart_third_starter,
+                             include_filter_lists=False).values())
+    filters = filter_list_status(payload)
+    if filters == "foreign":
+        return "foreign"
+    try:
+        if filters == "applied" and not _filter_readers_ok(payload):
+            return "foreign"
+    except (ValueError, struct.error):
+        return "foreign"
+    if states == {"retail"} and filters == "retail":
         return "retail"
+    # A complete retained profile is necessary for unscanned/custom rosters.
+    # It also recognizes pre-r64 pooled XBEs for a safe, explicit upgrade.
     if states == {"applied"}:
         return "applied"
     return "foreign"
@@ -616,12 +773,7 @@ def _string_at(payload: bytes, va: int) -> str:
 
 
 def filter_rows(payload: bytes) -> list[dict[str, object]]:
-    """The two linebacker rows of every position-filter array, as a screen would print them.
-
-    Fifteen screens, one ``Outside Linebackers`` record immediately followed by one
-    ``Inside Linebackers`` record.  After ``apply`` the second reads ``Linebackers`` and the first is
-    untouched, so no screen shows the same row name twice.
-    """
+    """Inspect the fifteen fixed page pairs and their installed visibility policy."""
 
     rows: list[dict[str, object]] = []
     for olb_va, ilb_va in zip(FILTER_OLB_RECORDS, FILTER_ILB_RECORDS):
@@ -632,6 +784,7 @@ def filter_rows(payload: bytes) -> list[dict[str, object]]:
             entry[f"{key}_name"] = _string_at(payload, pointer)
             entry[f"{key}_enum"] = enum
         entry["duplicate"] = entry["olb_name"] == entry["ilb_name"]
+        entry["olb_visible"] = filter_list_status(payload) != "applied"
         rows.append(entry)
     return rows
 
@@ -659,20 +812,43 @@ def retail_olb_identity(payload: bytes) -> bool:
 
 
 def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
-          depth_chart_third_starter: bool = True) -> tuple[bytes, Mapping[str, object]]:
-    """Return the patched XBE bytes plus a receipt; refuses anything but retail sites."""
+          depth_chart_third_starter: bool = True,
+          roster_has_olb: bool | None = None) -> tuple[bytes, Mapping[str, object]]:
+    """Apply/replay pools and an explicitly certified roster-filter policy.
 
+    ``False``: a scan of every selectable roster found no enum-10 players, so
+    remove OLB from all sixteen pointer lists. ``True``: retain/restore those
+    entries for custom players. ``None``: retain on a new installation; keep
+    the existing policy on replay. Unknown roster evidence never removes rows.
+
+    This is a build-time policy, not a detector for subsequently loaded saves.
+    Discs intended for unscanned saves must use the retained profile. Replaying
+    an identical request returns identical XBE bytes and an exact zero-edit
+    receipt. All mixed/foreign tables refuse before any mutation.
+    """
+
+    _require(roster_has_olb is None or type(roster_has_olb) is bool,
+             "roster_has_olb must be a scan result (bool) or None")
     _require(modern.status(payload) == "applied",
              "apply the Phase-1 scheme labels (nfl2k5_modern_positions) before the position pools")
     state = status(payload, linebacker_penalty_fix=linebacker_penalty_fix,
                    depth_chart_third_starter=depth_chart_third_starter)
-    _require(state == "retail", f"position-pool sites are {state}, not retail")
+    _require(state in ("retail", "applied"), f"position-pool sites are {state}; refusing")
+    current_filters = filter_list_status(payload)
+    remove = current_filters == "applied" if roster_has_olb is None else not roster_has_olb
+    if remove:
+        _require(_filter_readers_ok(payload), "foreign position-filter reader; refusing to change list lengths")
+    planned = _sites(linebacker_penalty_fix, depth_chart_third_starter, modern.layout_stride(payload),
+                     modern.layout_table(payload), include_filter_lists=False) if state == "retail" else []
+    if remove != (current_filters == "applied"):
+        for site in filter_list_sites(probowl_ordered=_probowl_ordered(payload)):
+            planned.append(site if remove else Site(site.label, site.va, (site.after,), site.befores[0], site.group))
     buf = bytearray(payload)
     sections = _sections(payload)
     header = _header_size(payload)
     touched: set[int] = set()
     edits = []
-    for site in _sites(linebacker_penalty_fix, depth_chart_third_starter, modern.layout_stride(payload), modern.layout_table(payload)):
+    for site in planned:
         off = _offset(payload, site.va)
         before = bytes(buf[off: off + site.size])
         buf[off: off + site.size] = site.after
@@ -687,9 +863,17 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
     patched = bytes(buf)
     _require(status(patched, linebacker_penalty_fix=linebacker_penalty_fix,
                     depth_chart_third_starter=depth_chart_third_starter) == "applied", "post-apply verification failed")
+    _require(filter_list_status(patched) == ("applied" if remove else "retail"),
+             "post-apply filter policy differs")
     _require(modern.status(patched) == "applied", "the Phase-1 labels no longer read applied after the pool rewrite")
     changed = sum(1 for a, b in zip(payload, patched) if a != b)
     return patched, {"edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
+                     "already_applied": not edits, "experimental": True, "runtime_witnessed": False,
+                     "olb_filter_rows": "removed" if remove else "retained",
+                     "roster_has_olb": roster_has_olb,
+                     "filter_tables": [{"name": name, "va": f"0x{va:x}",
+                                        "rows": len(pages) - int(remove)}
+                                       for name, va, _olb, _stride, pages in FILTER_TABLES],
                      "linebacker_penalty_fix": linebacker_penalty_fix,
                      "depth_chart_third_starter": depth_chart_third_starter,
                      "cave_va": f"0x{CAVE_VA:x}" if depth_chart_third_starter else None,
@@ -700,6 +884,7 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
 
 
 __all__ = [
+    "FILTER_TABLES", "FILTER_READER_GUARDS", "filter_list_sites", "filter_list_states", "filter_list_status",
     "ASSERTED_RECORDS", "CAVE_SIZE", "CAVE_VA", "END_RECORD_TEXT", "ENUM_TO_KIND_VA", "KIND_LIST_PAIRS_VA",
     "KIND_TO_ENUM_VA", "NEW_PACKAGE_SWAP_OLB", "PACKAGES_VA", "PENALTY_JNE_VA", "POOL_RECORDS", "POSITIONS",
     "PositionPoolsError", "RETAIL_CAVE_HELPER", "RETAIL_ENUM_TO_KIND", "RETAIL_KIND_TO_ENUM", "RETAIL_MAXIMA",
